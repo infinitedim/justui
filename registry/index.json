@@ -1,0 +1,18 @@
+{
+  "version": "1",
+  "components": [
+    {
+      "name": "button",
+      "version": "0.1.0",
+      "description": "Versatile button with multiple variants",
+      "status": "stable",
+      "category": "primitives",
+      "files": [
+        "just_button.dart",
+        "just_button_style.dart"
+      ],
+      "registryDependencies": [],
+      "pubDependencies": {}
+    }
+  ]
+}
