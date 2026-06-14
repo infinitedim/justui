@@ -26,6 +26,8 @@ graph LR
 
 ## Milestone I — Token System
 
+> **Status:** 🟢 Completed
+
 ### Deskripsi
 
 Token System adalah **single source of truth** untuk seluruh nilai visual primitif yang digunakan di seluruh komponen JustUI. Token didesain sebagai Dart constants dan class yang immutable, sehingga dapat dikonsumsi langsung oleh widget maupun oleh theming engine.
@@ -157,15 +159,17 @@ packages/just_ui_tokens/lib/
 
 ### Acceptance Criteria — Milestone I
 
-- [ ] Semua token didefinisikan sebagai Dart constants (`const`) untuk tree-shaking optimal.
-- [ ] Barrel export file `tokens.dart` meng-export seluruh token categories.
-- [ ] Unit test memverifikasi setiap token value tidak `null` dan dalam range valid.
-- [ ] Dokumentasi dartdoc pada setiap public class dan property.
-- [ ] `dart analyze` zero warning pada package `just_ui_tokens`.
+- [x] Semua token didefinisikan sebagai Dart constants (`const`) untuk tree-shaking optimal.
+- [x] Barrel export file `tokens.dart` meng-export seluruh token categories.
+- [x] Unit test memverifikasi setiap token value tidak `null` dan dalam range valid.
+- [x] Dokumentasi dartdoc pada setiap public class dan property.
+- [x] `dart analyze` zero warning pada package `just_ui_tokens`.
 
 ---
 
 ## Milestone II — Theming Engine (Light/Dark & Custom Theme)
+
+> **Status:** 🔴 Not Started
 
 ### Deskripsi
 
@@ -296,6 +300,8 @@ extension JustThemeContext on BuildContext {
 ---
 
 ## Milestone III — CLI Scaffold & Copy-Paste Workflow
+
+> **Status:** 🔴 Not Started
 
 ### Deskripsi
 
