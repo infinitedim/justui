@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/packages/just_ui_cli/melos_just_ui_cli.iml" filepath="$PROJECT_DIR$/packages/just_ui_cli/melos_just_ui_cli.iml" />
+      <module fileurl="file://$PROJECT_DIR$/packages/just_ui_core/melos_just_ui_core.iml" filepath="$PROJECT_DIR$/packages/just_ui_core/melos_just_ui_core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/packages/just_ui_tokens/melos_just_ui_tokens.iml" filepath="$PROJECT_DIR$/packages/just_ui_tokens/melos_just_ui_tokens.iml" />
+      <module fileurl="file://$PROJECT_DIR$/apps/showcase/melos_showcase.iml" filepath="$PROJECT_DIR$/apps/showcase/melos_showcase.iml" />
+      <module fileurl="file://$PROJECT_DIR$/melos_justui.iml" filepath="$PROJECT_DIR$/melos_justui.iml" />
+    </modules>
+  </component>
+</project>

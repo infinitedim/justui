@@ -1,0 +1,9 @@
+name: justui
+packages:
+  - packages/*
+  - apps/*
+
+command:
+  bootstrap:
+    usePubspecOverrides: true
+sdkPath: .fvm/flutter_sdk
