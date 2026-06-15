@@ -5,14 +5,23 @@
       "name": "button",
       "version": "0.1.0",
       "description": "Versatile button with multiple variants",
-      "status": "stable",
       "category": "primitives",
-      "files": [
-        "just_button.dart",
-        "just_button_style.dart"
-      ],
       "registryDependencies": [],
-      "pubDependencies": {}
+      "pubDependencies": {
+        "flutter_animate": "^1.0.0"
+      },
+      "files": [
+        {
+          "name": "just_button.dart",
+          "path": "components/button/just_button.dart",
+          "checksum": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "just_button_style.dart",
+          "path": "components/button/just_button_style.dart",
+          "checksum": "sha256:85136894c25f4625b162629b30c441865369cfcfcfb9b9a6ca2911b7852b8555"
+        }
+      ]
     }
   ]
 }

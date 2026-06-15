@@ -1,0 +1,101 @@
+# JustUI — Agent Onboarding & Codebase Manual
+
+Selamat datang! Berkas ini dibuat sebagai **single source of truth** bagi AI Agent untuk memahami arsitektur, struktur proyek, dan batasan lingkungan pengembangan (constraints) JustUI tanpa perlu menganalisis seluruh codebase dari awal.
+
+---
+
+## 1. Project Overview & Philosophy
+
+**JustUI** adalah Flutter UI component library dengan filosofi **copy-paste model** (terinspirasi dari shadcn/ui).
+* User **tidak menginstall** library ini sebagai package pub.dev pihak ketiga.
+* User menggunakan CLI tool (`just_ui_cli`) untuk menyalin kode sumber komponen secara langsung ke dalam direktori proyek mereka sendiri.
+* Desain arsitektur diutamakan pada **Zero-dependency footprint** (tidak memakai library eksternal pub.dev selain bawaan Flutter) dan **Visual & Performance Excellence**.
+
+---
+
+## 2. Monorepo Structure
+
+```
+justui/
+├── packages/
+│   ├── just_ui_tokens/     # Design system tokens (colors, spacing, typography, dll.)
+│   ├── just_ui_core/       # Theming engine, context extensions, & optimisasi rebuild
+│   └── just_ui_cli/        # Command-Line Interface (scaffolding & copy-paste workflow)
+├── docs/                   # Spesifikasi desain & fungsionalitas per fase
+├── melos.yaml
+└── pubspec.yaml
+```
+
+---
+
+## 3. Architecture & Key Features (Milestone I & II)
+
+### packages/just_ui_tokens
+* **Visual Primitives**: Menyediakan konstanta compile-time (`const`) untuk `Colors`, `Spacing`, `Typography`, `Radius`, `Shadows`, dan `Animation` (Duration & Curves).
+* **Accessibility Contrast Auditor (`colors_accessibility.dart`)**:
+  * Menyediakan extension method pada `Color`: `contrastRatioWith` dan `isAccessibleWith`.
+  * Memenuhi standar WCAG AA (kontras $\ge$ 4.5:1 untuk teks normal, $\ge$ 3.0:1 untuk komponen/teks besar).
+
+### packages/just_ui_core
+* **Aspect-Based Rebuilds (`InheritedModel`)**:
+  * Menggunakan `JustThemeProvider` dengan `InheritedModel<JustThemeAspect>`.
+  * Mengurangi overhead rebuild widget tree dengan memastikan perubahan aspek spesifik (misal: warna ketika toggle tema) hanya merender ulang widget yang mendengarkan aspek tersebut (`context.justColors`).
+* **Lazy-Cached Material `ThemeData`**:
+  * Nilai Flutter `ThemeData` diterjemahkan secara malas (*lazily*) dan disimpan di memori. Pemanggilan `.toThemeData()` berulang kali mengembalikan instance yang identik, menghilangkan overhead kalkulasi di setiap build.
+* **Seeding & Contrast Enforcement (`JustThemeData.fromSeed`)**:
+  * Memungkinkan inisialisasi tema kustom dari satu warna seed via HSL color scale.
+  * Menjamin kontras warna primer (`borderFocus`) dinamis tetap memenuhi rasio kontras $\ge$ 3.0:1 terhadap background dengan memanipulasi nilai lightness warna secara otomatis di runtime.
+* **Transition TIMING & Curves**:
+  * `JustThemeProvider` mengekspos `transitionDuration` (default: `JustDuration.normal`) dan `transitionCurve` (default: `JustCurves.default_`).
+
+### Best Practices for Theme Consumption (Penting!)
+Untuk mempertahankan performa render yang optimal, AI Agent wajib menggunakan extension method dari `BuildContext` dengan aspek yang tepat ketika membangun widget/komponen baru:
+* **Gunakan aspek spesifik** saat mengambil token di dalam metode `build`:
+  * `context.justColors` untuk warna (misal: `context.justColors.background`) -> Hanya merender ulang widget jika warna berubah.
+  * `context.justTypo` untuk teks (misal: `context.justTypo.bodyMd`) -> Hanya merender ulang widget jika typography berubah.
+  * `context.justSpacing` untuk spacing (misal: `context.justSpacing.md`) -> Hanya merender ulang widget jika spacing berubah.
+* **Hindari** penggunaan `context.justTheme` di dalam widget kecil, kecuali jika widget tersebut memang membutuhkan banyak aspek sekaligus. Memanggil `context.justTheme` akan meregistrasikan listener ke *seluruh* aspek tema, sehingga widget akan dibangun ulang saat aspek apa pun berubah.
+* **Gunakan API non-registering** di dalam callback (seperti `onPressed`, `onTap`, dll.):
+  * `context.readTheme()` -> Mengambil data tema secara langsung tanpa mendaftarkan listener rebuild ke context.
+
+---
+
+## 4. Coding Style & Syntax Rules (Penting!)
+
+Semua agent wajib mematuhi aturan gaya penulisan kode berikut agar konsisten dengan codebase yang sudah ada:
+
+1. **Patuhi Gaya Penulisan Kode yang Ada:** Jangan mengubah gaya penulisan, struktur indentasi, formatting, atau pengorganisasian kode yang sudah terbentuk di dalam repositori ini.
+2. **Penggunaan Dart Dot Shorthand (Constructor Shorthands):**
+   * Repositori ini memanfaatkan fitur **dot shorthand** (tersedia pada Dart 3.10 ke atas) untuk mempersingkat pemanggilan konstruktor static/factory bawaan Flutter ketika tipe datanya sudah dideklarasikan secara statis oleh parameter (misalnya `BorderRadius`, `EdgeInsets`, dll.).
+   * Contoh penulisan shorthand:
+     ```dart
+     borderRadius: .all(radius.lg)  // JANGAN UBAH ke BorderRadius.all!
+     padding: .symmetric(horizontal: spacing.md)  // JANGAN UBAH ke EdgeInsets.symmetric!
+     ```
+   * **Aturan Mutlak:** Jika Anda melihat sintaksis shorthand yang berawalan titik seperti `.all(...)` atau `.symmetric(...)`, **jangan sekali-kali memodifikasinya atau mengembalikannya ke bentuk panjang (verbose)**.
+
+---
+
+## 5. Development & Sandbox Constraints (Sangat Penting!)
+
+Ketika bekerja di sandbox ini, harap perhatikan aturan lingkungan berikut:
+
+1. **Offline Environment (No Internet)**:
+   * Sandbox tidak memiliki koneksi internet, sehingga `dart pub get` atau `flutter pub get` standar akan gagal karena tidak bisa mengakses pub.dev.
+   * **Penyelesaian**: Dependensi antar package lokal sudah dikonfigurasi secara offline di `.dart_tool/package_config.json`. **Jangan pernah menghapus atau menimpa folder `.dart_tool` secara ceroboh.**
+2. **Dart Telemetry & Read-Only filesystem**:
+   * Menjalankan tool Dart/Flutter dapat memicu error penulisan file telemetri di direktori HOME bawaan system.
+   * **Solusi**: Selalu override `HOME` ke folder project lokal (`~/development/justui/.home`) saat menjalankan tool CLI Dart.
+3. **Static Analysis & Lint Checks**:
+   * Gunakan perintah berikut dari root proyek untuk memverifikasi kebersihan kode:
+     ```bash
+     export HOME=/home/yourblooo/development/justui/.home && dart analyze packages/just_ui_core
+     export HOME=/home/yourblooo/development/justui/.home && dart analyze packages/just_ui_tokens
+     ```
+4. **Running Tests**:
+   * Karena tidak adanya Flutter SDK lengkap di sandbox, perintah `flutter test` atau `dart test` langsung akan mengalami socket error/crash kompilasi FFI.
+   * Unit test di [theme_test.dart](file:///home/yourblooo/development/justui/packages/just_ui_core/test/theme_test.dart) dan [tokens_test.dart](file:///home/yourblooo/development/justui/packages/just_ui_tokens/test/tokens_test.dart) telah ditulis dengan lengkap dan bersih. Pengujian harus dilakukan di environment lokal user (user-land) yang memiliki Flutter SDK terpasang:
+     ```bash
+     flutter test packages/just_ui_tokens
+     flutter test packages/just_ui_core
+     ```

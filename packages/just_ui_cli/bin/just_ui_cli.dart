@@ -1,5 +1,6 @@
-import 'package:just_ui_cli/just_ui_cli.dart' as just_ui_cli;
+import 'package:file/local.dart';
+import 'package:just_ui_cli/just_ui_cli.dart';
 
-void main(List<String> arguments) {
-  print('Hello world: ${just_ui_cli.calculate()}!');
+void main(List<String> arguments) async {
+  await runCli(arguments, const LocalFileSystem());
 }
