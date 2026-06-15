@@ -8,7 +8,15 @@
       "version": "0.0.0",
       "dependencies": [],
       "devDependencies": [
+        "flutter_lints",
         "melos"
+      ]
+    },
+    {
+      "name": "flutter_lints",
+      "version": "6.0.0",
+      "dependencies": [
+        "lints"
       ]
     },
     {
@@ -291,6 +299,11 @@
       "dependencies": [
         "collection"
       ]
+    },
+    {
+      "name": "lints",
+      "version": "6.1.0",
+      "dependencies": []
     }
   ],
   "configVersion": 1

@@ -1,0 +1,61 @@
+name: Bug Report
+description: Create a report to help us improve JustUI components or CLI.
+title: "[BUG]: "
+labels: ["bug", "untriaged"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Describe the problem...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Copy component using 'justui add <component>'
+        2. ...
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+  - type: input
+    id: dart-version
+    attributes:
+      label: Dart SDK Version
+      description: e.g., 3.12.0
+  - type: input
+    id: flutter-version
+    attributes:
+      label: Flutter SDK Version
+      description: e.g., 3.27.0
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Target Platform
+      description: Which platform did this occur on?
+      options:
+        - Android
+        - iOS
+        - Web
+        - macOS
+        - Windows
+        - Linux
+  - type: textarea
+    id: code
+    attributes:
+      label: Code Snippet / Logs
+      description: Paste the offending widget code or logs here.
+      render: dart

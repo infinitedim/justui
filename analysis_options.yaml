@@ -1,0 +1,20 @@
+# analysis_options.yaml (root)
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    missing_required_param: error
+    missing_return: error
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    avoid_print: true
+    use_super_parameters: true
+    prefer_final_locals: true
+    avoid_unnecessary_containers: true

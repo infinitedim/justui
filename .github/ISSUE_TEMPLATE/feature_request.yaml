@@ -1,0 +1,33 @@
+name: Feature Request
+description: Suggest a new component, visual token, or CLI feature.
+title: "[FEAT]: "
+labels: ["enhancement", "proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea for a new widget or feature? We'd love to hear it!
+  - type: textarea
+    id: problem
+    attributes:
+      label: Is your feature request related to a problem?
+      description: A clear and concise description of what the problem is. E.g., "I'm frustrated when..."
+      placeholder: Describe the pain point...
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what component or feature you want to add. Describe its options, behavior, and visual tokens.
+      placeholder: Describe the widget, layout, or CLI tool additions...
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Describe alternatives you've considered
+      description: A clear and concise description of any alternative solutions or features you've considered.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Add any other context, designs, screenshots, or mockups about the feature request here.
