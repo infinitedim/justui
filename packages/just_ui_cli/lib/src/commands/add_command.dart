@@ -11,7 +11,8 @@ class AddCommand extends Command<void> {
   final String name = 'add';
 
   @override
-  final String description = 'Add a component and its dependencies to your project.';
+  final String description =
+      'Add a component and its dependencies to your project.';
 
   /// Mockable file system instance.
   final FileSystem fileSystem;
@@ -23,7 +24,9 @@ class AddCommand extends Command<void> {
   void run() async {
     final args = argResults?.rest ?? [];
     if (args.isEmpty) {
-      JustLogger.error('Please specify a component name (e.g., "justui add button").');
+      JustLogger.error(
+        'Please specify a component name (e.g., "justui add button").',
+      );
       return;
     }
     final componentName = args.first;
@@ -87,13 +90,21 @@ class AddCommand extends Command<void> {
 
     // 1. Recursively resolve and download registry dependencies first
     for (final dep in component.registryDependencies) {
-      await _addComponent(dep, index, client, componentsDir, tokensDir, visited);
+      await _addComponent(
+        dep,
+        index,
+        client,
+        componentsDir,
+        tokensDir,
+        visited,
+      );
     }
 
     JustLogger.info('Adding component "$name" (v${component.version})...');
 
     // 2. Map target target directory based on category
-    final String targetDir = component.category == 'tokens' || component.category == 'core'
+    final String targetDir =
+        component.category == 'tokens' || component.category == 'core'
         ? tokensDir
         : fileSystem.path.join(componentsDir, component.name);
 
@@ -119,7 +130,9 @@ class AddCommand extends Command<void> {
             versionConstraint: version,
             pubspecPath: 'pubspec.yaml',
           );
-          JustLogger.success('Added dependency "$pubDep: $version" to pubspec.yaml.');
+          JustLogger.success(
+            'Added dependency "$pubDep: $version" to pubspec.yaml.',
+          );
         } catch (e) {
           JustLogger.warning('Could not add dependency "$pubDep": $e');
         }

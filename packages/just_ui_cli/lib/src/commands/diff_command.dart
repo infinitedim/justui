@@ -12,7 +12,8 @@ class DiffCommand extends Command<void> {
   final String name = 'diff';
 
   @override
-  final String description = 'Show differences between local components and registry files.';
+  final String description =
+      'Show differences between local components and registry files.';
 
   /// Mockable file system instance.
   final FileSystem fileSystem;
@@ -31,7 +32,9 @@ class DiffCommand extends Command<void> {
   void run() async {
     final args = argResults?.rest ?? [];
     if (args.isEmpty) {
-      JustLogger.error('Please specify a component name (e.g., "justui diff button").');
+      JustLogger.error(
+        'Please specify a component name (e.g., "justui diff button").',
+      );
       return;
     }
     final componentName = args.first;
@@ -63,10 +66,12 @@ class DiffCommand extends Command<void> {
 
       final component = index.components.firstWhere(
         (c) => c.name == componentName,
-        orElse: () => throw Exception('Component "$componentName" not found in registry'),
+        orElse: () =>
+            throw Exception('Component "$componentName" not found in registry'),
       );
 
-      final String targetDir = component.category == 'tokens' || component.category == 'core'
+      final String targetDir =
+          component.category == 'tokens' || component.category == 'core'
           ? config.tokensDir
           : fileSystem.path.join(config.componentsDir, component.name);
 
@@ -75,7 +80,9 @@ class DiffCommand extends Command<void> {
         final localFile = fileSystem.file(targetPath);
 
         if (!localFile.existsSync()) {
-          JustLogger.warning('File ${file.name} is missing locally (needs to be added).');
+          JustLogger.warning(
+            'File ${file.name} is missing locally (needs to be added).',
+          );
           continue;
         }
 
@@ -106,7 +113,9 @@ class DiffCommand extends Command<void> {
     JustLogger.stdout('\n--- Line-by-line diff for $fileName ---');
     final localLines = local.split('\n');
     final remoteLines = remote.split('\n');
-    final maxLines = localLines.length > remoteLines.length ? localLines.length : remoteLines.length;
+    final maxLines = localLines.length > remoteLines.length
+        ? localLines.length
+        : remoteLines.length;
 
     for (int i = 0; i < maxLines; i++) {
       final localLine = i < localLines.length ? localLines[i] : null;
@@ -121,8 +130,12 @@ class DiffCommand extends Command<void> {
           JustLogger.stdout('\x1B[31m- [Line ${i + 1}] $localLine\x1B[0m');
         } else {
           // Modified line
-          JustLogger.stdout('\x1B[31m- [Line ${i + 1}] Local:    $localLine\x1B[0m');
-          JustLogger.stdout('\x1B[32m+ [Line ${i + 1}] Registry: $remoteLine\x1B[0m');
+          JustLogger.stdout(
+            '\x1B[31m- [Line ${i + 1}] Local:    $localLine\x1B[0m',
+          );
+          JustLogger.stdout(
+            '\x1B[32m+ [Line ${i + 1}] Registry: $remoteLine\x1B[0m',
+          );
         }
       }
     }

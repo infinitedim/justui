@@ -7,10 +7,12 @@ abstract final class JustLogger {
   static void success(String message) => _print('\x1B[32m✓ $message\x1B[0m');
 
   /// Logs a red error message with a cross icon.
-  static void error(String message) => _print('\x1B[31m✗ Error: $message\x1B[0m');
+  static void error(String message) =>
+      _print('\x1B[31m✗ Error: $message\x1B[0m');
 
   /// Logs a yellow warning message.
-  static void warning(String message) => _print('\x1B[33m⚠ Warning: $message\x1B[0m');
+  static void warning(String message) =>
+      _print('\x1B[33m⚠ Warning: $message\x1B[0m');
 
   /// Logs a cyan informational message.
   static void info(String message) => _print('\x1B[36mℹ $message\x1B[0m');
