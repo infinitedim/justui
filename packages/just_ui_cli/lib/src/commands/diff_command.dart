@@ -87,7 +87,9 @@ class DiffCommand extends Command<void> {
         }
 
         // Calculate local SHA-256 hash
-        final localContent = localFile.readAsStringSync();
+        final rawLocalContent = localFile.readAsStringSync();
+        // Normalize line endings to avoid cross-platform CRLF vs LF mismatches
+        final localContent = rawLocalContent.replaceAll('\r\n', '\n');
         final bytes = utf8.encode(localContent);
         final localHash = sha256.convert(bytes).toString();
 
@@ -111,8 +113,10 @@ class DiffCommand extends Command<void> {
 
   void _printLineDiff(String fileName, String local, String remote) {
     JustLogger.stdout('\n--- Line-by-line diff for $fileName ---');
-    final localLines = local.split('\n');
-    final remoteLines = remote.split('\n');
+    final localNormalized = local.replaceAll('\r\n', '\n');
+    final remoteNormalized = remote.replaceAll('\r\n', '\n');
+    final localLines = localNormalized.split('\n');
+    final remoteLines = remoteNormalized.split('\n');
     final maxLines = localLines.length > remoteLines.length
         ? localLines.length
         : remoteLines.length;
