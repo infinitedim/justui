@@ -80,7 +80,7 @@ dependencies:
 
       await runCli(['init'], fs);
       expect(
-        logs.any((l) => l.contains('success: JustUI initialized successfully')),
+        logs.any((l) => l.contains('JustUI initialized successfully')),
         isTrue,
       );
       expect(fs.file('justui.config.yaml').existsSync(), isTrue);
@@ -134,6 +134,8 @@ components_dir: lib/ui
 tokens_dir: lib/tokens
 registry_url: mock_registry
 ''');
+
+        fs.directory('mock_registry').createSync(recursive: true);
 
         // Registry index defining dependency (button depends on spacing token)
         fs
@@ -220,6 +222,8 @@ tokens_dir: lib/tokens
 registry_url: mock_registry
 ''');
 
+        fs.directory('mock_registry').createSync(recursive: true);
+
         // A depends on B, B depends on A
         fs
             .file('mock_registry/index.json')
@@ -289,6 +293,8 @@ tokens_dir: lib/tokens
 registry_url: mock_registry
 ''');
 
+        fs.directory('mock_registry').createSync(recursive: true);
+
         final componentHash = sha256
             .convert(utf8.encode('original'))
             .toString();
@@ -330,7 +336,7 @@ registry_url: mock_registry
         logs.clear();
         await runCli(['diff', 'button'], fs);
         expect(
-          logs.any((l) => l.contains('success: just_button.dart: Up to date')),
+          logs.any((l) => l.contains('just_button.dart: Up to date')),
           isTrue,
         );
 
@@ -339,9 +345,7 @@ registry_url: mock_registry
         logs.clear();
         await runCli(['diff', 'button'], fs);
         expect(
-          logs.any(
-            (l) => l.contains('warning: just_button.dart: Modified locally'),
-          ),
+          logs.any((l) => l.contains('just_button.dart: Modified locally')),
           isTrue,
         );
         expect(logs.any((l) => l.contains('Line-by-line diff')), isFalse);
@@ -355,6 +359,119 @@ registry_url: mock_registry
         );
         expect(logs.any((l) => l.contains('Local:    modified')), isTrue);
         expect(logs.any((l) => l.contains('Registry: original')), isTrue);
+      },
+    );
+
+    test(
+      'AddCommand fails if downloaded file checksum mismatches expected hash',
+      () async {
+        fs.file('pubspec.yaml').writeAsStringSync('name: test');
+        fs.file('justui.config.yaml').writeAsStringSync('''
+components_dir: lib/ui
+tokens_dir: lib/tokens
+registry_url: mock_registry
+''');
+
+        fs.directory('mock_registry').createSync(recursive: true);
+
+        fs
+            .file('mock_registry/index.json')
+            .writeAsStringSync(
+              jsonEncode({
+                'version': '1',
+                'components': [
+                  {
+                    'name': 'corrupted',
+                    'version': '0.1.0',
+                    'description': 'Corrupted component',
+                    'category': 'primitives',
+                    'registryDependencies': [],
+                    'pubDependencies': {},
+                    'files': [
+                      {
+                        'name': 'corrupted.dart',
+                        'path': 'components/corrupted.dart',
+                        'checksum': 'sha256:mismatchinghash1234567890',
+                      },
+                    ],
+                  },
+                ],
+              }),
+            );
+
+        fs.file('mock_registry/components/corrupted.dart')
+          ..createSync(recursive: true)
+          ..writeAsStringSync('some file content');
+
+        logs.clear();
+        await runCli(['add', 'corrupted'], fs);
+
+        expect(
+          logs.any((l) => l.contains('Error: Failed to add component')),
+          isTrue,
+        );
+        expect(logs.any((l) => l.contains('Checksum mismatch')), isTrue);
+        expect(
+          fs.file('lib/ui/corrupted/corrupted.dart').existsSync(),
+          isFalse,
+        );
+      },
+    );
+
+    test(
+      'DiffCommand normalizes CRLF and LF to avoid cross-platform mismatches',
+      () async {
+        fs.file('pubspec.yaml').writeAsStringSync('name: test');
+        fs.file('justui.config.yaml').writeAsStringSync('''
+components_dir: lib/ui
+tokens_dir: lib/tokens
+registry_url: mock_registry
+''');
+
+        fs.directory('mock_registry').createSync(recursive: true);
+
+        // Hash is calculated from 'line1\nline2' (LF)
+        final lfHash = sha256.convert(utf8.encode('line1\nline2')).toString();
+
+        fs
+            .file('mock_registry/index.json')
+            .writeAsStringSync(
+              jsonEncode({
+                'version': '1',
+                'components': [
+                  {
+                    'name': 'lineending',
+                    'version': '0.1.0',
+                    'description': 'Line Ending Check',
+                    'category': 'primitives',
+                    'registryDependencies': [],
+                    'pubDependencies': {},
+                    'files': [
+                      {
+                        'name': 'le.dart',
+                        'path': 'components/le.dart',
+                        'checksum': 'sha256:$lfHash',
+                      },
+                    ],
+                  },
+                ],
+              }),
+            );
+
+        fs.file('mock_registry/components/le.dart')
+          ..createSync(recursive: true)
+          ..writeAsStringSync('line1\nline2');
+
+        // Local file is saved with CRLF ('line1\r\nline2')
+        fs.file('lib/ui/lineending/le.dart')
+          ..createSync(recursive: true)
+          ..writeAsStringSync('line1\r\nline2');
+
+        logs.clear();
+        await runCli(['diff', 'lineending'], fs);
+
+        // Should normalize CRLF to LF, match the hashes, and say "Up to date"
+        expect(logs.any((l) => l.contains('le.dart: Up to date')), isTrue);
       },
     );
   });

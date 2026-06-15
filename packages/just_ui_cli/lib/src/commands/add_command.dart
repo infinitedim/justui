@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:args/command_runner.dart';
+import 'package:crypto/crypto.dart';
 import 'package:file/file.dart';
 import '../config/justui_config.dart';
 import '../registry/registry_client.dart';
@@ -108,9 +110,24 @@ class AddCommand extends Command<void> {
         ? tokensDir
         : fileSystem.path.join(componentsDir, component.name);
 
-    // 3. Download and write each file
+    // 3. Download, validate, and write each file
     for (final file in component.files) {
       final content = await client.fetchFileContent(file.path);
+
+      // Verify SHA-256 checksum integrity
+      final bytes = utf8.encode(content);
+      final downloadedHash = sha256.convert(bytes).toString();
+      final expectedHash = file.checksum.replaceAll('sha256:', '').trim();
+
+      if (downloadedHash != expectedHash) {
+        throw Exception(
+          'Security check failed: Checksum mismatch for downloaded file "${file.name}".\n'
+          '  Expected: $expectedHash\n'
+          '  Got:      $downloadedHash\n'
+          'The download might be corrupted or tampered with.',
+        );
+      }
+
       final targetPath = fileSystem.path.join(targetDir, file.name);
       final targetFile = fileSystem.file(targetPath);
 
