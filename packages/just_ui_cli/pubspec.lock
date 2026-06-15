@@ -18,7 +18,7 @@ packages:
     source: hosted
     version: "13.3.0"
   args:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: args
       sha256: d0481093c50b1da8910eb0bb301626d4d8eb7284aa739614d2b394ee09e3ea04
@@ -74,7 +74,7 @@ packages:
     source: hosted
     version: "1.15.1"
   crypto:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: crypto
       sha256: c8ea0233063ba03258fbcf2ca4d6dadfefe14f02fab57702265467a19f27fadf
@@ -82,7 +82,7 @@ packages:
     source: hosted
     version: "3.0.7"
   file:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: file
       sha256: a3b4f84adafef897088c160faf7dfffb7696046cb13ae90b508c2cbc95d3b8d4
@@ -378,7 +378,7 @@ packages:
     source: hosted
     version: "1.2.1"
   yaml:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: yaml
       sha256: b9da305ac7c39faa3f030eccd175340f968459dae4af175130b3fc47e40d76ce
