@@ -204,5 +204,30 @@ void main() {
         ),
       );
     });
+
+    testWidgets('System theme mode adapts to platform brightness changes dynamically', (WidgetTester tester) async {
+      tester.platformDispatcher.platformBrightnessTestValue = Brightness.light;
+
+      await tester.pumpWidget(
+        JustThemeProvider(
+          initialThemeMode: ThemeMode.system,
+          child: Builder(
+            builder: (context) {
+              final isDark = context.justTheme.colors.background == JustColors.neutral950;
+              return Text(isDark ? 'dark' : 'light');
+            },
+          ),
+        ),
+      );
+
+      expect(find.text('light'), findsOneWidget);
+
+      tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+      await tester.pumpAndSettle();
+
+      expect(find.text('dark'), findsOneWidget);
+
+      tester.platformDispatcher.clearPlatformBrightnessTestValue();
+    });
   });
 }
