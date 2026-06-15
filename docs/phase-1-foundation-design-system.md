@@ -169,7 +169,7 @@ packages/just_ui_tokens/lib/
 
 ## Milestone II — Theming Engine (Light/Dark & Custom Theme)
 
-> **Status:** 🔴 Not Started
+> **Status:** 🟢 Completed
 
 ### Deskripsi
 
@@ -290,12 +290,12 @@ extension JustThemeContext on BuildContext {
 
 ### Acceptance Criteria — Milestone II
 
-- [ ] Light & Dark theme render dengan benar di showcase app.
-- [ ] Theme toggle berjalan smooth tanpa rebuild seluruh widget tree.
-- [ ] Custom theme dengan partial override berfungsi.
-- [ ] System preference detection bekerja di Android, iOS, Web, Desktop.
-- [ ] Contrast ratio setiap text-on-surface ≥ 4.5:1 (WCAG AA).
-- [ ] Theme callbacks (`onThemeChanged` dan `initialThemeMode`) terbukti dapat dipanggil dan diintegrasikan oleh storage engine eksternal.
+- [x] Light & Dark theme render dengan benar di showcase app.
+- [x] Theme toggle berjalan smooth tanpa rebuild seluruh widget tree.
+- [x] Custom theme dengan partial override berfungsi.
+- [x] System preference detection bekerja di Android, iOS, Web, Desktop.
+- [x] Contrast ratio setiap text-on-surface ≥ 4.5:1 (WCAG AA).
+- [x] Theme callbacks (`onThemeChanged` dan `initialThemeMode`) terbukti dapat dipanggil dan diintegrasikan oleh storage engine eksternal.
 
 ---
 

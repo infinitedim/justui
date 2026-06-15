@@ -40,12 +40,9 @@ abstract final class JustSpacing {
   /// 3. Otherwise returns [EdgeInsets.zero].
   static EdgeInsets insets({double? all, double? h, double? v}) {
     if (all != null) {
-      return EdgeInsets.all(all);
+      return .all(all);
     }
-    return EdgeInsets.symmetric(
-      horizontal: h ?? 0.0,
-      vertical: v ?? 0.0,
-    );
+    return .symmetric(horizontal: h ?? 0.0, vertical: v ?? 0.0);
   }
 }
 
@@ -54,29 +51,38 @@ abstract final class JustSpacing {
 /// Useful for vertical or horizontal inline spacers.
 abstract final class JustGap {
   /// Extra extra small gap (2.0px)
-  static Widget get xxs => const SizedBox(height: JustSpacing.xxs, width: JustSpacing.xxs);
+  static Widget get xxs =>
+      const SizedBox(height: JustSpacing.xxs, width: JustSpacing.xxs);
 
   /// Extra small gap (4.0px)
-  static Widget get xs => const SizedBox(height: JustSpacing.xs, width: JustSpacing.xs);
+  static Widget get xs =>
+      const SizedBox(height: JustSpacing.xs, width: JustSpacing.xs);
 
   /// Small gap (8.0px)
-  static Widget get sm => const SizedBox(height: JustSpacing.sm, width: JustSpacing.sm);
+  static Widget get sm =>
+      const SizedBox(height: JustSpacing.sm, width: JustSpacing.sm);
 
   /// Medium gap (12.0px)
-  static Widget get md => const SizedBox(height: JustSpacing.md, width: JustSpacing.md);
+  static Widget get md =>
+      const SizedBox(height: JustSpacing.md, width: JustSpacing.md);
 
   /// Large gap (16.0px)
-  static Widget get lg => const SizedBox(height: JustSpacing.lg, width: JustSpacing.lg);
+  static Widget get lg =>
+      const SizedBox(height: JustSpacing.lg, width: JustSpacing.lg);
 
   /// Extra large gap (24.0px)
-  static Widget get xl => const SizedBox(height: JustSpacing.xl, width: JustSpacing.xl);
+  static Widget get xl =>
+      const SizedBox(height: JustSpacing.xl, width: JustSpacing.xl);
 
   /// Double extra large gap (32.0px)
-  static Widget get xxl => const SizedBox(height: JustSpacing.xxl, width: JustSpacing.xxl);
+  static Widget get xxl =>
+      const SizedBox(height: JustSpacing.xxl, width: JustSpacing.xxl);
 
   /// Triple extra large gap (48.0px)
-  static Widget get xxxl => const SizedBox(height: JustSpacing.xxxl, width: JustSpacing.xxxl);
+  static Widget get xxxl =>
+      const SizedBox(height: JustSpacing.xxxl, width: JustSpacing.xxxl);
 
   /// Huge gap (64.0px)
-  static Widget get huge => const SizedBox(height: JustSpacing.huge, width: JustSpacing.huge);
+  static Widget get huge =>
+      const SizedBox(height: JustSpacing.huge, width: JustSpacing.huge);
 }

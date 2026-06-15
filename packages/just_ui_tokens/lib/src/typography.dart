@@ -16,7 +16,7 @@ abstract final class JustTypo {
   static const TextStyle displayLg = TextStyle(
     fontFamily: fontFamily,
     fontSize: 48.0,
-    fontWeight: FontWeight.w700,
+    fontWeight: .w700,
     height: 1.2,
     letterSpacing: -0.96, // -0.02 * 48
   );
@@ -25,7 +25,7 @@ abstract final class JustTypo {
   static const TextStyle displayMd = TextStyle(
     fontFamily: fontFamily,
     fontSize: 36.0,
-    fontWeight: FontWeight.w700,
+    fontWeight: .w700,
     height: 1.2,
     letterSpacing: -0.72, // -0.02 * 36
   );
@@ -34,7 +34,7 @@ abstract final class JustTypo {
   static const TextStyle displaySm = TextStyle(
     fontFamily: fontFamily,
     fontSize: 30.0,
-    fontWeight: FontWeight.w600,
+    fontWeight: .w600,
     height: 1.3,
     letterSpacing: -0.6, // -0.02 * 30
   );
@@ -44,7 +44,7 @@ abstract final class JustTypo {
   static const TextStyle headingLg = TextStyle(
     fontFamily: fontFamily,
     fontSize: 24.0,
-    fontWeight: FontWeight.w600,
+    fontWeight: .w600,
     height: 1.3,
     letterSpacing: -0.24, // -0.01 * 24
   );
@@ -53,7 +53,7 @@ abstract final class JustTypo {
   static const TextStyle headingMd = TextStyle(
     fontFamily: fontFamily,
     fontSize: 20.0,
-    fontWeight: FontWeight.w600,
+    fontWeight: .w600,
     height: 1.4,
     letterSpacing: -0.2, // -0.01 * 20
   );
@@ -62,7 +62,7 @@ abstract final class JustTypo {
   static const TextStyle headingSm = TextStyle(
     fontFamily: fontFamily,
     fontSize: 16.0,
-    fontWeight: FontWeight.w600,
+    fontWeight: .w600,
     height: 1.4,
     letterSpacing: -0.16, // -0.01 * 16
   );
@@ -72,7 +72,7 @@ abstract final class JustTypo {
   static const TextStyle bodyLg = TextStyle(
     fontFamily: fontFamily,
     fontSize: 18.0,
-    fontWeight: FontWeight.w400,
+    fontWeight: .w400,
     height: 1.6,
     letterSpacing: 0.0,
   );
@@ -81,7 +81,7 @@ abstract final class JustTypo {
   static const TextStyle bodyMd = TextStyle(
     fontFamily: fontFamily,
     fontSize: 16.0,
-    fontWeight: FontWeight.w400,
+    fontWeight: .w400,
     height: 1.6,
     letterSpacing: 0.0,
   );
@@ -90,7 +90,7 @@ abstract final class JustTypo {
   static const TextStyle bodySm = TextStyle(
     fontFamily: fontFamily,
     fontSize: 14.0,
-    fontWeight: FontWeight.w400,
+    fontWeight: .w400,
     height: 1.5,
     letterSpacing: 0.0,
   );
@@ -100,7 +100,7 @@ abstract final class JustTypo {
   static const TextStyle caption = TextStyle(
     fontFamily: fontFamily,
     fontSize: 12.0,
-    fontWeight: FontWeight.w400,
+    fontWeight: .w400,
     height: 1.4,
     letterSpacing: 0.0,
   );
@@ -109,7 +109,7 @@ abstract final class JustTypo {
   static const TextStyle overline = TextStyle(
     fontFamily: fontFamily,
     fontSize: 11.0,
-    fontWeight: FontWeight.w500,
+    fontWeight: .w500,
     height: 1.5,
     letterSpacing: 0.55, // 0.05 * 11
   );

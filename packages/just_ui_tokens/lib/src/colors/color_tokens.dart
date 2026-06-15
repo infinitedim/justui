@@ -293,3 +293,56 @@ abstract final class JustColors {
   /// Info shade 950
   static const Color info950 = JustColorPalette.info950;
 }
+
+/// A concrete implementation of [JustColorScheme] that allows passing custom colors.
+final class CustomColorScheme extends JustColorScheme {
+  @override
+  final Color background;
+  @override
+  final Color card;
+  @override
+  final Color elevated;
+  @override
+  final Color overlay;
+  @override
+  final Color textPrimary;
+  @override
+  final Color textSecondary;
+  @override
+  final Color textDisabled;
+  @override
+  final Color textInverse;
+  @override
+  final Color borderDefault;
+  @override
+  final Color borderFocus;
+  @override
+  final Color borderError;
+  @override
+  final Color success;
+  @override
+  final Color warning;
+  @override
+  final Color error;
+  @override
+  final Color info;
+
+  /// Creates a custom color scheme.
+  const CustomColorScheme({
+    required this.background,
+    required this.card,
+    required this.elevated,
+    required this.overlay,
+    required this.textPrimary,
+    required this.textSecondary,
+    required this.textDisabled,
+    required this.textInverse,
+    required this.borderDefault,
+    required this.borderFocus,
+    required this.borderError,
+    required this.success,
+    required this.warning,
+    required this.error,
+    required this.info,
+  });
+}

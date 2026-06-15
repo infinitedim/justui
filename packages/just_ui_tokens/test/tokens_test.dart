@@ -264,4 +264,29 @@ void main() {
       expect(JustCurves.spring, isNotNull);
     });
   });
+
+  group('Accessibility Contrast Validation', () {
+    test('Calculates correct contrast ratio for pure black and white', () {
+      const black = JustColors.black;
+      const white = JustColors.white;
+
+      expect(black.contrastRatioWith(white), closeTo(21.0, 0.01));
+      expect(white.contrastRatioWith(black), closeTo(21.0, 0.01));
+    });
+
+    test('Identical colors have a contrast ratio of 1.0', () {
+      const color = JustColors.primary500;
+      expect(color.contrastRatioWith(color), closeTo(1.0, 0.01));
+    });
+
+    test('Verifies accessibility compliance for standard pairings', () {
+      final light = JustColors.light();
+      
+      // textPrimary (dark grey/black) on background (light grey) should be WCAG AA compliant
+      expect(light.textPrimary.isAccessibleWith(light.background), isTrue);
+      
+      // Inverse text on overlay should also be compliant
+      expect(light.textInverse.isAccessibleWith(light.overlay), isTrue);
+    });
+  });
 }
