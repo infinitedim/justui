@@ -18,14 +18,15 @@ export 'src/utils/pubspec_editor.dart';
 
 /// Executes the CLI with the provided arguments and target file system.
 Future<void> runCli(List<String> arguments, FileSystem fileSystem) async {
-  final runner = CommandRunner<void>(
-    'justui',
-    'JustUI CLI - Scaffolding and copy-paste component tool for Flutter.',
-  )
-    ..addCommand(InitCommand(fileSystem))
-    ..addCommand(AddCommand(fileSystem))
-    ..addCommand(ListCommand(fileSystem))
-    ..addCommand(DiffCommand(fileSystem));
+  final runner =
+      CommandRunner<void>(
+          'justui',
+          'JustUI CLI - Scaffolding and copy-paste component tool for Flutter.',
+        )
+        ..addCommand(InitCommand(fileSystem))
+        ..addCommand(AddCommand(fileSystem))
+        ..addCommand(ListCommand(fileSystem))
+        ..addCommand(DiffCommand(fileSystem));
 
   try {
     await runner.run(arguments);

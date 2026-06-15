@@ -9,7 +9,8 @@ class InitCommand extends Command<void> {
   final String name = 'init';
 
   @override
-  final String description = 'Initialize JustUI configuration in the project root.';
+  final String description =
+      'Initialize JustUI configuration in the project root.';
 
   /// Mockable file system instance.
   final FileSystem fileSystem;
@@ -32,7 +33,9 @@ class InitCommand extends Command<void> {
     // 2. Check if configuration file already exists
     final configFile = fileSystem.file(JustUIConfig.configFileName);
     if (configFile.existsSync()) {
-      JustLogger.warning('${JustUIConfig.configFileName} already exists in this project.');
+      JustLogger.warning(
+        '${JustUIConfig.configFileName} already exists in this project.',
+      );
       return;
     }
 
@@ -41,7 +44,9 @@ class InitCommand extends Command<void> {
       final config = JustUIConfig.default_;
       configFile.writeAsStringSync(config.toYamlString());
       JustLogger.success('JustUI initialized successfully.');
-      JustLogger.info('Configuration written to ${JustUIConfig.configFileName}');
+      JustLogger.info(
+        'Configuration written to ${JustUIConfig.configFileName}',
+      );
     } catch (e) {
       JustLogger.error('Failed to create configuration file: $e');
     }

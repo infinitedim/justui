@@ -25,7 +25,8 @@ class JustUIConfig {
   static final JustUIConfig default_ = JustUIConfig(
     componentsDir: 'lib/ui',
     tokensDir: 'lib/tokens',
-    registryUrl: 'https://raw.githubusercontent.com/infinitedim/justui/main/registry',
+    registryUrl:
+        'https://raw.githubusercontent.com/infinitedim/justui/main/registry',
   );
 
   /// Parses config from a YAML string.
@@ -38,7 +39,8 @@ class JustUIConfig {
       return JustUIConfig(
         componentsDir: parsed['components_dir']?.toString() ?? 'lib/ui',
         tokensDir: parsed['tokens_dir']?.toString() ?? 'lib/tokens',
-        registryUrl: parsed['registry_url']?.toString() ??
+        registryUrl:
+            parsed['registry_url']?.toString() ??
             'https://raw.githubusercontent.com/infinitedim/justui/main/registry',
       );
     } catch (_) {

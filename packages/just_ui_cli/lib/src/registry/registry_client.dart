@@ -76,8 +76,12 @@ class RegistryComponent {
       description: json['description'] as String? ?? '',
       category: json['category'] as String? ?? 'general',
       registryDependencies: regDepsJson.map((e) => e.toString()).toList(),
-      pubDependencies: pubDepsJson.map((key, val) => MapEntry(key, val.toString())),
-      files: filesJson.map((e) => RegistryFile.fromJson(e as Map<String, dynamic>)).toList(),
+      pubDependencies: pubDepsJson.map(
+        (key, val) => MapEntry(key, val.toString()),
+      ),
+      files: filesJson
+          .map((e) => RegistryFile.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }
@@ -91,17 +95,16 @@ class RegistryIndex {
   final List<RegistryComponent> components;
 
   /// Creates a registry index.
-  RegistryIndex({
-    required this.version,
-    required this.components,
-  });
+  RegistryIndex({required this.version, required this.components});
 
   /// Parses from JSON map.
   factory RegistryIndex.fromJson(Map<String, dynamic> json) {
     final compsJson = json['components'] as List<dynamic>? ?? [];
     return RegistryIndex(
       version: json['version'] as String? ?? '1',
-      components: compsJson.map((e) => RegistryComponent.fromJson(e as Map<String, dynamic>)).toList(),
+      components: compsJson
+          .map((e) => RegistryComponent.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }
@@ -120,12 +123,14 @@ class RegistryClient {
   /// Creates a [RegistryClient].
   RegistryClient(this.baseUrl, this.fileSystem, {this.httpClient});
 
-  bool get _isRemote => baseUrl.startsWith('http://') || baseUrl.startsWith('https://');
+  bool get _isRemote =>
+      baseUrl.startsWith('http://') || baseUrl.startsWith('https://');
 
   /// Fetches and parses the registry index.
   Future<RegistryIndex> fetchIndex() async {
     final content = await _readContent('index.json');
-    final Map<String, dynamic> json = jsonDecode(content) as Map<String, dynamic>;
+    final Map<String, dynamic> json =
+        jsonDecode(content) as Map<String, dynamic>;
     return RegistryIndex.fromJson(json);
   }
 
@@ -143,7 +148,9 @@ class RegistryClient {
         final request = await client.getUrl(Uri.parse(url));
         final response = await request.close();
         if (response.statusCode != HttpStatus.ok) {
-          throw Exception('Failed to fetch from registry ($url): HTTP ${response.statusCode}');
+          throw Exception(
+            'Failed to fetch from registry ($url): HTTP ${response.statusCode}',
+          );
         }
         return await response.transform(utf8.decoder).join();
       } finally {
