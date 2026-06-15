@@ -56,15 +56,18 @@ class ListCommand extends Command<void> {
         final comps = entry.value;
 
         // Print category header capitalized
-        final capitalizedCategory =
-            category.isNotEmpty ? category[0].toUpperCase() + category.substring(1) : 'General';
+        final capitalizedCategory = category.isNotEmpty
+            ? category[0].toUpperCase() + category.substring(1)
+            : 'General';
         JustLogger.stdout('  $capitalizedCategory:');
 
         for (final comp in comps) {
           final dot = '\x1B[32m●\x1B[0m'; // Green bullet
           final nameStr = comp.name.padRight(16);
           final versionStr = '(${comp.version})'.padRight(10);
-          JustLogger.stdout('    $dot $nameStr $versionStr ${comp.description}');
+          JustLogger.stdout(
+            '    $dot $nameStr $versionStr ${comp.description}',
+          );
         }
       }
       JustLogger.stdout('');

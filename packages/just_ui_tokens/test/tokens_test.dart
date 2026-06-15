@@ -122,34 +122,41 @@ void main() {
       expect(all.left, equals(JustSpacing.md));
       expect(all.right, equals(JustSpacing.md));
 
-      final symmetric = JustSpacing.insets(h: JustSpacing.lg, v: JustSpacing.sm);
+      final symmetric = JustSpacing.insets(
+        h: JustSpacing.lg,
+        v: JustSpacing.sm,
+      );
       expect(symmetric.left, equals(JustSpacing.lg));
       expect(symmetric.right, equals(JustSpacing.lg));
       expect(symmetric.top, equals(JustSpacing.sm));
       expect(symmetric.bottom, equals(JustSpacing.sm));
     });
 
-    testWidgets('JustGap returns non-null SizedBox widgets', (WidgetTester tester) async {
-      await tester.pumpWidget(Directionality(
-        textDirection: TextDirection.ltr,
-        child: Column(
-          children: [
-            JustGap.xxs,
-            JustGap.xs,
-            JustGap.sm,
-            JustGap.md,
-            JustGap.lg,
-            JustGap.xl,
-            JustGap.xxl,
-            JustGap.xxxl,
-            JustGap.huge,
-          ],
+    testWidgets('JustGap returns non-null SizedBox widgets', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Column(
+            children: [
+              JustGap.xxs,
+              JustGap.xs,
+              JustGap.sm,
+              JustGap.md,
+              JustGap.lg,
+              JustGap.xl,
+              JustGap.xxl,
+              JustGap.xxxl,
+              JustGap.huge,
+            ],
+          ),
         ),
-      ));
+      );
 
       final gaps = tester.widgetList<SizedBox>(find.byType(SizedBox));
       expect(gaps.length, equals(9));
-      
+
       final spacingValues = [
         JustSpacing.xxs,
         JustSpacing.xs,
@@ -281,10 +288,10 @@ void main() {
 
     test('Verifies accessibility compliance for standard pairings', () {
       final light = JustColors.light();
-      
+
       // textPrimary (dark grey/black) on background (light grey) should be WCAG AA compliant
       expect(light.textPrimary.isAccessibleWith(light.background), isTrue);
-      
+
       // Inverse text on overlay should also be compliant
       expect(light.textInverse.isAccessibleWith(light.overlay), isTrue);
     });
