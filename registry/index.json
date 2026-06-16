@@ -3,23 +3,311 @@
   "components": [
     {
       "name": "button",
-      "version": "0.1.0",
-      "description": "Versatile button with multiple variants",
-      "category": "primitives",
-      "registryDependencies": [],
-      "pubDependencies": {
-        "flutter_animate": "^1.0.0"
-      },
+      "version": "0.2.0",
+      "description": "Versatile interactive button with dynamic variant and scale-down state animations.",
+      "category": "primitive",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator",
+        "_shared_progress_spinner"
+      ],
+      "pubDependencies": {},
       "files": [
         {
           "name": "just_button.dart",
           "path": "components/button/just_button.dart",
-          "checksum": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          "checksum": "sha256:821e39d36400e95115fc2ccdcef195f59e07d4e2e40f52eb33f03e7d2a1672c4"
         },
         {
           "name": "just_button_style.dart",
           "path": "components/button/just_button_style.dart",
-          "checksum": "sha256:85136894c25f4625b162629b30c441865369cfcfcfb9b9a6ca2911b7852b8555"
+          "checksum": "sha256:f5c1e9ba55db0ce246422aecad03fb552d73d5ed08cd29213d99bae9320d347c"
+        },
+        {
+          "name": "just_button_theme.dart",
+          "path": "components/button/just_button_theme.dart",
+          "checksum": "sha256:3a4f968242b58528ea8a7889741caaed2b601cc2ac5a61a3219058d8234d5bfb"
+        },
+        {
+          "name": "just_button_variants.dart",
+          "path": "components/button/just_button_variants.dart",
+          "checksum": "sha256:9bea3b598953dd5286287ab5c798c28ed738c1a57204fccd3842d03a468f30cc"
+        }
+      ]
+    },
+    {
+      "name": "icon-button",
+      "version": "0.1.0",
+      "description": "Premium icon button with tooltip assertions and press interactions. Requires base button component.",
+      "category": "composite",
+      "hidden": false,
+      "registryDependencies": [
+        "button",
+        "_shared_pressable",
+        "_shared_focus_indicator",
+        "_shared_progress_spinner"
+      ],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_icon_button.dart",
+          "path": "components/button/just_icon_button.dart",
+          "checksum": "sha256:79251811e18ce1d898dafca46592601fac3b8c83c4a6587feac51abfe5e81b73"
+        }
+      ]
+    },
+    {
+      "name": "input",
+      "version": "0.1.0",
+      "description": "Interactive text field component with dynamic label animations and form state bindings.",
+      "category": "primitive",
+      "hidden": false,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_input.dart",
+          "path": "components/input/just_input.dart",
+          "checksum": "sha256:631e37e1917a7fdb7dcb48448925f78ad8a338d48187b087aae9dd32df1c96d3"
+        },
+        {
+          "name": "just_input_style.dart",
+          "path": "components/input/just_input_style.dart",
+          "checksum": "sha256:8d26d2dd9c4e46687fde7180abbf6d3715cac3c825c1d740f9d428f2831cbc53"
+        },
+        {
+          "name": "just_input_theme.dart",
+          "path": "components/input/just_input_theme.dart",
+          "checksum": "sha256:1c2f9372c173defa89d50d94271ec8fe6f5dec65abbb253ed150a1bf8ce5c63b"
+        },
+        {
+          "name": "just_input_variants.dart",
+          "path": "components/input/just_input_variants.dart",
+          "checksum": "sha256:6c24b485a5d5140fd3195ddd83de963b6c62987813f734e06f41bc8b5f677408"
+        }
+      ]
+    },
+    {
+      "name": "badge",
+      "version": "0.1.0",
+      "description": "Tag indicator widget supporting outline states and animated pulsing dot halos.",
+      "category": "primitive",
+      "hidden": false,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_badge.dart",
+          "path": "components/badge/just_badge.dart",
+          "checksum": "sha256:cdb0a4d678bd546288ca8f634683f2757d4ac6e2ae70af9492ab948f2c12d514"
+        },
+        {
+          "name": "just_badge_style.dart",
+          "path": "components/badge/just_badge_style.dart",
+          "checksum": "sha256:f94f7833c7b52d3727492ccd4e47e8dab8a413e9b8024491b684c996bce9c32f"
+        },
+        {
+          "name": "just_badge_variants.dart",
+          "path": "components/badge/just_badge_variants.dart",
+          "checksum": "sha256:5cccf772fdeecec5ac32f4a3589c2421671cb9b3374e44e5c058b15919763822"
+        }
+      ]
+    },
+    {
+      "name": "avatar",
+      "version": "0.1.0",
+      "description": "Image avatar with fallback initials generator and presence status indicators.",
+      "category": "primitive",
+      "hidden": false,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_avatar.dart",
+          "path": "components/avatar/just_avatar.dart",
+          "checksum": "sha256:aff5806c88212ac9a4dfd27b3927f9684a21dbe6b700444f9b78a908813db64b"
+        },
+        {
+          "name": "just_avatar_style.dart",
+          "path": "components/avatar/just_avatar_style.dart",
+          "checksum": "sha256:fdf9159cb5d738d1b3b511f7bcca9314f764738beb458a9c8071872151592dbd"
+        },
+        {
+          "name": "just_avatar_variants.dart",
+          "path": "components/avatar/just_avatar_variants.dart",
+          "checksum": "sha256:c924f3f83a250f154c975722148828042a49db34f03c8be11987119346a01ea9"
+        }
+      ]
+    },
+    {
+      "name": "avatar-group",
+      "version": "0.1.0",
+      "description": "Avatar stack container displaying overlapping avatars with remainder counts. Requires base avatar component.",
+      "category": "composite",
+      "hidden": false,
+      "registryDependencies": [
+        "avatar"
+      ],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_avatar_group.dart",
+          "path": "components/avatar/just_avatar_group.dart",
+          "checksum": "sha256:2fc1ffe8269b223382b12ad33ca38d87d04325b799b33c07d70f242fd38b18de"
+        }
+      ]
+    },
+    {
+      "name": "checkbox",
+      "version": "0.1.0",
+      "description": "High-performance checkbox selection primitive supporting checked, unchecked, and mixed states.",
+      "category": "selection",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_checkbox.dart",
+          "path": "components/checkbox/just_checkbox.dart",
+          "checksum": "sha256:5862b07db035346dc0535fec40accd76feabd22e9bb1bcf322a4de1a470b3347"
+        },
+        {
+          "name": "just_checkbox_style.dart",
+          "path": "components/checkbox/just_checkbox_style.dart",
+          "checksum": "sha256:b551eaaf05face31a54bc719bdfa7d9e14be6b0df961ee7931b109491f4f1ab6"
+        },
+        {
+          "name": "just_checkbox_theme.dart",
+          "path": "components/checkbox/just_checkbox_theme.dart",
+          "checksum": "sha256:57c244623f7096231c301e33191473259e1eb8445850e2a848d13caa49b555e8"
+        }
+      ]
+    },
+    {
+      "name": "radio",
+      "version": "0.1.0",
+      "description": "High-performance radio button selection primitive with custom paint animations.",
+      "category": "selection",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_radio.dart",
+          "path": "components/radio/just_radio.dart",
+          "checksum": "sha256:a56dc8aad0e99e28271add7039d1a20ce28718785f3381cbc2c3f8f8421528d1"
+        },
+        {
+          "name": "just_radio_style.dart",
+          "path": "components/radio/just_radio_style.dart",
+          "checksum": "sha256:227c384e0b4fb2c34183df1fbc34b6bac081d3ae253270d8aaeb809e3cc2c3ec"
+        },
+        {
+          "name": "just_radio_theme.dart",
+          "path": "components/radio/just_radio_theme.dart",
+          "checksum": "sha256:994ef64e99aaaebcd55698d8eff4d9b540eb7bcdac04a9e7e7c53c89444e6785"
+        }
+      ]
+    },
+    {
+      "name": "radio-group",
+      "version": "0.1.0",
+      "description": "Radio button container laying out radio options in horizontal or vertical lists. Requires base radio component.",
+      "category": "composite",
+      "hidden": false,
+      "registryDependencies": [
+        "radio"
+      ],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_radio_group.dart",
+          "path": "components/radio/just_radio_group.dart",
+          "checksum": "sha256:e3db66f133fd8e281c75e0fbe9772474c463dcee21aba3e6761cdbd933e587a9"
+        }
+      ]
+    },
+    {
+      "name": "switch",
+      "version": "0.1.0",
+      "description": "Premium animated toggle switch component with tap and horizontal drag gestures.",
+      "category": "selection",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_switch.dart",
+          "path": "components/switch/just_switch.dart",
+          "checksum": "sha256:9f14f3d25cdca9cd2ed79cc945d5d34edcb38198bf1f46acfc8b4287327b265d"
+        },
+        {
+          "name": "just_switch_style.dart",
+          "path": "components/switch/just_switch_style.dart",
+          "checksum": "sha256:63619e4d947f55eba60a33dea53c33349eac77fb2bc972d1022dadbbc9ba990e"
+        },
+        {
+          "name": "just_switch_theme.dart",
+          "path": "components/switch/just_switch_theme.dart",
+          "checksum": "sha256:01495ad4ff5248d1206dcdcc032ce6134a109faf469e6fe50dc95021b57366fb"
+        }
+      ]
+    },
+    {
+      "name": "_shared_pressable",
+      "version": "0.1.0",
+      "description": "Internal shared interactive press/hover state tracker.",
+      "category": "internal",
+      "hidden": true,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_pressable.dart",
+          "path": "components/shared/just_pressable.dart",
+          "checksum": "sha256:277d08e1ae2dc2d18bbfbdb5ae37bda65c2ff54595b908bd80ed181b9b29996a"
+        }
+      ]
+    },
+    {
+      "name": "_shared_focus_indicator",
+      "version": "0.1.0",
+      "description": "Internal shared focus outline indicator ring overlay.",
+      "category": "internal",
+      "hidden": true,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_focus_indicator.dart",
+          "path": "components/shared/just_focus_indicator.dart",
+          "checksum": "sha256:addfd270a1841aa5f3e6a328401a4c71b74e0a4dfe1e3811e34eb6ab212bee37"
+        }
+      ]
+    },
+    {
+      "name": "_shared_progress_spinner",
+      "version": "0.1.0",
+      "description": "Internal shared rotatory loading progress spinner.",
+      "category": "internal",
+      "hidden": true,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_progress_spinner.dart",
+          "path": "components/shared/just_progress_spinner.dart",
+          "checksum": "sha256:840b18272408dca9471db7828131cc467607959aa6aac6af9a0eddd3dae8b2f7"
         }
       ]
     }
