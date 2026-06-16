@@ -295,7 +295,7 @@ class JustBadge extends StatelessWidget {
       return Container(
         width: dotSize,
         height: dotSize,
-        decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
+        decoration: BoxDecoration(color: dotColor, shape: .circle),
       );
     }
 
@@ -403,17 +403,14 @@ class _JustPulsingDotState extends State<_JustPulsingDot>
             height: widget.size,
             decoration: BoxDecoration(
               color: widget.color.withValues(alpha: 0.4),
-              shape: BoxShape.circle,
+              shape: .circle,
             ),
           ),
           // Inner dot
           Container(
             width: widget.size,
             height: widget.size,
-            decoration: BoxDecoration(
-              color: widget.color,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: widget.color, shape: .circle),
           ),
         ],
       ),

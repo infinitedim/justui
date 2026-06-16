@@ -166,12 +166,7 @@ void main() {
     ) async {
       final controller = TextEditingController();
       await tester.pumpWidget(
-        buildTestableWidget(
-          JustInput(
-            controller: controller,
-            maxLength: 10,
-          ),
-        ),
+        buildTestableWidget(JustInput(controller: controller, maxLength: 10)),
       );
 
       // Verify initial state
@@ -192,10 +187,7 @@ void main() {
       final controller = TextEditingController();
       await tester.pumpWidget(
         buildTestableWidget(
-          JustInput(
-            controller: controller,
-            showClearButton: true,
-          ),
+          JustInput(controller: controller, showClearButton: true),
         ),
       );
 
