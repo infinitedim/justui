@@ -1,6 +1,6 @@
 # Phase 1: Fondasi & Design System
 
-> **Status:** 🟡 In Progress  
+> **Status:** 🟢 Completed  
 > **Target:** Sprint 1–4  
 > **Packages:** `just_ui_tokens`, `just_ui_core` (theming), `just_ui_cli`  
 > **Prioritas:** Critical — Semua fase berikutnya bergantung pada fondasi ini.
@@ -36,17 +36,18 @@ Token System adalah **single source of truth** untuk seluruh nilai visual primit
 
 #### 1. Color Tokens
 
-| Token Category | Contoh Key | Deskripsi |
-|---|---|---|
-| `JustColors.primary` | `primary`, `primaryLight`, `primaryDark` | Warna utama brand |
-| `JustColors.secondary` | `secondary`, `secondaryLight`, `secondaryDark` | Warna pendukung |
-| `JustColors.neutral` | `neutral50` – `neutral950` | Skala abu-abu (11 tingkat) |
-| `JustColors.semantic` | `success`, `warning`, `error`, `info` | Warna kontekstual |
-| `JustColors.surface` | `background`, `card`, `elevated`, `overlay` | Warna permukaan/latar |
-| `JustColors.border` | `borderDefault`, `borderFocus`, `borderError` | Warna border sesuai state |
-| `JustColors.text` | `textPrimary`, `textSecondary`, `textDisabled`, `textInverse` | Warna teks |
+| Token Category         | Contoh Key                                                    | Deskripsi                  |
+| ---------------------- | ------------------------------------------------------------- | -------------------------- |
+| `JustColors.primary`   | `primary`, `primaryLight`, `primaryDark`                      | Warna utama brand          |
+| `JustColors.secondary` | `secondary`, `secondaryLight`, `secondaryDark`                | Warna pendukung            |
+| `JustColors.neutral`   | `neutral50` – `neutral950`                                    | Skala abu-abu (11 tingkat) |
+| `JustColors.semantic`  | `success`, `warning`, `error`, `info`                         | Warna kontekstual          |
+| `JustColors.surface`   | `background`, `card`, `elevated`, `overlay`                   | Warna permukaan/latar      |
+| `JustColors.border`    | `borderDefault`, `borderFocus`, `borderError`                 | Warna border sesuai state  |
+| `JustColors.text`      | `textPrimary`, `textSecondary`, `textDisabled`, `textInverse` | Warna teks                 |
 
 **Struktur File:**
+
 ```
 packages/just_ui_tokens/lib/
 ├── src/
@@ -58,6 +59,7 @@ packages/just_ui_tokens/lib/
 ```
 
 **Spesifikasi Teknis:**
+
 - Setiap warna memiliki minimal **11 shade** (50, 100, 200, ..., 900, 950) mengikuti pola Material 3.
 - Warna disimpan sebagai `Color` constant (`const Color(0xFF...)`) untuk efisiensi compile-time.
 - Semantic colors (`success`, `error`, dll.) mereferensi palette, bukan hardcoded hex.
@@ -67,19 +69,20 @@ packages/just_ui_tokens/lib/
 
 #### 2. Spacing Tokens
 
-| Token | Value | Use Case |
-|---|---|---|
-| `JustSpacing.xxs` | `2.0` | Micro gap, icon-label spacing |
-| `JustSpacing.xs` | `4.0` | Compact padding |
-| `JustSpacing.sm` | `8.0` | Default inline spacing |
-| `JustSpacing.md` | `12.0` | Standard padding |
-| `JustSpacing.lg` | `16.0` | Section padding |
-| `JustSpacing.xl` | `24.0` | Card internal padding |
-| `JustSpacing.xxl` | `32.0` | Section gap |
-| `JustSpacing.xxxl` | `48.0` | Page-level margin |
-| `JustSpacing.huge` | `64.0` | Hero section spacing |
+| Token              | Value  | Use Case                      |
+| ------------------ | ------ | ----------------------------- |
+| `JustSpacing.xxs`  | `2.0`  | Micro gap, icon-label spacing |
+| `JustSpacing.xs`   | `4.0`  | Compact padding               |
+| `JustSpacing.sm`   | `8.0`  | Default inline spacing        |
+| `JustSpacing.md`   | `12.0` | Standard padding              |
+| `JustSpacing.lg`   | `16.0` | Section padding               |
+| `JustSpacing.xl`   | `24.0` | Card internal padding         |
+| `JustSpacing.xxl`  | `32.0` | Section gap                   |
+| `JustSpacing.xxxl` | `48.0` | Page-level margin             |
+| `JustSpacing.huge` | `64.0` | Hero section spacing          |
 
 **Spesifikasi Teknis:**
+
 - Skala berbasis **4px grid system** untuk konsistensi pixel-perfect.
 - Disediakan helper `JustSpacing.insets(...)` yang mengembalikan `EdgeInsets` langsung.
 - Disediakan `SizedBox` shortcut: `JustGap.sm`, `JustGap.md`, dll. (vertical & horizontal).
@@ -88,65 +91,66 @@ packages/just_ui_tokens/lib/
 
 #### 3. Typography Tokens
 
-| Token | Font Size | Weight | Line Height | Use Case |
-|---|---|---|---|---|
-| `JustTypo.displayLg` | `48px` | `Bold` | `1.2` | Hero headline |
-| `JustTypo.displayMd` | `36px` | `Bold` | `1.2` | Section headline |
-| `JustTypo.displaySm` | `30px` | `SemiBold` | `1.3` | Sub-headline |
-| `JustTypo.headingLg` | `24px` | `SemiBold` | `1.3` | Page title |
-| `JustTypo.headingMd` | `20px` | `SemiBold` | `1.4` | Card title |
-| `JustTypo.headingSm` | `16px` | `SemiBold` | `1.4` | Section label |
-| `JustTypo.bodyLg` | `18px` | `Regular` | `1.6` | Large body text |
-| `JustTypo.bodyMd` | `16px` | `Regular` | `1.6` | Default body |
-| `JustTypo.bodySm` | `14px` | `Regular` | `1.5` | Secondary text |
-| `JustTypo.caption` | `12px` | `Regular` | `1.4` | Helper/caption |
-| `JustTypo.overline` | `11px` | `Medium` | `1.5` | Label/overline |
+| Token                | Font Size | Weight     | Line Height | Use Case         |
+| -------------------- | --------- | ---------- | ----------- | ---------------- |
+| `JustTypo.displayLg` | `48px`    | `Bold`     | `1.2`       | Hero headline    |
+| `JustTypo.displayMd` | `36px`    | `Bold`     | `1.2`       | Section headline |
+| `JustTypo.displaySm` | `30px`    | `SemiBold` | `1.3`       | Sub-headline     |
+| `JustTypo.headingLg` | `24px`    | `SemiBold` | `1.3`       | Page title       |
+| `JustTypo.headingMd` | `20px`    | `SemiBold` | `1.4`       | Card title       |
+| `JustTypo.headingSm` | `16px`    | `SemiBold` | `1.4`       | Section label    |
+| `JustTypo.bodyLg`    | `18px`    | `Regular`  | `1.6`       | Large body text  |
+| `JustTypo.bodyMd`    | `16px`    | `Regular`  | `1.6`       | Default body     |
+| `JustTypo.bodySm`    | `14px`    | `Regular`  | `1.5`       | Secondary text   |
+| `JustTypo.caption`   | `12px`    | `Regular`  | `1.4`       | Helper/caption   |
+| `JustTypo.overline`  | `11px`    | `Medium`   | `1.5`       | Label/overline   |
 
 **Spesifikasi Teknis:**
+
 - Default font family: **Inter** (Google Fonts), dengan fallback ke system font.
 - Monospace variant: **JetBrains Mono** untuk kode snippet.
 - Setiap `TextStyle` sudah include `letterSpacing` yang proporsional.
-- *Responsive typography* (misalnya `JustTypo.responsive(context)`) didefer ke Phase 2 (atau sebagai optional layout extension) untuk menghindari premature complexity dan menunggu finalisasi Breakpoint System.
+- _Responsive typography_ (misalnya `JustTypo.responsive(context)`) didefer ke Phase 2 (atau sebagai optional layout extension) untuk menghindari premature complexity dan menunggu finalisasi Breakpoint System.
 
 ---
 
 #### 4. Border Radius Tokens
 
-| Token | Value | Use Case |
-|---|---|---|
-| `JustRadius.none` | `0.0` | Sharp corners |
-| `JustRadius.xs` | `2.0` | Subtle rounding |
-| `JustRadius.sm` | `4.0` | Badge, tag |
-| `JustRadius.md` | `8.0` | Button, input |
-| `JustRadius.lg` | `12.0` | Card |
-| `JustRadius.xl` | `16.0` | Modal, dialog |
-| `JustRadius.xxl` | `24.0` | Floating panel |
-| `JustRadius.full` | `9999.0` | Pill shape |
+| Token             | Value    | Use Case        |
+| ----------------- | -------- | --------------- |
+| `JustRadius.none` | `0.0`    | Sharp corners   |
+| `JustRadius.xs`   | `2.0`    | Subtle rounding |
+| `JustRadius.sm`   | `4.0`    | Badge, tag      |
+| `JustRadius.md`   | `8.0`    | Button, input   |
+| `JustRadius.lg`   | `12.0`   | Card            |
+| `JustRadius.xl`   | `16.0`   | Modal, dialog   |
+| `JustRadius.xxl`  | `24.0`   | Floating panel  |
+| `JustRadius.full` | `9999.0` | Pill shape      |
 
 ---
 
 #### 5. Shadow / Elevation Tokens
 
-| Token | Offset | Blur | Spread | Use Case |
-|---|---|---|---|---|
-| `JustShadow.xs` | `(0, 1)` | `2` | `0` | Subtle lift |
-| `JustShadow.sm` | `(0, 2)` | `4` | `-1` | Card rest |
-| `JustShadow.md` | `(0, 4)` | `8` | `-2` | Card hover |
-| `JustShadow.lg` | `(0, 8)` | `16` | `-4` | Dropdown |
-| `JustShadow.xl` | `(0, 16)` | `32` | `-6` | Modal |
-| `JustShadow.xxl` | `(0, 24)` | `48` | `-8` | Toast / floating |
+| Token            | Offset    | Blur | Spread | Use Case         |
+| ---------------- | --------- | ---- | ------ | ---------------- |
+| `JustShadow.xs`  | `(0, 1)`  | `2`  | `0`    | Subtle lift      |
+| `JustShadow.sm`  | `(0, 2)`  | `4`  | `-1`   | Card rest        |
+| `JustShadow.md`  | `(0, 4)`  | `8`  | `-2`   | Card hover       |
+| `JustShadow.lg`  | `(0, 8)`  | `16` | `-4`   | Dropdown         |
+| `JustShadow.xl`  | `(0, 16)` | `32` | `-6`   | Modal            |
+| `JustShadow.xxl` | `(0, 24)` | `48` | `-8`   | Toast / floating |
 
 ---
 
 #### 6. Animation / Duration Tokens
 
-| Token | Value | Curve | Use Case |
-|---|---|---|---|
-| `JustDuration.instant` | `50ms` | — | Micro feedback |
-| `JustDuration.fast` | `150ms` | `easeOut` | Hover/focus |
-| `JustDuration.normal` | `250ms` | `easeInOut` | Toggle, expand |
-| `JustDuration.slow` | `400ms` | `easeInOut` | Page transition |
-| `JustDuration.slower` | `600ms` | `cubic(0.16,1,0.3,1)` | Complex animation |
+| Token                  | Value   | Curve                 | Use Case          |
+| ---------------------- | ------- | --------------------- | ----------------- |
+| `JustDuration.instant` | `50ms`  | —                     | Micro feedback    |
+| `JustDuration.fast`    | `150ms` | `easeOut`             | Hover/focus       |
+| `JustDuration.normal`  | `250ms` | `easeInOut`           | Toggle, expand    |
+| `JustDuration.slow`    | `400ms` | `easeInOut`           | Page transition   |
+| `JustDuration.slower`  | `600ms` | `cubic(0.16,1,0.3,1)` | Complex animation |
 
 ---
 
@@ -214,19 +218,22 @@ class JustThemeData {
 
 #### 2. Pre-built Themes
 
-| Theme | Deskripsi |
-|---|---|
-| `JustTheme.light()` | Default light theme menggunakan token standar |
-| `JustTheme.dark()` | Default dark theme (auto-inverted neutral, adjusted surfaces) |
-| `JustTheme.custom({...})` | Factory untuk custom brand theme |
+| Theme                     | Deskripsi                                                     |
+| ------------------------- | ------------------------------------------------------------- |
+| `JustTheme.light()`       | Default light theme menggunakan token standar                 |
+| `JustTheme.dark()`        | Default dark theme (auto-inverted neutral, adjusted surfaces) |
+| `JustTheme.custom({...})` | Factory untuk custom brand theme                              |
 
 **Spesifikasi Teknis:**
+
 - Dark theme **bukan** sekadar invert warna. Surface colors menggunakan palette terpisah yang di-optimize untuk readability di dark background.
 - Semantic colors (success, error) di-adjust agar kontras WCAG AA (≥ 4.5:1) tetap terjaga di kedua mode.
 - Custom theme mendukung **partial override**: developer hanya perlu define warna yang ingin diganti, sisanya inherit dari light/dark base.
 
 #### Hubungan `JustThemeData` vs `ThemeExtension`
+
 Untuk menghindari adanya dua sistem override paralel yang membingungkan:
+
 - **`JustThemeData`**: Digunakan untuk konfigurasi global theme (skema warna global, typography global, spacing scheme global).
 - **`ThemeExtension` (Flutter)**: Digunakan khusus untuk per-component override (misalnya, kustomisasi spesifik untuk widget Button, Input, atau Card tertentu).
 - **Resolusi Konflik (Prioritas)**: Jika terjadi tabrakan properti (misal: warna background tombol diatur secara global di `JustThemeData.colors` dan didefinisikan secara khusus di `ThemeExtension` untuk Button), maka nilai dari **`ThemeExtension`** (per-component override) yang akan diprioritaskan untuk widget tersebut.
@@ -271,6 +278,7 @@ class JustThemeProvider extends InheritedWidget {
 ```
 
 **Spesifikasi Teknis:**
+
 - Menggunakan `InheritedWidget` + `ChangeNotifier` pattern (zero dependency ke state management library).
 - **Zero-Dependency Persistence:** Package tidak bergantung pada `SharedPreferences` secara langsung. Proses penyimpanan status (persistence) diserahkan sepenuhnya ke user melalui callback `onThemeChanged` (misal menggunakan Hive, Hydrated BLoC, SharedPrefs, dll) dan pemuatan awal menggunakan `initialThemeMode` agar library tetap pure tanpa dependencies eksternal.
 - Auto-detect system brightness via `MediaQuery.platformBrightnessOf(context)`.
@@ -301,7 +309,7 @@ extension JustThemeContext on BuildContext {
 
 ## Milestone III — CLI Scaffold & Copy-Paste Workflow
 
-> **Status:** 🔴 Not Started
+> **Status:** 🟢 Completed
 
 ### Deskripsi
 
@@ -312,12 +320,14 @@ extension JustThemeContext on BuildContext {
 CLI didesain untuk dapat diaktifkan secara global melalui pub.dev/local package sehingga pengguna dapat memanggil `justui` secara langsung tanpa harus mengetik `dart run just_ui_cli`.
 
 Pada [packages/just_ui_cli/pubspec.yaml](file:///home/yourblooo/development/justui/packages/just_ui_cli/pubspec.yaml), executables didaftarkan sebagai berikut:
+
 ```yaml
 executables:
   justui: just_ui_cli
 ```
 
 Cara instalasi global oleh developer:
+
 ```bash
 $ dart pub global activate just_ui_cli
 ```
@@ -331,46 +341,34 @@ Inisialisasi project baru dengan JustUI.
 ```bash
 $ justui init
 
-✓ Detecting project type... (Flutter)
-✓ Adding just_ui_tokens dependency...
-✓ Creating justui.config.yaml...
-✓ Setting up theme provider in main.dart...
-✓ Done! JustUI initialized successfully.
+✓ JustUI initialized successfully.
+ℹ Configuration written to justui.config.yaml
 ```
 
 **Config file yang di-generate (`justui.config.yaml`):**
+
 ```yaml
 # justui.config.yaml
 version: 1
-style: default          # default (varian style lain didefer untuk menghindari premature differentiation)
+style: default # default (varian style lain didefer untuk menghindari premature differentiation)
 theme:
-  mode: system          # light | dark | system
+  mode: system # light | dark | system
   primary: "#6C5CE7"
   font_family: "Inter"
-components_dir: lib/ui  # Target directory for copied components
-tokens_dir: lib/tokens  # Target directory for copied tokens
+components_dir: lib/ui # Target directory for copied components
+tokens_dir: lib/tokens # Target directory for copied tokens
 ```
 
 #### 2. `justui add <component>`
 
-Mendownload komponen individual dari registry URL ke project developer secara dinamis saat runtime (tidak di-embed di binary CLI).
+Mendownload komponen dan token terkait dari registry ke project. Saat file didownload, CLI melakukan verifikasi integritas file menggunakan hash SHA-256 untuk menghindari file korup atau termanipulasi.
 
 ```bash
 $ justui add button
 
-✓ Fetching component metadata from registry...
-✓ Copying button component to lib/ui/button/...
-  - just_button.dart
-  - just_button_style.dart
-  - just_button_variants.dart
-✓ Adding required tokens...
-✓ Updating barrel exports...
+ℹ Fetching button component from registry...
+✓ just_button.dart copied successfully.
 ✓ Button component added successfully!
-
-Dependencies added:
-  - JustColors (from tokens)
-  - JustRadius (from tokens)
-  - JustTypo (from tokens)
 ```
 
 #### 3. `justui list`
@@ -395,58 +393,60 @@ Available components:
 
 #### 4. `justui theme`
 
-Generate atau customize theme files.
-
-```bash
-$ justui theme generate --primary="#E84393" --mode=dark
-
-✓ Generating custom theme...
-✓ Writing to lib/tokens/custom_theme.dart...
-✓ Theme generated successfully!
-```
+> **Note:** Perintah ini didefer/ditiadakan di tingkat CLI karena pembuatan tema kustom dinamis berdaya kontras tinggi dialihkan sepenuhnya ke API runtime `JustThemeData.fromSeed` pada package `just_ui_core`. Hal ini menjaga kemurnian filosofi zero-dependency.
 
 #### 5. `justui diff`
 
-Menampilkan perbedaan antara komponen lokal yang sudah di-copy dengan versi terbaru di remote registry.
+Menampilkan status perbedaan antara komponen lokal yang sudah di-copy dengan versi terbaru di remote registry. CLI secara cerdas menormalisasi CRLF (`\r\n`) menjadi LF (`\n`) terlebih dahulu sehingga tidak menghasilkan status false-positive di platform Windows.
 
 ```bash
 $ justui diff button
 
-  Comparing local button with registry v1.2.0...
-  
-  ~ just_button.dart
-    + Added: onLongPress callback
-    ~ Changed: Default padding from 12 to 16
-    
-  Apply update? (y/n)
+ℹ Comparing component "button" with registry...
+✓ just_button.dart: Up to date.
+```
+
+Pada mode verbose (`-v`), CLI mencetak perbedaan baris demi baris:
+
+```bash
+$ justui diff button -v
+
+ℹ Comparing component "button" with registry...
+⚠ just_button.dart: Modified locally.
+
+--- Line-by-line diff for just_button.dart ---
+- [Line 5] Local:    modified_code
++ [Line 5] Registry: original_code
+-----------------------------------------
 ```
 
 ### Registry Format Specification
 
-Untuk memastikan CLI dan remote registry kompatibel sejak hari pertama, remote registry akan menyajikan file index dengan format YAML (`registry/index.yaml`) yang berisi metadata komponen:
+Untuk memastikan CLI dan remote registry kompatibel sejak hari pertama, remote registry menyajikan file index dengan format JSON (`registry/index.json`) dengan hash pengecekan SHA-256 untuk memverifikasi integritas file yang di-download:
 
-```yaml
-# registry/index.yaml
-components:
-  - name: button
-    version: "1.0.0"
-    files:
-      - path: "lib/ui/button/just_button.dart"
-        type: component
-      - path: "lib/ui/button/just_button_style.dart"
-        type: style
-      - path: "lib/ui/button/just_button_variants.dart"
-        type: variant
-    registry_dependencies: []
-    pub_dependencies:
-      - flutter_animate: "^1.0.0"
-  - name: input
-    version: "1.0.0"
-    files:
-      - path: "lib/ui/input/just_input.dart"
-        type: component
-    registry_dependencies: []
-    pub_dependencies: []
+```json
+{
+  "version": "1",
+  "components": [
+    {
+      "name": "button",
+      "version": "0.1.0",
+      "description": "Button component",
+      "category": "primitives",
+      "registryDependencies": ["spacing"],
+      "pubDependencies": {
+        "flutter_animate": "^1.0.0"
+      },
+      "files": [
+        {
+          "name": "just_button.dart",
+          "path": "components/button/just_button.dart",
+          "checksum": "sha256:abc123xyz..."
+        }
+      ]
+    }
+  ]
+}
 ```
 
 ### Struktur File CLI
@@ -484,32 +484,32 @@ packages/just_ui_cli/
 
 ### Acceptance Criteria — Milestone III
 
-- [ ] `justui init` berhasil setup project baru tanpa error.
-- [ ] `justui add <component>` berhasil mendownload file dari remote registry ke target directory.
-- [ ] `justui list` menampilkan semua komponen dari remote registry.
-- [ ] `justui theme generate` menghasilkan theme file valid.
-- [ ] Config file (`justui.config.yaml`) terbaca dan diparse dengan benar.
-- [ ] Seluruh command memiliki `--help` flag yang informatif.
-- [ ] Unit test coverage ≥ 80% pada CLI logic.
+- [x] `justui init` berhasil setup project baru tanpa error.
+- [x] `justui add <component>` berhasil mendownload file dari remote registry ke target directory.
+- [x] `justui list` menampilkan semua komponen dari remote registry.
+- [x] Config file (`justui.config.yaml`) terbaca dan diparse dengan benar.
+- [x] Seluruh command memiliki `--help` flag yang informatif.
+- [x] Unit test coverage ≥ 80% pada CLI logic.
+- [ ] `justui theme generate` (N/A - Replaced by `JustThemeData.fromSeed` runtime seeding)
 
 ---
 
 ## Risiko & Mitigasi
 
-| Risiko | Dampak | Mitigasi |
-|---|---|---|
+| Risiko                                          | Dampak                           | Mitigasi                                                                  |
+| ----------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------- |
 | Token naming convention berubah di tengah jalan | Refactor masif di semua komponen | Lock naming convention sebelum Milestone I selesai, buat migration script |
-| Dark theme contrast gagal WCAG | Accessibility complaint | Automated contrast checker di CI/CD pipeline |
-| CLI template tidak sinkron dengan package | Developer mendapat versi lama | Versioning pada template + `justui diff` command |
+| Dark theme contrast gagal WCAG                  | Accessibility complaint          | Automated contrast checker di CI/CD pipeline                              |
+| CLI template tidak sinkron dengan package       | Developer mendapat versi lama    | Versioning pada template + `justui diff` command                          |
 
 ---
 
 ## Definition of Done — Phase 1
 
-- [ ] Package `just_ui_tokens` published ke internal registry.
-- [ ] Package theming engine terintegrasi di `just_ui_core`.
-- [ ] CLI `just_ui_cli` executable dan tested.
-- [ ] Showcase app mendemonstrasikan theme switching.
-- [ ] Seluruh kode memiliki dartdoc documentation.
-- [ ] Zero warning dari `dart analyze` di seluruh packages.
-- [ ] README.md di setiap package sudah lengkap.
+- [ ] Package `just_ui_tokens` published ke internal registry (N/A - Monorepo path referencing used locally)
+- [x] Package theming engine terintegrasi di `just_ui_core`.
+- [x] CLI `just_ui_cli` executable dan tested.
+- [x] Showcase app mendemonstrasikan theme switching.
+- [x] Seluruh kode memiliki dartdoc documentation.
+- [x] Zero warning dari `dart analyze` di seluruh packages.
+- [x] README.md di setiap package sudah lengkap.
