@@ -39,14 +39,12 @@ jobs:
         run: |
           dart format --output=none --set-exit-if-changed .
 
-      # - name: Static Analysis
-      #   run: |
-      #     dart analyze packages/just_ui_tokens
-      #     dart analyze packages/just_ui_core
-      #     dart analyze packages/just_ui_cli
+      - name: Static Analysis
+        run: |
+          melos exec --flutter -- "flutter analyze ."
+          melos exec --no-flutter -- "dart analyze ."
 
       - name: Run Tests
         run: |
-          flutter test packages/just_ui_tokens
-          flutter test packages/just_ui_core
-          cd packages/just_ui_cli && dart test
+          melos exec --flutter --dir-exists="test" -- "flutter test"
+          melos exec --no-flutter --dir-exists="test" -- "dart test"
