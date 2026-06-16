@@ -20,6 +20,9 @@ class JustBadgeStyle {
   /// Custom text style overrides.
   final TextStyle? textStyle;
 
+  /// Custom pulse animation maximum scale factor for dot badges.
+  final double? pulseScale;
+
   /// Creates a [JustBadgeStyle] override.
   const JustBadgeStyle({
     this.backgroundColor,
@@ -28,5 +31,6 @@ class JustBadgeStyle {
     this.borderRadius,
     this.padding,
     this.textStyle,
+    this.pulseScale,
   });
 }

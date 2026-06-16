@@ -95,6 +95,9 @@ class JustInput extends StatefulWidget {
   /// The length of code for OTP input (applicable only when variant is otp).
   final int? otpLength;
 
+  /// Whether to display a clear button when the input is filled.
+  final bool showClearButton;
+
   /// Default constructor for [JustInput].
   const JustInput({
     super.key,
@@ -125,6 +128,7 @@ class JustInput extends StatefulWidget {
     this.inputFormatters,
     this.size = .md,
     this.style,
+    this.showClearButton = false,
   }) : variant = .text,
        otpLength = null;
 
@@ -151,6 +155,7 @@ class JustInput extends StatefulWidget {
     this.textInputAction,
     this.size = .md,
     this.style,
+    this.showClearButton = false,
   }) : variant = .password,
        maxLines = 1,
        minLines = null,
@@ -162,6 +167,9 @@ class JustInput extends StatefulWidget {
        otpLength = null;
 
   /// Named constructor for search inputs. Includes search icon and clear button.
+  ///
+  /// By default, [showClearButton] is set to `true` specifically for this variant,
+  /// matching the standard user experience convention for search fields.
   const JustInput.search({
     super.key,
     this.label,
@@ -184,6 +192,7 @@ class JustInput extends StatefulWidget {
     this.textInputAction = .search,
     this.size = .md,
     this.style,
+    this.showClearButton = true,
   }) : variant = .search,
        maxLines = 1,
        minLines = null,
@@ -219,6 +228,7 @@ class JustInput extends StatefulWidget {
     this.textInputAction,
     this.size = .md,
     this.style,
+    this.showClearButton = false,
   }) : variant = .number,
        maxLines = 1,
        minLines = null,
@@ -254,6 +264,7 @@ class JustInput extends StatefulWidget {
     this.textInputAction,
     this.size = .md,
     this.style,
+    this.showClearButton = false,
   }) : variant = .textarea,
        obscureText = false,
        keyboardType = .multiline,
@@ -292,7 +303,8 @@ class JustInput extends StatefulWidget {
        readOnly = false,
        keyboardType = .number,
        inputFormatters = null,
-       textInputAction = null;
+       textInputAction = null,
+       showClearButton = false;
 
   @override
   State<JustInput> createState() => _JustInputState();
@@ -482,6 +494,12 @@ class _JustInputState extends State<JustInput> {
     final bool needsMinTargetSize =
         fieldHeight < 48.0 && (widget.maxLines == null || widget.maxLines == 1);
 
+    final bool hasSubElements =
+        widget.errorText != null ||
+        widget.successText != null ||
+        widget.helper != null;
+    final bool hasCounter = widget.maxLength != null;
+
     // Error announcement
     if (widget.errorText != null) {
       // ignore: deprecated_member_use
@@ -562,29 +580,6 @@ class _JustInputState extends State<JustInput> {
                           );
                         },
                       );
-                    } else if (widget.variant == .search) {
-                      trailingWidget = ValueListenableBuilder<bool>(
-                        valueListenable: _isFilled,
-                        builder: (context, filled, _) {
-                          if (!filled) return const SizedBox.shrink();
-                          return GestureDetector(
-                            onTap: () {
-                              if (widget.enabled) {
-                                _controller.clear();
-                                widget.onChanged?.call('');
-                              }
-                            },
-                            child: Padding(
-                              padding: .only(left: spacing.sm),
-                              child: Icon(
-                                const IconData(0xe902) /* close fallback */,
-                                size: fontSize + 2,
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                          );
-                        },
-                      );
                     } else if (widget.variant == .number) {
                       trailingWidget = Row(
                         mainAxisSize: .min,
@@ -612,6 +607,46 @@ class _JustInputState extends State<JustInput> {
                             ),
                           ),
                         ],
+                      );
+                    } else if (widget.showClearButton) {
+                      trailingWidget = ValueListenableBuilder<bool>(
+                        valueListenable: _isFilled,
+                        builder: (context, filled, _) {
+                          if (!filled) {
+                            if (widget.suffixIcon != null) {
+                              return Padding(
+                                padding: .only(left: spacing.sm),
+                                child: Icon(
+                                  widget.suffixIcon,
+                                  size: fontSize + 4,
+                                  color: colors.textSecondary,
+                                ),
+                              );
+                            } else if (widget.suffix != null) {
+                              return Padding(
+                                padding: .only(left: spacing.sm),
+                                child: widget.suffix,
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          }
+                          return GestureDetector(
+                            onTap: () {
+                              if (widget.enabled) {
+                                _controller.clear();
+                                widget.onChanged?.call('');
+                              }
+                            },
+                            child: Padding(
+                              padding: .only(left: spacing.sm),
+                              child: Icon(
+                                const IconData(0xe902) /* close fallback */,
+                                size: fontSize + 2,
+                                color: colors.textSecondary,
+                              ),
+                            ),
+                          );
+                        },
                       );
                     } else if (widget.suffixIcon != null) {
                       trailingWidget = Padding(
@@ -732,30 +767,54 @@ class _JustInputState extends State<JustInput> {
               },
             ),
           ),
-          // Sub-elements (Error, Success, Helper texts)
-          if (widget.errorText != null ||
-              widget.successText != null ||
-              widget.helper != null) ...[
+          // Sub-elements (Error, Success, Helper texts & Character Counter)
+          if (hasSubElements || hasCounter) ...[
             SizedBox(height: spacing.xs),
-            Builder(
-              builder: (context) {
-                String text;
-                Color textColor;
-                if (widget.errorText != null) {
-                  text = widget.errorText!;
-                  textColor = errorBorder;
-                } else if (widget.successText != null) {
-                  text = widget.successText!;
-                  textColor = successBorder;
-                } else {
-                  text = widget.helper!;
-                  textColor = colors.textSecondary;
-                }
-                return Text(
-                  text,
-                  style: finalHelperStyle.copyWith(color: textColor),
-                );
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (hasSubElements)
+                  Expanded(
+                    child: Builder(
+                      builder: (context) {
+                        String text;
+                        Color textColor;
+                        if (widget.errorText != null) {
+                          text = widget.errorText!;
+                          textColor = errorBorder;
+                        } else if (widget.successText != null) {
+                          text = widget.successText!;
+                          textColor = successBorder;
+                        } else {
+                          text = widget.helper!;
+                          textColor = colors.textSecondary;
+                        }
+                        return Text(
+                          text,
+                          style: finalHelperStyle.copyWith(color: textColor),
+                        );
+                      },
+                    ),
+                  )
+                else
+                  const Spacer(),
+                if (hasCounter)
+                  Padding(
+                    padding: .only(left: spacing.sm),
+                    child: ValueListenableBuilder<TextEditingValue>(
+                      valueListenable: _controller,
+                      builder: (context, value, _) {
+                        return Text(
+                          '${value.text.length} / ${widget.maxLength}',
+                          style: finalHelperStyle.copyWith(
+                            color: colors.textSecondary,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+              ],
             ),
           ],
         ],

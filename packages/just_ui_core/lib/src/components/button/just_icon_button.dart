@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/just_focus_indicator.dart';
@@ -5,6 +7,7 @@ import '../shared/just_pressable.dart';
 import '../shared/just_progress_spinner.dart';
 import 'just_button_style.dart';
 import 'just_button_variants.dart';
+import 'just_button_theme.dart';
 
 /// An icon-only button component following JustUI tokens and strict accessibility rules.
 class JustIconButton extends StatefulWidget {
@@ -32,6 +35,10 @@ class JustIconButton extends StatefulWidget {
   /// Per-instance style overrides.
   final JustButtonStyle? style;
 
+  /// Whether to enable haptic feedback on button presses.
+  /// If null, falls back to the theme setting.
+  final bool? enableHaptic;
+
   /// Creates a [JustIconButton].
   const JustIconButton({
     super.key,
@@ -43,6 +50,7 @@ class JustIconButton extends StatefulWidget {
     this.isLoading = false,
     this.isDisabled = false,
     this.style,
+    this.enableHaptic,
   }) : assert(
          tooltip != null,
          'A tooltip must be provided for JustIconButton for accessibility.',
@@ -56,6 +64,30 @@ class _JustIconButtonState extends State<JustIconButton> {
   @override
   Widget build(BuildContext context) {
     final customTheme = JustThemeProvider.of(context).theme;
+    final buttonTheme = Theme.of(context).extension<JustButtonTheme>();
+    JustButtonStyle? themeStyle;
+    if (buttonTheme != null) {
+      switch (widget.variant) {
+        case .primary:
+          themeStyle = buttonTheme.primaryStyle;
+          break;
+        case .secondary:
+          themeStyle = buttonTheme.secondaryStyle;
+          break;
+        case .ghost:
+          themeStyle = buttonTheme.ghostStyle;
+          break;
+        case .destructive:
+          themeStyle = buttonTheme.destructiveStyle;
+          break;
+        case .link:
+          themeStyle = buttonTheme.linkStyle;
+          break;
+      }
+    }
+    final finalEnableHaptic =
+        widget.enableHaptic ?? buttonTheme?.enableHaptic ?? false;
+
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
     final radius = customTheme.radius;
     final animations = customTheme.animations;
@@ -113,7 +145,14 @@ class _JustIconButtonState extends State<JustIconButton> {
           heightFactor: 1.0,
           child: JustPressable(
             enabled: isInteractive,
-            onTap: widget.onPressed,
+            onTap: widget.onPressed == null
+                ? null
+                : () {
+                    if (finalEnableHaptic) {
+                      HapticFeedback.lightImpact();
+                    }
+                    widget.onPressed?.call();
+                  },
             builder: (context, isHovered, isPressed, isFocused, focusNode) {
               Color bg;
               Color text;
@@ -202,11 +241,22 @@ class _JustIconButtonState extends State<JustIconButton> {
                   break;
               }
 
-              final finalBg = widget.style?.backgroundColor ?? bg;
-              final finalFg = widget.style?.foregroundColor ?? text;
-              final finalBorder = widget.style?.borderColor ?? border;
+              final finalBg =
+                  widget.style?.backgroundColor ??
+                  themeStyle?.backgroundColor ??
+                  bg;
+              final finalFg =
+                  widget.style?.foregroundColor ??
+                  themeStyle?.foregroundColor ??
+                  text;
+              final finalBorder =
+                  widget.style?.borderColor ??
+                  themeStyle?.borderColor ??
+                  border;
               final resolvedRadius =
-                  widget.style?.borderRadius ?? defaultRadius;
+                  widget.style?.borderRadius ??
+                  themeStyle?.borderRadius ??
+                  defaultRadius;
 
               Widget content;
               if (widget.isLoading) {

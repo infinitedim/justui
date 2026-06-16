@@ -18,6 +18,9 @@ class JustButtonTheme extends ThemeExtension<JustButtonTheme> {
   /// Style override for the link button.
   final JustButtonStyle? linkStyle;
 
+  /// Whether to enable haptic feedback on button presses by default.
+  final bool enableHaptic;
+
   /// Creates a [JustButtonTheme] configuration.
   const JustButtonTheme({
     this.primaryStyle,
@@ -25,6 +28,7 @@ class JustButtonTheme extends ThemeExtension<JustButtonTheme> {
     this.ghostStyle,
     this.destructiveStyle,
     this.linkStyle,
+    this.enableHaptic = false,
   });
 
   /// Default configuration for the theme.
@@ -37,6 +41,7 @@ class JustButtonTheme extends ThemeExtension<JustButtonTheme> {
     JustButtonStyle? ghostStyle,
     JustButtonStyle? destructiveStyle,
     JustButtonStyle? linkStyle,
+    bool? enableHaptic,
   }) {
     return JustButtonTheme(
       primaryStyle: primaryStyle ?? this.primaryStyle,
@@ -44,6 +49,7 @@ class JustButtonTheme extends ThemeExtension<JustButtonTheme> {
       ghostStyle: ghostStyle ?? this.ghostStyle,
       destructiveStyle: destructiveStyle ?? this.destructiveStyle,
       linkStyle: linkStyle ?? this.linkStyle,
+      enableHaptic: enableHaptic ?? this.enableHaptic,
     );
   }
 

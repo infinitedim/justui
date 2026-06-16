@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/just_focus_indicator.dart';
@@ -5,6 +7,7 @@ import '../shared/just_pressable.dart';
 import '../shared/just_progress_spinner.dart';
 import 'just_button_style.dart';
 import 'just_button_variants.dart';
+import 'just_button_theme.dart';
 
 /// An InheritedWidget to pass group information to individual buttons.
 class JustButtonGroupInfo extends InheritedWidget {
@@ -71,6 +74,10 @@ class JustButton extends StatefulWidget {
   /// Per-instance style overrides.
   final JustButtonStyle? style;
 
+  /// Whether to enable haptic feedback on button presses.
+  /// If null, falls back to the theme setting.
+  final bool? enableHaptic;
+
   /// Default constructor for [JustButton].
   const JustButton({
     super.key,
@@ -84,6 +91,7 @@ class JustButton extends StatefulWidget {
     this.isDisabled = false,
     this.isFullWidth = false,
     this.style,
+    this.enableHaptic,
   });
 
   /// Named constructor for primary solid buttons.
@@ -98,6 +106,7 @@ class JustButton extends StatefulWidget {
     this.isDisabled = false,
     this.isFullWidth = false,
     this.style,
+    this.enableHaptic,
   }) : variant = .primary;
 
   /// Named constructor for secondary outline buttons.
@@ -112,6 +121,7 @@ class JustButton extends StatefulWidget {
     this.isDisabled = false,
     this.isFullWidth = false,
     this.style,
+    this.enableHaptic,
   }) : variant = .secondary;
 
   /// Named constructor for ghost transparent buttons.
@@ -126,6 +136,7 @@ class JustButton extends StatefulWidget {
     this.isDisabled = false,
     this.isFullWidth = false,
     this.style,
+    this.enableHaptic,
   }) : variant = .ghost;
 
   /// Named constructor for destructive solid buttons.
@@ -140,6 +151,7 @@ class JustButton extends StatefulWidget {
     this.isDisabled = false,
     this.isFullWidth = false,
     this.style,
+    this.enableHaptic,
   }) : variant = .destructive;
 
   /// Named constructor for link buttons.
@@ -154,6 +166,7 @@ class JustButton extends StatefulWidget {
     this.isDisabled = false,
     this.isFullWidth = false,
     this.style,
+    this.enableHaptic,
   }) : variant = .link;
 
   @override
@@ -166,6 +179,30 @@ class _JustButtonState extends State<JustButton> {
     // Attempt to read from Flutter Theme Extension
     // Using context.justTheme which resolves InheritedModel aspects properly
     final customTheme = JustThemeProvider.of(context).theme;
+    final buttonTheme = Theme.of(context).extension<JustButtonTheme>();
+    JustButtonStyle? themeStyle;
+    if (buttonTheme != null) {
+      switch (widget.variant) {
+        case .primary:
+          themeStyle = buttonTheme.primaryStyle;
+          break;
+        case .secondary:
+          themeStyle = buttonTheme.secondaryStyle;
+          break;
+        case .ghost:
+          themeStyle = buttonTheme.ghostStyle;
+          break;
+        case .destructive:
+          themeStyle = buttonTheme.destructiveStyle;
+          break;
+        case .link:
+          themeStyle = buttonTheme.linkStyle;
+          break;
+      }
+    }
+    final finalEnableHaptic =
+        widget.enableHaptic ?? buttonTheme?.enableHaptic ?? false;
+
     // We register dependency to colors aspect
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
     final typography = JustThemeProvider.of(
@@ -229,7 +266,8 @@ class _JustButtonState extends State<JustButton> {
 
     // Apply button group attached adjustments if in a group
     final groupInfo = JustButtonGroupInfo.of(context);
-    BorderRadius resolvedRadius = widget.style?.borderRadius ?? defaultRadius;
+    BorderRadius resolvedRadius =
+        widget.style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius;
     if (groupInfo != null) {
       final isFirst = groupInfo.index == 0;
       final isLast = groupInfo.index == groupInfo.totalCount - 1;
@@ -285,7 +323,14 @@ class _JustButtonState extends State<JustButton> {
           heightFactor: 1.0,
           child: JustPressable(
             enabled: isInteractive,
-            onTap: widget.onPressed,
+            onTap: widget.onPressed == null
+                ? null
+                : () {
+                    if (finalEnableHaptic) {
+                      HapticFeedback.lightImpact();
+                    }
+                    widget.onPressed?.call();
+                  },
             builder: (context, isHovered, isPressed, isFocused, focusNode) {
               // Resolve states colors
               Color bg;
@@ -376,17 +421,29 @@ class _JustButtonState extends State<JustButton> {
                   break;
               }
 
-              // Apply manual instance styles if provided
-              final finalBg = widget.style?.backgroundColor ?? bg;
-              final finalFg = widget.style?.foregroundColor ?? text;
-              final finalBorder = widget.style?.borderColor ?? border;
+              // Apply theme & manual instance styles if provided
+              final finalBg =
+                  widget.style?.backgroundColor ??
+                  themeStyle?.backgroundColor ??
+                  bg;
+              final finalFg =
+                  widget.style?.foregroundColor ??
+                  themeStyle?.foregroundColor ??
+                  text;
+              final finalBorder =
+                  widget.style?.borderColor ??
+                  themeStyle?.borderColor ??
+                  border;
               final finalPadding =
                   widget.style?.padding ??
+                  themeStyle?.padding ??
                   (widget.variant == .link
                       ? .zero
                       : .symmetric(horizontal: paddingH));
               final finalTextStyle =
-                  widget.style?.textStyle ?? textStyle.copyWith(color: finalFg);
+                  widget.style?.textStyle ??
+                  themeStyle?.textStyle ??
+                  textStyle.copyWith(color: finalFg);
 
               // Link decoration
               final isLinkWithHover = widget.variant == .link && isHovered;
