@@ -26,6 +26,7 @@ jobs:
 
       - name: Bootstrap Monorepo
         run: |
+          export MELOS_SDK_PATH="$FLUTTER_ROOT"
           melos bootstrap
 
       - name: Verify Formatting
