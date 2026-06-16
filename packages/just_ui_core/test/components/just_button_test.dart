@@ -93,10 +93,12 @@ void main() {
     ) async {
       final List<MethodCall> log = <MethodCall>[];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(SystemChannels.platform, (MethodCall methodCall) async {
-        log.add(methodCall);
-        return null;
-      });
+          .setMockMethodCallHandler(SystemChannels.platform, (
+            MethodCall methodCall,
+          ) async {
+            log.add(methodCall);
+            return null;
+          });
 
       await tester.pumpWidget(
         buildTestableWidget(
@@ -116,7 +118,11 @@ void main() {
         contains(
           isA<MethodCall>()
               .having((c) => c.method, 'method', 'HapticFeedback.vibrate')
-              .having((c) => c.arguments, 'arguments', 'HapticFeedbackType.lightImpact'),
+              .having(
+                (c) => c.arguments,
+                'arguments',
+                'HapticFeedbackType.lightImpact',
+              ),
         ),
       );
 
@@ -124,133 +130,135 @@ void main() {
           .setMockMethodCallHandler(SystemChannels.platform, null);
     });
 
-    testWidgets('Does not trigger haptic feedback when disabled or haptics disabled', (
-      WidgetTester tester,
-    ) async {
-      final List<MethodCall> log = <MethodCall>[];
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(SystemChannels.platform, (MethodCall methodCall) async {
-        log.add(methodCall);
-        return null;
-      });
+    testWidgets(
+      'Does not trigger haptic feedback when disabled or haptics disabled',
+      (WidgetTester tester) async {
+        final List<MethodCall> log = <MethodCall>[];
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.platform, (
+              MethodCall methodCall,
+            ) async {
+              log.add(methodCall);
+              return null;
+            });
 
-      // Scenario 1: Pressed, but haptics explicitly disabled
-      await tester.pumpWidget(
-        buildTestableWidget(
-          JustButton(
-            label: 'No Haptic Button',
-            onPressed: () {},
-            enableHaptic: false,
-          ),
-        ),
-      );
-      await tester.tap(find.text('No Haptic Button'));
-      await tester.pump();
-
-      // Scenario 2: Haptics enabled, but button is disabled (onPressed is null)
-      await tester.pumpWidget(
-        buildTestableWidget(
-          const JustButton(
-            label: 'Disabled Haptic Button',
-            onPressed: null,
-            enableHaptic: true,
-          ),
-        ),
-      );
-      await tester.tap(find.text('Disabled Haptic Button'));
-      await tester.pump();
-
-      final hasHapticCall = log.any(
-        (c) =>
-            c.method == 'HapticFeedback.vibrate' &&
-            c.arguments == 'HapticFeedbackType.lightImpact',
-      );
-      expect(hasHapticCall, isFalse);
-
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(SystemChannels.platform, null);
-    });
-
-    testWidgets('Theme and instance level enableHaptic overrides resolve correctly', (
-      WidgetTester tester,
-    ) async {
-      final List<MethodCall> log = <MethodCall>[];
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(SystemChannels.platform, (MethodCall methodCall) async {
-        log.add(methodCall);
-        return null;
-      });
-
-      // 1. Theme-level enabled (true), instance-level unset -> should trigger haptic
-      await tester.pumpWidget(
-        JustThemeProvider(
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Theme(
-              data: ThemeData(
-                extensions: const [
-                  JustButtonTheme(enableHaptic: true),
-                ],
-              ),
-              child: JustButton(
-                label: 'Theme Enabled Button',
-                onPressed: () {},
-              ),
+        // Scenario 1: Pressed, but haptics explicitly disabled
+        await tester.pumpWidget(
+          buildTestableWidget(
+            JustButton(
+              label: 'No Haptic Button',
+              onPressed: () {},
+              enableHaptic: false,
             ),
           ),
-        ),
-      );
+        );
+        await tester.tap(find.text('No Haptic Button'));
+        await tester.pump();
 
-      await tester.tap(find.text('Theme Enabled Button'));
-      await tester.pump();
+        // Scenario 2: Haptics enabled, but button is disabled (onPressed is null)
+        await tester.pumpWidget(
+          buildTestableWidget(
+            const JustButton(
+              label: 'Disabled Haptic Button',
+              onPressed: null,
+              enableHaptic: true,
+            ),
+          ),
+        );
+        await tester.tap(find.text('Disabled Haptic Button'));
+        await tester.pump();
 
-      expect(
-        log.any(
+        final hasHapticCall = log.any(
           (c) =>
               c.method == 'HapticFeedback.vibrate' &&
               c.arguments == 'HapticFeedbackType.lightImpact',
-        ),
-        isTrue,
-      );
+        );
+        expect(hasHapticCall, isFalse);
 
-      log.clear();
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.platform, null);
+      },
+    );
 
-      // 2. Theme-level enabled (true), instance-level override to false -> should not trigger haptic
-      await tester.pumpWidget(
-        JustThemeProvider(
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Theme(
-              data: ThemeData(
-                extensions: const [
-                  JustButtonTheme(enableHaptic: true),
-                ],
-              ),
-              child: JustButton(
-                label: 'Theme Enabled Instance Overridden Button',
-                onPressed: () {},
-                enableHaptic: false,
+    testWidgets(
+      'Theme and instance level enableHaptic overrides resolve correctly',
+      (WidgetTester tester) async {
+        final List<MethodCall> log = <MethodCall>[];
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.platform, (
+              MethodCall methodCall,
+            ) async {
+              log.add(methodCall);
+              return null;
+            });
+
+        // 1. Theme-level enabled (true), instance-level unset -> should trigger haptic
+        await tester.pumpWidget(
+          JustThemeProvider(
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: Theme(
+                data: ThemeData(
+                  extensions: const [JustButtonTheme(enableHaptic: true)],
+                ),
+                child: JustButton(
+                  label: 'Theme Enabled Button',
+                  onPressed: () {},
+                ),
               ),
             ),
           ),
-        ),
-      );
+        );
 
-      await tester.tap(find.text('Theme Enabled Instance Overridden Button'));
-      await tester.pump();
+        await tester.tap(find.text('Theme Enabled Button'));
+        await tester.pump();
 
-      expect(
-        log.any(
-          (c) =>
-              c.method == 'HapticFeedback.vibrate' &&
-              c.arguments == 'HapticFeedbackType.lightImpact',
-        ),
-        isFalse,
-      );
+        expect(
+          log.any(
+            (c) =>
+                c.method == 'HapticFeedback.vibrate' &&
+                c.arguments == 'HapticFeedbackType.lightImpact',
+          ),
+          isTrue,
+        );
 
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(SystemChannels.platform, null);
-    });
+        log.clear();
+
+        // 2. Theme-level enabled (true), instance-level override to false -> should not trigger haptic
+        await tester.pumpWidget(
+          JustThemeProvider(
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: Theme(
+                data: ThemeData(
+                  extensions: const [JustButtonTheme(enableHaptic: true)],
+                ),
+                child: JustButton(
+                  label: 'Theme Enabled Instance Overridden Button',
+                  onPressed: () {},
+                  enableHaptic: false,
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('Theme Enabled Instance Overridden Button'));
+        await tester.pump();
+
+        expect(
+          log.any(
+            (c) =>
+                c.method == 'HapticFeedback.vibrate' &&
+                c.arguments == 'HapticFeedbackType.lightImpact',
+          ),
+          isFalse,
+        );
+
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.platform, null);
+      },
+    );
   });
 
   group('JustIconButton Tests', () {
@@ -286,10 +294,12 @@ void main() {
     ) async {
       final List<MethodCall> log = <MethodCall>[];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(SystemChannels.platform, (MethodCall methodCall) async {
-        log.add(methodCall);
-        return null;
-      });
+          .setMockMethodCallHandler(SystemChannels.platform, (
+            MethodCall methodCall,
+          ) async {
+            log.add(methodCall);
+            return null;
+          });
 
       await tester.pumpWidget(
         buildTestableWidget(
@@ -310,7 +320,11 @@ void main() {
         contains(
           isA<MethodCall>()
               .having((c) => c.method, 'method', 'HapticFeedback.vibrate')
-              .having((c) => c.arguments, 'arguments', 'HapticFeedbackType.lightImpact'),
+              .having(
+                (c) => c.arguments,
+                'arguments',
+                'HapticFeedbackType.lightImpact',
+              ),
         ),
       );
 

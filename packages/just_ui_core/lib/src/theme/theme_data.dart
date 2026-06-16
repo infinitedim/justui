@@ -383,7 +383,7 @@ class JustThemeData {
     // Generate an HSL-based primary color variant.
     // In light mode, default borderFocus is primary500 (lightness ~0.5).
     // In dark mode, default borderFocus is primary400 (lightness ~0.6).
-    final hsl = HSLColor.fromColor(seedColor);
+    final HSLColor hsl = .fromColor(seedColor);
     final targetLightness = isDark ? 0.6 : 0.5;
     final primary = hsl.withLightness(targetLightness).toColor();
 
@@ -450,7 +450,7 @@ class JustThemeData {
     if (color.contrastRatioWith(background) >= minRatio) {
       return color;
     }
-    final hsl = HSLColor.fromColor(color);
+    final HSLColor hsl = .fromColor(color);
     final isBgDark = background.computeLuminance() < 0.5;
     double currentLightness = hsl.lightness;
     const double step = 0.02;

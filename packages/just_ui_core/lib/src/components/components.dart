@@ -18,6 +18,19 @@ export 'avatar/just_avatar_style.dart';
 export 'avatar/just_avatar_variants.dart';
 export 'avatar/just_avatar_group.dart';
 
+export 'checkbox/just_checkbox.dart';
+export 'checkbox/just_checkbox_style.dart';
+export 'checkbox/just_checkbox_theme.dart';
+
+export 'radio/just_radio.dart';
+export 'radio/just_radio_group.dart';
+export 'radio/just_radio_style.dart';
+export 'radio/just_radio_theme.dart';
+
+export 'switch/just_switch.dart';
+export 'switch/just_switch_style.dart';
+export 'switch/just_switch_theme.dart';
+
 export 'shared/just_pressable.dart';
 export 'shared/just_progress_spinner.dart';
 export 'shared/just_focus_indicator.dart';

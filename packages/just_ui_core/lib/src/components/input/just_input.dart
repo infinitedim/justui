@@ -383,7 +383,7 @@ class _JustInputState extends State<JustInput> {
 
   void _handleIncrement() {
     if (!widget.enabled || widget.readOnly) return;
-    final val = double.tryParse(_controller.text) ?? 0.0;
+    final double val = .tryParse(_controller.text) ?? 0.0;
     final updated = val + 1.0;
     // Format appropriately
     _controller.text = updated % 1 == 0
@@ -394,7 +394,7 @@ class _JustInputState extends State<JustInput> {
 
   void _handleDecrement() {
     if (!widget.enabled || widget.readOnly) return;
-    final val = double.tryParse(_controller.text) ?? 0.0;
+    final double val = .tryParse(_controller.text) ?? 0.0;
     final updated = val - 1.0;
     _controller.text = updated % 1 == 0
         ? updated.toInt().toString()

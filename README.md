@@ -136,6 +136,34 @@ ElevatedButton(
 )
 ```
 
+### 3. Component Theme Extensions (Theme / MaterialApp Requirement)
+
+JustUI utilizes Flutter's native `ThemeExtension` mechanism for per-component style overrides (e.g., `JustButtonTheme` customizes button styles globally).
+
+Because of this, **a `Theme` widget must be present at the root of the widget tree** (which is automatically set up by `MaterialApp`, or can be provided manually under a `WidgetsApp` or `CupertinoApp` by wrapping the tree in a `Theme` widget with the generated `JustThemeData.toThemeData()`):
+
+```dart
+// Example using MaterialApp (automatically sets up Theme)
+MaterialApp(
+  theme: JustThemeData.light.toThemeData(),
+  darkTheme: JustThemeData.dark.toThemeData(),
+  home: const MyHomeScreen(),
+)
+
+// Example using CupertinoApp / WidgetsApp (requires manual Theme wrapping)
+CupertinoApp(
+  builder: (context, child) {
+    return Theme(
+      data: JustThemeData.light.toThemeData(),
+      child: child!,
+    );
+  },
+  home: const MyHomeScreen(),
+)
+```
+
+While the components themselves are strictly **zero-Material** (they do not render Material design components like `ElevatedButton` or `TextField` internally, using core Flutter primitives instead), they still rely on the standard Flutter `Theme`/`ThemeData` framework for component style overrides.
+
 ---
 
 ## Contributing & Development
