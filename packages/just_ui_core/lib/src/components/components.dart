@@ -31,6 +31,18 @@ export 'switch/just_switch.dart';
 export 'switch/just_switch_style.dart';
 export 'switch/just_switch_theme.dart';
 
+export 'card/just_card.dart';
+export 'card/just_card_style.dart';
+export 'card/just_card_theme.dart';
+
+export 'separator/just_separator.dart';
+export 'separator/just_separator_style.dart';
+export 'separator/just_separator_theme.dart';
+
+export 'scroll/just_scroll_area.dart';
+export 'scroll/just_scroll_area_style.dart';
+export 'scroll/just_scroll_area_theme.dart';
+
 export 'shared/just_pressable.dart';
 export 'shared/just_progress_spinner.dart';
 export 'shared/just_focus_indicator.dart';
