@@ -8,9 +8,14 @@ import 'just_separator_theme.dart';
 /// A divider widget supporting horizontal and vertical directions and centered text labels.
 ///
 /// Follows zero-Material visual widget policy and maps styles using JustUI tokens.
+/// Can be responsive to screen/viewport width breakpoints when using the [JustSeparator.responsive] constructor.
 class JustSeparator extends StatelessWidget {
-  /// The direction of the separator. Defaults to [Axis.horizontal].
-  final Axis direction;
+  /// The direction of the separator. If null, the separator is responsive.
+  final Axis? direction;
+
+  /// The screen/viewport width breakpoint below which the separator orientation is horizontal.
+  /// Only used when [direction] is null. Defaults to 640.0.
+  final double breakpoint;
 
   /// The thickness of the divider line. Defaults to 1.0.
   final double thickness;
@@ -39,10 +44,10 @@ class JustSeparator extends StatelessWidget {
   /// Per-instance style overrides.
   final JustSeparatorStyle? style;
 
-  /// Creates a [JustSeparator].
+  /// Creates a standard [JustSeparator].
   const JustSeparator({
     super.key,
-    this.direction = Axis.horizontal,
+    this.direction = .horizontal,
     this.thickness = 1.0,
     this.color,
     this.indent = 0.0,
@@ -52,7 +57,22 @@ class JustSeparator extends StatelessWidget {
     this.height,
     this.width,
     this.style,
-  });
+  }) : breakpoint = 640.0;
+
+  /// Creates a responsive [JustSeparator] that adapts its direction depending on viewport size.
+  const JustSeparator.responsive({
+    super.key,
+    this.breakpoint = 640.0,
+    this.thickness = 1.0,
+    this.color,
+    this.indent = 0.0,
+    this.endIndent = 0.0,
+    this.label,
+    this.labelStyle,
+    this.height,
+    this.width,
+    this.style,
+  }) : direction = null;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +113,14 @@ class JustSeparator extends StatelessWidget {
     final resolvedLabelPadding =
         style?.labelPadding ?? themeStyle?.labelPadding ?? .all(spacing.sm);
 
-    if (direction == Axis.horizontal) {
+    // Resolve direction adaptively if null
+    final resolvedDirection =
+        direction ??
+        (MediaQuery.sizeOf(context).width < breakpoint
+            ? .horizontal
+            : .vertical);
+
+    if (resolvedDirection == .horizontal) {
       if (label == null) {
         return Padding(
           padding: .only(left: resolvedIndent, right: resolvedEndIndent),
