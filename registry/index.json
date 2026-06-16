@@ -264,6 +264,90 @@
       ]
     },
     {
+      "name": "card",
+      "version": "0.1.0",
+      "description": "Customizable content card supporting elevated, outlined, and filled states.",
+      "category": "layout",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_card.dart",
+          "path": "components/card/just_card.dart",
+          "checksum": "sha256:a8aff1e31bf3337f87bdf3f1581a7966f123564e295851a0e1bf2d01d5205f45"
+        },
+        {
+          "name": "just_card_style.dart",
+          "path": "components/card/just_card_style.dart",
+          "checksum": "sha256:4cc522d8baf358ff9124eaf8fc75016ccc674c41c00daf37d5ae6952cc8c0251"
+        },
+        {
+          "name": "just_card_theme.dart",
+          "path": "components/card/just_card_theme.dart",
+          "checksum": "sha256:edc00cf643869d3c4559df4e6f87a3d0276f72b7e08cfff5879fada9c6379090"
+        }
+      ]
+    },
+    {
+      "name": "separator",
+      "version": "0.1.0",
+      "description": "Visual divider widget supporting horizontal and vertical directions and centered text labels.",
+      "category": "layout",
+      "hidden": false,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_separator.dart",
+          "path": "components/separator/just_separator.dart",
+          "checksum": "sha256:1c4d2b414cb2cee446514692dda1044efd532114023f9d9e6ba12afb9af9c42b"
+        },
+        {
+          "name": "just_separator_style.dart",
+          "path": "components/separator/just_separator_style.dart",
+          "checksum": "sha256:5bc01c4cc457cc8c49d6da3b416444114406cb859c9c719e6b294490eec93cc7"
+        },
+        {
+          "name": "just_separator_theme.dart",
+          "path": "components/separator/just_separator_theme.dart",
+          "checksum": "sha256:1cd179d9c50f47995b5f23d48b3dd7342e586a36949d5064616722dd0b8ac72e"
+        }
+      ]
+    },
+    {
+      "name": "scroll-area",
+      "version": "0.1.0",
+      "description": "Performance-optimized scroll viewport with custom scrollbars, fade edges, and scroll-to-top overlays.",
+      "category": "layout",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_scroll_area.dart",
+          "path": "components/scroll/just_scroll_area.dart",
+          "checksum": "sha256:8a11caaf98e7b51f5da0fde35abb517507fcf276443757e918a0f4e114f03a0d"
+        },
+        {
+          "name": "just_scroll_area_style.dart",
+          "path": "components/scroll/just_scroll_area_style.dart",
+          "checksum": "sha256:bf64b9b20c32b128b834311e5c81c1c5dceb8a6785811b3385c48cc3af01d198"
+        },
+        {
+          "name": "just_scroll_area_theme.dart",
+          "path": "components/scroll/just_scroll_area_theme.dart",
+          "checksum": "sha256:49468d833d66b461bbc798c55840fabf81556c91e788e906233e32c7dd763ecb"
+        }
+      ]
+    },
+    {
       "name": "_shared_pressable",
       "version": "0.1.0",
       "description": "Internal shared interactive press/hover state tracker.",
