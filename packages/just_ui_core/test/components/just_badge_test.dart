@@ -78,5 +78,31 @@ void main() {
       expect(find.byType(Stack), findsOneWidget);
       expect(find.byType(Positioned), findsOneWidget);
     });
+
+    testWidgets('Renders pulsing dot animation widget when pulse is true', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestableWidget(const JustBadge.dot(pulse: true)),
+      );
+
+      final pulsingDotFinder = find.byWidgetPredicate(
+        (widget) => widget.runtimeType.toString() == '_JustPulsingDot',
+      );
+      expect(pulsingDotFinder, findsOneWidget);
+    });
+
+    testWidgets('Does not render pulsing dot when pulse is false', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestableWidget(const JustBadge.dot(pulse: false)),
+      );
+
+      final pulsingDotFinder = find.byWidgetPredicate(
+        (widget) => widget.runtimeType.toString() == '_JustPulsingDot',
+      );
+      expect(pulsingDotFinder, findsNothing);
+    });
   });
 }

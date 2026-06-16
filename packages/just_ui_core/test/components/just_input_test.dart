@@ -160,5 +160,63 @@ void main() {
 
       expect(find.text('Email is required'), findsOneWidget);
     });
+
+    testWidgets('Shows character limit counter and updates dynamically', (
+      WidgetTester tester,
+    ) async {
+      final controller = TextEditingController();
+      await tester.pumpWidget(
+        buildTestableWidget(
+          JustInput(
+            controller: controller,
+            maxLength: 10,
+          ),
+        ),
+      );
+
+      // Verify initial state
+      expect(find.text('0 / 10'), findsOneWidget);
+
+      // Enter some text
+      controller.text = 'hello';
+      await tester.pump();
+
+      // Verify updated character count
+      expect(find.text('5 / 10'), findsOneWidget);
+      expect(find.text('0 / 10'), findsNothing);
+    });
+
+    testWidgets('Shows clear button when filled and clears input on tap', (
+      WidgetTester tester,
+    ) async {
+      final controller = TextEditingController();
+      await tester.pumpWidget(
+        buildTestableWidget(
+          JustInput(
+            controller: controller,
+            showClearButton: true,
+          ),
+        ),
+      );
+
+      // Initially clear button should not be shown
+      expect(find.byType(GestureDetector), findsNothing);
+
+      // Add text
+      controller.text = 'some text';
+      await tester.pump();
+
+      // Clear button should be visible (as a GestureDetector)
+      final clearFinder = find.byType(GestureDetector);
+      expect(clearFinder, findsOneWidget);
+
+      // Tap clear button
+      await tester.tap(clearFinder);
+      await tester.pump();
+
+      // Verify text is cleared and clear button is hidden again
+      expect(controller.text, isEmpty);
+      expect(find.byType(GestureDetector), findsNothing);
+    });
   });
 }
