@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/just_pressable.dart';
@@ -62,6 +63,9 @@ class JustScrollArea extends StatefulWidget {
   /// Optional maximum height constraint.
   final double? maxHeight;
 
+  /// The distance scrolled per keyboard arrow keypress. Defaults to 50.0.
+  final double keyboardScrollStep;
+
   /// Per-instance style overrides.
   final JustScrollAreaStyle? style;
 
@@ -85,6 +89,7 @@ class JustScrollArea extends StatefulWidget {
     this.controller,
     this.padding,
     this.maxHeight,
+    this.keyboardScrollStep = 50.0,
     this.style,
   });
 
@@ -94,6 +99,7 @@ class JustScrollArea extends StatefulWidget {
 
 class _JustScrollAreaState extends State<JustScrollArea> {
   late final ScrollController _internalController;
+  late final FocusNode _focusNode;
   final ValueNotifier<double> _topFadeOpacity = ValueNotifier<double>(0.0);
   final ValueNotifier<double> _bottomFadeOpacity = ValueNotifier<double>(0.0);
   final ValueNotifier<bool> _showScrollToTop = ValueNotifier<bool>(false);
@@ -106,6 +112,7 @@ class _JustScrollAreaState extends State<JustScrollArea> {
   void initState() {
     super.initState();
     _internalController = ScrollController();
+    _focusNode = FocusNode();
 
     // Trigger initial metrics calculation after the first frame layout
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -116,6 +123,7 @@ class _JustScrollAreaState extends State<JustScrollArea> {
   @override
   void dispose() {
     _internalController.dispose();
+    _focusNode.dispose();
     _topFadeOpacity.dispose();
     _bottomFadeOpacity.dispose();
     _showScrollToTop.dispose();
@@ -156,9 +164,15 @@ class _JustScrollAreaState extends State<JustScrollArea> {
     }
   }
 
-  void _checkReachBottom() {
+  void _checkReachBottom(ScrollNotification notification) {
     if (widget.onReachBottom == null) return;
     if (!_resolvedController.hasClients) return;
+
+    // Guard: Only trigger when scrolling downwards
+    if (notification is ScrollUpdateNotification) {
+      final delta = notification.scrollDelta ?? 0.0;
+      if (delta <= 0) return; // Upwards or stationary scroll
+    }
 
     final metrics = _resolvedController.position;
     final offset = metrics.pixels;
@@ -178,7 +192,7 @@ class _JustScrollAreaState extends State<JustScrollArea> {
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification.depth == 0) {
       _updateScrollMetrics();
-      _checkReachBottom();
+      _checkReachBottom(notification);
 
       // Trigger standard callbacks
       if (notification is ScrollStartNotification) {
@@ -188,6 +202,82 @@ class _JustScrollAreaState extends State<JustScrollArea> {
       }
     }
     return false;
+  }
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    if (!_resolvedController.hasClients) return KeyEventResult.ignored;
+
+    final double currentOffset = _resolvedController.offset;
+    final double maxScroll = _resolvedController.position.maxScrollExtent;
+    final double viewportDimension =
+        _resolvedController.position.viewportDimension;
+
+    double targetOffset = currentOffset;
+    final isVertical = widget.direction == Axis.vertical;
+
+    if (isVertical) {
+      if (event.logicalKey == .arrowDown) {
+        targetOffset = (currentOffset + widget.keyboardScrollStep).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else if (event.logicalKey == .arrowUp) {
+        targetOffset = (currentOffset - widget.keyboardScrollStep).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else if (event.logicalKey == .pageDown) {
+        targetOffset = (currentOffset + viewportDimension).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else if (event.logicalKey == .pageUp) {
+        targetOffset = (currentOffset - viewportDimension).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else {
+        return .ignored;
+      }
+    } else {
+      // Horizontal scrolling keys
+      if (event.logicalKey == .arrowRight) {
+        targetOffset = (currentOffset + widget.keyboardScrollStep).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else if (event.logicalKey == .arrowLeft) {
+        targetOffset = (currentOffset - widget.keyboardScrollStep).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else if (event.logicalKey == .pageDown) {
+        targetOffset = (currentOffset + viewportDimension).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else if (event.logicalKey == .pageUp) {
+        targetOffset = (currentOffset - viewportDimension).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else {
+        return .ignored;
+      }
+    }
+
+    final animations = JustThemeProvider.of(
+      context,
+      aspect: .animations,
+    ).theme.animations;
+    _resolvedController.animateTo(
+      targetOffset,
+      duration: animations.fast,
+      curve: animations.defaultCurve,
+    );
+
+    return .handled;
   }
 
   @override
@@ -469,9 +559,7 @@ class _JustScrollAreaState extends State<JustScrollArea> {
                                     return FocusIndicator(
                                       isFocused: isFocused,
                                       focusColor: colors.borderFocus,
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(20.0),
-                                      ),
+                                      borderRadius: const .all(.circular(20.0)),
                                       child: Container(
                                         width: 40.0,
                                         height: 40.0,
@@ -519,9 +607,13 @@ class _JustScrollAreaState extends State<JustScrollArea> {
       );
     }
 
-    return NotificationListener<ScrollNotification>(
-      onNotification: _handleScrollNotification,
-      child: RepaintBoundary(child: result),
+    return Focus(
+      focusNode: _focusNode,
+      onKeyEvent: _handleKeyEvent,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: _handleScrollNotification,
+        child: RepaintBoundary(child: result),
+      ),
     );
   }
 }

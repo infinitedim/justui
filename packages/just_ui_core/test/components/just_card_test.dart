@@ -82,5 +82,34 @@ void main() {
 
       await gesture.removePointer();
     });
+
+    testWidgets('Renders modular composable widgets', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        buildTestableWidget(
+          const JustCard(
+            child: Column(
+              children: [
+                JustCardHeader(
+                  child: Column(
+                    children: [
+                      JustCardTitle(child: Text('Modular Title')),
+                      JustCardDescription(child: Text('Modular Description')),
+                    ],
+                  ),
+                ),
+                JustCardContent(child: Text('Modular Content')),
+                JustCardFooter(child: Text('Modular Footer')),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Modular Title'), findsOneWidget);
+      expect(find.text('Modular Description'), findsOneWidget);
+      expect(find.text('Modular Content'), findsOneWidget);
+      expect(find.text('Modular Footer'), findsOneWidget);
+    });
   });
 }
+
