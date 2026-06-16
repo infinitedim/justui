@@ -1,0 +1,55 @@
+import 'package:flutter/material.dart';
+import 'just_button_style.dart';
+
+/// Global theme configuration for buttons, extending Flutter's [ThemeExtension].
+class JustButtonTheme extends ThemeExtension<JustButtonTheme> {
+  /// Style override for the primary button.
+  final JustButtonStyle? primaryStyle;
+
+  /// Style override for the secondary button.
+  final JustButtonStyle? secondaryStyle;
+
+  /// Style override for the ghost button.
+  final JustButtonStyle? ghostStyle;
+
+  /// Style override for the destructive button.
+  final JustButtonStyle? destructiveStyle;
+
+  /// Style override for the link button.
+  final JustButtonStyle? linkStyle;
+
+  /// Creates a [JustButtonTheme] configuration.
+  const JustButtonTheme({
+    this.primaryStyle,
+    this.secondaryStyle,
+    this.ghostStyle,
+    this.destructiveStyle,
+    this.linkStyle,
+  });
+
+  /// Default configuration for the theme.
+  static const defaults = JustButtonTheme();
+
+  @override
+  JustButtonTheme copyWith({
+    JustButtonStyle? primaryStyle,
+    JustButtonStyle? secondaryStyle,
+    JustButtonStyle? ghostStyle,
+    JustButtonStyle? destructiveStyle,
+    JustButtonStyle? linkStyle,
+  }) {
+    return JustButtonTheme(
+      primaryStyle: primaryStyle ?? this.primaryStyle,
+      secondaryStyle: secondaryStyle ?? this.secondaryStyle,
+      ghostStyle: ghostStyle ?? this.ghostStyle,
+      destructiveStyle: destructiveStyle ?? this.destructiveStyle,
+      linkStyle: linkStyle ?? this.linkStyle,
+    );
+  }
+
+  @override
+  JustButtonTheme lerp(ThemeExtension<JustButtonTheme>? other, double t) {
+    if (other is! JustButtonTheme) return this;
+    return t < 0.5 ? this : other;
+  }
+}
