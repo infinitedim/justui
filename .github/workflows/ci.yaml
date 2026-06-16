@@ -24,9 +24,15 @@ jobs:
         run: |
           dart pub global activate melos
 
+      - name: Setup FVM Symlink for Melos
+        run: |
+          mkdir -p .fvm
+          FLUTTER_SDK_PATH="${FLUTTER_ROOT:-$(dirname $(dirname $(which flutter)))}"
+          echo "Setting up FVM symlink to: $FLUTTER_SDK_PATH"
+          ln -sf "$FLUTTER_SDK_PATH" .fvm/flutter_sdk
+
       - name: Bootstrap Monorepo
         run: |
-          export MELOS_SDK_PATH="$FLUTTER_ROOT"
           melos bootstrap
 
       - name: Verify Formatting
