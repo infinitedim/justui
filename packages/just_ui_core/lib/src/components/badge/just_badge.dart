@@ -29,6 +29,9 @@ class JustBadge extends StatelessWidget {
   /// Per-instance style overrides.
   final JustBadgeStyle? style;
 
+  /// Whether to show a pulse animation (only applicable to dot variant).
+  final bool pulse;
+
   /// Default constructor for [JustBadge].
   const JustBadge({
     super.key,
@@ -40,16 +43,21 @@ class JustBadge extends StatelessWidget {
     this.onDismiss,
     this.maxWidth,
     this.style,
+    this.pulse = false,
   });
 
   /// Shorthand constructor for notification dot badges.
-  const JustBadge.dot({super.key, this.color = .error, this.size = .sm})
-    : label = null,
-      variant = .dot,
-      leading = null,
-      onDismiss = null,
-      maxWidth = null,
-      style = null;
+  const JustBadge.dot({
+    super.key,
+    this.color = .error,
+    this.size = .sm,
+    this.pulse = false,
+  }) : label = null,
+       variant = .dot,
+       leading = null,
+       onDismiss = null,
+       maxWidth = null,
+       style = null;
 
   /// Convenience utility to overlay a positioned badge on top of another widget.
   static Widget overlay({
@@ -276,13 +284,18 @@ class JustBadge extends StatelessWidget {
 
     // Dot variant layout
     if (variant == .dot) {
+      final dotColor = finalBg == const Color(0x00000000) ? finalFg : finalBg;
+      if (pulse) {
+        return _JustPulsingDot(
+          size: dotSize,
+          color: dotColor,
+          pulseScale: style?.pulseScale ?? 2.2,
+        );
+      }
       return Container(
         width: dotSize,
         height: dotSize,
-        decoration: BoxDecoration(
-          color: finalBg == const Color(0x00000000) ? finalFg : finalBg,
-          shape: BoxShape.circle,
-        ),
+        decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
       );
     }
 
@@ -338,5 +351,104 @@ class JustBadge extends StatelessWidget {
         children: [?leadingIcon, labelText, ?dismissIcon],
       ),
     );
+  }
+}
+
+class _JustPulsingDot extends StatefulWidget {
+  final double size;
+  final Color color;
+  final double pulseScale;
+
+  const _JustPulsingDot({
+    required this.size,
+    required this.color,
+    required this.pulseScale,
+  });
+
+  @override
+  State<_JustPulsingDot> createState() => _JustPulsingDotState();
+}
+
+class _JustPulsingDotState extends State<_JustPulsingDot>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1600),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RepaintBoundary(
+      child: Flow(
+        delegate: _PulsingFlowDelegate(
+          controller: _controller,
+          pulseScale: widget.pulseScale,
+        ),
+        children: [
+          // Pulse halo
+          Container(
+            width: widget.size,
+            height: widget.size,
+            decoration: BoxDecoration(
+              color: widget.color.withValues(alpha: 0.4),
+              shape: BoxShape.circle,
+            ),
+          ),
+          // Inner dot
+          Container(
+            width: widget.size,
+            height: widget.size,
+            decoration: BoxDecoration(
+              color: widget.color,
+              shape: BoxShape.circle,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PulsingFlowDelegate extends FlowDelegate {
+  final Animation<double> controller;
+  final double pulseScale;
+
+  _PulsingFlowDelegate({required this.controller, required this.pulseScale})
+    : super(repaint: controller);
+
+  @override
+  void paintChildren(FlowPaintingContext context) {
+    // 1. Paint pulse halo
+    final double scale = 1.0 + (pulseScale - 1.0) * controller.value;
+    final double opacity = 1.0 - controller.value;
+    final double centerShift =
+        (context.size.width - context.size.width * scale) / 2.0;
+
+    context.paintChild(
+      0,
+      transform: Matrix4.translationValues(centerShift, centerShift, 0.0)
+        ..scaleByDouble(scale, scale, 1.0, 1.0),
+      opacity: opacity,
+    );
+
+    // 2. Paint inner dot (no transformation, full opacity)
+    context.paintChild(1);
+  }
+
+  @override
+  bool shouldRepaint(covariant _PulsingFlowDelegate oldDelegate) {
+    return pulseScale != oldDelegate.pulseScale;
   }
 }
