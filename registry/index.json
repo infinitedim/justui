@@ -278,7 +278,7 @@
         {
           "name": "just_card.dart",
           "path": "components/card/just_card.dart",
-          "checksum": "sha256:a8aff1e31bf3337f87bdf3f1581a7966f123564e295851a0e1bf2d01d5205f45"
+          "checksum": "sha256:a6e54599f3aad4f54d6241c2c630b99ec758270df4937678b9602840f50143f4"
         },
         {
           "name": "just_card_style.dart",
@@ -304,7 +304,7 @@
         {
           "name": "just_separator.dart",
           "path": "components/separator/just_separator.dart",
-          "checksum": "sha256:1c4d2b414cb2cee446514692dda1044efd532114023f9d9e6ba12afb9af9c42b"
+          "checksum": "sha256:6ed2528d6d6a63567ca353ea05c3a1d5a7e991724ab9213e5c8c270fc40ed24b"
         },
         {
           "name": "just_separator_style.dart",
@@ -333,7 +333,7 @@
         {
           "name": "just_scroll_area.dart",
           "path": "components/scroll/just_scroll_area.dart",
-          "checksum": "sha256:8a11caaf98e7b51f5da0fde35abb517507fcf276443757e918a0f4e114f03a0d"
+          "checksum": "sha256:9aeb33fa7d1581de69b240dbb0d4a94e0b6928ef323cd856f4761954090d63b1"
         },
         {
           "name": "just_scroll_area_style.dart",

@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
@@ -141,5 +142,97 @@ void main() {
 
       controller.dispose();
     });
+
+    testWidgets('Handles keyboard arrow and page keys for scrolling', (WidgetTester tester) async {
+      final controller = ScrollController();
+      await tester.pumpWidget(
+        buildTestableWidget(
+          SizedBox(
+            height: 300.0,
+            child: JustScrollArea(
+              controller: controller,
+              keyboardScrollStep: 40.0,
+              child: Column(
+                children: List.generate(
+                  50,
+                  (index) => SizedBox(height: 50.0, child: Text('Item $index')),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final focusFinder = find.byType(Focus);
+      expect(focusFinder, findsOneWidget);
+      final FocusNode node = tester.widget<Focus>(focusFinder).focusNode!;
+      node.requestFocus();
+      await tester.pump();
+      expect(node.hasFocus, isTrue);
+
+      // Send Arrow Down
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      expect(controller.offset, equals(40.0));
+
+      // Send Arrow Up
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pumpAndSettle();
+      expect(controller.offset, equals(0.0));
+
+      // Send Page Down
+      await tester.sendKeyEvent(LogicalKeyboardKey.pageDown);
+      await tester.pumpAndSettle();
+      expect(controller.offset, equals(300.0));
+
+      // Send Page Up
+      await tester.sendKeyEvent(LogicalKeyboardKey.pageUp);
+      await tester.pumpAndSettle();
+      expect(controller.offset, equals(0.0));
+
+      controller.dispose();
+    });
+
+    testWidgets('Scroll direction guard prevents onReachBottom on upward scroll', (WidgetTester tester) async {
+      int triggerCount = 0;
+      final controller = ScrollController();
+
+      await tester.pumpWidget(
+        buildTestableWidget(
+          SizedBox(
+            height: 300.0,
+            child: JustScrollArea(
+              controller: controller,
+              reachBottomThreshold: 100.0,
+              onReachBottom: () => triggerCount++,
+              child: Column(
+                children: List.generate(
+                  50,
+                  (index) => SizedBox(height: 50.0, child: Text('Item $index')),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Scroll past the threshold to trigger it (moving downwards)
+      await tester.drag(find.text('Item 0'), const Offset(0.0, -2000.0));
+      await tester.pumpAndSettle();
+      expect(triggerCount, greaterThan(0));
+
+      // Reset trigger count
+      triggerCount = 0;
+
+      // Drag UPWARDS slightly but staying within bottom threshold range
+      await tester.drag(find.text('Item 40'), const Offset(0.0, 10.0));
+      await tester.pumpAndSettle();
+
+      // Since we scrolled UPWARDS, reach bottom callback should NOT be triggered
+      expect(triggerCount, equals(0));
+
+      controller.dispose();
+    });
   });
 }
+
