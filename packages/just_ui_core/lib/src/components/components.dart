@@ -46,3 +46,8 @@ export 'scroll/just_scroll_area_theme.dart';
 export 'shared/just_pressable.dart';
 export 'shared/just_progress_spinner.dart';
 export 'shared/just_focus_indicator.dart';
+
+export 'skeleton/just_skeleton.dart';
+export 'skeleton/just_skeleton_style.dart';
+export 'skeleton/just_skeleton_theme.dart';
+
