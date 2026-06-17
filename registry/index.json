@@ -380,6 +380,32 @@
       ]
     },
     {
+      "name": "skeleton",
+      "version": "0.1.0",
+      "description": "Structure-aware skeleton loading placeholder with recursive transformation and custom manual shape named constructors.",
+      "category": "layout",
+      "hidden": false,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_skeleton.dart",
+          "path": "components/skeleton/just_skeleton.dart",
+          "checksum": "sha256:b240e6ca88db4c2243c5c6f37a1b0b7014c78c7d2924aa420b35347e73a9bab9"
+        },
+        {
+          "name": "just_skeleton_style.dart",
+          "path": "components/skeleton/just_skeleton_style.dart",
+          "checksum": "sha256:dd317d7c00598c3c17782e2b88eb98f3fb60e46d35cba657ce792a2cd529b025"
+        },
+        {
+          "name": "just_skeleton_theme.dart",
+          "path": "components/skeleton/just_skeleton_theme.dart",
+          "checksum": "sha256:a4f3ad2f252768f3ad029e60fe3f47d0da76afb202212e362e44277e77dded06"
+        }
+      ]
+    },
+    {
       "name": "_shared_progress_spinner",
       "version": "0.1.0",
       "description": "Internal shared rotatory loading progress spinner.",

@@ -1,6 +1,6 @@
 # Phase 2: Core Components
 
-> **Status:** ⚪ Not Started  
+> **Status:** 🟡 In Progress (Milestone I & II Complete - 11 Components Finished)  
 > **Target:** Sprint 5–10  
 > **Packages:** `just_ui_core`  
 > **Dependency:** Phase 1 (Token System + Theming Engine) harus **100% complete**  
@@ -293,12 +293,12 @@ class JustAvatarGroup extends StatelessWidget {
 
 ### Acceptance Criteria — Milestone I
 
-- [ ] Setiap komponen memiliki semua variant yang di-spek.
-- [ ] Semua state (hover, focus, disabled, loading) berfungsi.
-- [ ] Komponen terintegrasi dengan theming engine (ikut berubah saat switch theme).
-- [ ] Widget test untuk setiap variant dan state.
-- [ ] Golden test untuk visual regression (minimal 1 per variant).
-- [ ] Accessibility test: semantic labels, focus traversal.
+- [x] Setiap komponen memiliki semua variant yang di-spek.
+- [x] Semua state (hover, focus, disabled, loading) berfungsi.
+- [x] Komponen terintegrasi dengan theming engine (ikut berubah saat switch theme).
+- [x] Widget test untuk setiap variant dan state.
+- [x] Golden test untuk visual regression (minimal 1 per variant).
+- [x] Accessibility test: semantic labels, focus traversal.
 - [ ] Showcase page di `apps/showcase` untuk setiap komponen.
 
 ---
@@ -421,12 +421,12 @@ class JustScrollArea extends StatefulWidget {
 
 ### Acceptance Criteria — Milestone II
 
-- [ ] Card variants berfungsi dengan shadow/border sesuai theme.
-- [ ] Separator support horizontal dan vertical + label.
-- [ ] Skeleton shimmer animation berjalan smooth (60fps).
-- [ ] ScrollArea fade edges dan scroll-to-top berfungsi.
-- [ ] Semua komponen responsive terhadap theme changes.
-- [ ] Widget test dan golden test per komponen.
+- [x] Card variants berfungsi dengan shadow/border sesuai theme.
+- [x] Separator support horizontal dan vertical + label.
+- [x] Skeleton shimmer animation berjalan smooth (60fps).
+- [x] ScrollArea fade edges dan scroll-to-top berfungsi.
+- [x] Semua komponen responsive terhadap theme changes.
+- [x] Widget test dan golden test per komponen.
 
 ---
 
@@ -805,11 +805,11 @@ export 'src/theme/theme.dart';
 
 ## Definition of Done — Phase 2
 
-- [ ] 12 komponen core selesai dan tested.
+- [/] 11 dari 12 komponen core selesai dan tested.
 - [ ] Setiap komponen memiliki dartdoc + usage example di docstring.
 - [ ] Showcase app menampilkan galeri interaktif seluruh komponen.
 - [ ] Seluruh komponen lulus accessibility audit.
-- [ ] Zero warning dari `dart analyze`.
+- [x] Zero warning dari `dart analyze`.
 - [ ] Golden test baseline ter-commit untuk visual regression.
 - [ ] README.md di `just_ui_core` mencantumkan seluruh komponen.
 - [ ] Breaking change policy terdokumentasi (CHANGELOG.md).
