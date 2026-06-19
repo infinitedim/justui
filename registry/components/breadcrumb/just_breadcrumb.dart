@@ -2,8 +2,6 @@ import 'package:flutter/widgets.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/just_pressable.dart';
 import 'just_breadcrumb_style.dart';
-import 'just_breadcrumb_theme.dart';
-import 'just_breadcrumb_variants.dart';
 
 /// Represents an individual navigation link within a [JustBreadcrumb].
 class JustBreadcrumbItem {
@@ -78,8 +76,7 @@ class JustBreadcrumb extends StatelessWidget {
 
     // Resolve collapsed widget
     final resolvedCollapsed =
-        collapsed ??
-        const Text('...', style: TextStyle(fontWeight: FontWeight.w600));
+        collapsed ?? const Text('...', style: TextStyle(fontWeight: .w600));
 
     final finalPadding = style?.padding ?? .symmetric(vertical: spacing.sm);
 
@@ -134,8 +131,8 @@ class JustBreadcrumb extends StatelessWidget {
     return Padding(
       padding: finalPadding,
       child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(mainAxisSize: MainAxisSize.min, children: children),
+        scrollDirection: .horizontal,
+        child: Row(mainAxisSize: .min, children: children),
       ),
     );
   }
@@ -162,7 +159,7 @@ class JustBreadcrumb extends StatelessWidget {
     final activeColor = style?.activeColor ?? colors.borderFocus;
     final baseTextStyle = isLast
         ? (style?.activeTextStyle ??
-              typography.bodyMd.copyWith(fontWeight: FontWeight.w600))
+              typography.bodyMd.copyWith(fontWeight: .w600))
         : (style?.textStyle ?? typography.bodyMd);
 
     if (!isClickable) {
@@ -171,7 +168,7 @@ class JustBreadcrumb extends StatelessWidget {
         child: Padding(
           padding: style?.itemPadding ?? .symmetric(horizontal: spacing.xs),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               if (item.icon != null) ...[
                 IconTheme.merge(
@@ -203,7 +200,7 @@ class JustBreadcrumb extends StatelessWidget {
           child: Padding(
             padding: style?.itemPadding ?? .symmetric(horizontal: spacing.xs),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 if (item.icon != null) ...[
                   IconTheme.merge(
@@ -216,9 +213,7 @@ class JustBreadcrumb extends StatelessWidget {
                   item.label,
                   style: baseTextStyle.copyWith(
                     color: itemColor,
-                    decoration: isHovered
-                        ? TextDecoration.underline
-                        : TextDecoration.none,
+                    decoration: isHovered ? .underline : .none,
                   ),
                 ),
               ],
@@ -271,11 +266,11 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
 
     return OverlayPortal.overlayChildLayoutBuilder(
       controller: _controller,
-      overlayChildLayoutBuilder: (context, info) {
+      overlayChildBuilder: (BuildContext context, info) {
         // targetOffset represents the top-left coordinate of the child widget
         final targetOffset = MatrixUtils.transformPoint(
           info.childPaintTransform,
-          Offset.zero,
+          .zero,
         );
 
         return Stack(
@@ -304,8 +299,8 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
                   padding: .symmetric(vertical: spacing.xs),
                   child: SingleChildScrollView(
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: .min,
+                      crossAxisAlignment: .stretch,
                       children: widget.collapsedItems.map((item) {
                         return JustPressable(
                           onTap: () {
@@ -359,7 +354,7 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
                                                       typography.bodySm)
                                                   .copyWith(
                                                     color: itemFg,
-                                                    fontWeight: FontWeight.w400,
+                                                    fontWeight: .w400,
                                                   ),
                                           maxLines: 1,
                                           overflow: .ellipsis,

@@ -42,8 +42,6 @@ class JustTabController extends ChangeNotifier {
 
   int _index;
   double _animationValue;
-  // ignore: unused_field
-  TickerProvider? _vsync;
   AnimationController? _animationController;
 
   /// Creates a [JustTabController].
@@ -79,7 +77,6 @@ class JustTabController extends ChangeNotifier {
   }
 
   void _bindVsync(TickerProvider vsync) {
-    _vsync = vsync;
     _animationController?.dispose();
     _animationController = AnimationController(
       vsync: vsync,

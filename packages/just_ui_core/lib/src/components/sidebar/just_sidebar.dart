@@ -198,7 +198,7 @@ class _JustSidebarState extends State<JustSidebar>
 
     final BorderRadius borderRadius = widget.variant == .floating
         ? .all(radius.xl)
-        : (widget.variant == .inset ? .all(radius.lg) : BorderRadius.zero);
+        : (widget.variant == .inset ? .all(radius.lg) : .zero);
 
     return AnimatedBuilder(
       animation: _collapseAnimation,
@@ -559,7 +559,7 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
                           style: TextStyle(
                             color: foregroundColor,
                             fontSize: 14.0,
-                            fontWeight: FontWeight.w400,
+                            fontWeight: .w400,
                           ),
                           maxLines: 1,
                           overflow: .ellipsis,

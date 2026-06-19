@@ -771,8 +771,8 @@ class _JustInputState extends State<JustInput> {
           if (hasSubElements || hasCounter) ...[
             SizedBox(height: spacing.xs),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: .spaceBetween,
+              crossAxisAlignment: .start,
               children: [
                 if (hasSubElements)
                   Expanded(

@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_data.dart';
 import 'just_tabs_style.dart';
 import 'just_tabs_variants.dart';
@@ -36,55 +37,51 @@ class JustTabIndicator extends StatelessWidget {
     // Resolve styling colors and shapes
     final activeColor =
         style?.indicatorColor ?? style?.activeColor ?? colors.borderFocus;
-    final defaultIndicatorRadius = variant == JustTabVariant.pill
+    final BorderRadius defaultIndicatorRadius = variant == .pill
         ? .all(radius.full)
         : .all(radius.md);
     final indicatorRadius = style?.indicatorRadius ?? defaultIndicatorRadius;
 
     switch (variant) {
-      case JustTabVariant.line:
+      case .line:
         final thickness = style?.indicatorThickness ?? 2.0;
-        if (orientation == Axis.horizontal) {
+        if (orientation == .horizontal) {
           return Align(
-            alignment: Alignment.bottomCenter,
+            alignment: .bottomCenter,
             child: Container(
               height: thickness,
-              width: double.infinity,
+              width: .infinity,
               decoration: BoxDecoration(
                 color: activeColor,
                 borderRadius: .only(
-                  topLeft: Radius.circular(radius.sm.x),
-                  topRight: Radius.circular(radius.sm.x),
+                  topLeft: .circular(radius.sm.x),
+                  topRight: .circular(radius.sm.x),
                 ),
               ),
             ),
           );
         } else {
           // Vertical layout: line on the starting edge (respecting Directionality)
-          final isRtl = Directionality.of(context) == TextDirection.rtl;
+          final isRtl = Directionality.of(context) == .rtl;
           return Align(
-            alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
+            alignment: isRtl ? .centerRight : .centerLeft,
             child: Container(
               width: thickness,
-              height: double.infinity,
+              height: .infinity,
               decoration: BoxDecoration(
                 color: activeColor,
                 borderRadius: .only(
-                  topRight: isRtl ? Radius.circular(radius.sm.x) : Radius.zero,
-                  bottomRight: isRtl
-                      ? Radius.circular(radius.sm.x)
-                      : Radius.zero,
-                  topLeft: !isRtl ? Radius.circular(radius.sm.x) : Radius.zero,
-                  bottomLeft: !isRtl
-                      ? Radius.circular(radius.sm.x)
-                      : Radius.zero,
+                  topRight: isRtl ? .circular(radius.sm.x) : .zero,
+                  bottomRight: isRtl ? .circular(radius.sm.x) : .zero,
+                  topLeft: !isRtl ? .circular(radius.sm.x) : .zero,
+                  bottomLeft: !isRtl ? .circular(radius.sm.x) : .zero,
                 ),
               ),
             ),
           );
         }
 
-      case JustTabVariant.enclosed:
+      case .enclosed:
         // Card-style outline wrapper
         return Container(
           decoration: BoxDecoration(
@@ -94,7 +91,7 @@ class JustTabIndicator extends StatelessWidget {
           ),
         );
 
-      case JustTabVariant.pill:
+      case .pill:
         // Pill solid background indicator
         return Container(
           decoration: BoxDecoration(
@@ -103,22 +100,22 @@ class JustTabIndicator extends StatelessWidget {
           ),
         );
 
-      case JustTabVariant.vertical:
+      case .vertical:
         // Fallback for vertical: line by default, or similar to line
         final thickness = style?.indicatorThickness ?? 2.0;
-        final isRtl = Directionality.of(context) == TextDirection.rtl;
+        final isRtl = Directionality.of(context) == .rtl;
         return Align(
-          alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
+          alignment: isRtl ? .centerRight : .centerLeft,
           child: Container(
             width: thickness,
-            height: double.infinity,
+            height: .infinity,
             decoration: BoxDecoration(
               color: activeColor,
               borderRadius: .only(
-                topRight: isRtl ? Radius.circular(radius.sm.x) : Radius.zero,
-                bottomRight: isRtl ? Radius.circular(radius.sm.x) : Radius.zero,
-                topLeft: !isRtl ? Radius.circular(radius.sm.x) : Radius.zero,
-                bottomLeft: !isRtl ? Radius.circular(radius.sm.x) : Radius.zero,
+                topRight: isRtl ? .circular(radius.sm.x) : .zero,
+                bottomRight: isRtl ? .circular(radius.sm.x) : .zero,
+                topLeft: !isRtl ? .circular(radius.sm.x) : .zero,
+                bottomLeft: !isRtl ? .circular(radius.sm.x) : .zero,
               ),
             ),
           ),
