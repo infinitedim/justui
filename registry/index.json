@@ -398,7 +398,7 @@
         {
           "name": "just_skeleton.dart",
           "path": "components/skeleton/just_skeleton.dart",
-          "checksum": "sha256:3d42b032f23ba764b57baee4c473e9d256bc302268f26d29de3ffcf0baf15adc"
+          "checksum": "sha256:5773b1ccc112a756a70ae167f6b7832e68da79ecb080d068118afaed52aceabf"
         },
         {
           "name": "just_skeleton_style.dart",
@@ -425,6 +425,160 @@
           "name": "just_progress_spinner.dart",
           "path": "components/shared/just_progress_spinner.dart",
           "checksum": "sha256:840b18272408dca9471db7828131cc467607959aa6aac6af9a0eddd3dae8b2f7"
+        }
+      ]
+    },
+    {
+      "name": "breadcrumb",
+      "version": "0.1.0",
+      "description": "Premium text link layout breadcrumbs with collapsible middle items and custom overlay dropdown.",
+      "category": "navigation",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable"
+      ],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_breadcrumb.dart",
+          "path": "components/breadcrumb/just_breadcrumb.dart",
+          "checksum": "sha256:303ebe92ac336b1e3a7c323a4724129d7575aa25e4d23a5acfc03f94c75714ea"
+        },
+        {
+          "name": "just_breadcrumb_style.dart",
+          "path": "components/breadcrumb/just_breadcrumb_style.dart",
+          "checksum": "sha256:a7553d5fb73586b0bb533878e37ee0fd5fc5851c643d6d5ec209d0f0c1c570bc"
+        },
+        {
+          "name": "just_breadcrumb_theme.dart",
+          "path": "components/breadcrumb/just_breadcrumb_theme.dart",
+          "checksum": "sha256:d959c51867b1f95e473e2926e044b6443b952e9529c8a8f6c2d353bac5fd7c56"
+        },
+        {
+          "name": "just_breadcrumb_variants.dart",
+          "path": "components/breadcrumb/just_breadcrumb_variants.dart",
+          "checksum": "sha256:ff63d18f651b1ad6dca2270c3226eec4096577bee717302a3846b77d7d1419ad"
+        }
+      ]
+    },
+    {
+      "name": "tabs",
+      "version": "0.1.0",
+      "description": "Tabs component supporting line, enclosed, pill, and vertical variants with lazy loading and keyboard navigation.",
+      "category": "navigation",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable"
+      ],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_tabs.dart",
+          "path": "components/tabs/just_tabs.dart",
+          "checksum": "sha256:34a3aea6103f0660c725c6c2db85b19880e10dd49a366215f5fc5d84df32d8e9"
+        },
+        {
+          "name": "just_tabs_style.dart",
+          "path": "components/tabs/just_tabs_style.dart",
+          "checksum": "sha256:db43c2121251066d59dbf3b6e0d6154cd1f553ab400c898d4a527ddaabc2bbc9"
+        },
+        {
+          "name": "just_tabs_theme.dart",
+          "path": "components/tabs/just_tabs_theme.dart",
+          "checksum": "sha256:d091764ce32990f054562a0d3ef91081bc081acb96601016d670244a9562e70e"
+        },
+        {
+          "name": "just_tabs_variants.dart",
+          "path": "components/tabs/just_tabs_variants.dart",
+          "checksum": "sha256:1b314729be3321a83cdc0f888e6167a252b8c7c87069c2ddd7d4142273f25ccc"
+        },
+        {
+          "name": "just_tab_indicator.dart",
+          "path": "components/tabs/just_tab_indicator.dart",
+          "checksum": "sha256:3750a00ccee2780c8df5f2188de87780fbb18b294d1b686aa32e4e8df7a982ca"
+        }
+      ]
+    },
+    {
+      "name": "bottom-nav",
+      "version": "0.1.0",
+      "description": "Navigation bar component supporting fixed, shifting, and floating layout structures.",
+      "category": "navigation",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable"
+      ],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_bottom_nav.dart",
+          "path": "components/bottom_nav/just_bottom_nav.dart",
+          "checksum": "sha256:3dd1840d7d5f00fd84468e46bda4bc34496c854a42cd94f1ec4bd3d6765f3b4a"
+        },
+        {
+          "name": "just_bottom_nav_style.dart",
+          "path": "components/bottom_nav/just_bottom_nav_style.dart",
+          "checksum": "sha256:7f3b8d7ff5cae41ca9117856227a443293adf4b2dc48bcfd76637b2151762968"
+        },
+        {
+          "name": "just_bottom_nav_theme.dart",
+          "path": "components/bottom_nav/just_bottom_nav_theme.dart",
+          "checksum": "sha256:f254f2cb08be857840ad81066ce332c0ef0fbde6a28aa730e5d13b886191c911"
+        },
+        {
+          "name": "just_bottom_nav_variants.dart",
+          "path": "components/bottom_nav/just_bottom_nav_variants.dart",
+          "checksum": "sha256:85eacd8b822b79acee41f3e30d0690e7525fc057eccd4ded7af6fbc8b8bb166f"
+        }
+      ]
+    },
+    {
+      "name": "_shared_tooltip_overlay",
+      "version": "0.1.0",
+      "description": "Internal shared layout-phase tooltip overlay portal.",
+      "category": "internal",
+      "hidden": true,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_tooltip_overlay.dart",
+          "path": "components/shared/_shared_tooltip_overlay.dart",
+          "checksum": "sha256:3e6e3a40d39a3d4bc49d01a666c4e282ee9a891e6d2804a017fad5db139b65ef"
+        }
+      ]
+    },
+    {
+      "name": "sidebar",
+      "version": "0.1.0",
+      "description": "Collapsible navigation sidebar supporting recursive folder sub-menus and hover tooltips.",
+      "category": "navigation",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_tooltip_overlay"
+      ],
+      "pubDependencies": {},
+      "files": [
+        {
+          "name": "just_sidebar.dart",
+          "path": "components/sidebar/just_sidebar.dart",
+          "checksum": "sha256:1afd9cf738e9faee1a69a00bf9debcafd535d188611a0b4ae26fffa5d64de6de"
+        },
+        {
+          "name": "just_sidebar_style.dart",
+          "path": "components/sidebar/just_sidebar_style.dart",
+          "checksum": "sha256:111c6472e6d09a40c909d25dadeca1ec0f272840a6ab9f2182cf2dff0d49b0da"
+        },
+        {
+          "name": "just_sidebar_theme.dart",
+          "path": "components/sidebar/just_sidebar_theme.dart",
+          "checksum": "sha256:34a504501a5ee0cf5416a31c7ab18e8a2347ead6dafbdc6920ac6ffcc8fa943e"
+        },
+        {
+          "name": "just_sidebar_variants.dart",
+          "path": "components/sidebar/just_sidebar_variants.dart",
+          "checksum": "sha256:4509d3dff6284e23475df95701dcfd1f747f7a6d242d610787c151772a77522a"
         }
       ]
     }

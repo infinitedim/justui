@@ -239,7 +239,7 @@ class _JustSkeletonState extends State<JustSkeleton>
       }
 
       return _JustSkeletonShape(
-        width: w ?? double.infinity,
+        width: w ?? .infinity,
         height: h ?? 56.0,
         borderRadius: widget.borderRadius,
       );
@@ -519,7 +519,9 @@ class _JustSkeletonState extends State<JustSkeleton>
         child: GestureDetector(
           key: widget.key,
           behavior: widget.behavior,
-          child: widget.child != null ? _transform(widget.child!, context) : null,
+          child: widget.child != null
+              ? _transform(widget.child!, context)
+              : null,
         ),
       );
     }
@@ -529,13 +531,17 @@ class _JustSkeletonState extends State<JustSkeleton>
         child: MouseRegion(
           key: widget.key,
           cursor: widget.cursor,
-          child: widget.child != null ? _transform(widget.child!, context) : null,
+          child: widget.child != null
+              ? _transform(widget.child!, context)
+              : null,
         ),
       );
     }
     if (widget is Semantics) {
       final label = widget.properties.label;
-      final resolvedLabel = label != null && label.isNotEmpty ? '$label (loading)' : 'Loading';
+      final resolvedLabel = label != null && label.isNotEmpty
+          ? '$label (loading)'
+          : 'Loading';
       return Semantics(
         key: widget.key,
         container: widget.container,
@@ -547,7 +553,9 @@ class _JustSkeletonState extends State<JustSkeleton>
         scopesRoute: widget.properties.scopesRoute,
         namesRoute: widget.properties.namesRoute,
         liveRegion: widget.properties.liveRegion,
-        child: widget.child != null ? _transform(widget.child!, context) : const SizedBox.shrink(),
+        child: widget.child != null
+            ? _transform(widget.child!, context)
+            : const SizedBox.shrink(),
       );
     }
     if (widget is SafeArea) {
@@ -882,7 +890,11 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
           builder: (context, child) {
             return ShaderMask(
               shaderCallback: (bounds) {
-                return scope.createShader(bounds, scope.animation.value, context);
+                return scope.createShader(
+                  bounds,
+                  scope.animation.value,
+                  context,
+                );
               },
               blendMode: .srcATop,
               child: child,
