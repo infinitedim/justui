@@ -205,9 +205,9 @@ class JustCard extends StatelessWidget {
         }
       }
 
-      final borderSide = currentBorderWidth > 0.0
+      final BorderSide borderSide = currentBorderWidth > 0.0
           ? BorderSide(color: currentBorderColor, width: currentBorderWidth)
-          : BorderSide.none;
+          : .none;
 
       final cardLayout = Container(
         width: width,
@@ -330,7 +330,7 @@ class JustCardTitle extends StatelessWidget {
 
     final defaultStyle = typo.headingMd.copyWith(
       color: colors.textPrimary,
-      fontWeight: FontWeight.w600,
+      fontWeight: .w600,
     );
 
     return DefaultTextStyle(style: defaultStyle.merge(style), child: child);

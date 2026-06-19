@@ -205,8 +205,8 @@ class _JustScrollAreaState extends State<JustScrollArea> {
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent) return KeyEventResult.ignored;
-    if (!_resolvedController.hasClients) return KeyEventResult.ignored;
+    if (event is! KeyDownEvent) return .ignored;
+    if (!_resolvedController.hasClients) return .ignored;
 
     final double currentOffset = _resolvedController.offset;
     final double maxScroll = _resolvedController.position.maxScrollExtent;
@@ -320,7 +320,7 @@ class _JustScrollAreaState extends State<JustScrollArea> {
     final scrollbarRadius =
         widget.style?.scrollbarRadius ??
         themeStyle?.scrollbarRadius ??
-        const Radius.circular(3.0);
+        const .circular(3.0);
 
     // Create the viewport layout
     Widget scrollView = SingleChildScrollView(

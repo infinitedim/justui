@@ -1,5 +1,5 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show HapticFeedback;
-import 'package:flutter/widgets.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/just_pressable.dart';
 import 'just_bottom_nav_style.dart';
@@ -59,7 +59,7 @@ class JustBottomNav extends StatefulWidget {
     required this.items,
     this.selectedIndex = 0,
     this.onItemSelected,
-    this.variant = JustBottomNavVariant.fixed,
+    this.variant = .fixed,
     this.showLabels = true,
     this.hapticFeedback = true,
     this.style,
@@ -101,13 +101,13 @@ class _JustBottomNavState extends State<JustBottomNav> {
     JustBottomNavStyle? themeStyle;
     if (navTheme != null) {
       switch (widget.variant) {
-        case JustBottomNavVariant.fixed:
+        case .fixed:
           themeStyle = navTheme.fixedStyle;
           break;
-        case JustBottomNavVariant.shifting:
+        case .shifting:
           themeStyle = navTheme.shiftingStyle;
           break;
-        case JustBottomNavVariant.floating:
+        case .floating:
           themeStyle = navTheme.floatingStyle;
           break;
       }
@@ -123,9 +123,7 @@ class _JustBottomNavState extends State<JustBottomNav> {
         colors.textSecondary;
     final double iconSize =
         widget.style?.iconSize ?? themeStyle?.iconSize ?? 24.0;
-    final double defaultHeight = widget.variant == JustBottomNavVariant.floating
-        ? 64.0
-        : 56.0;
+    final double defaultHeight = widget.variant == .floating ? 64.0 : 56.0;
     final double height =
         widget.style?.height ?? themeStyle?.height ?? defaultHeight;
 
@@ -136,14 +134,21 @@ class _JustBottomNavState extends State<JustBottomNav> {
     final containerBorderRadius =
         widget.style?.borderRadius ??
         themeStyle?.borderRadius ??
-        (widget.variant == JustBottomNavVariant.floating
-            ? .all(radius.full)
-            : BorderRadius.zero);
+        (widget.variant == .floating ? .all(radius.full) : .zero);
 
     final finalTextStyle =
         widget.style?.textStyle ??
         themeStyle?.textStyle ??
-        typography.caption.copyWith(fontWeight: FontWeight.w500);
+        typography.caption.copyWith(fontWeight: .w500);
+
+    final resolvedDuration =
+        widget.style?.animationDuration ??
+        themeStyle?.animationDuration ??
+        animations.fast;
+    final resolvedCurve =
+        widget.style?.animationCurve ??
+        themeStyle?.animationCurve ??
+        animations.defaultCurve;
 
     // Build items
     final List<Widget> navItems = [];
@@ -151,9 +156,9 @@ class _JustBottomNavState extends State<JustBottomNav> {
       final item = widget.items[i];
       final isSelected = widget.selectedIndex == i;
 
-      Widget iconContent = Stack(
+      final Widget iconContent = Stack(
         clipBehavior: .none,
-        alignment: Alignment.center,
+        alignment: .center,
         children: [
           IconTheme.merge(
             data: IconThemeData(
@@ -162,23 +167,23 @@ class _JustBottomNavState extends State<JustBottomNav> {
             ),
             child: item.activeIcon != null
                 ? Stack(
-                    alignment: Alignment.center,
+                    alignment: .center,
                     children: [
                       AnimatedOpacity(
                         opacity: isSelected ? 0.0 : 1.0,
-                        duration: animations.fast,
+                        duration: resolvedDuration,
                         child: AnimatedScale(
                           scale: isSelected ? 0.8 : 1.0,
-                          duration: animations.fast,
+                          duration: resolvedDuration,
                           child: item.icon,
                         ),
                       ),
                       AnimatedOpacity(
                         opacity: isSelected ? 1.0 : 0.0,
-                        duration: animations.fast,
+                        duration: resolvedDuration,
                         child: AnimatedScale(
                           scale: isSelected ? 1.0 : 0.8,
-                          duration: animations.fast,
+                          duration: resolvedDuration,
                           child: item.activeIcon!,
                         ),
                       ),
@@ -191,29 +196,30 @@ class _JustBottomNavState extends State<JustBottomNav> {
         ],
       );
 
-      Widget labelContent = AnimatedDefaultTextStyle(
+      final Widget labelContent = AnimatedDefaultTextStyle(
         style: finalTextStyle.copyWith(
           color: isSelected ? activeColor : inactiveColor,
         ),
-        duration: animations.fast,
-        curve: animations.defaultCurve,
+        duration: resolvedDuration,
+        curve: resolvedCurve,
         child: Text(item.label, maxLines: 1, overflow: .ellipsis),
       );
 
-      Widget itemWidget = JustPressable(
+      final Widget itemWidget = JustPressable(
         onTap: () => _handleItemTap(i),
         builder: (context, isHovered, isPressed, isFocused, focusNode) {
           Widget content;
-          if (widget.variant == JustBottomNavVariant.shifting) {
+          if (widget.variant == .shifting) {
             content = Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: .center,
               children: [
                 iconContent,
                 ClipRect(
                   child: AnimatedAlign(
+                    alignment: .center,
                     heightFactor: isSelected ? 1.0 : 0.0,
-                    duration: animations.fast,
-                    curve: animations.defaultCurve,
+                    duration: resolvedDuration,
+                    curve: resolvedCurve,
                     child: Padding(
                       padding: .only(top: spacing.xs),
                       child: labelContent,
@@ -224,7 +230,7 @@ class _JustBottomNavState extends State<JustBottomNav> {
             );
           } else {
             content = Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: .center,
               children: [
                 iconContent,
                 if (widget.showLabels) ...[
@@ -252,15 +258,16 @@ class _JustBottomNavState extends State<JustBottomNav> {
         },
       );
 
-      if (widget.variant == JustBottomNavVariant.shifting) {
+      if (widget.variant == .shifting) {
         navItems.add(
           TweenAnimationBuilder<double>(
             tween: Tween<double>(begin: 0.0, end: isSelected ? 1.0 : 0.0),
-            duration: animations.fast,
-            curve: animations.defaultCurve,
+            duration: resolvedDuration,
+            curve: resolvedCurve,
+            child: itemWidget,
             builder: (context, value, child) {
               final flex = 1.0 + value * 0.5;
-              return Expanded(flex: (flex * 1000).toInt(), child: itemWidget);
+              return Expanded(flex: (flex * 1000).toInt(), child: child!);
             },
           ),
         );
@@ -269,28 +276,26 @@ class _JustBottomNavState extends State<JustBottomNav> {
       }
     }
 
-    Widget contentBar = Container(
+    final Widget contentBar = Container(
       height: height,
       padding: widget.style?.padding ?? themeStyle?.padding,
       decoration: BoxDecoration(
         color: containerBg,
         borderRadius: containerBorderRadius,
-        border: widget.variant == JustBottomNavVariant.floating
+        border: widget.variant == .floating
             ? .all(color: colors.borderDefault, width: 1.0)
             : Border(top: BorderSide(color: colors.borderDefault, width: 1.0)),
-        boxShadow: widget.variant == JustBottomNavVariant.floating
-            ? customTheme.shadows.md
-            : null,
+        boxShadow: widget.variant == .floating ? customTheme.shadows.md : null,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: .spaceEvenly,
+        crossAxisAlignment: .stretch,
         children: navItems,
       ),
     );
 
     // Apply safe area depending on layout format
-    if (widget.variant == JustBottomNavVariant.floating) {
+    if (widget.variant == .floating) {
       return SafeArea(
         top: false,
         child: Padding(
