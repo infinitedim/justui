@@ -45,11 +45,9 @@ class JustTabController extends ChangeNotifier {
   AnimationController? _animationController;
 
   /// Creates a [JustTabController].
-  JustTabController({
-    required this.length,
-    int initialIndex = 0,
-  })  : _index = initialIndex,
-        _animationValue = initialIndex.toDouble() {
+  JustTabController({required this.length, int initialIndex = 0})
+    : _index = initialIndex,
+      _animationValue = initialIndex.toDouble() {
     assert(initialIndex >= 0 && initialIndex < length);
   }
 
@@ -98,17 +96,19 @@ class JustTabController extends ChangeNotifier {
     }
 
     _animationController!.stop();
-    _animationController!.duration = duration ?? const Duration(milliseconds: 250);
+    _animationController!.duration =
+        duration ?? const Duration(milliseconds: 250);
 
-    final Animation<double> animation = Tween<double>(
-      begin: _animationValue,
-      end: targetIndex.toDouble(),
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController!,
-        curve: curve ?? Curves.easeInOut,
-      ),
-    );
+    final Animation<double> animation =
+        Tween<double>(
+          begin: _animationValue,
+          end: targetIndex.toDouble(),
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController!,
+            curve: curve ?? Curves.easeInOut,
+          ),
+        );
 
     void updateTween() {
       updateAnimationValue(animation.value);
@@ -208,8 +208,8 @@ class JustTabs extends StatefulWidget {
     this.onChanged,
     this.controller,
     this.style,
-  })  : variant = JustTabVariant.vertical,
-        isScrollable = false;
+  }) : variant = JustTabVariant.vertical,
+       isScrollable = false;
 
   @override
   State<JustTabs> createState() => _JustTabsState();
@@ -306,13 +306,13 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       _isAnimatingToPage = true;
       _pageController
           .animateToPage(
-        index,
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeInOut,
-      )
+            index,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+          )
           .then((_) {
-        _isAnimatingToPage = false;
-      });
+            _isAnimatingToPage = false;
+          });
     }
   }
 
@@ -339,17 +339,27 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     final List<double> offsets = [];
 
     for (final key in _tabKeys) {
-      final RenderBox? box = key.currentContext?.findRenderObject() as RenderBox?;
+      final RenderBox? box =
+          key.currentContext?.findRenderObject() as RenderBox?;
       if (box != null && box.hasSize) {
-        widths.add(widget.variant == JustTabVariant.vertical ? box.size.height : box.size.width);
+        widths.add(
+          widget.variant == JustTabVariant.vertical
+              ? box.size.height
+              : box.size.width,
+        );
         final localOffset = box.localToGlobal(Offset.zero, ancestor: parentBox);
-        offsets.add(widget.variant == JustTabVariant.vertical ? localOffset.dy : localOffset.dx);
+        offsets.add(
+          widget.variant == JustTabVariant.vertical
+              ? localOffset.dy
+              : localOffset.dx,
+        );
       } else {
         return; // Layout not fully completed yet
       }
     }
 
-    if (!_listEquals(_tabWidths, widths) || !_listEquals(_tabOffsets, offsets)) {
+    if (!_listEquals(_tabWidths, widths) ||
+        !_listEquals(_tabOffsets, offsets)) {
       setState(() {
         _tabWidths = widths;
         _tabOffsets = offsets;
@@ -404,8 +414,14 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     final customTheme = JustThemeProvider.of(context).theme;
     final tabsTheme = Theme.of(context).extension<JustTabsTheme>();
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(context, aspect: .typography).theme.typography;
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final typography = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
     final radius = customTheme.radius;
 
     // Resolve active styles
@@ -427,20 +443,32 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       }
     }
 
-    final activeColor = widget.style?.activeColor ?? themeStyle?.activeColor ?? colors.borderFocus;
-    final inactiveColor = widget.style?.inactiveColor ?? themeStyle?.inactiveColor ?? colors.textSecondary;
+    final activeColor =
+        widget.style?.activeColor ??
+        themeStyle?.activeColor ??
+        colors.borderFocus;
+    final inactiveColor =
+        widget.style?.inactiveColor ??
+        themeStyle?.inactiveColor ??
+        colors.textSecondary;
 
-    final containerBg = widget.style?.containerBackgroundColor ??
+    final containerBg =
+        widget.style?.containerBackgroundColor ??
         themeStyle?.containerBackgroundColor ??
-        (widget.variant == JustTabVariant.pill || widget.variant == JustTabVariant.enclosed
+        (widget.variant == JustTabVariant.pill ||
+                widget.variant == JustTabVariant.enclosed
             ? colors.card
             : const Color(0x00000000));
 
-    final containerBorderRadius = widget.style?.containerRadius ??
+    final containerBorderRadius =
+        widget.style?.containerRadius ??
         themeStyle?.containerRadius ??
         .all(radius.md);
 
-    final double activeVal = _tabController.animationValue.clamp(0.0, (widget.tabs.length - 1).toDouble());
+    final double activeVal = _tabController.animationValue.clamp(
+      0.0,
+      (widget.tabs.length - 1).toDouble(),
+    );
 
     // Build Tab Headers
     final List<Widget> tabWidgets = [];
@@ -457,10 +485,13 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
           builder: (context, isHovered, isPressed, isFocused, focusNode) {
             final double distance = (activeVal - i).abs();
             final double textInterpolation = (1.0 - distance).clamp(0.0, 1.0);
-            final textColor = Color.lerp(inactiveColor, activeColor, textInterpolation) ?? inactiveColor;
+            final textColor =
+                Color.lerp(inactiveColor, activeColor, textInterpolation) ??
+                inactiveColor;
 
             final resolvedTextStyle = isSelected
-                ? (widget.style?.activeTextStyle ?? typography.bodyMd.copyWith(fontWeight: FontWeight.w600))
+                ? (widget.style?.activeTextStyle ??
+                      typography.bodyMd.copyWith(fontWeight: FontWeight.w600))
                 : (widget.style?.inactiveTextStyle ?? typography.bodyMd);
 
             Widget headerContent = Row(
@@ -469,7 +500,10 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
               children: [
                 if (tab.icon != null) ...[
                   IconTheme.merge(
-                    data: IconThemeData(size: 18.0, color: isEnabled ? textColor : colors.textDisabled),
+                    data: IconThemeData(
+                      size: 18.0,
+                      color: isEnabled ? textColor : colors.textDisabled,
+                    ),
                     child: tab.icon!,
                   ),
                   SizedBox(width: spacing.sm),
@@ -492,15 +526,13 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
               selected: isSelected,
               enabled: isEnabled,
               child: Container(
-                padding: widget.style?.tabPadding ??
+                padding:
+                    widget.style?.tabPadding ??
                     themeStyle?.tabPadding ??
-                    .symmetric(
-                      horizontal: spacing.lg,
-                      vertical: spacing.md,
-                    ),
+                    .symmetric(horizontal: spacing.lg, vertical: spacing.md),
                 child: headerContent,
               ),
-            ),
+            );
           },
         ),
       );
@@ -508,7 +540,8 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
 
     // Indicator positioning widget
     Widget? indicatorWidget;
-    if (_tabWidths.length == widget.tabs.length && _tabOffsets.length == widget.tabs.length) {
+    if (_tabWidths.length == widget.tabs.length &&
+        _tabOffsets.length == widget.tabs.length) {
       final int floorIdx = activeVal.floor();
       final int ceilIdx = activeVal.ceil();
       final double t = activeVal - floorIdx;
@@ -523,7 +556,9 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
 
       final indicatorInner = JustTabIndicator(
         variant: widget.variant,
-        orientation: widget.variant == JustTabVariant.vertical ? Axis.vertical : Axis.horizontal,
+        orientation: widget.variant == JustTabVariant.vertical
+            ? Axis.vertical
+            : Axis.horizontal,
         colors: colors,
         radius: radius,
         style: widget.style ?? themeStyle,
@@ -558,10 +593,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
         if (widget.isScrollable && !isVertical)
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: tabWidgets,
-            ),
+            child: Row(mainAxisSize: MainAxisSize.min, children: tabWidgets),
           )
         else if (isVertical)
           Column(
@@ -572,7 +604,9 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
         else
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: tabWidgets.map((w) => Expanded(child: Center(child: w))).toList(),
+            children: tabWidgets
+                .map((w) => Expanded(child: Center(child: w)))
+                .toList(),
           ),
       ],
     );
@@ -601,9 +635,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       itemBuilder: (context, index) {
         final isVisited = _visitedIndices.contains(index);
         if (isVisited) {
-          return _JustTabKeepAlive(
-            child: widget.tabs[index].content,
-          );
+          return _JustTabKeepAlive(child: widget.tabs[index].content);
         } else {
           return const SizedBox.shrink();
         }

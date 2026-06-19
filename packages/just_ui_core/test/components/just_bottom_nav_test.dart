@@ -19,18 +19,9 @@ void main() {
         buildTestableWidget(
           JustBottomNav(
             items: [
-              const JustBottomNavItem(
-                label: 'Home',
-                icon: Text('IconA'),
-              ),
-              const JustBottomNavItem(
-                label: 'Search',
-                icon: Text('IconB'),
-              ),
-              const JustBottomNavItem(
-                label: 'Profile',
-                icon: Text('IconC'),
-              ),
+              const JustBottomNavItem(label: 'Home', icon: Text('IconA')),
+              const JustBottomNavItem(label: 'Search', icon: Text('IconB')),
+              const JustBottomNavItem(label: 'Profile', icon: Text('IconC')),
             ],
           ),
         ),
@@ -53,18 +44,9 @@ void main() {
             selectedIndex: 0,
             onItemSelected: (idx) => selectedIndex = idx,
             items: [
-              const JustBottomNavItem(
-                label: 'Home',
-                icon: Text('IconA'),
-              ),
-              const JustBottomNavItem(
-                label: 'Search',
-                icon: Text('IconB'),
-              ),
-              const JustBottomNavItem(
-                label: 'Profile',
-                icon: Text('IconC'),
-              ),
+              const JustBottomNavItem(label: 'Home', icon: Text('IconA')),
+              const JustBottomNavItem(label: 'Search', icon: Text('IconB')),
+              const JustBottomNavItem(label: 'Profile', icon: Text('IconC')),
             ],
           ),
         ),
@@ -82,14 +64,8 @@ void main() {
       expect(
         () => JustBottomNav(
           items: [
-            const JustBottomNavItem(
-              label: 'Home',
-              icon: Text('IconA'),
-            ),
-            const JustBottomNavItem(
-              label: 'Search',
-              icon: Text('IconB'),
-            ),
+            const JustBottomNavItem(label: 'Home', icon: Text('IconA')),
+            const JustBottomNavItem(label: 'Search', icon: Text('IconB')),
           ],
         ),
         throwsAssertionError,

@@ -7,20 +7,14 @@ class JustSkeletonTheme extends ThemeExtension<JustSkeletonTheme> {
   final JustSkeletonStyle? style;
 
   /// Creates a [JustSkeletonTheme] configuration.
-  const JustSkeletonTheme({
-    this.style,
-  });
+  const JustSkeletonTheme({this.style});
 
   /// Default configuration for the theme.
   static const defaults = JustSkeletonTheme();
 
   @override
-  JustSkeletonTheme copyWith({
-    JustSkeletonStyle? style,
-  }) {
-    return JustSkeletonTheme(
-      style: style ?? this.style,
-    );
+  JustSkeletonTheme copyWith({JustSkeletonStyle? style}) {
+    return JustSkeletonTheme(style: style ?? this.style);
   }
 
   @override

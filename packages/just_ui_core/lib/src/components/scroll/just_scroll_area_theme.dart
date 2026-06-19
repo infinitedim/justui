@@ -7,24 +7,21 @@ class JustScrollAreaTheme extends ThemeExtension<JustScrollAreaTheme> {
   final JustScrollAreaStyle? style;
 
   /// Creates a [JustScrollAreaTheme] configuration.
-  const JustScrollAreaTheme({
-    this.style,
-  });
+  const JustScrollAreaTheme({this.style});
 
   /// Default configuration for the theme.
   static const defaults = JustScrollAreaTheme();
 
   @override
-  JustScrollAreaTheme copyWith({
-    JustScrollAreaStyle? style,
-  }) {
-    return JustScrollAreaTheme(
-      style: style ?? this.style,
-    );
+  JustScrollAreaTheme copyWith({JustScrollAreaStyle? style}) {
+    return JustScrollAreaTheme(style: style ?? this.style);
   }
 
   @override
-  JustScrollAreaTheme lerp(ThemeExtension<JustScrollAreaTheme>? other, double t) {
+  JustScrollAreaTheme lerp(
+    ThemeExtension<JustScrollAreaTheme>? other,
+    double t,
+  ) {
     if (other is! JustScrollAreaTheme) return this;
     return t < 0.5 ? this : other;
   }

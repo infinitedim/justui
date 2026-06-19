@@ -109,10 +109,19 @@ class JustCard extends StatelessWidget {
 
     // Aspect-based subscriptions for optimal rebuild performance
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
     final radius = JustThemeProvider.of(context, aspect: .radius).theme.radius;
-    final shadows = JustThemeProvider.of(context, aspect: .shadows).theme.shadows;
-    final animations = JustThemeProvider.of(context, aspect: .animations).theme.animations;
+    final shadows = JustThemeProvider.of(
+      context,
+      aspect: .shadows,
+    ).theme.shadows;
+    final animations = JustThemeProvider.of(
+      context,
+      aspect: .animations,
+    ).theme.animations;
 
     final isInteractive = onTap != null;
 
@@ -138,7 +147,9 @@ class JustCard extends StatelessWidget {
         defaultShadows = const [];
         break;
       case .filled:
-        defaultBg = isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9); // Slate-800 / Slate-100
+        defaultBg = isDark
+            ? const Color(0xFF1E293B)
+            : const Color(0xFFF1F5F9); // Slate-800 / Slate-100
         defaultBorderColor = const Color(0x00000000);
         defaultBorderWidth = 0.0;
         defaultShadows = const [];
@@ -146,21 +157,39 @@ class JustCard extends StatelessWidget {
     }
 
     // Resolve structural values with preference order: widget parameter -> theme extension -> default
-    final resolvedBgColor = style?.backgroundColor ?? themeStyle?.backgroundColor ?? defaultBg;
-    final resolvedBorderColor = style?.borderColor ?? themeStyle?.borderColor ?? defaultBorderColor;
-    final resolvedBorderWidth = style?.borderWidth ?? themeStyle?.borderWidth ?? defaultBorderWidth;
-    final resolvedBorderRadius = style?.borderRadius ?? themeStyle?.borderRadius ?? .all(radius.lg);
-    final resolvedPadding = style?.padding ?? themeStyle?.padding ?? .all(spacing.lg);
+    final resolvedBgColor =
+        style?.backgroundColor ?? themeStyle?.backgroundColor ?? defaultBg;
+    final resolvedBorderColor =
+        style?.borderColor ?? themeStyle?.borderColor ?? defaultBorderColor;
+    final resolvedBorderWidth =
+        style?.borderWidth ?? themeStyle?.borderWidth ?? defaultBorderWidth;
+    final resolvedBorderRadius =
+        style?.borderRadius ?? themeStyle?.borderRadius ?? .all(radius.lg);
+    final resolvedPadding =
+        style?.padding ?? themeStyle?.padding ?? .all(spacing.lg);
     final resolvedMargin = style?.margin ?? themeStyle?.margin ?? .zero;
 
-    final resolvedHeaderPadding = style?.headerPadding ?? themeStyle?.headerPadding ?? .symmetric(horizontal: spacing.lg, vertical: spacing.md);
-    final resolvedFooterPadding = style?.footerPadding ?? themeStyle?.footerPadding ?? .symmetric(horizontal: spacing.lg, vertical: spacing.md);
-    final resolvedHeaderDividerColor = style?.headerDividerColor ?? themeStyle?.headerDividerColor ?? colors.borderDefault;
-    final resolvedFooterDividerColor = style?.footerDividerColor ?? themeStyle?.footerDividerColor ?? colors.borderDefault;
+    final resolvedHeaderPadding =
+        style?.headerPadding ??
+        themeStyle?.headerPadding ??
+        .symmetric(horizontal: spacing.lg, vertical: spacing.md);
+    final resolvedFooterPadding =
+        style?.footerPadding ??
+        themeStyle?.footerPadding ??
+        .symmetric(horizontal: spacing.lg, vertical: spacing.md);
+    final resolvedHeaderDividerColor =
+        style?.headerDividerColor ??
+        themeStyle?.headerDividerColor ??
+        colors.borderDefault;
+    final resolvedFooterDividerColor =
+        style?.footerDividerColor ??
+        themeStyle?.footerDividerColor ??
+        colors.borderDefault;
 
     Widget buildCardContent(bool isHovered, bool isPressed, bool isFocused) {
       // Interactive overrides
-      List<BoxShadow> currentShadows = style?.shadows ?? themeStyle?.shadows ?? defaultShadows;
+      List<BoxShadow> currentShadows =
+          style?.shadows ?? themeStyle?.shadows ?? defaultShadows;
       Color currentBorderColor = resolvedBorderColor;
       double currentBorderWidth = resolvedBorderWidth;
 
@@ -195,29 +224,21 @@ class JustCard extends StatelessWidget {
           crossAxisAlignment: .stretch,
           children: [
             if (header != null) ...[
-              JustCardHeader(
-                padding: resolvedHeaderPadding,
-                child: header!,
-              ),
+              JustCardHeader(padding: resolvedHeaderPadding, child: header!),
               Container(height: 1.0, color: resolvedHeaderDividerColor),
             ],
-            Padding(
-              padding: resolvedPadding,
-              child: child,
-            ),
+            Padding(padding: resolvedPadding, child: child),
             if (footer != null) ...[
               Container(height: 1.0, color: resolvedFooterDividerColor),
-              JustCardFooter(
-                padding: resolvedFooterPadding,
-                child: footer!,
-              ),
+              JustCardFooter(padding: resolvedFooterPadding, child: footer!),
             ],
           ],
         ),
       );
 
       if (isInteractive) {
-        final scaleFactor = style?.scaleOnPress ?? themeStyle?.scaleOnPress ?? 0.99;
+        final scaleFactor =
+            style?.scaleOnPress ?? themeStyle?.scaleOnPress ?? 0.99;
         return AnimatedScale(
           scale: isPressed ? scaleFactor : 1.0,
           duration: animations.fast,
@@ -261,19 +282,19 @@ class JustCardHeader extends StatelessWidget {
   final EdgeInsets? padding;
 
   /// Creates a [JustCardHeader].
-  const JustCardHeader({
-    super.key,
-    required this.child,
-    this.padding,
-  });
+  const JustCardHeader({super.key, required this.child, this.padding});
 
   @override
   Widget build(BuildContext context) {
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
     final globalCardTheme = Theme.of(context).extension<JustCardTheme>();
     final themeStyle = globalCardTheme?.style;
 
-    final resolvedPadding = padding ??
+    final resolvedPadding =
+        padding ??
         themeStyle?.headerPadding ??
         .symmetric(horizontal: spacing.lg, vertical: spacing.md);
 
@@ -297,26 +318,22 @@ class JustCardTitle extends StatelessWidget {
   final TextStyle? style;
 
   /// Creates a [JustCardTitle].
-  const JustCardTitle({
-    super.key,
-    required this.child,
-    this.style,
-  });
+  const JustCardTitle({super.key, required this.child, this.style});
 
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typo = JustThemeProvider.of(context, aspect: .typography).theme.typography;
+    final typo = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
 
     final defaultStyle = typo.headingMd.copyWith(
       color: colors.textPrimary,
       fontWeight: FontWeight.w600,
     );
 
-    return DefaultTextStyle(
-      style: defaultStyle.merge(style),
-      child: child,
-    );
+    return DefaultTextStyle(style: defaultStyle.merge(style), child: child);
   }
 }
 
@@ -329,25 +346,19 @@ class JustCardDescription extends StatelessWidget {
   final TextStyle? style;
 
   /// Creates a [JustCardDescription].
-  const JustCardDescription({
-    super.key,
-    required this.child,
-    this.style,
-  });
+  const JustCardDescription({super.key, required this.child, this.style});
 
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typo = JustThemeProvider.of(context, aspect: .typography).theme.typography;
+    final typo = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
 
-    final defaultStyle = typo.bodySm.copyWith(
-      color: colors.textSecondary,
-    );
+    final defaultStyle = typo.bodySm.copyWith(color: colors.textSecondary);
 
-    return DefaultTextStyle(
-      style: defaultStyle.merge(style),
-      child: child,
-    );
+    return DefaultTextStyle(style: defaultStyle.merge(style), child: child);
   }
 }
 
@@ -360,24 +371,20 @@ class JustCardContent extends StatelessWidget {
   final EdgeInsets? padding;
 
   /// Creates a [JustCardContent].
-  const JustCardContent({
-    super.key,
-    required this.child,
-    this.padding,
-  });
+  const JustCardContent({super.key, required this.child, this.padding});
 
   @override
   Widget build(BuildContext context) {
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
     final globalCardTheme = Theme.of(context).extension<JustCardTheme>();
     final themeStyle = globalCardTheme?.style;
 
     final resolvedPadding = padding ?? themeStyle?.padding ?? .all(spacing.lg);
 
-    return Padding(
-      padding: resolvedPadding,
-      child: child,
-    );
+    return Padding(padding: resolvedPadding, child: child);
   }
 }
 
@@ -390,25 +397,22 @@ class JustCardFooter extends StatelessWidget {
   final EdgeInsets? padding;
 
   /// Creates a [JustCardFooter].
-  const JustCardFooter({
-    super.key,
-    required this.child,
-    this.padding,
-  });
+  const JustCardFooter({super.key, required this.child, this.padding});
 
   @override
   Widget build(BuildContext context) {
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
     final globalCardTheme = Theme.of(context).extension<JustCardTheme>();
     final themeStyle = globalCardTheme?.style;
 
-    final resolvedPadding = padding ??
+    final resolvedPadding =
+        padding ??
         themeStyle?.footerPadding ??
         .symmetric(horizontal: spacing.lg, vertical: spacing.md);
 
-    return Padding(
-      padding: resolvedPadding,
-      child: child,
-    );
+    return Padding(padding: resolvedPadding, child: child);
   }
 }
