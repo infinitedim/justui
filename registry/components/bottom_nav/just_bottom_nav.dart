@@ -63,7 +63,10 @@ class JustBottomNav extends StatefulWidget {
     this.showLabels = true,
     this.hapticFeedback = true,
     this.style,
-  }) : assert(items.length >= 3 && items.length <= 5, 'JustBottomNav must have between 3 and 5 items.');
+  }) : assert(
+         items.length >= 3 && items.length <= 5,
+         'JustBottomNav must have between 3 and 5 items.',
+       );
 
   @override
   State<JustBottomNav> createState() => _JustBottomNavState();
@@ -83,8 +86,14 @@ class _JustBottomNavState extends State<JustBottomNav> {
     final customTheme = JustThemeProvider.of(context).theme;
     final navTheme = Theme.of(context).extension<JustBottomNavTheme>();
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(context, aspect: .typography).theme.typography;
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final typography = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
     final radius = customTheme.radius;
     final animations = customTheme.animations;
 
@@ -104,18 +113,37 @@ class _JustBottomNavState extends State<JustBottomNav> {
       }
     }
 
-    final activeColor = widget.style?.activeColor ?? themeStyle?.activeColor ?? colors.borderFocus;
-    final inactiveColor = widget.style?.inactiveColor ?? themeStyle?.inactiveColor ?? colors.textSecondary;
-    final double iconSize = widget.style?.iconSize ?? themeStyle?.iconSize ?? 24.0;
-    final double defaultHeight = widget.variant == JustBottomNavVariant.floating ? 64.0 : 56.0;
-    final double height = widget.style?.height ?? themeStyle?.height ?? defaultHeight;
+    final activeColor =
+        widget.style?.activeColor ??
+        themeStyle?.activeColor ??
+        colors.borderFocus;
+    final inactiveColor =
+        widget.style?.inactiveColor ??
+        themeStyle?.inactiveColor ??
+        colors.textSecondary;
+    final double iconSize =
+        widget.style?.iconSize ?? themeStyle?.iconSize ?? 24.0;
+    final double defaultHeight = widget.variant == JustBottomNavVariant.floating
+        ? 64.0
+        : 56.0;
+    final double height =
+        widget.style?.height ?? themeStyle?.height ?? defaultHeight;
 
-    final containerBg = widget.style?.backgroundColor ?? themeStyle?.backgroundColor ?? colors.elevated;
-    final containerBorderRadius = widget.style?.borderRadius ??
+    final containerBg =
+        widget.style?.backgroundColor ??
+        themeStyle?.backgroundColor ??
+        colors.elevated;
+    final containerBorderRadius =
+        widget.style?.borderRadius ??
         themeStyle?.borderRadius ??
-        (widget.variant == JustBottomNavVariant.floating ? .all(radius.full) : BorderRadius.zero);
+        (widget.variant == JustBottomNavVariant.floating
+            ? .all(radius.full)
+            : BorderRadius.zero);
 
-    final finalTextStyle = widget.style?.textStyle ?? themeStyle?.textStyle ?? typography.caption.copyWith(fontWeight: FontWeight.w500);
+    final finalTextStyle =
+        widget.style?.textStyle ??
+        themeStyle?.textStyle ??
+        typography.caption.copyWith(fontWeight: FontWeight.w500);
 
     // Build items
     final List<Widget> navItems = [];
@@ -124,11 +152,14 @@ class _JustBottomNavState extends State<JustBottomNav> {
       final isSelected = widget.selectedIndex == i;
 
       Widget iconContent = Stack(
-        clipBehavior: Clip.none,
+        clipBehavior: .none,
         alignment: Alignment.center,
         children: [
           IconTheme.merge(
-            data: IconThemeData(size: iconSize, color: isSelected ? activeColor : inactiveColor),
+            data: IconThemeData(
+              size: iconSize,
+              color: isSelected ? activeColor : inactiveColor,
+            ),
             child: item.activeIcon != null
                 ? Stack(
                     alignment: Alignment.center,
@@ -156,11 +187,7 @@ class _JustBottomNavState extends State<JustBottomNav> {
                 : item.icon,
           ),
           if (item.badge != null)
-            Positioned(
-              top: -4,
-              right: -4,
-              child: item.badge!,
-            ),
+            Positioned(top: -4, right: -4, child: item.badge!),
         ],
       );
 
@@ -170,11 +197,7 @@ class _JustBottomNavState extends State<JustBottomNav> {
         ),
         duration: animations.fast,
         curve: animations.defaultCurve,
-        child: Text(
-          item.label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
+        child: Text(item.label, maxLines: 1, overflow: .ellipsis),
       );
 
       Widget itemWidget = JustPressable(
@@ -220,7 +243,9 @@ class _JustBottomNavState extends State<JustBottomNav> {
             selected: isSelected,
             button: true,
             child: Container(
-              color: const Color(0x00000000), // Transparent to allow full tap detection
+              color: const Color(
+                0x00000000,
+              ), // Transparent to allow full tap detection
               child: content,
             ),
           );
@@ -235,19 +260,12 @@ class _JustBottomNavState extends State<JustBottomNav> {
             curve: animations.defaultCurve,
             builder: (context, value, child) {
               final flex = 1.0 + value * 0.5;
-              return Expanded(
-                flex: (flex * 1000).toInt(),
-                child: itemWidget,
-              );
+              return Expanded(flex: (flex * 1000).toInt(), child: itemWidget);
             },
           ),
         );
       } else {
-        navItems.add(
-          Expanded(
-            child: itemWidget,
-          ),
-        );
+        navItems.add(Expanded(child: itemWidget));
       }
     }
 
@@ -283,10 +301,7 @@ class _JustBottomNavState extends State<JustBottomNav> {
     } else {
       return Container(
         color: containerBg,
-        child: SafeArea(
-          top: false,
-          child: contentBar,
-        ),
+        child: SafeArea(top: false, child: contentBar),
       );
     }
   }
