@@ -48,8 +48,14 @@ class _JustTooltipOverlayState extends State<JustTooltipOverlay> {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(context, aspect: .typography).theme.typography;
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final typography = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
     final radius = JustThemeProvider.of(context).theme.radius;
 
     return MouseRegion(
@@ -59,7 +65,10 @@ class _JustTooltipOverlayState extends State<JustTooltipOverlay> {
         controller: _controller,
         overlayChildLayoutBuilder: (context, info) {
           // Calculate the target offset relative to the overlay coordinate system
-          final targetOffset = MatrixUtils.transformPoint(info.childPaintTransform, Offset.zero);
+          final targetOffset = MatrixUtils.transformPoint(
+            info.childPaintTransform,
+            Offset.zero,
+          );
 
           // We estimate tooltip height to be ~24px for positioning.
           // Positioning: placed to the right of the trigger child (useful for collapsed sidebar items).

@@ -143,7 +143,9 @@ void main() {
       controller.dispose();
     });
 
-    testWidgets('Handles keyboard arrow and page keys for scrolling', (WidgetTester tester) async {
+    testWidgets('Handles keyboard arrow and page keys for scrolling', (
+      WidgetTester tester,
+    ) async {
       final controller = ScrollController();
       await tester.pumpWidget(
         buildTestableWidget(
@@ -193,46 +195,49 @@ void main() {
       controller.dispose();
     });
 
-    testWidgets('Scroll direction guard prevents onReachBottom on upward scroll', (WidgetTester tester) async {
-      int triggerCount = 0;
-      final controller = ScrollController();
+    testWidgets(
+      'Scroll direction guard prevents onReachBottom on upward scroll',
+      (WidgetTester tester) async {
+        int triggerCount = 0;
+        final controller = ScrollController();
 
-      await tester.pumpWidget(
-        buildTestableWidget(
-          SizedBox(
-            height: 300.0,
-            child: JustScrollArea(
-              controller: controller,
-              reachBottomThreshold: 100.0,
-              onReachBottom: () => triggerCount++,
-              child: Column(
-                children: List.generate(
-                  50,
-                  (index) => SizedBox(height: 50.0, child: Text('Item $index')),
+        await tester.pumpWidget(
+          buildTestableWidget(
+            SizedBox(
+              height: 300.0,
+              child: JustScrollArea(
+                controller: controller,
+                reachBottomThreshold: 100.0,
+                onReachBottom: () => triggerCount++,
+                child: Column(
+                  children: List.generate(
+                    50,
+                    (index) =>
+                        SizedBox(height: 50.0, child: Text('Item $index')),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      );
+        );
 
-      // Scroll past the threshold to trigger it (moving downwards)
-      await tester.drag(find.text('Item 0'), const Offset(0.0, -2000.0));
-      await tester.pumpAndSettle();
-      expect(triggerCount, greaterThan(0));
+        // Scroll past the threshold to trigger it (moving downwards)
+        await tester.drag(find.text('Item 0'), const Offset(0.0, -2000.0));
+        await tester.pumpAndSettle();
+        expect(triggerCount, greaterThan(0));
 
-      // Reset trigger count
-      triggerCount = 0;
+        // Reset trigger count
+        triggerCount = 0;
 
-      // Drag UPWARDS slightly but staying within bottom threshold range
-      await tester.drag(find.text('Item 40'), const Offset(0.0, 10.0));
-      await tester.pumpAndSettle();
+        // Drag UPWARDS slightly but staying within bottom threshold range
+        await tester.drag(find.text('Item 40'), const Offset(0.0, 10.0));
+        await tester.pumpAndSettle();
 
-      // Since we scrolled UPWARDS, reach bottom callback should NOT be triggered
-      expect(triggerCount, equals(0));
+        // Since we scrolled UPWARDS, reach bottom callback should NOT be triggered
+        expect(triggerCount, equals(0));
 
-      controller.dispose();
-    });
+        controller.dispose();
+      },
+    );
   });
 }
-

@@ -7,24 +7,21 @@ class JustBreadcrumbTheme extends ThemeExtension<JustBreadcrumbTheme> {
   final JustBreadcrumbStyle? style;
 
   /// Creates a [JustBreadcrumbTheme] theme extension.
-  const JustBreadcrumbTheme({
-    this.style,
-  });
+  const JustBreadcrumbTheme({this.style});
 
   /// Default theme configuration.
   static const defaults = JustBreadcrumbTheme();
 
   @override
-  JustBreadcrumbTheme copyWith({
-    JustBreadcrumbStyle? style,
-  }) {
-    return JustBreadcrumbTheme(
-      style: style ?? this.style,
-    );
+  JustBreadcrumbTheme copyWith({JustBreadcrumbStyle? style}) {
+    return JustBreadcrumbTheme(style: style ?? this.style);
   }
 
   @override
-  JustBreadcrumbTheme lerp(ThemeExtension<JustBreadcrumbTheme>? other, double t) {
+  JustBreadcrumbTheme lerp(
+    ThemeExtension<JustBreadcrumbTheme>? other,
+    double t,
+  ) {
     if (other is! JustBreadcrumbTheme) return this;
     return t < 0.5 ? this : other;
   }

@@ -81,9 +81,7 @@ void main() {
           const JustSidebar(
             width: 260.0,
             collapsedWidth: 68.0,
-            items: [
-              JustSidebarItem(label: 'Home', icon: Text('HomeIcon')),
-            ],
+            items: [JustSidebarItem(label: 'Home', icon: Text('HomeIcon'))],
           ),
           width: 500.0, // Below md breakpoint
         ),
@@ -102,9 +100,7 @@ void main() {
         buildTestableWidget(
           const JustSidebar(
             isCollapsed: true,
-            items: [
-              JustSidebarItem(label: 'HoverMe', icon: Text('Icon')),
-            ],
+            items: [JustSidebarItem(label: 'HoverMe', icon: Text('Icon'))],
           ),
         ),
       );

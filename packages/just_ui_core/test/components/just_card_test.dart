@@ -83,7 +83,9 @@ void main() {
       await gesture.removePointer();
     });
 
-    testWidgets('Renders modular composable widgets', (WidgetTester tester) async {
+    testWidgets('Renders modular composable widgets', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           const JustCard(
@@ -112,4 +114,3 @@ void main() {
     });
   });
 }
-

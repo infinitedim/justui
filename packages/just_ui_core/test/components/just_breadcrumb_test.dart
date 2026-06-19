@@ -89,7 +89,10 @@ void main() {
             maxItems: 3,
             items: [
               const JustBreadcrumbItem(label: 'Home'),
-              JustBreadcrumbItem(label: 'Category', onTap: () => categoryTapped = true),
+              JustBreadcrumbItem(
+                label: 'Category',
+                onTap: () => categoryTapped = true,
+              ),
               const JustBreadcrumbItem(label: 'Subcategory'),
               const JustBreadcrumbItem(label: 'Item Details'),
             ],
