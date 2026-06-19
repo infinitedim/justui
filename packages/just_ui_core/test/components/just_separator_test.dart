@@ -16,7 +16,7 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        buildTestableWidget(const JustSeparator(direction: Axis.horizontal)),
+        buildTestableWidget(const JustSeparator(direction: .horizontal)),
       );
 
       expect(find.byType(JustSeparator), findsOneWidget);
@@ -27,7 +27,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         buildTestableWidget(
-          const JustSeparator(direction: Axis.horizontal, label: 'OR'),
+          const JustSeparator(direction: .horizontal, label: 'OR'),
         ),
       );
 
@@ -42,7 +42,7 @@ void main() {
           const Row(
             children: [
               Text('Left'),
-              JustSeparator(direction: Axis.vertical),
+              JustSeparator(direction: .vertical),
               Text('Right'),
             ],
           ),
@@ -63,7 +63,7 @@ void main() {
           const Row(
             children: [
               Text('Left'),
-              JustSeparator(direction: Axis.vertical, label: 'AND'),
+              JustSeparator(direction: .vertical, label: 'AND'),
               Text('Right'),
             ],
           ),
@@ -76,37 +76,37 @@ void main() {
       expect(separatorSize.height, equals(48.0));
     });
 
-    testWidgets('Responsive constructor resolves direction adaptively based on width and breakpoint', (
-      WidgetTester tester,
-    ) async {
-      // Set width below breakpoint (640) -> should be horizontal -> renders Row when label is provided
-      tester.view.physicalSize = const Size(500, 1000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
+    testWidgets(
+      'Responsive constructor resolves direction adaptively based on width and breakpoint',
+      (WidgetTester tester) async {
+        // Set width below breakpoint (640) -> should be horizontal -> renders Row when label is provided
+        tester.view.physicalSize = const Size(500, 1000);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
 
-      await tester.pumpWidget(
-        buildTestableWidget(
-          const JustSeparator.responsive(breakpoint: 640.0, label: 'SEP'),
-        ),
-      );
-      await tester.pump();
+        await tester.pumpWidget(
+          buildTestableWidget(
+            const JustSeparator.responsive(breakpoint: 640.0, label: 'SEP'),
+          ),
+        );
+        await tester.pump();
 
-      expect(find.byType(Row), findsOneWidget);
-      expect(find.byType(Column), findsNothing);
+        expect(find.byType(Row), findsOneWidget);
+        expect(find.byType(Column), findsNothing);
 
-      // Set width above breakpoint (640) -> should be vertical -> renders Column when label is provided
-      tester.view.physicalSize = const Size(800, 1000);
-      await tester.pumpWidget(
-        buildTestableWidget(
-          const JustSeparator.responsive(breakpoint: 640.0, label: 'SEP'),
-        ),
-      );
-      await tester.pump();
+        // Set width above breakpoint (640) -> should be vertical -> renders Column when label is provided
+        tester.view.physicalSize = const Size(800, 1000);
+        await tester.pumpWidget(
+          buildTestableWidget(
+            const JustSeparator.responsive(breakpoint: 640.0, label: 'SEP'),
+          ),
+        );
+        await tester.pump();
 
-      expect(find.byType(Column), findsOneWidget);
-      expect(find.byType(Row), findsNothing);
-    });
+        expect(find.byType(Column), findsOneWidget);
+        expect(find.byType(Row), findsNothing);
+      },
+    );
   });
 }
-

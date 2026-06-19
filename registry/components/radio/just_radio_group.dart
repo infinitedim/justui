@@ -32,7 +32,7 @@ class JustRadioGroup<T> extends StatelessWidget {
   /// Callback executed when any option is selected.
   final ValueChanged<T>? onChanged;
 
-  /// The direction to lay out the radio options. Defaults to [Axis.vertical].
+  /// The direction to lay out the radio options. Defaults to [.vertical].
   final Axis direction;
 
   /// Custom spacing between radio items. If null, falls back to theme spacing.
@@ -47,7 +47,7 @@ class JustRadioGroup<T> extends StatelessWidget {
     required this.value,
     required this.options,
     required this.onChanged,
-    this.direction = Axis.vertical,
+    this.direction = .vertical,
     this.spacing,
     this.isDisabled = false,
   });
@@ -59,8 +59,8 @@ class JustRadioGroup<T> extends StatelessWidget {
 
     return Flex(
       direction: direction,
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: direction == Axis.vertical
+      mainAxisSize: .min,
+      crossAxisAlignment: direction == .vertical
           ? CrossAxisAlignment.start
           : CrossAxisAlignment.center,
       spacing: resolvedSpacing,

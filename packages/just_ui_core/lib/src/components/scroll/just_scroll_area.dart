@@ -214,7 +214,7 @@ class _JustScrollAreaState extends State<JustScrollArea> {
         _resolvedController.position.viewportDimension;
 
     double targetOffset = currentOffset;
-    final isVertical = widget.direction == Axis.vertical;
+    final isVertical = widget.direction == .vertical;
 
     if (isVertical) {
       if (event.logicalKey == .arrowDown) {

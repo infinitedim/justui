@@ -105,7 +105,8 @@ class _JustScrollAreaState extends State<JustScrollArea> {
   final ValueNotifier<bool> _showScrollToTop = ValueNotifier<bool>(false);
   bool _reachedBottomFlag = false;
 
-  ScrollController get _resolvedController => widget.controller ?? _internalController;
+  ScrollController get _resolvedController =>
+      widget.controller ?? _internalController;
 
   @override
   void initState() {
@@ -139,7 +140,8 @@ class _JustScrollAreaState extends State<JustScrollArea> {
     // Resolve theme variables
     final globalTheme = Theme.of(context).extension<JustScrollAreaTheme>();
     final themeStyle = globalTheme?.style;
-    final resolvedFadeHeight = widget.style?.fadeHeight ?? themeStyle?.fadeHeight ?? 24.0;
+    final resolvedFadeHeight =
+        widget.style?.fadeHeight ?? themeStyle?.fadeHeight ?? 24.0;
 
     // Fade overlay updates
     if (widget.fadeEdges) {
@@ -148,7 +150,8 @@ class _JustScrollAreaState extends State<JustScrollArea> {
         _bottomFadeOpacity.value = 0.0;
       } else {
         final double topOpacity = (offset / resolvedFadeHeight).clamp(0.0, 1.0);
-        final double bottomOpacity = ((maxScroll - offset) / resolvedFadeHeight).clamp(0.0, 1.0);
+        final double bottomOpacity = ((maxScroll - offset) / resolvedFadeHeight)
+            .clamp(0.0, 1.0);
 
         _topFadeOpacity.value = topOpacity;
         _bottomFadeOpacity.value = bottomOpacity;
@@ -207,70 +210,115 @@ class _JustScrollAreaState extends State<JustScrollArea> {
 
     final double currentOffset = _resolvedController.offset;
     final double maxScroll = _resolvedController.position.maxScrollExtent;
-    final double viewportDimension = _resolvedController.position.viewportDimension;
+    final double viewportDimension =
+        _resolvedController.position.viewportDimension;
 
     double targetOffset = currentOffset;
-    final isVertical = widget.direction == Axis.vertical;
+    final isVertical = widget.direction == .vertical;
 
     if (isVertical) {
-      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-        targetOffset = (currentOffset + widget.keyboardScrollStep).clamp(0.0, maxScroll);
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-        targetOffset = (currentOffset - widget.keyboardScrollStep).clamp(0.0, maxScroll);
-      } else if (event.logicalKey == LogicalKeyboardKey.pageDown) {
-        targetOffset = (currentOffset + viewportDimension).clamp(0.0, maxScroll);
-      } else if (event.logicalKey == LogicalKeyboardKey.pageUp) {
-        targetOffset = (currentOffset - viewportDimension).clamp(0.0, maxScroll);
+      if (event.logicalKey == .arrowDown) {
+        targetOffset = (currentOffset + widget.keyboardScrollStep).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else if (event.logicalKey == .arrowUp) {
+        targetOffset = (currentOffset - widget.keyboardScrollStep).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else if (event.logicalKey == .pageDown) {
+        targetOffset = (currentOffset + viewportDimension).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else if (event.logicalKey == .pageUp) {
+        targetOffset = (currentOffset - viewportDimension).clamp(
+          0.0,
+          maxScroll,
+        );
       } else {
-        return KeyEventResult.ignored;
+        return .ignored;
       }
     } else {
       // Horizontal scrolling keys
-      if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-        targetOffset = (currentOffset + widget.keyboardScrollStep).clamp(0.0, maxScroll);
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-        targetOffset = (currentOffset - widget.keyboardScrollStep).clamp(0.0, maxScroll);
-      } else if (event.logicalKey == LogicalKeyboardKey.pageDown) {
-        targetOffset = (currentOffset + viewportDimension).clamp(0.0, maxScroll);
-      } else if (event.logicalKey == LogicalKeyboardKey.pageUp) {
-        targetOffset = (currentOffset - viewportDimension).clamp(0.0, maxScroll);
+      if (event.logicalKey == .arrowRight) {
+        targetOffset = (currentOffset + widget.keyboardScrollStep).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else if (event.logicalKey == .arrowLeft) {
+        targetOffset = (currentOffset - widget.keyboardScrollStep).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else if (event.logicalKey == .pageDown) {
+        targetOffset = (currentOffset + viewportDimension).clamp(
+          0.0,
+          maxScroll,
+        );
+      } else if (event.logicalKey == .pageUp) {
+        targetOffset = (currentOffset - viewportDimension).clamp(
+          0.0,
+          maxScroll,
+        );
       } else {
-        return KeyEventResult.ignored;
+        return .ignored;
       }
     }
 
-    final animations = JustThemeProvider.of(context, aspect: .animations).theme.animations;
+    final animations = JustThemeProvider.of(
+      context,
+      aspect: .animations,
+    ).theme.animations;
     _resolvedController.animateTo(
       targetOffset,
       duration: animations.fast,
       curve: animations.defaultCurve,
     );
 
-    return KeyEventResult.handled;
+    return .handled;
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
-    final shadows = JustThemeProvider.of(context, aspect: .shadows).theme.shadows;
-    final animations = JustThemeProvider.of(context, aspect: .animations).theme.animations;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
+    final shadows = JustThemeProvider.of(
+      context,
+      aspect: .shadows,
+    ).theme.shadows;
+    final animations = JustThemeProvider.of(
+      context,
+      aspect: .animations,
+    ).theme.animations;
 
     final globalTheme = Theme.of(context).extension<JustScrollAreaTheme>();
     final themeStyle = globalTheme?.style;
 
     // Resolve spacing/colors configurations
-    final resolvedFadeColor = widget.style?.fadeColor ?? themeStyle?.fadeColor ?? colors.background;
-    final resolvedFadeHeight = widget.style?.fadeHeight ?? themeStyle?.fadeHeight ?? 24.0;
+    final resolvedFadeColor =
+        widget.style?.fadeColor ?? themeStyle?.fadeColor ?? colors.background;
+    final resolvedFadeHeight =
+        widget.style?.fadeHeight ?? themeStyle?.fadeHeight ?? 24.0;
 
-    final scrollbarThumbColor = widget.style?.scrollbarThumbColor ??
+    final scrollbarThumbColor =
+        widget.style?.scrollbarThumbColor ??
         themeStyle?.scrollbarThumbColor ??
         colors.textSecondary.withValues(alpha: 0.3);
-    final scrollbarTrackColor = widget.style?.scrollbarTrackColor ??
+    final scrollbarTrackColor =
+        widget.style?.scrollbarTrackColor ??
         themeStyle?.scrollbarTrackColor ??
         const Color(0x00000000);
-    final scrollbarThickness = widget.style?.scrollbarThickness ?? themeStyle?.scrollbarThickness ?? 6.0;
-    final scrollbarRadius = widget.style?.scrollbarRadius ??
+    final scrollbarThickness =
+        widget.style?.scrollbarThickness ??
+        themeStyle?.scrollbarThickness ??
+        6.0;
+    final scrollbarRadius =
+        widget.style?.scrollbarRadius ??
         themeStyle?.scrollbarRadius ??
         const Radius.circular(3.0);
 
@@ -297,7 +345,7 @@ class _JustScrollAreaState extends State<JustScrollArea> {
 
     // Apply fade edges
     if (widget.fadeEdges) {
-      if (widget.fadeMode == JustScrollFadeMode.overlay) {
+      if (widget.fadeMode == .overlay) {
         scrollView = Stack(
           children: [
             scrollView,
@@ -307,7 +355,9 @@ class _JustScrollAreaState extends State<JustScrollArea> {
               top: 0.0,
               right: widget.direction == .vertical ? 0.0 : null,
               bottom: widget.direction == .horizontal ? 0.0 : null,
-              width: widget.direction == .horizontal ? resolvedFadeHeight : null,
+              width: widget.direction == .horizontal
+                  ? resolvedFadeHeight
+                  : null,
               height: widget.direction == .vertical ? resolvedFadeHeight : null,
               child: ValueListenableBuilder<double>(
                 valueListenable: _topFadeOpacity,
@@ -320,11 +370,11 @@ class _JustScrollAreaState extends State<JustScrollArea> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             begin: widget.direction == .vertical
-                                ? Alignment.topCenter
-                                : Alignment.centerLeft,
+                                ? .topCenter
+                                : .centerLeft,
                             end: widget.direction == .vertical
-                                ? Alignment.bottomCenter
-                                : Alignment.centerRight,
+                                ? .bottomCenter
+                                : .centerRight,
                             colors: [
                               resolvedFadeColor,
                               resolvedFadeColor.withValues(alpha: 0.0),
@@ -343,7 +393,9 @@ class _JustScrollAreaState extends State<JustScrollArea> {
               top: widget.direction == .vertical ? null : 0.0,
               right: 0.0,
               bottom: 0.0,
-              width: widget.direction == .horizontal ? resolvedFadeHeight : null,
+              width: widget.direction == .horizontal
+                  ? resolvedFadeHeight
+                  : null,
               height: widget.direction == .vertical ? resolvedFadeHeight : null,
               child: ValueListenableBuilder<double>(
                 valueListenable: _bottomFadeOpacity,
@@ -356,11 +408,11 @@ class _JustScrollAreaState extends State<JustScrollArea> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             begin: widget.direction == .vertical
-                                ? Alignment.bottomCenter
-                                : Alignment.centerRight,
+                                ? .bottomCenter
+                                : .centerRight,
                             end: widget.direction == .vertical
-                                ? Alignment.topCenter
-                                : Alignment.centerLeft,
+                                ? .topCenter
+                                : .centerLeft,
                             colors: [
                               resolvedFadeColor,
                               resolvedFadeColor.withValues(alpha: 0.0),
@@ -391,32 +443,41 @@ class _JustScrollAreaState extends State<JustScrollArea> {
                   ).createShader(bounds);
                 }
 
-                final totalLength = widget.direction == .vertical ? bounds.height : bounds.width;
-                final topFraction = (resolvedFadeHeight / totalLength).clamp(0.0, 0.5);
-                final bottomFraction = (1.0 - (resolvedFadeHeight / totalLength)).clamp(0.5, 1.0);
+                final totalLength = widget.direction == .vertical
+                    ? bounds.height
+                    : bounds.width;
+                final topFraction = (resolvedFadeHeight / totalLength).clamp(
+                  0.0,
+                  0.5,
+                );
+                final bottomFraction =
+                    (1.0 - (resolvedFadeHeight / totalLength)).clamp(0.5, 1.0);
 
                 return LinearGradient(
                   begin: widget.direction == .vertical
-                      ? Alignment.topCenter
-                      : Alignment.centerLeft,
+                      ? .topCenter
+                      : .centerLeft,
                   end: widget.direction == .vertical
-                      ? Alignment.bottomCenter
-                      : Alignment.centerRight,
+                      ? .bottomCenter
+                      : .centerRight,
                   colors: [
-                    Color.lerp(const Color(0xFFFFFFFF), const Color(0x00FFFFFF), topOpacity)!,
+                    Color.lerp(
+                      const Color(0xFFFFFFFF),
+                      const Color(0x00FFFFFF),
+                      topOpacity,
+                    )!,
                     const Color(0xFFFFFFFF),
                     const Color(0xFFFFFFFF),
-                    Color.lerp(const Color(0xFFFFFFFF), const Color(0x00FFFFFF), bottomOpacity)!,
+                    Color.lerp(
+                      const Color(0xFFFFFFFF),
+                      const Color(0x00FFFFFF),
+                      bottomOpacity,
+                    )!,
                   ],
-                  stops: [
-                    0.0,
-                    topFraction,
-                    bottomFraction,
-                    1.0,
-                  ],
+                  stops: [0.0, topFraction, bottomFraction, 1.0],
                 ).createShader(bounds);
               },
-              blendMode: BlendMode.dstIn,
+              blendMode: .dstIn,
               child: child,
             );
           },
@@ -429,9 +490,7 @@ class _JustScrollAreaState extends State<JustScrollArea> {
     Widget result = scrollView;
     if (widget.maxHeight != null) {
       result = ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: widget.maxHeight!,
-        ),
+        constraints: BoxConstraints(maxHeight: widget.maxHeight!),
         child: result,
       );
     }
@@ -449,10 +508,18 @@ class _JustScrollAreaState extends State<JustScrollArea> {
                 child: Padding(
                   padding: widget.scrollToTopOffset != null
                       ? .only(
-                          left: widget.scrollToTopOffset!.dx >= 0 ? widget.scrollToTopOffset!.dx : 0.0,
-                          top: widget.scrollToTopOffset!.dy >= 0 ? widget.scrollToTopOffset!.dy : 0.0,
-                          right: widget.scrollToTopOffset!.dx < 0 ? -widget.scrollToTopOffset!.dx : 0.0,
-                          bottom: widget.scrollToTopOffset!.dy < 0 ? -widget.scrollToTopOffset!.dy : 0.0,
+                          left: widget.scrollToTopOffset!.dx >= 0
+                              ? widget.scrollToTopOffset!.dx
+                              : 0.0,
+                          top: widget.scrollToTopOffset!.dy >= 0
+                              ? widget.scrollToTopOffset!.dy
+                              : 0.0,
+                          right: widget.scrollToTopOffset!.dx < 0
+                              ? -widget.scrollToTopOffset!.dx
+                              : 0.0,
+                          bottom: widget.scrollToTopOffset!.dy < 0
+                              ? -widget.scrollToTopOffset!.dy
+                              : 0.0,
                         )
                       : .all(spacing.lg),
                   child: AnimatedOpacity(
@@ -481,40 +548,51 @@ class _JustScrollAreaState extends State<JustScrollArea> {
                                   curve: animations.defaultCurve,
                                 );
                               },
-                              builder: (context, isHovered, isPressed, isFocused, focusNode) {
-                                return FocusIndicator(
-                                  isFocused: isFocused,
-                                  focusColor: colors.borderFocus,
-                                  borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-                                  child: Container(
-                                    width: 40.0,
-                                    height: 40.0,
-                                    decoration: BoxDecoration(
-                                      color: isPressed
-                                          ? colors.borderDefault
-                                          : (isHovered ? colors.background : colors.card),
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: isFocused ? colors.borderFocus : colors.borderDefault,
-                                        width: isFocused ? 2.0 : 1.0,
-                                      ),
-                                      boxShadow: shadows.md,
-                                    ),
-                                    child: Center(
-                                      child: SizedBox(
-                                        width: 16.0,
-                                        height: 16.0,
-                                        child: CustomPaint(
-                                          painter: _ChevronUpPainter(
-                                            color: colors.textPrimary,
-                                            strokeWidth: 2.0,
+                              builder:
+                                  (
+                                    context,
+                                    isHovered,
+                                    isPressed,
+                                    isFocused,
+                                    focusNode,
+                                  ) {
+                                    return FocusIndicator(
+                                      isFocused: isFocused,
+                                      focusColor: colors.borderFocus,
+                                      borderRadius: const .all(.circular(20.0)),
+                                      child: Container(
+                                        width: 40.0,
+                                        height: 40.0,
+                                        decoration: BoxDecoration(
+                                          color: isPressed
+                                              ? colors.borderDefault
+                                              : (isHovered
+                                                    ? colors.background
+                                                    : colors.card),
+                                          shape: .circle,
+                                          border: .all(
+                                            color: isFocused
+                                                ? colors.borderFocus
+                                                : colors.borderDefault,
+                                            width: isFocused ? 2.0 : 1.0,
+                                          ),
+                                          boxShadow: shadows.md,
+                                        ),
+                                        child: Center(
+                                          child: SizedBox(
+                                            width: 16.0,
+                                            height: 16.0,
+                                            child: CustomPaint(
+                                              painter: _ChevronUpPainter(
+                                                color: colors.textPrimary,
+                                                strokeWidth: 2.0,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                );
-                              },
+                                    );
+                                  },
                             ),
                           ),
                         ),
@@ -534,9 +612,7 @@ class _JustScrollAreaState extends State<JustScrollArea> {
       onKeyEvent: _handleKeyEvent,
       child: NotificationListener<ScrollNotification>(
         onNotification: _handleScrollNotification,
-        child: RepaintBoundary(
-          child: result,
-        ),
+        child: RepaintBoundary(child: result),
       ),
     );
   }
@@ -546,19 +622,16 @@ class _ChevronUpPainter extends CustomPainter {
   final Color color;
   final double strokeWidth;
 
-  const _ChevronUpPainter({
-    required this.color,
-    required this.strokeWidth,
-  });
+  const _ChevronUpPainter({required this.color, required this.strokeWidth});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
       ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
+      ..style = .stroke
+      ..strokeCap = .round
+      ..strokeJoin = .round;
 
     final path = Path();
     path.moveTo(size.width * 0.25, size.height * 0.65);

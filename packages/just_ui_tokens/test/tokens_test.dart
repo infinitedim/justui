@@ -137,7 +137,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         Directionality(
-          textDirection: TextDirection.ltr,
+          textDirection: .ltr,
           child: Column(
             children: [
               JustGap.xxs,

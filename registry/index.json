@@ -230,7 +230,7 @@
         {
           "name": "just_radio_group.dart",
           "path": "components/radio/just_radio_group.dart",
-          "checksum": "sha256:e3db66f133fd8e281c75e0fbe9772474c463dcee21aba3e6761cdbd933e587a9"
+          "checksum": "sha256:4c05ed5b58fcb80b6b4e4c9c6ac61b1c623587a50cf2dd527031b311ac30261f"
         }
       ]
     },
@@ -304,7 +304,7 @@
         {
           "name": "just_separator.dart",
           "path": "components/separator/just_separator.dart",
-          "checksum": "sha256:6ed2528d6d6a63567ca353ea05c3a1d5a7e991724ab9213e5c8c270fc40ed24b"
+          "checksum": "sha256:fcc79c002db18ea16eb3b309d7bddfee8c534e37aecab75530b895c43787e03b"
         },
         {
           "name": "just_separator_style.dart",
@@ -333,7 +333,7 @@
         {
           "name": "just_scroll_area.dart",
           "path": "components/scroll/just_scroll_area.dart",
-          "checksum": "sha256:9aeb33fa7d1581de69b240dbb0d4a94e0b6928ef323cd856f4761954090d63b1"
+          "checksum": "sha256:69c71570db4745bcca79b19271eca12d7edcd348d8863aa2ad2500b82c1f5dec"
         },
         {
           "name": "just_scroll_area_style.dart",
@@ -385,13 +385,20 @@
       "description": "Structure-aware skeleton loading placeholder with recursive transformation and custom manual shape named constructors.",
       "category": "layout",
       "hidden": false,
-      "registryDependencies": [],
+      "registryDependencies": [
+        "avatar",
+        "badge",
+        "button",
+        "card",
+        "separator",
+        "_shared_progress_spinner"
+      ],
       "pubDependencies": {},
       "files": [
         {
           "name": "just_skeleton.dart",
           "path": "components/skeleton/just_skeleton.dart",
-          "checksum": "sha256:b240e6ca88db4c2243c5c6f37a1b0b7014c78c7d2924aa420b35347e73a9bab9"
+          "checksum": "sha256:3d42b032f23ba764b57baee4c473e9d256bc302268f26d29de3ffcf0baf15adc"
         },
         {
           "name": "just_skeleton_style.dart",

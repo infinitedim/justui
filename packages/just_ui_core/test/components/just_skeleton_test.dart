@@ -7,7 +7,7 @@ void main() {
 
   Widget buildTestableWidget(Widget child) {
     return JustThemeProvider(
-      child: Directionality(textDirection: TextDirection.ltr, child: child),
+      child: Directionality(textDirection: .ltr, child: child),
     );
   }
 
@@ -86,8 +86,13 @@ void main() {
 
       // Verify container with decoration is preserved
       final containerFinder = find.byType(Container);
-      expect(containerFinder, findsNWidgets(2)); // Container and _JustSkeletonShape container
-      final Container container = tester.widget<Container>(containerFinder.first);
+      expect(
+        containerFinder,
+        findsNWidgets(2),
+      ); // Container and _JustSkeletonShape container
+      final Container container = tester.widget<Container>(
+        containerFinder.first,
+      );
       expect(container.decoration, equals(boxDecoration));
 
       // Verify nested child is transformed to skeleton shape
@@ -125,43 +130,41 @@ void main() {
       expect(shapeFinder, findsOneWidget);
     });
 
-    testWidgets('Escape Hatch: JustSkeletonAtomic collapses sub-tree to single shape', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(
-        buildTestableWidget(
-          const JustSkeleton(
-            loading: true,
-            child: JustSkeletonAtomic(
-              width: 80.0,
-              height: 80.0,
-              borderRadius: .all(Radius.circular(10.0)),
-              child: Column(
-                children: [
-                  Text('Child Text 1'),
-                  Text('Child Text 2'),
-                ],
+    testWidgets(
+      'Escape Hatch: JustSkeletonAtomic collapses sub-tree to single shape',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestableWidget(
+            const JustSkeleton(
+              loading: true,
+              child: JustSkeletonAtomic(
+                width: 80.0,
+                height: 80.0,
+                borderRadius: .all(Radius.circular(10.0)),
+                child: Column(
+                  children: [Text('Child Text 1'), Text('Child Text 2')],
+                ),
               ),
             ),
           ),
-        ),
-      );
+        );
 
-      // Children are ignored and not rendered
-      expect(find.text('Child Text 1'), findsNothing);
-      expect(find.text('Child Text 2'), findsNothing);
+        // Children are ignored and not rendered
+        expect(find.text('Child Text 1'), findsNothing);
+        expect(find.text('Child Text 2'), findsNothing);
 
-      // One single shape is rendered with the specified dimensions
-      final shapeFinder = find.byWidgetPredicate(
-        (widget) => widget.runtimeType.toString() == '_JustSkeletonShape',
-      );
-      expect(shapeFinder, findsOneWidget);
-      
-      final shapeWidget = tester.widget(shapeFinder);
-      // Access width/height using dynamic to avoid private wrapper issues
-      expect((shapeWidget as dynamic).width, equals(80.0));
-      expect((shapeWidget as dynamic).height, equals(80.0));
-    });
+        // One single shape is rendered with the specified dimensions
+        final shapeFinder = find.byWidgetPredicate(
+          (widget) => widget.runtimeType.toString() == '_JustSkeletonShape',
+        );
+        expect(shapeFinder, findsOneWidget);
+
+        final shapeWidget = tester.widget(shapeFinder);
+        // Access width/height using dynamic to avoid private wrapper issues
+        expect((shapeWidget as dynamic).width, equals(80.0));
+        expect((shapeWidget as dynamic).height, equals(80.0));
+      },
+    );
 
     testWidgets('Transforms whitelisted registry components', (
       WidgetTester tester,
@@ -212,20 +215,156 @@ void main() {
       expect(shapeFinder, findsNWidgets(2));
     });
 
-    testWidgets('AbsorbPointer blocks pointer interactions when loading is true', (
+    testWidgets(
+      'AbsorbPointer is applied selectively, keeping JustSkeletonIgnore interactive',
+      (WidgetTester tester) async {
+        bool ignoredPressed = false;
+        bool normalPressed = false;
+
+        await tester.pumpWidget(
+          buildTestableWidget(
+            JustSkeleton(
+              loading: true,
+              child: Column(
+                children: [
+                  GestureDetector(
+                    key: const Key('normal-detector'),
+                    onTap: () => normalPressed = true,
+                    child: const Text('Normal Tap Target'),
+                  ),
+                  JustSkeletonIgnore(
+                    child: GestureDetector(
+                      key: const Key('ignored-detector'),
+                      onTap: () => ignoredPressed = true,
+                      child: const Text('Ignored Tap Target'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        final normalFinder = find.byKey(const Key('normal-detector'));
+        final normalAbsorb = find.ancestor(
+          of: normalFinder,
+          matching: find.byType(AbsorbPointer),
+        );
+        expect(normalAbsorb, findsOneWidget);
+
+        final ignoredFinder = find.byKey(const Key('ignored-detector'));
+        final ignoredAbsorb = find.ancestor(
+          of: ignoredFinder,
+          matching: find.byType(AbsorbPointer),
+        );
+        expect(ignoredAbsorb, findsNothing);
+
+        await tester.tap(normalFinder);
+        expect(normalPressed, isFalse);
+
+        await tester.tap(ignoredFinder);
+        expect(ignoredPressed, isTrue);
+      },
+    );
+
+    testWidgets('JustSkeletonAtomic fallback sizing', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestableWidget(
-          const JustSkeleton(loading: true, child: Text('Interaction Test')),
+          const JustSkeleton(
+            loading: true,
+            child: JustSkeletonAtomic(
+              child: SizedBox(width: 150.0, height: 100.0),
+            ),
+          ),
+        ),
+      );
+      final shapeFinder = find.byWidgetPredicate(
+        (widget) => widget.runtimeType.toString() == '_JustSkeletonShape',
+      );
+      final shapeWidget1 = tester.widget(shapeFinder);
+      expect((shapeWidget1 as dynamic).width, equals(150.0));
+      expect((shapeWidget1 as dynamic).height, equals(100.0));
+
+      await tester.pumpWidget(
+        buildTestableWidget(
+          const JustSkeleton(
+            loading: true,
+            child: JustSkeletonAtomic(child: Text('some custom child')),
+          ),
+        ),
+      );
+      final shapeWidget2 = tester.widget(shapeFinder);
+      expect((shapeWidget2 as dynamic).width, equals(double.infinity));
+      expect((shapeWidget2 as dynamic).height, equals(56.0));
+    });
+
+    testWidgets(
+      'Generic fallback transforms custom single-child layout wrapper',
+      (WidgetTester tester) async {
+        const wrapper = _TestSingleChildWrapper(child: Text('Test Child'));
+
+        await tester.pumpWidget(
+          buildTestableWidget(
+            const JustSkeleton(loading: true, child: wrapper),
+          ),
+        );
+
+        expect(find.text('Test Child'), findsNothing);
+
+        final shapeFinder = find.byWidgetPredicate(
+          (widget) => widget.runtimeType.toString() == '_JustSkeletonShape',
+        );
+        expect(shapeFinder, findsOneWidget);
+      },
+    );
+
+    testWidgets('Preserves Semantics label with loading tag', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestableWidget(
+          JustSkeleton(
+            loading: true,
+            child: Semantics(label: 'Submit Form', child: const Text('Submit')),
+          ),
         ),
       );
 
-      expect(find.byType(AbsorbPointer), findsOneWidget);
-      final AbsorbPointer absorb = tester.widget<AbsorbPointer>(
-        find.byType(AbsorbPointer),
+      final semanticsFinder = find.byType(Semantics);
+      expect(semanticsFinder, findsOneWidget);
+
+      final Semantics semantics = tester.widget<Semantics>(semanticsFinder);
+      expect(semantics.properties.label, equals('Submit Form (loading)'));
+    });
+
+    testWidgets('Stack falls back to rect shape', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        buildTestableWidget(
+          const JustSkeleton(
+            loading: true,
+            child: Stack(children: [Text('Stack Child')]),
+          ),
+        ),
       );
-      expect(absorb.absorbing, isTrue);
+
+      expect(find.text('Stack Child'), findsNothing);
+
+      final shapeFinder = find.byWidgetPredicate(
+        (widget) => widget.runtimeType.toString() == '_JustSkeletonShape',
+      );
+      expect(shapeFinder, findsOneWidget);
+      final shapeWidget = tester.widget(shapeFinder);
+      expect((shapeWidget as dynamic).width, equals(double.infinity));
+      expect((shapeWidget as dynamic).height, equals(120.0));
     });
   });
+}
+
+class _TestSingleChildWrapper extends StatelessWidget {
+  final Widget child;
+  const _TestSingleChildWrapper({required this.child});
+  @override
+  Widget build(BuildContext context) => child;
 }
