@@ -2,18 +2,23 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'src/commands/add_command.dart';
+import 'src/commands/create_command.dart';
 import 'src/commands/diff_command.dart';
 import 'src/commands/init_command.dart';
 import 'src/commands/list_command.dart';
+import 'src/commands/update_command.dart';
 import 'src/utils/logger.dart';
 
 export 'src/commands/add_command.dart';
+export 'src/commands/create_command.dart';
 export 'src/commands/diff_command.dart';
 export 'src/commands/init_command.dart';
 export 'src/commands/list_command.dart';
+export 'src/commands/update_command.dart';
 export 'src/config/justui_config.dart';
 export 'src/registry/registry_client.dart';
 export 'src/utils/logger.dart';
+export 'src/utils/prompt.dart';
 export 'src/utils/pubspec_editor.dart';
 
 /// Executes the CLI with the provided arguments and target file system.
@@ -26,7 +31,9 @@ Future<void> runCli(List<String> arguments, FileSystem fileSystem) async {
         ..addCommand(InitCommand(fileSystem))
         ..addCommand(AddCommand(fileSystem))
         ..addCommand(ListCommand(fileSystem))
-        ..addCommand(DiffCommand(fileSystem));
+        ..addCommand(DiffCommand(fileSystem))
+        ..addCommand(UpdateCommand(fileSystem))
+        ..addCommand(CreateCommand(fileSystem));
 
   try {
     await runner.run(arguments);

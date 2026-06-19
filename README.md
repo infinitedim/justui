@@ -11,8 +11,12 @@ Instead of adding a bloated third-party package to your project, you use the CLI
 1. **Zero-Dependency Footprint:** Built entirely using native Flutter widgets and layout APIs. No external pubspec.yaml dependencies (except Flutter itself).
 2. **Aspect-Based Rebuilds (`InheritedModel`):** Rather than rebuilding whole widget trees when a theme changes, JustUI utilizes aspect-based rebuilds so only widgets depending on the specific modified aspect (colors, spacing, or typography) are re-rendered.
 3. **Lazy-Cached Material ThemeData:** Compiles custom themes into Flutter's `ThemeData` lazily and caches the instance, saving significant rendering overhead.
-4. **Dynamic Seed Seeding & Contrast Enforcement:** Instantiates a custom theme scale from a single seed color and automatically audits/adjusts active elements to guarantee WCAG AA accessibility compliance (contrast ratio $\ge$ 3.0:1) at runtime.
-5. **Robust Command Line Interface:** Handles configuration initialization, recursive component dependency resolution, local pubspec.yaml injection, and local change diffing.
+4. **Dynamic Seed Seeding & Contrast Enforcement:** Instantiates a custom theme scale from a single seed color and automatically audits/adjusts active elements at runtime.
+   - **Global Contrast Audit:** Automatically enforces WCAG AA accessibility compliance (contrast ratio $\ge$ 4.5:1 for `success`, `error`, and `info`, and $\ge$ 3.0:1 for `warning` and focused borders) against generated background colors by adjusting lightness values.
+5. **Dynamic Brand-Tinted Dark Mode:** Generates accessible, premium dark-mode surfaces (background L=3%, card L=7%, elevated L=12%, overlay L=2%) with brand-based hues and clamped saturations for rich aesthetics.
+6. **Ambient Tinted Shadows:** Employs a dual-layer shadow system, combining a crisp key shadow (black with low opacity) with a soft ambient shadow (brand-tinted at low opacity).
+7. **Fluid Spacing & Responsive Corner Radii:** Scales spacing and radius properties dynamically from 75% on mobile (viewport width $\le$ 640px) to 100% on desktop (viewport width $\ge$ 1024px) for optimized responsive layouts.
+8. **Interactive CLI Toolchain:** A fully offline, interactive CLI for project initialization, component scaffolding, conflict resolution, local change diffing, and dynamic updates.
 
 ---
 
@@ -34,7 +38,7 @@ justui/
 
 ### 1. Register and Compile the CLI
 
-Navigate to `just_ui_cli` and activate it globally or compile it:
+Navigate to `packages/just_ui_cli` and activate it globally or compile it:
 
 ```bash
 cd packages/just_ui_cli
@@ -49,9 +53,15 @@ From the root directory of your Flutter application, run:
 justui init
 ```
 
-This generates a `justui.config.yaml` specifying target directories for your components and tokens:
+The initialization wizard will interactively prompt you for:
+- **Components target directory** (default: `lib/ui`)
+- **Tokens target directory** (default: `lib/tokens`)
+- **Primary brand HEX color** (e.g., `#3b82f6`)
+
+It generates a `justui.config.yaml` and bootstraps a brand-seeded theme configuration at `lib/theme/just_theme.dart`:
 
 ```yaml
+# justui.config.yaml
 components_dir: lib/ui
 tokens_dir: lib/tokens
 registry_url: https://raw.githubusercontent.com/username/justui/main/registry
@@ -73,10 +83,20 @@ To copy a component and all of its required local dependencies recursively, run:
 justui add button
 ```
 
-This will:
+If you run the command without arguments, an **interactive multi-selection prompt** is displayed:
 
-- Check for circular dependencies and copy component files into `lib/ui/` or `lib/tokens/`.
-- Edit your local `pubspec.yaml` to append any third-party dependencies required (e.g. `flutter_animate`) below `dependencies:` (making a backup file at `pubspec.yaml.bak`).
+```bash
+justui add
+```
+
+During copy-pasting, the CLI automatically:
+- Checks for circular dependencies and copies component files into your directories.
+- Verifies file integrity using **SHA-256 checksums**.
+- Triggers the **Three-Way Conflict Resolution Overwrite Guard** if local modifications are detected. You can choose to:
+  - `[o] Overwrite` (replace local changes with registry updates)
+  - `[s] Skip` (preserve your local modifications)
+  - `[d] Show Diff` (visualize green/red additions and deletions on the terminal)
+- Edits your local `pubspec.yaml` to append any third-party dependencies required (e.g. `flutter_animate`) below `dependencies:` (making a backup file at `pubspec.yaml.bak`).
 
 ### 5. Check for Code Modifications
 
@@ -91,6 +111,30 @@ For a line-by-line file difference visual output, run:
 ```bash
 justui diff button --verbose
 ```
+
+### 6. Dynamic Component Updates
+
+To check which of your installed components differ from the registry version and dynamically update them:
+
+```bash
+justui update
+```
+
+The CLI will scan your installed components, show a list of outdated ones, and let you interactively select and update them using the Overwrite Guard.
+
+### 7. Local Component Scaffolder
+
+To scaffold a new custom UI component following JustUI's layout and styling guidelines:
+
+```bash
+justui create my_component
+```
+
+This creates a standard 4-file bundle under your components directory:
+- `my_component.dart`: Widget implementation utilizing aspect-based listeners (`context.justColors`, `context.justSpacing`, etc.).
+- `my_component_style.dart`: Style configuration class for per-instance overrides.
+- `my_component_variants.dart`: Enums for sizes and variants.
+- `my_component_theme.dart`: A Flutter `ThemeExtension` mapping class for global styling overrides.
 
 ---
 
@@ -111,7 +155,7 @@ Widget build(BuildContext context) {
   final spacing = context.justSpacing;
 
   return Container(
-    padding: .all(spacing.md), // Using dot shorthand
+    padding: .symmetric(horizontal: spacing.md), // Using dot shorthand
     color: colors.background,
     child: Text(
       'JustUI Card',
