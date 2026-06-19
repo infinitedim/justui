@@ -5,6 +5,7 @@ import 'package:file/file.dart';
 import '../config/justui_config.dart';
 import '../registry/registry_client.dart';
 import '../utils/logger.dart';
+import '../utils/prompt.dart';
 import '../utils/pubspec_editor.dart';
 
 /// The CLI command to copy a component and its dependencies into the target project.
@@ -24,15 +25,6 @@ class AddCommand extends Command<void> {
 
   @override
   void run() async {
-    final args = argResults?.rest ?? [];
-    if (args.isEmpty) {
-      JustLogger.error(
-        'Please specify a component name (e.g., "justui add button").',
-      );
-      return;
-    }
-    final componentName = args.first;
-
     // 1. Verify initialization config exists
     final configFile = fileSystem.file(JustUIConfig.configFileName);
     if (!configFile.existsSync()) {
@@ -57,21 +49,51 @@ class AddCommand extends Command<void> {
       final client = RegistryClient(config.registryUrl, fileSystem);
       final index = await client.fetchIndex();
 
+      final List<String> componentsToAdd = [];
+      final args = argResults?.rest ?? [];
+
+      if (args.isEmpty) {
+        // Render interactive selection
+        final componentNames = index.components
+            .map((c) => '${c.name} (${c.description})')
+            .toList();
+        if (componentNames.isEmpty) {
+          JustLogger.error('No components found in the registry.');
+          return;
+        }
+        JustLogger.stdout('Select components to add:');
+        final selectedIndices = JustPrompt.selectMultiple(
+          'Choose components',
+          componentNames,
+        );
+        if (selectedIndices.isEmpty) {
+          JustLogger.warning('No components selected.');
+          return;
+        }
+        for (final idx in selectedIndices) {
+          componentsToAdd.add(index.components[idx].name);
+        }
+      } else {
+        componentsToAdd.addAll(args);
+      }
+
       final visited = <String>{};
-      await _addComponent(
-        componentName,
-        index,
-        client,
-        config.componentsDir,
-        config.tokensDir,
-        visited,
-      );
+      for (final compName in componentsToAdd) {
+        await addComponent(
+          compName,
+          index,
+          client,
+          config.componentsDir,
+          config.tokensDir,
+          visited,
+        );
+      }
     } catch (e) {
-      JustLogger.error('Failed to add component "$componentName": $e');
+      JustLogger.error('Failed to add components: $e');
     }
   }
 
-  Future<void> _addComponent(
+  Future<void> addComponent(
     String name,
     RegistryIndex index,
     RegistryClient client,
@@ -92,14 +114,7 @@ class AddCommand extends Command<void> {
 
     // 1. Recursively resolve and download registry dependencies first
     for (final dep in component.registryDependencies) {
-      await _addComponent(
-        dep,
-        index,
-        client,
-        componentsDir,
-        tokensDir,
-        visited,
-      );
+      await addComponent(dep, index, client, componentsDir, tokensDir, visited);
     }
 
     JustLogger.info('Adding component "$name" (v${component.version})...');
@@ -131,10 +146,47 @@ class AddCommand extends Command<void> {
       final targetPath = fileSystem.path.join(targetDir, file.name);
       final targetFile = fileSystem.file(targetPath);
 
-      // Create parents dynamically
-      targetFile.parent.createSync(recursive: true);
-      targetFile.writeAsStringSync(content);
-      JustLogger.stdout('  - Copied ${file.name} to $targetDir/');
+      bool shouldWrite = true;
+      if (targetFile.existsSync()) {
+        final rawLocalContent = targetFile.readAsStringSync();
+        final localContent = rawLocalContent.replaceAll('\r\n', '\n');
+        final localBytes = utf8.encode(localContent);
+        final localHash = sha256.convert(localBytes).toString();
+
+        if (localHash == expectedHash) {
+          JustLogger.stdout('  - ${file.name} is already up-to-date.');
+          shouldWrite = false;
+        } else {
+          JustLogger.warning(
+            'Conflict: Local file "${file.name}" has been modified.',
+          );
+          while (true) {
+            final action = JustPrompt.ask(
+              '  Choose action: [o] Overwrite, [s] Skip, [d] Show Diff',
+              defaultValue: 's',
+            ).toLowerCase();
+
+            if (action == 'o') {
+              shouldWrite = true;
+              break;
+            } else if (action == 's') {
+              shouldWrite = false;
+              break;
+            } else if (action == 'd') {
+              _printLineDiff(file.name, localContent, content);
+            } else {
+              JustLogger.error('Invalid option. Choose o, s, or d.');
+            }
+          }
+        }
+      }
+
+      if (shouldWrite) {
+        // Create parents dynamically
+        targetFile.parent.createSync(recursive: true);
+        targetFile.writeAsStringSync(content);
+        JustLogger.stdout('  - Copied ${file.name} to $targetDir/');
+      }
     }
 
     // 4. Inject third-party pub dependencies into pubspec.yaml if present
@@ -157,5 +209,40 @@ class AddCommand extends Command<void> {
     }
 
     JustLogger.success('Component "$name" added successfully.');
+  }
+
+  void _printLineDiff(String fileName, String local, String remote) {
+    JustLogger.stdout('\n--- Line-by-line diff for $fileName ---');
+    final localNormalized = local.replaceAll('\r\n', '\n');
+    final remoteNormalized = remote.replaceAll('\r\n', '\n');
+    final localLines = localNormalized.split('\n');
+    final remoteLines = remoteNormalized.split('\n');
+    final maxLines = localLines.length > remoteLines.length
+        ? localLines.length
+        : remoteLines.length;
+
+    for (int i = 0; i < maxLines; i++) {
+      final localLine = i < localLines.length ? localLines[i] : null;
+      final remoteLine = i < remoteLines.length ? remoteLines[i] : null;
+
+      if (localLine != remoteLine) {
+        if (remoteLine != null && localLine == null) {
+          // Added in registry
+          JustLogger.stdout('\x1B[32m+ [Line ${i + 1}] $remoteLine\x1B[0m');
+        } else if (localLine != null && remoteLine == null) {
+          // Custom local additions
+          JustLogger.stdout('\x1B[31m- [Line ${i + 1}] $localLine\x1B[0m');
+        } else {
+          // Modified line
+          JustLogger.stdout(
+            '\x1B[31m- [Line ${i + 1}] Local:    $localLine\x1B[0m',
+          );
+          JustLogger.stdout(
+            '\x1B[32m+ [Line ${i + 1}] Registry: $remoteLine\x1B[0m',
+          );
+        }
+      }
+    }
+    JustLogger.stdout('-----------------------------------------\n');
   }
 }
