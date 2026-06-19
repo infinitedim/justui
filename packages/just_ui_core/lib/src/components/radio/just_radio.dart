@@ -26,7 +26,7 @@ class JustRadio<T> extends StatefulWidget {
   /// Optional text label placed alongside the radio button. Tapping the label selects the radio.
   final Widget? label;
 
-  /// The size of the visual radio circle. Defaults to [JustRadioSize.md].
+  /// The size of the visual radio circle. Defaults to [.md].
   final JustRadioSize size;
 
   /// Whether the radio is explicitly disabled.
@@ -49,7 +49,7 @@ class JustRadio<T> extends StatefulWidget {
     required this.groupValue,
     required this.onChanged,
     this.label,
-    this.size = JustRadioSize.md,
+    this.size = .md,
     this.isDisabled = false,
     this.style,
     this.enableHaptic,
@@ -86,13 +86,12 @@ class _JustRadioState<T> extends State<JustRadio<T>>
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is KeyDownEvent && !widget.isDisabled) {
-      if (event.logicalKey == LogicalKeyboardKey.space ||
-          event.logicalKey == LogicalKeyboardKey.enter) {
+      if (event.logicalKey == .space || event.logicalKey == .enter) {
         _handleSelect();
-        return KeyEventResult.handled;
+        return .handled;
       }
     }
-    return KeyEventResult.ignored;
+    return .ignored;
   }
 
   @override
@@ -160,15 +159,15 @@ class _JustRadioState<T> extends State<JustRadio<T>>
     TextStyle textStyle;
 
     switch (widget.size) {
-      case JustRadioSize.sm:
+      case .sm:
         circleSize = 16.0;
         textStyle = typography.bodySm;
         break;
-      case JustRadioSize.md:
+      case .md:
         circleSize = 20.0;
         textStyle = typography.bodyMd;
         break;
-      case JustRadioSize.lg:
+      case .lg:
         circleSize = 24.0;
         textStyle = typography.bodyLg;
         break;

@@ -90,13 +90,12 @@ class _JustSwitchState extends State<JustSwitch>
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is KeyDownEvent && !widget.isDisabled) {
-      if (event.logicalKey == LogicalKeyboardKey.space ||
-          event.logicalKey == LogicalKeyboardKey.enter) {
+      if (event.logicalKey == .space || event.logicalKey == .enter) {
         _handleToggle();
-        return KeyEventResult.handled;
+        return .handled;
       }
     }
-    return KeyEventResult.ignored;
+    return .ignored;
   }
 
   @override

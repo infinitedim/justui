@@ -63,11 +63,11 @@ class _JustTooltipOverlayState extends State<JustTooltipOverlay> {
       onExit: (_) => _controller.hide(),
       child: OverlayPortal.overlayChildLayoutBuilder(
         controller: _controller,
-        overlayChildLayoutBuilder: (context, info) {
+        overlayChildBuilder: (BuildContext context, info) {
           // Calculate the target offset relative to the overlay coordinate system
           final targetOffset = MatrixUtils.transformPoint(
             info.childPaintTransform,
-            Offset.zero,
+            .zero,
           );
 
           // We estimate tooltip height to be ~24px for positioning.

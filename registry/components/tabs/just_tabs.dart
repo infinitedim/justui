@@ -1,4 +1,5 @@
-import 'package:flutter/services.dart' show HapticFeedback;
+import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
+import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/just_pressable.dart';
@@ -41,7 +42,6 @@ class JustTabController extends ChangeNotifier {
 
   int _index;
   double _animationValue;
-  TickerProvider? _vsync;
   AnimationController? _animationController;
 
   /// Creates a [JustTabController].
@@ -77,7 +77,6 @@ class JustTabController extends ChangeNotifier {
   }
 
   void _bindVsync(TickerProvider vsync) {
-    _vsync = vsync;
     _animationController?.dispose();
     _animationController = AnimationController(
       vsync: vsync,
@@ -159,7 +158,7 @@ class JustTabs extends StatefulWidget {
   const JustTabs({
     super.key,
     required this.tabs,
-    this.variant = JustTabVariant.line,
+    this.variant = .line,
     this.initialIndex = 0,
     this.onChanged,
     this.isScrollable = false,
@@ -176,7 +175,7 @@ class JustTabs extends StatefulWidget {
     this.isScrollable = false,
     this.controller,
     this.style,
-  }) : variant = JustTabVariant.line;
+  }) : variant = .line;
 
   /// Named constructor for card enclosed style tabs.
   const JustTabs.enclosed({
@@ -187,7 +186,7 @@ class JustTabs extends StatefulWidget {
     this.isScrollable = false,
     this.controller,
     this.style,
-  }) : variant = JustTabVariant.enclosed;
+  }) : variant = .enclosed;
 
   /// Named constructor for pill style tabs.
   const JustTabs.pill({
@@ -198,7 +197,7 @@ class JustTabs extends StatefulWidget {
     this.isScrollable = false,
     this.controller,
     this.style,
-  }) : variant = JustTabVariant.pill;
+  }) : variant = .pill;
 
   /// Named constructor for vertical layout tabs.
   const JustTabs.vertical({
@@ -208,7 +207,7 @@ class JustTabs extends StatefulWidget {
     this.onChanged,
     this.controller,
     this.style,
-  }) : variant = JustTabVariant.vertical,
+  }) : variant = .vertical,
        isScrollable = false;
 
   @override
@@ -343,15 +342,11 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
           key.currentContext?.findRenderObject() as RenderBox?;
       if (box != null && box.hasSize) {
         widths.add(
-          widget.variant == JustTabVariant.vertical
-              ? box.size.height
-              : box.size.width,
+          widget.variant == .vertical ? box.size.height : box.size.width,
         );
         final localOffset = box.localToGlobal(Offset.zero, ancestor: parentBox);
         offsets.add(
-          widget.variant == JustTabVariant.vertical
-              ? localOffset.dy
-              : localOffset.dx,
+          widget.variant == .vertical ? localOffset.dy : localOffset.dx,
         );
       } else {
         return; // Layout not fully completed yet
@@ -388,16 +383,16 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     if (event is! KeyDownEvent) return;
 
     int newIndex = _tabController.index;
-    if (widget.variant == JustTabVariant.vertical) {
-      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+    if (widget.variant == .vertical) {
+      if (event.logicalKey == .arrowDown) {
         newIndex = (newIndex + 1).clamp(0, widget.tabs.length - 1);
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      } else if (event.logicalKey == .arrowUp) {
         newIndex = (newIndex - 1).clamp(0, widget.tabs.length - 1);
       }
     } else {
-      if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      if (event.logicalKey == .arrowRight) {
         newIndex = (newIndex + 1).clamp(0, widget.tabs.length - 1);
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      } else if (event.logicalKey == .arrowLeft) {
         newIndex = (newIndex - 1).clamp(0, widget.tabs.length - 1);
       }
     }
@@ -428,16 +423,16 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     JustTabsStyle? themeStyle;
     if (tabsTheme != null) {
       switch (widget.variant) {
-        case JustTabVariant.line:
+        case .line:
           themeStyle = tabsTheme.lineStyle;
           break;
-        case JustTabVariant.enclosed:
+        case .enclosed:
           themeStyle = tabsTheme.enclosedStyle;
           break;
-        case JustTabVariant.pill:
+        case .pill:
           themeStyle = tabsTheme.pillStyle;
           break;
-        case JustTabVariant.vertical:
+        case .vertical:
           themeStyle = tabsTheme.verticalStyle;
           break;
       }
@@ -455,8 +450,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     final containerBg =
         widget.style?.containerBackgroundColor ??
         themeStyle?.containerBackgroundColor ??
-        (widget.variant == JustTabVariant.pill ||
-                widget.variant == JustTabVariant.enclosed
+        (widget.variant == .pill || widget.variant == .enclosed
             ? colors.card
             : const Color(0x00000000));
 
@@ -491,12 +485,12 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
 
             final resolvedTextStyle = isSelected
                 ? (widget.style?.activeTextStyle ??
-                      typography.bodyMd.copyWith(fontWeight: FontWeight.w600))
+                      typography.bodyMd.copyWith(fontWeight: .w600))
                 : (widget.style?.inactiveTextStyle ?? typography.bodyMd);
 
-            Widget headerContent = Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
+            final Widget headerContent = Row(
+              mainAxisSize: .min,
+              mainAxisAlignment: .center,
               children: [
                 if (tab.icon != null) ...[
                   IconTheme.merge(
@@ -556,15 +550,13 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
 
       final indicatorInner = JustTabIndicator(
         variant: widget.variant,
-        orientation: widget.variant == JustTabVariant.vertical
-            ? Axis.vertical
-            : Axis.horizontal,
+        orientation: widget.variant == .vertical ? .vertical : .horizontal,
         colors: colors,
         radius: radius,
         style: widget.style ?? themeStyle,
       );
 
-      if (widget.variant == JustTabVariant.vertical) {
+      if (widget.variant == .vertical) {
         indicatorWidget = Positioned(
           top: pos,
           height: size,
@@ -584,26 +576,27 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     }
 
     // Layout configuration
-    final bool isVertical = widget.variant == JustTabVariant.vertical;
+    final bool isVertical = widget.variant == .vertical;
 
-    Widget headerBar = Stack(
+    final Widget headerBar = Stack(
       clipBehavior: .none,
       children: [
+        // ignore: use_null_aware_elements
         if (indicatorWidget != null) indicatorWidget,
         if (widget.isScrollable && !isVertical)
           SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(mainAxisSize: MainAxisSize.min, children: tabWidgets),
+            scrollDirection: .horizontal,
+            child: Row(mainAxisSize: .min, children: tabWidgets),
           )
         else if (isVertical)
           Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: .stretch,
+            mainAxisSize: .min,
             children: tabWidgets,
           )
         else
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: .spaceEvenly,
             children: tabWidgets
                 .map((w) => Expanded(child: Center(child: w)))
                 .toList(),
@@ -611,14 +604,14 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       ],
     );
 
-    Widget headerContainer = KeyboardListener(
+    final Widget headerContainer = KeyboardListener(
       focusNode: _focusNode,
       onKeyEvent: _handleKeyEvent,
       child: Container(
         decoration: BoxDecoration(
           color: containerBg,
           borderRadius: containerBorderRadius,
-          border: widget.variant == JustTabVariant.enclosed
+          border: widget.variant == .enclosed
               ? .all(color: colors.borderDefault, width: 1.0)
               : null,
         ),
@@ -644,7 +637,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
 
     if (isVertical) {
       return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           SizedBox(
             width: 200, // Fixed width for vertical tab header panel
@@ -655,7 +648,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       );
     } else {
       return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           headerContainer,
           Expanded(child: pageView),
