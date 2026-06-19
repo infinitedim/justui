@@ -22,14 +22,8 @@ void main() {
             height: 300,
             child: JustTabs(
               tabs: [
-                JustTab(
-                  label: 'Tab A',
-                  content: Text('Content A'),
-                ),
-                JustTab(
-                  label: 'Tab B',
-                  content: Text('Content B'),
-                ),
+                JustTab(label: 'Tab A', content: Text('Content A')),
+                JustTab(label: 'Tab B', content: Text('Content B')),
               ],
             ),
           ),
@@ -57,14 +51,8 @@ void main() {
             child: JustTabs(
               onChanged: (idx) => changedIndex = idx,
               tabs: [
-                const JustTab(
-                  label: 'Tab A',
-                  content: Text('Content A'),
-                ),
-                const JustTab(
-                  label: 'Tab B',
-                  content: Text('Content B'),
-                ),
+                const JustTab(label: 'Tab A', content: Text('Content A')),
+                const JustTab(label: 'Tab B', content: Text('Content B')),
               ],
             ),
           ),
@@ -92,10 +80,7 @@ void main() {
             child: JustTabs(
               onChanged: (idx) => changedIndex = idx,
               tabs: [
-                const JustTab(
-                  label: 'Tab A',
-                  content: Text('Content A'),
-                ),
+                const JustTab(label: 'Tab A', content: Text('Content A')),
                 const JustTab(
                   label: 'Tab B',
                   enabled: false,
@@ -126,14 +111,8 @@ void main() {
             child: JustTabs(
               initialIndex: 0,
               tabs: [
-                JustTab(
-                  label: 'Tab A',
-                  content: Text('Content A'),
-                ),
-                JustTab(
-                  label: 'Tab B',
-                  content: Text('Content B'),
-                ),
+                JustTab(label: 'Tab A', content: Text('Content A')),
+                JustTab(label: 'Tab B', content: Text('Content B')),
               ],
             ),
           ),

@@ -34,7 +34,8 @@ class JustTabIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Resolve styling colors and shapes
-    final activeColor = style?.indicatorColor ?? style?.activeColor ?? colors.borderFocus;
+    final activeColor =
+        style?.indicatorColor ?? style?.activeColor ?? colors.borderFocus;
     final defaultIndicatorRadius = variant == JustTabVariant.pill
         ? .all(radius.full)
         : .all(radius.md);
@@ -70,9 +71,13 @@ class JustTabIndicator extends StatelessWidget {
                 color: activeColor,
                 borderRadius: .only(
                   topRight: isRtl ? Radius.circular(radius.sm.x) : Radius.zero,
-                  bottomRight: isRtl ? Radius.circular(radius.sm.x) : Radius.zero,
+                  bottomRight: isRtl
+                      ? Radius.circular(radius.sm.x)
+                      : Radius.zero,
                   topLeft: !isRtl ? Radius.circular(radius.sm.x) : Radius.zero,
-                  bottomLeft: !isRtl ? Radius.circular(radius.sm.x) : Radius.zero,
+                  bottomLeft: !isRtl
+                      ? Radius.circular(radius.sm.x)
+                      : Radius.zero,
                 ),
               ),
             ),
@@ -85,10 +90,7 @@ class JustTabIndicator extends StatelessWidget {
           decoration: BoxDecoration(
             color: style?.containerBackgroundColor ?? colors.card,
             borderRadius: indicatorRadius,
-            border: .all(
-              color: colors.borderDefault,
-              width: 1.0,
-            ),
+            border: .all(color: colors.borderDefault, width: 1.0),
           ),
         );
 

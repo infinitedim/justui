@@ -7,20 +7,14 @@ class JustCardTheme extends ThemeExtension<JustCardTheme> {
   final JustCardStyle? style;
 
   /// Creates a [JustCardTheme] configuration.
-  const JustCardTheme({
-    this.style,
-  });
+  const JustCardTheme({this.style});
 
   /// Default configuration for the theme.
   static const defaults = JustCardTheme();
 
   @override
-  JustCardTheme copyWith({
-    JustCardStyle? style,
-  }) {
-    return JustCardTheme(
-      style: style ?? this.style,
-    );
+  JustCardTheme copyWith({JustCardStyle? style}) {
+    return JustCardTheme(style: style ?? this.style);
   }
 
   @override

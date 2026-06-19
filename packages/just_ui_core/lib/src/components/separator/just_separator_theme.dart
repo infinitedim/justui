@@ -7,20 +7,14 @@ class JustSeparatorTheme extends ThemeExtension<JustSeparatorTheme> {
   final JustSeparatorStyle? style;
 
   /// Creates a [JustSeparatorTheme] configuration.
-  const JustSeparatorTheme({
-    this.style,
-  });
+  const JustSeparatorTheme({this.style});
 
   /// Default configuration for the theme.
   static const defaults = JustSeparatorTheme();
 
   @override
-  JustSeparatorTheme copyWith({
-    JustSeparatorStyle? style,
-  }) {
-    return JustSeparatorTheme(
-      style: style ?? this.style,
-    );
+  JustSeparatorTheme copyWith({JustSeparatorStyle? style}) {
+    return JustSeparatorTheme(style: style ?? this.style);
   }
 
   @override
