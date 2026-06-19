@@ -61,6 +61,39 @@ final class _DefaultSpacingScheme extends JustSpacingScheme {
   double get huge => JustSpacing.huge;
 }
 
+final class FluidSpacingScheme extends JustSpacingScheme {
+  final double width;
+
+  const FluidSpacingScheme({required this.width});
+
+  double _fluid(double minSize, double maxSize) {
+    const double minWidth = 640.0;
+    const double maxWidth = 1024.0;
+    final clampedWidth = width.clamp(minWidth, maxWidth);
+    final slope = (maxSize - minSize) / (maxWidth - minWidth);
+    return minSize + slope * (clampedWidth - minWidth);
+  }
+
+  @override
+  double get xxs => _fluid(1.5, 2.0);
+  @override
+  double get xs => _fluid(3.0, 4.0);
+  @override
+  double get sm => _fluid(6.0, 8.0);
+  @override
+  double get md => _fluid(9.0, 12.0);
+  @override
+  double get lg => _fluid(12.0, 16.0);
+  @override
+  double get xl => _fluid(18.0, 24.0);
+  @override
+  double get xxl => _fluid(24.0, 32.0);
+  @override
+  double get xxxl => _fluid(36.0, 48.0);
+  @override
+  double get huge => _fluid(48.0, 64.0);
+}
+
 // ==========================================
 // --- Typography Scheme ---
 // ==========================================
@@ -186,6 +219,38 @@ final class _DefaultRadiusScheme extends JustRadiusScheme {
   Radius get full => JustRadius.full;
 }
 
+final class FluidRadiusScheme extends JustRadiusScheme {
+  final double width;
+
+  const FluidRadiusScheme({required this.width});
+
+  Radius _fluid(double minSize, double maxSize) {
+    const double minWidth = 640.0;
+    const double maxWidth = 1024.0;
+    final clampedWidth = width.clamp(minWidth, maxWidth);
+    final slope = (maxSize - minSize) / (maxWidth - minWidth);
+    final calculatedSize = minSize + slope * (clampedWidth - minWidth);
+    return .circular(calculatedSize);
+  }
+
+  @override
+  Radius get none => .zero;
+  @override
+  Radius get xs => _fluid(1.5, 2.0);
+  @override
+  Radius get sm => _fluid(3.0, 4.0);
+  @override
+  Radius get md => _fluid(6.0, 8.0);
+  @override
+  Radius get lg => _fluid(8.0, 12.0);
+  @override
+  Radius get xl => _fluid(12.0, 16.0);
+  @override
+  Radius get xxl => _fluid(16.0, 24.0);
+  @override
+  Radius get full => const Radius.circular(9999.0);
+}
+
 // ==========================================
 // --- Shadow Scheme ---
 // ==========================================
@@ -248,64 +313,27 @@ final class _DefaultShadowSchemeDark extends JustShadowScheme {
   List<BoxShadow> get xxl => JustShadows.xxlDark;
 }
 
-// ==========================================
-// --- Animation Scheme ---
-// ==========================================
+final class TintedShadowScheme extends JustShadowScheme {
+  final Color seedColor;
+  final bool isDark;
 
-/// Defines animation timings and curves.
-abstract final class JustAnimationScheme {
-  /// Base constructor.
-  const JustAnimationScheme();
-
-  /// Instant feedback duration.
-  Duration get instant;
-
-  /// Fast duration.
-  Duration get fast;
-
-  /// Normal duration.
-  Duration get normal;
-
-  /// Slow duration.
-  Duration get slow;
-
-  /// Slower duration.
-  Duration get slower;
-
-  /// Default easing curve.
-  Curve get defaultCurve;
-
-  /// Entrance easing curve.
-  Curve get enter;
-
-  /// Exit easing curve.
-  Curve get exit;
-
-  /// Springy easing curve.
-  Curve get spring;
-}
-
-final class _DefaultAnimationScheme extends JustAnimationScheme {
-  const _DefaultAnimationScheme();
+  const TintedShadowScheme({
+    required this.seedColor,
+    required this.isDark,
+  });
 
   @override
-  Duration get instant => JustDuration.instant;
+  List<BoxShadow> get xs => JustShadows.generate(seedColor: seedColor, elevation: 1, isDark: isDark);
   @override
-  Duration get fast => JustDuration.fast;
+  List<BoxShadow> get sm => JustShadows.generate(seedColor: seedColor, elevation: 2, isDark: isDark);
   @override
-  Duration get normal => JustDuration.normal;
+  List<BoxShadow> get md => JustShadows.generate(seedColor: seedColor, elevation: 4, isDark: isDark);
   @override
-  Duration get slow => JustDuration.slow;
+  List<BoxShadow> get lg => JustShadows.generate(seedColor: seedColor, elevation: 8, isDark: isDark);
   @override
-  Duration get slower => JustDuration.slower;
+  List<BoxShadow> get xl => JustShadows.generate(seedColor: seedColor, elevation: 16, isDark: isDark);
   @override
-  Curve get defaultCurve => JustCurves.default_;
-  @override
-  Curve get enter => JustCurves.enter;
-  @override
-  Curve get exit => JustCurves.exit;
-  @override
-  Curve get spring => JustCurves.spring;
+  List<BoxShadow> get xxl => JustShadows.generate(seedColor: seedColor, elevation: 24, isDark: isDark);
 }
 
 // ==========================================
@@ -324,7 +352,7 @@ class JustThemeData {
     this.spacing = const _DefaultSpacingScheme(),
     this.radius = const _DefaultRadiusScheme(),
     required this.shadows,
-    this.animations = const _DefaultAnimationScheme(),
+    this.animations = JustMotionProfile.standard,
   });
 
   /// The active color scheme.
@@ -343,7 +371,7 @@ class JustThemeData {
   final JustShadowScheme shadows;
 
   /// The active animation scheme.
-  final JustAnimationScheme animations;
+  final JustMotionProfile animations;
 
   // Cached material theme data.
   ThemeData? _cachedThemeData;
@@ -374,11 +402,24 @@ class JustThemeData {
     JustTypographyScheme typography = const _DefaultTypographyScheme(),
     JustSpacingScheme spacing = const _DefaultSpacingScheme(),
     JustRadiusScheme radius = const _DefaultRadiusScheme(),
-    JustAnimationScheme animations = const _DefaultAnimationScheme(),
+    JustMotionProfile animations = JustMotionProfile.standard,
   }) {
-    final bg = isDark
-        ? JustColorSemanticDark.background
-        : JustColorSemanticLight.background;
+    final Color bg;
+    final Color card;
+    final Color elevated;
+    final Color overlay;
+
+    if (isDark) {
+      bg = JustDynamicSurfaces.generateDarkSurface(seedColor, lightness: 0.03);
+      card = JustDynamicSurfaces.generateDarkSurface(seedColor, lightness: 0.07);
+      elevated = JustDynamicSurfaces.generateDarkSurface(seedColor, lightness: 0.12);
+      overlay = JustDynamicSurfaces.generateDarkSurface(seedColor, lightness: 0.02);
+    } else {
+      bg = JustColorSemanticLight.background;
+      card = JustColorSemanticLight.card;
+      elevated = JustColorSemanticLight.elevated;
+      overlay = JustColorSemanticLight.overlay;
+    }
 
     // Generate an HSL-based primary color variant.
     // In light mode, default borderFocus is primary500 (lightness ~0.5).
@@ -390,15 +431,22 @@ class JustThemeData {
     // Adjust lightness dynamically to guarantee at least 3.0:1 contrast (WCAG AA for large text/components).
     final borderFocusColor = _makeAccessible(primary, bg, minRatio: 3.0);
 
+    // Dynamic contrast enforcement for semantic state colors against generated background
+    final successBase = isDark ? JustColorSemanticDark.success : JustColorSemanticLight.success;
+    final warningBase = isDark ? JustColorSemanticDark.warning : JustColorSemanticLight.warning;
+    final errorBase = isDark ? JustColorSemanticDark.error : JustColorSemanticLight.error;
+    final infoBase = isDark ? JustColorSemanticDark.info : JustColorSemanticLight.info;
+
+    final successColor = _makeAccessible(successBase, bg, minRatio: 4.5);
+    final warningColor = _makeAccessible(warningBase, bg, minRatio: 3.0);
+    final errorColor = _makeAccessible(errorBase, bg, minRatio: 4.5);
+    final infoColor = _makeAccessible(infoBase, bg, minRatio: 4.5);
+
     final colors = CustomColorScheme(
       background: bg,
-      card: isDark ? JustColorSemanticDark.card : JustColorSemanticLight.card,
-      elevated: isDark
-          ? JustColorSemanticDark.elevated
-          : JustColorSemanticLight.elevated,
-      overlay: isDark
-          ? JustColorSemanticDark.overlay
-          : JustColorSemanticLight.overlay,
+      card: card,
+      elevated: elevated,
+      overlay: overlay,
       textPrimary: isDark
           ? JustColorSemanticDark.textPrimary
           : JustColorSemanticLight.textPrimary,
@@ -418,16 +466,10 @@ class JustThemeData {
       borderError: isDark
           ? JustColorSemanticDark.borderError
           : JustColorSemanticLight.borderError,
-      success: isDark
-          ? JustColorSemanticDark.success
-          : JustColorSemanticLight.success,
-      warning: isDark
-          ? JustColorSemanticDark.warning
-          : JustColorSemanticLight.warning,
-      error: isDark
-          ? JustColorSemanticDark.error
-          : JustColorSemanticLight.error,
-      info: isDark ? JustColorSemanticDark.info : JustColorSemanticLight.info,
+      success: successColor,
+      warning: warningColor,
+      error: errorColor,
+      info: infoColor,
     );
 
     return JustThemeData(
@@ -435,9 +477,7 @@ class JustThemeData {
       typography: typography,
       spacing: spacing,
       radius: radius,
-      shadows: isDark
-          ? const _DefaultShadowSchemeDark()
-          : const _DefaultShadowSchemeLight(),
+      shadows: TintedShadowScheme(seedColor: seedColor, isDark: isDark),
       animations: animations,
     );
   }
@@ -564,7 +604,7 @@ class JustThemeData {
     JustSpacingScheme? spacing,
     JustRadiusScheme? radius,
     JustShadowScheme? shadows,
-    JustAnimationScheme? animations,
+    JustMotionProfile? animations,
   }) {
     return JustThemeData(
       colors: colors ?? this.colors,

@@ -111,6 +111,70 @@ void main() {
               as OutlineInputBorder?;
       expect(border?.borderSide.color, equals(theme.colors.borderFocus));
     });
+
+    test('Dynamic contrast and dark surfaces enforcement in fromSeed', () {
+      const seed = Color(0xFF3B82F6);
+
+      // Light Mode seed checks
+      final lightTheme = JustThemeData.fromSeed(seed, isDark: false);
+      expect(
+        lightTheme.colors.success.contrastRatioWith(lightTheme.colors.background),
+        greaterThanOrEqualTo(4.5),
+      );
+      expect(
+        lightTheme.colors.warning.contrastRatioWith(lightTheme.colors.background),
+        greaterThanOrEqualTo(3.0),
+      );
+      expect(
+        lightTheme.colors.error.contrastRatioWith(lightTheme.colors.background),
+        greaterThanOrEqualTo(4.5),
+      );
+      expect(
+        lightTheme.colors.info.contrastRatioWith(lightTheme.colors.background),
+        greaterThanOrEqualTo(4.5),
+      );
+
+      // Dark Mode seed checks
+      final darkTheme = JustThemeData.fromSeed(seed, isDark: true);
+      expect(
+        darkTheme.colors.success.contrastRatioWith(darkTheme.colors.background),
+        greaterThanOrEqualTo(4.5),
+      );
+      expect(
+        darkTheme.colors.warning.contrastRatioWith(darkTheme.colors.background),
+        greaterThanOrEqualTo(3.0),
+      );
+
+      // Verify Tinted surfaces in dark mode
+      final HSLColor hslSeed = HSLColor.fromColor(seed);
+      final HSLColor hslBg = HSLColor.fromColor(darkTheme.colors.background);
+      expect(hslBg.hue, closeTo(hslSeed.hue, 0.01));
+      expect(hslBg.lightness, equals(0.03));
+    });
+
+    test('FluidSpacingScheme and FluidRadiusScheme scale based on screen width', () {
+      const spacingSmall = FluidSpacingScheme(width: 320.0);
+      const spacingLarge = FluidSpacingScheme(width: 1024.0);
+
+      expect(spacingSmall.md, lessThan(spacingLarge.md));
+      expect(spacingLarge.md, equals(12.0)); // standard md size is 12
+
+      const radiusSmall = FluidRadiusScheme(width: 320.0);
+      const radiusLarge = FluidRadiusScheme(width: 1024.0);
+
+      expect(radiusSmall.md.x, lessThan(radiusLarge.md.x));
+      expect(radiusLarge.md.x, equals(8.0)); // standard md radius is 8
+    });
+
+    test('TintedShadowScheme generates tinted dual-layer shadows', () {
+      const seed = Color(0xFF3B82F6);
+      const shadowsScheme = TintedShadowScheme(seedColor: seed, isDark: false);
+
+      final smShadows = shadowsScheme.sm;
+      expect(smShadows.length, equals(2));
+      expect(smShadows[0].color.computeLuminance(), closeTo(0, 0.01)); // key shadow is dark
+      expect(HSLColor.fromColor(smShadows[1].color).hue, closeTo(HSLColor.fromColor(seed).hue, 0.01)); // ambient shadow is tinted
+    });
   });
 
   group('JustThemeProvider Tests', () {

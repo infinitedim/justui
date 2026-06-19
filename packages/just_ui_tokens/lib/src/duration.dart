@@ -20,6 +20,24 @@ abstract final class JustDuration {
 
   /// Slower duration (600ms) - sequential/orchestrated animations
   static const Duration slower = Duration(milliseconds: 600);
+
+  /// Dynamically scales animation duration based on travel distance (in pixels).
+  ///
+  /// Uses a physics-based velocity constant (pixels per millisecond) to compute
+  /// the ideal duration, clamped between [min] and [max] values.
+  static Duration scaleForDistance(
+    double distancePixels, {
+    double speedPixelsPerMs = 1.5,
+    Duration min = JustDuration.fast,
+    Duration max = JustDuration.slow,
+  }) {
+    if (distancePixels <= 0) return min;
+    final int durationMs = (distancePixels / speedPixelsPerMs).round();
+    final int minMs = min.inMilliseconds;
+    final int maxMs = max.inMilliseconds;
+    final int clampedMs = durationMs.clamp(minMs, maxMs);
+    return Duration(milliseconds: clampedMs);
+  }
 }
 
 /// Curve tokens for JustUI animations.
