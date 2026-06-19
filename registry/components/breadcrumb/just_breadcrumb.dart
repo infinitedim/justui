@@ -18,11 +18,7 @@ class JustBreadcrumbItem {
   final Widget? icon;
 
   /// Creates a [JustBreadcrumbItem] configuration.
-  const JustBreadcrumbItem({
-    required this.label,
-    this.onTap,
-    this.icon,
-  });
+  const JustBreadcrumbItem({required this.label, this.onTap, this.icon});
 }
 
 /// A breadcrumb trail component that provides clean horizontal hierarchy navigation.
@@ -61,29 +57,36 @@ class JustBreadcrumb extends StatelessWidget {
     if (items.isEmpty) return const SizedBox.shrink();
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(context, aspect: .typography).theme.typography;
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final typography = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
 
     // Resolve separator widget
-    final resolvedSeparator = separator ??
+    final resolvedSeparator =
+        separator ??
         Text(
           '/',
-          style: style?.separatorStyle ??
+          style:
+              style?.separatorStyle ??
               typography.bodyMd.copyWith(color: colors.textSecondary),
         );
 
     // Resolve collapsed widget
-    final resolvedCollapsed = collapsed ??
-        const Text(
-          '...',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        );
+    final resolvedCollapsed =
+        collapsed ??
+        const Text('...', style: TextStyle(fontWeight: FontWeight.w600));
 
     final finalPadding = style?.padding ?? .symmetric(vertical: spacing.sm);
 
     // Generate list of items to render
     final List<Widget> children = [];
-    final hasCollapse = maxItems != null && items.length > maxItems! && maxItems! >= 2;
+    final hasCollapse =
+        maxItems != null && items.length > maxItems! && maxItems! >= 2;
 
     if (!hasCollapse) {
       for (int i = 0; i < items.length; i++) {
@@ -132,25 +135,34 @@ class JustBreadcrumb extends StatelessWidget {
       padding: finalPadding,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: children,
-        ),
+        child: Row(mainAxisSize: MainAxisSize.min, children: children),
       ),
     );
   }
 
-  Widget _buildItem(BuildContext context, JustBreadcrumbItem item, bool isLast) {
+  Widget _buildItem(
+    BuildContext context,
+    JustBreadcrumbItem item,
+    bool isLast,
+  ) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(context, aspect: .typography).theme.typography;
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final typography = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
 
     final isClickable = item.onTap != null;
 
-    final normalColor = style?.color ?? (isLast ? colors.textPrimary : colors.textSecondary);
+    final normalColor =
+        style?.color ?? (isLast ? colors.textPrimary : colors.textSecondary);
     final activeColor = style?.activeColor ?? colors.borderFocus;
     final baseTextStyle = isLast
-        ? (style?.activeTextStyle ?? typography.bodyMd.copyWith(fontWeight: FontWeight.w600))
+        ? (style?.activeTextStyle ??
+              typography.bodyMd.copyWith(fontWeight: FontWeight.w600))
         : (style?.textStyle ?? typography.bodyMd);
 
     if (!isClickable) {
@@ -204,7 +216,9 @@ class JustBreadcrumb extends StatelessWidget {
                   item.label,
                   style: baseTextStyle.copyWith(
                     color: itemColor,
-                    decoration: isHovered ? TextDecoration.underline : TextDecoration.none,
+                    decoration: isHovered
+                        ? TextDecoration.underline
+                        : TextDecoration.none,
                   ),
                 ),
               ],
@@ -228,7 +242,8 @@ class _JustBreadcrumbCollapsed extends StatefulWidget {
   });
 
   @override
-  State<_JustBreadcrumbCollapsed> createState() => _JustBreadcrumbCollapsedState();
+  State<_JustBreadcrumbCollapsed> createState() =>
+      _JustBreadcrumbCollapsedState();
 }
 
 class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
@@ -244,15 +259,24 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(context, aspect: .typography).theme.typography;
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final typography = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
     final radius = JustThemeProvider.of(context).theme.radius;
 
     return OverlayPortal.overlayChildLayoutBuilder(
       controller: _controller,
       overlayChildLayoutBuilder: (context, info) {
         // targetOffset represents the top-left coordinate of the child widget
-        final targetOffset = MatrixUtils.transformPoint(info.childPaintTransform, Offset.zero);
+        final targetOffset = MatrixUtils.transformPoint(
+          info.childPaintTransform,
+          Offset.zero,
+        );
 
         return Stack(
           children: [
@@ -267,7 +291,10 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
               child: TapRegion(
                 onTapOutside: (_) => _controller.hide(),
                 child: Container(
-                  constraints: const BoxConstraints(minWidth: 160, maxWidth: 240),
+                  constraints: const BoxConstraints(
+                    minWidth: 160,
+                    maxWidth: 240,
+                  ),
                   decoration: BoxDecoration(
                     color: colors.elevated,
                     borderRadius: .all(radius.md),
@@ -285,49 +312,63 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
                             _controller.hide();
                             item.onTap?.call();
                           },
-                          builder: (context, isHovered, isPressed, isFocused, focusNode) {
-                            final itemBg = isPressed
-                                ? colors.borderFocus.withValues(alpha: 0.15)
-                                : (isHovered
-                                    ? colors.borderFocus.withValues(alpha: 0.08)
-                                    : const Color(0x00000000));
-                            final itemFg = item.onTap != null
-                                ? (isHovered || isPressed ? colors.borderFocus : colors.textPrimary)
-                                : colors.textDisabled;
+                          builder:
+                              (
+                                context,
+                                isHovered,
+                                isPressed,
+                                isFocused,
+                                focusNode,
+                              ) {
+                                final itemBg = isPressed
+                                    ? colors.borderFocus.withValues(alpha: 0.15)
+                                    : (isHovered
+                                          ? colors.borderFocus.withValues(
+                                              alpha: 0.08,
+                                            )
+                                          : const Color(0x00000000));
+                                final itemFg = item.onTap != null
+                                    ? (isHovered || isPressed
+                                          ? colors.borderFocus
+                                          : colors.textPrimary)
+                                    : colors.textDisabled;
 
-                            return Container(
-                              color: itemBg,
-                              padding: .symmetric(
-                                horizontal: spacing.md,
-                                vertical: spacing.sm,
-                              ),
-                              child: Row(
-                                children: [
-                                  if (item.icon != null) ...[
-                                    IconTheme.merge(
-                                      data: IconThemeData(
-                                        size: 16.0,
-                                        color: itemFg,
-                                      ),
-                                      child: item.icon!,
-                                    ),
-                                    SizedBox(width: spacing.sm),
-                                  ],
-                                  Expanded(
-                                    child: Text(
-                                      item.label,
-                                      style: (widget.style?.textStyle ?? typography.bodySm).copyWith(
-                                        color: itemFg,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                return Container(
+                                  color: itemBg,
+                                  padding: .symmetric(
+                                    horizontal: spacing.md,
+                                    vertical: spacing.sm,
                                   ),
-                                ],
-                              ),
-                            );
-                          },
+                                  child: Row(
+                                    children: [
+                                      if (item.icon != null) ...[
+                                        IconTheme.merge(
+                                          data: IconThemeData(
+                                            size: 16.0,
+                                            color: itemFg,
+                                          ),
+                                          child: item.icon!,
+                                        ),
+                                        SizedBox(width: spacing.sm),
+                                      ],
+                                      Expanded(
+                                        child: Text(
+                                          item.label,
+                                          style:
+                                              (widget.style?.textStyle ??
+                                                      typography.bodySm)
+                                                  .copyWith(
+                                                    color: itemFg,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                          maxLines: 1,
+                                          overflow: .ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
                         );
                       }).toList(),
                     ),
@@ -346,10 +387,14 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
             label: 'Show collapsed breadcrumbs',
             button: true,
             child: Container(
-              padding: widget.style?.itemPadding ?? .symmetric(horizontal: spacing.xs),
+              padding:
+                  widget.style?.itemPadding ??
+                  .symmetric(horizontal: spacing.xs),
               child: DefaultTextStyle(
                 style: (widget.style?.textStyle ?? typography.bodyMd).copyWith(
-                  color: isHovered || isPressed ? colors.borderFocus : colors.textSecondary,
+                  color: isHovered || isPressed
+                      ? colors.borderFocus
+                      : colors.textSecondary,
                 ),
                 child: widget.collapsedIndicator,
               ),

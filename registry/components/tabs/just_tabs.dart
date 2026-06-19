@@ -552,7 +552,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     final bool isVertical = widget.variant == JustTabVariant.vertical;
 
     Widget headerBar = Stack(
-      clipBehavior: Clip.none,
+      clipBehavior: .none,
       children: [
         if (indicatorWidget != null) indicatorWidget,
         if (widget.isScrollable && !isVertical)

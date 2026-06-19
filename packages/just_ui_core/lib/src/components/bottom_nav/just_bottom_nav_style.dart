@@ -26,6 +26,12 @@ class JustBottomNavStyle {
   /// Custom icon size.
   final double? iconSize;
 
+  /// Custom animation duration for transitions.
+  final Duration? animationDuration;
+
+  /// Custom animation curve for transitions.
+  final Curve? animationCurve;
+
   /// Creates a [JustBottomNavStyle] override configuration.
   const JustBottomNavStyle({
     this.height,
@@ -36,5 +42,7 @@ class JustBottomNavStyle {
     this.inactiveColor,
     this.textStyle,
     this.iconSize,
+    this.animationDuration,
+    this.animationCurve,
   });
 }
