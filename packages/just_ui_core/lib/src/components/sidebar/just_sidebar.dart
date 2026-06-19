@@ -298,7 +298,7 @@ class _JustSidebarState extends State<JustSidebar>
     final hasChildren = item.children != null && item.children!.isNotEmpty;
 
     // Proportional indentation in LTR/RTL
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final isRtl = Directionality.of(context) == .rtl;
     final double indent = depth * 16.0;
 
     final EdgeInsetsGeometry defaultItemPadding = widget.variant == .inset
@@ -370,8 +370,12 @@ class _JustSidebarState extends State<JustSidebar>
                   : null,
             ),
             padding: resolvedItemPadding.copyWith(
-              left: !isRtl ? resolvedItemPadding.left + indent : resolvedItemPadding.left,
-              right: isRtl ? resolvedItemPadding.right + indent : resolvedItemPadding.right,
+              left: !isRtl
+                  ? resolvedItemPadding.left + indent
+                  : resolvedItemPadding.left,
+              right: isRtl
+                  ? resolvedItemPadding.right + indent
+                  : resolvedItemPadding.right,
             ),
             child: Row(
               children: [
@@ -473,14 +477,12 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
   }
 
   void _toggleExpand() {
-    setState(() {
-      _isExpanded = !_isExpanded;
-      if (_isExpanded) {
-        _expandController.forward();
-      } else {
-        _expandController.reverse();
-      }
-    });
+    _isExpanded = !_isExpanded;
+    if (_isExpanded) {
+      _expandController.forward();
+    } else {
+      _expandController.reverse();
+    }
   }
 
   @override
@@ -490,7 +492,7 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
       aspect: .spacing,
     ).theme.spacing;
     final radius = JustThemeProvider.of(context).theme.radius;
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final isRtl = Directionality.of(context) == .rtl;
 
     final itemPadding =
         widget.themeStyle?.itemPadding ??
@@ -498,9 +500,8 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
     final itemRadius = widget.themeStyle?.itemBorderRadius ?? .all(radius.md);
 
     // Chevron pointing side (or left in RTL) when collapsed, down when expanded
-    final Widget chevronIcon = AnimatedRotation(
-      turns: _isExpanded ? 0.25 : 0.0,
-      duration: const Duration(milliseconds: 150),
+    final Widget chevronIcon = RotationTransition(
+      turns: _expandAnimation.drive(Tween<double>(begin: 0.0, end: 0.25)),
       child: Icon(
         isRtl
             ? const IconData(0xEA60, fontFamily: 'MaterialIcons')
@@ -511,52 +512,65 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
     );
 
     // Wrap the base item row layout to support folder toggling on folder header click
-    final Widget folderHeader = JustPressable(
-      onTap: _toggleExpand,
-      builder: (context, isHovered, isPressed, isFocused, focusNode) {
-        final Color itemBg = isPressed
-            ? widget.activeColor.withValues(alpha: 0.12)
-            : (isHovered
-                  ? widget.activeColor.withValues(alpha: 0.05)
-                  : const Color(0x00000000));
+    final Widget folderHeader = AnimatedBuilder(
+      animation: _expandAnimation,
+      builder: (context, child) {
+        final isFolderExpanded = _expandController.value > 0.5;
 
-        final Color foregroundColor = isHovered || isPressed
-            ? widget.activeColor
-            : widget.inactiveColor;
+        return Semantics(
+          expanded: isFolderExpanded,
+          child: JustPressable(
+            onTap: _toggleExpand,
+            builder: (context, isHovered, isPressed, isFocused, focusNode) {
+              final Color itemBg = isPressed
+                  ? widget.activeColor.withValues(alpha: 0.12)
+                  : (isHovered
+                        ? widget.activeColor.withValues(alpha: 0.05)
+                        : const Color(0x00000000));
 
-        return Container(
-          decoration: BoxDecoration(color: itemBg, borderRadius: itemRadius),
-          padding: itemPadding.copyWith(
-            left: !isRtl
-                ? itemPadding.left + (widget.depth * 16.0)
-                : itemPadding.left,
-            right: isRtl
-                ? itemPadding.right + (widget.depth * 16.0)
-                : itemPadding.right,
-          ),
-          child: Row(
-            children: [
-              IconTheme.merge(
-                data: IconThemeData(size: 20.0, color: foregroundColor),
-                child: widget.item.icon,
-              ),
-              if (!widget.isCollapsed) ...[
-                SizedBox(width: spacing.md),
-                Expanded(
-                  child: Text(
-                    widget.item.label,
-                    style: TextStyle(
-                      color: foregroundColor,
-                      fontSize: 14.0,
-                      fontWeight: .w400,
-                    ),
-                    maxLines: 1,
-                    overflow: .ellipsis,
-                  ),
+              final Color foregroundColor = isHovered || isPressed
+                  ? widget.activeColor
+                  : widget.inactiveColor;
+
+              return Container(
+                decoration: BoxDecoration(
+                  color: itemBg,
+                  borderRadius: itemRadius,
                 ),
-                chevronIcon,
-              ],
-            ],
+                padding: itemPadding.copyWith(
+                  left: !isRtl
+                      ? itemPadding.left + (widget.depth * 16.0)
+                      : itemPadding.left,
+                  right: isRtl
+                      ? itemPadding.right + (widget.depth * 16.0)
+                      : itemPadding.right,
+                ),
+                child: Row(
+                  children: [
+                    IconTheme.merge(
+                      data: IconThemeData(size: 20.0, color: foregroundColor),
+                      child: widget.item.icon,
+                    ),
+                    if (!widget.isCollapsed) ...[
+                      SizedBox(width: spacing.md),
+                      Expanded(
+                        child: Text(
+                          widget.item.label,
+                          style: TextStyle(
+                            color: foregroundColor,
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          maxLines: 1,
+                          overflow: .ellipsis,
+                        ),
+                      ),
+                      chevronIcon,
+                    ],
+                  ],
+                ),
+              );
+            },
           ),
         );
       },
@@ -622,7 +636,7 @@ class _JustSidebarItemWidget extends StatelessWidget {
     final radius = JustThemeProvider.of(context).theme.radius;
 
     final hasChildren = item.children != null && item.children!.isNotEmpty;
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final isRtl = Directionality.of(context) == .rtl;
     final double indent = depth * 16.0;
 
     final itemPadding =
@@ -652,8 +666,12 @@ class _JustSidebarItemWidget extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(color: itemBg, borderRadius: itemRadius),
             padding: resolvedItemPadding.copyWith(
-              left: !isRtl ? resolvedItemPadding.left + indent : resolvedItemPadding.left,
-              right: isRtl ? resolvedItemPadding.right + indent : resolvedItemPadding.right,
+              left: !isRtl
+                  ? resolvedItemPadding.left + indent
+                  : resolvedItemPadding.left,
+              right: isRtl
+                  ? resolvedItemPadding.right + indent
+                  : resolvedItemPadding.right,
             ),
             child: Row(
               children: [
