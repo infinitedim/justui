@@ -7,3 +7,4 @@ export 'src/typography.dart';
 export 'src/radius.dart';
 export 'src/shadows.dart';
 export 'src/duration.dart';
+export 'src/breakpoints.dart';
