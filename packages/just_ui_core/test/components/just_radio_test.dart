@@ -11,7 +11,7 @@ void main() {
 
   Widget buildTestableWidget(Widget child) {
     return JustThemeProvider(
-      child: Directionality(textDirection: TextDirection.ltr, child: child),
+      child: Directionality(textDirection: .ltr, child: child),
     );
   }
 

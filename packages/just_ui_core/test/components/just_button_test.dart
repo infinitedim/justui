@@ -9,7 +9,7 @@ void main() {
 
   Widget buildTestableWidget(Widget child) {
     return JustThemeProvider(
-      child: Directionality(textDirection: TextDirection.ltr, child: child),
+      child: Directionality(textDirection: .ltr, child: child),
     );
   }
 
@@ -196,7 +196,7 @@ void main() {
         await tester.pumpWidget(
           JustThemeProvider(
             child: Directionality(
-              textDirection: TextDirection.ltr,
+              textDirection: .ltr,
               child: Theme(
                 data: ThemeData(
                   extensions: const [JustButtonTheme(enableHaptic: true)],
@@ -228,7 +228,7 @@ void main() {
         await tester.pumpWidget(
           JustThemeProvider(
             child: Directionality(
-              textDirection: TextDirection.ltr,
+              textDirection: .ltr,
               child: Theme(
                 data: ThemeData(
                   extensions: const [JustButtonTheme(enableHaptic: true)],
