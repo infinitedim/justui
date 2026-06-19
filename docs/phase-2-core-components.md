@@ -21,7 +21,7 @@ Phase 2 adalah jantung dari JustUI. Di sini seluruh komponen UI yang reusable ak
 ```mermaid
 graph TD
     subgraph "Milestone I"
-        A[Button] 
+        A[Button]
         B[Input]
         C[Badge]
         D[Avatar]
@@ -44,14 +44,14 @@ graph TD
         O[Sheet]
         P[Tooltip]
     end
-    
+
     A --> E
     B --> E
     C --> I
     D --> K
     E --> N
     E --> O
-    
+
     style A fill:#6C5CE7,color:#fff
     style B fill:#6C5CE7,color:#fff
     style C fill:#6C5CE7,color:#fff
@@ -78,34 +78,34 @@ graph TD
 
 #### Variants
 
-| Variant | Deskripsi | Visual |
-|---|---|---|
-| `JustButton.primary()` | Filled button dengan warna primer | Solid background, white text |
-| `JustButton.secondary()` | Outlined button dengan border | Transparent bg, colored border + text |
-| `JustButton.ghost()` | Text-only tanpa border/background | Transparent, text color only |
-| `JustButton.destructive()` | Aksi berbahaya (hapus, dll.) | Red-toned solid |
-| `JustButton.link()` | Tampil seperti hyperlink | Underlined text, no padding |
+| Variant                    | Deskripsi                         | Visual                                |
+| -------------------------- | --------------------------------- | ------------------------------------- |
+| `JustButton.primary()`     | Filled button dengan warna primer | Solid background, white text          |
+| `JustButton.secondary()`   | Outlined button dengan border     | Transparent bg, colored border + text |
+| `JustButton.ghost()`       | Text-only tanpa border/background | Transparent, text color only          |
+| `JustButton.destructive()` | Aksi berbahaya (hapus, dll.)      | Red-toned solid                       |
+| `JustButton.link()`        | Tampil seperti hyperlink          | Underlined text, no padding           |
 
 #### Sizes
 
-| Size | Height | Padding H | Font Size | Icon Size |
-|---|---|---|---|---|
-| `JustButtonSize.xs` | `28px` | `8px` | `12px` | `14px` |
-| `JustButtonSize.sm` | `32px` | `12px` | `13px` | `16px` |
-| `JustButtonSize.md` | `40px` | `16px` | `14px` | `18px` |
-| `JustButtonSize.lg` | `48px` | `20px` | `16px` | `20px` |
-| `JustButtonSize.xl` | `56px` | `24px` | `18px` | `22px` |
+| Size                | Height | Padding H | Font Size | Icon Size |
+| ------------------- | ------ | --------- | --------- | --------- |
+| `JustButtonSize.xs` | `28px` | `8px`     | `12px`    | `14px`    |
+| `JustButtonSize.sm` | `32px` | `12px`    | `13px`    | `16px`    |
+| `JustButtonSize.md` | `40px` | `16px`    | `14px`    | `18px`    |
+| `JustButtonSize.lg` | `48px` | `20px`    | `16px`    | `20px`    |
+| `JustButtonSize.xl` | `56px` | `24px`    | `18px`    | `22px`    |
 
 #### States
 
-| State | Visual Behavior |
-|---|---|
-| `default` | Idle appearance |
-| `hover` | Lightened/darkened background (±10%) |
-| `pressed` | Scale down 0.97, darkened bg |
-| `focused` | Focus ring (2px offset, primary color) |
-| `disabled` | Opacity 0.5, non-interactive |
-| `loading` | Replace label with spinner, disabled interaction |
+| State      | Visual Behavior                                  |
+| ---------- | ------------------------------------------------ |
+| `default`  | Idle appearance                                  |
+| `hover`    | Lightened/darkened background (±10%)             |
+| `pressed`  | Scale down 0.97, darkened bg                     |
+| `focused`  | Focus ring (2px offset, primary color)           |
+| `disabled` | Opacity 0.5, non-interactive                     |
+| `loading`  | Replace label with spinner, disabled interaction |
 
 #### API Surface
 
@@ -154,26 +154,26 @@ packages/just_ui_core/lib/src/components/button/
 
 #### Variants
 
-| Variant | Deskripsi |
-|---|---|
-| `JustInput.text()` | Standard text input |
-| `JustInput.password()` | Obscured text + toggle visibility |
-| `JustInput.search()` | Search icon prefix + clear button |
-| `JustInput.number()` | Numeric keyboard, optional stepper |
-| `JustInput.textarea()` | Multi-line input (auto-expand) |
-| `JustInput.otp()` | OTP/PIN code input (segmented boxes) |
+| Variant                | Deskripsi                            |
+| ---------------------- | ------------------------------------ |
+| `JustInput.text()`     | Standard text input                  |
+| `JustInput.password()` | Obscured text + toggle visibility    |
+| `JustInput.search()`   | Search icon prefix + clear button    |
+| `JustInput.number()`   | Numeric keyboard, optional stepper   |
+| `JustInput.textarea()` | Multi-line input (auto-expand)       |
+| `JustInput.otp()`      | OTP/PIN code input (segmented boxes) |
 
 #### States
 
-| State | Border Color | Label Behavior | Helper Text |
-|---|---|---|---|
-| `default` | `borderDefault` | Static above | Hint text shown |
-| `focused` | `primary` | Floating/highlighted | Hint hidden |
-| `filled` | `borderDefault` | Floating above | — |
-| `error` | `error` | Red-tinted | Error message shown |
-| `success` | `success` | Green-tinted | Success message shown |
-| `disabled` | `neutral300` | Muted | — |
-| `readOnly` | `neutral200` | Normal | — |
+| State      | Border Color    | Label Behavior       | Helper Text           |
+| ---------- | --------------- | -------------------- | --------------------- |
+| `default`  | `borderDefault` | Static above         | Hint text shown       |
+| `focused`  | `primary`       | Floating/highlighted | Hint hidden           |
+| `filled`   | `borderDefault` | Floating above       | —                     |
+| `error`    | `error`         | Red-tinted           | Error message shown   |
+| `success`  | `success`       | Green-tinted         | Success message shown |
+| `disabled` | `neutral300`    | Muted                | —                     |
+| `readOnly` | `neutral200`    | Normal               | —                     |
 
 #### API Surface
 
@@ -218,12 +218,12 @@ class JustInput extends StatefulWidget {
 
 #### Variants
 
-| Variant | Use Case |
-|---|---|
-| `JustBadge.solid()` | Status indicator (Active, Inactive) |
-| `JustBadge.outline()` | Subtle category label |
-| `JustBadge.soft()` | Tinted background, colored text |
-| `JustBadge.dot()` | Notification dot (no text) |
+| Variant               | Use Case                            |
+| --------------------- | ----------------------------------- |
+| `JustBadge.solid()`   | Status indicator (Active, Inactive) |
+| `JustBadge.outline()` | Subtle category label               |
+| `JustBadge.soft()`    | Tinted background, colored text     |
+| `JustBadge.dot()`     | Notification dot (no text)          |
 
 #### API Surface
 
@@ -247,23 +247,23 @@ class JustBadge extends StatelessWidget {
 
 #### Variants
 
-| Variant | Fallback Behavior |
-|---|---|
-| `JustAvatar.image()` | Tampilkan image, fallback ke initials |
-| `JustAvatar.initials()` | Tampilkan 1-2 huruf inisial |
-| `JustAvatar.icon()` | Tampilkan icon (default: person) |
-| `JustAvatar.group()` | Stack beberapa avatar (overlap) |
+| Variant                 | Fallback Behavior                     |
+| ----------------------- | ------------------------------------- |
+| `JustAvatar.image()`    | Tampilkan image, fallback ke initials |
+| `JustAvatar.initials()` | Tampilkan 1-2 huruf inisial           |
+| `JustAvatar.icon()`     | Tampilkan icon (default: person)      |
+| `JustAvatar.group()`    | Stack beberapa avatar (overlap)       |
 
 #### Sizes
 
-| Size | Diameter | Font Size |
-|---|---|---|
-| `xs` | `24px` | `10px` |
-| `sm` | `32px` | `12px` |
-| `md` | `40px` | `14px` |
-| `lg` | `48px` | `16px` |
-| `xl` | `64px` | `20px` |
-| `xxl` | `96px` | `28px` |
+| Size  | Diameter | Font Size |
+| ----- | -------- | --------- |
+| `xs`  | `24px`   | `10px`    |
+| `sm`  | `32px`   | `12px`    |
+| `md`  | `40px`   | `14px`    |
+| `lg`  | `48px`   | `16px`    |
+| `xl`  | `64px`   | `20px`    |
+| `xxl` | `96px`   | `28px`    |
 
 #### API Surface
 
@@ -309,11 +309,11 @@ class JustAvatarGroup extends StatelessWidget {
 
 #### Variants
 
-| Variant | Deskripsi |
-|---|---|
-| `JustCard.elevated()` | Shadow-based elevation |
-| `JustCard.outlined()` | Border-only, no shadow |
-| `JustCard.filled()` | Filled background, no border |
+| Variant                  | Deskripsi                         |
+| ------------------------ | --------------------------------- |
+| `JustCard.elevated()`    | Shadow-based elevation            |
+| `JustCard.outlined()`    | Border-only, no shadow            |
+| `JustCard.filled()`      | Filled background, no border      |
 | `JustCard.interactive()` | Clickable card dengan hover state |
 
 #### API Surface
@@ -342,7 +342,7 @@ class JustCard extends StatelessWidget {
 ```dart
 class JustSeparator extends StatelessWidget {
   const JustSeparator({
-    this.direction = Axis.horizontal,
+    this.direction = .horizontal,
     this.thickness = 1.0,
     this.color,               // Color? — default: borderDefault
     this.indent = 0.0,        // Leading indent
@@ -361,13 +361,13 @@ Skeleton/shimmer loading placeholder yang auto-match layout komponen aslinya.
 
 #### Variants
 
-| Variant | Deskripsi |
-|---|---|
-| `JustSkeleton.text()` | Placeholder untuk teks (baris-baris) |
-| `JustSkeleton.circle()` | Placeholder untuk avatar |
-| `JustSkeleton.rect()` | Placeholder untuk image/card |
-| `JustSkeleton.card()` | Preset card skeleton (image + text lines) |
-| `JustSkeleton.list()` | Preset list item skeleton |
+| Variant                 | Deskripsi                                 |
+| ----------------------- | ----------------------------------------- |
+| `JustSkeleton.text()`   | Placeholder untuk teks (baris-baris)      |
+| `JustSkeleton.circle()` | Placeholder untuk avatar                  |
+| `JustSkeleton.rect()`   | Placeholder untuk image/card              |
+| `JustSkeleton.card()`   | Preset card skeleton (image + text lines) |
+| `JustSkeleton.list()`   | Preset list item skeleton                 |
 
 #### Animation
 
@@ -386,7 +386,7 @@ class JustSkeleton extends StatefulWidget {
     this.highlightColor,      // Default: neutral100 (light) / neutral700 (dark)
     this.duration,            // Default: JustDuration.slow * 2
   });
-  
+
   // Named constructors
   const JustSkeleton.text({this.lines = 3, this.lastLineWidth = 0.6});
   const JustSkeleton.circle({this.diameter = 40});
@@ -404,7 +404,7 @@ Custom scroll area dengan scroll indicator, fade edges, dan scroll-to-top button
 class JustScrollArea extends StatefulWidget {
   const JustScrollArea({
     required this.child,
-    this.direction = Axis.vertical,
+    this.direction = .vertical,
     this.showScrollbar = true,
     this.fadeEdges = false,        // Gradient fade di top/bottom edges
     this.scrollToTopButton = false, // Floating button saat scroll down
@@ -436,12 +436,12 @@ class JustScrollArea extends StatefulWidget {
 
 #### Variants
 
-| Variant | Deskripsi |
-|---|---|
-| `JustTabs.line()` | Underline indicator (default) |
-| `JustTabs.enclosed()` | Card-style enclosed tabs |
-| `JustTabs.pill()` | Pill/chip shape tabs |
-| `JustTabs.vertical()` | Vertical tab layout |
+| Variant               | Deskripsi                     |
+| --------------------- | ----------------------------- |
+| `JustTabs.line()`     | Underline indicator (default) |
+| `JustTabs.enclosed()` | Card-style enclosed tabs      |
+| `JustTabs.pill()`     | Pill/chip shape tabs          |
+| `JustTabs.vertical()` | Vertical tab layout           |
 
 ```dart
 class JustTabs extends StatefulWidget {
@@ -465,6 +465,7 @@ class JustTab {
 ```
 
 **Spesifikasi Teknis:**
+
 - Animated indicator slide antar tab.
 - Swipe gesture support untuk mobile.
 - Lazy loading tab content (hanya render tab yang aktif).
@@ -523,6 +524,7 @@ class JustSidebarItem {
 ```
 
 **Spesifikasi Teknis:**
+
 - Smooth collapse/expand animation.
 - Tooltip muncul saat collapsed (menampilkan label).
 - Nested items dengan expand/collapse chevron.
@@ -554,6 +556,7 @@ class JustBottomNavItem {
 ```
 
 **Spesifikasi Teknis:**
+
 - `fixed`: Semua item tampil equal-width.
 - `shifting`: Item aktif expand, sisanya shrink.
 - `floating`: Floating bar dengan margin dan border radius.
@@ -577,13 +580,13 @@ class JustBottomNavItem {
 
 #### Variants
 
-| Variant | Icon | Color |
-|---|---|---|
-| `JustToast.info()` | ℹ️ Info | `info` (blue) |
+| Variant               | Icon     | Color             |
+| --------------------- | -------- | ----------------- |
+| `JustToast.info()`    | ℹ️ Info  | `info` (blue)     |
 | `JustToast.success()` | ✅ Check | `success` (green) |
 | `JustToast.warning()` | ⚠️ Alert | `warning` (amber) |
-| `JustToast.error()` | ❌ Error | `error` (red) |
-| `JustToast.custom()` | Custom | Custom color |
+| `JustToast.error()`   | ❌ Error | `error` (red)     |
+| `JustToast.custom()`  | Custom   | Custom color      |
 
 #### API — Imperative (recommended)
 
@@ -607,6 +610,7 @@ JustToast.dismissAll();
 ```
 
 **Spesifikasi Teknis:**
+
 - Toast menggunakan `OverlayEntry`, bukan `SnackBar` bawaan Flutter.
 - Stack multiple toast (max 5 visible, sisanya queue).
 - Swipe-to-dismiss di mobile.
@@ -620,13 +624,13 @@ JustToast.dismissAll();
 
 #### Variants
 
-| Variant | Use Case |
-|---|---|
-| `JustDialog.alert()` | Simple alert dengan 1 button |
-| `JustDialog.confirm()` | Konfirmasi dengan 2 button (cancel + confirm) |
-| `JustDialog.destructive()` | Konfirmasi aksi berbahaya (red CTA) |
-| `JustDialog.form()` | Dialog dengan form input |
-| `JustDialog.custom()` | Fully custom content |
+| Variant                    | Use Case                                      |
+| -------------------------- | --------------------------------------------- |
+| `JustDialog.alert()`       | Simple alert dengan 1 button                  |
+| `JustDialog.confirm()`     | Konfirmasi dengan 2 button (cancel + confirm) |
+| `JustDialog.destructive()` | Konfirmasi aksi berbahaya (red CTA)           |
+| `JustDialog.form()`        | Dialog dengan form input                      |
+| `JustDialog.custom()`      | Fully custom content                          |
 
 #### API
 
@@ -666,6 +670,7 @@ JustDialog.show(
 ```
 
 **Spesifikasi Teknis:**
+
 - Barrier color: `Colors.black.withOpacity(0.4)` (tap outside = dismiss, configurable).
 - Scale + fade entrance animation.
 - Focus trap di dalam dialog.
@@ -678,10 +683,10 @@ JustDialog.show(
 
 #### Variants
 
-| Variant | Deskripsi |
-|---|---|
-| `JustSheet.bottom()` | Bottom sheet (mobile-first) |
-| `JustSheet.side()` | Side sheet / drawer (tablet/desktop) |
+| Variant              | Deskripsi                            |
+| -------------------- | ------------------------------------ |
+| `JustSheet.bottom()` | Bottom sheet (mobile-first)          |
+| `JustSheet.side()`   | Side sheet / drawer (tablet/desktop) |
 
 ```dart
 // Bottom Sheet
@@ -709,6 +714,7 @@ JustSheet.showSide(
 ```
 
 **Spesifikasi Teknis:**
+
 - Bottom sheet mendukung **multi-snap points** (drag antar height).
 - Drag handle visual indicator.
 - Side sheet otomatis beralih ke bottom sheet di mobile breakpoint.
@@ -734,6 +740,7 @@ class JustTooltip extends StatelessWidget {
 ```
 
 **Spesifikasi Teknis:**
+
 - Smart positioning: auto-flip jika tidak cukup ruang.
 - Arrow pointer yang mengarah ke trigger element.
 - Support rich content (multi-line text, bahkan mini-widgets).
@@ -766,6 +773,7 @@ lib/src/components/<component_name>/
 ```
 
 **Barrel Export Pattern:**
+
 ```dart
 // lib/src/components/components.dart
 export 'button/just_button.dart';
@@ -782,24 +790,24 @@ export 'src/theme/theme.dart';
 
 ## Testing Strategy
 
-| Test Type | Tool | Coverage Target | Purpose |
-|---|---|---|---|
-| Unit Test | `flutter_test` | 90%+ | Logic, state, callback |
-| Widget Test | `flutter_test` | 85%+ | Rendering, interaction |
-| Golden Test | `golden_toolkit` | 1 per variant | Visual regression |
-| Accessibility Test | `flutter_test` + `Semantics` | 100% | Screen reader, focus |
-| Integration Test | `integration_test` | Showcase app | End-to-end component flow |
+| Test Type          | Tool                         | Coverage Target | Purpose                   |
+| ------------------ | ---------------------------- | --------------- | ------------------------- |
+| Unit Test          | `flutter_test`               | 90%+            | Logic, state, callback    |
+| Widget Test        | `flutter_test`               | 85%+            | Rendering, interaction    |
+| Golden Test        | `golden_toolkit`             | 1 per variant   | Visual regression         |
+| Accessibility Test | `flutter_test` + `Semantics` | 100%            | Screen reader, focus      |
+| Integration Test   | `integration_test`           | Showcase app    | End-to-end component flow |
 
 ---
 
 ## Risiko & Mitigasi
 
-| Risiko | Dampak | Mitigasi |
-|---|---|---|
-| API surface terlalu besar / bloated | Developer bingung | Keep required params minimal, gunakan named constructors |
-| Performance bottleneck di list/scroll | Jank UI | Profiling rutin, `const` constructors, `RepaintBoundary` |
-| Inkonsistensi visual antar komponen | Design terasa tidak unified | Design review checklist + golden test |
-| Platform-specific bugs (iOS vs Android) | Bug reports | Platform-specific testing di CI |
+| Risiko                                  | Dampak                      | Mitigasi                                                 |
+| --------------------------------------- | --------------------------- | -------------------------------------------------------- |
+| API surface terlalu besar / bloated     | Developer bingung           | Keep required params minimal, gunakan named constructors |
+| Performance bottleneck di list/scroll   | Jank UI                     | Profiling rutin, `const` constructors, `RepaintBoundary` |
+| Inkonsistensi visual antar komponen     | Design terasa tidak unified | Design review checklist + golden test                    |
+| Platform-specific bugs (iOS vs Android) | Bug reports                 | Platform-specific testing di CI                          |
 
 ---
 

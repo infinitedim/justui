@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Theme, InkWell;
+import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import '../../theme/theme_provider.dart';
 import '../avatar/just_avatar.dart';
@@ -42,6 +42,9 @@ class JustSkeleton extends StatefulWidget {
        _isManual = false;
 
   /// Named constructor for a manual text shape skeleton placeholder.
+  ///
+  /// Note: Escape hatches like [JustSkeletonIgnore] and [JustSkeletonAtomic]
+  /// are not supported in manual mode as there is no child tree to inspect.
   const JustSkeleton.text({
     super.key,
     double? width,
@@ -57,6 +60,9 @@ class JustSkeleton extends StatefulWidget {
        _isManual = true;
 
   /// Named constructor for a manual circular shape skeleton placeholder.
+  ///
+  /// Note: Escape hatches like [JustSkeletonIgnore] and [JustSkeletonAtomic]
+  /// are not supported in manual mode as there is no child tree to inspect.
   const JustSkeleton.circle({super.key, required double size, this.style})
     : child = const SizedBox.shrink(),
       loading = true,
@@ -67,6 +73,9 @@ class JustSkeleton extends StatefulWidget {
       _isManual = true;
 
   /// Named constructor for a manual rectangular shape skeleton placeholder.
+  ///
+  /// Note: Escape hatches like [JustSkeletonIgnore] and [JustSkeletonAtomic]
+  /// are not supported in manual mode as there is no child tree to inspect.
   const JustSkeleton.rect({
     super.key,
     double? width,
@@ -196,10 +205,7 @@ class _JustSkeletonState extends State<JustSkeleton>
               resolvedStyle: resolvedStyle,
               baseColor: resolvedBase,
               highlightColor: resolvedHighlight,
-              child: AbsorbPointer(
-                absorbing: true,
-                child: _transform(widget.child, context),
-              ),
+              child: _transform(widget.child, context),
             )
           : widget.child,
     );
@@ -213,9 +219,28 @@ class _JustSkeletonState extends State<JustSkeleton>
 
     // 2. Escape Hatch: Atomic Block
     if (widget is JustSkeletonAtomic) {
+      double? w = widget.width;
+      double? h = widget.height;
+      final child = widget.child;
+
+      if (w == null) {
+        if (child is Container) {
+          w = _getContainerWidth(child);
+        } else if (child is SizedBox) {
+          w = child.width;
+        }
+      }
+      if (h == null) {
+        if (child is Container) {
+          h = _getContainerHeight(child);
+        } else if (child is SizedBox) {
+          h = child.height;
+        }
+      }
+
       return _JustSkeletonShape(
-        width: widget.width,
-        height: widget.height,
+        width: w ?? .infinity,
+        height: h ?? 56.0,
         borderRadius: widget.borderRadius,
       );
     }
@@ -316,7 +341,7 @@ class _JustSkeletonState extends State<JustSkeleton>
           break;
       }
       return _JustSkeletonShape(
-        width: widget.isFullWidth ? double.infinity : 100.0,
+        width: widget.isFullWidth ? .infinity : 100.0,
         height: height,
         borderRadius: const .all(.circular(6.0)),
       );
@@ -350,19 +375,31 @@ class _JustSkeletonState extends State<JustSkeleton>
       final fontSize = widget.style?.fontSize ?? 14.0;
       if (textStr.isEmpty) return const SizedBox.shrink();
 
+      final textAlign = widget.textAlign ?? TextAlign.start;
+      CrossAxisAlignment columnAlignment = CrossAxisAlignment.start;
+      Alignment alignment = Alignment.centerLeft;
+      if (textAlign == TextAlign.center) {
+        columnAlignment = CrossAxisAlignment.center;
+        alignment = Alignment.center;
+      } else if (textAlign == TextAlign.end || textAlign == TextAlign.right) {
+        columnAlignment = CrossAxisAlignment.end;
+        alignment = Alignment.centerRight;
+      }
+
       if (textStr.length > 40 || textStr.contains('\n')) {
         final linesCount = textStr.contains('\n')
             ? textStr.split('\n').length
             : (textStr.length / 40).ceil();
         final clampedLines = linesCount.clamp(1, 4);
         return Column(
-          crossAxisAlignment: .start,
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: columnAlignment,
+          mainAxisSize: .min,
           children: List.generate(clampedLines, (index) {
             final isLast = index == clampedLines - 1;
             return Padding(
               padding: .only(bottom: isLast ? 0.0 : 6.0),
               child: FractionallySizedBox(
+                alignment: alignment,
                 widthFactor: isLast ? 0.6 : 1.0,
                 child: _JustSkeletonShape(
                   height: fontSize * 0.85,
@@ -385,12 +422,52 @@ class _JustSkeletonState extends State<JustSkeleton>
     if (widget is RichText) {
       final textStr = widget.text.toPlainText();
       if (textStr.isEmpty) return const SizedBox.shrink();
-      final double estimatedWidth = textStr.length * 8.0;
-      return _JustSkeletonShape(
-        width: estimatedWidth.clamp(30.0, 250.0),
-        height: 12.0,
-        borderRadius: const .all(.circular(4.0)),
-      );
+
+      final style = widget.text.style;
+      final fontSize = style?.fontSize ?? 14.0;
+
+      final textAlign = widget.textAlign;
+      CrossAxisAlignment columnAlignment = CrossAxisAlignment.start;
+      Alignment alignment = Alignment.centerLeft;
+      if (textAlign == TextAlign.center) {
+        columnAlignment = CrossAxisAlignment.center;
+        alignment = Alignment.center;
+      } else if (textAlign == TextAlign.end || textAlign == TextAlign.right) {
+        columnAlignment = CrossAxisAlignment.end;
+        alignment = Alignment.centerRight;
+      }
+
+      if (textStr.length > 40 || textStr.contains('\n')) {
+        final linesCount = textStr.contains('\n')
+            ? textStr.split('\n').length
+            : (textStr.length / 40).ceil();
+        final clampedLines = linesCount.clamp(1, 4);
+        return Column(
+          crossAxisAlignment: columnAlignment,
+          mainAxisSize: .min,
+          children: List.generate(clampedLines, (index) {
+            final isLast = index == clampedLines - 1;
+            return Padding(
+              padding: .only(bottom: isLast ? 0.0 : 6.0),
+              child: FractionallySizedBox(
+                alignment: alignment,
+                widthFactor: isLast ? 0.6 : 1.0,
+                child: _JustSkeletonShape(
+                  height: fontSize * 0.85,
+                  borderRadius: const .all(.circular(4.0)),
+                ),
+              ),
+            );
+          }),
+        );
+      } else {
+        final double estimatedWidth = textStr.length * fontSize * 0.6;
+        return _JustSkeletonShape(
+          width: estimatedWidth.clamp(30.0, 250.0),
+          height: fontSize * 0.85,
+          borderRadius: const .all(.circular(4.0)),
+        );
+      }
     }
 
     if (widget is Image || widget is RawImage) {
@@ -429,7 +506,7 @@ class _JustSkeletonState extends State<JustSkeleton>
     // 6. Stack Fallback (Avoid overlapping complexity)
     if (widget is Stack) {
       return const _JustSkeletonShape(
-        width: double.infinity,
+        width: .infinity,
         height: 120.0,
         borderRadius: .all(.circular(6.0)),
       );
@@ -437,42 +514,51 @@ class _JustSkeletonState extends State<JustSkeleton>
 
     // 7. Whitelisted Layout Containers (Pass-throughs)
     if (widget is GestureDetector) {
-      final dynamic dynamicWidget = widget;
-      return GestureDetector(
-        key: widget.key,
-        behavior: widget.behavior,
-        child: dynamicWidget.child != null
-            ? _transform(dynamicWidget.child as Widget, context)
-            : null,
-      );
-    }
-    if (widget is InkWell) {
-      final dynamic dynamicWidget = widget;
-      return InkWell(
-        key: widget.key,
-        child: dynamicWidget.child != null
-            ? _transform(dynamicWidget.child as Widget, context)
-            : null,
+      return AbsorbPointer(
+        absorbing: true,
+        child: GestureDetector(
+          key: widget.key,
+          behavior: widget.behavior,
+          child: widget.child != null
+              ? _transform(widget.child!, context)
+              : null,
+        ),
       );
     }
     if (widget is MouseRegion) {
-      final dynamic dynamicWidget = widget;
-      return MouseRegion(
-        key: widget.key,
-        cursor: widget.cursor,
-        child: dynamicWidget.child != null
-            ? _transform(dynamicWidget.child as Widget, context)
-            : null,
+      return AbsorbPointer(
+        absorbing: true,
+        child: MouseRegion(
+          key: widget.key,
+          cursor: widget.cursor,
+          child: widget.child != null
+              ? _transform(widget.child!, context)
+              : null,
+        ),
       );
     }
     if (widget is Semantics) {
-      final dynamic dynamicWidget = widget;
-      return dynamicWidget.child != null
-          ? _transform(dynamicWidget.child as Widget, context)
-          : const SizedBox.shrink();
+      final label = widget.properties.label;
+      final resolvedLabel = label != null && label.isNotEmpty
+          ? '$label (loading)'
+          : 'Loading';
+      return Semantics(
+        key: widget.key,
+        container: widget.container,
+        explicitChildNodes: widget.explicitChildNodes,
+        excludeSemantics: widget.excludeSemantics,
+        label: resolvedLabel,
+        value: widget.properties.value,
+        hint: widget.properties.hint,
+        scopesRoute: widget.properties.scopesRoute,
+        namesRoute: widget.properties.namesRoute,
+        liveRegion: widget.properties.liveRegion,
+        child: widget.child != null
+            ? _transform(widget.child!, context)
+            : const SizedBox.shrink(),
+      );
     }
     if (widget is SafeArea) {
-      final dynamic dynamicWidget = widget;
       return SafeArea(
         key: widget.key,
         left: widget.left,
@@ -481,97 +567,73 @@ class _JustSkeletonState extends State<JustSkeleton>
         bottom: widget.bottom,
         minimum: widget.minimum,
         maintainBottomViewPadding: widget.maintainBottomViewPadding,
-        child: _transform(dynamicWidget.child as Widget, context),
+        child: _transform(widget.child, context),
       );
     }
 
     // 8. Whitelisted Layout Containers (Preserved structure)
     if (widget is Padding) {
-      final dynamic dynamicWidget = widget;
       return Padding(
         padding: widget.padding,
-        child: dynamicWidget.child != null
-            ? _transform(dynamicWidget.child as Widget, context)
-            : null,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
       );
     }
     if (widget is SizedBox) {
-      final dynamic dynamicWidget = widget;
       return SizedBox(
         width: widget.width,
         height: widget.height,
-        child: dynamicWidget.child != null
-            ? _transform(dynamicWidget.child as Widget, context)
-            : null,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
       );
     }
     if (widget is Center) {
-      final dynamic dynamicWidget = widget;
       return Center(
         widthFactor: widget.widthFactor,
         heightFactor: widget.heightFactor,
-        child: dynamicWidget.child != null
-            ? _transform(dynamicWidget.child as Widget, context)
-            : null,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
       );
     }
     if (widget is Align) {
-      final dynamic dynamicWidget = widget;
       return Align(
         alignment: widget.alignment,
         widthFactor: widget.widthFactor,
         heightFactor: widget.heightFactor,
-        child: dynamicWidget.child != null
-            ? _transform(dynamicWidget.child as Widget, context)
-            : null,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
       );
     }
     if (widget is Expanded) {
-      final dynamic dynamicWidget = widget;
       return Expanded(
         flex: widget.flex,
-        child: _transform(dynamicWidget.child as Widget, context),
+        child: _transform(widget.child, context),
       );
     }
     if (widget is Flexible) {
-      final dynamic dynamicWidget = widget;
       return Flexible(
         flex: widget.flex,
         fit: widget.fit,
-        child: _transform(dynamicWidget.child as Widget, context),
+        child: _transform(widget.child, context),
       );
     }
     if (widget is Opacity) {
-      final dynamic dynamicWidget = widget;
       return Opacity(
         opacity: widget.opacity,
         alwaysIncludeSemantics: widget.alwaysIncludeSemantics,
-        child: dynamicWidget.child != null
-            ? _transform(dynamicWidget.child as Widget, context)
-            : null,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
       );
     }
     if (widget is ClipRRect) {
-      final dynamic dynamicWidget = widget;
       return ClipRRect(
         borderRadius: widget.borderRadius,
         clipBehavior: widget.clipBehavior,
-        child: dynamicWidget.child != null
-            ? _transform(dynamicWidget.child as Widget, context)
-            : null,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
       );
     }
     if (widget is ClipRect) {
-      final dynamic dynamicWidget = widget;
       return ClipRect(
         clipBehavior: widget.clipBehavior,
-        child: dynamicWidget.child != null
-            ? _transform(dynamicWidget.child as Widget, context)
-            : null,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
       );
     }
     if (widget is Container) {
-      final dynamic dynamicWidget = widget;
       return Container(
         alignment: widget.alignment,
         padding: widget.padding,
@@ -585,9 +647,50 @@ class _JustSkeletonState extends State<JustSkeleton>
         transform: widget.transform,
         transformAlignment: widget.transformAlignment,
         clipBehavior: widget.clipBehavior,
-        child: dynamicWidget.child != null
-            ? _transform(dynamicWidget.child as Widget, context)
-            : null,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
+      );
+    }
+    if (widget is DecoratedBox) {
+      return DecoratedBox(
+        decoration: widget.decoration,
+        position: widget.position,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
+      );
+    }
+    if (widget is ColoredBox) {
+      return ColoredBox(
+        color: widget.color,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
+      );
+    }
+    if (widget is ConstrainedBox) {
+      return ConstrainedBox(
+        constraints: widget.constraints,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
+      );
+    }
+    if (widget is FractionallySizedBox) {
+      return FractionallySizedBox(
+        alignment: widget.alignment,
+        widthFactor: widget.widthFactor,
+        heightFactor: widget.heightFactor,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
+      );
+    }
+    if (widget is AspectRatio) {
+      return AspectRatio(
+        aspectRatio: widget.aspectRatio,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
+      );
+    }
+    if (widget is Transform) {
+      return Transform(
+        transform: widget.transform,
+        origin: widget.origin,
+        alignment: widget.alignment,
+        transformHitTests: widget.transformHitTests,
+        filterQuality: widget.filterQuality,
+        child: widget.child != null ? _transform(widget.child!, context) : null,
       );
     }
 
@@ -632,7 +735,27 @@ class _JustSkeletonState extends State<JustSkeleton>
       );
     }
 
-    // 9. Unknown Widget Fallback
+    // 9. Dynamic Fallback for Custom/Third-party Layout Wrappers
+    try {
+      final dynamic dynamicWidget = widget;
+      if (dynamicWidget.child is Widget) {
+        return _transform(dynamicWidget.child as Widget, context);
+      }
+    } catch (_) {}
+
+    try {
+      final dynamic dynamicWidget = widget;
+      if (dynamicWidget.children is List<Widget>) {
+        final childrenList = (dynamicWidget.children as List).cast<Widget>();
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: childrenList.map((c) => _transform(c, context)).toList(),
+        );
+      }
+    } catch (_) {}
+
+    // 10. Unknown Widget Fallback
     return const _JustSkeletonShape(
       width: 120.0,
       height: 40.0,
@@ -660,16 +783,30 @@ class _JustSkeletonScope extends InheritedWidget {
     return context.dependOnInheritedWidgetOfExactType<_JustSkeletonScope>();
   }
 
-  Shader createShader(Rect bounds, double value) {
-    final double sweepWidth = bounds.width;
+  Shader createShader(Rect bounds, double value, BuildContext context) {
+    double screenWidth = 1000.0;
+    try {
+      screenWidth = MediaQuery.sizeOf(context).width;
+    } catch (_) {}
+
+    final renderBox = context.findRenderObject() as RenderBox?;
+    double globalX = 0.0;
+    if (renderBox != null && renderBox.hasSize) {
+      try {
+        globalX = renderBox.localToGlobal(Offset.zero).dx;
+      } catch (_) {}
+    }
+
+    final double sweepWidth = screenWidth;
     final double xOffset = -sweepWidth + (sweepWidth * 2 * value);
+    final double localXOffset = xOffset - globalX;
 
     return LinearGradient(
-      begin: .centerLeft,
-      end: .centerRight,
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
       colors: [baseColor, highlightColor, baseColor],
       stops: const [0.0, 0.5, 1.0],
-      transform: _GradientTranslation(xOffset),
+      transform: _GradientTranslation(localXOffset),
     ).createShader(bounds);
   }
 
@@ -753,7 +890,11 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
           builder: (context, child) {
             return ShaderMask(
               shaderCallback: (bounds) {
-                return scope.createShader(bounds, scope.animation.value);
+                return scope.createShader(
+                  bounds,
+                  scope.animation.value,
+                  context,
+                );
               },
               blendMode: .srcATop,
               child: child,
@@ -775,14 +916,29 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
             final double value = _localController!.value;
             return ShaderMask(
               shaderCallback: (bounds) {
-                final double sweepWidth = bounds.width;
+                double screenWidth = 1000.0;
+                try {
+                  screenWidth = MediaQuery.sizeOf(context).width;
+                } catch (_) {}
+
+                final renderBox = context.findRenderObject() as RenderBox?;
+                double globalX = 0.0;
+                if (renderBox != null && renderBox.hasSize) {
+                  try {
+                    globalX = renderBox.localToGlobal(Offset.zero).dx;
+                  } catch (_) {}
+                }
+
+                final double sweepWidth = screenWidth;
                 final double xOffset = -sweepWidth + (sweepWidth * 2 * value);
+                final double localXOffset = xOffset - globalX;
+
                 return LinearGradient(
-                  begin: .centerLeft,
-                  end: .centerRight,
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
                   colors: [baseColor, highlightColor, baseColor],
                   stops: const [0.0, 0.5, 1.0],
-                  transform: _GradientTranslation(xOffset),
+                  transform: _GradientTranslation(localXOffset),
                 ).createShader(bounds);
               },
               blendMode: .srcATop,
@@ -832,6 +988,11 @@ class JustSkeletonIgnore extends StatelessWidget {
 
 /// Wrapper widget that acts as an escape hatch to force its entire child sub-tree
 /// into a single atomic solid skeleton shape block during a skeleton loading state.
+///
+/// If [width] or [height] is null, the loader will attempt to resolve dimensions
+/// from the child if it is a [Container] or [SizedBox] with explicit sizes.
+/// If dimensions cannot be resolved, they fall back to predictable defaults
+/// ([double.infinity] for width, and `56.0` for height).
 class JustSkeletonAtomic extends StatelessWidget {
   /// The child widget.
   final Widget child;

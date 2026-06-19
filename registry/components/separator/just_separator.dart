@@ -47,7 +47,7 @@ class JustSeparator extends StatelessWidget {
   /// Creates a standard [JustSeparator].
   const JustSeparator({
     super.key,
-    this.direction = Axis.horizontal,
+    this.direction = .horizontal,
     this.thickness = 1.0,
     this.color,
     this.indent = 0.0,
@@ -114,12 +114,13 @@ class JustSeparator extends StatelessWidget {
         style?.labelPadding ?? themeStyle?.labelPadding ?? .all(spacing.sm);
 
     // Resolve direction adaptively if null
-    final resolvedDirection = direction ??
+    final resolvedDirection =
+        direction ??
         (MediaQuery.sizeOf(context).width < breakpoint
-            ? Axis.horizontal
-            : Axis.vertical);
+            ? .horizontal
+            : .vertical);
 
-    if (resolvedDirection == Axis.horizontal) {
+    if (resolvedDirection == .horizontal) {
       if (label == null) {
         return Padding(
           padding: .only(left: resolvedIndent, right: resolvedEndIndent),
