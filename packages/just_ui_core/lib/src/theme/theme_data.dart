@@ -317,23 +317,26 @@ final class TintedShadowScheme extends JustShadowScheme {
   final Color seedColor;
   final bool isDark;
 
-  const TintedShadowScheme({
-    required this.seedColor,
-    required this.isDark,
-  });
+  const TintedShadowScheme({required this.seedColor, required this.isDark});
 
   @override
-  List<BoxShadow> get xs => JustShadows.generate(seedColor: seedColor, elevation: 1, isDark: isDark);
+  List<BoxShadow> get xs =>
+      JustShadows.generate(seedColor: seedColor, elevation: 1, isDark: isDark);
   @override
-  List<BoxShadow> get sm => JustShadows.generate(seedColor: seedColor, elevation: 2, isDark: isDark);
+  List<BoxShadow> get sm =>
+      JustShadows.generate(seedColor: seedColor, elevation: 2, isDark: isDark);
   @override
-  List<BoxShadow> get md => JustShadows.generate(seedColor: seedColor, elevation: 4, isDark: isDark);
+  List<BoxShadow> get md =>
+      JustShadows.generate(seedColor: seedColor, elevation: 4, isDark: isDark);
   @override
-  List<BoxShadow> get lg => JustShadows.generate(seedColor: seedColor, elevation: 8, isDark: isDark);
+  List<BoxShadow> get lg =>
+      JustShadows.generate(seedColor: seedColor, elevation: 8, isDark: isDark);
   @override
-  List<BoxShadow> get xl => JustShadows.generate(seedColor: seedColor, elevation: 16, isDark: isDark);
+  List<BoxShadow> get xl =>
+      JustShadows.generate(seedColor: seedColor, elevation: 16, isDark: isDark);
   @override
-  List<BoxShadow> get xxl => JustShadows.generate(seedColor: seedColor, elevation: 24, isDark: isDark);
+  List<BoxShadow> get xxl =>
+      JustShadows.generate(seedColor: seedColor, elevation: 24, isDark: isDark);
 }
 
 // ==========================================
@@ -411,9 +414,18 @@ class JustThemeData {
 
     if (isDark) {
       bg = JustDynamicSurfaces.generateDarkSurface(seedColor, lightness: 0.03);
-      card = JustDynamicSurfaces.generateDarkSurface(seedColor, lightness: 0.07);
-      elevated = JustDynamicSurfaces.generateDarkSurface(seedColor, lightness: 0.12);
-      overlay = JustDynamicSurfaces.generateDarkSurface(seedColor, lightness: 0.02);
+      card = JustDynamicSurfaces.generateDarkSurface(
+        seedColor,
+        lightness: 0.07,
+      );
+      elevated = JustDynamicSurfaces.generateDarkSurface(
+        seedColor,
+        lightness: 0.12,
+      );
+      overlay = JustDynamicSurfaces.generateDarkSurface(
+        seedColor,
+        lightness: 0.02,
+      );
     } else {
       bg = JustColorSemanticLight.background;
       card = JustColorSemanticLight.card;
@@ -432,10 +444,18 @@ class JustThemeData {
     final borderFocusColor = _makeAccessible(primary, bg, minRatio: 3.0);
 
     // Dynamic contrast enforcement for semantic state colors against generated background
-    final successBase = isDark ? JustColorSemanticDark.success : JustColorSemanticLight.success;
-    final warningBase = isDark ? JustColorSemanticDark.warning : JustColorSemanticLight.warning;
-    final errorBase = isDark ? JustColorSemanticDark.error : JustColorSemanticLight.error;
-    final infoBase = isDark ? JustColorSemanticDark.info : JustColorSemanticLight.info;
+    final successBase = isDark
+        ? JustColorSemanticDark.success
+        : JustColorSemanticLight.success;
+    final warningBase = isDark
+        ? JustColorSemanticDark.warning
+        : JustColorSemanticLight.warning;
+    final errorBase = isDark
+        ? JustColorSemanticDark.error
+        : JustColorSemanticLight.error;
+    final infoBase = isDark
+        ? JustColorSemanticDark.info
+        : JustColorSemanticLight.info;
 
     final successColor = _makeAccessible(successBase, bg, minRatio: 4.5);
     final warningColor = _makeAccessible(warningBase, bg, minRatio: 3.0);

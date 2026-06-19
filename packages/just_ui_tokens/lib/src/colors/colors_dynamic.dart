@@ -163,8 +163,10 @@ abstract final class JustDynamicSurfaces {
     double saturationFactor = 0.20,
   }) {
     final HSLColor hsl = .fromColor(seedColor);
-    final double s = (hsl.saturation * saturationFactor).clamp(0.0, maxSaturation);
+    final double s = (hsl.saturation * saturationFactor).clamp(
+      0.0,
+      maxSaturation,
+    );
     return HSLColor.fromAHSL(1.0, hsl.hue, s, lightness).toColor();
   }
 }
-

@@ -118,11 +118,15 @@ void main() {
       // Light Mode seed checks
       final lightTheme = JustThemeData.fromSeed(seed, isDark: false);
       expect(
-        lightTheme.colors.success.contrastRatioWith(lightTheme.colors.background),
+        lightTheme.colors.success.contrastRatioWith(
+          lightTheme.colors.background,
+        ),
         greaterThanOrEqualTo(4.5),
       );
       expect(
-        lightTheme.colors.warning.contrastRatioWith(lightTheme.colors.background),
+        lightTheme.colors.warning.contrastRatioWith(
+          lightTheme.colors.background,
+        ),
         greaterThanOrEqualTo(3.0),
       );
       expect(
@@ -152,19 +156,22 @@ void main() {
       expect(hslBg.lightness, equals(0.03));
     });
 
-    test('FluidSpacingScheme and FluidRadiusScheme scale based on screen width', () {
-      const spacingSmall = FluidSpacingScheme(width: 320.0);
-      const spacingLarge = FluidSpacingScheme(width: 1024.0);
+    test(
+      'FluidSpacingScheme and FluidRadiusScheme scale based on screen width',
+      () {
+        const spacingSmall = FluidSpacingScheme(width: 320.0);
+        const spacingLarge = FluidSpacingScheme(width: 1024.0);
 
-      expect(spacingSmall.md, lessThan(spacingLarge.md));
-      expect(spacingLarge.md, equals(12.0)); // standard md size is 12
+        expect(spacingSmall.md, lessThan(spacingLarge.md));
+        expect(spacingLarge.md, equals(12.0)); // standard md size is 12
 
-      const radiusSmall = FluidRadiusScheme(width: 320.0);
-      const radiusLarge = FluidRadiusScheme(width: 1024.0);
+        const radiusSmall = FluidRadiusScheme(width: 320.0);
+        const radiusLarge = FluidRadiusScheme(width: 1024.0);
 
-      expect(radiusSmall.md.x, lessThan(radiusLarge.md.x));
-      expect(radiusLarge.md.x, equals(8.0)); // standard md radius is 8
-    });
+        expect(radiusSmall.md.x, lessThan(radiusLarge.md.x));
+        expect(radiusLarge.md.x, equals(8.0)); // standard md radius is 8
+      },
+    );
 
     test('TintedShadowScheme generates tinted dual-layer shadows', () {
       const seed = Color(0xFF3B82F6);
@@ -172,8 +179,14 @@ void main() {
 
       final smShadows = shadowsScheme.sm;
       expect(smShadows.length, equals(2));
-      expect(smShadows[0].color.computeLuminance(), closeTo(0, 0.01)); // key shadow is dark
-      expect(HSLColor.fromColor(smShadows[1].color).hue, closeTo(HSLColor.fromColor(seed).hue, 0.01)); // ambient shadow is tinted
+      expect(
+        smShadows[0].color.computeLuminance(),
+        closeTo(0, 0.01),
+      ); // key shadow is dark
+      expect(
+        HSLColor.fromColor(smShadows[1].color).hue,
+        closeTo(HSLColor.fromColor(seed).hue, 0.01),
+      ); // ambient shadow is tinted
     });
   });
 
