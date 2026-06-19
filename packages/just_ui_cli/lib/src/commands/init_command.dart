@@ -2,6 +2,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import '../config/justui_config.dart';
 import '../utils/logger.dart';
+import '../utils/prompt.dart';
 
 /// The CLI command to initialize JustUI in a Flutter project.
 class InitCommand extends Command<void> {
@@ -10,7 +11,7 @@ class InitCommand extends Command<void> {
 
   @override
   final String description =
-      'Initialize JustUI configuration in the project root.';
+      'Initialize JustUI configuration and themes in the project root.';
 
   /// Mockable file system instance.
   final FileSystem fileSystem;
@@ -39,16 +40,83 @@ class InitCommand extends Command<void> {
       return;
     }
 
-    // 3. Write default configuration file
+    JustLogger.stdout('=== JustUI Initialization Wizard ===');
+
+    // 3. Prompt for components directory
+    final componentsDir = JustPrompt.ask(
+      'Enter the directory for UI components',
+      defaultValue: 'lib/ui',
+    );
+
+    // 4. Prompt for tokens directory
+    final tokensDir = JustPrompt.ask(
+      'Enter the directory for design tokens',
+      defaultValue: 'lib/tokens',
+    );
+
+    // 5. Prompt for brand seed color
+    String brandColor = '#3b82f6';
+    final hexRegex = RegExp(r'^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$');
+    while (true) {
+      final input = JustPrompt.ask(
+        'Enter your brand seed color (HEX)',
+        defaultValue: '#3b82f6',
+      );
+      if (hexRegex.hasMatch(input)) {
+        brandColor = input;
+        break;
+      }
+      JustLogger.error(
+        'Invalid HEX color format. Please try again (e.g. #3b82f6 or FFF).',
+      );
+    }
+
+    // Standardize hex representation to 8-digit uppercase (e.g. 0xFF3B82F6)
+    String cleanHex = brandColor.replaceAll('#', '').toUpperCase();
+    if (cleanHex.length == 3) {
+      cleanHex = cleanHex.split('').map((c) => '$c$c').join();
+    }
+    final hexCode = '0xFF$cleanHex';
+
+    // 6. Write configuration file
     try {
-      final config = JustUIConfig.default_;
+      final config = JustUIConfig(
+        componentsDir: componentsDir,
+        tokensDir: tokensDir,
+        registryUrl: JustUIConfig.default_.registryUrl,
+      );
       configFile.writeAsStringSync(config.toYamlString());
-      JustLogger.success('JustUI initialized successfully.');
+      JustLogger.success('JustUI configuration initialized.');
       JustLogger.info(
         'Configuration written to ${JustUIConfig.configFileName}',
       );
+
+      // 7. Scaffold standard theme file bootstrap
+      final themeDir = fileSystem.directory('lib/theme');
+      themeDir.createSync(recursive: true);
+      final themeFile = fileSystem.file('lib/theme/just_theme.dart');
+
+      themeFile.writeAsStringSync('''
+import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+/// Dynamically generated light theme from brand seed color.
+final JustThemeData justThemeLight = JustThemeData.fromSeed(
+  const Color($hexCode),
+  isDark: false,
+);
+
+/// Dynamically generated dark theme from brand seed color.
+final JustThemeData justThemeDark = JustThemeData.fromSeed(
+  const Color($hexCode),
+  isDark: true,
+);
+''');
+      JustLogger.success(
+        'Bootstrap theme created at lib/theme/just_theme.dart',
+      );
     } catch (e) {
-      JustLogger.error('Failed to create configuration file: $e');
+      JustLogger.error('Failed to initialize JustUI: $e');
     }
   }
 }

@@ -17,6 +17,7 @@ void main() {
 
   tearDown(() {
     JustLogger.testStdoutSink = null;
+    JustPrompt.testInputReader = null;
   });
 
   group('JustUIConfig Tests', () {
@@ -474,5 +475,270 @@ registry_url: mock_registry
         expect(logs.any((l) => l.contains('le.dart: Up to date')), isTrue);
       },
     );
+  });
+
+  group('Interactive CLI & Scaffolding Tests', () {
+    test('JustPrompt confirm and ask work with mock input', () {
+      int idx = 0;
+      final inputs = ['y', 'no', 'custom_value'];
+      JustPrompt.testInputReader = () => inputs[idx++];
+
+      expect(JustPrompt.confirm('Message'), isTrue);
+      expect(JustPrompt.confirm('Message'), isFalse);
+      expect(
+        JustPrompt.ask('Message', defaultValue: 'default'),
+        equals('custom_value'),
+      );
+    });
+
+    test('JustPrompt selectMultiple works with indices and all', () {
+      int idx = 0;
+      final inputs = ['1, 3', 'all'];
+      JustPrompt.testInputReader = () => inputs[idx++];
+
+      final options = ['opt1', 'opt2', 'opt3', 'opt4'];
+      expect(JustPrompt.selectMultiple('Message', options), equals([0, 2]));
+      expect(
+        JustPrompt.selectMultiple('Message', options),
+        equals([0, 1, 2, 3]),
+      );
+    });
+
+    test(
+      'InitCommand wizard custom inputs generate seeded theme class',
+      () async {
+        fs.file('pubspec.yaml').writeAsStringSync('name: test');
+
+        int idx = 0;
+        final inputs = ['src/ui', 'src/tokens', '#ff00ff'];
+        JustPrompt.testInputReader = () => inputs[idx++];
+
+        await runCli(['init'], fs);
+
+        expect(fs.file('justui.config.yaml').existsSync(), isTrue);
+        final configContent = fs.file('justui.config.yaml').readAsStringSync();
+        expect(configContent, contains('components_dir: src/ui'));
+        expect(configContent, contains('tokens_dir: src/tokens'));
+
+        expect(fs.file('lib/theme/just_theme.dart').existsSync(), isTrue);
+        final themeContent = fs
+            .file('lib/theme/just_theme.dart')
+            .readAsStringSync();
+        expect(themeContent, contains('const Color(0xFFFF00FF)'));
+      },
+    );
+
+    test('AddCommand interactive selection when no arguments', () async {
+      fs.file('pubspec.yaml').writeAsStringSync('name: test');
+      fs.file('justui.config.yaml').writeAsStringSync('''
+components_dir: lib/ui
+tokens_dir: lib/tokens
+registry_url: mock_registry
+''');
+      fs.directory('mock_registry').createSync(recursive: true);
+      fs
+          .file('mock_registry/index.json')
+          .writeAsStringSync(
+            jsonEncode({
+              'version': '1',
+              'components': [
+                {
+                  'name': 'button',
+                  'version': '0.1.0',
+                  'description': 'Button component',
+                  'category': 'primitives',
+                  'registryDependencies': [],
+                  'pubDependencies': {},
+                  'files': [
+                    {
+                      'name': 'just_button.dart',
+                      'path': 'components/button/just_button.dart',
+                      'checksum':
+                          'sha256:${sha256.convert(utf8.encode('button_code')).toString()}',
+                    },
+                  ],
+                },
+              ],
+            }),
+          );
+      fs.file('mock_registry/components/button/just_button.dart')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('button_code');
+
+      // Select first component (index 1)
+      int idx = 0;
+      final inputs = ['1'];
+      JustPrompt.testInputReader = () => inputs[idx++];
+
+      await runCli(['add'], fs);
+
+      expect(fs.file('lib/ui/button/just_button.dart').existsSync(), isTrue);
+      expect(
+        fs.file('lib/ui/button/just_button.dart').readAsStringSync(),
+        equals('button_code'),
+      );
+    });
+
+    test(
+      'AddCommand Overwrite Guard prompts when local content differs',
+      () async {
+        fs.file('pubspec.yaml').writeAsStringSync('name: test');
+        fs.file('justui.config.yaml').writeAsStringSync('''
+components_dir: lib/ui
+tokens_dir: lib/tokens
+registry_url: mock_registry
+''');
+        fs.directory('mock_registry').createSync(recursive: true);
+
+        final expectedHash = sha256
+            .convert(utf8.encode('remote_code'))
+            .toString();
+        fs
+            .file('mock_registry/index.json')
+            .writeAsStringSync(
+              jsonEncode({
+                'version': '1',
+                'components': [
+                  {
+                    'name': 'button',
+                    'version': '0.1.0',
+                    'description': 'Button',
+                    'category': 'primitives',
+                    'registryDependencies': [],
+                    'pubDependencies': {},
+                    'files': [
+                      {
+                        'name': 'just_button.dart',
+                        'path': 'components/button/just_button.dart',
+                        'checksum': 'sha256:$expectedHash',
+                      },
+                    ],
+                  },
+                ],
+              }),
+            );
+        fs.file('mock_registry/components/button/just_button.dart')
+          ..createSync(recursive: true)
+          ..writeAsStringSync('remote_code');
+
+        // Local file exists and differs
+        final localFile = fs.file('lib/ui/button/just_button.dart')
+          ..createSync(recursive: true)
+          ..writeAsStringSync('local_code');
+
+        // First run: choose 's' (skip)
+        int idx = 0;
+        var inputs = ['s'];
+        JustPrompt.testInputReader = () => inputs[idx++];
+
+        await runCli(['add', 'button'], fs);
+        expect(localFile.readAsStringSync(), equals('local_code'));
+
+        // Second run: choose 'o' (overwrite)
+        idx = 0;
+        inputs = ['o'];
+        JustPrompt.testInputReader = () => inputs[idx++];
+
+        await runCli(['add', 'button'], fs);
+        expect(localFile.readAsStringSync(), equals('remote_code'));
+      },
+    );
+
+    test('UpdateCommand updates outdated components', () async {
+      fs.file('pubspec.yaml').writeAsStringSync('name: test');
+      fs.file('justui.config.yaml').writeAsStringSync('''
+components_dir: lib/ui
+tokens_dir: lib/tokens
+registry_url: mock_registry
+''');
+      fs.directory('mock_registry').createSync(recursive: true);
+
+      final remoteHash = sha256.convert(utf8.encode('new_code')).toString();
+      fs
+          .file('mock_registry/index.json')
+          .writeAsStringSync(
+            jsonEncode({
+              'version': '1',
+              'components': [
+                {
+                  'name': 'button',
+                  'version': '0.2.0',
+                  'description': 'Button',
+                  'category': 'primitives',
+                  'registryDependencies': [],
+                  'pubDependencies': {},
+                  'files': [
+                    {
+                      'name': 'just_button.dart',
+                      'path': 'components/button/just_button.dart',
+                      'checksum': 'sha256:$remoteHash',
+                    },
+                  ],
+                },
+              ],
+            }),
+          );
+      fs.file('mock_registry/components/button/just_button.dart')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('new_code');
+
+      // Locally installed but outdated
+      final localFile = fs.file('lib/ui/button/just_button.dart')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('old_code');
+
+      // Update command: select '1' (button) and then 'o' (overwrite guard)
+      int idx = 0;
+      final inputs = ['1', 'o'];
+      JustPrompt.testInputReader = () => inputs[idx++];
+
+      await runCli(['update'], fs);
+
+      expect(localFile.readAsStringSync(), equals('new_code'));
+    });
+
+    test('CreateCommand scaffolds custom component 4-file bundle', () async {
+      fs.file('pubspec.yaml').writeAsStringSync('name: test');
+      fs.file('justui.config.yaml').writeAsStringSync('''
+components_dir: lib/ui
+tokens_dir: lib/tokens
+registry_url: mock_registry
+''');
+
+      await runCli(['create', 'fancy_card'], fs);
+
+      final componentDir = 'lib/ui/fancy_card';
+      expect(fs.file('$componentDir/fancy_card.dart').existsSync(), isTrue);
+      expect(
+        fs.file('$componentDir/fancy_card_style.dart').existsSync(),
+        isTrue,
+      );
+      expect(
+        fs.file('$componentDir/fancy_card_variants.dart').existsSync(),
+        isTrue,
+      );
+      expect(
+        fs.file('$componentDir/fancy_card_theme.dart').existsSync(),
+        isTrue,
+      );
+
+      final widgetContent = fs
+          .file('$componentDir/fancy_card.dart')
+          .readAsStringSync();
+      expect(
+        widgetContent,
+        contains('class FancyCard extends StatelessWidget'),
+      );
+      expect(widgetContent, contains('const FancyCard({'));
+      expect(widgetContent, contains('this.variant = .default_'));
+
+      final themeContent = fs
+          .file('$componentDir/fancy_card_theme.dart')
+          .readAsStringSync();
+      expect(
+        themeContent,
+        contains('class FancyCardTheme extends ThemeExtension<FancyCardTheme>'),
+      );
+    });
   });
 }
