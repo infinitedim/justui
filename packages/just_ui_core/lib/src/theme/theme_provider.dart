@@ -96,16 +96,28 @@ class JustThemeProviderState extends State<JustThemeProvider>
 
   /// Retrieves the active resolved [JustThemeData] based on [themeMode] and system brightness.
   JustThemeData get theme {
+    final JustThemeData baseTheme;
     switch (_themeMode) {
       case .light:
-        return _lightTheme;
+        baseTheme = _lightTheme;
+        break;
       case .dark:
-        return _darkTheme;
+        baseTheme = _darkTheme;
+        break;
       case .system:
         final brightness =
             WidgetsBinding.instance.platformDispatcher.platformBrightness;
-        return brightness == .dark ? _darkTheme : _lightTheme;
+        baseTheme = brightness == .dark ? _darkTheme : _lightTheme;
+        break;
     }
+
+    final mediaQuery = MediaQuery.maybeOf(context);
+    final double width = mediaQuery?.size.width ?? 1024.0;
+
+    return baseTheme.copyWith(
+      spacing: FluidSpacingScheme(width: width),
+      radius: FluidRadiusScheme(width: width),
+    );
   }
 
   @override

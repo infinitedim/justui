@@ -2,9 +2,13 @@ export 'src/colors/color_palette.dart';
 export 'src/colors/color_semantic.dart';
 export 'src/colors/color_tokens.dart';
 export 'src/colors/colors_accessibility.dart';
+export 'src/colors/colors_dynamic.dart';
 export 'src/spacing.dart';
 export 'src/typography.dart';
+export 'src/typography_fluid.dart';
 export 'src/radius.dart';
 export 'src/shadows.dart';
 export 'src/duration.dart';
 export 'src/breakpoints.dart';
+export 'src/motion.dart';
+

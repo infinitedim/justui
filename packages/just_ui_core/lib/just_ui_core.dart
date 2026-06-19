@@ -32,6 +32,28 @@ extension JustThemeContext on BuildContext {
   JustSpacingScheme get justSpacing =>
       JustThemeProvider.of(this, aspect: .spacing).theme.spacing;
 
+  /// Retrieves the active [JustRadiusScheme] and subscribes the context
+  /// to rebuild *only* when the radius aspect changes.
+  JustRadiusScheme get justRadius =>
+      JustThemeProvider.of(this, aspect: .radius).theme.radius;
+
+  /// Retrieves the active [JustShadowScheme] and subscribes the context
+  /// to rebuild *only* when the shadows aspect changes.
+  JustShadowScheme get justShadows =>
+      JustThemeProvider.of(this, aspect: .shadows).theme.shadows;
+
+  /// Retrieves the active [JustMotionProfile] and subscribes the context
+  /// to rebuild *only* when the animations aspect changes.
+  JustMotionProfile get justAnimations =>
+      JustThemeProvider.of(this, aspect: .animations).theme.animations;
+
+  /// Retrieves the active resolved [JustMotionProfile] and subscribes the context
+  /// to rebuild *only* when the animations aspect changes.
+  ///
+  /// Automatically returns [JustMotionProfile.reduced] if the system requests
+  /// reduced motion via accessibility settings.
+  JustMotionProfile get justMotion => justAnimations.resolve(this);
+
   /// Reads the active theme configuration without registering a rebuild dependency.
   ///
   /// Ideal for use within callbacks or static configurations.
