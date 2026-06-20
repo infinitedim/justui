@@ -17,7 +17,15 @@ class InitCommand extends Command<void> {
   final FileSystem fileSystem;
 
   /// Creates an [InitCommand].
-  InitCommand(this.fileSystem);
+  /// Creates an [InitCommand].
+  InitCommand(this.fileSystem) {
+    argParser.addOption(
+      'preset',
+      help: 'Theme preset style to initialize.',
+      allowed: ['default', 'neobrutalism'],
+      defaultsTo: 'default',
+    );
+  }
 
   @override
   void run() {
@@ -40,7 +48,22 @@ class InitCommand extends Command<void> {
       return;
     }
 
+    final presetArg = argResults?['preset'] as String? ?? 'default';
+    final wasPresetParsed = argResults?.wasParsed('preset') ?? false;
+
     JustLogger.stdout('=== JustUI Initialization Wizard ===');
+
+    // Prompt for visual style preset
+    String preset = presetArg;
+    if (!wasPresetParsed) {
+      preset = JustPrompt.ask(
+        'Select visual style preset (default, neobrutalism)',
+        defaultValue: 'default',
+      );
+      if (preset != 'default' && preset != 'neobrutalism') {
+        preset = 'default';
+      }
+    }
 
     // 3. Prompt for components directory
     final componentsDir = JustPrompt.ask(
@@ -96,6 +119,10 @@ class InitCommand extends Command<void> {
       themeDir.createSync(recursive: true);
       final themeFile = fileSystem.file('lib/theme/just_theme.dart');
 
+      final presetParam = preset == 'neobrutalism'
+          ? '\n  preset: JustThemePreset.neobrutalism,'
+          : '';
+
       themeFile.writeAsStringSync('''
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
@@ -103,13 +130,13 @@ import 'package:just_ui_core/just_ui_core.dart';
 /// Dynamically generated light theme from brand seed color.
 final JustThemeData justThemeLight = JustThemeData.fromSeed(
   const Color($hexCode),
-  isDark: false,
+  isDark: false,$presetParam
 );
 
 /// Dynamically generated dark theme from brand seed color.
 final JustThemeData justThemeDark = JustThemeData.fromSeed(
   const Color($hexCode),
-  isDark: true,
+  isDark: true,$presetParam
 );
 ''');
       JustLogger.success(

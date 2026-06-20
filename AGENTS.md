@@ -99,3 +99,24 @@ Ketika bekerja di sandbox ini, harap perhatikan aturan lingkungan berikut:
      flutter test packages/just_ui_tokens
      flutter test packages/just_ui_core
      ```
+
+---
+
+## 6. Style Presets & Neobrutalism Guidelines
+
+Ketika mengimplementasikan atau memodifikasi visual style preset kustom (seperti `neobrutalism`), AI Agent wajib mematuhi aturan berikut:
+
+1. **Perhitungan Inner-Layout & Border Overlap**:
+   * Karena `BoxDecoration` menggambarkan border ke bagian dalam (`BorderAlign.inside`), komponen dengan layout internal ketat (seperti track dan thumb pada `JustSwitch`) harus menyesuaikan dimensinya. 
+   * Kurangi ukuran thumb secara dinamis sebesar `2 * borderWidth` di bawah preset `neobrutalism` dan offset peletakannya di stack (`Positioned(top: padding + borderWidth, left: padding + borderWidth)`) agar tidak melebihi batas border track.
+
+2. **Mencegah Visual Drift (Jitter) Animasi Tekan**:
+   * Untuk mencocokkan pergerakan posisi (translate) elemen dengan hilangnya bayangan solid (shadow offset collapsing) ketika ditekan, set durasi `AnimatedContainer` ke `animations.instant` (bukan `animations.fast`). Hal ini menjaga sinkronisasi pergerakan visual agar tidak terjadi pergeseran (drift).
+
+3. **Pemberlakuan Kontras Dinamis & Warna Border**:
+   * Di bawah preset `neobrutalism`, pertahankan kekhasan estetika dengan memaksa warna border tombol/input menjadi `colors.textPrimary` (hitam pekat di light mode, putih pekat di dark mode) di semua state (normal, hover, focused, error). Jangan biarkan warna border bertransisi ke warna primer/tinted.
+   * Lewati (*bypass*) penyesuaian kontras HSL dinamis (`_makeAccessible`) khusus untuk default/focus border di preset `neobrutalism`.
+
+4. **Kompatibilitas CLI**:
+   * Ketika menambah preset baru, perbarui `init_command.dart` di `just_ui_cli` untuk mendukung pilihan preset via opsi `--preset` dan scaffold file `just_theme.dart` dengan preset yang sesuai.
+   * Pastikan preset baru juga terdaftar di perbandingan `operator ==`, `hashCode`, dan metode `copyWith` pada `JustThemeData`.

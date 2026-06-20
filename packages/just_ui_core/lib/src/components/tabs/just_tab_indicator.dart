@@ -19,6 +19,9 @@ class JustTabIndicator extends StatelessWidget {
   /// The active radius scheme.
   final JustRadiusScheme radius;
 
+  /// The active theme data.
+  final JustThemeData theme;
+
   /// Optional per-instance styles.
   final JustTabsStyle? style;
 
@@ -29,11 +32,13 @@ class JustTabIndicator extends StatelessWidget {
     required this.orientation,
     required this.colors,
     required this.radius,
+    required this.theme,
     this.style,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isNeobrutalism = theme.preset == JustThemePreset.neobrutalism;
     // Resolve styling colors and shapes
     final activeColor =
         style?.indicatorColor ?? style?.activeColor ?? colors.borderFocus;
@@ -44,7 +49,8 @@ class JustTabIndicator extends StatelessWidget {
 
     switch (variant) {
       case .line:
-        final thickness = style?.indicatorThickness ?? 2.0;
+        final thickness =
+            style?.indicatorThickness ?? (isNeobrutalism ? 4.0 : 2.0);
         if (orientation == .horizontal) {
           return Align(
             alignment: .bottomCenter,
@@ -87,7 +93,10 @@ class JustTabIndicator extends StatelessWidget {
           decoration: BoxDecoration(
             color: style?.containerBackgroundColor ?? colors.card,
             borderRadius: indicatorRadius,
-            border: .all(color: colors.borderDefault, width: 1.0),
+            border: .all(
+              color: isNeobrutalism ? colors.textPrimary : colors.borderDefault,
+              width: isNeobrutalism ? 2.5 : 1.0,
+            ),
           ),
         );
 
@@ -95,14 +104,20 @@ class JustTabIndicator extends StatelessWidget {
         // Pill solid background indicator
         return Container(
           decoration: BoxDecoration(
-            color: activeColor.withValues(alpha: 0.1),
+            color: isNeobrutalism
+                ? colors.success.withValues(alpha: 0.2)
+                : activeColor.withValues(alpha: 0.1),
             borderRadius: indicatorRadius,
+            border: isNeobrutalism
+                ? .all(color: colors.textPrimary, width: 1.5)
+                : null,
           ),
         );
 
       case .vertical:
         // Fallback for vertical: line by default, or similar to line
-        final thickness = style?.indicatorThickness ?? 2.0;
+        final thickness =
+            style?.indicatorThickness ?? (isNeobrutalism ? 4.0 : 2.0);
         final isRtl = Directionality.of(context) == .rtl;
         return Align(
           alignment: isRtl ? .centerRight : .centerLeft,
