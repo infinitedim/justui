@@ -15,6 +15,7 @@ extension JustFluidTypography on TextStyle {
     required double minSize,
     required double maxSize,
   }) {
+    assert(maxWidth > minWidth, 'maxWidth must be greater than minWidth');
     final double clampedWidth = screenWidth.clamp(minWidth, maxWidth);
     final double slope = (maxSize - minSize) / (maxWidth - minWidth);
     final double calculatedSize = minSize + slope * (clampedWidth - minWidth);

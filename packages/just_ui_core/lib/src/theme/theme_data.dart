@@ -92,6 +92,16 @@ final class FluidSpacingScheme extends JustSpacingScheme {
   double get xxxl => _fluid(36.0, 48.0);
   @override
   double get huge => _fluid(48.0, 64.0);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FluidSpacingScheme &&
+          runtimeType == other.runtimeType &&
+          width == other.width;
+
+  @override
+  int get hashCode => width.hashCode;
 }
 
 // ==========================================
@@ -249,6 +259,16 @@ final class FluidRadiusScheme extends JustRadiusScheme {
   Radius get xxl => _fluid(16.0, 24.0);
   @override
   Radius get full => const Radius.circular(9999.0);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FluidRadiusScheme &&
+          runtimeType == other.runtimeType &&
+          width == other.width;
+
+  @override
+  int get hashCode => width.hashCode;
 }
 
 // ==========================================
@@ -635,4 +655,26 @@ class JustThemeData {
       animations: animations ?? this.animations,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JustThemeData &&
+          runtimeType == other.runtimeType &&
+          colors == other.colors &&
+          typography == other.typography &&
+          spacing == other.spacing &&
+          radius == other.radius &&
+          shadows == other.shadows &&
+          animations == other.animations;
+
+  @override
+  int get hashCode => Object.hash(
+        colors,
+        typography,
+        spacing,
+        radius,
+        shadows,
+        animations,
+      );
 }
