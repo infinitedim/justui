@@ -121,5 +121,37 @@ void main() {
       // Tooltip label should show up
       expect(find.text('HoverMe'), findsOneWidget);
     });
+
+    testWidgets('Applies Neobrutalism preset correctly', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: const Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustSidebar(
+              items: [
+                JustSidebarItem(label: 'Home', icon: Text('HomeIcon')),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      bool foundThickBorder = false;
+      for (final element in tester.allElements) {
+        if (element.widget is Container) {
+          final container = element.widget as Container;
+          if (container.decoration is BoxDecoration) {
+            final dec = container.decoration as BoxDecoration;
+            if (dec.border is Border && (dec.border as Border).right.width == 2.5) {
+              foundThickBorder = true;
+            }
+          }
+        }
+      }
+      expect(foundThickBorder, isTrue);
+    });
   });
 }

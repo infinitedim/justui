@@ -126,5 +126,48 @@ void main() {
       await tester.pump();
       expect(find.text('Category'), findsNothing);
     });
+
+    testWidgets('Applies Neobrutalism preset correctly to collapsed overlay', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: const Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustBreadcrumb(
+              maxItems: 3,
+              items: [
+                JustBreadcrumbItem(label: 'Home'),
+                JustBreadcrumbItem(label: 'Category'),
+                JustBreadcrumbItem(label: 'Subcategory'),
+                JustBreadcrumbItem(label: 'Item Details'),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final collapsedFinder = find.text('...');
+      expect(collapsedFinder, findsOneWidget);
+
+      await tester.tap(collapsedFinder);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      bool foundThickBorder = false;
+      for (final element in tester.allElements) {
+        if (element.widget is Container) {
+          final container = element.widget as Container;
+          if (container.decoration is BoxDecoration) {
+            final dec = container.decoration as BoxDecoration;
+            if (dec.border != null && dec.border!.top.width == 2.5) {
+              foundThickBorder = true;
+            }
+          }
+        }
+      }
+      expect(foundThickBorder, isTrue);
+    });
   });
 }

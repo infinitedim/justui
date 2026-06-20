@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
@@ -564,15 +564,7 @@ class JustThemeData {
   /// The active animation scheme.
   final JustMotionProfile animations;
 
-  // Cached material theme data.
-  ThemeData? _cachedThemeData;
 
-  /// Converts this [JustThemeData] configuration into Flutter [ThemeData].
-  ///
-  /// Caches the output value. Repeated calls return the same instance.
-  ThemeData toThemeData() {
-    return _cachedThemeData ??= _buildMaterialTheme();
-  }
 
   /// Default pre-built light theme.
   static final JustThemeData light = JustThemeData(
@@ -830,91 +822,7 @@ class JustThemeData {
     return isBgDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
   }
 
-  ThemeData _buildMaterialTheme() {
-    final isDark = colors.background.computeLuminance() < 0.5;
-    final Brightness brightness = isDark ? .dark : .light;
 
-    return ThemeData(
-      useMaterial3: true,
-      brightness: brightness,
-      scaffoldBackgroundColor: colors.background,
-      cardColor: colors.card,
-      dividerColor: colors.borderDefault,
-      dialogTheme: DialogThemeData(backgroundColor: colors.elevated),
-      colorScheme: ColorScheme(
-        brightness: brightness,
-        primary: colors.borderFocus,
-        onPrimary: colors.textInverse,
-        secondary: colors.borderFocus,
-        onSecondary: colors.textInverse,
-        error: colors.error,
-        onError: colors.textInverse,
-        surface: colors.card,
-        onSurface: colors.textPrimary,
-      ),
-      appBarTheme: AppBarTheme(
-        backgroundColor: colors.background,
-        elevation: 0.0,
-        titleTextStyle: typography.headingLg.copyWith(
-          color: colors.textPrimary,
-        ),
-        iconTheme: IconThemeData(color: colors.textPrimary),
-        actionsIconTheme: IconThemeData(color: colors.textPrimary),
-      ),
-      cardTheme: CardThemeData(
-        shape: RoundedRectangleBorder(borderRadius: .all(radius.lg)),
-        elevation: 0.0,
-        color: colors.card,
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: colors.background,
-        border: OutlineInputBorder(
-          borderRadius: .all(radius.md),
-          borderSide: BorderSide(color: colors.borderDefault),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: .all(radius.md),
-          borderSide: BorderSide(color: colors.borderDefault),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: .all(radius.md),
-          borderSide: BorderSide(color: colors.borderFocus, width: 2.0),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: .all(radius.md),
-          borderSide: BorderSide(color: colors.borderError),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: .all(radius.md),
-          borderSide: BorderSide(color: colors.borderError, width: 2.0),
-        ),
-      ),
-      dividerTheme: DividerThemeData(
-        thickness: 1.0,
-        space: 1.0,
-        color: colors.borderDefault,
-      ),
-      buttonTheme: ButtonThemeData(
-        shape: RoundedRectangleBorder(borderRadius: .all(radius.md)),
-        padding: .symmetric(horizontal: spacing.md, vertical: spacing.sm),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: .all(radius.md)),
-          padding: .symmetric(horizontal: spacing.md, vertical: spacing.sm),
-          textStyle: typography.bodyMd,
-        ),
-      ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: .all(radius.md)),
-          padding: .symmetric(horizontal: spacing.md, vertical: spacing.sm),
-          textStyle: typography.bodyMd,
-        ),
-      ),
-    );
-  }
 
   /// Creates a copy of this theme with the given fields replaced by new values.
   JustThemeData copyWith({

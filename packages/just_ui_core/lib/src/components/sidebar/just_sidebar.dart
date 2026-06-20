@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart' show JustBreakpoints;
+import 'package:just_ui_tokens/just_ui_tokens.dart' show JustBreakpoints, JustThemePreset;
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_tooltip_overlay.dart';
 import '../shared/just_pressable.dart';
@@ -207,17 +207,26 @@ class _JustSidebarState extends State<JustSidebar>
             widget.collapsedWidth +
             (widget.width - widget.collapsedWidth) * _collapseAnimation.value;
 
+        final isNeobrutalism = customTheme.preset == JustThemePreset.neobrutalism;
+        final Border borderStyle = isNeobrutalism
+            ? (widget.variant == .default_
+                ? Border(
+                    right: BorderSide(color: colors.textPrimary, width: 2.5),
+                  )
+                : .all(color: colors.textPrimary, width: 2.5))
+            : (widget.variant == .default_
+                ? Border(
+                    right: BorderSide(color: colors.borderDefault, width: 1.0),
+                  )
+                : .all(color: colors.borderDefault, width: 1.0));
+
         return Container(
           width: currentWidth,
           height: double.infinity,
           decoration: BoxDecoration(
             color: containerBg,
             borderRadius: borderRadius,
-            border: widget.variant == .default_
-                ? Border(
-                    right: BorderSide(color: colors.borderDefault, width: 1.0),
-                  )
-                : .all(color: colors.borderDefault, width: 1.0),
+            border: borderStyle,
             boxShadow: widget.variant != .default_ ? shadows.md : null,
           ),
           padding: finalPadding,
@@ -283,11 +292,9 @@ class _JustSidebarState extends State<JustSidebar>
     required Color inactiveColor,
     JustSidebarStyle? themeStyle,
   }) {
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(
-      context,
-      aspect: .spacing,
-    ).theme.spacing;
+    final customTheme = JustThemeProvider.of(context).theme;
+    final colors = customTheme.colors;
+    final spacing = customTheme.spacing;
     final typography = JustThemeProvider.of(
       context,
       aspect: .typography,
@@ -336,21 +343,39 @@ class _JustSidebarState extends State<JustSidebar>
       builder: (context, isHovered, isPressed, isFocused, focusNode) {
         final double itemOpacity = item.enabled ? 1.0 : 0.5;
 
+        final isNeobrutalism = customTheme.preset == JustThemePreset.neobrutalism;
+
         final Color itemBg = isSelected
-            ? (widget.variant == .default_
-                  ? colors.card
-                  : activeColor.withValues(alpha: 0.08))
+            ? (isNeobrutalism
+                  ? colors.success.withValues(alpha: 0.2)
+                  : (widget.variant == .default_
+                        ? colors.card
+                        : activeColor.withValues(alpha: 0.08)))
             : (isPressed
                   ? activeColor.withValues(alpha: 0.12)
                   : (isHovered
                         ? activeColor.withValues(alpha: 0.05)
                         : const Color(0x00000000)));
 
-        final Color foregroundColor = isSelected
-            ? activeColor
-            : (isHovered || isPressed ? activeColor : inactiveColor);
+        final Color foregroundColor = isNeobrutalism
+            ? colors.textPrimary
+            : (isSelected
+                  ? activeColor
+                  : (isHovered || isPressed ? activeColor : inactiveColor));
 
         final resolvedTextStyle = isSelected ? activeTextStyle : textStyle;
+
+        final Border? itemBorder = isNeobrutalism
+            ? .all(
+                color: (isSelected || isHovered) ? colors.textPrimary : const Color(0x00000000),
+                width: 1.5,
+              )
+            : (isSelected && widget.variant == .default_
+                ? Border(
+                    left: !isRtl ? BorderSide(color: activeColor, width: 3.0) : .none,
+                    right: isRtl ? BorderSide(color: activeColor, width: 3.0) : .none,
+                  )
+                : null);
 
         final Widget itemRow = Opacity(
           opacity: itemOpacity,
@@ -358,16 +383,7 @@ class _JustSidebarState extends State<JustSidebar>
             decoration: BoxDecoration(
               color: itemBg,
               borderRadius: itemRadius,
-              border: isSelected && widget.variant == .default_
-                  ? Border(
-                      left: !isRtl
-                          ? BorderSide(color: activeColor, width: 3.0)
-                          : .none,
-                      right: isRtl
-                          ? BorderSide(color: activeColor, width: 3.0)
-                          : .none,
-                    )
-                  : null,
+              border: itemBorder,
             ),
             padding: resolvedItemPadding.copyWith(
               left: !isRtl
@@ -403,7 +419,10 @@ class _JustSidebarState extends State<JustSidebar>
           ),
         );
 
-        return itemRow;
+        return customTheme.buildPressEffect(
+          isPressed: isPressed,
+          child: itemRow,
+        );
       },
     );
 
@@ -487,11 +506,10 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
 
   @override
   Widget build(BuildContext context) {
-    final spacing = JustThemeProvider.of(
-      context,
-      aspect: .spacing,
-    ).theme.spacing;
-    final radius = JustThemeProvider.of(context).theme.radius;
+    final customTheme = JustThemeProvider.of(context).theme;
+    final colors = customTheme.colors;
+    final spacing = customTheme.spacing;
+    final radius = customTheme.radius;
     final isRtl = Directionality.of(context) == .rtl;
 
     final itemPadding =
@@ -528,14 +546,23 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
                         ? widget.activeColor.withValues(alpha: 0.05)
                         : const Color(0x00000000));
 
-              final Color foregroundColor = isHovered || isPressed
-                  ? widget.activeColor
-                  : widget.inactiveColor;
+              final isNeobrutalism = customTheme.preset == JustThemePreset.neobrutalism;
+              final Color foregroundColor = isNeobrutalism
+                  ? colors.textPrimary
+                  : (isHovered || isPressed ? widget.activeColor : widget.inactiveColor);
 
-              return Container(
+              final Border? itemBorder = isNeobrutalism
+                  ? .all(
+                      color: isHovered ? colors.textPrimary : const Color(0x00000000),
+                      width: 1.5,
+                    )
+                  : null;
+
+              final Widget folderBox = Container(
                 decoration: BoxDecoration(
                   color: itemBg,
                   borderRadius: itemRadius,
+                  border: itemBorder,
                 ),
                 padding: itemPadding.copyWith(
                   left: !isRtl
@@ -569,6 +596,11 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
                     ],
                   ],
                 ),
+              );
+
+              return customTheme.buildPressEffect(
+                isPressed: isPressed,
+                child: folderBox,
               );
             },
           ),
