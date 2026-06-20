@@ -253,6 +253,12 @@ void main() {
     ) async {
       int fullRebuildCount = 0;
       int colorRebuildCount = 0;
+      int spacingRebuildCount = 0;
+      int radiusRebuildCount = 0;
+
+      // Set initial screen size for fluid calculations
+      tester.view.physicalSize = const Size(800.0, 600.0);
+      tester.view.devicePixelRatio = 1.0;
 
       await tester.pumpWidget(
         JustThemeProvider(
@@ -277,6 +283,22 @@ void main() {
               ),
               Builder(
                 builder: (context) {
+                  // Subscribes *only* to spacing
+                  context.justSpacing;
+                  spacingRebuildCount++;
+                  return const SizedBox.shrink();
+                },
+              ),
+              Builder(
+                builder: (context) {
+                  // Subscribes *only* to radius
+                  context.justRadius;
+                  radiusRebuildCount++;
+                  return const SizedBox.shrink();
+                },
+              ),
+              Builder(
+                builder: (context) {
                   // Reads theme without subscription
                   context.readTheme();
                   return ElevatedButton(
@@ -296,13 +318,42 @@ void main() {
 
       expect(fullRebuildCount, equals(1));
       expect(colorRebuildCount, equals(1));
+      expect(spacingRebuildCount, equals(1));
+      expect(radiusRebuildCount, equals(1));
 
-      // Trigger change
+      // 1. Trigger ThemeMode switch (light -> dark)
+      // This changes colors and shadows. Spacing and radius schemes should NOT change.
       await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
 
       expect(fullRebuildCount, equals(2));
       expect(colorRebuildCount, equals(2));
+      expect(
+        spacingRebuildCount,
+        equals(1),
+      ); // Negative validation control: spacing remains unaffected!
+      expect(
+        radiusRebuildCount,
+        equals(1),
+      ); // Negative validation control: radius remains unaffected!
+
+      // 2. Trigger screen width change (MediaQuery change)
+      // Fluid spacing/radius values scale dynamically with screen width, causing their values to change.
+      // Static color scheme does NOT change.
+      tester.view.physicalSize = const Size(1000.0, 600.0);
+      await tester.pump();
+
+      expect(fullRebuildCount, equals(3));
+      expect(
+        colorRebuildCount,
+        equals(2),
+      ); // Negative validation control: colors remain unaffected!
+      expect(spacingRebuildCount, equals(2)); // Spacing changes, must rebuild.
+      expect(radiusRebuildCount, equals(2)); // Radius changes, must rebuild.
+
+      // Reset test view properties
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
     });
 
     testWidgets('Exposes transition timing and curve parameters', (
