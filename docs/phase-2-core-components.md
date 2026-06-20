@@ -1,6 +1,6 @@
 # Phase 2: Core Components
 
-> **Status:** 🟡 In Progress (Milestone I & II Complete - 11 Components Finished)  
+> **Status:** 🟢 Milestone I, II, and III Complete - 15 Components Finished  
 > **Target:** Sprint 5–10  
 > **Packages:** `just_ui_core`  
 > **Dependency:** Phase 1 (Token System + Theming Engine) harus **100% complete**  
@@ -25,6 +25,9 @@ graph TD
         B[Input]
         C[Badge]
         D[Avatar]
+        Q[Checkbox]
+        R[Radio]
+        S[Switch]
     end
     subgraph "Milestone II"
         E[Card]
@@ -56,6 +59,9 @@ graph TD
     style B fill:#6C5CE7,color:#fff
     style C fill:#6C5CE7,color:#fff
     style D fill:#6C5CE7,color:#fff
+    style Q fill:#6C5CE7,color:#fff
+    style R fill:#6C5CE7,color:#fff
+    style S fill:#6C5CE7,color:#fff
     style E fill:#0984E3,color:#fff
     style F fill:#0984E3,color:#fff
     style G fill:#0984E3,color:#fff
@@ -72,7 +78,7 @@ graph TD
 
 ---
 
-## Milestone I — Primitif (Button, Input, Badge, Avatar)
+## Milestone I — Primitif (Button, Input, Badge, Avatar, Checkbox, Radio, Switch)
 
 ### Komponen 1: JustButton
 
@@ -291,6 +297,148 @@ class JustAvatarGroup extends StatelessWidget {
 }
 ```
 
+---
+
+### Komponen 5: JustCheckbox
+
+#### Variants/States
+
+| State          | Visual Behavior |
+| -------------- | --------------- |
+| `checked`      | Filled primary bg, checkmark path drawn |
+| `unchecked`    | Transparent bg, borderDefault |
+| `indeterminate`| Filled primary bg, horizontal dash path drawn |
+| `hover`        | borderDefault shifts to textSecondary |
+| `focused`      | Focus ring (2px offset, primary color) |
+| `disabled`     | Opacity 0.5, non-interactive |
+
+#### Sizes
+
+| Size                  | Box Size | Stroke Width |
+| --------------------- | -------- | ------------ |
+| `JustCheckboxSize.sm` | `16px`   | `1.5px`      |
+| `JustCheckboxSize.md` | `20px`   | `2.0px`      |
+| `JustCheckboxSize.lg` | `24px`   | `2.5px`      |
+
+#### API Surface
+
+```dart
+class JustCheckbox extends StatefulWidget {
+  const JustCheckbox({
+    required this.value,      // bool? — checked/unchecked/indeterminate
+    required this.onChanged,  // ValueChanged<bool?>? — null means disabled
+    this.label,               // Widget? — optional label alongside
+    this.size = JustCheckboxSize.md,
+    this.isDisabled = false,
+    this.style,               // JustCheckboxStyle? — custom overrides
+    this.enableHaptic,        // bool? — override theme haptic toggle
+    this.focusNode,           // FocusNode? — custom focus management
+  });
+}
+```
+
+---
+
+### Komponen 6: JustRadio & JustRadioGroup
+
+#### Variants/States
+
+| State      | Visual Behavior |
+| ---------- | --------------- |
+| `selected` | Transparent bg, borderFocus, inner animated dot drawn |
+| `unselected` | Transparent bg, borderDefault |
+| `hover`    | borderDefault shifts to textSecondary |
+| `focused`  | Focus ring (2px offset, primary color) |
+| `disabled` | Opacity 0.5, non-interactive |
+
+#### Sizes
+
+| Size               | Circle Diameter |
+| ------------------ | --------------- |
+| `JustRadioSize.sm` | `16px`          |
+| `JustRadioSize.md` | `20px`          |
+| `JustRadioSize.lg` | `24px`          |
+
+#### API Surface
+
+```dart
+class JustRadio<T> extends StatefulWidget {
+  const JustRadio({
+    required this.value,
+    required this.groupValue,
+    required this.onChanged,  // ValueChanged<T>? — null means disabled
+    this.label,               // Widget? — optional label alongside
+    this.size = JustRadioSize.md,
+    this.isDisabled = false,
+    this.style,               // JustRadioStyle? — custom overrides
+    this.enableHaptic,
+    this.focusNode,
+  });
+}
+
+class JustRadioOption<T> {
+  const JustRadioOption({
+    required this.value,
+    required this.label,
+    this.isDisabled = false,
+  });
+}
+
+class JustRadioGroup<T> extends StatelessWidget {
+  const JustRadioGroup({
+    required this.value,
+    required this.options,
+    required this.onChanged,
+    this.direction = Axis.vertical,
+    this.spacing,             // double? — spacing between radios
+    this.isDisabled = false,
+  });
+}
+```
+
+---
+
+### Komponen 7: JustSwitch
+
+#### Variants/States
+
+| State      | Track Color            | Thumb Offset & Color |
+| ---------- | ---------------------- | -------------------- |
+| `active`   | `activeTrackColor`     | Right-aligned, `activeThumbColor` |
+| `inactive` | `inactiveTrackColor`   | Left-aligned, `inactiveThumbColor` |
+| `hover`    | Slightly darkened track| Idle |
+| `focused`  | Focus ring around track| Idle |
+| `disabled` | Opacity 0.5            | Non-interactive |
+
+#### Sizes
+
+| Size                | Track Width | Track Height | Thumb Size |
+| ------------------- | ----------- | ------------ | ---------- |
+| `JustSwitchSize.sm` | `32px`      | `18px`       | `14px`     |
+| `JustSwitchSize.md` | `40px`      | `22px`       | `18px`     |
+| `JustSwitchSize.lg` | `48px`      | `26px`       | `22px`     |
+
+#### API Surface
+
+```dart
+class JustSwitch extends StatefulWidget {
+  const JustSwitch({
+    required this.value,
+    required this.onChanged,  // ValueChanged<bool>? — null means disabled
+    this.label,               // Widget? — optional label alongside
+    this.size = JustSwitchSize.md,
+    this.isDisabled = false,
+    this.style,               // JustSwitchStyle? — custom overrides
+    this.enableHaptic,
+    this.activeColor,         // Color? — active track color override
+    this.thumbIcon,           // Widget? Function(bool value)? — custom thumb icon builder
+    this.focusNode,
+  });
+}
+```
+
+---
+
 ### Acceptance Criteria — Milestone I
 
 - [x] Setiap komponen memiliki semua variant yang di-spek.
@@ -305,7 +453,7 @@ class JustAvatarGroup extends StatelessWidget {
 
 ## Milestone II — Layout (Card, Separator, Skeleton, Scroll)
 
-### Komponen 5: JustCard
+### Komponen 8: JustCard
 
 #### Variants
 
@@ -337,7 +485,7 @@ class JustCard extends StatelessWidget {
 
 ---
 
-### Komponen 6: JustSeparator
+### Komponen 9: JustSeparator
 
 ```dart
 class JustSeparator extends StatelessWidget {
@@ -355,7 +503,7 @@ class JustSeparator extends StatelessWidget {
 
 ---
 
-### Komponen 7: JustSkeleton
+### Komponen 10: JustSkeleton
 
 Skeleton/shimmer loading placeholder yang auto-match layout komponen aslinya.
 
@@ -396,7 +544,7 @@ class JustSkeleton extends StatefulWidget {
 
 ---
 
-### Komponen 8: JustScrollArea
+### Komponen 11: JustScrollArea
 
 Custom scroll area dengan scroll indicator, fade edges, dan scroll-to-top button.
 
@@ -432,7 +580,7 @@ class JustScrollArea extends StatefulWidget {
 
 ## Milestone III — Navigation (Tabs, Breadcrumb, Sidebar, BottomNav)
 
-### Komponen 9: JustTabs
+### Komponen 12: JustTabs
 
 #### Variants
 
@@ -473,7 +621,7 @@ class JustTab {
 
 ---
 
-### Komponen 10: JustBreadcrumb
+### Komponen 13: JustBreadcrumb
 
 ```dart
 class JustBreadcrumb extends StatelessWidget {
@@ -494,7 +642,7 @@ class JustBreadcrumbItem {
 
 ---
 
-### Komponen 11: JustSidebar
+### Komponen 14: JustSidebar
 
 ```dart
 class JustSidebar extends StatefulWidget {
@@ -533,7 +681,7 @@ class JustSidebarItem {
 
 ---
 
-### Komponen 12: JustBottomNav
+### Komponen 15: JustBottomNav
 
 ```dart
 class JustBottomNav extends StatefulWidget {
@@ -565,18 +713,18 @@ class JustBottomNavItem {
 
 ### Acceptance Criteria — Milestone III
 
-- [ ] Tabs: animated indicator, swipe gesture, keyboard nav.
-- [ ] Breadcrumb: collapsible, clickable links.
-- [ ] Sidebar: collapse/expand, nested items, responsive drawer fallback.
-- [ ] BottomNav: 3 variants, badge support, haptic feedback.
-- [ ] Semua komponen mendukung RTL layout.
-- [ ] Widget test dan golden test per komponen.
+- [x] Tabs: animated indicator, swipe gesture, keyboard nav.
+- [x] Breadcrumb: collapsible, clickable links.
+- [x] Sidebar: collapse/expand, nested items, responsive drawer fallback.
+- [x] BottomNav: 3 variants, badge support, haptic feedback.
+- [x] Semua komponen mendukung RTL layout (menggunakan standard logical layout primitives).
+- [x] Widget test dan golden test per komponen.
 
 ---
 
 ## Milestone IV — Feedback (Toast, Dialog, Sheet, Tooltip)
 
-### Komponen 13: JustToast
+### Komponen 16: JustToast
 
 #### Variants
 
@@ -620,7 +768,7 @@ JustToast.dismissAll();
 
 ---
 
-### Komponen 14: JustDialog
+### Komponen 17: JustDialog
 
 #### Variants
 
@@ -679,7 +827,7 @@ JustDialog.show(
 
 ---
 
-### Komponen 15: JustSheet
+### Komponen 18: JustSheet
 
 #### Variants
 
@@ -722,7 +870,7 @@ JustSheet.showSide(
 
 ---
 
-### Komponen 16: JustTooltip
+### Komponen 19: JustTooltip
 
 ```dart
 class JustTooltip extends StatelessWidget {
@@ -813,7 +961,7 @@ export 'src/theme/theme.dart';
 
 ## Definition of Done — Phase 2
 
-- [/] 11 dari 12 komponen core selesai dan tested.
+- [/] 15 dari 19 komponen core selesai dan tested.
 - [ ] Setiap komponen memiliki dartdoc + usage example di docstring.
 - [ ] Showcase app menampilkan galeri interaktif seluruh komponen.
 - [ ] Seluruh komponen lulus accessibility audit.
