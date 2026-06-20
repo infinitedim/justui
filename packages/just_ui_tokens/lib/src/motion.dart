@@ -127,14 +127,14 @@ class JustMotionProfile {
 
   @override
   int get hashCode => Object.hash(
-        instant,
-        fast,
-        normal,
-        slow,
-        slower,
-        defaultCurve,
-        enter,
-        exit,
-        spring,
-      );
+    instant,
+    fast,
+    normal,
+    slow,
+    slower,
+    defaultCurve,
+    enter,
+    exit,
+    spring,
+  );
 }
