@@ -114,5 +114,35 @@ void main() {
       expect(find.text('InactiveHome'), findsOneWidget);
       expect(find.text('ActiveHome'), findsOneWidget);
     });
+
+    testWidgets('Applies Neobrutalism preset correctly', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustBottomNav(
+              variant: JustBottomNavVariant.floating,
+              items: [
+                const JustBottomNavItem(label: 'Home', icon: Text('IconA')),
+                const JustBottomNavItem(label: 'Search', icon: Text('IconB')),
+                const JustBottomNavItem(label: 'Profile', icon: Text('IconC')),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final containerFinder = find.descendant(
+        of: find.byType(JustBottomNav),
+        matching: find.byType(Container),
+      );
+      final container = tester.widget<Container>(containerFinder.first);
+      final decoration = container.decoration as BoxDecoration;
+      expect(decoration.border, isNotNull);
+      expect(decoration.border!.top.width, equals(2.5));
+    });
   });
 }
