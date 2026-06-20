@@ -109,4 +109,32 @@ class JustMotionProfile {
     exit: Curves.linear,
     spring: Curves.linear,
   );
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JustMotionProfile &&
+          runtimeType == other.runtimeType &&
+          instant == other.instant &&
+          fast == other.fast &&
+          normal == other.normal &&
+          slow == other.slow &&
+          slower == other.slower &&
+          defaultCurve == other.defaultCurve &&
+          enter == other.enter &&
+          exit == other.exit &&
+          spring == other.spring;
+
+  @override
+  int get hashCode => Object.hash(
+        instant,
+        fast,
+        normal,
+        slow,
+        slower,
+        defaultCurve,
+        enter,
+        exit,
+        spring,
+      );
 }
