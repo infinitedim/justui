@@ -669,12 +669,6 @@ class JustThemeData {
           animations == other.animations;
 
   @override
-  int get hashCode => Object.hash(
-        colors,
-        typography,
-        spacing,
-        radius,
-        shadows,
-        animations,
-      );
+  int get hashCode =>
+      Object.hash(colors, typography, spacing, radius, shadows, animations);
 }
