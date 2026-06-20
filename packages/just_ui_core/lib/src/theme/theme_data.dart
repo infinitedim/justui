@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 // ==========================================
@@ -36,6 +37,26 @@ abstract final class JustSpacingScheme {
 
   /// Huge spacing.
   double get huge;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is JustSpacingScheme &&
+        other.xxs == xxs &&
+        other.xs == xs &&
+        other.sm == sm &&
+        other.md == md &&
+        other.lg == lg &&
+        other.xl == xl &&
+        other.xxl == xxl &&
+        other.xxxl == xxxl &&
+        other.huge == huge;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hashAll([xxs, xs, sm, md, lg, xl, xxl, xxxl, huge]);
+  }
 }
 
 final class _DefaultSpacingScheme extends JustSpacingScheme {
@@ -145,6 +166,40 @@ abstract final class JustTypographyScheme {
 
   /// Overline text.
   TextStyle get overline;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is JustTypographyScheme &&
+        other.displayLg == displayLg &&
+        other.displayMd == displayMd &&
+        other.displaySm == displaySm &&
+        other.headingLg == headingLg &&
+        other.headingMd == headingMd &&
+        other.headingSm == headingSm &&
+        other.bodyLg == bodyLg &&
+        other.bodyMd == bodyMd &&
+        other.bodySm == bodySm &&
+        other.caption == caption &&
+        other.overline == overline;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hashAll([
+      displayLg,
+      displayMd,
+      displaySm,
+      headingLg,
+      headingMd,
+      headingSm,
+      bodyLg,
+      bodyMd,
+      bodySm,
+      caption,
+      overline,
+    ]);
+  }
 }
 
 final class _DefaultTypographyScheme extends JustTypographyScheme {
@@ -206,6 +261,25 @@ abstract final class JustRadiusScheme {
 
   /// Fully rounded pill shape.
   Radius get full;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is JustRadiusScheme &&
+        other.none == none &&
+        other.xs == xs &&
+        other.sm == sm &&
+        other.md == md &&
+        other.lg == lg &&
+        other.xl == xl &&
+        other.xxl == xxl &&
+        other.full == full;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hashAll([none, xs, sm, md, lg, xl, xxl, full]);
+  }
 }
 
 final class _DefaultRadiusScheme extends JustRadiusScheme {
@@ -297,6 +371,30 @@ abstract final class JustShadowScheme {
 
   /// Double extra large shadow.
   List<BoxShadow> get xxl;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is JustShadowScheme &&
+        listEquals(other.xs, xs) &&
+        listEquals(other.sm, sm) &&
+        listEquals(other.md, md) &&
+        listEquals(other.lg, lg) &&
+        listEquals(other.xl, xl) &&
+        listEquals(other.xxl, xxl);
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+      .hashAll(xs),
+      .hashAll(sm),
+      .hashAll(md),
+      .hashAll(lg),
+      .hashAll(xl),
+      .hashAll(xxl),
+    );
+  }
 }
 
 final class _DefaultShadowSchemeLight extends JustShadowScheme {
@@ -425,7 +523,7 @@ class JustThemeData {
     JustTypographyScheme typography = const _DefaultTypographyScheme(),
     JustSpacingScheme spacing = const _DefaultSpacingScheme(),
     JustRadiusScheme radius = const _DefaultRadiusScheme(),
-    JustMotionProfile animations = JustMotionProfile.standard,
+    JustMotionProfile animations = .standard,
   }) {
     final Color bg;
     final Color card;
@@ -527,27 +625,14 @@ class JustThemeData {
     Color background, {
     double minRatio = 3.0,
   }) {
-    if (color.contrastRatioWith(background) >= minRatio) {
-      return color;
+    final adjusted = color.adjustLightnessForContrast(
+      background: background,
+      targetRatio: minRatio,
+    );
+    if (adjusted.contrastRatioWith(background) >= minRatio) {
+      return adjusted;
     }
-    final HSLColor hsl = .fromColor(color);
     final isBgDark = background.computeLuminance() < 0.5;
-    double currentLightness = hsl.lightness;
-    const double step = 0.02;
-
-    while (currentLightness >= 0.0 && currentLightness <= 1.0) {
-      if (isBgDark) {
-        currentLightness += step;
-        if (currentLightness > 1.0) break;
-      } else {
-        currentLightness -= step;
-        if (currentLightness < 0.0) break;
-      }
-      final adjusted = hsl.withLightness(currentLightness).toColor();
-      if (adjusted.contrastRatioWith(background) >= minRatio) {
-        return adjusted;
-      }
-    }
     return isBgDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
   }
 
