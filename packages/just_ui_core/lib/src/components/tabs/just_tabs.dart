@@ -105,7 +105,9 @@ class JustTabController extends ChangeNotifier {
 
     _animationController!.stop();
     _animationController!.duration =
-        duration ?? _animationController!.duration ?? const Duration(milliseconds: 250);
+        duration ??
+        _animationController!.duration ??
+        const Duration(milliseconds: 250);
 
     final Animation<double> animation =
         Tween<double>(
@@ -315,7 +317,11 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     if (_pageController.hasClients && _pageController.page?.round() != index) {
       _isAnimatingToPage = true;
       final animations = JustThemeProvider.read(context).theme.animations;
-      final duration = _durationForTransition(_tabController.index, index, animations);
+      final duration = _durationForTransition(
+        _tabController.index,
+        index,
+        animations,
+      );
       _pageController
           .animateToPage(
             index,
@@ -383,9 +389,14 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     return true;
   }
 
-  Duration _durationForTransition(int fromIndex, int toIndex, JustMotionProfile animations) {
+  Duration _durationForTransition(
+    int fromIndex,
+    int toIndex,
+    JustMotionProfile animations,
+  ) {
     if (_tabOffsets.length > fromIndex && _tabOffsets.length > toIndex) {
-      final double distance = (_tabOffsets[toIndex] - _tabOffsets[fromIndex]).abs();
+      final double distance = (_tabOffsets[toIndex] - _tabOffsets[fromIndex])
+          .abs();
       return JustDuration.scaleForDistance(
         distance,
         min: animations.fast,
@@ -400,7 +411,11 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     HapticFeedback.selectionClick();
     _visitedIndices.add(index);
     final animations = JustThemeProvider.read(context).theme.animations;
-    final duration = _durationForTransition(_tabController.index, index, animations);
+    final duration = _durationForTransition(
+      _tabController.index,
+      index,
+      animations,
+    );
     _tabController.animateTo(
       index,
       duration: duration,
