@@ -130,5 +130,56 @@ void main() {
       // Now Tab B content should be active
       expect(find.text('Content B'), findsOneWidget);
     });
+
+    testWidgets('Swapping JustTabController updates active tab and does not throw', (
+      WidgetTester tester,
+    ) async {
+      final controllerA = JustTabController(length: 2, initialIndex: 0);
+      final controllerB = JustTabController(length: 2, initialIndex: 1);
+
+      // Render with controllerA
+      await tester.pumpWidget(
+        buildTestableWidget(
+          SizedBox(
+            height: 300,
+            child: JustTabs(
+              controller: controllerA,
+              tabs: const [
+                JustTab(label: 'Tab A', content: Text('Content A')),
+                JustTab(label: 'Tab B', content: Text('Content B')),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Content A'), findsOneWidget);
+      expect(find.text('Content B'), findsNothing);
+
+      // Re-render with controllerB
+      await tester.pumpWidget(
+        buildTestableWidget(
+          SizedBox(
+            height: 300,
+            child: JustTabs(
+              controller: controllerB,
+              tabs: const [
+                JustTab(label: 'Tab A', content: Text('Content A')),
+                JustTab(label: 'Tab B', content: Text('Content B')),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Active content should now be Content B and no exception should be thrown
+      expect(find.text('Content A'), findsNothing);
+      expect(find.text('Content B'), findsOneWidget);
+
+      controllerA.dispose();
+      controllerB.dispose();
+    });
   });
 }

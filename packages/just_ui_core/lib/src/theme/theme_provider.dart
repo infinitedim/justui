@@ -111,12 +111,13 @@ class JustThemeProviderState extends State<JustThemeProvider>
         break;
     }
 
-    final mediaQuery = MediaQuery.maybeOf(context);
-    final double width = mediaQuery?.size.width ?? 1024.0;
+    final double width = MediaQuery.maybeSizeOf(context)?.width ?? 1024.0;
+    final resolvedAnimations = baseTheme.animations.resolve(context);
 
     return baseTheme.copyWith(
       spacing: FluidSpacingScheme(width: width),
       radius: FluidRadiusScheme(width: width),
+      animations: resolvedAnimations,
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/just_pressable.dart';
 import '../shared/just_focus_indicator.dart';
@@ -323,12 +324,7 @@ class JustCardTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typo = JustThemeProvider.of(
-      context,
-      aspect: .typography,
-    ).theme.typography;
-
-    final defaultStyle = typo.headingMd.copyWith(
+    final defaultStyle = JustFluidTypo.headingMd(context).copyWith(
       color: colors.textPrimary,
       fontWeight: .w600,
     );
@@ -351,12 +347,9 @@ class JustCardDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typo = JustThemeProvider.of(
-      context,
-      aspect: .typography,
-    ).theme.typography;
-
-    final defaultStyle = typo.bodySm.copyWith(color: colors.textSecondary);
+    final defaultStyle = JustFluidTypo.bodySm(context).copyWith(
+      color: colors.textSecondary,
+    );
 
     return DefaultTextStyle(style: defaultStyle.merge(style), child: child);
   }

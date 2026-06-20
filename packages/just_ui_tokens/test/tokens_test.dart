@@ -418,6 +418,20 @@ void main() {
       expect(styleMid.fontSize, equals(26.0));
     });
 
+    test('Fluid scaling throws assertion error if minWidth >= maxWidth', () {
+      const style = TextStyle(fontSize: 16.0);
+      expect(
+        () => style.fluid(
+          screenWidth: 640.0,
+          minWidth: 640.0,
+          maxWidth: 640.0,
+          minSize: 20.0,
+          maxSize: 32.0,
+        ),
+        throwsA(isA<AssertionError>()),
+      );
+    });
+
     testWidgets('Adaptive line height tightens for larger text sizes', (
       WidgetTester tester,
     ) async {

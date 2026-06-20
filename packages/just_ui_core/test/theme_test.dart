@@ -357,5 +357,91 @@ void main() {
         tester.platformDispatcher.clearPlatformBrightnessTestValue();
       },
     );
+
+    testWidgets(
+      'System accessibility reduced motion settings automatically resolve the theme animations to reduced profile',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MediaQuery(
+            data: const MediaQueryData(disableAnimations: false),
+            child: JustThemeProvider(
+              child: Builder(
+                builder: (context) {
+                  final animations = context.justAnimations;
+                  expect(animations.normal, equals(JustDuration.normal));
+                  expect(animations.defaultCurve, equals(JustCurves.default_));
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpWidget(
+          MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: JustThemeProvider(
+              child: Builder(
+                builder: (context) {
+                  final animations = context.justAnimations;
+                  expect(animations.normal, equals(Duration.zero));
+                  expect(animations.defaultCurve, equals(Curves.linear));
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    testWidgets(
+      'Changing unrelated MediaQuery properties like viewInsets does not rebuild dependents of theme spacing',
+      (WidgetTester tester) async {
+        int spacingRebuildCount = 0;
+
+        await tester.pumpWidget(
+          MediaQuery(
+            data: const MediaQueryData(
+              size: Size(1024.0, 768.0),
+              viewInsets: EdgeInsets.zero,
+            ),
+            child: JustThemeProvider(
+              child: Builder(
+                builder: (context) {
+                  context.justSpacing;
+                  spacingRebuildCount++;
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+          ),
+        );
+
+        expect(spacingRebuildCount, equals(1));
+
+        // Pump with modified viewInsets (simulating keyboard opening)
+        await tester.pumpWidget(
+          MediaQuery(
+            data: const MediaQueryData(
+              size: Size(1024.0, 768.0),
+              viewInsets: EdgeInsets.only(bottom: 300.0),
+            ),
+            child: JustThemeProvider(
+              child: Builder(
+                builder: (context) {
+                  context.justSpacing;
+                  spacingRebuildCount++;
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+          ),
+        );
+
+        // Rebuild count should remain 1 because spacing has same values
+        expect(spacingRebuildCount, equals(1));
+      },
+    );
   });
 }
