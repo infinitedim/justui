@@ -178,6 +178,91 @@ final class _JustColorSchemeDark extends JustColorScheme {
   Color get info => JustColorSemanticDark.info;
 }
 
+/// Visual style presets for JustUI.
+enum JustThemePreset {
+  /// The default modern/clean styling.
+  default_,
+
+  /// Neobrutalism preset with thick borders and flat offset shadows.
+  neobrutalism,
+}
+
+final class _JustColorSchemeNeobrutalismLight extends JustColorScheme {
+  const _JustColorSchemeNeobrutalismLight();
+
+  @override
+  Color get background => const Color(0xFFFFFDF5); // Warm cream
+  @override
+  Color get card => const Color(0xFFFFFFFF);
+  @override
+  Color get elevated => const Color(0xFFFFFFFF);
+  @override
+  Color get overlay => const Color(0x99000000);
+
+  @override
+  Color get textPrimary => const Color(0xFF000000);
+  @override
+  Color get textSecondary => const Color(0xFF222222);
+  @override
+  Color get textDisabled => const Color(0xFF777777);
+  @override
+  Color get textInverse => const Color(0xFFFFFFFF);
+
+  @override
+  Color get borderDefault => const Color(0xFF000000);
+  @override
+  Color get borderFocus => const Color(0xFF000000);
+  @override
+  Color get borderError => const Color(0xFF000000);
+
+  @override
+  Color get success => const Color(0xFF3CD070); // Vibrant success
+  @override
+  Color get warning => const Color(0xFFFFC000); // Vibrant warning
+  @override
+  Color get error => const Color(0xFFFF3B30); // Vibrant error
+  @override
+  Color get info => const Color(0xFF007AFF); // Vibrant info
+}
+
+final class _JustColorSchemeNeobrutalismDark extends JustColorScheme {
+  const _JustColorSchemeNeobrutalismDark();
+
+  @override
+  Color get background => const Color(0xFF121212);
+  @override
+  Color get card => const Color(0xFF1E1E1E);
+  @override
+  Color get elevated => const Color(0xFF2D2D2D);
+  @override
+  Color get overlay => const Color(0xCC000000);
+
+  @override
+  Color get textPrimary => const Color(0xFFFFFFFF);
+  @override
+  Color get textSecondary => const Color(0xFFCCCCCC);
+  @override
+  Color get textDisabled => const Color(0xFF666666);
+  @override
+  Color get textInverse => const Color(0xFF000000);
+
+  @override
+  Color get borderDefault => const Color(0xFFFFFFFF);
+  @override
+  Color get borderFocus => const Color(0xFFFFFFFF);
+  @override
+  Color get borderError => const Color(0xFFFFFFFF);
+
+  @override
+  Color get success => const Color(0xFF4ADE80);
+  @override
+  Color get warning => const Color(0xFFFBBF24);
+  @override
+  Color get error => const Color(0xFFF87171);
+  @override
+  Color get info => const Color(0xFF60A5FA);
+}
+
 /// Aggregated color tokens class exposing both raw palette and theme factories.
 ///
 /// Use `JustColors.light()` and `JustColors.dark()` to retrieve semantic schemes,
@@ -190,11 +275,25 @@ abstract final class JustColors {
   /// The default dark theme color scheme.
   static const JustColorScheme darkScheme = _JustColorSchemeDark();
 
+  /// The neobrutalism light theme color scheme.
+  static const JustColorScheme neobrutalismLightScheme =
+      _JustColorSchemeNeobrutalismLight();
+
+  /// The neobrutalism dark theme color scheme.
+  static const JustColorScheme neobrutalismDarkScheme =
+      _JustColorSchemeNeobrutalismDark();
+
   /// Returns the default light theme color scheme.
   static JustColorScheme light() => lightScheme;
 
   /// Returns the default dark theme color scheme.
   static JustColorScheme dark() => darkScheme;
+
+  /// Returns the neobrutalism light theme color scheme.
+  static JustColorScheme neobrutalismLight() => neobrutalismLightScheme;
+
+  /// Returns the neobrutalism dark theme color scheme.
+  static JustColorScheme neobrutalismDark() => neobrutalismDarkScheme;
 
   // --- Raw Palette Constants ---
   /// Pure white.

@@ -494,5 +494,96 @@ void main() {
         expect(spacingRebuildCount, equals(1));
       },
     );
+
+    group('JustThemePreset Tests', () {
+      test('Value equality works correctly for presets', () {
+        final defaultTheme1 = JustThemeData.light;
+        final defaultTheme2 = JustThemeData.light.copyWith();
+        final neobrutalismTheme = JustThemeData.neobrutalismLight;
+
+        expect(defaultTheme1 == defaultTheme2, isTrue);
+        expect(defaultTheme1 == neobrutalismTheme, isFalse);
+        expect(defaultTheme1.hashCode == neobrutalismTheme.hashCode, isFalse);
+      });
+
+      testWidgets('Interactive press effects build correctly under each preset', (
+        WidgetTester tester,
+      ) async {
+        final key = GlobalKey();
+
+        // Test default preset (should use AnimatedScale)
+        await tester.pumpWidget(
+          JustThemeProvider(
+            initialThemeMode: ThemeMode.light,
+            child: Builder(
+              builder: (context) {
+                final theme = JustThemeProvider.of(context).theme;
+                return theme.buildPressEffect(
+                  isPressed: true,
+                  child: SizedBox(key: key, width: 100, height: 100),
+                );
+              },
+            ),
+          ),
+        );
+
+        // Verify that AnimatedScale is present
+        expect(find.byType(AnimatedScale), findsOneWidget);
+        // Verify that AnimatedContainer (translation) is NOT present
+        expect(find.byType(AnimatedContainer), findsNothing);
+
+        // Test neobrutalism preset (should use AnimatedContainer for translation)
+        await tester.pumpWidget(
+          JustThemeProvider(
+            initialThemeMode: ThemeMode.light,
+            lightTheme: JustThemeData.neobrutalismLight,
+            child: Builder(
+              builder: (context) {
+                final theme = JustThemeProvider.of(context).theme;
+                return theme.buildPressEffect(
+                  isPressed: true,
+                  child: SizedBox(key: key, width: 100, height: 100),
+                );
+              },
+            ),
+          ),
+        );
+
+        // Verify that AnimatedContainer is present
+        expect(find.byType(AnimatedContainer), findsOneWidget);
+        // Verify that AnimatedScale is NOT present
+        expect(find.byType(AnimatedScale), findsNothing);
+      });
+
+      testWidgets('Changing presets dynamically triggers correct rebuilds', (
+        WidgetTester tester,
+      ) async {
+        int rebuildCount = 0;
+        late JustThemeProviderState providerState;
+
+        await tester.pumpWidget(
+          JustThemeProvider(
+            initialThemeMode: ThemeMode.light,
+            child: Builder(
+              builder: (context) {
+                providerState = JustThemeProvider.read(context);
+                // Subscribe to shadows aspect (which changes when preset switches)
+                context.justShadows;
+                rebuildCount++;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        );
+
+        expect(rebuildCount, equals(1));
+
+        // Switch preset to neobrutalism (via applying a new light theme)
+        providerState.applyTheme(light: JustThemeData.neobrutalismLight);
+        await tester.pump();
+
+        expect(rebuildCount, equals(2));
+      });
+    });
   });
 }

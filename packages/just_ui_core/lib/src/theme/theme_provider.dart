@@ -115,8 +115,8 @@ class JustThemeProviderState extends State<JustThemeProvider>
     final resolvedAnimations = baseTheme.animations.resolve(context);
 
     return baseTheme.copyWith(
-      spacing: FluidSpacingScheme(width: width),
-      radius: FluidRadiusScheme(width: width),
+      spacing: baseTheme.spacing.resolve(width),
+      radius: baseTheme.radius.resolve(width),
       animations: resolvedAnimations,
     );
   }

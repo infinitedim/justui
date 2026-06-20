@@ -92,7 +92,7 @@ class JustAvatar extends StatelessWidget {
     this.name,
     this.icon,
     this.size = .md,
-    this.shape = JustAvatarShape.circle,
+    this.shape = .circle,
     this.border,
     this.statusDot,
     this.backgroundColor,
