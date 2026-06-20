@@ -600,6 +600,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
         orientation: widget.variant == .vertical ? .vertical : .horizontal,
         colors: colors,
         radius: radius,
+        theme: customTheme,
         style: widget.style ?? themeStyle,
       );
 
@@ -651,6 +652,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       ],
     );
 
+    final isNeobrutalism = customTheme.preset == JustThemePreset.neobrutalism;
     final Widget headerContainer = KeyboardListener(
       focusNode: _focusNode,
       onKeyEvent: _handleKeyEvent,
@@ -658,9 +660,13 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           color: containerBg,
           borderRadius: containerBorderRadius,
-          border: widget.variant == .enclosed
-              ? .all(color: colors.borderDefault, width: 1.0)
-              : null,
+          border: isNeobrutalism
+              ? (widget.variant == .enclosed || widget.variant == .pill
+                    ? .all(color: colors.textPrimary, width: 2.5)
+                    : null)
+              : (widget.variant == .enclosed
+                    ? .all(color: colors.borderDefault, width: 1.0)
+                    : null),
         ),
         padding: widget.style?.padding ?? themeStyle?.padding,
         child: headerBar,

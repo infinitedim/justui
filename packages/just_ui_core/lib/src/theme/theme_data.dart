@@ -57,6 +57,9 @@ abstract final class JustSpacingScheme {
   int get hashCode {
     return Object.hashAll([xxs, xs, sm, md, lg, xl, xxl, xxxl, huge]);
   }
+
+  /// Resolves the spacing scheme for a given screen width. Defaults to returning itself.
+  JustSpacingScheme resolve(double width) => this;
 }
 
 final class _DefaultSpacingScheme extends JustSpacingScheme {
@@ -85,7 +88,10 @@ final class _DefaultSpacingScheme extends JustSpacingScheme {
 final class FluidSpacingScheme extends JustSpacingScheme {
   final double width;
 
-  const FluidSpacingScheme({required this.width});
+  const FluidSpacingScheme({this.width = 1024.0});
+
+  @override
+  JustSpacingScheme resolve(double width) => FluidSpacingScheme(width: width);
 
   double _fluid(double minSize, double maxSize) {
     const double minWidth = 640.0;
@@ -280,6 +286,9 @@ abstract final class JustRadiusScheme {
   int get hashCode {
     return Object.hashAll([none, xs, sm, md, lg, xl, xxl, full]);
   }
+
+  /// Resolves the radius scheme for a given screen width. Defaults to returning itself.
+  JustRadiusScheme resolve(double width) => this;
 }
 
 final class _DefaultRadiusScheme extends JustRadiusScheme {
@@ -306,7 +315,10 @@ final class _DefaultRadiusScheme extends JustRadiusScheme {
 final class FluidRadiusScheme extends JustRadiusScheme {
   final double width;
 
-  const FluidRadiusScheme({required this.width});
+  const FluidRadiusScheme({this.width = 1024.0});
+
+  @override
+  JustRadiusScheme resolve(double width) => FluidRadiusScheme(width: width);
 
   Radius _fluid(double minSize, double maxSize) {
     const double minWidth = 640.0;
@@ -457,6 +469,60 @@ final class TintedShadowScheme extends JustShadowScheme {
       JustShadows.generate(seedColor: seedColor, elevation: 24, isDark: isDark);
 }
 
+final class NeobrutalismShadowScheme extends JustShadowScheme {
+  final Color shadowColor;
+  const NeobrutalismShadowScheme({this.shadowColor = const Color(0xFF000000)});
+
+  @override
+  List<BoxShadow> get xs => [
+    BoxShadow(
+      color: shadowColor,
+      offset: const Offset(1.0, 1.0),
+      blurRadius: 0.0,
+    ),
+  ];
+  @override
+  List<BoxShadow> get sm => [
+    BoxShadow(
+      color: shadowColor,
+      offset: const Offset(2.0, 2.0),
+      blurRadius: 0.0,
+    ),
+  ];
+  @override
+  List<BoxShadow> get md => [
+    BoxShadow(
+      color: shadowColor,
+      offset: const Offset(3.0, 3.0),
+      blurRadius: 0.0,
+    ),
+  ];
+  @override
+  List<BoxShadow> get lg => [
+    BoxShadow(
+      color: shadowColor,
+      offset: const Offset(4.0, 4.0),
+      blurRadius: 0.0,
+    ),
+  ];
+  @override
+  List<BoxShadow> get xl => [
+    BoxShadow(
+      color: shadowColor,
+      offset: const Offset(6.0, 6.0),
+      blurRadius: 0.0,
+    ),
+  ];
+  @override
+  List<BoxShadow> get xxl => [
+    BoxShadow(
+      color: shadowColor,
+      offset: const Offset(8.0, 8.0),
+      blurRadius: 0.0,
+    ),
+  ];
+}
+
 // ==========================================
 // --- JustThemeData ---
 // ==========================================
@@ -474,7 +540,11 @@ class JustThemeData {
     this.radius = const _DefaultRadiusScheme(),
     required this.shadows,
     this.animations = JustMotionProfile.standard,
+    this.preset = JustThemePreset.default_,
   });
+
+  /// The visual style preset.
+  final JustThemePreset preset;
 
   /// The active color scheme.
   final JustColorScheme colors;
@@ -516,6 +586,72 @@ class JustThemeData {
     shadows: const _DefaultShadowSchemeDark(),
   );
 
+  /// Pre-built neobrutalism light theme.
+  static final JustThemeData neobrutalismLight = JustThemeData(
+    colors: JustColors.neobrutalismLight(),
+    shadows: const NeobrutalismShadowScheme(),
+    preset: JustThemePreset.neobrutalism,
+  );
+
+  /// Pre-built neobrutalism dark theme.
+  static final JustThemeData neobrutalismDark = JustThemeData(
+    colors: JustColors.neobrutalismDark(),
+    shadows: const NeobrutalismShadowScheme(shadowColor: Color(0xFFFFFFFF)),
+    preset: JustThemePreset.neobrutalism,
+  );
+
+  /// Resolves the shadow offset based on the preset.
+  Offset get shadowOffset => preset == JustThemePreset.neobrutalism
+      ? const Offset(3.0, 3.0)
+      : Offset.zero;
+
+  /// Resolves the shadow list for the current preset and press state.
+  ///
+  /// Under neobrutalism, if the component is pressed, all solid shadows collapse
+  /// to [Offset.zero] (i.e. disappear behind the element).
+  List<BoxShadow> resolveShadows(
+    List<BoxShadow> baseShadows, {
+    required bool isPressed,
+  }) {
+    if (preset == JustThemePreset.neobrutalism && isPressed) {
+      return baseShadows.map((s) => s.copyWith(offset: Offset.zero)).toList();
+    }
+    return baseShadows;
+  }
+
+  /// Builds the interactive press effect wrapper widget matching the active preset.
+  ///
+  /// In default mode, applies a smooth scale animation.
+  /// In neobrutalism mode, translates the widget down/right by [shadowOffset]
+  /// to align with the collapsed shadow.
+  Widget buildPressEffect({
+    required Widget child,
+    required bool isPressed,
+    double scaleFactor = 0.97,
+    Offset? translationOffset,
+  }) {
+    if (preset == JustThemePreset.neobrutalism) {
+      final offset = translationOffset ?? shadowOffset;
+      return AnimatedContainer(
+        duration: animations.instant,
+        curve: animations.defaultCurve,
+        transform: Matrix4.translationValues(
+          isPressed ? offset.dx : 0.0,
+          isPressed ? offset.dy : 0.0,
+          0.0,
+        ),
+        child: child,
+      );
+    } else {
+      return AnimatedScale(
+        scale: isPressed ? scaleFactor : 1.0,
+        duration: animations.instant,
+        curve: animations.defaultCurve,
+        child: child,
+      );
+    }
+  }
+
   /// Generates a complete [JustThemeData] configuration dynamically from a single [seedColor].
   static JustThemeData fromSeed(
     Color seedColor, {
@@ -524,6 +660,7 @@ class JustThemeData {
     JustSpacingScheme spacing = const _DefaultSpacingScheme(),
     JustRadiusScheme radius = const _DefaultRadiusScheme(),
     JustMotionProfile animations = .standard,
+    JustThemePreset preset = JustThemePreset.default_,
   }) {
     final Color bg;
     final Color card;
@@ -545,7 +682,9 @@ class JustThemeData {
         lightness: 0.02,
       );
     } else {
-      bg = JustColorSemanticLight.background;
+      bg = preset == JustThemePreset.neobrutalism
+          ? const Color(0xFFFFFDF5)
+          : JustColorSemanticLight.background;
       card = JustColorSemanticLight.card;
       elevated = JustColorSemanticLight.elevated;
       overlay = JustColorSemanticLight.overlay;
@@ -559,7 +698,14 @@ class JustThemeData {
     final primary = hsl.withLightness(targetLightness).toColor();
 
     // Adjust lightness dynamically to guarantee at least 3.0:1 contrast (WCAG AA for large text/components).
-    final borderFocusColor = _makeAccessible(primary, bg, minRatio: 3.0);
+    final Color borderFocusColor;
+    if (preset == JustThemePreset.neobrutalism) {
+      borderFocusColor = isDark
+          ? const Color(0xFFFFFFFF)
+          : const Color(0xFF000000);
+    } else {
+      borderFocusColor = _makeAccessible(primary, bg, minRatio: 3.0);
+    }
 
     // Dynamic contrast enforcement for semantic state colors against generated background
     final successBase = isDark
@@ -580,43 +726,91 @@ class JustThemeData {
     final errorColor = _makeAccessible(errorBase, bg, minRatio: 4.5);
     final infoColor = _makeAccessible(infoBase, bg, minRatio: 4.5);
 
+    final Color textPrimaryResolved;
+    final Color textSecondaryResolved;
+    final Color textDisabledResolved;
+    final Color textInverseResolved;
+    final Color borderDefaultResolved;
+    final Color borderErrorResolved;
+
+    if (preset == JustThemePreset.neobrutalism) {
+      textPrimaryResolved = isDark
+          ? const Color(0xFFFFFFFF)
+          : const Color(0xFF000000);
+      textSecondaryResolved = isDark
+          ? const Color(0xFFCCCCCC)
+          : const Color(0xFF222222);
+      textDisabledResolved = isDark
+          ? const Color(0xFF666666)
+          : const Color(0xFF777777);
+      textInverseResolved = isDark
+          ? const Color(0xFF000000)
+          : const Color(0xFFFFFFFF);
+      borderDefaultResolved = isDark
+          ? const Color(0xFFFFFFFF)
+          : const Color(0xFF000000);
+      borderErrorResolved = isDark
+          ? const Color(0xFFFFFFFF)
+          : const Color(0xFF000000);
+    } else {
+      textPrimaryResolved = isDark
+          ? JustColorSemanticDark.textPrimary
+          : JustColorSemanticLight.textPrimary;
+      textSecondaryResolved = isDark
+          ? JustColorSemanticDark.textSecondary
+          : JustColorSemanticLight.textSecondary;
+      textDisabledResolved = isDark
+          ? JustColorSemanticDark.textDisabled
+          : JustColorSemanticLight.textDisabled;
+      textInverseResolved = isDark
+          ? JustColorSemanticDark.textInverse
+          : JustColorSemanticLight.textInverse;
+      borderDefaultResolved = isDark
+          ? JustColorSemanticDark.borderDefault
+          : JustColorSemanticLight.borderDefault;
+      borderErrorResolved = isDark
+          ? JustColorSemanticDark.borderError
+          : JustColorSemanticLight.borderError;
+    }
+
     final colors = CustomColorScheme(
       background: bg,
       card: card,
       elevated: elevated,
       overlay: overlay,
-      textPrimary: isDark
-          ? JustColorSemanticDark.textPrimary
-          : JustColorSemanticLight.textPrimary,
-      textSecondary: isDark
-          ? JustColorSemanticDark.textSecondary
-          : JustColorSemanticLight.textSecondary,
-      textDisabled: isDark
-          ? JustColorSemanticDark.textDisabled
-          : JustColorSemanticLight.textDisabled,
-      textInverse: isDark
-          ? JustColorSemanticDark.textInverse
-          : JustColorSemanticLight.textInverse,
-      borderDefault: isDark
-          ? JustColorSemanticDark.borderDefault
-          : JustColorSemanticLight.borderDefault,
+      textPrimary: textPrimaryResolved,
+      textSecondary: textSecondaryResolved,
+      textDisabled: textDisabledResolved,
+      textInverse: textInverseResolved,
+      borderDefault: borderDefaultResolved,
       borderFocus: borderFocusColor,
-      borderError: isDark
-          ? JustColorSemanticDark.borderError
-          : JustColorSemanticLight.borderError,
+      borderError: borderErrorResolved,
       success: successColor,
       warning: warningColor,
       error: errorColor,
       info: infoColor,
     );
 
+    final JustShadowScheme resolvedShadows;
+    if (preset == JustThemePreset.neobrutalism) {
+      resolvedShadows = NeobrutalismShadowScheme(
+        shadowColor: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
+      );
+    } else {
+      resolvedShadows = TintedShadowScheme(
+        seedColor: seedColor,
+        isDark: isDark,
+      );
+    }
+
     return JustThemeData(
       colors: colors,
       typography: typography,
       spacing: spacing,
       radius: radius,
-      shadows: TintedShadowScheme(seedColor: seedColor, isDark: isDark),
+      shadows: resolvedShadows,
       animations: animations,
+      preset: preset,
     );
   }
 
@@ -730,6 +924,7 @@ class JustThemeData {
     JustRadiusScheme? radius,
     JustShadowScheme? shadows,
     JustMotionProfile? animations,
+    JustThemePreset? preset,
   }) {
     return JustThemeData(
       colors: colors ?? this.colors,
@@ -738,6 +933,7 @@ class JustThemeData {
       radius: radius ?? this.radius,
       shadows: shadows ?? this.shadows,
       animations: animations ?? this.animations,
+      preset: preset ?? this.preset,
     );
   }
 
@@ -751,9 +947,17 @@ class JustThemeData {
           spacing == other.spacing &&
           radius == other.radius &&
           shadows == other.shadows &&
-          animations == other.animations;
+          animations == other.animations &&
+          preset == other.preset;
 
   @override
-  int get hashCode =>
-      Object.hash(colors, typography, spacing, radius, shadows, animations);
+  int get hashCode => Object.hash(
+    colors,
+    typography,
+    spacing,
+    radius,
+    shadows,
+    animations,
+    preset,
+  );
 }
