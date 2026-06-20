@@ -58,6 +58,48 @@ abstract final class JustColorScheme {
 
   /// State color for info.
   Color get info;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is JustColorScheme &&
+        other.background == background &&
+        other.card == card &&
+        other.elevated == elevated &&
+        other.overlay == overlay &&
+        other.textPrimary == textPrimary &&
+        other.textSecondary == textSecondary &&
+        other.textDisabled == textDisabled &&
+        other.textInverse == textInverse &&
+        other.borderDefault == borderDefault &&
+        other.borderFocus == borderFocus &&
+        other.borderError == borderError &&
+        other.success == success &&
+        other.warning == warning &&
+        other.error == error &&
+        other.info == info;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hashAll([
+      background,
+      card,
+      elevated,
+      overlay,
+      textPrimary,
+      textSecondary,
+      textDisabled,
+      textInverse,
+      borderDefault,
+      borderFocus,
+      borderError,
+      success,
+      warning,
+      error,
+      info,
+    ]);
+  }
 }
 
 final class _JustColorSchemeLight extends JustColorScheme {
