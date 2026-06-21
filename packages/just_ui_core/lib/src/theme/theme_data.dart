@@ -539,8 +539,8 @@ class JustThemeData {
     this.spacing = const _DefaultSpacingScheme(),
     this.radius = const _DefaultRadiusScheme(),
     required this.shadows,
-    this.animations = JustMotionProfile.standard,
-    this.preset = JustThemePreset.default_,
+    this.animations = .standard,
+    this.preset = .default_,
   });
 
   /// The visual style preset.
@@ -564,8 +564,6 @@ class JustThemeData {
   /// The active animation scheme.
   final JustMotionProfile animations;
 
-
-
   /// Default pre-built light theme.
   static final JustThemeData light = JustThemeData(
     colors: JustColors.light(),
@@ -582,20 +580,19 @@ class JustThemeData {
   static final JustThemeData neobrutalismLight = JustThemeData(
     colors: JustColors.neobrutalismLight(),
     shadows: const NeobrutalismShadowScheme(),
-    preset: JustThemePreset.neobrutalism,
+    preset: .neobrutalism,
   );
 
   /// Pre-built neobrutalism dark theme.
   static final JustThemeData neobrutalismDark = JustThemeData(
     colors: JustColors.neobrutalismDark(),
     shadows: const NeobrutalismShadowScheme(shadowColor: Color(0xFFFFFFFF)),
-    preset: JustThemePreset.neobrutalism,
+    preset: .neobrutalism,
   );
 
   /// Resolves the shadow offset based on the preset.
-  Offset get shadowOffset => preset == JustThemePreset.neobrutalism
-      ? const Offset(3.0, 3.0)
-      : Offset.zero;
+  Offset get shadowOffset =>
+      preset == .neobrutalism ? const Offset(3.0, 3.0) : Offset.zero;
 
   /// Resolves the shadow list for the current preset and press state.
   ///
@@ -605,7 +602,7 @@ class JustThemeData {
     List<BoxShadow> baseShadows, {
     required bool isPressed,
   }) {
-    if (preset == JustThemePreset.neobrutalism && isPressed) {
+    if (preset == .neobrutalism && isPressed) {
       return baseShadows.map((s) => s.copyWith(offset: Offset.zero)).toList();
     }
     return baseShadows;
@@ -622,7 +619,7 @@ class JustThemeData {
     double scaleFactor = 0.97,
     Offset? translationOffset,
   }) {
-    if (preset == JustThemePreset.neobrutalism) {
+    if (preset == .neobrutalism) {
       final offset = translationOffset ?? shadowOffset;
       return AnimatedContainer(
         duration: animations.instant,
@@ -652,7 +649,7 @@ class JustThemeData {
     JustSpacingScheme spacing = const _DefaultSpacingScheme(),
     JustRadiusScheme radius = const _DefaultRadiusScheme(),
     JustMotionProfile animations = .standard,
-    JustThemePreset preset = JustThemePreset.default_,
+    JustThemePreset preset = .default_,
   }) {
     final Color bg;
     final Color card;
@@ -674,7 +671,7 @@ class JustThemeData {
         lightness: 0.02,
       );
     } else {
-      bg = preset == JustThemePreset.neobrutalism
+      bg = preset == .neobrutalism
           ? const Color(0xFFFFFDF5)
           : JustColorSemanticLight.background;
       card = JustColorSemanticLight.card;
@@ -691,7 +688,7 @@ class JustThemeData {
 
     // Adjust lightness dynamically to guarantee at least 3.0:1 contrast (WCAG AA for large text/components).
     final Color borderFocusColor;
-    if (preset == JustThemePreset.neobrutalism) {
+    if (preset == .neobrutalism) {
       borderFocusColor = isDark
           ? const Color(0xFFFFFFFF)
           : const Color(0xFF000000);
@@ -725,7 +722,7 @@ class JustThemeData {
     final Color borderDefaultResolved;
     final Color borderErrorResolved;
 
-    if (preset == JustThemePreset.neobrutalism) {
+    if (preset == .neobrutalism) {
       textPrimaryResolved = isDark
           ? const Color(0xFFFFFFFF)
           : const Color(0xFF000000);
@@ -784,7 +781,7 @@ class JustThemeData {
     );
 
     final JustShadowScheme resolvedShadows;
-    if (preset == JustThemePreset.neobrutalism) {
+    if (preset == .neobrutalism) {
       resolvedShadows = NeobrutalismShadowScheme(
         shadowColor: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
       );
@@ -821,8 +818,6 @@ class JustThemeData {
     final isBgDark = background.computeLuminance() < 0.5;
     return isBgDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
   }
-
-
 
   /// Creates a copy of this theme with the given fields replaced by new values.
   JustThemeData copyWith({

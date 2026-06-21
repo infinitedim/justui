@@ -885,6 +885,67 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
       decoration: decoration,
     );
 
+    final theme = JustThemeProvider.of(context).theme;
+    final isNeobrutalism = theme.preset == .neobrutalism;
+
+    if (isNeobrutalism) {
+      final animations = JustThemeProvider.of(
+        context,
+        aspect: .animations,
+      ).theme.animations;
+      final targetDuration =
+          scope?.resolvedStyle.duration ?? (animations.slower * 2);
+
+      if (targetDuration == Duration.zero) {
+        return Container(
+          width: widget.width,
+          height: widget.height,
+          decoration: BoxDecoration(
+            color: colors.borderDefault.withValues(alpha: 0.12),
+            borderRadius: widget.shape == .circle ? null : resolvedRadius,
+            shape: widget.shape,
+          ),
+        );
+      }
+
+      AnimationController? activeController;
+      if (scope != null) {
+        activeController = scope.animation as AnimationController;
+      } else {
+        _localController ??= AnimationController(
+          vsync: this,
+          duration: targetDuration,
+        );
+        if (_localController!.duration != targetDuration) {
+          _localController!.duration = targetDuration;
+        }
+        if (!_localController!.isAnimating) {
+          _localController!.repeat();
+        }
+        activeController = _localController;
+      }
+
+      return RepaintBoundary(
+        child: AnimatedBuilder(
+          animation: activeController!,
+          builder: (context, child) {
+            final double value = activeController!.value;
+            final double opacity =
+                0.12 + 0.20 * (1.0 - (2.0 * (value - 0.5).abs()));
+            return Container(
+              width: widget.width,
+              height: widget.height,
+              decoration: BoxDecoration(
+                color: colors.borderDefault.withValues(alpha: opacity),
+                borderRadius: widget.shape == .circle ? null : resolvedRadius,
+                shape: widget.shape,
+              ),
+            );
+          },
+        ),
+      );
+    }
+
     if (scope != null) {
       if (scope.resolvedStyle.duration == Duration.zero) {
         return baseContainer;

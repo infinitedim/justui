@@ -6,6 +6,7 @@ import '../config/justui_config.dart';
 import '../registry/registry_client.dart';
 import '../utils/logger.dart';
 import '../utils/prompt.dart';
+import '../utils/import_rewriter.dart';
 import 'add_command.dart';
 
 /// The CLI command to check and pull component updates.
@@ -98,13 +99,23 @@ class UpdateCommand extends Command<void> {
 
           final rawLocalContent = localFile.readAsStringSync();
           final localContent = rawLocalContent.replaceAll('\r\n', '\n');
-          final localBytes = utf8.encode(localContent);
-          final localHash = sha256.convert(localBytes).toString();
           final expectedHash = file.checksum.replaceAll('sha256:', '').trim();
 
-          if (localHash != expectedHash) {
-            needsUpdate = true;
-            break;
+          final meta = ImportRewriter.parseMetadata(localContent);
+          if (meta != null) {
+            // Check if the registry version has changed
+            if (meta.registryHash != expectedHash) {
+              needsUpdate = true;
+              break;
+            }
+          } else {
+            // Fall back to direct hash check of entire file
+            final localBytes = utf8.encode(localContent);
+            final localHash = sha256.convert(localBytes).toString();
+            if (localHash != expectedHash) {
+              needsUpdate = true;
+              break;
+            }
           }
         }
 

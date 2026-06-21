@@ -7,6 +7,8 @@ import '../registry/registry_client.dart';
 import '../utils/logger.dart';
 import '../utils/prompt.dart';
 import '../utils/pubspec_editor.dart';
+import '../utils/import_rewriter.dart';
+import '../utils/diff_formatter.dart';
 
 /// The CLI command to copy a component and its dependencies into the target project.
 class AddCommand extends Command<void> {
@@ -125,11 +127,11 @@ class AddCommand extends Command<void> {
         ? tokensDir
         : fileSystem.path.join(componentsDir, component.name);
 
-    // 3. Download, validate, and write each file
+    // 3. Download, validate, rewrite, and write each file
     for (final file in component.files) {
       final content = await client.fetchFileContent(file.path);
 
-      // Verify SHA-256 checksum integrity
+      // Verify SHA-256 checksum integrity of downloaded content
       final bytes = utf8.encode(content);
       final downloadedHash = sha256.convert(bytes).toString();
       final expectedHash = file.checksum.replaceAll('sha256:', '').trim();
@@ -143,6 +145,25 @@ class AddCommand extends Command<void> {
         );
       }
 
+      // Apply dynamic relative import rewriting
+      final rewrittenContent = ImportRewriter.rewrite(
+        content: content,
+        sourceRegistryPath: file.path,
+        currentComponentName: component.name,
+        registryIndex: index,
+        componentsDir: componentsDir,
+        tokensDir: tokensDir,
+        fileSystem: fileSystem,
+      );
+
+      final localRewrittenHash =
+          sha256.convert(utf8.encode(rewrittenContent)).toString();
+      final finalContentToWrite = ImportRewriter.injectMetadata(
+        rewrittenContent,
+        expectedHash,
+        localRewrittenHash,
+      );
+
       final targetPath = fileSystem.path.join(targetDir, file.name);
       final targetFile = fileSystem.file(targetPath);
 
@@ -150,32 +171,97 @@ class AddCommand extends Command<void> {
       if (targetFile.existsSync()) {
         final rawLocalContent = targetFile.readAsStringSync();
         final localContent = rawLocalContent.replaceAll('\r\n', '\n');
-        final localBytes = utf8.encode(localContent);
-        final localHash = sha256.convert(localBytes).toString();
 
-        if (localHash == expectedHash) {
-          JustLogger.stdout('  - ${file.name} is already up-to-date.');
-          shouldWrite = false;
-        } else {
-          JustLogger.warning(
-            'Conflict: Local file "${file.name}" has been modified.',
-          );
-          while (true) {
-            final action = JustPrompt.ask(
-              '  Choose action: [o] Overwrite, [s] Skip, [d] Show Diff',
-              defaultValue: 's',
-            ).toLowerCase();
+        final meta = ImportRewriter.parseMetadata(localContent);
+        if (meta != null) {
+          final localCleanContent = ImportRewriter.stripMetadata(localContent);
+          final currentLocalHash =
+              sha256.convert(utf8.encode(localCleanContent)).toString();
 
-            if (action == 'o') {
-              shouldWrite = true;
-              break;
-            } else if (action == 's') {
+          if (currentLocalHash == meta.localHash) {
+            // Unmodified locally by the user
+            if (meta.registryHash == expectedHash) {
+              JustLogger.stdout('  - ${file.name} is already up-to-date.');
               shouldWrite = false;
-              break;
-            } else if (action == 'd') {
-              _printLineDiff(file.name, localContent, content);
             } else {
-              JustLogger.error('Invalid option. Choose o, s, or d.');
+              JustLogger.info(
+                '  - Updating ${file.name} to latest registry version.',
+              );
+              shouldWrite = true;
+            }
+          } else {
+            // Locally modified by the user
+            if (meta.registryHash == expectedHash) {
+              // Remote is same, but local is modified -> keep local
+              JustLogger.stdout(
+                '  - ${file.name} has been customized locally. Skipping.',
+              );
+              shouldWrite = false;
+            } else {
+              // True conflict: remote changed and local changed
+              JustLogger.warning(
+                'Conflict: Local file "${file.name}" has been modified, and a registry update is available.',
+              );
+              while (true) {
+                final action = JustPrompt.ask(
+                  '  Choose action: [o] Overwrite, [s] Skip, [d] Show Diff',
+                  defaultValue: 's',
+                ).toLowerCase();
+
+                if (action == 'o') {
+                  shouldWrite = true;
+                  break;
+                } else if (action == 's') {
+                  shouldWrite = false;
+                  break;
+                } else if (action == 'd') {
+                  // Show diff of clean local content vs remote rewritten content
+                  DiffFormatter.printUnifiedDiff(
+                    file.name,
+                    localCleanContent,
+                    rewrittenContent,
+                  );
+                } else {
+                  JustLogger.error('Invalid option. Choose o, s, or d.');
+                }
+              }
+            }
+          }
+        } else {
+          // No metadata header: fall back to raw hash comparison of the entire file
+          final localBytes = utf8.encode(localContent);
+          final localHash = sha256.convert(localBytes).toString();
+
+          if (localHash == expectedHash) {
+            JustLogger.stdout(
+              '  - ${file.name} is already up-to-date (no metadata).',
+            );
+            shouldWrite = false;
+          } else {
+            JustLogger.warning(
+              'Conflict: Local file "${file.name}" exists and differs (no metadata).',
+            );
+            while (true) {
+              final action = JustPrompt.ask(
+                '  Choose action: [o] Overwrite, [s] Skip, [d] Show Diff',
+                defaultValue: 's',
+              ).toLowerCase();
+
+              if (action == 'o') {
+                shouldWrite = true;
+                break;
+              } else if (action == 's') {
+                shouldWrite = false;
+                break;
+              } else if (action == 'd') {
+                DiffFormatter.printUnifiedDiff(
+                  file.name,
+                  localContent,
+                  rewrittenContent,
+                );
+              } else {
+                JustLogger.error('Invalid option. Choose o, s, or d.');
+              }
             }
           }
         }
@@ -184,7 +270,7 @@ class AddCommand extends Command<void> {
       if (shouldWrite) {
         // Create parents dynamically
         targetFile.parent.createSync(recursive: true);
-        targetFile.writeAsStringSync(content);
+        targetFile.writeAsStringSync(finalContentToWrite);
         JustLogger.stdout('  - Copied ${file.name} to $targetDir/');
       }
     }
@@ -209,40 +295,5 @@ class AddCommand extends Command<void> {
     }
 
     JustLogger.success('Component "$name" added successfully.');
-  }
-
-  void _printLineDiff(String fileName, String local, String remote) {
-    JustLogger.stdout('\n--- Line-by-line diff for $fileName ---');
-    final localNormalized = local.replaceAll('\r\n', '\n');
-    final remoteNormalized = remote.replaceAll('\r\n', '\n');
-    final localLines = localNormalized.split('\n');
-    final remoteLines = remoteNormalized.split('\n');
-    final maxLines = localLines.length > remoteLines.length
-        ? localLines.length
-        : remoteLines.length;
-
-    for (int i = 0; i < maxLines; i++) {
-      final localLine = i < localLines.length ? localLines[i] : null;
-      final remoteLine = i < remoteLines.length ? remoteLines[i] : null;
-
-      if (localLine != remoteLine) {
-        if (remoteLine != null && localLine == null) {
-          // Added in registry
-          JustLogger.stdout('\x1B[32m+ [Line ${i + 1}] $remoteLine\x1B[0m');
-        } else if (localLine != null && remoteLine == null) {
-          // Custom local additions
-          JustLogger.stdout('\x1B[31m- [Line ${i + 1}] $localLine\x1B[0m');
-        } else {
-          // Modified line
-          JustLogger.stdout(
-            '\x1B[31m- [Line ${i + 1}] Local:    $localLine\x1B[0m',
-          );
-          JustLogger.stdout(
-            '\x1B[32m+ [Line ${i + 1}] Registry: $remoteLine\x1B[0m',
-          );
-        }
-      }
-    }
-    JustLogger.stdout('-----------------------------------------\n');
   }
 }

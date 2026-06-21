@@ -130,8 +130,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
       final finalEnableHaptic =
           widget.enableHaptic ??
           radioTheme?.enableHaptic ??
-          (JustThemeProvider.read(context).theme.preset ==
-              JustThemePreset.neobrutalism);
+          (JustThemeProvider.read(context).theme.preset == .neobrutalism);
 
       if (finalEnableHaptic) {
         HapticFeedback.selectionClick();
@@ -194,7 +193,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
         textStyle.copyWith(color: colors.textPrimary);
 
     final customTheme = JustThemeProvider.of(context).theme;
-    final isNeobrutalism = customTheme.preset == JustThemePreset.neobrutalism;
+    final isNeobrutalism = customTheme.preset == .neobrutalism;
 
     return Semantics(
       checked: _isSelected,

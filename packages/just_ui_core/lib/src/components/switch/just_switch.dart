@@ -137,8 +137,7 @@ class _JustSwitchState extends State<JustSwitch>
     final finalEnableHaptic =
         widget.enableHaptic ??
         switchTheme?.enableHaptic ??
-        (JustThemeProvider.read(context).theme.preset ==
-            JustThemePreset.neobrutalism);
+        (JustThemeProvider.read(context).theme.preset == .neobrutalism);
 
     if (finalEnableHaptic) {
       HapticFeedback.selectionClick();
@@ -191,7 +190,7 @@ class _JustSwitchState extends State<JustSwitch>
 
     final isInteractive = !widget.isDisabled && widget.onChanged != null;
 
-    final isNeobrutalism = customTheme.preset == JustThemePreset.neobrutalism;
+    final isNeobrutalism = customTheme.preset == .neobrutalism;
     final borderWidth = isNeobrutalism ? 2.0 : 0.0;
 
     // Resolve sizing values
