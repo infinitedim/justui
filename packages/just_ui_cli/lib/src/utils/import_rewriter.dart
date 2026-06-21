@@ -15,9 +15,10 @@ class JustUIMetadata {
 
 /// A helper class to rewrite relative import paths and manage metadata headers.
 class ImportRewriter {
-  static final RegExp _importRegExp =
-      RegExp(r'''import\s+['"]([^'"]+)['"]\s*;''');
-  
+  static final RegExp _importRegExp = RegExp(
+    r'''import\s+['"]([^'"]+)['"]\s*;''',
+  );
+
   static final RegExp _metaRegExp = RegExp(
     r"^// justui-meta: registry=([a-zA-Z0-9]+) local=([a-zA-Z0-9]+)\r?\n",
   );
@@ -75,9 +76,9 @@ class ImportRewriter {
 
     final String currentDir =
         currentComponent.category == 'tokens' ||
-                currentComponent.category == 'core'
-            ? tokensDir
-            : pathContext.join(componentsDir, currentComponentName);
+            currentComponent.category == 'core'
+        ? tokensDir
+        : pathContext.join(componentsDir, currentComponentName);
 
     final filename = pathContext.basename(sourceRegistryPath);
     final String currentFilePath = pathContext.join(currentDir, filename);
@@ -121,17 +122,23 @@ class ImportRewriter {
 
       if (targetComponent != null && targetFile != null) {
         // Calculate the target path in the user's project
-        final String targetDir = targetComponent.category == 'tokens' ||
+        final String targetDir =
+            targetComponent.category == 'tokens' ||
                 targetComponent.category == 'core'
             ? tokensDir
             : pathContext.join(componentsDir, targetComponent.name);
 
-        final String targetFilePath =
-            pathContext.join(targetDir, targetFile.name);
+        final String targetFilePath = pathContext.join(
+          targetDir,
+          targetFile.name,
+        );
 
         // Compute the relative path from the current file's local directory to the target file
         final relativeImport = pathContext
-            .relative(targetFilePath, from: pathContext.dirname(currentFilePath))
+            .relative(
+              targetFilePath,
+              from: pathContext.dirname(currentFilePath),
+            )
             .replaceAll('\\', '/');
 
         return "import '$relativeImport';";

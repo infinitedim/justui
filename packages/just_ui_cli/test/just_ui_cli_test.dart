@@ -197,14 +197,18 @@ registry_url: mock_registry
         // Verify files are copied to correct locations
         expect(fs.file('lib/ui/button/just_button.dart').existsSync(), isTrue);
         expect(
-          ImportRewriter.stripMetadata(fs.file('lib/ui/button/just_button.dart').readAsStringSync()).trim(),
+          ImportRewriter.stripMetadata(
+            fs.file('lib/ui/button/just_button.dart').readAsStringSync(),
+          ).trim(),
           equals('button_code'),
         );
 
         // Verify registry dependency is copied to tokensDir
         expect(fs.file('lib/tokens/spacing.dart').existsSync(), isTrue);
         expect(
-          ImportRewriter.stripMetadata(fs.file('lib/tokens/spacing.dart').readAsStringSync()).trim(),
+          ImportRewriter.stripMetadata(
+            fs.file('lib/tokens/spacing.dart').readAsStringSync(),
+          ).trim(),
           equals('spacing_code'),
         );
 
@@ -577,7 +581,9 @@ registry_url: mock_registry
 
       expect(fs.file('lib/ui/button/just_button.dart').existsSync(), isTrue);
       expect(
-        ImportRewriter.stripMetadata(fs.file('lib/ui/button/just_button.dart').readAsStringSync()).trim(),
+        ImportRewriter.stripMetadata(
+          fs.file('lib/ui/button/just_button.dart').readAsStringSync(),
+        ).trim(),
         equals('button_code'),
       );
     });
@@ -752,81 +758,100 @@ registry_url: mock_registry
   });
 
   group('ImportRewriter & Diff/Selective Apply Tests', () {
-    test('ImportRewriter correctly rewrites relative imports and handles theme special case', () {
-      final mockIndex = RegistryIndex(
-        version: '1',
-        components: [
-          RegistryComponent(
-            name: 'button',
-            version: '0.1.0',
-            description: '',
-            category: 'primitives',
-            registryDependencies: ['_shared_pressable'],
-            pubDependencies: {},
-            files: [
-              RegistryFile(
-                name: 'just_button.dart',
-                path: 'components/button/just_button.dart',
-                checksum: '',
-              ),
-            ],
-          ),
-          RegistryComponent(
-            name: '_shared_pressable',
-            version: '0.1.0',
-            description: '',
-            category: 'internal',
-            registryDependencies: [],
-            pubDependencies: {},
-            files: [
-              RegistryFile(
-                name: 'just_pressable.dart',
-                path: 'components/shared/just_pressable.dart',
-                checksum: '',
-              ),
-            ],
-          ),
-        ],
-      );
+    test(
+      'ImportRewriter correctly rewrites relative imports and handles theme special case',
+      () {
+        final mockIndex = RegistryIndex(
+          version: '1',
+          components: [
+            RegistryComponent(
+              name: 'button',
+              version: '0.1.0',
+              description: '',
+              category: 'primitives',
+              registryDependencies: ['_shared_pressable'],
+              pubDependencies: {},
+              files: [
+                RegistryFile(
+                  name: 'just_button.dart',
+                  path: 'components/button/just_button.dart',
+                  checksum: '',
+                ),
+              ],
+            ),
+            RegistryComponent(
+              name: '_shared_pressable',
+              version: '0.1.0',
+              description: '',
+              category: 'internal',
+              registryDependencies: [],
+              pubDependencies: {},
+              files: [
+                RegistryFile(
+                  name: 'just_pressable.dart',
+                  path: 'components/shared/just_pressable.dart',
+                  checksum: '',
+                ),
+              ],
+            ),
+          ],
+        );
 
-      final originalContent = '''
+        final originalContent = '''
 import 'package:flutter/widgets.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/just_pressable.dart';
 ''';
 
-      final rewritten = ImportRewriter.rewrite(
-        content: originalContent,
-        sourceRegistryPath: 'components/button/just_button.dart',
-        currentComponentName: 'button',
-        registryIndex: mockIndex,
-        componentsDir: 'lib/ui',
-        tokensDir: 'lib/tokens',
-        fileSystem: fs,
-      );
+        final rewritten = ImportRewriter.rewrite(
+          content: originalContent,
+          sourceRegistryPath: 'components/button/just_button.dart',
+          currentComponentName: 'button',
+          registryIndex: mockIndex,
+          componentsDir: 'lib/ui',
+          tokensDir: 'lib/tokens',
+          fileSystem: fs,
+        );
 
-      expect(rewritten, contains("import 'package:just_ui_core/just_ui_core.dart';"));
-      expect(rewritten, contains("import '../_shared_pressable/just_pressable.dart';"));
-    });
+        expect(
+          rewritten,
+          contains("import 'package:just_ui_core/just_ui_core.dart';"),
+        );
+        expect(
+          rewritten,
+          contains("import '../_shared_pressable/just_pressable.dart';"),
+        );
+      },
+    );
 
-    test('ImportRewriter metadata parse, strip, and inject functions work as expected', () {
-      const code = 'void main() {}';
-      final injected = ImportRewriter.injectMetadata(code, 'reg123', 'loc456');
-      expect(injected, contains('// justui-meta: registry=reg123 local=loc456'));
+    test(
+      'ImportRewriter metadata parse, strip, and inject functions work as expected',
+      () {
+        const code = 'void main() {}';
+        final injected = ImportRewriter.injectMetadata(
+          code,
+          'reg123',
+          'loc456',
+        );
+        expect(
+          injected,
+          contains('// justui-meta: registry=reg123 local=loc456'),
+        );
 
-      final meta = ImportRewriter.parseMetadata(injected)!;
-      expect(meta.registryHash, equals('reg123'));
-      expect(meta.localHash, equals('loc456'));
+        final meta = ImportRewriter.parseMetadata(injected)!;
+        expect(meta.registryHash, equals('reg123'));
+        expect(meta.localHash, equals('loc456'));
 
-      final stripped = ImportRewriter.stripMetadata(injected);
-      expect(stripped.trim(), equals(code));
-    });
+        final stripped = ImportRewriter.stripMetadata(injected);
+        expect(stripped.trim(), equals(code));
+      },
+    );
 
     test('DiffCommand supports unified diff rendering', () {
       const local = 'line 1\nline 2\nline 3\n';
       const remote = 'line 1\nline 2 modified\nline 3\n';
       final diffLines = DiffFormatter.calculateDiff(local, remote);
-      
+
       expect(diffLines.any((l) => l.type == '-'), isTrue);
       expect(diffLines.any((l) => l.type == '+'), isTrue);
     });
