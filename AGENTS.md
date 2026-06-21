@@ -114,7 +114,8 @@ Ketika mengimplementasikan atau memodifikasi visual style preset kustom (seperti
    * Untuk mencocokkan pergerakan posisi (translate) elemen dengan hilangnya bayangan solid (shadow offset collapsing) ketika ditekan, set durasi `AnimatedContainer` ke `animations.instant` (bukan `animations.fast`). Hal ini menjaga sinkronisasi pergerakan visual agar tidak terjadi pergeseran (drift).
 
 3. **Pemberlakuan Kontras Dinamis & Warna Border**:
-   * Di bawah preset `neobrutalism`, pertahankan kekhasan estetika dengan memaksa warna border tombol/input menjadi `colors.textPrimary` (hitam pekat di light mode, putih pekat di dark mode) di semua state (normal, hover, focused, error). Jangan biarkan warna border bertransisi ke warna primer/tinted.
+   * Di bawah preset `neobrutalism`, pertahankan kekhasan estetika dengan memaksa warna border tombol/input/container menjadi `colors.textPrimary` (hitam pekat di light mode, putih pekat di dark mode) di semua state (normal, hover, focused, error). Jangan biarkan warna border bertransisi ke warna primer/tinted.
+   * Tebal border standar untuk komponen dan container (seperti Button, Card, Input, Sidebar, BottomNav, Breadcrumb dropdown) ditetapkan sebesar `2.5` (menggantikan rancangan awal `3.0` demi proporsi visual yang lebih seimbang).
    * Lewati (*bypass*) penyesuaian kontras HSL dinamis (`_makeAccessible`) khusus untuk default/focus border di preset `neobrutalism`.
 
 4. **Kompatibilitas CLI**:
