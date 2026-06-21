@@ -131,9 +131,7 @@ void main() {
           child: const Directionality(
             textDirection: TextDirection.ltr,
             child: JustSidebar(
-              items: [
-                JustSidebarItem(label: 'Home', icon: Text('HomeIcon')),
-              ],
+              items: [JustSidebarItem(label: 'Home', icon: Text('HomeIcon'))],
             ),
           ),
         ),
@@ -145,7 +143,8 @@ void main() {
           final container = element.widget as Container;
           if (container.decoration is BoxDecoration) {
             final dec = container.decoration as BoxDecoration;
-            if (dec.border is Border && (dec.border as Border).right.width == 2.5) {
+            if (dec.border is Border &&
+                (dec.border as Border).right.width == 2.5) {
               foundThickBorder = true;
             }
           }

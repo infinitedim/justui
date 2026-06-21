@@ -132,13 +132,15 @@ class DiffCommand extends Command<void> {
         final expectedHash = file.checksum.replaceAll('sha256:', '').trim();
 
         if (!localFile.existsSync()) {
-          filesStatus.add(DiffFileStatus(
-            file: file,
-            targetPath: targetPath,
-            statusType: DiffStatusType.missing,
-            localContent: '',
-            expectedHash: expectedHash,
-          ));
+          filesStatus.add(
+            DiffFileStatus(
+              file: file,
+              targetPath: targetPath,
+              statusType: DiffStatusType.missing,
+              localContent: '',
+              expectedHash: expectedHash,
+            ),
+          );
           continue;
         }
 
@@ -148,44 +150,53 @@ class DiffCommand extends Command<void> {
         final meta = ImportRewriter.parseMetadata(localContent);
         if (meta != null) {
           final localCleanContent = ImportRewriter.stripMetadata(localContent);
-          final currentLocalHash =
-              sha256.convert(utf8.encode(localCleanContent)).toString();
+          final currentLocalHash = sha256
+              .convert(utf8.encode(localCleanContent))
+              .toString();
 
           if (currentLocalHash == meta.localHash) {
             if (meta.registryHash == expectedHash) {
-              filesStatus.add(DiffFileStatus(
-                file: file,
-                targetPath: targetPath,
-                statusType: DiffStatusType.upToDate,
-                localContent: localCleanContent,
-                expectedHash: expectedHash,
-              ));
+              filesStatus.add(
+                DiffFileStatus(
+                  file: file,
+                  targetPath: targetPath,
+                  statusType: DiffStatusType.upToDate,
+                  localContent: localCleanContent,
+                  expectedHash: expectedHash,
+                ),
+              );
             } else {
-              filesStatus.add(DiffFileStatus(
-                file: file,
-                targetPath: targetPath,
-                statusType: DiffStatusType.updateAvailable,
-                localContent: localCleanContent,
-                expectedHash: expectedHash,
-              ));
+              filesStatus.add(
+                DiffFileStatus(
+                  file: file,
+                  targetPath: targetPath,
+                  statusType: DiffStatusType.updateAvailable,
+                  localContent: localCleanContent,
+                  expectedHash: expectedHash,
+                ),
+              );
             }
           } else {
             if (meta.registryHash == expectedHash) {
-              filesStatus.add(DiffFileStatus(
-                file: file,
-                targetPath: targetPath,
-                statusType: DiffStatusType.locallyModified,
-                localContent: localCleanContent,
-                expectedHash: expectedHash,
-              ));
+              filesStatus.add(
+                DiffFileStatus(
+                  file: file,
+                  targetPath: targetPath,
+                  statusType: DiffStatusType.locallyModified,
+                  localContent: localCleanContent,
+                  expectedHash: expectedHash,
+                ),
+              );
             } else {
-              filesStatus.add(DiffFileStatus(
-                file: file,
-                targetPath: targetPath,
-                statusType: DiffStatusType.conflict,
-                localContent: localCleanContent,
-                expectedHash: expectedHash,
-              ));
+              filesStatus.add(
+                DiffFileStatus(
+                  file: file,
+                  targetPath: targetPath,
+                  statusType: DiffStatusType.conflict,
+                  localContent: localCleanContent,
+                  expectedHash: expectedHash,
+                ),
+              );
             }
           }
         } else {
@@ -194,21 +205,25 @@ class DiffCommand extends Command<void> {
           final localHash = sha256.convert(localBytes).toString();
 
           if (localHash == expectedHash) {
-            filesStatus.add(DiffFileStatus(
-              file: file,
-              targetPath: targetPath,
-              statusType: DiffStatusType.upToDate,
-              localContent: localContent,
-              expectedHash: expectedHash,
-            ));
+            filesStatus.add(
+              DiffFileStatus(
+                file: file,
+                targetPath: targetPath,
+                statusType: DiffStatusType.upToDate,
+                localContent: localContent,
+                expectedHash: expectedHash,
+              ),
+            );
           } else {
-            filesStatus.add(DiffFileStatus(
-              file: file,
-              targetPath: targetPath,
-              statusType: DiffStatusType.locallyModified,
-              localContent: localContent,
-              expectedHash: expectedHash,
-            ));
+            filesStatus.add(
+              DiffFileStatus(
+                file: file,
+                targetPath: targetPath,
+                statusType: DiffStatusType.locallyModified,
+                localContent: localContent,
+                expectedHash: expectedHash,
+              ),
+            );
           }
         }
       }
@@ -300,8 +315,10 @@ class DiffCommand extends Command<void> {
         JustLogger.stdout('  [v] View full diff');
         JustLogger.stdout('  [q] Quit');
 
-        final choice =
-            JustPrompt.ask('Choose option', defaultValue: 'q').toLowerCase();
+        final choice = JustPrompt.ask(
+          'Choose option',
+          defaultValue: 'q',
+        ).toLowerCase();
 
         if (choice == 'q') {
           break;
