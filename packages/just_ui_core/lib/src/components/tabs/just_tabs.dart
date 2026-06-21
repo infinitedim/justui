@@ -652,7 +652,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       ],
     );
 
-    final isNeobrutalism = customTheme.preset == JustThemePreset.neobrutalism;
+    final isNeobrutalism = customTheme.preset == .neobrutalism;
     final Widget headerContainer = KeyboardListener(
       focusNode: _focusNode,
       onKeyEvent: _handleKeyEvent,

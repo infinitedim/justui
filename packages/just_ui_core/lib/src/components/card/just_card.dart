@@ -116,7 +116,7 @@ class JustCard extends StatelessWidget {
     final shadows = theme.shadows;
 
     final isInteractive = onTap != null;
-    final isNeobrutalism = theme.preset == JustThemePreset.neobrutalism;
+    final isNeobrutalism = theme.preset == .neobrutalism;
 
     // Resolve base colors and shadows depending on the card variant
     Color defaultBg;

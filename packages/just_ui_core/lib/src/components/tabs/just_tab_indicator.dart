@@ -38,7 +38,7 @@ class JustTabIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isNeobrutalism = theme.preset == JustThemePreset.neobrutalism;
+    final isNeobrutalism = theme.preset == .neobrutalism;
     // Resolve styling colors and shapes
     final activeColor =
         style?.indicatorColor ?? style?.activeColor ?? colors.borderFocus;
