@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart' show JustBreakpoints, JustThemePreset;
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_tooltip_overlay.dart';
@@ -347,7 +348,7 @@ class _JustSidebarState extends State<JustSidebar>
 
         final Color itemBg = isSelected
             ? (isNeobrutalism
-                  ? colors.success.withValues(alpha: 0.2)
+                  ? activeColor.withValues(alpha: 0.35)
                   : (widget.variant == .default_
                         ? colors.card
                         : activeColor.withValues(alpha: 0.08)))
