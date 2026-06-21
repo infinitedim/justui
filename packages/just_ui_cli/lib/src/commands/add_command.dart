@@ -156,8 +156,9 @@ class AddCommand extends Command<void> {
         fileSystem: fileSystem,
       );
 
-      final localRewrittenHash =
-          sha256.convert(utf8.encode(rewrittenContent)).toString();
+      final localRewrittenHash = sha256
+          .convert(utf8.encode(rewrittenContent))
+          .toString();
       final finalContentToWrite = ImportRewriter.injectMetadata(
         rewrittenContent,
         expectedHash,
@@ -175,8 +176,9 @@ class AddCommand extends Command<void> {
         final meta = ImportRewriter.parseMetadata(localContent);
         if (meta != null) {
           final localCleanContent = ImportRewriter.stripMetadata(localContent);
-          final currentLocalHash =
-              sha256.convert(utf8.encode(localCleanContent)).toString();
+          final currentLocalHash = sha256
+              .convert(utf8.encode(localCleanContent))
+              .toString();
 
           if (currentLocalHash == meta.localHash) {
             // Unmodified locally by the user

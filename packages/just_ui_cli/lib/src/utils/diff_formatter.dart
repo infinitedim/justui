@@ -110,7 +110,8 @@ class DiffFormatter {
 
     // Print header border
     final borderLength = max(40, fileName.length + 8);
-    final headerBorder = '┌─ $fileName ${"─" * (borderLength - fileName.length - 4)}';
+    final headerBorder =
+        '┌─ $fileName ${"─" * (borderLength - fileName.length - 4)}';
     JustLogger.stdout(headerBorder);
 
     for (final group in groups) {
@@ -144,7 +145,8 @@ class DiffFormatter {
       }
 
       // Print hunk header
-      final hunkHeader = '│ @@ -$localStart,$localCount +$remoteStart,$remoteCount @@';
+      final hunkHeader =
+          '│ @@ -$localStart,$localCount +$remoteStart,$remoteCount @@';
       JustLogger.stdout('\x1B[36m$hunkHeader\x1B[0m');
 
       // Print hunk lines
