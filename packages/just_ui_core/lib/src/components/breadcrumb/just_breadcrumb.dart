@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/just_pressable.dart';
 import 'just_breadcrumb_style.dart';
@@ -65,6 +64,9 @@ class JustBreadcrumb extends StatelessWidget {
       aspect: .spacing,
     ).theme.spacing;
 
+    final isNeobrutalism =
+        JustThemeProvider.of(context).theme.preset == .neobrutalism;
+
     // Resolve separator widget
     final resolvedSeparator =
         separator ??
@@ -72,7 +74,11 @@ class JustBreadcrumb extends StatelessWidget {
           '/',
           style:
               style?.separatorStyle ??
-              typography.bodyMd.copyWith(color: colors.textSecondary),
+              typography.bodyMd.copyWith(
+                color: isNeobrutalism
+                    ? colors.borderDefault
+                    : colors.textSecondary,
+              ),
         );
 
     // Resolve collapsed widget
@@ -259,7 +265,7 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
     final typography = customTheme.typography;
     final spacing = customTheme.spacing;
     final radius = customTheme.radius;
-    final isNeobrutalism = customTheme.preset == JustThemePreset.neobrutalism;
+    final isNeobrutalism = customTheme.preset == .neobrutalism;
 
     return OverlayPortal.overlayChildLayoutBuilder(
       controller: _controller,
@@ -291,7 +297,9 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
                     color: colors.elevated,
                     borderRadius: .all(radius.md),
                     border: .all(
-                      color: isNeobrutalism ? colors.textPrimary : colors.borderDefault,
+                      color: isNeobrutalism
+                          ? colors.textPrimary
+                          : colors.borderDefault,
                       width: isNeobrutalism ? 2.5 : 1.0,
                     ),
                     boxShadow: customTheme.shadows.md,
@@ -379,11 +387,10 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
         onTap: () => _controller.toggle(),
         builder: (context, isHovered, isPressed, isFocused, focusNode) {
           final customTheme = JustThemeProvider.of(context).theme;
-          final isNeobrutalism = customTheme.preset == JustThemePreset.neobrutalism;
+          final isNeobrutalism = customTheme.preset == .neobrutalism;
           final Widget collapsedIndicatorWidget = Container(
             padding:
-                widget.style?.itemPadding ??
-                .symmetric(horizontal: spacing.xs),
+                widget.style?.itemPadding ?? .symmetric(horizontal: spacing.xs),
             child: DefaultTextStyle(
               style: (widget.style?.textStyle ?? typography.bodyMd).copyWith(
                 color: isHovered || isPressed

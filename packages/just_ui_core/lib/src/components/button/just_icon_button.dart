@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/just_focus_indicator.dart';
 import '../shared/just_pressable.dart';
@@ -89,7 +88,7 @@ class _JustIconButtonState extends State<JustIconButton> {
     final finalEnableHaptic =
         widget.enableHaptic ??
         buttonTheme?.enableHaptic ??
-        (customTheme.preset == JustThemePreset.neobrutalism);
+        (customTheme.preset == .neobrutalism);
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
     final radius = customTheme.radius;
@@ -157,8 +156,7 @@ class _JustIconButtonState extends State<JustIconButton> {
                     widget.onPressed?.call();
                   },
             builder: (context, isHovered, isPressed, isFocused, focusNode) {
-              final isNeobrutalism =
-                  customTheme.preset == JustThemePreset.neobrutalism;
+              final isNeobrutalism = customTheme.preset == .neobrutalism;
               Color bg;
               Color text;
               Color border;

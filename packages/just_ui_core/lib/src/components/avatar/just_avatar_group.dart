@@ -33,6 +33,8 @@ class JustAvatarGroup extends StatelessWidget {
     }
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
+    final customTheme = JustThemeProvider.of(context).theme;
+    final isNeobrutalism = customTheme.preset == .neobrutalism;
 
     final int displayCount = avatars.length > maxDisplay
         ? maxDisplay
@@ -63,7 +65,10 @@ class JustAvatarGroup extends StatelessWidget {
         break;
     }
 
-    final double stepWidth = diameter - overlap;
+    final double resolvedOverlap = isNeobrutalism
+        ? (overlap > 3.0 ? overlap - 2.0 : overlap)
+        : overlap;
+    final double stepWidth = diameter - resolvedOverlap;
     final double totalWidth = diameter + (totalItems - 1) * stepWidth;
 
     final List<Widget> children = [];
@@ -84,7 +89,10 @@ class JustAvatarGroup extends StatelessWidget {
           shape: original.shape,
           border:
               original.border ??
-              BorderSide(color: colors.background, width: 2.0),
+              BorderSide(
+                color: colors.background,
+                width: isNeobrutalism ? 2.5 : 2.0,
+              ),
           statusDot: original.statusDot,
           backgroundColor: original.backgroundColor,
           onTap: original.onTap,
@@ -98,7 +106,10 @@ class JustAvatarGroup extends StatelessWidget {
           size: size,
           shape: avatars.isNotEmpty ? avatars.first.shape : .circle,
           backgroundColor: colors.borderDefault,
-          border: BorderSide(color: colors.background, width: 2.0),
+          border: BorderSide(
+            color: colors.background,
+            width: isNeobrutalism ? 2.5 : 2.0,
+          ),
         );
       }
 

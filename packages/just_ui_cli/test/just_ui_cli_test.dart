@@ -3,6 +3,8 @@ import 'package:crypto/crypto.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:just_ui_cli/just_ui_cli.dart';
+import 'package:just_ui_cli/src/utils/import_rewriter.dart';
+import 'package:just_ui_cli/src/utils/diff_formatter.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -13,6 +15,7 @@ void main() {
     fs = MemoryFileSystem();
     logs = [];
     JustLogger.testStdoutSink = (msg) => logs.add(msg);
+    JustPrompt.testInputReader = () => '';
   });
 
   tearDown(() {
@@ -81,7 +84,7 @@ dependencies:
 
       await runCli(['init'], fs);
       expect(
-        logs.any((l) => l.contains('JustUI initialized successfully')),
+        logs.any((l) => l.contains('JustUI configuration initialized')),
         isTrue,
       );
       expect(fs.file('justui.config.yaml').existsSync(), isTrue);
@@ -194,14 +197,14 @@ registry_url: mock_registry
         // Verify files are copied to correct locations
         expect(fs.file('lib/ui/button/just_button.dart').existsSync(), isTrue);
         expect(
-          fs.file('lib/ui/button/just_button.dart').readAsStringSync(),
+          ImportRewriter.stripMetadata(fs.file('lib/ui/button/just_button.dart').readAsStringSync()).trim(),
           equals('button_code'),
         );
 
         // Verify registry dependency is copied to tokensDir
         expect(fs.file('lib/tokens/spacing.dart').existsSync(), isTrue);
         expect(
-          fs.file('lib/tokens/spacing.dart').readAsStringSync(),
+          ImportRewriter.stripMetadata(fs.file('lib/tokens/spacing.dart').readAsStringSync()).trim(),
           equals('spacing_code'),
         );
 
@@ -510,7 +513,7 @@ registry_url: mock_registry
         fs.file('pubspec.yaml').writeAsStringSync('name: test');
 
         int idx = 0;
-        final inputs = ['src/ui', 'src/tokens', '#ff00ff'];
+        final inputs = ['default', 'src/ui', 'src/tokens', '#ff00ff'];
         JustPrompt.testInputReader = () => inputs[idx++];
 
         await runCli(['init'], fs);
@@ -574,7 +577,7 @@ registry_url: mock_registry
 
       expect(fs.file('lib/ui/button/just_button.dart').existsSync(), isTrue);
       expect(
-        fs.file('lib/ui/button/just_button.dart').readAsStringSync(),
+        ImportRewriter.stripMetadata(fs.file('lib/ui/button/just_button.dart').readAsStringSync()).trim(),
         equals('button_code'),
       );
     });
@@ -640,7 +643,10 @@ registry_url: mock_registry
         JustPrompt.testInputReader = () => inputs[idx++];
 
         await runCli(['add', 'button'], fs);
-        expect(localFile.readAsStringSync(), equals('remote_code'));
+        expect(
+          ImportRewriter.stripMetadata(localFile.readAsStringSync()).trim(),
+          equals('remote_code'),
+        );
       },
     );
 
@@ -694,7 +700,10 @@ registry_url: mock_registry
 
       await runCli(['update'], fs);
 
-      expect(localFile.readAsStringSync(), equals('new_code'));
+      expect(
+        ImportRewriter.stripMetadata(localFile.readAsStringSync()).trim(),
+        equals('new_code'),
+      );
     });
 
     test('CreateCommand scaffolds custom component 4-file bundle', () async {
@@ -739,6 +748,87 @@ registry_url: mock_registry
         themeContent,
         contains('class FancyCardTheme extends ThemeExtension<FancyCardTheme>'),
       );
+    });
+  });
+
+  group('ImportRewriter & Diff/Selective Apply Tests', () {
+    test('ImportRewriter correctly rewrites relative imports and handles theme special case', () {
+      final mockIndex = RegistryIndex(
+        version: '1',
+        components: [
+          RegistryComponent(
+            name: 'button',
+            version: '0.1.0',
+            description: '',
+            category: 'primitives',
+            registryDependencies: ['_shared_pressable'],
+            pubDependencies: {},
+            files: [
+              RegistryFile(
+                name: 'just_button.dart',
+                path: 'components/button/just_button.dart',
+                checksum: '',
+              ),
+            ],
+          ),
+          RegistryComponent(
+            name: '_shared_pressable',
+            version: '0.1.0',
+            description: '',
+            category: 'internal',
+            registryDependencies: [],
+            pubDependencies: {},
+            files: [
+              RegistryFile(
+                name: 'just_pressable.dart',
+                path: 'components/shared/just_pressable.dart',
+                checksum: '',
+              ),
+            ],
+          ),
+        ],
+      );
+
+      final originalContent = '''
+import 'package:flutter/widgets.dart';
+import '../../theme/theme_provider.dart';
+import '../shared/just_pressable.dart';
+''';
+
+      final rewritten = ImportRewriter.rewrite(
+        content: originalContent,
+        sourceRegistryPath: 'components/button/just_button.dart',
+        currentComponentName: 'button',
+        registryIndex: mockIndex,
+        componentsDir: 'lib/ui',
+        tokensDir: 'lib/tokens',
+        fileSystem: fs,
+      );
+
+      expect(rewritten, contains("import 'package:just_ui_core/just_ui_core.dart';"));
+      expect(rewritten, contains("import '../_shared_pressable/just_pressable.dart';"));
+    });
+
+    test('ImportRewriter metadata parse, strip, and inject functions work as expected', () {
+      const code = 'void main() {}';
+      final injected = ImportRewriter.injectMetadata(code, 'reg123', 'loc456');
+      expect(injected, contains('// justui-meta: registry=reg123 local=loc456'));
+
+      final meta = ImportRewriter.parseMetadata(injected)!;
+      expect(meta.registryHash, equals('reg123'));
+      expect(meta.localHash, equals('loc456'));
+
+      final stripped = ImportRewriter.stripMetadata(injected);
+      expect(stripped.trim(), equals(code));
+    });
+
+    test('DiffCommand supports unified diff rendering', () {
+      const local = 'line 1\nline 2\nline 3\n';
+      const remote = 'line 1\nline 2 modified\nline 3\n';
+      final diffLines = DiffFormatter.calculateDiff(local, remote);
+      
+      expect(diffLines.any((l) => l.type == '-'), isTrue);
+      expect(diffLines.any((l) => l.type == '+'), isTrue);
     });
   });
 }

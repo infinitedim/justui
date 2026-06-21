@@ -747,8 +747,7 @@ class _JustInputState extends State<JustInput> {
                       ],
                     );
 
-                    final isNeobrutalism =
-                        theme.preset == JustThemePreset.neobrutalism;
+                    final isNeobrutalism = theme.preset == .neobrutalism;
                     final double borderWidth = isNeobrutalism
                         ? 2.5
                         : (isFocused ? 2.0 : 1.0);
@@ -857,7 +856,7 @@ class _JustInputState extends State<JustInput> {
       style: textStyle,
       cursorColor:
           widget.style?.focusedBorderColor ??
-          (theme.preset == JustThemePreset.neobrutalism
+          (theme.preset == .neobrutalism
               ? theme.colors.textPrimary
               : JustColorPalette.primary500),
       backgroundCursorColor: const Color(0xFF888888),

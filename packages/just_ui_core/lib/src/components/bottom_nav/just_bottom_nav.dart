@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart' show Theme;
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
+
 import 'package:flutter/services.dart' show HapticFeedback;
-import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/just_pressable.dart';
 import 'just_bottom_nav_style.dart';
@@ -99,6 +98,8 @@ class _JustBottomNavState extends State<JustBottomNav> {
     final radius = customTheme.radius;
     final animations = customTheme.animations;
 
+    final isNeobrutalism = customTheme.preset == .neobrutalism;
+
     // Resolve theme-specific styles
     JustBottomNavStyle? themeStyle;
     if (navTheme != null) {
@@ -143,14 +144,16 @@ class _JustBottomNavState extends State<JustBottomNav> {
         themeStyle?.textStyle ??
         typography.caption.copyWith(fontWeight: .w500);
 
-    final resolvedDuration =
-        widget.style?.animationDuration ??
-        themeStyle?.animationDuration ??
-        animations.fast;
-    final resolvedCurve =
-        widget.style?.animationCurve ??
-        themeStyle?.animationCurve ??
-        animations.defaultCurve;
+    final resolvedDuration = isNeobrutalism
+        ? Duration.zero
+        : (widget.style?.animationDuration ??
+              themeStyle?.animationDuration ??
+              animations.fast);
+    final resolvedCurve = isNeobrutalism
+        ? Curves.linear
+        : (widget.style?.animationCurve ??
+              themeStyle?.animationCurve ??
+              animations.defaultCurve);
 
     // Build items
     final List<Widget> navItems = [];
@@ -175,7 +178,9 @@ class _JustBottomNavState extends State<JustBottomNav> {
                         opacity: isSelected ? 0.0 : 1.0,
                         duration: resolvedDuration,
                         child: AnimatedScale(
-                          scale: isSelected ? 0.8 : 1.0,
+                          scale: isSelected
+                              ? (isNeobrutalism ? 1.0 : 0.8)
+                              : 1.0,
                           duration: resolvedDuration,
                           child: item.icon,
                         ),
@@ -184,7 +189,9 @@ class _JustBottomNavState extends State<JustBottomNav> {
                         opacity: isSelected ? 1.0 : 0.0,
                         duration: resolvedDuration,
                         child: AnimatedScale(
-                          scale: isSelected ? 1.0 : 0.8,
+                          scale: isSelected
+                              ? 1.0
+                              : (isNeobrutalism ? 1.0 : 0.8),
                           duration: resolvedDuration,
                           child: item.activeIcon!,
                         ),
@@ -253,7 +260,9 @@ class _JustBottomNavState extends State<JustBottomNav> {
             child: customTheme.buildPressEffect(
               isPressed: isPressed,
               child: Container(
-                color: const Color(0x00000000), // Transparent to allow full tap detection
+                color: const Color(
+                  0x00000000,
+                ), // Transparent to allow full tap detection
                 child: content,
               ),
             ),
@@ -279,14 +288,17 @@ class _JustBottomNavState extends State<JustBottomNav> {
       }
     }
 
-    final isNeobrutalism = customTheme.preset == JustThemePreset.neobrutalism;
     final Border borderStyle = isNeobrutalism
         ? (widget.variant == .floating
-            ? .all(color: colors.textPrimary, width: 2.5)
-            : Border(top: BorderSide(color: colors.textPrimary, width: 2.5)))
+              ? .all(color: colors.borderDefault, width: 2.5)
+              : Border(
+                  top: BorderSide(color: colors.borderDefault, width: 2.5),
+                ))
         : (widget.variant == .floating
-            ? .all(color: colors.borderDefault, width: 1.0)
-            : Border(top: BorderSide(color: colors.borderDefault, width: 1.0)));
+              ? .all(color: colors.borderDefault, width: 1.0)
+              : Border(
+                  top: BorderSide(color: colors.borderDefault, width: 1.0),
+                ));
 
     final Widget contentBar = Container(
       height: height,
@@ -295,7 +307,12 @@ class _JustBottomNavState extends State<JustBottomNav> {
         color: containerBg,
         borderRadius: containerBorderRadius,
         border: borderStyle,
-        boxShadow: widget.variant == .floating ? customTheme.shadows.md : null,
+        boxShadow: widget.variant == .floating
+            ? customTheme.resolveShadows(
+                customTheme.shadows.md,
+                isPressed: false,
+              )
+            : null,
       ),
       child: Row(
         mainAxisAlignment: .spaceEvenly,

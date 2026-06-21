@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_card_style.dart';
 
 /// Global theme configuration for cards, extending Flutter's [ThemeExtension].

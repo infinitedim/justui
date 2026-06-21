@@ -127,8 +127,7 @@ class _JustCheckboxState extends State<JustCheckbox>
     final finalEnableHaptic =
         widget.enableHaptic ??
         checkboxTheme?.enableHaptic ??
-        (JustThemeProvider.read(context).theme.preset ==
-            JustThemePreset.neobrutalism);
+        (JustThemeProvider.read(context).theme.preset == .neobrutalism);
 
     if (finalEnableHaptic) {
       HapticFeedback.selectionClick();
@@ -240,8 +239,7 @@ class _JustCheckboxState extends State<JustCheckbox>
                             final progress = _controller.value;
                             final isIndeterminate = widget.value == null;
                             final isNeobrutalism =
-                                customTheme.preset ==
-                                JustThemePreset.neobrutalism;
+                                customTheme.preset == .neobrutalism;
 
                             // Interpolate colors based on checked/indeterminate progress
                             final Color currentBg = .lerp(

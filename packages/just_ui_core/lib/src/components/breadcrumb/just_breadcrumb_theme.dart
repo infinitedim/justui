@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_breadcrumb_style.dart';
 
 /// Global theme configuration for breadcrumbs, extending Flutter's [ThemeExtension].
