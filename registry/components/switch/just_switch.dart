@@ -135,7 +135,9 @@ class _JustSwitchState extends State<JustSwitch>
   void _triggerToggle(bool newValue) {
     final switchTheme = Theme.of(context).extension<JustSwitchTheme>();
     final finalEnableHaptic =
-        widget.enableHaptic ?? switchTheme?.enableHaptic ?? false;
+        widget.enableHaptic ??
+        switchTheme?.enableHaptic ??
+        (JustThemeProvider.read(context).theme.preset == .neobrutalism);
 
     if (finalEnableHaptic) {
       HapticFeedback.selectionClick();
@@ -188,6 +190,9 @@ class _JustSwitchState extends State<JustSwitch>
 
     final isInteractive = !widget.isDisabled && widget.onChanged != null;
 
+    final isNeobrutalism = customTheme.preset == .neobrutalism;
+    final borderWidth = isNeobrutalism ? 2.5 : 0.0;
+
     // Resolve sizing values
     double trackWidth;
     double trackHeight;
@@ -215,17 +220,21 @@ class _JustSwitchState extends State<JustSwitch>
         break;
     }
 
+    final resolvedThumbSize = isNeobrutalism
+        ? thumbSize - 2 * borderWidth
+        : thumbSize;
+
     // Resolve theme styles
     final themeStyle = switchTheme?.style;
     final resolvedActiveTrackColor =
         widget.activeColor ??
         widget.style?.activeTrackColor ??
         themeStyle?.activeTrackColor ??
-        colors.borderFocus;
+        (isNeobrutalism ? colors.success : colors.borderFocus);
     final resolvedInactiveTrackColor =
         widget.style?.inactiveTrackColor ??
         themeStyle?.inactiveTrackColor ??
-        colors.borderDefault;
+        (isNeobrutalism ? colors.background : colors.borderDefault);
     final resolvedActiveThumbColor =
         widget.style?.activeThumbColor ??
         themeStyle?.activeThumbColor ??
@@ -240,7 +249,8 @@ class _JustSwitchState extends State<JustSwitch>
         textStyle.copyWith(color: colors.textPrimary);
 
     const double padding = 2.0;
-    final double maxTravel = trackWidth - padding * 2 - thumbSize;
+    final double maxTravel =
+        trackWidth - padding * 2 - resolvedThumbSize - borderWidth * 2;
 
     return Semantics(
       toggled: widget.value,
@@ -300,25 +310,39 @@ class _JustSwitchState extends State<JustSwitch>
                                   borderRadius: .all(
                                     .circular(trackHeight / 2),
                                   ),
+                                  border: isNeobrutalism
+                                      ? .all(
+                                          color: colors.textPrimary,
+                                          width: borderWidth,
+                                        )
+                                      : null,
                                 ),
                                 child: Stack(
                                   clipBehavior: .none,
                                   children: [
                                     Positioned(
-                                      left: padding,
-                                      top: padding,
+                                      left: padding + borderWidth,
+                                      top: padding + borderWidth,
                                       child: Transform.translate(
                                         offset: Offset(
                                           progress * maxTravel,
                                           0.0,
                                         ),
                                         child: Container(
-                                          width: thumbSize,
-                                          height: thumbSize,
+                                          width: resolvedThumbSize,
+                                          height: resolvedThumbSize,
                                           decoration: BoxDecoration(
                                             color: currentThumbColor,
                                             shape: .circle,
-                                            boxShadow: customTheme.shadows.xs,
+                                            border: isNeobrutalism
+                                                ? .all(
+                                                    color: colors.textPrimary,
+                                                    width: 1.5,
+                                                  )
+                                                : null,
+                                            boxShadow: isNeobrutalism
+                                                ? null
+                                                : customTheme.shadows.xs,
                                           ),
                                           child: widget.thumbIcon != null
                                               ? Center(

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_skeleton_style.dart';
 
 /// Global theme configuration for skeletons, extending Flutter's [ThemeExtension].

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/just_pressable.dart';
 import '../shared/just_focus_indicator.dart';
@@ -108,22 +109,14 @@ class JustCard extends StatelessWidget {
     final themeStyle = globalCardTheme?.style;
 
     // Aspect-based subscriptions for optimal rebuild performance
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(
-      context,
-      aspect: .spacing,
-    ).theme.spacing;
-    final radius = JustThemeProvider.of(context, aspect: .radius).theme.radius;
-    final shadows = JustThemeProvider.of(
-      context,
-      aspect: .shadows,
-    ).theme.shadows;
-    final animations = JustThemeProvider.of(
-      context,
-      aspect: .animations,
-    ).theme.animations;
+    final theme = JustThemeProvider.of(context).theme;
+    final colors = theme.colors;
+    final spacing = theme.spacing;
+    final radius = theme.radius;
+    final shadows = theme.shadows;
 
     final isInteractive = onTap != null;
+    final isNeobrutalism = theme.preset == .neobrutalism;
 
     // Resolve base colors and shadows depending on the card variant
     Color defaultBg;
@@ -136,22 +129,26 @@ class JustCard extends StatelessWidget {
     switch (variant) {
       case .elevated:
         defaultBg = colors.card;
-        defaultBorderColor = const Color(0x00000000);
-        defaultBorderWidth = 0.0;
+        defaultBorderColor = isNeobrutalism
+            ? colors.borderDefault
+            : const Color(0x00000000);
+        defaultBorderWidth = isNeobrutalism ? 2.5 : 0.0;
         defaultShadows = shadows.sm;
         break;
       case .outlined:
         defaultBg = colors.card;
         defaultBorderColor = colors.borderDefault;
-        defaultBorderWidth = 1.0;
+        defaultBorderWidth = isNeobrutalism ? 2.5 : 1.0;
         defaultShadows = const [];
         break;
       case .filled:
         defaultBg = isDark
             ? const Color(0xFF1E293B)
             : const Color(0xFFF1F5F9); // Slate-800 / Slate-100
-        defaultBorderColor = const Color(0x00000000);
-        defaultBorderWidth = 0.0;
+        defaultBorderColor = isNeobrutalism
+            ? colors.borderDefault
+            : const Color(0x00000000);
+        defaultBorderWidth = isNeobrutalism ? 2.5 : 0.0;
         defaultShadows = const [];
         break;
     }
@@ -205,6 +202,12 @@ class JustCard extends StatelessWidget {
         }
       }
 
+      // Resolve shadows for press state (collapses in neobrutalism)
+      currentShadows = theme.resolveShadows(
+        currentShadows,
+        isPressed: isPressed,
+      );
+
       final BorderSide borderSide = currentBorderWidth > 0.0
           ? BorderSide(color: currentBorderColor, width: currentBorderWidth)
           : .none;
@@ -239,11 +242,10 @@ class JustCard extends StatelessWidget {
       if (isInteractive) {
         final scaleFactor =
             style?.scaleOnPress ?? themeStyle?.scaleOnPress ?? 0.99;
-        return AnimatedScale(
-          scale: isPressed ? scaleFactor : 1.0,
-          duration: animations.fast,
-          curve: animations.defaultCurve,
+        return theme.buildPressEffect(
           child: cardLayout,
+          isPressed: isPressed,
+          scaleFactor: scaleFactor,
         );
       }
 
@@ -323,15 +325,9 @@ class JustCardTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typo = JustThemeProvider.of(
+    final defaultStyle = JustFluidTypo.headingMd(
       context,
-      aspect: .typography,
-    ).theme.typography;
-
-    final defaultStyle = typo.headingMd.copyWith(
-      color: colors.textPrimary,
-      fontWeight: .w600,
-    );
+    ).copyWith(color: colors.textPrimary, fontWeight: .w600);
 
     return DefaultTextStyle(style: defaultStyle.merge(style), child: child);
   }
@@ -351,12 +347,9 @@ class JustCardDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typo = JustThemeProvider.of(
+    final defaultStyle = JustFluidTypo.bodySm(
       context,
-      aspect: .typography,
-    ).theme.typography;
-
-    final defaultStyle = typo.bodySm.copyWith(color: colors.textSecondary);
+    ).copyWith(color: colors.textSecondary);
 
     return DefaultTextStyle(style: defaultStyle.merge(style), child: child);
   }

@@ -165,9 +165,9 @@ class _JustSkeletonState extends State<JustSkeleton>
       _controller.duration = resolvedDuration;
       if (widget.loading &&
           !_controller.isAnimating &&
-          resolvedDuration > Duration.zero) {
+          resolvedDuration > .zero) {
         _controller.repeat();
-      } else if (resolvedDuration == Duration.zero) {
+      } else if (resolvedDuration == .zero) {
         _controller.stop();
       }
     }
@@ -896,12 +896,12 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
       final targetDuration =
           scope?.resolvedStyle.duration ?? (animations.slower * 2);
 
-      if (targetDuration == Duration.zero) {
+      if (targetDuration == .zero) {
         return Container(
           width: widget.width,
           height: widget.height,
           decoration: BoxDecoration(
-            color: colors.borderDefault.withValues(alpha: 0.12),
+            color: baseColor.withValues(alpha: 0.3),
             borderRadius: widget.shape == .circle ? null : resolvedRadius,
             shape: widget.shape,
           ),
@@ -931,12 +931,12 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
           builder: (context, child) {
             final double value = activeController!.value;
             final double opacity =
-                0.12 + 0.20 * (1.0 - (2.0 * (value - 0.5).abs()));
+                0.3 + 0.3 * (1.0 - (2.0 * (value - 0.5).abs()));
             return Container(
               width: widget.width,
               height: widget.height,
               decoration: BoxDecoration(
-                color: colors.borderDefault.withValues(alpha: opacity),
+                color: baseColor.withValues(alpha: opacity),
                 borderRadius: widget.shape == .circle ? null : resolvedRadius,
                 shape: widget.shape,
               ),
@@ -947,7 +947,7 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
     }
 
     if (scope != null) {
-      if (scope.resolvedStyle.duration == Duration.zero) {
+      if (scope.resolvedStyle.duration == .zero) {
         return baseContainer;
       }
       return RepaintBoundary(
@@ -976,7 +976,7 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
       ).theme.animations;
       final targetDuration = animations.slower * 2;
 
-      if (targetDuration == Duration.zero) {
+      if (targetDuration == .zero) {
         return baseContainer;
       }
 

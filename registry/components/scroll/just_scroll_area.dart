@@ -317,10 +317,13 @@ class _JustScrollAreaState extends State<JustScrollArea> {
         widget.style?.scrollbarThickness ??
         themeStyle?.scrollbarThickness ??
         6.0;
-    final scrollbarRadius =
-        widget.style?.scrollbarRadius ??
-        themeStyle?.scrollbarRadius ??
-        const .circular(3.0);
+    final isNeobrutalism =
+        JustThemeProvider.of(context).theme.preset == .neobrutalism;
+    final scrollbarRadius = isNeobrutalism
+        ? Radius.zero
+        : (widget.style?.scrollbarRadius ??
+              themeStyle?.scrollbarRadius ??
+              const .circular(3.0));
 
     // Create the viewport layout
     Widget scrollView = SingleChildScrollView(

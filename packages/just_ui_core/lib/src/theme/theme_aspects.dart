@@ -20,4 +20,7 @@ enum JustThemeAspect {
 
   /// Durations and curves aspect.
   animations,
+
+  /// Preset aspect — notifies when JustThemePreset switches (e.g. default_ ↔ neobrutalism).
+  preset,
 }
