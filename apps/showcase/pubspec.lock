@@ -75,6 +75,20 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  just_ui_core:
+    dependency: "direct main"
+    description:
+      path: "../../packages/just_ui_core"
+      relative: true
+    source: path
+    version: "0.1.0"
+  just_ui_tokens:
+    dependency: "direct main"
+    description:
+      path: "../../packages/just_ui_tokens"
+      relative: true
+    source: path
+    version: "0.1.0"
   leak_tracker:
     dependency: transitive
     description:
@@ -208,6 +222,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "15.2.0"
+  web:
+    dependency: "direct main"
+    description:
+      name: web
+      sha256: "97da13628db363c635202ad97068d47c5b8aa555808e7a9411963c533b449b27"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.1"
 sdks:
   dart: ">=3.12.0 <4.0.0"
-  flutter: ">=3.18.0-18.0.pre.54"
+  flutter: ">=3.41.0"

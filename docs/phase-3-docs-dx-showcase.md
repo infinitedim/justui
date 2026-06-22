@@ -2,7 +2,7 @@
 
 > **Status:** ⚪ Not Started  
 > **Target:** Sprint 11–16  
-> **Packages:** `apps/showcase`, `just_ui_cli`, `docs/` (new — Next.js site)  
+> **Packages:** `just_ui_cli`, `apps/docs` (new — Next.js site)  
 > **Dependency:** Phase 2 Milestone I–II minimal harus complete (komponen primitif + layout tersedia)  
 > **Prioritas:** High — Adopsi developer sangat bergantung pada kualitas dokumentasi dan DX.
 
@@ -16,7 +16,7 @@ Fase ini mencakup 3 pilar:
 
 ```mermaid
 graph TD
-    A["📖 Docs Site<br/>Next.js / Nextra"] --> D[Developer Adoption]
+    A["📖 Docs Site<br/>Next.js / Fumadocs"] --> D[Developer Adoption]
     B["🔧 CLI Polishing<br/>add, remove, diff"] --> D
     C["📱 Example Apps<br/>Dashboard & Admin Kit"] --> D
     
@@ -28,21 +28,24 @@ graph TD
 
 ---
 
-## Milestone I — Docs Site (Next.js/Nextra) dengan Live Preview Widget
+## Milestone I — Docs Site (Next.js/Fumadocs) dengan Live Preview Widget
 
 ### Deskripsi
 
-Website dokumentasi publik yang menjadi **sumber kebenaran tunggal** bagi developer yang ingin menggunakan JustUI. Dibangun dengan **Next.js + Nextra** (MDX-based docs framework) dengan fitur unik: **live Flutter widget preview** yang ter-embed langsung di halaman dokumentasi.
+Website dokumentasi publik yang menjadi **sumber kebenaran tunggal** bagi developer yang ingin menggunakan JustUI. Dibangun dengan **Next.js + Fumadocs** (MDX-based docs framework) dengan fitur unik: **live Flutter widget preview** (di-compile menggunakan WebAssembly) yang ter-embed langsung di halaman dokumentasi.
 
 ### Tech Stack
 
 | Layer | Technology | Alasan |
 |---|---|---|
-| Framework | Next.js 14+ (App Router) | SSR, SEO, performa |
-| Docs Engine | Nextra 3.x | MDX support, sidebar auto-gen, search |
-| Styling | Tailwind CSS 4.x | Rapid styling untuk docs site |
-| Live Preview | Flutter Web (iframe embed) | Render widget Flutter asli di browser |
-| Search | Algolia DocSearch / Pagefind | Full-text search across docs |
+| Framework | Next.js 16 (App Router, React 19) | SSR, SEO, performa tertinggi |
+| Bahasa Pemrograman | TypeScript 6.0.3 | Memberikan type safety penuh & integrasi template Fumadocs. |
+| Docs Engine | Fumadocs 14.x | MDX support, sidebar auto-gen, search terintegrasi |
+| Styling | Tailwind CSS v4 (CSS-first) | Rapid styling untuk docs site via @theme directive (tanpa tailwind.config) |
+| Live Preview | (Ditangguhkan) | Fitur pratinjau interaktif Flutter Web ditangguhkan sementara; dokumentasi menggunakan kode & pratinjau statis. |
+| Package Manager | Bun | Runtime & package manager yang sangat cepat |
+| Tooling | ESLint v9 Flat Config, Prettier v3, Vitest, Playwright | Komplet dengan linter, formatter, unit testing & E2E testing |
+| Search | Fumadocs Built-in Search (Orama) | Client-side fuzzy search, 0ms network latency, zero 3rd-party dependencies |
 | Deployment | Vercel / Cloudflare Pages | Edge CDN, auto-deploy dari Git |
 | Analytics | Plausible / Umami | Privacy-friendly analytics |
 
@@ -145,12 +148,15 @@ JustButton.primary(
 <!-- Links ke komponen terkait -->
 ```
 
-### Live Preview Widget — Arsitektur
+### Live Preview Widget — Arsitektur (Ditangguhkan)
+
+> [!WARNING]
+> Fitur pratinjau interaktif Flutter Web (Wasm) ditangguhkan seiring dihapusnya direktori `apps/showcase` dan `apps/template`. Bagian ini dipertahankan sebagai referensi arsitektur masa depan ketika sandbox diaktifkan kembali.
 
 ```mermaid
 graph LR
     A["MDX Page<br/>(Next.js)"] --> B["<LivePreview/><br/>React Component"]
-    B --> C["iframe<br/>Flutter Web App"]
+    B --> C["iframe<br/>Flutter Web (Wasm)"]
     B --> D["Controls Panel<br/>(React)"]
     D -- "postMessage" --> C
     C -- "postMessage" --> B
