@@ -7,12 +7,12 @@ on:
     branches: [main, master]
 
 jobs:
-  analyze-and-test:
+  # Job 1: Validasi dan testing Dart & Flutter Packages (Melos)
+  dart-flutter-ci:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Flutter SDK
         uses: subosito/flutter-action@v2
@@ -48,3 +48,30 @@ jobs:
         run: |
           melos exec --flutter --dir-exists="test" -- "flutter test"
           melos exec --no-flutter --dir-exists="test" -- "dart test"
+
+  # Job 2: Validasi dan testing Next.js Documentation Portal (Bun)
+  nextjs-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun Runtime
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: |
+          cd apps/docs
+          bun install --frozen-lockfile
+
+      - name: Verify Formatting & Linting
+        run: |
+          cd apps/docs
+          bun run lint
+
+      - name: Run Unit Tests
+        run: |
+          cd apps/docs
+          bun test run
