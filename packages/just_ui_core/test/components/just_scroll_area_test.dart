@@ -239,5 +239,31 @@ void main() {
         controller.dispose();
       },
     );
+
+    testWidgets('Renders correctly under neobrutalism preset', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: const Directionality(
+            textDirection: TextDirection.ltr,
+            child: SizedBox(
+              height: 300.0,
+              child: JustScrollArea(
+                child: SizedBox(
+                  height: 1000.0,
+                  width: 300.0,
+                  child: Text('Neobrutalist Scroll Content'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Neobrutalist Scroll Content'), findsOneWidget);
+    });
   });
 }

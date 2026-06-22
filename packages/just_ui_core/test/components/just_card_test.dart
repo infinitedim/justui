@@ -112,5 +112,22 @@ void main() {
       expect(find.text('Modular Content'), findsOneWidget);
       expect(find.text('Modular Footer'), findsOneWidget);
     });
+
+    testWidgets('Renders correctly under neobrutalism preset', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: const Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustCard(child: Text('Neobrutalist Card Content')),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Neobrutalist Card Content'), findsOneWidget);
+    });
   });
 }

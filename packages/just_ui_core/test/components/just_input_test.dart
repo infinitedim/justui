@@ -210,5 +210,22 @@ void main() {
       expect(controller.text, isEmpty);
       expect(find.byType(GestureDetector), findsNothing);
     });
+
+    testWidgets('Renders correctly under neobrutalism preset', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: const Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustInput(label: 'Neobrutalist Username'),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(JustInput), findsOneWidget);
+    });
   });
 }

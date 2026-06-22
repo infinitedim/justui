@@ -1,5 +1,6 @@
 import 'package:file/file.dart';
 import '../registry/registry_client.dart';
+import 'logger.dart';
 
 /// Represents the parsed metadata header from a file copied by JustUI.
 class JustUIMetadata {
@@ -20,7 +21,7 @@ class ImportRewriter {
   );
 
   static final RegExp _metaRegExp = RegExp(
-    r"^// justui-meta: registry=([a-zA-Z0-9]+) local=([a-zA-Z0-9]+)\r?\n",
+    r'^// justui-meta: registry=([0-9a-f]{64}) local=([0-9a-f]{64})\r?\n',
   );
 
   /// Parses the [JustUIMetadata] from the top of the file content, if present.
@@ -91,19 +92,30 @@ class ImportRewriter {
         return match.group(0)!;
       }
 
-      // Special Case: theme relative imports pointing to core theming engine
-      if (importPath.contains('theme/theme_provider.dart') ||
-          importPath.contains('theme/theme_data.dart') ||
-          importPath.contains('theme/theme_aspects.dart') ||
-          importPath.contains('theme/theme_data_material.dart')) {
-        return "import 'package:just_ui_core/just_ui_core.dart';";
-      }
-
       // Resolve the relative path in the registry context (Unix-style normalizations)
       final sourceRegDir = pathContext.dirname(sourceRegistryPath);
       final resolvedRegPath = pathContext
           .normalize(pathContext.join(sourceRegDir, importPath))
           .replaceAll('\\', '/');
+
+      // Special Case: theme relative imports pointing to core theming engine
+      // Heuristic matches any file whose registry path starts with 'components/theme/' or
+      // ends with one of the known theme file suffixes.
+      // TODO: If new theme files are added outside of these naming conventions or directory,
+      // update this heuristic or the suffixes list.
+      const themeSuffixes = [
+        'theme_provider.dart',
+        'theme_data.dart',
+        'theme_aspects.dart',
+        'theme_data_material.dart',
+      ];
+      final isThemeImport =
+          resolvedRegPath.startsWith('components/theme/') ||
+          themeSuffixes.any((suffix) => resolvedRegPath.endsWith(suffix));
+
+      if (isThemeImport) {
+        return "import 'package:just_ui_core/just_ui_core.dart';";
+      }
 
       // Find which component owns this registry file
       RegistryComponent? targetComponent;
@@ -145,6 +157,11 @@ class ImportRewriter {
       }
 
       // Fallback: If not found in registry index, return unchanged
+      JustLogger.warning(
+        'Relative import "$importPath" in component "$currentComponentName" '
+        '(source file: "$sourceRegistryPath") could not be resolved in the '
+        'registry. The import will be left as-is and may need manual fixing.',
+      );
       return match.group(0)!;
     });
   }

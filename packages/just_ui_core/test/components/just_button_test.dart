@@ -352,6 +352,23 @@ void main() {
       expect(find.text('Btn 1'), findsOneWidget);
       expect(find.text('Btn 2'), findsOneWidget);
     });
+
+    testWidgets('Renders correctly under neobrutalism preset', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustButton(label: 'Neobrutalist Button', onPressed: () {}),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Neobrutalist Button'), findsOneWidget);
+    });
   });
 
   group('Golden Tests for JustButton', () {
