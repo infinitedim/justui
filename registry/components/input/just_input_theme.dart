@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_input_style.dart';
 
 /// Global theme configurations for inputs, extending Flutter's [ThemeExtension].

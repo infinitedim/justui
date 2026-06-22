@@ -455,7 +455,7 @@ void main() {
           MediaQuery(
             data: const MediaQueryData(
               size: Size(1024.0, 768.0),
-              viewInsets: EdgeInsets.zero,
+              viewInsets: .zero,
             ),
             child: JustThemeProvider(
               child: Builder(
@@ -476,7 +476,7 @@ void main() {
           MediaQuery(
             data: const MediaQueryData(
               size: Size(1024.0, 768.0),
-              viewInsets: EdgeInsets.only(bottom: 300.0),
+              viewInsets: .only(bottom: 300.0),
             ),
             child: JustThemeProvider(
               child: Builder(

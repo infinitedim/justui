@@ -159,14 +159,16 @@ class _JustSkeletonState extends State<JustSkeleton>
         defaultHighlight;
 
     final resolvedDuration =
-        widget.style?.duration ??
-        themeStyle?.duration ??
-        const Duration(milliseconds: 1000);
+        widget.style?.duration ?? themeStyle?.duration ?? animations.slower * 2;
 
     if (_controller.duration != resolvedDuration) {
       _controller.duration = resolvedDuration;
-      if (widget.loading && !_controller.isAnimating) {
+      if (widget.loading &&
+          !_controller.isAnimating &&
+          resolvedDuration > .zero) {
         _controller.repeat();
+      } else if (resolvedDuration == .zero) {
+        _controller.stop();
       }
     }
 
@@ -375,15 +377,15 @@ class _JustSkeletonState extends State<JustSkeleton>
       final fontSize = widget.style?.fontSize ?? 14.0;
       if (textStr.isEmpty) return const SizedBox.shrink();
 
-      final textAlign = widget.textAlign ?? TextAlign.start;
-      CrossAxisAlignment columnAlignment = CrossAxisAlignment.start;
-      Alignment alignment = Alignment.centerLeft;
-      if (textAlign == TextAlign.center) {
-        columnAlignment = CrossAxisAlignment.center;
-        alignment = Alignment.center;
-      } else if (textAlign == TextAlign.end || textAlign == TextAlign.right) {
-        columnAlignment = CrossAxisAlignment.end;
-        alignment = Alignment.centerRight;
+      final textAlign = widget.textAlign ?? .start;
+      CrossAxisAlignment columnAlignment = .start;
+      Alignment alignment = .centerLeft;
+      if (textAlign == .center) {
+        columnAlignment = .center;
+        alignment = .center;
+      } else if (textAlign == .end || textAlign == .right) {
+        columnAlignment = .end;
+        alignment = .centerRight;
       }
 
       if (textStr.length > 40 || textStr.contains('\n')) {
@@ -427,14 +429,14 @@ class _JustSkeletonState extends State<JustSkeleton>
       final fontSize = style?.fontSize ?? 14.0;
 
       final textAlign = widget.textAlign;
-      CrossAxisAlignment columnAlignment = CrossAxisAlignment.start;
-      Alignment alignment = Alignment.centerLeft;
-      if (textAlign == TextAlign.center) {
-        columnAlignment = CrossAxisAlignment.center;
-        alignment = Alignment.center;
-      } else if (textAlign == TextAlign.end || textAlign == TextAlign.right) {
-        columnAlignment = CrossAxisAlignment.end;
-        alignment = Alignment.centerRight;
+      CrossAxisAlignment columnAlignment = .start;
+      Alignment alignment = .centerLeft;
+      if (textAlign == .center) {
+        columnAlignment = .center;
+        alignment = .center;
+      } else if (textAlign == .end || textAlign == .right) {
+        columnAlignment = .end;
+        alignment = .centerRight;
       }
 
       if (textStr.length > 40 || textStr.contains('\n')) {
@@ -749,7 +751,7 @@ class _JustSkeletonState extends State<JustSkeleton>
         final childrenList = (dynamicWidget.children as List).cast<Widget>();
         return Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: childrenList.map((c) => _transform(c, context)).toList(),
         );
       }
@@ -802,8 +804,8 @@ class _JustSkeletonScope extends InheritedWidget {
     final double localXOffset = xOffset - globalX;
 
     return LinearGradient(
-      begin: Alignment.centerLeft,
-      end: Alignment.centerRight,
+      begin: .centerLeft,
+      end: .centerRight,
       colors: [baseColor, highlightColor, baseColor],
       stops: const [0.0, 0.5, 1.0],
       transform: _GradientTranslation(localXOffset),
@@ -883,7 +885,71 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
       decoration: decoration,
     );
 
+    final theme = JustThemeProvider.of(context).theme;
+    final isNeobrutalism = theme.preset == .neobrutalism;
+
+    if (isNeobrutalism) {
+      final animations = JustThemeProvider.of(
+        context,
+        aspect: .animations,
+      ).theme.animations;
+      final targetDuration =
+          scope?.resolvedStyle.duration ?? (animations.slower * 2);
+
+      if (targetDuration == .zero) {
+        return Container(
+          width: widget.width,
+          height: widget.height,
+          decoration: BoxDecoration(
+            color: baseColor.withValues(alpha: 0.3),
+            borderRadius: widget.shape == .circle ? null : resolvedRadius,
+            shape: widget.shape,
+          ),
+        );
+      }
+
+      AnimationController? activeController;
+      if (scope != null) {
+        activeController = scope.animation as AnimationController;
+      } else {
+        _localController ??= AnimationController(
+          vsync: this,
+          duration: targetDuration,
+        );
+        if (_localController!.duration != targetDuration) {
+          _localController!.duration = targetDuration;
+        }
+        if (!_localController!.isAnimating) {
+          _localController!.repeat();
+        }
+        activeController = _localController;
+      }
+
+      return RepaintBoundary(
+        child: AnimatedBuilder(
+          animation: activeController!,
+          builder: (context, child) {
+            final double value = activeController!.value;
+            final double opacity =
+                0.3 + 0.3 * (1.0 - (2.0 * (value - 0.5).abs()));
+            return Container(
+              width: widget.width,
+              height: widget.height,
+              decoration: BoxDecoration(
+                color: baseColor.withValues(alpha: opacity),
+                borderRadius: widget.shape == .circle ? null : resolvedRadius,
+                shape: widget.shape,
+              ),
+            );
+          },
+        ),
+      );
+    }
+
     if (scope != null) {
+      if (scope.resolvedStyle.duration == .zero) {
+        return baseContainer;
+      }
       return RepaintBoundary(
         child: AnimatedBuilder(
           animation: scope.animation,
@@ -904,10 +970,28 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
         ),
       );
     } else {
+      final animations = JustThemeProvider.of(
+        context,
+        aspect: .animations,
+      ).theme.animations;
+      final targetDuration = animations.slower * 2;
+
+      if (targetDuration == .zero) {
+        return baseContainer;
+      }
+
       _localController ??= AnimationController(
         vsync: this,
-        duration: const Duration(milliseconds: 1000),
-      )..repeat();
+        duration: targetDuration,
+      );
+
+      if (_localController!.duration != targetDuration) {
+        _localController!.duration = targetDuration;
+      }
+
+      if (!_localController!.isAnimating) {
+        _localController!.repeat();
+      }
 
       return RepaintBoundary(
         child: AnimatedBuilder(
@@ -934,8 +1018,8 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
                 final double localXOffset = xOffset - globalX;
 
                 return LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
+                  begin: .centerLeft,
+                  end: .centerRight,
                   colors: [baseColor, highlightColor, baseColor],
                   stops: const [0.0, 0.5, 1.0],
                   transform: _GradientTranslation(localXOffset),

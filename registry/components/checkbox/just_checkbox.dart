@@ -125,7 +125,9 @@ class _JustCheckboxState extends State<JustCheckbox>
 
     final checkboxTheme = Theme.of(context).extension<JustCheckboxTheme>();
     final finalEnableHaptic =
-        widget.enableHaptic ?? checkboxTheme?.enableHaptic ?? false;
+        widget.enableHaptic ??
+        checkboxTheme?.enableHaptic ??
+        (JustThemeProvider.read(context).theme.preset == .neobrutalism);
 
     if (finalEnableHaptic) {
       HapticFeedback.selectionClick();
@@ -236,6 +238,8 @@ class _JustCheckboxState extends State<JustCheckbox>
                           builder: (context, child) {
                             final progress = _controller.value;
                             final isIndeterminate = widget.value == null;
+                            final isNeobrutalism =
+                                customTheme.preset == .neobrutalism;
 
                             // Interpolate colors based on checked/indeterminate progress
                             final Color currentBg = .lerp(
@@ -244,21 +248,37 @@ class _JustCheckboxState extends State<JustCheckbox>
                               progress,
                             )!;
 
-                            final Color currentBorder = isHovered
-                                ? colors.textSecondary
-                                : .lerp(
-                                    resolvedBorderColor,
-                                    resolvedActiveColor,
-                                    progress,
-                                  )!;
+                            final Color currentBorder = isNeobrutalism
+                                ? colors.textPrimary
+                                : (isHovered
+                                      ? colors.textSecondary
+                                      : .lerp(
+                                          resolvedBorderColor,
+                                          resolvedActiveColor,
+                                          progress,
+                                        )!);
 
-                            return Container(
+                            List<BoxShadow> currentShadows = isNeobrutalism
+                                ? customTheme.shadows.xs
+                                : const [];
+                            currentShadows = customTheme.resolveShadows(
+                              currentShadows,
+                              isPressed: isPressed,
+                            );
+
+                            final checkboxBox = Container(
                               width: boxSize,
                               height: boxSize,
                               decoration: BoxDecoration(
                                 color: currentBg,
                                 borderRadius: resolvedRadius,
-                                border: .all(color: currentBorder, width: 1.5),
+                                border: .all(
+                                  color: currentBorder,
+                                  width: isNeobrutalism ? 2.5 : 1.5,
+                                ),
+                                boxShadow: currentShadows.isNotEmpty
+                                    ? currentShadows
+                                    : null,
                               ),
                               child: isIndeterminate
                                   ? CustomPaint(
@@ -275,6 +295,11 @@ class _JustCheckboxState extends State<JustCheckbox>
                                         strokeWidth: strokeWidth,
                                       ),
                                     ),
+                            );
+
+                            return customTheme.buildPressEffect(
+                              isPressed: isPressed,
+                              child: checkboxBox,
                             );
                           },
                         ),

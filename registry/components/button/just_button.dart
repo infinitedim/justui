@@ -201,7 +201,9 @@ class _JustButtonState extends State<JustButton> {
       }
     }
     final finalEnableHaptic =
-        widget.enableHaptic ?? buttonTheme?.enableHaptic ?? false;
+        widget.enableHaptic ??
+        buttonTheme?.enableHaptic ??
+        (customTheme.preset == .neobrutalism);
 
     // We register dependency to colors aspect
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
@@ -332,6 +334,8 @@ class _JustButtonState extends State<JustButton> {
                     widget.onPressed?.call();
                   },
             builder: (context, isHovered, isPressed, isFocused, focusNode) {
+              final isNeobrutalism = customTheme.preset == .neobrutalism;
+
               // Resolve states colors
               Color bg;
               Color text;
@@ -346,7 +350,9 @@ class _JustButtonState extends State<JustButton> {
                 case .primary:
                   bg = primaryBg;
                   text = primaryFg;
-                  border = const Color(0x00000000);
+                  border = isNeobrutalism
+                      ? colors.textPrimary
+                      : const Color(0x00000000);
 
                   if (!isInteractive) {
                     bg = bg.withValues(alpha: 0.5);
@@ -361,18 +367,20 @@ class _JustButtonState extends State<JustButton> {
                 case .secondary:
                   bg = const Color(0x00000000);
                   text = colors.textPrimary;
-                  border = colors.borderDefault;
+                  border = isNeobrutalism
+                      ? colors.textPrimary
+                      : colors.borderDefault;
 
                   if (!isInteractive) {
                     text = text.withValues(alpha: 0.4);
                     border = border.withValues(alpha: 0.4);
                   } else if (isPressed) {
                     bg = primaryBg.withValues(alpha: 0.15);
-                    border = primaryBg;
+                    border = isNeobrutalism ? colors.textPrimary : primaryBg;
                     text = primaryBg;
                   } else if (isHovered) {
                     bg = primaryBg.withValues(alpha: 0.08);
-                    border = primaryBg;
+                    border = isNeobrutalism ? colors.textPrimary : primaryBg;
                     text = primaryBg;
                   }
                   break;
@@ -380,7 +388,9 @@ class _JustButtonState extends State<JustButton> {
                 case .ghost:
                   bg = const Color(0x00000000);
                   text = colors.textPrimary;
-                  border = const Color(0x00000000);
+                  border = isNeobrutalism
+                      ? colors.textPrimary
+                      : const Color(0x00000000);
 
                   if (!isInteractive) {
                     text = text.withValues(alpha: 0.4);
@@ -394,7 +404,9 @@ class _JustButtonState extends State<JustButton> {
                 case .destructive:
                   bg = errorBg;
                   text = primaryFg;
-                  border = const Color(0x00000000);
+                  border = isNeobrutalism
+                      ? colors.textPrimary
+                      : const Color(0x00000000);
 
                   if (!isInteractive) {
                     bg = bg.withValues(alpha: 0.5);
@@ -501,23 +513,59 @@ class _JustButtonState extends State<JustButton> {
               // Scale animation on tap/press
               final double scale = isPressed ? 0.97 : 1.0;
 
-              return AnimatedScale(
-                scale: scale,
-                duration: animations.instant,
-                curve: animations.defaultCurve,
+              // Shadows resolution (flat solid offset shadow for neobrutalism)
+              List<BoxShadow> defaultShadows;
+              if (isNeobrutalism && widget.variant != JustButtonVariant.link) {
+                defaultShadows = widget.size == JustButtonSize.xs
+                    ? customTheme.shadows.xs
+                    : customTheme.shadows.sm;
+              } else {
+                defaultShadows = const [];
+              }
+
+              final double? styleElevation =
+                  widget.style?.elevation ?? themeStyle?.elevation;
+              List<BoxShadow> resolvedShadows;
+              if (styleElevation != null) {
+                resolvedShadows = styleElevation > 0.0
+                    ? (styleElevation <= 1.5
+                          ? customTheme.shadows.xs
+                          : customTheme.shadows.sm)
+                    : const [];
+              } else {
+                resolvedShadows = defaultShadows;
+              }
+
+              resolvedShadows = customTheme.resolveShadows(
+                resolvedShadows,
+                isPressed: isPressed,
+              );
+
+              final double finalBorderWidth =
+                  isNeobrutalism && widget.variant != JustButtonVariant.link
+                  ? 2.5
+                  : (finalBorder != const Color(0x00000000) ? 1.0 : 0.0);
+
+              return customTheme.buildPressEffect(
+                isPressed: isPressed,
+                scaleFactor: scale,
                 child: AnimatedContainer(
-                  duration: animations.fast,
+                  duration: isNeobrutalism
+                      ? customTheme.animations.instant
+                      : customTheme.animations.fast,
                   curve: animations.defaultCurve,
                   height: height,
                   padding: finalPadding,
                   decoration: BoxDecoration(
                     color: finalBg,
                     borderRadius: resolvedRadius,
-                    border: finalBorder != const Color(0x00000000)
-                        ? .all(color: finalBorder, width: 1.0)
+                    border:
+                        finalBorder != const Color(0x00000000) &&
+                            finalBorderWidth > 0.0
+                        ? .all(color: finalBorder, width: finalBorderWidth)
                         : null,
-                    boxShadow: widget.style?.elevation != null
-                        ? customTheme.shadows.xs
+                    boxShadow: resolvedShadows.isNotEmpty
+                        ? resolvedShadows
                         : null,
                   ),
                   child: FocusIndicator(

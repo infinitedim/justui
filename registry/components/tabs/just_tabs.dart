@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/just_pressable.dart';
 import 'just_tab_indicator.dart';
@@ -76,12 +77,20 @@ class JustTabController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _bindVsync(TickerProvider vsync) {
+  void _bindVsync(TickerProvider vsync, {Duration? defaultDuration}) {
     _animationController?.dispose();
     _animationController = AnimationController(
       vsync: vsync,
-      duration: const Duration(milliseconds: 250),
+      duration: defaultDuration ?? const Duration(milliseconds: 250),
     );
+  }
+
+  /// Updates the default duration of the tab transition animation.
+  void updateDuration(Duration duration) {
+    if (_animationController != null &&
+        _animationController!.duration != duration) {
+      _animationController!.duration = duration;
+    }
   }
 
   /// Animates the controller to the target index.
@@ -96,7 +105,9 @@ class JustTabController extends ChangeNotifier {
 
     _animationController!.stop();
     _animationController!.duration =
-        duration ?? const Duration(milliseconds: 250);
+        duration ??
+        _animationController!.duration ??
+        const Duration(milliseconds: 250);
 
     final Animation<double> animation =
         Tween<double>(
@@ -215,7 +226,7 @@ class JustTabs extends StatefulWidget {
 }
 
 class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
-  late final JustTabController _tabController;
+  late JustTabController _tabController;
   late final PageController _pageController;
   final List<GlobalKey> _tabKeys = [];
   final FocusNode _focusNode = FocusNode();
@@ -243,7 +254,8 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       _isLocalController = true;
     }
 
-    _tabController._bindVsync(this);
+    final animations = JustThemeProvider.read(context).theme.animations;
+    _tabController._bindVsync(this, defaultDuration: animations.normal);
     _tabController.addListener(_onControllerChanged);
 
     _pageController = PageController(initialPage: _tabController.index);
@@ -280,7 +292,8 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
         );
         _isLocalController = true;
       }
-      _tabController._bindVsync(this);
+      final animations = JustThemeProvider.read(context).theme.animations;
+      _tabController._bindVsync(this, defaultDuration: animations.normal);
       _tabController.addListener(_onControllerChanged);
     }
   }
@@ -303,11 +316,17 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     _visitedIndices.add(index);
     if (_pageController.hasClients && _pageController.page?.round() != index) {
       _isAnimatingToPage = true;
+      final animations = JustThemeProvider.read(context).theme.animations;
+      final duration = _durationForTransition(
+        _tabController.index,
+        index,
+        animations,
+      );
       _pageController
           .animateToPage(
             index,
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeInOut,
+            duration: duration,
+            curve: animations.defaultCurve,
           )
           .then((_) {
             _isAnimatingToPage = false;
@@ -370,11 +389,38 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     return true;
   }
 
+  Duration _durationForTransition(
+    int fromIndex,
+    int toIndex,
+    JustMotionProfile animations,
+  ) {
+    if (_tabOffsets.length > fromIndex && _tabOffsets.length > toIndex) {
+      final double distance = (_tabOffsets[toIndex] - _tabOffsets[fromIndex])
+          .abs();
+      return JustDuration.scaleForDistance(
+        distance,
+        min: animations.fast,
+        max: animations.slow,
+      );
+    }
+    return animations.normal;
+  }
+
   void _handleTabTap(int index) {
     if (!widget.tabs[index].enabled) return;
     HapticFeedback.selectionClick();
     _visitedIndices.add(index);
-    _tabController.animateTo(index);
+    final animations = JustThemeProvider.read(context).theme.animations;
+    final duration = _durationForTransition(
+      _tabController.index,
+      index,
+      animations,
+    );
+    _tabController.animateTo(
+      index,
+      duration: duration,
+      curve: animations.defaultCurve,
+    );
     widget.onChanged?.call(index);
     setState(() {});
   }
@@ -407,6 +453,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     WidgetsBinding.instance.addPostFrameCallback((_) => _measureTabs());
 
     final customTheme = JustThemeProvider.of(context).theme;
+    _tabController.updateDuration(customTheme.animations.normal);
     final tabsTheme = Theme.of(context).extension<JustTabsTheme>();
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
     final typography = JustThemeProvider.of(
@@ -553,6 +600,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
         orientation: widget.variant == .vertical ? .vertical : .horizontal,
         colors: colors,
         radius: radius,
+        theme: customTheme,
         style: widget.style ?? themeStyle,
       );
 
@@ -604,6 +652,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       ],
     );
 
+    final isNeobrutalism = customTheme.preset == .neobrutalism;
     final Widget headerContainer = KeyboardListener(
       focusNode: _focusNode,
       onKeyEvent: _handleKeyEvent,
@@ -611,9 +660,13 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           color: containerBg,
           borderRadius: containerBorderRadius,
-          border: widget.variant == .enclosed
-              ? .all(color: colors.borderDefault, width: 1.0)
-              : null,
+          border: isNeobrutalism
+              ? (widget.variant == .enclosed || widget.variant == .pill
+                    ? .all(color: colors.textPrimary, width: 2.5)
+                    : null)
+              : (widget.variant == .enclosed
+                    ? .all(color: colors.borderDefault, width: 1.0)
+                    : null),
         ),
         padding: widget.style?.padding ?? themeStyle?.padding,
         child: headerBar,

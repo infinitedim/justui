@@ -144,16 +144,14 @@ class _JustBottomNavState extends State<JustBottomNav> {
         themeStyle?.textStyle ??
         typography.caption.copyWith(fontWeight: .w500);
 
-    final resolvedDuration = isNeobrutalism
-        ? Duration.zero
-        : (widget.style?.animationDuration ??
-              themeStyle?.animationDuration ??
-              animations.fast);
-    final resolvedCurve = isNeobrutalism
-        ? Curves.linear
-        : (widget.style?.animationCurve ??
-              themeStyle?.animationCurve ??
-              animations.defaultCurve);
+    final resolvedDuration =
+        widget.style?.animationDuration ??
+        themeStyle?.animationDuration ??
+        animations.fast;
+    final resolvedCurve =
+        widget.style?.animationCurve ??
+        themeStyle?.animationCurve ??
+        animations.defaultCurve;
 
     // Build items
     final List<Widget> navItems = [];
@@ -178,9 +176,7 @@ class _JustBottomNavState extends State<JustBottomNav> {
                         opacity: isSelected ? 0.0 : 1.0,
                         duration: resolvedDuration,
                         child: AnimatedScale(
-                          scale: isSelected
-                              ? (isNeobrutalism ? 1.0 : 0.8)
-                              : 1.0,
+                          scale: isSelected ? 0.8 : 1.0,
                           duration: resolvedDuration,
                           child: item.icon,
                         ),
@@ -189,9 +185,7 @@ class _JustBottomNavState extends State<JustBottomNav> {
                         opacity: isSelected ? 1.0 : 0.0,
                         duration: resolvedDuration,
                         child: AnimatedScale(
-                          scale: isSelected
-                              ? 1.0
-                              : (isNeobrutalism ? 1.0 : 0.8),
+                          scale: isSelected ? 1.0 : 0.8,
                           duration: resolvedDuration,
                           child: item.activeIcon!,
                         ),

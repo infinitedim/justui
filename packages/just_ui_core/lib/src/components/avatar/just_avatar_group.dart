@@ -65,10 +65,7 @@ class JustAvatarGroup extends StatelessWidget {
         break;
     }
 
-    final double resolvedOverlap = isNeobrutalism
-        ? (overlap > 3.0 ? overlap - 2.0 : overlap)
-        : overlap;
-    final double stepWidth = diameter - resolvedOverlap;
+    final double stepWidth = diameter - overlap;
     final double totalWidth = diameter + (totalItems - 1) * stepWidth;
 
     final List<Widget> children = [];

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter/services.dart' show HapticFeedback;
 import '../../theme/theme_provider.dart';
 import '../shared/just_pressable.dart';
@@ -96,6 +97,8 @@ class _JustBottomNavState extends State<JustBottomNav> {
     ).theme.spacing;
     final radius = customTheme.radius;
     final animations = customTheme.animations;
+
+    final isNeobrutalism = customTheme.preset == .neobrutalism;
 
     // Resolve theme-specific styles
     JustBottomNavStyle? themeStyle;
@@ -248,11 +251,14 @@ class _JustBottomNavState extends State<JustBottomNav> {
             label: item.label,
             selected: isSelected,
             button: true,
-            child: Container(
-              color: const Color(
-                0x00000000,
-              ), // Transparent to allow full tap detection
-              child: content,
+            child: customTheme.buildPressEffect(
+              isPressed: isPressed,
+              child: Container(
+                color: const Color(
+                  0x00000000,
+                ), // Transparent to allow full tap detection
+                child: content,
+              ),
             ),
           );
         },
@@ -276,16 +282,31 @@ class _JustBottomNavState extends State<JustBottomNav> {
       }
     }
 
+    final Border borderStyle = isNeobrutalism
+        ? (widget.variant == .floating
+              ? .all(color: colors.borderDefault, width: 2.5)
+              : Border(
+                  top: BorderSide(color: colors.borderDefault, width: 2.5),
+                ))
+        : (widget.variant == .floating
+              ? .all(color: colors.borderDefault, width: 1.0)
+              : Border(
+                  top: BorderSide(color: colors.borderDefault, width: 1.0),
+                ));
+
     final Widget contentBar = Container(
       height: height,
       padding: widget.style?.padding ?? themeStyle?.padding,
       decoration: BoxDecoration(
         color: containerBg,
         borderRadius: containerBorderRadius,
-        border: widget.variant == .floating
-            ? .all(color: colors.borderDefault, width: 1.0)
-            : Border(top: BorderSide(color: colors.borderDefault, width: 1.0)),
-        boxShadow: widget.variant == .floating ? customTheme.shadows.md : null,
+        border: borderStyle,
+        boxShadow: widget.variant == .floating
+            ? customTheme.resolveShadows(
+                customTheme.shadows.md,
+                isPressed: false,
+              )
+            : null,
       ),
       child: Row(
         mainAxisAlignment: .spaceEvenly,

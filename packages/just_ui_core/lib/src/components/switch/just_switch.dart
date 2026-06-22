@@ -191,7 +191,7 @@ class _JustSwitchState extends State<JustSwitch>
     final isInteractive = !widget.isDisabled && widget.onChanged != null;
 
     final isNeobrutalism = customTheme.preset == .neobrutalism;
-    final borderWidth = isNeobrutalism ? 2.0 : 0.0;
+    final borderWidth = isNeobrutalism ? 2.5 : 0.0;
 
     // Resolve sizing values
     double trackWidth;

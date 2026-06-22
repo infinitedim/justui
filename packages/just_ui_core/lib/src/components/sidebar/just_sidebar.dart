@@ -229,7 +229,7 @@ class _JustSidebarState extends State<JustSidebar>
 
         return Container(
           width: currentWidth,
-          height: double.infinity,
+          height: .infinity,
           decoration: BoxDecoration(
             color: containerBg,
             borderRadius: borderRadius,

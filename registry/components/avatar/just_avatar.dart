@@ -92,7 +92,7 @@ class JustAvatar extends StatelessWidget {
     this.name,
     this.icon,
     this.size = .md,
-    this.shape = JustAvatarShape.circle,
+    this.shape = .circle,
     this.border,
     this.statusDot,
     this.backgroundColor,
@@ -179,9 +179,13 @@ class JustAvatar extends StatelessWidget {
         backgroundColor ??
         (name != null ? _colorFromName(name!) : colors.borderDefault);
     final Color fg = style?.foregroundColor ?? colors.textInverse;
-    final double borderWidth = style?.borderWidth ?? border?.width ?? 0.0;
+    final isNeobrutalism = theme.preset == .neobrutalism;
+    final double borderWidth =
+        style?.borderWidth ?? border?.width ?? (isNeobrutalism ? 2.5 : 0.0);
     final Color borderColor =
-        style?.borderColor ?? border?.color ?? const Color(0x00000000);
+        style?.borderColor ??
+        border?.color ??
+        (isNeobrutalism ? colors.borderDefault : const Color(0x00000000));
 
     // Build core content: Network Image -> Initials -> Icon
     Widget content;

@@ -228,6 +228,10 @@ class _JustThemeModel extends InheritedModel<JustThemeAspect> {
         themeData.animations != oldWidget.themeData.animations) {
       return true;
     }
+    if (dependencies.contains(JustThemeAspect.preset) &&
+        themeData.preset != oldWidget.themeData.preset) {
+      return true;
+    }
     return false;
   }
 }
