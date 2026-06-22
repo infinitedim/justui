@@ -96,8 +96,12 @@ class JustSeparator extends StatelessWidget {
     // Preference hierarchy resolution
     final resolvedColor =
         style?.color ?? themeStyle?.color ?? color ?? colors.borderDefault;
+    final isNeobrutalism =
+        JustThemeProvider.of(context).theme.preset == .neobrutalism;
     final resolvedThickness =
-        style?.thickness ?? themeStyle?.thickness ?? thickness;
+        style?.thickness ??
+        themeStyle?.thickness ??
+        (isNeobrutalism ? 2.0 : thickness);
     final resolvedIndent = style?.indent ?? themeStyle?.indent ?? indent;
     final resolvedEndIndent =
         style?.endIndent ?? themeStyle?.endIndent ?? endIndent;

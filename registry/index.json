@@ -17,7 +17,7 @@
         {
           "name": "just_button.dart",
           "path": "components/button/just_button.dart",
-          "checksum": "sha256:821e39d36400e95115fc2ccdcef195f59e07d4e2e40f52eb33f03e7d2a1672c4"
+          "checksum": "sha256:64c02ff66efff713015fd92fbf9adf71a29e29dcfefa47e9f686fd3f95177f21"
         },
         {
           "name": "just_button_style.dart",
@@ -27,7 +27,7 @@
         {
           "name": "just_button_theme.dart",
           "path": "components/button/just_button_theme.dart",
-          "checksum": "sha256:3a4f968242b58528ea8a7889741caaed2b601cc2ac5a61a3219058d8234d5bfb"
+          "checksum": "sha256:f4d0f2c52f56f910dbe00f92a4e1549994c3ced627b383987d2a620c109dc7bc"
         },
         {
           "name": "just_button_variants.dart",
@@ -53,7 +53,7 @@
         {
           "name": "just_icon_button.dart",
           "path": "components/button/just_icon_button.dart",
-          "checksum": "sha256:79251811e18ce1d898dafca46592601fac3b8c83c4a6587feac51abfe5e81b73"
+          "checksum": "sha256:50e469b076d44a79646e3834095e62f1b36570b361ed5cf665d72092b79be8c0"
         }
       ]
     },
@@ -69,7 +69,7 @@
         {
           "name": "just_input.dart",
           "path": "components/input/just_input.dart",
-          "checksum": "sha256:6e548e707522c979c3c202654a426a7b409e0d6968986e40c3bf1038b9e74aca"
+          "checksum": "sha256:da0db7b7adc3624b0f3b35cbae945787136bc6057fc6f07160d3876fa93e9bc6"
         },
         {
           "name": "just_input_style.dart",
@@ -79,7 +79,7 @@
         {
           "name": "just_input_theme.dart",
           "path": "components/input/just_input_theme.dart",
-          "checksum": "sha256:1c2f9372c173defa89d50d94271ec8fe6f5dec65abbb253ed150a1bf8ce5c63b"
+          "checksum": "sha256:0e95e9ddde2ed83abee07e4212bfcbf76a0069feb54451ab6b84eece481d1209"
         },
         {
           "name": "just_input_variants.dart",
@@ -100,7 +100,7 @@
         {
           "name": "just_badge.dart",
           "path": "components/badge/just_badge.dart",
-          "checksum": "sha256:cdb0a4d678bd546288ca8f634683f2757d4ac6e2ae70af9492ab948f2c12d514"
+          "checksum": "sha256:95e99802084b52321c95d32505a73508b8453cbf668672a15311b3cb27aaa771"
         },
         {
           "name": "just_badge_style.dart",
@@ -126,7 +126,7 @@
         {
           "name": "just_avatar.dart",
           "path": "components/avatar/just_avatar.dart",
-          "checksum": "sha256:aff5806c88212ac9a4dfd27b3927f9684a21dbe6b700444f9b78a908813db64b"
+          "checksum": "sha256:31d7f7ca35b803583c82d750a0512a054bbdc4aa3279e52deb42355ee2b69cb0"
         },
         {
           "name": "just_avatar_style.dart",
@@ -154,7 +154,7 @@
         {
           "name": "just_avatar_group.dart",
           "path": "components/avatar/just_avatar_group.dart",
-          "checksum": "sha256:2fc1ffe8269b223382b12ad33ca38d87d04325b799b33c07d70f242fd38b18de"
+          "checksum": "sha256:75aa4ac3c580f260de8bd5a913b0faee42b0205bf56f7dc01942cc025d6e0759"
         }
       ]
     },
@@ -173,7 +173,7 @@
         {
           "name": "just_checkbox.dart",
           "path": "components/checkbox/just_checkbox.dart",
-          "checksum": "sha256:5862b07db035346dc0535fec40accd76feabd22e9bb1bcf322a4de1a470b3347"
+          "checksum": "sha256:a0d2da48c882d4981ccc2dcd1d0816ae3c6c3feb63762517afe9c84ed3a09390"
         },
         {
           "name": "just_checkbox_style.dart",
@@ -183,7 +183,7 @@
         {
           "name": "just_checkbox_theme.dart",
           "path": "components/checkbox/just_checkbox_theme.dart",
-          "checksum": "sha256:57c244623f7096231c301e33191473259e1eb8445850e2a848d13caa49b555e8"
+          "checksum": "sha256:4c19a9d2fcd13ccc7889e596cb9fe745ca1efcd3c226f935add0d737c8f3659a"
         }
       ]
     },
@@ -202,7 +202,7 @@
         {
           "name": "just_radio.dart",
           "path": "components/radio/just_radio.dart",
-          "checksum": "sha256:83667dcfc1e2298f4ca882e9e6a5a9cb9377c5a86d31b2e9b922a447de0cbfba"
+          "checksum": "sha256:54dec429a8e27f9d22653b52bb1a645d54e13dbe50fb1ec4ec81d252a5973ac5"
         },
         {
           "name": "just_radio_style.dart",
@@ -212,7 +212,7 @@
         {
           "name": "just_radio_theme.dart",
           "path": "components/radio/just_radio_theme.dart",
-          "checksum": "sha256:994ef64e99aaaebcd55698d8eff4d9b540eb7bcdac04a9e7e7c53c89444e6785"
+          "checksum": "sha256:1c5a9700ba0a6c05818a69838bbd06b2b52ddc3ac052b9a547de8d50e302b001"
         }
       ]
     },
@@ -249,7 +249,7 @@
         {
           "name": "just_switch.dart",
           "path": "components/switch/just_switch.dart",
-          "checksum": "sha256:1e8105be34a519b1b90f1ea28b9f0cacc768fbd8255435433021015630a7dd22"
+          "checksum": "sha256:bcaeb252abb1606222c52c0286a88e29a71ea09f97b45e6c27034c8edfc4268f"
         },
         {
           "name": "just_switch_style.dart",
@@ -259,7 +259,7 @@
         {
           "name": "just_switch_theme.dart",
           "path": "components/switch/just_switch_theme.dart",
-          "checksum": "sha256:01495ad4ff5248d1206dcdcc032ce6134a109faf469e6fe50dc95021b57366fb"
+          "checksum": "sha256:597bef4c8d1faffa38e9b882c1e2079c459d0c33e884c9ab8f816dfa95aa13d5"
         }
       ]
     },
@@ -278,7 +278,7 @@
         {
           "name": "just_card.dart",
           "path": "components/card/just_card.dart",
-          "checksum": "sha256:95bcc0bee1a777f0dad7867c6f4c67eecebc0330899a5d0621aa00c6ab66dc0d"
+          "checksum": "sha256:c5febb5b70f882925baee402bce468f0b34e0050ccfb030dbdd150595b830f5c"
         },
         {
           "name": "just_card_style.dart",
@@ -288,7 +288,7 @@
         {
           "name": "just_card_theme.dart",
           "path": "components/card/just_card_theme.dart",
-          "checksum": "sha256:9a6930b69b82752d03ab423e2642a4c7a6ad4d397b0f63c544db58aff04820ee"
+          "checksum": "sha256:afecb0ad46b9fd3c0bfecbbb04978d58d899621018a09d7ef7c6497a9681bf64"
         }
       ]
     },
@@ -304,7 +304,7 @@
         {
           "name": "just_separator.dart",
           "path": "components/separator/just_separator.dart",
-          "checksum": "sha256:fcc79c002db18ea16eb3b309d7bddfee8c534e37aecab75530b895c43787e03b"
+          "checksum": "sha256:9ef50e87faaef74331911339536133b19c750cfc5e4c441bded5b7abe98bdab7"
         },
         {
           "name": "just_separator_style.dart",
@@ -314,7 +314,7 @@
         {
           "name": "just_separator_theme.dart",
           "path": "components/separator/just_separator_theme.dart",
-          "checksum": "sha256:ccea90738482a71919aeffae016599b7eb3d840c8be5a483b1a4db579913e422"
+          "checksum": "sha256:88f3edda6ec1934d7c17fae3049310529d026d7b01bd4d159a671c2043d1041e"
         }
       ]
     },
@@ -333,7 +333,7 @@
         {
           "name": "just_scroll_area.dart",
           "path": "components/scroll/just_scroll_area.dart",
-          "checksum": "sha256:cd1c55dce0f0acd1c0599029b40f67164ed2741cc5a36237839ca958774c3f4f"
+          "checksum": "sha256:771aec90c2e8d0a19fe4392b18468242749b01fb1e460508ae05cbb647efaa8d"
         },
         {
           "name": "just_scroll_area_style.dart",
@@ -343,7 +343,7 @@
         {
           "name": "just_scroll_area_theme.dart",
           "path": "components/scroll/just_scroll_area_theme.dart",
-          "checksum": "sha256:ff89bd7bea995ba1595344adff62a9becb6290e14b941ec880f6c8ac693b5645"
+          "checksum": "sha256:2b55eeecc198cdd428a4f0cc5fa96d4003e5aa3cc4d5cd215fedf1106837c8c8"
         }
       ]
     },
@@ -398,17 +398,17 @@
         {
           "name": "just_skeleton.dart",
           "path": "components/skeleton/just_skeleton.dart",
-          "checksum": "sha256:5773b1ccc112a756a70ae167f6b7832e68da79ecb080d068118afaed52aceabf"
+          "checksum": "sha256:b8be21d4da62727060c88c8556deaa47e050c033c838d35365e312dcd28997c0"
         },
         {
           "name": "just_skeleton_style.dart",
           "path": "components/skeleton/just_skeleton_style.dart",
-          "checksum": "sha256:dd317d7c00598c3c17782e2b88eb98f3fb60e46d35cba657ce792a2cd529b025"
+          "checksum": "sha256:66b55fa18e23fafd773ea0e5cc832c997aff3ac4e7668cf7f37c3ac2a691db85"
         },
         {
           "name": "just_skeleton_theme.dart",
           "path": "components/skeleton/just_skeleton_theme.dart",
-          "checksum": "sha256:6ecccac3e95d831ace735a20a6224feadb6a9920e508696cefec7daf667ee7ce"
+          "checksum": "sha256:489938e3a08ac1d1f8c4434dd00d8c7f144afa72b4836c79090f3395c99b2ad7"
         }
       ]
     },
@@ -442,7 +442,7 @@
         {
           "name": "just_breadcrumb.dart",
           "path": "components/breadcrumb/just_breadcrumb.dart",
-          "checksum": "sha256:786fd2952e045af7b460ab98deb21e7312d30c2843eeea23f53e263e84211a48"
+          "checksum": "sha256:efa5a19f1c22b2df20f32cbd27a45851aa7afa00eccf09e990a01ba82fd97b34"
         },
         {
           "name": "just_breadcrumb_style.dart",
@@ -452,7 +452,7 @@
         {
           "name": "just_breadcrumb_theme.dart",
           "path": "components/breadcrumb/just_breadcrumb_theme.dart",
-          "checksum": "sha256:fd3dd0a186b38d51ebabca9c5a61106546556e360467e0975ae7abf4ff434e78"
+          "checksum": "sha256:bcb139a8e00021ae81c83ce5f4144ba5c29f454c2cae206bf7e663260c1e6d4e"
         },
         {
           "name": "just_breadcrumb_variants.dart",
@@ -475,7 +475,7 @@
         {
           "name": "just_tabs.dart",
           "path": "components/tabs/just_tabs.dart",
-          "checksum": "sha256:e3ad1599c0257eaa67d477c7b00b3a77f4f52c2431b3ffa0b153cc67387cf817"
+          "checksum": "sha256:1369cf6e6959b10236e133e228945ab7303e11ec75ac870e669d6e0489254261"
         },
         {
           "name": "just_tabs_style.dart",
@@ -485,7 +485,7 @@
         {
           "name": "just_tabs_theme.dart",
           "path": "components/tabs/just_tabs_theme.dart",
-          "checksum": "sha256:d091764ce32990f054562a0d3ef91081bc081acb96601016d670244a9562e70e"
+          "checksum": "sha256:b94c297a00d7d8aba8ee5039534fc9c2b72527955dabaf2299afeb8ce72bd828"
         },
         {
           "name": "just_tabs_variants.dart",
@@ -495,7 +495,7 @@
         {
           "name": "just_tab_indicator.dart",
           "path": "components/tabs/just_tab_indicator.dart",
-          "checksum": "sha256:1ea1db49cea0441746e610dc4ee2c0f0409d090eebf1b8faaf597afcf79d7a61"
+          "checksum": "sha256:284f52b372ce24d6a8946d2ccedc2a19be8c2d6d8ece9b1d4f154c952ee3ca93"
         }
       ]
     },
@@ -513,7 +513,7 @@
         {
           "name": "just_bottom_nav.dart",
           "path": "components/bottom_nav/just_bottom_nav.dart",
-          "checksum": "sha256:2303af6592276786181cb30e042720849cb5e7f088bf00cfd81cbacaa44b6392"
+          "checksum": "sha256:2996cf5beb310e44976b48aa3aa86915699aab455d544847ebd818b43a2fa32e"
         },
         {
           "name": "just_bottom_nav_style.dart",
@@ -523,7 +523,7 @@
         {
           "name": "just_bottom_nav_theme.dart",
           "path": "components/bottom_nav/just_bottom_nav_theme.dart",
-          "checksum": "sha256:f254f2cb08be857840ad81066ce332c0ef0fbde6a28aa730e5d13b886191c911"
+          "checksum": "sha256:be2951079a93b308c7aaba437290592c2196bdaebbc630baefe7c2469256525f"
         },
         {
           "name": "just_bottom_nav_variants.dart",
@@ -563,7 +563,7 @@
         {
           "name": "just_sidebar.dart",
           "path": "components/sidebar/just_sidebar.dart",
-          "checksum": "sha256:f20cca958a69fb9ce9010f099d7df9008c0fe5a207e07adc5b3d49a38a4f62d5"
+          "checksum": "sha256:5e6fdb415619f32dd02a7daeaf265db1437faf4168fb9063f6f7a818d8622105"
         },
         {
           "name": "just_sidebar_style.dart",
@@ -573,7 +573,7 @@
         {
           "name": "just_sidebar_theme.dart",
           "path": "components/sidebar/just_sidebar_theme.dart",
-          "checksum": "sha256:34a504501a5ee0cf5416a31c7ab18e8a2347ead6dafbdc6920ac6ffcc8fa943e"
+          "checksum": "sha256:0471b599f1058bec41894917d167ba777e243c4d6ea0032ba2aa35982c6437af"
         },
         {
           "name": "just_sidebar_variants.dart",

@@ -335,15 +335,26 @@ class JustBadge extends StatelessWidget {
       );
     }
 
+    final isNeobrutalism = theme.preset == .neobrutalism;
+
+    final Border? resolvedBorder = isNeobrutalism
+        ? .all(color: colors.textPrimary, width: 2.5)
+        : (finalBorder != const Color(0x00000000)
+              ? .all(color: finalBorder, width: 1.0)
+              : null);
+
+    final List<BoxShadow>? resolvedShadows = isNeobrutalism
+        ? (size == JustBadgeSize.sm ? theme.shadows.xs : theme.shadows.sm)
+        : null;
+
     return Container(
       height: height,
       padding: finalPadding,
       decoration: BoxDecoration(
         color: finalBg,
         borderRadius: finalRadius,
-        border: finalBorder != const Color(0x00000000)
-            ? .all(color: finalBorder, width: 1.0)
-            : null,
+        border: resolvedBorder,
+        boxShadow: resolvedShadows,
       ),
       child: Row(
         mainAxisSize: .min,

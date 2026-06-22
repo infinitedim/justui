@@ -64,6 +64,9 @@ class JustBreadcrumb extends StatelessWidget {
       aspect: .spacing,
     ).theme.spacing;
 
+    final isNeobrutalism =
+        JustThemeProvider.of(context).theme.preset == .neobrutalism;
+
     // Resolve separator widget
     final resolvedSeparator =
         separator ??
@@ -71,7 +74,11 @@ class JustBreadcrumb extends StatelessWidget {
           '/',
           style:
               style?.separatorStyle ??
-              typography.bodyMd.copyWith(color: colors.textSecondary),
+              typography.bodyMd.copyWith(
+                color: isNeobrutalism
+                    ? colors.borderDefault
+                    : colors.textSecondary,
+              ),
         );
 
     // Resolve collapsed widget
@@ -142,15 +149,10 @@ class JustBreadcrumb extends StatelessWidget {
     JustBreadcrumbItem item,
     bool isLast,
   ) {
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(
-      context,
-      aspect: .typography,
-    ).theme.typography;
-    final spacing = JustThemeProvider.of(
-      context,
-      aspect: .spacing,
-    ).theme.spacing;
+    final customTheme = JustThemeProvider.of(context).theme;
+    final colors = customTheme.colors;
+    final typography = customTheme.typography;
+    final spacing = customTheme.spacing;
 
     final isClickable = item.onTap != null;
 
@@ -194,7 +196,7 @@ class JustBreadcrumb extends StatelessWidget {
             ? activeColor.withValues(alpha: 0.8)
             : (isHovered ? activeColor : normalColor);
 
-        return Semantics(
+        final Widget itemWidget = Semantics(
           label: item.label,
           link: true,
           child: Padding(
@@ -219,6 +221,11 @@ class JustBreadcrumb extends StatelessWidget {
               ],
             ),
           ),
+        );
+
+        return customTheme.buildPressEffect(
+          isPressed: isPressed,
+          child: itemWidget,
         );
       },
     );
@@ -253,16 +260,12 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(
-      context,
-      aspect: .typography,
-    ).theme.typography;
-    final spacing = JustThemeProvider.of(
-      context,
-      aspect: .spacing,
-    ).theme.spacing;
-    final radius = JustThemeProvider.of(context).theme.radius;
+    final customTheme = JustThemeProvider.of(context).theme;
+    final colors = customTheme.colors;
+    final typography = customTheme.typography;
+    final spacing = customTheme.spacing;
+    final radius = customTheme.radius;
+    final isNeobrutalism = customTheme.preset == .neobrutalism;
 
     return OverlayPortal.overlayChildLayoutBuilder(
       controller: _controller,
@@ -293,8 +296,13 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
                   decoration: BoxDecoration(
                     color: colors.elevated,
                     borderRadius: .all(radius.md),
-                    border: .all(color: colors.borderDefault, width: 1.0),
-                    boxShadow: JustThemeProvider.of(context).theme.shadows.md,
+                    border: .all(
+                      color: isNeobrutalism
+                          ? colors.textPrimary
+                          : colors.borderDefault,
+                      width: isNeobrutalism ? 2.5 : 1.0,
+                    ),
+                    boxShadow: customTheme.shadows.md,
                   ),
                   padding: .symmetric(vertical: spacing.xs),
                   child: SingleChildScrollView(
@@ -378,21 +386,27 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
         focusNode: _focusNode,
         onTap: () => _controller.toggle(),
         builder: (context, isHovered, isPressed, isFocused, focusNode) {
+          final customTheme = JustThemeProvider.of(context).theme;
+          final isNeobrutalism = customTheme.preset == .neobrutalism;
+          final Widget collapsedIndicatorWidget = Container(
+            padding:
+                widget.style?.itemPadding ?? .symmetric(horizontal: spacing.xs),
+            child: DefaultTextStyle(
+              style: (widget.style?.textStyle ?? typography.bodyMd).copyWith(
+                color: isHovered || isPressed
+                    ? (isNeobrutalism ? colors.textPrimary : colors.borderFocus)
+                    : colors.textSecondary,
+              ),
+              child: widget.collapsedIndicator,
+            ),
+          );
+
           return Semantics(
             label: 'Show collapsed breadcrumbs',
             button: true,
-            child: Container(
-              padding:
-                  widget.style?.itemPadding ??
-                  .symmetric(horizontal: spacing.xs),
-              child: DefaultTextStyle(
-                style: (widget.style?.textStyle ?? typography.bodyMd).copyWith(
-                  color: isHovered || isPressed
-                      ? colors.borderFocus
-                      : colors.textSecondary,
-                ),
-                child: widget.collapsedIndicator,
-              ),
+            child: customTheme.buildPressEffect(
+              isPressed: isPressed,
+              child: collapsedIndicatorWidget,
             ),
           );
         },

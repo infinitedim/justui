@@ -747,8 +747,21 @@ class _JustInputState extends State<JustInput> {
                       ],
                     );
 
+                    final isNeobrutalism = theme.preset == .neobrutalism;
+                    final double borderWidth = isNeobrutalism
+                        ? 2.5
+                        : (isFocused ? 2.0 : 1.0);
+                    final Color finalBorderColor = isNeobrutalism
+                        ? colors.textPrimary
+                        : border;
+                    final List<BoxShadow>? resolvedShadows = isNeobrutalism
+                        ? theme.shadows.sm
+                        : null;
+
                     return AnimatedContainer(
-                      duration: animations.fast,
+                      duration: isNeobrutalism
+                          ? theme.animations.instant
+                          : theme.animations.fast,
                       curve: animations.defaultCurve,
                       alignment: .centerLeft,
                       padding: finalPadding,
@@ -756,9 +769,10 @@ class _JustInputState extends State<JustInput> {
                         color: finalBg,
                         borderRadius: finalRadius,
                         border: .all(
-                          color: border,
-                          width: isFocused ? 2.0 : 1.0,
+                          color: finalBorderColor,
+                          width: borderWidth,
                         ),
+                        boxShadow: resolvedShadows,
                       ),
                       child: fieldContent,
                     );
@@ -827,6 +841,7 @@ class _JustInputState extends State<JustInput> {
     TextStyle textStyle,
     double fontSize,
   ) {
+    final theme = JustThemeProvider.of(context).theme;
     return EditableText(
       controller: _controller,
       focusNode: _focusNode,
@@ -840,7 +855,10 @@ class _JustInputState extends State<JustInput> {
       textInputAction: widget.textInputAction,
       style: textStyle,
       cursorColor:
-          widget.style?.focusedBorderColor ?? JustColorPalette.primary500,
+          widget.style?.focusedBorderColor ??
+          (theme.preset == .neobrutalism
+              ? theme.colors.textPrimary
+              : JustColorPalette.primary500),
       backgroundCursorColor: const Color(0xFF888888),
       onChanged: widget.onChanged,
       onSubmitted: widget.onSubmitted,

@@ -21,4 +21,18 @@ class JustSkeletonStyle {
     this.duration,
     this.fallbackRadius,
   });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is JustSkeletonStyle &&
+        other.backgroundColor == backgroundColor &&
+        other.shimmerColor == shimmerColor &&
+        other.duration == duration &&
+        other.fallbackRadius == fallbackRadius;
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(backgroundColor, shimmerColor, duration, fallbackRadius);
 }
