@@ -158,5 +158,22 @@ void main() {
       expect(pageIndex, equals(1));
       expect(find.text('Page 2'), findsOneWidget);
     });
+
+    testWidgets('Renders correctly under neobrutalism preset', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustSwitch(value: true, onChanged: (_) {}),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(JustSwitch), findsOneWidget);
+    });
   });
 }

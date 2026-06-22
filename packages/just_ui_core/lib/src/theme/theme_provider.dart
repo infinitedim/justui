@@ -137,6 +137,17 @@ class JustThemeProviderState extends State<JustThemeProvider>
   }
 
   @override
+  void didUpdateWidget(covariant JustThemeProvider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.lightTheme != oldWidget.lightTheme) {
+      _lightTheme = widget.lightTheme ?? .light;
+    }
+    if (widget.darkTheme != oldWidget.darkTheme) {
+      _darkTheme = widget.darkTheme ?? .dark;
+    }
+  }
+
+  @override
   void didChangePlatformBrightness() {
     if (_themeMode == .system) {
       setState(() {});

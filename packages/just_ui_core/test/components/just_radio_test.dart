@@ -171,5 +171,27 @@ void main() {
 
       focusNode.dispose();
     });
+
+    testWidgets('Renders correctly under neobrutalism preset', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustRadio<int>(
+              value: 1,
+              groupValue: 2,
+              onChanged: (_) {},
+              label: const Text('Neobrutalist Option'),
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(JustRadio<int>), findsOneWidget);
+    });
   });
 }

@@ -218,20 +218,23 @@ void main() {
         ThemeMode? persistedMode;
 
         await tester.pumpWidget(
-          JustThemeProvider(
-            initialThemeMode: ThemeMode.light,
-            onThemeChanged: (mode) {
-              persistedMode = mode;
-            },
-            child: Builder(
-              builder: (context) {
-                return ElevatedButton(
-                  onPressed: () {
-                    JustThemeProvider.read(context).toggleTheme();
-                  },
-                  child: Text(JustThemeProvider.of(context).themeMode.name),
-                );
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustThemeProvider(
+              initialThemeMode: ThemeMode.light,
+              onThemeChanged: (mode) {
+                persistedMode = mode;
               },
+              child: Builder(
+                builder: (context) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      JustThemeProvider.read(context).toggleTheme();
+                    },
+                    child: Text(JustThemeProvider.of(context).themeMode.name),
+                  );
+                },
+              ),
             ),
           ),
         );
@@ -261,57 +264,68 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
 
       await tester.pumpWidget(
-        JustThemeProvider(
-          initialThemeMode: ThemeMode.light,
-          child: Column(
-            children: [
-              Builder(
-                builder: (context) {
-                  // Subscribes to the entire theme
-                  context.justTheme;
-                  fullRebuildCount++;
-                  return const SizedBox.shrink();
-                },
-              ),
-              Builder(
-                builder: (context) {
-                  // Subscribes *only* to colors
-                  context.justColors;
-                  colorRebuildCount++;
-                  return const SizedBox.shrink();
-                },
-              ),
-              Builder(
-                builder: (context) {
-                  // Subscribes *only* to spacing
-                  context.justSpacing;
-                  spacingRebuildCount++;
-                  return const SizedBox.shrink();
-                },
-              ),
-              Builder(
-                builder: (context) {
-                  // Subscribes *only* to radius
-                  context.justRadius;
-                  radiusRebuildCount++;
-                  return const SizedBox.shrink();
-                },
-              ),
-              Builder(
-                builder: (context) {
-                  // Reads theme without subscription
-                  context.readTheme();
-                  return ElevatedButton(
-                    onPressed: () {
-                      JustThemeProvider.read(
-                        context,
-                      ).setThemeMode(ThemeMode.dark);
-                    },
-                    child: const Text('Change Theme'),
-                  );
-                },
-              ),
-            ],
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: JustThemeProvider(
+            initialThemeMode: ThemeMode.light,
+            lightTheme: JustThemeData.light.copyWith(
+              spacing: const FluidSpacingScheme(),
+              radius: const FluidRadiusScheme(),
+            ),
+            darkTheme: JustThemeData.dark.copyWith(
+              spacing: const FluidSpacingScheme(),
+              radius: const FluidRadiusScheme(),
+            ),
+            child: Column(
+              children: [
+                Builder(
+                  builder: (context) {
+                    // Subscribes to the entire theme
+                    context.justTheme;
+                    fullRebuildCount++;
+                    return const SizedBox.shrink();
+                  },
+                ),
+                Builder(
+                  builder: (context) {
+                    // Subscribes *only* to colors
+                    context.justColors;
+                    colorRebuildCount++;
+                    return const SizedBox.shrink();
+                  },
+                ),
+                Builder(
+                  builder: (context) {
+                    // Subscribes *only* to spacing
+                    context.justSpacing;
+                    spacingRebuildCount++;
+                    return const SizedBox.shrink();
+                  },
+                ),
+                Builder(
+                  builder: (context) {
+                    // Subscribes *only* to radius
+                    context.justRadius;
+                    radiusRebuildCount++;
+                    return const SizedBox.shrink();
+                  },
+                ),
+                Builder(
+                  builder: (context) {
+                    // Reads theme without subscription
+                    context.readTheme();
+                    return ElevatedButton(
+                      onPressed: () {
+                        JustThemeProvider.read(
+                          context,
+                        ).setThemeMode(ThemeMode.dark);
+                      },
+                      child: const Text('Change Theme'),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -385,15 +399,18 @@ void main() {
             Brightness.light;
 
         await tester.pumpWidget(
-          JustThemeProvider(
-            initialThemeMode: ThemeMode.system,
-            child: Builder(
-              builder: (context) {
-                final isDark =
-                    context.justTheme.colors.background ==
-                    JustColors.neutral950;
-                return Text(isDark ? 'dark' : 'light');
-              },
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustThemeProvider(
+              initialThemeMode: ThemeMode.system,
+              child: Builder(
+                builder: (context) {
+                  final isDark =
+                      context.justTheme.colors.background ==
+                      JustColors.neutral950;
+                  return Text(isDark ? 'dark' : 'light');
+                },
+              ),
             ),
           ),
         );
@@ -451,21 +468,21 @@ void main() {
       (WidgetTester tester) async {
         int spacingRebuildCount = 0;
 
+        final builderWidget = Builder(
+          builder: (context) {
+            context.justSpacing;
+            spacingRebuildCount++;
+            return const SizedBox.shrink();
+          },
+        );
+
         await tester.pumpWidget(
           MediaQuery(
             data: const MediaQueryData(
               size: Size(1024.0, 768.0),
               viewInsets: .zero,
             ),
-            child: JustThemeProvider(
-              child: Builder(
-                builder: (context) {
-                  context.justSpacing;
-                  spacingRebuildCount++;
-                  return const SizedBox.shrink();
-                },
-              ),
-            ),
+            child: JustThemeProvider(child: builderWidget),
           ),
         );
 
@@ -478,15 +495,7 @@ void main() {
               size: Size(1024.0, 768.0),
               viewInsets: .only(bottom: 300.0),
             ),
-            child: JustThemeProvider(
-              child: Builder(
-                builder: (context) {
-                  context.justSpacing;
-                  spacingRebuildCount++;
-                  return const SizedBox.shrink();
-                },
-              ),
-            ),
+            child: JustThemeProvider(child: builderWidget),
           ),
         );
 

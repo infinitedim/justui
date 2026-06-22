@@ -12,7 +12,9 @@ void main() {
         textDirection: TextDirection.ltr,
         child: MediaQuery(
           data: MediaQueryData(size: Size(width, 600.0)),
-          child: child,
+          child: Overlay(
+            initialEntries: [OverlayEntry(builder: (context) => child)],
+          ),
         ),
       ),
     );

@@ -7,7 +7,12 @@ void main() {
 
   Widget buildTestableWidget(Widget child) {
     return JustThemeProvider(
-      child: Directionality(textDirection: TextDirection.ltr, child: child),
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Overlay(
+          initialEntries: [OverlayEntry(builder: (context) => child)],
+        ),
+      ),
     );
   }
 
@@ -133,15 +138,21 @@ void main() {
       await tester.pumpWidget(
         JustThemeProvider(
           lightTheme: JustThemeData.neobrutalismLight,
-          child: const Directionality(
+          child: Directionality(
             textDirection: TextDirection.ltr,
-            child: JustBreadcrumb(
-              maxItems: 3,
-              items: [
-                JustBreadcrumbItem(label: 'Home'),
-                JustBreadcrumbItem(label: 'Category'),
-                JustBreadcrumbItem(label: 'Subcategory'),
-                JustBreadcrumbItem(label: 'Item Details'),
+            child: Overlay(
+              initialEntries: [
+                OverlayEntry(
+                  builder: (context) => const JustBreadcrumb(
+                    maxItems: 3,
+                    items: [
+                      JustBreadcrumbItem(label: 'Home'),
+                      JustBreadcrumbItem(label: 'Category'),
+                      JustBreadcrumbItem(label: 'Subcategory'),
+                      JustBreadcrumbItem(label: 'Item Details'),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
