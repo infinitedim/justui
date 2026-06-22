@@ -35,6 +35,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  just_ui_core:
+    path: ../../packages/just_ui_core
+  just_ui_tokens:
+    path: ../../packages/just_ui_tokens
+  web: ^0.5.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
