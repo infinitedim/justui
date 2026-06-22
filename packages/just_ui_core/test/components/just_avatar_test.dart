@@ -56,6 +56,23 @@ void main() {
       expect(find.byType(Stack), findsOneWidget);
       expect(find.byType(Positioned), findsOneWidget);
     });
+
+    testWidgets('Renders correctly under neobrutalism preset', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: const Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustAvatar(name: 'Neobrutalist User'),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('NU'), findsOneWidget);
+    });
   });
 
   group('JustAvatarGroup Tests', () {

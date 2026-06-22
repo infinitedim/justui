@@ -55,7 +55,10 @@ void main() {
         ),
       );
 
-      final constrainedBoxFinder = find.byType(ConstrainedBox);
+      final constrainedBoxFinder = find.byWidgetPredicate(
+        (widget) =>
+            widget is ConstrainedBox && widget.constraints.maxWidth == 50.0,
+      );
       expect(constrainedBoxFinder, findsOneWidget);
       final ConstrainedBox box = tester.widget<ConstrainedBox>(
         constrainedBoxFinder,
@@ -103,6 +106,23 @@ void main() {
         (widget) => widget.runtimeType.toString() == '_JustPulsingDot',
       );
       expect(pulsingDotFinder, findsNothing);
+    });
+
+    testWidgets('Renders correctly under neobrutalism preset', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: const Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustBadge(label: 'Neobrutalist Badge'),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Neobrutalist Badge'), findsOneWidget);
     });
   });
 }

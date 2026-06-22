@@ -828,19 +828,17 @@ import '../shared/just_pressable.dart';
       'ImportRewriter metadata parse, strip, and inject functions work as expected',
       () {
         const code = 'void main() {}';
-        final injected = ImportRewriter.injectMetadata(
-          code,
-          'reg123',
-          'loc456',
-        );
+        final regHash = 'a' * 64;
+        final locHash = 'b' * 64;
+        final injected = ImportRewriter.injectMetadata(code, regHash, locHash);
         expect(
           injected,
-          contains('// justui-meta: registry=reg123 local=loc456'),
+          contains('// justui-meta: registry=$regHash local=$locHash'),
         );
 
         final meta = ImportRewriter.parseMetadata(injected)!;
-        expect(meta.registryHash, equals('reg123'));
-        expect(meta.localHash, equals('loc456'));
+        expect(meta.registryHash, equals(regHash));
+        expect(meta.localHash, equals(locHash));
 
         final stripped = ImportRewriter.stripMetadata(injected);
         expect(stripped.trim(), equals(code));
@@ -855,5 +853,35 @@ import '../shared/just_pressable.dart';
       expect(diffLines.any((l) => l.type == '-'), isTrue);
       expect(diffLines.any((l) => l.type == '+'), isTrue);
     });
+
+    test(
+      'DiffFormatter calculateDiff falls back to simple diff when lines exceed max limit',
+      () {
+        final local = 'a\n' * 2001;
+        final remote = 'b\n' * 2001;
+
+        final warnings = <String>[];
+        final oldSink = JustLogger.testStdoutSink;
+        JustLogger.testStdoutSink = (msg) {
+          if (msg.contains('Warning:')) {
+            warnings.add(msg);
+          }
+        };
+
+        try {
+          final diffLines = DiffFormatter.calculateDiff(local, remote);
+          expect(diffLines.length, equals(4004));
+          expect(diffLines.where((l) => l.type == '-').length, equals(2002));
+          expect(diffLines.where((l) => l.type == '+').length, equals(2002));
+          expect(warnings.length, equals(1));
+          expect(
+            warnings.first,
+            contains('File is too large for contextual diff'),
+          );
+        } finally {
+          JustLogger.testStdoutSink = oldSink;
+        }
+      },
+    );
   });
 }

@@ -108,5 +108,22 @@ void main() {
         expect(find.byType(Row), findsNothing);
       },
     );
+
+    testWidgets('Renders correctly under neobrutalism preset', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: const Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustSeparator(direction: Axis.horizontal),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(JustSeparator), findsOneWidget);
+    });
   });
 }

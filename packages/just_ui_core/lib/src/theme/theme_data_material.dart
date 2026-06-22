@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'theme_data.dart';
+import '../components/components.dart';
 
 final Expando<ThemeData> _themeDataCache = Expando<ThemeData>();
 
@@ -94,6 +95,21 @@ extension JustThemeDataMaterialExtension on JustThemeData {
           textStyle: typography.bodyMd,
         ),
       ),
+      extensions: const <ThemeExtension<dynamic>>[
+        JustButtonTheme.defaults,
+        JustCardTheme.defaults,
+        JustInputTheme.defaults,
+        JustCheckboxTheme.defaults,
+        JustRadioTheme.defaults,
+        JustSwitchTheme.defaults,
+        JustTabsTheme.defaults,
+        JustSeparatorTheme.defaults,
+        JustSkeletonTheme.defaults,
+        JustScrollAreaTheme.defaults,
+        JustBreadcrumbTheme.defaults,
+        JustBottomNavTheme.defaults,
+        JustSidebarTheme.defaults,
+      ],
     );
   }
 }

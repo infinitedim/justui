@@ -44,6 +44,9 @@ class DiffFileStatus {
   /// Expected registry hash.
   final String expectedHash;
 
+  /// Cached remote content.
+  String? remoteContent;
+
   /// Creates a diff file status definition.
   DiffFileStatus({
     required this.file,
@@ -51,6 +54,7 @@ class DiffFileStatus {
     required this.statusType,
     required this.localContent,
     required this.expectedHash,
+    this.remoteContent,
   });
 }
 
@@ -263,7 +267,13 @@ class DiffCommand extends Command<void> {
       if (isVerbose) {
         for (final fs in changedFiles) {
           if (fs.statusType == DiffStatusType.missing) continue;
-          final remoteRaw = await client.fetchFileContent(fs.file.path);
+          final String remoteRaw;
+          if (fs.remoteContent != null) {
+            remoteRaw = fs.remoteContent!;
+          } else {
+            remoteRaw = await client.fetchFileContent(fs.file.path);
+            fs.remoteContent = remoteRaw;
+          }
           final remoteRewritten = ImportRewriter.rewrite(
             content: remoteRaw,
             sourceRegistryPath: fs.file.path,
@@ -285,7 +295,13 @@ class DiffCommand extends Command<void> {
             JustLogger.info('\n[File "${fs.file.name}" is missing locally]');
             continue;
           }
-          final remoteRaw = await client.fetchFileContent(fs.file.path);
+          final String remoteRaw;
+          if (fs.remoteContent != null) {
+            remoteRaw = fs.remoteContent!;
+          } else {
+            remoteRaw = await client.fetchFileContent(fs.file.path);
+            fs.remoteContent = remoteRaw;
+          }
           final remoteRewritten = ImportRewriter.rewrite(
             content: remoteRaw,
             sourceRegistryPath: fs.file.path,
@@ -393,7 +409,13 @@ class DiffCommand extends Command<void> {
     RegistryClient client,
     JustUIConfig config,
   ) async {
-    final remoteRaw = await client.fetchFileContent(fs.file.path);
+    final String remoteRaw;
+    if (fs.remoteContent != null) {
+      remoteRaw = fs.remoteContent!;
+    } else {
+      remoteRaw = await client.fetchFileContent(fs.file.path);
+      fs.remoteContent = remoteRaw;
+    }
     final remoteRewritten = ImportRewriter.rewrite(
       content: remoteRaw,
       sourceRegistryPath: fs.file.path,

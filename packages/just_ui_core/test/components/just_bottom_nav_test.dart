@@ -135,11 +135,10 @@ void main() {
         ),
       );
 
-      final containerFinder = find.descendant(
-        of: find.byType(JustBottomNav),
-        matching: find.byType(Container),
+      final containerFinder = find.byKey(
+        const Key('just_bottom_nav_bar_surface'),
       );
-      final container = tester.widget<Container>(containerFinder.first);
+      final container = tester.widget<Container>(containerFinder);
       final decoration = container.decoration as BoxDecoration;
       expect(decoration.border, isNotNull);
       expect(decoration.border!.top.width, equals(2.5));

@@ -359,6 +359,26 @@ void main() {
       expect((shapeWidget as dynamic).width, equals(double.infinity));
       expect((shapeWidget as dynamic).height, equals(120.0));
     });
+
+    testWidgets('Renders correctly under neobrutalism preset', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: const Directionality(
+            textDirection: TextDirection.ltr,
+            child: JustSkeleton(
+              loading: true,
+              child: Text('Neobrutalist Loading...'),
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(JustSkeleton), findsOneWidget);
+    });
   });
 }
 

@@ -21,6 +21,8 @@ class DiffLine {
 
 /// A utility class for calculating and formatting visual diffs between files.
 class DiffFormatter {
+  static const _maxLinesForLcs = 2000;
+
   /// Computes the diff between [local] and [remote] using an LCS algorithm.
   static List<DiffLine> calculateDiff(String local, String remote) {
     final localNormalized = local.replaceAll('\r\n', '\n');
@@ -28,6 +30,22 @@ class DiffFormatter {
 
     final localLines = localNormalized.split('\n');
     final remoteLines = remoteNormalized.split('\n');
+
+    if (localLines.length > _maxLinesForLcs ||
+        remoteLines.length > _maxLinesForLcs) {
+      JustLogger.warning(
+        'File is too large for contextual diff (exceeds $_maxLinesForLcs lines). '
+        'Skipping LCS calculation; raw diff is shown instead.',
+      );
+      final List<DiffLine> diff = [];
+      for (int i = 0; i < localLines.length; i++) {
+        diff.add(DiffLine('-', localLines[i], i + 1, 0));
+      }
+      for (int j = 0; j < remoteLines.length; j++) {
+        diff.add(DiffLine('+', remoteLines[j], 0, j + 1));
+      }
+      return diff;
+    }
 
     final n = localLines.length;
     final m = remoteLines.length;

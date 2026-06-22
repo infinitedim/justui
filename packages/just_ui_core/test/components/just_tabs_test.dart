@@ -182,5 +182,30 @@ void main() {
         controllerB.dispose();
       },
     );
+
+    testWidgets('Renders correctly under neobrutalism preset', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        JustThemeProvider(
+          lightTheme: JustThemeData.neobrutalismLight,
+          child: const Directionality(
+            textDirection: TextDirection.ltr,
+            child: SizedBox(
+              height: 300,
+              child: JustTabs(
+                tabs: [
+                  JustTab(label: 'Tab A', content: Text('Content A')),
+                  JustTab(label: 'Tab B', content: Text('Content B')),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(JustTabs), findsOneWidget);
+    });
   });
 }
