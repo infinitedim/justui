@@ -1,0 +1,86 @@
+---
+title: Kustomisasi Tema & Kontras Dinamis
+description: Panduan mendalam tentang arsitektur theming JustUI, inisialisasi warna dari seed, serta algoritma penjamin kontras WCAG AA.
+---
+
+Sistem desain JustUI dilengkapi dengan mesin theming dinamis di dalam package `just_ui_core`. Pustaka ini tidak hanya memungkinkan Anda menghasilkan skema warna lengkap secara instan dari satu warna seed merek, tetapi juga secara aktif menjamin bahwa semua kombinasi warna yang dihasilkan memenuhi standar aksesibilitas kontras WCAG AA di runtime tanpa merusak estetika warna asal Anda.
+
+---
+
+## Menghasilkan Tema dari Warna Seed
+
+JustUI menyediakan metode konstruktor factory `JustThemeData.fromSeed(Color seedColor)` yang memungkinkan pengembang mendefinisikan identitas visual aplikasi hanya dengan menyediakan satu warna primer dasar.
+
+### Cara Kerja Skala HSL
+
+Di balik layar, JustUI mengonversi warna RGB seed yang Anda berikan ke dalam ruang warna **HSL (Hue, Saturation, Lightness)**. Penggunaan ruang warna HSL sangat penting karena memungkinkan manipulasi nilai kecerahan (_lightness_) dan kejenuhan (_saturation_) warna secara mandiri tanpa mengubah rona dasar (_hue_) dari warna merek Anda.
+
+Dari warna seed dasar tersebut, JustUI secara otomatis memetakan dan menghasilkan palet warna komplementer untuk berbagai kebutuhan antarmuka, seperti:
+
+- **Warna Utama (Primary)**: Warna seed asli Anda.
+- **Warna Latar Belakang (Background)**: Warna netral yang sangat terang (pada mode terang) atau sangat gelap (pada mode gelap).
+- **Warna Permukaan (Surface/Card)**: Warna kontainer sekunder.
+- **Warna Teks (Text Primary/Secondary)**: Warna dengan kontras tinggi terhadap latar belakang.
+- **Warna Aksen/Status**: Warna sukses, info, peringatan, dan bahaya yang telah disesuaikan agar serasi dengan saturasi warna seed utama Anda.
+
+---
+
+## Algoritma Penjamin Kontras Dinamis (Dynamic Contrast Enforcement)
+
+Salah satu tantangan terbesar dalam sistem tema dinamis adalah memastikan bahwa warna yang dihasilkan secara acak atau berdasarkan input pengguna tetap dapat dibaca dengan jelas. Batas fokus input (`borderFocus`) atau warna tombol yang terlalu pudar di atas latar belakang tertentu dapat menyulitkan pengguna dengan gangguan penglihatan.
+
+Untuk mengatasi hal ini, JustUI menyertakan modul penjamin kontras otomatis (`colors_dynamic.dart`) yang mengevaluasi rasio kontras warna terhadap latar belakangnya secara real-time.
+
+### Langkah-Langkah Algoritma Lightness Adjustment
+
+Jika rasio kontras awal antara warna elemen interaktif/teks terhadap warna latar belakang kontainer (`background`) berada di bawah batas minimum yang ditargetkan (misalnya, rasio kontras $\ge$ 3.0:1 untuk elemen visual/fokus, atau $\ge$ 4.5:1 untuk teks normal), sistem akan mengeksekusi algoritma berikut:
+
+#### 1. Deteksi Arah Kecerahan
+
+Pertama, algoritma menghitung luminansi relatif dari latar belakang (`bgLuminance = background.computeLuminance()`). Nilai luminansi ini berkisar dari `0.0` (hitam pekat) hingga `1.0` (putih pekat).
+
+- Jika `bgLuminance < 0.5` (latar belakang cenderung gelap), maka warna elemen harus dibuat lebih terang (`makeLighter = true`) agar kontrasnya naik.
+- Jika `bgLuminance >= 0.5` (latar belakang cenderung terang), maka warna elemen harus dibuat lebih gelap (`makeLighter = false`) agar kontrasnya naik.
+
+#### 2. Pencarian Biner Kecerahan (Binary Search Lightness)
+
+Untuk menjaga agar warna hasil penyesuaian tetap sedekat mungkin dengan warna seed asli Anda (mempertahankan Hue dan Saturation asli), algoritma menjalankan pencarian biner pada rentang Lightness HSL sebanyak **8 iterasi**:
+
+- Batas awal didefinisikan:
+  - Jika `makeLighter` aktif: batas bawah pencarian (`low`) diatur ke lightness awal warna seed, batas atas (`high`) disetel ke `1.0` (putih murni).
+  - Jika `makeLighter` nonaktif: batas bawah (`low`) disetel ke `0.0` (hitam murni), batas atas (`high`) diatur ke lightness awal warna seed.
+- Di setiap iterasi:
+  1. Hitung titik tengah kecerahan: `mid = (low + high) / 2`.
+  2. Konversi warna HSL baru dengan kecerahan `mid` tersebut kembali ke format RGB.
+  3. Evaluasi rasio kontras warna RGB baru tersebut terhadap warna latar belakang menggunakan formula WCAG:
+     ```text
+     Rasio Kontras = (L_terang + 0.05) / (L_gelap + 0.05)
+     ```
+  4. Sesuaikan batas pencarian:
+     - Jika warna baru telah memenuhi rasio target minimum:
+       - Jika mencari warna yang lebih terang: perkecil `high = mid` (mencari tingkat kecerahan yang lebih rendah namun tetap memenuhi kontras agar warna tidak terlalu putih).
+       - Jika mencari warna yang lebih gelap: perkecil `low = mid` (mencari tingkat kecerahan yang lebih tinggi namun tetap memenuhi kontras agar warna tidak terlalu hitam).
+     - Jika warna baru belum memenuhi rasio target minimum:
+       - Jika mencari warna yang lebih terang: tingkatkan `low = mid` (warna harus dibuat lebih terang lagi).
+       - Jika mencari warna yang lebih gelap: turunkan `high = mid` (warna harus dibuat lebih gelap lagi).
+
+#### 3. Batas Fallback Aman
+
+Jika setelah menyelesaikan 8 iterasi pencarian biner rasio kontras minimum tetap gagal dicapai (misalnya pada kombinasi warna seed ekstrem), sistem akan menggunakan mekanisme pengaman akhir:
+
+- Memaksa warna elemen menjadi **putih murni** (`0xFFFFFFFF`) jika latar belakang gelap.
+- Memaksa warna elemen menjadi **hitam murni** (`0xFF000000`) jika latar belakang terang.
+
+---
+
+## Kapan Penyesuaian Kontras Dinamis Di-Bypass?
+
+Meskipun aksesibilitas adalah prioritas utama, ada kasus desain khusus di mana manipulasi kecerahan dinamis ini justru merusak estetika visual yang diinginkan. Kasus utama tersebut adalah **Preset Neobrutalism**.
+
+Di bawah preset visual `neobrutalism`, JustUI secara otomatis melewati (_bypass_) seluruh proses `_makeAccessible` pada berkas `colors_dynamic.dart` khusus untuk default/focus border.
+
+### Alasan Desain Neobrutalism Bypass:
+
+1. **Estetika Garis Tepi Tebal & Solid**: Desain neobrutalism sangat bergantung pada garis tepi (_border_) berwarna hitam pekat (`colors.textPrimary` atau `0xFF000000` pada mode terang) dan putih pekat (`0xFFFFFFFF` pada mode gelap) di semua status komponen (normal, hover, focused, error).
+2. **Menghindari Perubahan Warna Menjadi Tinted**: Jika algoritma kontras dinamis dibiarkan berjalan, ia akan mencoba mengubah warna hitam pekat tersebut menjadi warna berbasis tint primer untuk menyesuaikan kontras, yang akan merusak garis tepi hitam tebal yang menjadi ciri khas utama estetika neobrutalism.
+3. **Kombinasi Dimensi & Bayangan**: Kontras visual pada neobrutalism tidak hanya dijamin oleh warna border, tetapi juga oleh ketebalan garis tepi (standar ditetapkan sebesar `2.5` piksel) dan bayangan solid dengan offset tebal di belakangnya, sehingga pembacaan batas komponen tetap sangat jelas bagi pengguna tanpa memerlukan manipulasi lightness warna.
