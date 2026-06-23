@@ -1,0 +1,89 @@
+---
+title: Panduan Migrasi & Pembaruan
+description: Pelajari bagaimana mengelola versi komponen lokal, mendeteksi modifikasi kustom, menyelesaikan konflik, serta memperbarui komponen JustUI menggunakan CLI.
+---
+
+Karena JustUI menggunakan model penyalinan kode sumber (_copy-paste_) langsung ke dalam proyek Anda, memelihara pembaruan kode komponen bisa menjadi tantangan jika dilakukan secara manual. Untuk mempermudah pemeliharaan ini, CLI JustUI (`just_ui_cli`) menyertakan sistem pelacakan metadata berbasis hash untuk mengelola versi komponen, mendeteksi perubahan kustom lokal, dan membantu Anda memperbarui kode tanpa menimpa modifikasi penting Anda secara ceroboh.
+
+---
+
+## Mekanisme Pelacakan Versi Berbasis Meta-Hash
+
+Saat Anda mengunduh komponen menggunakan perintah `justui add`, CLI tidak hanya menyalin kode sumber tetapi juga menyuntikkan baris komentar metadata khusus di bagian paling atas berkas komponen tersebut:
+
+```dart
+// justui-meta: registry=<sha_original_remote> local=<sha_local_rewritten>
+```
+
+Baris metadata ini memiliki peran vital dalam alur migrasi JustUI:
+
+- **`registry`**: Berisi nilai hash kriptografi **SHA-256** dari kode sumber asli komponen yang ada di server registry resmi saat komponen tersebut diunduh.
+- **`local`**: Berisi nilai hash **SHA-256** dari kode komponen lokal Anda _tepat setelah_ proses import rewriting selesai dijalankan oleh CLI (seperti pengalihan jalur impor file core dan relative path antar komponen).
+
+### Bagaimana CLI Mendeteksi Perubahan?
+
+Ketika Anda memverifikasi status komponen, CLI melakukan kalkulasi ulang terhadap hash SHA-256 dari kode berkas komponen yang saat ini ada di folder proyek Anda, lalu membandingkannya dengan nilai hash di atas:
+
+1. **Tidak Ada Perubahan**: Jika hash berkas lokal saat ini identik dengan nilai hash `local` yang tercatat di baris metadata, artinya Anda belum pernah mengedit berkas komponen tersebut secara lokal. Berkas masih murni dari registry.
+2. **Telah Dimodifikasi Lokal**: Jika hash berkas lokal saat ini berbeda dengan nilai hash `local` di metadata, CLI mendeteksi bahwa Anda telah melakukan kustomisasi atau modifikasi pada kode sumber komponen tersebut secara mandiri.
+
+---
+
+## Pendeteksian Konflik & Resolusi Konflik Interaktif
+
+Saat versi baru suatu komponen dirilis di registry resmi (misalnya, perbaikan bug aksesibilitas pada `JustInput` atau penambahan parameter baru), registry hash yang ada di server remote akan berubah. CLI membandingkan registry hash baru tersebut dengan nilai `registry` pada metadata lokal Anda untuk mendeteksi ketersediaan pembaruan.
+
+Jika ada versi baru di registry **DAN** Anda telah melakukan modifikasi lokal pada komponen tersebut, CLI mengidentifikasi situasi ini sebagai **Potensi Konflik**.
+
+Saat Anda mencoba memperbarui komponen tersebut, CLI tidak akan langsung menimpa kode Anda secara membabi buta. Sebaliknya, CLI menampilkan menu prompt interaktif untuk memilih salah satu resolusi konflik berikut:
+
+- **Overwrite (Timpa)**:
+  CLI akan mengunduh kode versi terbaru dari registry, menulis ulang impor berkas, lalu menimpa berkas lokal Anda sepenuhnya. **Perhatian**: Opsi ini akan menghapus seluruh modifikasi kustom lokal yang pernah Anda buat pada berkas tersebut.
+- **Skip (Lewati)**:
+  CLI mengabaikan pembaruan versi baru untuk komponen ini dan membiarkan kode komponen lokal Anda tetap seperti adanya. Anda dapat memilih opsi ini jika modifikasi kustom lokal Anda jauh lebih penting daripada fitur baru di versi remote registry.
+- **Show Diff (Tampilkan Perbedaan)**:
+  CLI membandingkan kode lokal Anda saat ini dengan kode versi terbaru dari registry dan menampilkan perbedaan baris per baris secara mendetail langsung di terminal (menggunakan format output standard diff dengan pewarnaan hijau untuk baris yang ditambahkan dan merah untuk baris yang dihapus). Ini membantu Anda memindahkan kustomisasi lokal Anda ke kode yang baru secara manual.
+
+---
+
+## Perintah CLI untuk Migrasi & Pembaruan
+
+Berikut adalah perintah-perintah CLI yang digunakan untuk melakukan audit kode dan memperbarui versi komponen di proyek Flutter Anda.
+
+### 1. Memeriksa Perbedaan Kode (`justui diff`)
+
+Untuk membandingkan secara mendetail antara berkas komponen lokal Anda dengan versi resmi di registry:
+
+```bash
+justui diff [nama_komponen]
+```
+
+#### Opsi Verbose (`--verbose` atau `-v`):
+
+Secara default, perintah `diff` akan melaporkan status ringkas (apakah komponen mutakhir, dimodifikasi, atau usang). Dengan menambahkan bendera `-v`, CLI akan menampilkan perbandingan baris per baris kode secara lengkap di terminal:
+
+```bash
+justui diff input --verbose
+```
+
+Dari hasil perbandingan ini, CLI akan membuka menu interaktif untuk:
+
+- `Apply all`: Mengaplikasikan seluruh pembaruan dari registry ke lokal.
+- `Select changes`: Memilih secara selektif bagian perubahan mana saja yang ingin ditarik ke dalam file lokal Anda.
+- `View full diff`: Membuka tampilan perbedaan penuh di terminal.
+
+### 2. Memperbarui Komponen Usang (`justui update`)
+
+Untuk mendata dan memperbarui seluruh komponen yang terpasang di proyek Anda secara massal:
+
+```bash
+justui update
+```
+
+Perintah ini akan menjalankan alur otomatis:
+
+1. Membaca berkas `justui.config.yaml` untuk mengetahui direktori komponen lokal Anda (`components_dir`).
+2. Memindai seluruh berkas komponen di folder tersebut dan membaca baris komentarnya untuk mengekstrak data metadata kontrol.
+3. Menghubungi server registry untuk membandingkan metadata lokal dengan versi remote terbaru.
+4. Menyaring dan menyusun daftar komponen yang berstatus **usang** (_outdated_).
+5. Menampilkan tabel ringkasan komponen yang memerlukan pembaruan dan meminta konfirmasi persetujuan Anda sebelum memulai proses pengunduhan serta penulisan ulang impor secara otomatis.

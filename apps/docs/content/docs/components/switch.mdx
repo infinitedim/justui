@@ -1,0 +1,157 @@
+---
+title: Switch
+description: Sakelar biner interaktif dengan dukungan gerakan geser jempol yang responsif, kustomisasi ikon tombol geser, dan kalkulasi proporsi neobrutalisme yang presisi.
+---
+
+# Switch
+
+Komponen `JustSwitch` adalah sakelar biner interaktif yang digunakan untuk mengaktifkan atau menonaktifkan suatu opsi secara instan. Komponen ini dirancang dengan interaksi gerakan geser (_gesture drag_) yang realistis, animasi geseran yang mulus, dan dukungan aksesibilitas penuh.
+
+---
+
+## Deskripsi
+
+- **`JustSwitch`**: Sakelar geser (toggle) yang memberikan umpan balik visual instan. Komponen ini mendukung label teks pendamping di sisi samping, kustomisasi warna lintasan aktif (_activeColor_), serta penyisipan ikon di dalam tombol geser (_thumb_).
+
+---
+
+## Usage
+
+### Basic Usage
+
+Contoh penggunaan dasar `JustSwitch` untuk mengaktifkan pengaturan notifikasi:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class SwitchBasicDemo extends StatefulWidget {
+  const SwitchBasicDemo({super.key});
+
+  @override
+  State<SwitchBasicDemo> createState() => _SwitchBasicDemoState();
+}
+
+class _SwitchBasicDemoState extends State<SwitchBasicDemo> {
+  bool _isNotificationEnabled = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSwitch(
+      value: _isNotificationEnabled,
+      label: const Text('Izinkan Notifikasi'),
+      onChanged: (val) {
+        setState(() {
+          _isNotificationEnabled = val;
+        });
+      },
+    );
+  }
+}
+```
+
+### Advanced Usage
+
+Contoh penggunaan tingkat lanjut yang menampilkan ikon khusus di dalam thumb, warna lintasan aktif kustom, dan ukuran variasi yang berbeda:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class SwitchAdvancedDemo extends StatefulWidget {
+  const SwitchAdvancedDemo({super.key});
+
+  @override
+  State<SwitchAdvancedDemo> createState() => _SwitchAdvancedDemoState();
+}
+
+class _SwitchAdvancedDemoState extends State<SwitchAdvancedDemo> {
+  bool _isDarkMode = false;
+  bool _isWifiOn = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: context.justSpacing.md,
+      children: [
+        // Switch dengan Ikon Kustom di dalam Thumb
+        JustSwitch(
+          value: _isDarkMode,
+          size: JustSwitchSize.lg,
+          label: const Text('Mode Gelap'),
+          thumbIcon: (val) => Icon(
+            val ? Icons.dark_mode : Icons.light_mode,
+            size: 12,
+            color: val ? Colors.indigo : Colors.orange,
+          ),
+          onChanged: (val) {
+            setState(() {
+              _isDarkMode = val;
+            });
+          },
+        ),
+
+        // Switch dengan Warna Kustom & Ukuran Kecil
+        JustSwitch(
+          value: _isWifiOn,
+          size: JustSwitchSize.sm,
+          activeColor: Colors.teal,
+          label: const Text('Wi-Fi Aktif'),
+          onChanged: (val) {
+            setState(() {
+              _isWifiOn = val;
+            });
+          },
+        ),
+      ],
+    );
+  }
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustSwitch
+
+| Properti      | Tipe Data                       | Nilai Bawaan (Default) | Deskripsi                                                                                                            |
+| :------------ | :------------------------------ | :--------------------- | :------------------------------------------------------------------------------------------------------------------- |
+| `value`       | `bool`                          | _Wajib (Required)_     | Status aktif sakelar: `true` (aktif/ON) atau `false` (mati/OFF).                                                     |
+| `onChanged`   | `ValueChanged<bool>?`           | _Wajib (Required)_     | Callback yang dipicu setiap kali status sakelar berubah atau digeser. Jika `null`, sakelar otomatis nonaktif.        |
+| `label`       | `Widget?`                       | `null`                 | Widget label (biasanya teks) yang diletakkan di samping kanan sakelar.                                               |
+| `size`        | `JustSwitchSize`                | `.md`                  | Ukuran geometri sakelar: `.sm`, `.md`, `.lg`.                                                                        |
+| `thumbIcon`   | `Widget? Function(bool value)?` | `null`                 | Fungsi builder untuk merender widget/ikon kustom di dalam lingkaran tombol geser (_thumb_) berdasarkan status aktif. |
+| `activeColor` | `Color?`                        | `null`                 | Warna kustom untuk lintasan track saat posisi sakelar aktif (ON).                                                    |
+| `isDisabled`  | `bool`                          | `false`                | Menonaktifkan interaksi dan meredupkan tampilan visual jika diset `true`.                                            |
+| `style`       | `JustSwitchStyle?`              | `null`                 | Meng-override gaya desain sakelar secara spesifik.                                                                   |
+
+---
+
+## Theming & Accessibility
+
+### Interaksi Gestur Geser Responsif
+
+Beda dengan sakelar standard yang hanya mendukung aksi klik, `JustSwitch` mendukung pelacakan gerakan geser horizontal secara penuh:
+
+1. **`onHorizontalDragUpdate`**: Sistem melacak pergerakan jempol pengguna di atas lintasan track secara langsung, memberikan visual pergeseran thumb secara instan dan interaktif.
+2. **`onHorizontalDragEnd`**: Saat sentuhan dilepas, jika persentase jarak geser telah melampaui batas tengah lintasan (lewat dari 50%), status sakelar secara otomatis berpindah ke nilai target yang baru secara elastis. Jika kurang dari 50%, thumb meluncur kembali ke posisi awal.
+
+### Kompensasi Dimensi Preset Neobrutalism
+
+Sesuai aturan ketat pada pedoman sistem desain `AGENTS.md`, komponen ini melakukan kalkulasi ukuran geometri secara khusus saat preset `neobrutalism` aktif:
+
+- Karena `BoxDecoration` menggambar garis luar (border) ke sisi dalam kontainer (`BorderAlign.inside`), lintasan track yang memiliki border setebal `2.5` pixel akan mempersempit area lintasan bersih bagian dalam.
+- **Kompensasi Ukuran**: Ukuran fisik thumb dikurangi secara dinamis sebesar `2 * borderWidth` dan koordinat peletakan thumb di dalam stack disesuaikan secara ketat (`Positioned(top: padding + borderWidth, left: padding + borderWidth)`). Hal ini menjamin thumb neobrutalism tidak akan bergeser keluar (_overlap_ / _jitter_) menabrak garis tepi lintasan track.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Target Sentuh**:
+   Untuk kenyamanan aksesibilitas seluler, komponen dibungkus untuk memastikan target sentuh interaktif minimal **48x48px** meskipun ukuran sakelar dikonfigurasi kecil (`.sm`).
+2. **Navigasi Keyboard**:
+   Pengguna dapat memfokuskan sakelar menggunakan tombol tabulasi keyboard dan mengubah nilai status sakelar secara instan dengan menekan tombol **Spasi** (_Space_) atau **Enter**.
+3. **Pembaca Layar**:
+   Komponen mengirimkan metadata semantik biner "Switch" yang melacak nilai aktif (ON/OFF) untuk dibacakan secara akurat oleh sistem pembaca layar sistem operasi.

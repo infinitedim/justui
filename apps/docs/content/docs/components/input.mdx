@@ -1,0 +1,185 @@
+---
+title: Input
+description: Kolom input teks canggih yang mendukung label melayang, kloning FormField dengan validasi, dan segmentasi digit OTP.
+---
+
+# Input
+
+Komponen `JustInput` adalah elemen pengisian teks berkinerja tinggi yang dirancang tanpa membungkus `TextField` Material standar. Komponen ini langsung berinteraksi dengan `EditableText` Flutter untuk meminimalisasi overhead rendering dan menjaga integritas visual sistem desain.
+
+---
+
+## Deskripsi
+
+- **`JustInput`**: Kolom input teks dasar dengan dukungan label melayang (_floating label_), ikon prefix/suffix, teks pembantu, teks kesalahan, teks sukses, serta tombol hapus instan.
+- **`JustFormInput`**: Varian pembungkus `JustInput` yang terintegrasi dengan sistem `Form` Flutter untuk kebutuhan validasi nilai input.
+- **`JustInput.otp`**: Varian khusus untuk pengisian kode verifikasi OTP (One-Time Password) satu digit per kolom dengan perpindahan fokus otomatis dan dukungan _paste_ teks pintar.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Contoh dasar penggunaan `JustInput` untuk masukan teks standar:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicInput(BuildContext context) {
+  return JustInput(
+    label: 'Alamat Email',
+    hint: 'nama@domain.com',
+    keyboardType: TextInputType.emailAddress,
+    onChanged: (value) => print('Email: $value'),
+  );
+}
+```
+
+### Advanced Usage
+
+Contoh penggunaan tingkat lanjut untuk input kata sandi dengan validasi form, dan kolom OTP terpisah:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class InputAdvancedScreen extends StatefulWidget {
+  const InputAdvancedScreen({super.key});
+
+  @override
+  State<InputAdvancedScreen> createState() => _InputAdvancedScreenState();
+}
+
+class _InputAdvancedScreenState extends State<InputAdvancedScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        spacing: context.justSpacing.lg,
+        children: [
+          // JustFormInput dengan Validasi & Suffix
+          JustFormInput(
+            label: 'Kata Sandi',
+            hint: 'Masukkan minimal 8 karakter',
+            obscureText: true,
+            controller: _passwordController,
+            validator: (val) {
+              if (val == null || val.length < 8) {
+                return 'Kata sandi harus minimal 8 karakter';
+              }
+              return null;
+            },
+          ),
+
+          // Tombol Submit Form
+          JustButton(
+            label: 'Kirim',
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                print('Form valid');
+              }
+            },
+          ),
+
+          const Divider(),
+
+          // Segmentasi OTP 6 Digit
+          JustInput.otp(
+            length: 6,
+            onChanged: (otpCode) => print('Kode OTP: $otpCode'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustInput
+
+| Properti          | Tipe Data                   | Nilai Bawaan (Default) | Deskripsi                                                                                              |
+| :---------------- | :-------------------------- | :--------------------- | :----------------------------------------------------------------------------------------------------- |
+| `label`           | `String?`                   | `null`                 | Teks label kolom yang akan melayang ke atas saat kolom aktif atau terisi.                              |
+| `hint`            | `String?`                   | `null`                 | Teks placeholder yang samar ketika kolom dalam keadaan kosong.                                         |
+| `helper`          | `String?`                   | `null`                 | Teks panduan atau instruksi tambahan di bawah kolom input.                                             |
+| `errorText`       | `String?`                   | `null`                 | Pesan kesalahan validasi. Jika diisi, kolom berubah menjadi merah dan aksesibilitas vokal diaktifkan.  |
+| `successText`     | `String?`                   | `null`                 | Pesan konfirmasi sukses. Jika diisi, kolom akan mendapatkan visual hijau.                              |
+| `controller`      | `TextEditingController?`    | `null`                 | Pengendali teks untuk membaca, menulis, dan mengontrol input.                                          |
+| `focusNode`       | `FocusNode?`                | `null`                 | Node fokus untuk melacak status aktif keyboard.                                                        |
+| `onChanged`       | `ValueChanged<String>?`     | `null`                 | Callback yang dipicu setiap kali teks di dalam kolom berubah.                                          |
+| `onSubmitted`     | `ValueChanged<String>?`     | `null`                 | Callback saat pengguna menekan tombol selesai/enter pada keyboard.                                     |
+| `onTap`           | `VoidCallback?`             | `null`                 | Callback ketika kolom input diketuk.                                                                   |
+| `prefix`          | `Widget?`                   | `null`                 | Widget kustom di sisi kiri input (seperti lambang mata uang).                                          |
+| `prefixIcon`      | `IconData?`                 | `null`                 | Ikon bawaan cepat untuk diletakkan di sisi kiri input.                                                 |
+| `suffix`          | `Widget?`                   | `null`                 | Widget kustom di sisi kanan input (seperti tombol toggle visibilitas kata sandi).                      |
+| `suffixIcon`      | `IconData?`                 | `null`                 | Ikon bawaan cepat untuk diletakkan di sisi kanan input.                                                |
+| `maxLength`       | `int?`                      | `null`                 | Batasan panjang karakter maksimum yang dapat dimasukkan.                                               |
+| `maxLines`        | `int?`                      | `1`                    | Jumlah baris maksimum teks. Setel `null` untuk input multi-baris dinamis.                              |
+| `minLines`        | `int?`                      | `null`                 | Jumlah baris minimum awal kolom input.                                                                 |
+| `obscureText`     | `bool`                      | `false`                | Menyamarkan karakter masukan (berguna untuk input kata sandi).                                         |
+| `enabled`         | `bool`                      | `true`                 | Jika `false`, menonaktifkan interaksi dan meredupkan kolom input.                                      |
+| `readOnly`        | `bool`                      | `false`                | Jika `true`, teks tidak dapat diubah tetapi pengguna tetap dapat memfokuskan atau menyalin teks.       |
+| `autofocus`       | `bool`                      | `false`                | Memfokuskan kolom secara otomatis saat layar terbuka jika disetel ke `true`.                           |
+| `keyboardType`    | `TextInputType?`            | `null`                 | Jenis keyboard yang dimunculkan (seperti angka, email, teks).                                          |
+| `textInputAction` | `TextInputAction?`          | `null`                 | Jenis tombol aksi pada keyboard (seperti Next, Done, Search).                                          |
+| `inputFormatters` | `List<TextInputFormatter>?` | `null`                 | Pemformat teks khusus (seperti membatasi hanya angka atau kapitalisasi otomatis).                      |
+| `size`            | `JustInputSize`             | `.md`                  | Pilihan ukuran kolom: `.sm`, `.md`, `.lg`.                                                             |
+| `style`           | `JustInputStyle?`           | `null`                 | Override gaya desain kolom input secara spesifik.                                                      |
+| `showClearButton` | `bool`                      | `false`                | Menampilkan tombol silang di kanan input untuk menghapus seluruh teks secara instan saat kolom terisi. |
+
+### JustInput.otp
+
+| Properti     | Tipe Data               | Nilai Bawaan (Default) | Deskripsi                                                                             |
+| :----------- | :---------------------- | :--------------------- | :------------------------------------------------------------------------------------ |
+| `length`     | `int`                   | _Wajib (Required)_     | Jumlah digit kotak OTP yang akan dirender (umumnya 4 atau 6).                         |
+| `onChanged`  | `ValueChanged<String>?` | `null`                 | Callback yang mengirimkan seluruh kode OTP tergabung setiap kali ada perubahan digit. |
+| `style`      | `JustInputStyle?`       | `null`                 | Kustomisasi gaya visual masing-masing kotak OTP.                                      |
+| `isDisabled` | `bool`                  | `false`                | Menonaktifkan seluruh kotak OTP jika disetel ke `true`.                               |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+Gaya visual kolom input merujuk pada preset tema aktif:
+
+- **Default Preset**:
+  - Memiliki kelengkungan sudut yang halus sesuai dengan `radius.md`.
+  - Garis tepi (border) berubah warna secara dinamis menjadi warna primer merek (`borderFocus`) saat mendapatkan fokus.
+  - Jika terjadi kesalahan (`errorText` tidak `null`), border dipaksa menjadi merah, dan status sukses (`successText` tidak `null`) memicu border hijau.
+
+- **Neobrutalism Preset**:
+  - Kolom input memiliki border hitam pekat (`colors.textPrimary`) sebesar `2.5` di semua status (hover, focused, error). Warna border tidak akan bertransisi ke warna primer merek.
+  - Bypass penyesuaian kontras dinamis HSL (`_makeAccessible`) pada warna border fokus untuk mempertahankan visual kontras tinggi klasik.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Aksesibilitas Vokal Kesalahan**:
+   Saat properti `errorText` diatur dan tidak bernilai `null`, `JustInput` secara otomatis mengirimkan instruksi vokal pemberitahuan kesalahan ke sistem aksesibilitas sistem operasi menggunakan utilitas `SemanticsService.announce()`. Hal ini menjamin pengguna tunanetra langsung mengetahui bahwa validasi gagal tanpa perlu menjelajahi layar secara manual.
+2. **Manajemen Fokus OTP Cerdas**:
+   Pada `JustInput.otp`, sistem mengelola fokus secara dinamis. Ketika satu digit diisi, fokus otomatis dipindahkan ke kotak di sebelah kanan. Jika pengguna melakukan aksi hapus (_backspace_), fokus melompat mundur ke kiri secara intuitif.
+3. **Penyebaran Teks Tempel (Paste Code Distribution)**:
+   Melalui `KeyboardListener` internal pada varian OTP, jika pengguna menyalin kode OTP penuh dan menempelkannya (_paste_) di kotak mana saja, sistem secara otomatis mendistribusikan deret karakter tersebut ke masing-masing kotak secara berurutan.
+4. **Target Sentuh**:
+   Seluruh area kolom input dirancang luas dengan padding vertikal minimal 12px (memenuhi target sentuh minimal 48px untuk kemudahan interaksi pada perangkat seluler).
+5. **Indikator Fokus Visual**:
+   Saat kolom input terpilih, ring indikator fokus yang tebal dan kontras tinggi akan muncul untuk mempermudah navigasi berbasis keyboard.

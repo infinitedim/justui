@@ -1,24 +1,38 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-import CustomSearchDialog from "../src/components/search";
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import CustomSearchDialog from '../src/components/search';
 
 // Mock fumadocs-core hooks
 const mockSetSearch = vi.fn();
-const mockQueryData = { data: "empty" };
+const mockQueryData = { data: 'empty' };
 
-vi.mock("fumadocs-core/search/client", () => ({
+vi.mock('fumadocs-core/search/client', () => ({
   useDocsSearch: () => ({
-    search: "test query",
+    search: 'test query',
     setSearch: mockSetSearch,
     query: mockQueryData,
   }),
 }));
 
 // Mock fumadocs-ui search components to render simple shells
-vi.mock("fumadocs-ui/components/dialog/search", () => ({
-  SearchDialog: ({ children, open }: { children: React.ReactNode; open?: boolean }) => open ? <div data-testid="search-dialog">{children}</div> : null,
-  SearchDialogContent: ({ children }: { children: React.ReactNode }) => <div data-testid="search-content">{children}</div>,
-  SearchDialogInput: ({ placeholder, className }: { placeholder?: string; className?: string }) => (
+vi.mock('fumadocs-ui/components/dialog/search', () => ({
+  SearchDialog: ({
+    children,
+    open,
+  }: {
+    children: React.ReactNode;
+    open?: boolean;
+  }) => (open ? <div data-testid="search-dialog">{children}</div> : null),
+  SearchDialogContent: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="search-content">{children}</div>
+  ),
+  SearchDialogInput: ({
+    placeholder,
+    className,
+  }: {
+    placeholder?: string;
+    className?: string;
+  }) => (
     <input
       data-testid="search-input"
       placeholder={placeholder}
@@ -28,37 +42,41 @@ vi.mock("fumadocs-ui/components/dialog/search", () => ({
   ),
   SearchDialogList: ({ items }: { items?: { title: string }[] | null }) => (
     <div data-testid="search-list">
-      {items ? items.map((item, idx) => <div key={idx}>{item.title}</div>) : "No items"}
+      {items
+        ? items.map((item, idx) => <div key={idx}>{item.title}</div>)
+        : 'No items'}
     </div>
   ),
 }));
 
-describe("CustomSearchDialog Component", () => {
-  it("does not render when open is false", () => {
-    const { container } = render(<CustomSearchDialog open={false} onOpenChange={() => {}} />);
+describe('CustomSearchDialog Component', () => {
+  it('does not render when open is false', () => {
+    const { container } = render(
+      <CustomSearchDialog open={false} onOpenChange={() => {}} />
+    );
     expect(container.firstChild).toBeNull();
   });
 
-  it("renders input and search list when open is true", () => {
+  it('renders input and search list when open is true', () => {
     render(<CustomSearchDialog open={true} onOpenChange={() => {}} />);
 
     // Verify dialog container is in the document
-    expect(screen.getByTestId("search-dialog")).toBeInTheDocument();
-    
+    expect(screen.getByTestId('search-dialog')).toBeInTheDocument();
+
     // Verify input placeholder
-    const input = screen.getByTestId("search-input");
+    const input = screen.getByTestId('search-input');
     expect(input).toBeInTheDocument();
-    expect(input).toHaveAttribute("placeholder", "Cari dokumentasi...");
+    expect(input).toHaveAttribute('placeholder', 'Cari dokumentasi...');
 
     // Verify list renders empty state when data is 'empty'
-    expect(screen.getByTestId("search-list")).toHaveTextContent("No items");
+    expect(screen.getByTestId('search-list')).toHaveTextContent('No items');
   });
 
-  it("calls setSearch callback when typing in input", () => {
+  it('calls setSearch callback when typing in input', () => {
     render(<CustomSearchDialog open={true} onOpenChange={() => {}} />);
-    const input = screen.getByTestId("search-input");
+    const input = screen.getByTestId('search-input');
 
-    fireEvent.change(input, { target: { value: "neobrutalism" } });
-    expect(mockSetSearch).toHaveBeenCalledWith("neobrutalism");
+    fireEvent.change(input, { target: { value: 'neobrutalism' } });
+    expect(mockSetSearch).toHaveBeenCalledWith('neobrutalism');
   });
 });

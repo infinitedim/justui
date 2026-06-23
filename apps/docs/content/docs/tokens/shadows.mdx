@@ -1,0 +1,157 @@
+---
+title: Shadows
+description: Galeri bayangan bertumpuk dua lapis (multi-layer shadows), generator bayangan warna seed, dan bayangan solid neobrutalism di JustUI.
+---
+
+Sistem bayangan (shadows) JustUI dirancang untuk memberikan kedalaman visual (depth), menegaskan elevasi hierarki elemen, dan memperkaya estetika antarmuka. JustUI mendukung tiga metode bayangan: bayangan bertumpuk dua lapis (default multi-layer shadows), bayangan pendar dinamis berwarna seed, dan bayangan solid datar khas gaya neobrutalism.
+
+---
+
+## 1. Galeri Bayangan Multi-Layer (`JustShadows`)
+
+Untuk menciptakan kedalaman yang halus dan premium pada mode default, JustUI menggabungkan **dua lapis `BoxShadow`** secara bersamaan. Lapis pertama berfungsi sebagai penegas fisik batas bawah (_key shadow_), sedangkan lapis kedua berfungsi sebagai pembentuk pendaran bayangan di sekeliling elemen (_ambient shadow_).
+
+### Skala Bayangan Mode Terang
+
+Menggunakan opasitas heksadesimal hitam pekat untuk mendapatkan kontras yang bersih di atas permukaan terang:
+
+- **xs** (Subtle Depth):
+  - Lapis 1: Offset `(0, 1)`, blur `2.0`, spread `0.0`, warna `Color(0x0D000000)` (5% hitam).
+- **sm** (Cards & Dropdowns):
+  - Lapis 1: Offset `(0, 1)`, blur `2.0`, spread `0.0`, warna `Color(0x08000000)` (3% hitam).
+  - Lapis 2: Offset `(0, 2)`, blur `4.0`, spread `0.0`, warna `Color(0x14000000)` (8% hitam).
+- **md** (Interactive Popovers):
+  - Lapis 1: Offset `(0, 4)`, blur `6.0`, spread `-1.0`, warna `Color(0x1A000000)` (10% hitam).
+  - Lapis 2: Offset `(0, 2)`, blur `4.0`, spread `-1.0`, warna `Color(0x0F000000)` (6% hitam).
+- **lg** (Menus & Dialogs):
+  - Lapis 1: Offset `(0, 10)`, blur `15.0`, spread `-3.0`, warna `Color(0x1A000000)` (10% hitam).
+  - Lapis 2: Offset `(0, 4)`, blur `6.0`, spread `-2.0`, warna `Color(0x0F000000)` (6% hitam).
+- **xl** (Modals):
+  - Lapis 1: Offset `(0, 20)`, blur `25.0`, spread `-5.0`, warna `Color(0x1A000000)` (10% hitam).
+  - Lapis 2: Offset `(0, 10)`, blur `10.0`, spread `-5.0`, warna `Color(0x0F000000)` (6% hitam).
+- **xxl** (Toasts & Floating Sheets):
+  - Lapis 1: Offset `(0, 25)`, blur `50.0`, spread `-12.0`, warna `Color(0x40000000)` (25% hitam).
+
+### Skala Bayangan Mode Gelap
+
+Menggunakan opasitas hitam pekat yang lebih tinggi untuk memberikan penegasan kedalaman di atas permukaan gelap:
+
+- **xsDark**: Lapis 1: Offset `(0, 1)`, blur `2.0`, warna `Color(0x33000000)` (20% hitam).
+- **smDark**: Lapis 1: Offset `(0, 1)`, blur `2.0`, warna `Color(0x1F000000)` (12% hitam); Lapis 2: Offset `(0, 2)`, blur `4.0`, warna `Color(0x3D000000)` (24% hitam).
+- **mdDark**: Lapis 1: Offset `(0, 4)`, blur `6.0`, spread `-1.0`, warna `Color(0x40000000)` (25% hitam); Lapis 2: Offset `(0, 2)`, blur `4.0`, spread `-1.0`, warna `Color(0x26000000)` (15% hitam).
+- **lgDark**: Lapis 1: Offset `(0, 10)`, blur `15.0`, spread `-3.0`, warna `Color(0x4D000000)` (30% hitam); Lapis 2: Offset `(0, 4)`, blur `6.0`, spread `-2.0`, warna `Color(0x33000000)` (20% hitam).
+- **xlDark**: Lapis 1: Offset `(0, 20)`, blur `25.0`, spread `-5.0`, warna `Color(0x59000000)` (35% hitam); Lapis 2: Offset `(0, 10)`, blur `10.0`, spread `-5.0`, warna `Color(0x40000000)` (25% hitam).
+- **xxlDark**: Lapis 1: Offset `(0, 25)`, blur `50.0`, spread `-12.0`, warna `Color(0x80000000)` (50% hitam).
+
+---
+
+## 2. Generator Bayangan Warna Seed (`JustShadows.generate`)
+
+JustUI mendukung pembuatan bayangan berpendar lembut sewarna dengan warna identitas merek (_tinted glow shadow_) menggunakan metode generator `JustShadows.generate`.
+
+Metode ini menerima parameter:
+
+- `seedColor` (`Color`): Warna merek dasar.
+- `elevation` (`double`): Nilai tingkat elevasi bayangan (diwakili skala 1 hingga 24).
+- `isDark` (`bool`): Menentukan kecerahan latar belakang target.
+
+### Cara Kerja Generator
+
+Sistem menggabungkan satu key shadow netral standar dengan satu ambient shadow yang diwarnai menggunakan `seedColor`:
+
+```dart
+// Implementasi internal generator bayangan
+BoxShadow(
+  offset: ambientOffset,
+  blurRadius: ambientBlur,
+  spreadRadius: ambientSpread,
+  // Memanfaatkan API warna modern untuk mengubah opasitas pendaran
+  color: seedColor.withValues(alpha: ambientOpacity),
+)
+```
+
+Metode ini menjaga pendaran warna di bawah elemen tetap proporsional dan selaras dengan warna identitas aplikasi Anda tanpa merusak kontras.
+
+---
+
+## 3. Bayangan Solid Neobrutalism (`NeobrutalismShadowScheme`)
+
+Di bawah preset visual **Neobrutalism**, JustUI meninggalkan estetika bayangan lembut berskala halus dan beralih ke gaya bayangan solid datar tanpa blur (`blurRadius: 0.0`).
+
+### Karakteristik Bayangan Neobrutalism
+
+- **Bentuk**: Bersudut tajam dengan pergeseran offset tebal.
+- **Warna**: Menggunakan warna hitam pekat (`Color(0xFF000000)`) di mode terang dan putih pekat (`Color(0xFFFFFFFF)`) di mode gelap.
+- **Skala Elevasi**:
+  - `xs`: Offset `(1.0, 1.0)`
+  - `sm`: Offset `(2.0, 2.0)`
+  - `md`: Offset `(3.0, 3.0)`
+  - `lg`: Offset `(4.0, 4.0)`
+  - `xl`: Offset `(6.0, 6.0)`
+  - `xxl`: Offset `(8.0, 8.0)`
+
+---
+
+## 4. Sinkronisasi Animasi Ditekan (Pressed Effect)
+
+Salah satu keunggulan preset Neobrutalism JustUI adalah integrasi sinkronisasi yang sangat ketat antara pergerakan fisik widget dan perilakunya ketika ditekan (`isPressed`):
+
+1. **Runtuhnya Bayangan (Collapse Shadow)**: Saat widget ditekan, offset bayangan solid neobrutalism meluncur menyusut menjadi **`Offset.zero`** (bayangan bersembunyi tepat di belakang widget).
+2. **Translasi Geometri (Translation Shift)**: Bersamaan dengan runtuhnya bayangan, widget secara fisik diterjemahkan (translate) bergeser ke arah kanan-bawah sesuai dengan jarak offset asalnya (`Matrix4.translationValues(offset.dx, offset.dy, 0.0)`).
+3. **Mencegah Visual Jitter (Visual Drift)**: Pergerakan translasi dan keruntuhan bayangan ini disinkronisasikan menggunakan durasi animasi instan **`JustDuration.instant` (50ms)**. Kecepatan reaksi tinggi ini memastikan tidak ada pergeseran visual yang tidak selaras (_jitter_) sehingga interaksi terasa sangat responsif dan mantap.
+
+```dart
+// Contoh visualisasi efek tekan di JustThemeData:
+Widget buildPressEffect({
+  required Widget child,
+  required bool isPressed,
+}) {
+  if (preset == JustThemePreset.neobrutalism) {
+    return AnimatedContainer(
+      duration: animations.instant, // 50ms
+      transform: Matrix4.translationValues(
+        isPressed ? shadowOffset.dx : 0.0,
+        isPressed ? shadowOffset.dy : 0.0,
+        0.0,
+      ),
+      child: child,
+    );
+  }
+  // Mode default menggunakan efek skala mengecil
+  return AnimatedScale(
+    scale: isPressed ? 0.97 : 1.0,
+    duration: animations.instant,
+    child: child,
+  );
+}
+```
+
+---
+
+## 5. Contoh Praktik Terbaik Konsumsi Bayangan di Flutter
+
+Konsumsilah bayangan menggunakan aspek `justShadows` pada context metode build widget Anda:
+
+```dart
+class ShadowedCard extends StatelessWidget {
+  const ShadowedCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Mendaftarkan widget HANYA pada aspek bayangan tema
+    final shadows = context.justShadows;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.justColors.card,
+        border: Border.all(color: context.justColors.borderDefault),
+        boxShadow: shadows.md, // Mengonsumsi bayangan medium
+      ),
+      child: const Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text('Kartu Berbayangan Dinamis'),
+      ),
+    );
+  }
+}
+```

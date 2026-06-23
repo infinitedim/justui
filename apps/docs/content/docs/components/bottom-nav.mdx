@@ -1,0 +1,157 @@
+---
+title: Bottom Navigation
+description: Bilah navigasi bawah dengan pilihan tata letak tetap, dinamis berpindah, dan mengambang kustom.
+---
+
+# Bottom Navigation
+
+`JustBottomNav` adalah komponen navigasi utama pada antarmuka perangkat seluler yang ditempatkan di bagian bawah layar. Komponen ini dirancang untuk mempermudah perpindahan antar halaman utama aplikasi dengan mendukung minimal 3 hingga maksimal 5 item navigasi, serta menawarkan varian gaya tetap (_fixed_), berpindah dinamis (_shifting_), dan mengambang (_floating_).
+
+## Usage
+
+### Basic
+
+Contoh penggunaan dasar `JustBottomNav` dengan gaya lebar tetap bawaan (_fixed_) untuk 3 menu utama.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class BasicBottomNavExample extends StatefulWidget {
+  const BasicBottomNavExample({super.key});
+
+  @override
+  State<BasicBottomNavExample> createState() => _BasicBottomNavExampleState();
+}
+
+class _BasicBottomNavExampleState extends State<BasicBottomNavExample> {
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: JustBottomNav(
+        selectedIndex: _currentIndex,
+        onItemSelected: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: const [
+          JustBottomNavItem(
+            label: 'Beranda',
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+          ),
+          JustBottomNavItem(
+            label: 'Cari',
+            icon: Icon(Icons.search),
+          ),
+          JustBottomNavItem(
+            label: 'Profil',
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+### Advanced
+
+Contoh penggunaan lanjutan menggunakan varian mengambang (_floating_), umpan balik getar (_haptic feedback_), dan perataan ikon.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class AdvancedBottomNavExample extends StatefulWidget {
+  const AdvancedBottomNavExample({super.key});
+
+  @override
+  State<AdvancedBottomNavExample> createState() => _AdvancedBottomNavExampleState();
+}
+
+class _AdvancedBottomNavExampleState extends State<AdvancedBottomNavExample> {
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: JustBottomNav(
+          selectedIndex: _currentIndex,
+          variant: JustBottomNavVariant.floating,
+          showLabels: true,
+          onItemSelected: (index) {
+            HapticFeedback.lightImpact(); // Memberikan getaran haptic ringan
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          items: const [
+            JustBottomNavItem(
+              label: 'Beranda',
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+            ),
+            JustBottomNavItem(
+              label: 'Pesan',
+              icon: Icon(Icons.chat_bubble_outline),
+              activeIcon: Icon(Icons.chat_bubble),
+            ),
+            JustBottomNavItem(
+              label: 'Keranjang',
+              icon: Icon(Icons.shopping_cart_outlined),
+              activeIcon: Icon(Icons.shopping_cart),
+            ),
+            JustBottomNavItem(
+              label: 'Akun',
+              icon: Icon(Icons.account_circle_outlined),
+              activeIcon: Icon(Icons.account_circle),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+## API Reference (Props)
+
+### JustBottomNav
+
+| Properti         | Tipe Data                 | Nilai Bawaan                 | Deskripsi                                                                                                                                                                                                        |
+| ---------------- | ------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `items`          | `List<JustBottomNavItem>` | _Wajib_                      | Rangkaian menu tujuan navigasi bawah (harus berjumlah minimal 3 dan maksimal 5 item).                                                                                                                            |
+| `selectedIndex`  | `int`                     | `0`                          | Indeks item navigasi yang aktif terpilih saat ini.                                                                                                                                                               |
+| `onItemSelected` | `ValueChanged<int>?`      | `null`                       | Callback yang terpicu ketika pengguna mengetuk salah satu item menu.                                                                                                                                             |
+| `variant`        | `JustBottomNavVariant`    | `JustBottomNavVariant.fixed` | Gaya visual navigasi bawah: `.fixed` (lebar tetap), `.shifting` (efek transisi melebar saat terpilih dan menyembunyikan teks tidak aktif), atau `.floating` (mengambang bebas berbayangan lembut di atas layar). |
+| `showLabels`     | `bool`                    | `true`                       | Menentukan apakah teks label di bawah ikon ditampilkan secara visual.                                                                                                                                            |
+
+### JustBottomNavItem
+
+| Properti     | Tipe Data | Nilai Bawaan | Deskripsi                                                                |
+| ------------ | --------- | ------------ | ------------------------------------------------------------------------ |
+| `label`      | `String`  | _Wajib_      | Teks judul menu navigasi.                                                |
+| `icon`       | `Widget`  | _Wajib_      | Ikon yang ditampilkan saat menu dalam keadaan tidak aktif.               |
+| `activeIcon` | `Widget?` | `null`       | Ikon alternatif yang ditampilkan saat menu dalam keadaan aktif terpilih. |
+
+## Theming & Accessibility
+
+### Penjelasan Kustomisasi Preset & Style
+
+- **Default Style**: Menampilkan garis pembatas atas yang tipis dan bayangan luar yang lembut (`JustShadows.sm`) dengan warna latar belakang yang menyatu dengan tema `colors.background`. Transisi warna teks dan ikon mengikuti interpolasi linear `JustDuration.normal` (250ms).
+- **Neobrutalism Style**: Memiliki border luar hitam pekat/putih pekat yang tebal (`2.5`), warna latar yang kontras tinggi, dan bayangan padat yang kaku (`JustShadows.generate` dengan offset tebal tanpa blur). Pada varian `.floating`, kontras dipaksa bernilai penuh tanpa kompensasi HSL dinamis, memberikan estetika visual pop-art yang tegas.
+
+### Pemenuhan Standar WCAG AA
+
+- **Batasan Jumlah Item (Area Sentuh)**: Komponen ini memberlakukan asersi ketat pada parameter `items` untuk memastikan jumlah menu berada di kisaran `3` hingga `5`. Hal ini menjamin pembagian lebar navigasi yang seimbang pada layar perangkat seluler, sehingga setiap item memiliki lebar area sentuh minimal 48x48 piksel (standar WCAG AA untuk elemen interaktif seluler).
+- **Semantik & Deskripsi Suara**: Setiap item dibungkus dengan widget `Semantics` yang mendeklarasikan status terpilih (`selected: true/false`), label deskriptif, dan urutan indeks navigasi saat ini ke sistem suara sistem operasi. Rasio kontras teks aktif/ikon terhadap latar belakang dijamin $\ge$ 4.5:1 untuk keterbacaan optimal bagi pengguna dengan gangguan penglihatan.
