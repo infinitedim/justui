@@ -40,7 +40,32 @@ registry_url: http://example.com/reg
       final config = JustUIConfig.fromYaml('invalid yaml map');
       expect(config.componentsDir, equals('lib/widgets'));
       expect(config.tokensDir, equals('lib/tokens'));
+      expect(config.sharedDir, equals('lib/widgets/shared'));
     });
+
+    test('Parses shared_dir from YAML correctly', () {
+      const yaml = '''
+components_dir: lib/ui
+tokens_dir: lib/tokens
+shared_dir: lib/ui/common
+registry_url: http://example.com/reg
+''';
+      final config = JustUIConfig.fromYaml(yaml);
+      expect(config.sharedDir, equals('lib/ui/common'));
+    });
+
+    test(
+      'Falls back to componentsDir/shared when shared_dir missing from YAML',
+      () {
+        const yaml = '''
+components_dir: lib/custom
+tokens_dir: lib/tokens
+registry_url: http://example.com/reg
+''';
+        final config = JustUIConfig.fromYaml(yaml);
+        expect(config.sharedDir, equals('lib/custom/shared'));
+      },
+    );
   });
 
   group('PubspecEditor Tests', () {
@@ -533,9 +558,10 @@ registry_url: mock_registry
         // 2. Components dir selection → '3' (Custom...)
         // 3. Custom components folder name → 'ui' (stored as lib/ui)
         // 4. Tokens folder name → 'tokens' (stored as lib/tokens)
-        // 5. Brand color → '#ff00ff'
+        // 5. Shared dir → '' (use default: lib/ui/shared)
+        // 6. Brand color → '#ff00ff'
         int idx = 0;
-        final inputs = ['2', '3', 'ui', 'tokens', '#ff00ff'];
+        final inputs = ['2', '3', 'ui', 'tokens', '', '#ff00ff'];
         JustPrompt.testInputReader = () => inputs[idx++];
 
         await runCli(['init'], fs);
@@ -544,6 +570,7 @@ registry_url: mock_registry
         final configContent = fs.file('justui.config.yaml').readAsStringSync();
         expect(configContent, contains('components_dir: lib/ui'));
         expect(configContent, contains('tokens_dir: lib/tokens'));
+        expect(configContent, contains('shared_dir: lib/ui/shared'));
 
         expect(fs.file('lib/theme/just_theme.dart').existsSync(), isTrue);
         final themeContent = fs
@@ -555,21 +582,26 @@ registry_url: mock_registry
       },
     );
 
-    test('InitCommand accepts preset alias --preset neo as neobrutalism', () async {
-      fs.file('pubspec.yaml').writeAsStringSync('name: test');
+    test(
+      'InitCommand accepts preset alias --preset neo as neobrutalism',
+      () async {
+        fs.file('pubspec.yaml').writeAsStringSync('name: test');
 
-      // No wizard prompts fired since --preset is parsed from args
-      // Only components dir (selectOne → default ''), tokens dir (''), brand color ('') needed
-      int idx = 0;
-      final inputs = ['', '', ''];
-      JustPrompt.testInputReader = () => inputs[idx++];
+        // No wizard prompts for preset (--preset parsed from args).
+        // Remaining prompts: selectOne compDir, ask tokens, ask sharedDir, ask brand color
+        int idx = 0;
+        final inputs = ['', '', '', ''];
+        JustPrompt.testInputReader = () => inputs[idx++];
 
-      await runCli(['init', '--preset', 'neo'], fs);
+        await runCli(['init', '--preset', 'neo'], fs);
 
-      expect(fs.file('lib/theme/just_theme.dart').existsSync(), isTrue);
-      final themeContent = fs.file('lib/theme/just_theme.dart').readAsStringSync();
-      expect(themeContent, contains('JustThemePreset.neobrutalism'));
-    });
+        expect(fs.file('lib/theme/just_theme.dart').existsSync(), isTrue);
+        final themeContent = fs
+            .file('lib/theme/just_theme.dart')
+            .readAsStringSync();
+        expect(themeContent, contains('JustThemePreset.neobrutalism'));
+      },
+    );
 
     test('InitCommand auto-prefixes lib/ and avoids double-prefix', () async {
       fs.file('pubspec.yaml').writeAsStringSync('name: test');
@@ -577,8 +609,9 @@ registry_url: mock_registry
       // Simulate: user picks default preset (index 1), then Custom (index 3),
       // types 'lib/widgets' (already has lib/ prefix)
       // Expected: stored as 'lib/widgets', NOT 'lib/lib/widgets'
+      // sharedDir → '' (use default)
       int idx = 0;
-      final inputs = ['1', '3', 'lib/widgets', 'tokens', '#3b82f6'];
+      final inputs = ['1', '3', 'lib/widgets', 'tokens', '', '#3b82f6'];
       JustPrompt.testInputReader = () => inputs[idx++];
 
       await runCli(['init'], fs);
@@ -587,7 +620,6 @@ registry_url: mock_registry
       expect(configContent, contains('components_dir: lib/widgets'));
       expect(configContent, isNot(contains('lib/lib')));
     });
-
 
     test('AddCommand interactive selection when no arguments', () async {
       fs.file('pubspec.yaml').writeAsStringSync('name: test');
@@ -815,6 +847,8 @@ registry_url: mock_registry
     test(
       'ImportRewriter correctly rewrites relative imports and handles theme special case',
       () {
+        // 'pressable' is depended upon by both 'button' and 'input',
+        // so computeSharedComponents() returns {'pressable'} and it goes to sharedDir.
         final mockIndex = RegistryIndex(
           version: '1',
           components: [
@@ -823,7 +857,7 @@ registry_url: mock_registry
               version: '0.1.0',
               description: '',
               category: 'primitives',
-              registryDependencies: ['_shared_pressable'],
+              registryDependencies: ['pressable'],
               pubDependencies: {},
               files: [
                 RegistryFile(
@@ -834,16 +868,31 @@ registry_url: mock_registry
               ],
             ),
             RegistryComponent(
-              name: '_shared_pressable',
+              name: 'input',
               version: '0.1.0',
               description: '',
-              category: 'internal',
+              category: 'primitives',
+              registryDependencies: ['pressable'],
+              pubDependencies: {},
+              files: [
+                RegistryFile(
+                  name: 'just_input.dart',
+                  path: 'components/input/just_input.dart',
+                  checksum: '',
+                ),
+              ],
+            ),
+            RegistryComponent(
+              name: 'pressable',
+              version: '0.1.0',
+              description: '',
+              category: 'primitives',
               registryDependencies: [],
               pubDependencies: {},
               files: [
                 RegistryFile(
                   name: 'just_pressable.dart',
-                  path: 'components/shared/just_pressable.dart',
+                  path: 'components/pressable/just_pressable.dart',
                   checksum: '',
                 ),
               ],
@@ -851,10 +900,12 @@ registry_url: mock_registry
           ],
         );
 
+        final sharedComponents = mockIndex.computeSharedComponents();
+
         final originalContent = '''
 import 'package:flutter/widgets.dart';
 import '../../theme/theme_provider.dart';
-import '../shared/just_pressable.dart';
+import '../pressable/just_pressable.dart';
 ''';
 
         final rewritten = ImportRewriter.rewrite(
@@ -864,17 +915,168 @@ import '../shared/just_pressable.dart';
           registryIndex: mockIndex,
           componentsDir: 'lib/ui',
           tokensDir: 'lib/tokens',
+          sharedDir: 'lib/ui/shared',
+          sharedComponents: sharedComponents,
           fileSystem: fs,
         );
 
+        // Theme import → package import
         expect(
           rewritten,
           contains("import 'package:just_ui_core/just_ui_core.dart';"),
         );
-        expect(
-          rewritten,
-          contains("import '../_shared_pressable/just_pressable.dart';"),
+        // pressable is shared (used by button + input) → goes to shared/
+        expect(rewritten, contains("import '../shared/just_pressable.dart';"));
+      },
+    );
+
+    test(
+      'ImportRewriter strips _shared_ prefix for shared files and resolves relative paths correctly',
+      () {
+        final mockIndex = RegistryIndex(
+          version: '1',
+          components: [
+            RegistryComponent(
+              name: 'button',
+              version: '0.1.0',
+              description: '',
+              category: 'primitives',
+              registryDependencies: ['pressable'],
+              pubDependencies: {},
+              files: [
+                RegistryFile(
+                  name: 'just_button.dart',
+                  path: 'components/button/just_button.dart',
+                  checksum: '',
+                ),
+              ],
+            ),
+            RegistryComponent(
+              name: 'pressable',
+              version: '0.1.0',
+              description: '',
+              category: 'primitives',
+              registryDependencies: [],
+              pubDependencies: {},
+              files: [
+                RegistryFile(
+                  name: '_shared_pressable.dart',
+                  path: 'components/shared/_shared_pressable.dart',
+                  checksum: '',
+                ),
+              ],
+            ),
+          ],
         );
+
+        final sharedComponents = mockIndex.computeSharedComponents();
+        expect(sharedComponents, contains('pressable'));
+
+        final originalContent = '''
+import 'package:flutter/widgets.dart';
+import '../shared/_shared_pressable.dart';
+''';
+
+        final rewritten = ImportRewriter.rewrite(
+          content: originalContent,
+          sourceRegistryPath: 'components/button/just_button.dart',
+          currentComponentName: 'button',
+          registryIndex: mockIndex,
+          componentsDir: 'lib/ui',
+          tokensDir: 'lib/tokens',
+          sharedDir: 'lib/ui/shared',
+          sharedComponents: sharedComponents,
+          fileSystem: fs,
+        );
+
+        expect(rewritten, contains("import '../shared/just_pressable.dart';"));
+      },
+    );
+
+    test(
+      'RegistryIndex.computeSharedComponents returns components with 2+ dependents',
+      () {
+        final index = RegistryIndex(
+          version: '1',
+          components: [
+            RegistryComponent(
+              name: 'button',
+              version: '0.1.0',
+              description: '',
+              category: 'primitives',
+              registryDependencies: ['pressable', 'base'],
+              pubDependencies: {},
+              files: [],
+            ),
+            RegistryComponent(
+              name: 'input',
+              version: '0.1.0',
+              description: '',
+              category: 'primitives',
+              registryDependencies: ['pressable'],
+              pubDependencies: {},
+              files: [],
+            ),
+            RegistryComponent(
+              name: 'pressable',
+              version: '0.1.0',
+              description: '',
+              category: 'primitives',
+              registryDependencies: [],
+              pubDependencies: {},
+              files: [],
+            ),
+            RegistryComponent(
+              name: 'base',
+              version: '0.1.0',
+              description: '',
+              category: 'primitives',
+              registryDependencies: [],
+              pubDependencies: {},
+              files: [],
+            ),
+          ],
+        );
+
+        final shared = index.computeSharedComponents();
+
+        // 'pressable' is used by both 'button' and 'input' → shared
+        expect(shared, contains('pressable'));
+        // 'base' is used only by 'button' → NOT shared
+        expect(shared, isNot(contains('base')));
+        // No other components → set size == 1
+        expect(shared.length, equals(1));
+      },
+    );
+
+    test(
+      'computeSharedComponents returns empty set when no shared components',
+      () {
+        final index = RegistryIndex(
+          version: '1',
+          components: [
+            RegistryComponent(
+              name: 'button',
+              version: '0.1.0',
+              description: '',
+              category: 'primitives',
+              registryDependencies: ['base'],
+              pubDependencies: {},
+              files: [],
+            ),
+            RegistryComponent(
+              name: 'base',
+              version: '0.1.0',
+              description: '',
+              category: 'primitives',
+              registryDependencies: [],
+              pubDependencies: {},
+              files: [],
+            ),
+          ],
+        );
+
+        expect(index.computeSharedComponents(), isEmpty);
       },
     );
 

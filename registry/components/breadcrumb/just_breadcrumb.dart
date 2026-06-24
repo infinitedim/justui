@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import '../../theme/theme_provider.dart';
-import '../shared/just_pressable.dart';
+import '../shared/_shared_pressable.dart';
 import 'just_breadcrumb_style.dart';
 
 /// Represents an individual navigation link within a [JustBreadcrumb].

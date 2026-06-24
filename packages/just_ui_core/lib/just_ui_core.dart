@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart' show BuildContext;
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 import 'src/theme/theme_data.dart';
 import 'src/theme/theme_provider.dart';
@@ -7,7 +7,6 @@ export 'src/theme/theme_aspects.dart';
 export 'src/theme/theme_data.dart';
 export 'src/theme/theme_data_material.dart';
 export 'src/theme/theme_provider.dart';
-export 'src/components/components.dart';
 
 /// Extension methods on [BuildContext] to simplify access to JustUI themes.
 extension JustThemeContext on BuildContext {

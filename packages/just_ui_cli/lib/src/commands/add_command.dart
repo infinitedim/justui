@@ -80,6 +80,7 @@ class AddCommand extends Command<void> {
       }
 
       final visited = <String>{};
+      final sharedComponents = index.computeSharedComponents();
       for (final compName in componentsToAdd) {
         await addComponent(
           compName,
@@ -87,6 +88,8 @@ class AddCommand extends Command<void> {
           client,
           config.componentsDir,
           config.tokensDir,
+          config.sharedDir,
+          sharedComponents,
           visited,
         );
       }
@@ -101,6 +104,8 @@ class AddCommand extends Command<void> {
     RegistryClient client,
     String componentsDir,
     String tokensDir,
+    String sharedDir,
+    Set<String> sharedComponents,
     Set<String> visited,
   ) async {
     // Circular dependency check and double-copy guard
@@ -116,15 +121,26 @@ class AddCommand extends Command<void> {
 
     // 1. Recursively resolve and download registry dependencies first
     for (final dep in component.registryDependencies) {
-      await addComponent(dep, index, client, componentsDir, tokensDir, visited);
+      await addComponent(
+        dep,
+        index,
+        client,
+        componentsDir,
+        tokensDir,
+        sharedDir,
+        sharedComponents,
+        visited,
+      );
     }
 
     JustLogger.info('Adding component "$name" (v${component.version})...');
 
-    // 2. Map target target directory based on category
+    // 2. Map target directory based on category and shared status
     final String targetDir =
         component.category == 'tokens' || component.category == 'core'
         ? tokensDir
+        : sharedComponents.contains(component.name)
+        ? sharedDir
         : fileSystem.path.join(componentsDir, component.name);
 
     // 3. Download, validate, rewrite, and write each file
@@ -153,6 +169,8 @@ class AddCommand extends Command<void> {
         registryIndex: index,
         componentsDir: componentsDir,
         tokensDir: tokensDir,
+        sharedDir: sharedDir,
+        sharedComponents: sharedComponents,
         fileSystem: fileSystem,
       );
 
@@ -165,7 +183,10 @@ class AddCommand extends Command<void> {
         localRewrittenHash,
       );
 
-      final targetPath = fileSystem.path.join(targetDir, file.name);
+      final localFileName = sharedComponents.contains(component.name)
+          ? ImportRewriter.normalizeSharedFileName(file.name)
+          : file.name;
+      final targetPath = fileSystem.path.join(targetDir, localFileName);
       final targetFile = fileSystem.file(targetPath);
 
       bool shouldWrite = true;
@@ -183,11 +204,11 @@ class AddCommand extends Command<void> {
           if (currentLocalHash == meta.localHash) {
             // Unmodified locally by the user
             if (meta.registryHash == expectedHash) {
-              JustLogger.stdout('  - ${file.name} is already up-to-date.');
+              JustLogger.stdout('  - $localFileName is already up-to-date.');
               shouldWrite = false;
             } else {
               JustLogger.info(
-                '  - Updating ${file.name} to latest registry version.',
+                '  - Updating $localFileName to latest registry version.',
               );
               shouldWrite = true;
             }
@@ -196,13 +217,13 @@ class AddCommand extends Command<void> {
             if (meta.registryHash == expectedHash) {
               // Remote is same, but local is modified -> keep local
               JustLogger.stdout(
-                '  - ${file.name} has been customized locally. Skipping.',
+                '  - $localFileName has been customized locally. Skipping.',
               );
               shouldWrite = false;
             } else {
               // True conflict: remote changed and local changed
               JustLogger.warning(
-                'Conflict: Local file "${file.name}" has been modified, and a registry update is available.',
+                'Conflict: Local file "$localFileName" has been modified, and a registry update is available.',
               );
               while (true) {
                 final action = JustPrompt.ask(
@@ -219,7 +240,7 @@ class AddCommand extends Command<void> {
                 } else if (action == 'd') {
                   // Show diff of clean local content vs remote rewritten content
                   DiffFormatter.printUnifiedDiff(
-                    file.name,
+                    localFileName,
                     localCleanContent,
                     rewrittenContent,
                   );
@@ -236,12 +257,12 @@ class AddCommand extends Command<void> {
 
           if (localHash == expectedHash) {
             JustLogger.stdout(
-              '  - ${file.name} is already up-to-date (no metadata).',
+              '  - $localFileName is already up-to-date (no metadata).',
             );
             shouldWrite = false;
           } else {
             JustLogger.warning(
-              'Conflict: Local file "${file.name}" exists and differs (no metadata).',
+              'Conflict: Local file "$localFileName" exists and differs (no metadata).',
             );
             while (true) {
               final action = JustPrompt.ask(
@@ -257,7 +278,7 @@ class AddCommand extends Command<void> {
                 break;
               } else if (action == 'd') {
                 DiffFormatter.printUnifiedDiff(
-                  file.name,
+                  localFileName,
                   localContent,
                   rewrittenContent,
                 );
@@ -273,7 +294,7 @@ class AddCommand extends Command<void> {
         // Create parents dynamically
         targetFile.parent.createSync(recursive: true);
         targetFile.writeAsStringSync(finalContentToWrite);
-        JustLogger.stdout('  - Copied ${file.name} to $targetDir/');
+        JustLogger.stdout('  - Copied $localFileName to $targetDir/');
       }
     }
 

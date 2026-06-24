@@ -3,6 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_core/src/components/button/just_button.dart';
+import 'package:just_ui_core/src/components/button/just_icon_button.dart';
+import 'package:just_ui_core/src/components/button/just_button_theme.dart';
+import 'package:just_ui_core/src/components/button/just_button_variants.dart';
+import 'package:just_ui_core/src/components/shared/_shared_progress_spinner.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

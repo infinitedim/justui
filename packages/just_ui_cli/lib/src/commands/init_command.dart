@@ -89,11 +89,10 @@ class InitCommand extends Command<void> {
     } else {
       JustLogger.stdout('');
       JustLogger.stdout('Select visual style preset:');
-      final presetIdx = JustPrompt.selectOne(
-        'Choose preset',
-        ['default', 'neobrutalism (alias: neo)'],
-        defaultIndex: 0,
-      );
+      final presetIdx = JustPrompt.selectOne('Choose preset', [
+        'default',
+        'neobrutalism (alias: neo)',
+      ], defaultIndex: 0);
       preset = presetIdx == 1 ? 'neobrutalism' : 'default';
     }
 
@@ -129,6 +128,15 @@ class InitCommand extends Command<void> {
     );
     final tokensDir = _toLibPath(tokensInput);
 
+    // --- Shared components directory ---
+    // Default is a 'shared/' subfolder inside the components directory
+    final sharedDirDefault = '$componentsDir/shared';
+    final rawSharedDir = JustPrompt.ask(
+      'Enter shared components folder (leave blank for default)',
+      defaultValue: sharedDirDefault,
+    );
+    final sharedDir = rawSharedDir.isEmpty ? sharedDirDefault : rawSharedDir;
+
     // --- Brand seed color ---
     String brandColor = '#3b82f6';
     final hexRegex = RegExp(r'^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$');
@@ -158,6 +166,7 @@ class InitCommand extends Command<void> {
       final config = JustUIConfig(
         componentsDir: componentsDir,
         tokensDir: tokensDir,
+        sharedDir: sharedDir,
         registryUrl: JustUIConfig.default_.registryUrl,
       );
       configFile.writeAsStringSync(config.toYamlString());

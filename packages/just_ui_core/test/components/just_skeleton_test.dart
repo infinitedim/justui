@@ -1,6 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_core/src/components/skeleton/just_skeleton.dart';
+import 'package:just_ui_core/src/components/avatar/just_avatar.dart';
+import 'package:just_ui_core/src/components/badge/just_badge.dart';
+import 'package:just_ui_core/src/components/button/just_button.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

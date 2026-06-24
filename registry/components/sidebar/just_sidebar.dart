@@ -4,7 +4,7 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:just_ui_tokens/just_ui_tokens.dart' show JustBreakpoints;
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_tooltip_overlay.dart';
-import '../shared/just_pressable.dart';
+import '../shared/_shared_pressable.dart';
 import 'just_sidebar_style.dart';
 import 'just_sidebar_theme.dart';
 import 'just_sidebar_variants.dart';
@@ -717,15 +717,11 @@ class _JustSidebarItemWidget extends StatelessWidget {
         final isNeobrutalism = customTheme.preset == .neobrutalism;
         final Color foregroundColor = isNeobrutalism
             ? colors.textPrimary
-            : (isHovered || isPressed
-                  ? activeColor
-                  : inactiveColor);
+            : (isHovered || isPressed ? activeColor : inactiveColor);
 
         final Border? itemBorder = isNeobrutalism
             ? .all(
-                color: isHovered
-                    ? colors.textPrimary
-                    : const Color(0x00000000),
+                color: isHovered ? colors.textPrimary : const Color(0x00000000),
                 width: 1.5,
               )
             : null;

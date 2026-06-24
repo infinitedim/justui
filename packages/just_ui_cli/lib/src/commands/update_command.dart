@@ -75,6 +75,7 @@ class UpdateCommand extends Command<void> {
 
       // Filter local components that differ from the registry version
       final List<String> outdatedComponents = [];
+      final sharedComponents = index.computeSharedComponents();
 
       for (final localName in localComponentNames) {
         final matchingComponents = index.components
@@ -84,13 +85,18 @@ class UpdateCommand extends Command<void> {
         final component = matchingComponents.first;
 
         bool needsUpdate = false;
-        final String targetDir = fileSystem.path.join(
-          config.componentsDir,
-          component.name,
-        );
+        final String targetDir =
+            component.category == 'tokens' || component.category == 'core'
+            ? config.tokensDir
+            : sharedComponents.contains(component.name)
+            ? config.sharedDir
+            : fileSystem.path.join(config.componentsDir, component.name);
 
         for (final file in component.files) {
-          final targetPath = fileSystem.path.join(targetDir, file.name);
+          final localFileName = sharedComponents.contains(component.name)
+              ? ImportRewriter.normalizeSharedFileName(file.name)
+              : file.name;
+          final targetPath = fileSystem.path.join(targetDir, localFileName);
           final localFile = fileSystem.file(targetPath);
           if (!localFile.existsSync()) {
             needsUpdate = true;
@@ -151,6 +157,8 @@ class UpdateCommand extends Command<void> {
           client,
           config.componentsDir,
           config.tokensDir,
+          config.sharedDir,
+          sharedComponents,
           visited,
         );
       }

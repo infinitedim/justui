@@ -6,7 +6,7 @@ import '../badge/just_badge.dart';
 import '../button/just_button.dart';
 import '../card/just_card.dart';
 import '../separator/just_separator.dart';
-import '../shared/just_progress_spinner.dart';
+import '../shared/_shared_progress_spinner.dart';
 import 'just_skeleton_style.dart';
 import 'just_skeleton_theme.dart';
 

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../theme/theme_provider.dart';
-import '../shared/just_pressable.dart';
-import '../shared/just_focus_indicator.dart';
+import '../shared/_shared_pressable.dart';
+import '../shared/_shared_focus_indicator.dart';
 import 'just_scroll_area_style.dart';
 import 'just_scroll_area_theme.dart';
 
