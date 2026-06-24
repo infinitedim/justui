@@ -398,7 +398,7 @@
         {
           "name": "just_skeleton.dart",
           "path": "components/skeleton/just_skeleton.dart",
-          "checksum": "sha256:b8be21d4da62727060c88c8556deaa47e050c033c838d35365e312dcd28997c0"
+          "checksum": "sha256:61ae11ff226b051c01547a351504130838f2d9ee57dc4b8c320d0417f42c8efe"
         },
         {
           "name": "just_skeleton_style.dart",
@@ -475,7 +475,7 @@
         {
           "name": "just_tabs.dart",
           "path": "components/tabs/just_tabs.dart",
-          "checksum": "sha256:1369cf6e6959b10236e133e228945ab7303e11ec75ac870e669d6e0489254261"
+          "checksum": "sha256:8bbb4009f59201458dbb85411f37e08878dceb799b4c845a20bbeacdfbbcda54"
         },
         {
           "name": "just_tabs_style.dart",
@@ -513,7 +513,7 @@
         {
           "name": "just_bottom_nav.dart",
           "path": "components/bottom_nav/just_bottom_nav.dart",
-          "checksum": "sha256:2996cf5beb310e44976b48aa3aa86915699aab455d544847ebd818b43a2fa32e"
+          "checksum": "sha256:cc4e43aa5fc23a106483ce7b60501be3520efe8b0a612c3c30cfa8384ce5891a"
         },
         {
           "name": "just_bottom_nav_style.dart",
@@ -563,7 +563,7 @@
         {
           "name": "just_sidebar.dart",
           "path": "components/sidebar/just_sidebar.dart",
-          "checksum": "sha256:5e6fdb415619f32dd02a7daeaf265db1437faf4168fb9063f6f7a818d8622105"
+          "checksum": "sha256:c7d45c74a3a60448eaa048789a2e86d99295931f32e340adfe4cc7d80259f9e7"
         },
         {
           "name": "just_sidebar_style.dart",

@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart' show Theme;
 
 import 'package:just_ui_tokens/just_ui_tokens.dart' show JustBreakpoints;
 import '../../theme/theme_provider.dart';
@@ -677,7 +678,10 @@ class _JustSidebarItemWidget extends StatelessWidget {
   });
 
   @override
+  @override
   Widget build(BuildContext context) {
+    final customTheme = JustThemeProvider.of(context, aspect: .colors).theme;
+    final colors = customTheme.colors;
     final spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
@@ -710,14 +714,30 @@ class _JustSidebarItemWidget extends StatelessWidget {
                   ? activeColor.withValues(alpha: 0.05)
                   : const Color(0x00000000));
 
-        final Color foregroundColor = isHovered || isPressed
-            ? activeColor
-            : inactiveColor;
+        final isNeobrutalism = customTheme.preset == .neobrutalism;
+        final Color foregroundColor = isNeobrutalism
+            ? colors.textPrimary
+            : (isHovered || isPressed
+                  ? activeColor
+                  : inactiveColor);
+
+        final Border? itemBorder = isNeobrutalism
+            ? .all(
+                color: isHovered
+                    ? colors.textPrimary
+                    : const Color(0x00000000),
+                width: 1.5,
+              )
+            : null;
 
         return Opacity(
           opacity: itemOpacity,
           child: Container(
-            decoration: BoxDecoration(color: itemBg, borderRadius: itemRadius),
+            decoration: BoxDecoration(
+              color: itemBg,
+              borderRadius: itemRadius,
+              border: itemBorder,
+            ),
             padding: resolvedItemPadding.copyWith(
               left: !isRtl
                   ? resolvedItemPadding.left + indent

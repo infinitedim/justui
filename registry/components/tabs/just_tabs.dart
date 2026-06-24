@@ -44,6 +44,7 @@ class JustTabController extends ChangeNotifier {
   int _index;
   double _animationValue;
   AnimationController? _animationController;
+  bool _isDisposed = false;
 
   /// Creates a [JustTabController].
   JustTabController({required this.length, int initialIndex = 0})
@@ -126,8 +127,9 @@ class JustTabController extends ChangeNotifier {
 
     _animationController!.addListener(updateTween);
 
-    _animationController!.forward(from: 0.0).then((_) {
-      _animationController!.removeListener(updateTween);
+    _animationController!.forward(from: 0.0).whenComplete(() {
+      if (_isDisposed) return;
+      _animationController?.removeListener(updateTween);
       _index = targetIndex;
       _animationValue = targetIndex.toDouble();
       notifyListeners();
@@ -136,7 +138,9 @@ class JustTabController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _isDisposed = true;
     _animationController?.dispose();
+    _animationController = null;
     super.dispose();
   }
 }

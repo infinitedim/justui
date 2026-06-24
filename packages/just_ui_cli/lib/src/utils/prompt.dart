@@ -47,6 +47,29 @@ class JustPrompt {
     return selected;
   }
 
+  /// Prompts the user to select a single item from a numbered list.
+  ///
+  /// Returns the 0-based index of the chosen option.
+  /// Falls back to [defaultIndex] on empty input or invalid selection.
+  static int selectOne(
+    String message,
+    List<String> options, {
+    int defaultIndex = 0,
+  }) {
+    for (int i = 0; i < options.length; i++) {
+      final marker = i == defaultIndex ? '*' : ' ';
+      io.stdout.writeln('  [$marker${i + 1}] ${options[i]}');
+    }
+    io.stdout.write('$message (default: ${defaultIndex + 1}): ');
+    final input = _readLine()?.trim() ?? '';
+    if (input.isEmpty) return defaultIndex;
+    final parsed = int.tryParse(input);
+    if (parsed != null && parsed >= 1 && parsed <= options.length) {
+      return parsed - 1;
+    }
+    return defaultIndex;
+  }
+
   /// Prompts for a string input.
   static String ask(String message, {required String defaultValue}) {
     io.stdout.write('$message [$defaultValue]: ');
