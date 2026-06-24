@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Route } from 'next';
 
 export default async function HomePage({
   params,
@@ -25,7 +26,7 @@ export default async function HomePage({
         {/* Action Buttons */}
         <div className="flex justify-center gap-4">
           <Link
-            href={`/${lang}/docs/introduction`}
+            href={`/${lang}/docs/introduction` as Route}
             className="rounded-lg bg-indigo-600 px-6 py-3 font-medium text-white shadow-md transition-colors hover:bg-indigo-700"
           >
             Baca Dokumentasi
