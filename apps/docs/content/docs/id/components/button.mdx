@@ -1,0 +1,154 @@
+---
+title: Button
+description: Komponen tombol interaktif utama dengan dukungan animasi sentuh terintegrasi dan tombol ikon khusus.
+---
+
+# Button
+
+Komponen `JustButton` dan `JustIconButton` adalah elemen interaktif utama yang digunakan untuk memicu tindakan atau navigasi. Komponen ini dirancang tanpa dependensi Material eksternal, menawarkan performa tinggi, animasi sentuh yang halus, serta kepatuhan penuh terhadap standar aksesibilitas.
+
+---
+
+## Deskripsi
+
+- **`JustButton`**: Tombol standar dengan label teks yang dapat dikombinasikan dengan ikon di bagian depan (`leading`) atau belakang (`trailing`). Tombol ini mendukung status loading bawaan dengan pemutar progres.
+- **`JustIconButton`**: Tombol khusus berbentuk lingkaran atau persegi yang hanya menampilkan ikon tanpa label teks. Komponen ini mewajibkan parameter `tooltip` untuk menjamin keterbacaan oleh pembaca layar (_screen reader_).
+
+---
+
+## Usage
+
+### Basic Usage
+
+Contoh penggunaan dasar untuk `JustButton` dan `JustIconButton`:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicButtons(BuildContext context) {
+  return Row(
+    spacing: context.justSpacing.md,
+    children: [
+      // JustButton Standar
+      JustButton(
+        label: 'Simpan',
+        onPressed: () => print('Tombol ditekan'),
+      ),
+
+      // JustIconButton Standar
+      JustIconButton(
+        icon: const Icon(Icons.share),
+        tooltip: 'Bagikan dokumen ini',
+        onPressed: () => print('Bagikan diklik'),
+      ),
+    ],
+  );
+}
+```
+
+### Advanced Usage
+
+Contoh penggunaan tingkat lanjut yang menunjukkan variasi ukuran, ikon, status loading, dan full-width:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedButtons(BuildContext context) {
+  return Column(
+    spacing: context.justSpacing.lg,
+    children: [
+      // Tombol Destructive dengan Ikon di Depan
+      JustButton(
+        label: 'Hapus Akun',
+        variant: .destructive,
+        size: .lg,
+        leading: const Icon(Icons.delete_outline),
+        onPressed: () => _showDeleteDialog(context),
+      ),
+
+      // Tombol dalam Keadaan Loading (Menampilkan Progress Spinner)
+      JustButton(
+        label: 'Memproses...',
+        isLoading: true,
+        onPressed: () {},
+      ),
+
+      // Tombol Lebar Penuh (Full Width)
+      JustButton(
+        label: 'Lanjutkan ke Pembayaran',
+        isFullWidth: true,
+        size: .xl,
+        trailing: const Icon(Icons.arrow_forward),
+        onPressed: () => _proceedToPayment(),
+      ),
+    ],
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustButton
+
+| Properti       | Tipe Data           | Nilai Bawaan (Default) | Deskripsi                                                                                                                                |
+| :------------- | :------------------ | :--------------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| `label`        | `String`            | _Wajib (Required)_     | Teks yang ditampilkan di dalam tombol.                                                                                                   |
+| `onPressed`    | `VoidCallback?`     | _Wajib (Required)_     | Callback ketika tombol ditekan. Jika bernilai `null`, tombol otomatis dinonaktifkan secara visual dan interaktif.                        |
+| `variant`      | `JustButtonVariant` | `.primary`             | Pilihan gaya visual tombol: `.primary`, `.secondary`, `.ghost`, `.destructive`, `.link`.                                                 |
+| `size`         | `JustButtonSize`    | `.md`                  | Ukuran geometri tombol: `.xs`, `.sm`, `.md`, `.lg`, `.xl`.                                                                               |
+| `leading`      | `Widget?`           | `null`                 | Widget (biasanya ikon) yang diletakkan sebelum teks label.                                                                               |
+| `trailing`     | `Widget?`           | `null`                 | Widget (biasanya ikon) yang diletakkan setelah teks label.                                                                               |
+| `isLoading`    | `bool`              | `false`                | Menentukan apakah tombol sedang dalam proses memuat. Jika `true`, teks/ikon disembunyikan dan `JustProgressSpinner` ditampilkan.         |
+| `isDisabled`   | `bool`              | `false`                | Menonaktifkan interaksi tombol dan memberikan visual redup jika disetel ke `true`.                                                       |
+| `isFullWidth`  | `bool`              | `false`                | Meregangkan ukuran tombol secara horizontal untuk mengisi ruang penampung jika disetel ke `true`.                                        |
+| `style`        | `JustButtonStyle?`  | `null`                 | Meng-override gaya desain tombol secara spesifik per instans.                                                                            |
+| `enableHaptic` | `bool?`             | `null`                 | Mengaktifkan umpan balik getaran ringan (_haptic feedback_) saat tombol ditekan. Bawaannya aktif jika menggunakan preset `neobrutalism`. |
+
+### JustIconButton
+
+| Properti       | Tipe Data           | Nilai Bawaan (Default) | Deskripsi                                                                                    |
+| :------------- | :------------------ | :--------------------- | :------------------------------------------------------------------------------------------- |
+| `icon`         | `Widget`            | _Wajib (Required)_     | Widget ikon yang akan ditampilkan di tengah tombol.                                          |
+| `onPressed`    | `VoidCallback?`     | _Wajib (Required)_     | Callback ketika tombol ditekan. Jika bernilai `null`, tombol otomatis dinonaktifkan.         |
+| `variant`      | `JustButtonVariant` | `.ghost`               | Pilihan gaya visual tombol: `.primary`, `.secondary`, `.ghost`, `.destructive`, `.link`.     |
+| `size`         | `JustButtonSize`    | `.md`                  | Ukuran geometri tombol: `.xs`, `.sm`, `.md`, `.lg`, `.xl`.                                   |
+| `tooltip`      | `String?`           | _Wajib (Required)_     | Deskripsi semantik tombol untuk pembaca layar (aksesibilitas) dan balon petunjuk saat hover. |
+| `isLoading`    | `bool`              | `false`                | Jika `true`, menyembunyikan ikon dan menampilkan indikator loading.                          |
+| `isDisabled`   | `bool`              | `false`                | Menonaktifkan interaksi dan meredupkan tampilan jika disetel ke `true`.                      |
+| `style`        | `JustButtonStyle?`  | `null`                 | Meng-override gaya desain tombol ikon secara spesifik.                                       |
+| `enableHaptic` | `bool?`             | `null`                 | Mengaktifkan umpan balik getaran ringan (_haptic feedback_) saat tombol ditekan.             |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+Gaya visual tombol sangat bergantung pada preset tema aktif yang dikonfigurasi melalui `JustThemeProvider`:
+
+- **Default Preset**:
+  - Tombol memiliki kelengkungan sudut yang dinamis (mengikuti `radius.md` atau `radius.full`).
+  - Animasi sentuh menggunakan `AnimatedScale` yang memberikan efek menekan ke dalam dengan memperkecil ukuran tombol secara dinamis ke skala `0.97` selama transisi.
+  - Kontras warna teks dengan latar belakang dievaluasi secara dinamis menggunakan algoritma `_makeAccessible` berbasis HSL.
+
+- **Neobrutalism Preset**:
+  - Tombol dipaksa memiliki border tebal berwarna hitam pekat (`colors.textPrimary`) sebesar `2.5` di semua status (hover, pressed, focused, disabled) tanpa transisi warna border ke warna primer.
+  - Penyesuaian kontras dinamis HSL dilewati (_bypass_) demi mempertahankan warna solid asli neobrutalism.
+  - Untuk mencegah _visual drift_ (pergeseran visual yang tidak sinkron) saat ditekan, durasi animasi disetel ke `animations.instant` (50ms). Tombol berpindah posisi secara fisik (translasi X/Y) bersamaan dengan hilangnya bayangan padat dibelakangnya secara instan.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Target Sentuh Minimum (Touch Targets)**:
+   Meskipun ukuran tombol disetel ke `.xs` atau `.sm`, JustUI menjamin area target sentuh interaktif tetap memiliki ukuran fisik minimal **48x48px** sesuai pedoman WCAG AA. Ini diimplementasikan secara internal melalui pembungkus `ConstrainedBox` dan area hit-test yang diperluas.
+2. **Deskripsi Semantik Wajib**:
+   Untuk `JustIconButton`, parameter `tooltip` wajib diberikan (`assert(tooltip != null)`). Hal ini memastikan bahwa pembaca layar (_screen reader_) dapat membacakan deskripsi fungsi tombol kepada pengguna dengan keterbatasan penglihatan.
+3. **Indikator Fokus Visual (Focus Ring)**:
+   Ketika tombol diakses menggunakan keyboard atau kontroler lainnya, indikator fokus yang tebal dan kontras tinggi akan ditampilkan di sekeliling tombol melalui widget pembantu internal `FocusIndicator`.
+4. **Pewarnaan Ikon Otomatis**:
+   Melalui `IconTheme.merge`, warna ikon secara otomatis disesuaikan dengan kontras warna status tombol aktif (misalnya menjadi putih kontras tinggi saat tombol utama aktif, atau abu-abu pudar saat dinonaktifkan).

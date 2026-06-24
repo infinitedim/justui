@@ -1,0 +1,122 @@
+---
+title: Breadcrumb
+description: Navigasi jejak hierarki halaman yang mendukung penciutan otomatis dan menu dropdown bertumpuk.
+---
+
+# Breadcrumb
+
+`JustBreadcrumb` adalah komponen navigasi hierarki yang membantu pengguna memahami lokasi mereka saat ini dalam struktur aplikasi atau situs. Komponen ini secara otomatis menciutkan item tengah jika jumlahnya melampaui batas maksimal yang ditentukan, dan menampilkannya kembali secara elegan melalui menu dropdown melayang berbasis portal (`OverlayPortal`).
+
+## Usage
+
+### Basic
+
+Contoh penggunaan dasar `JustBreadcrumb` untuk navigasi halaman terurut dengan separator bawaan.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class BasicBreadcrumbExample extends StatelessWidget {
+  const BasicBreadcrumbExample({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return JustBreadcrumb(
+      items: [
+        JustBreadcrumbItem(
+          label: 'Beranda',
+          onTap: () => Navigator.pushNamed(context, '/'),
+        ),
+        JustBreadcrumbItem(
+          label: 'Kategori',
+          onTap: () => Navigator.pushNamed(context, '/categories'),
+        ),
+        JustBreadcrumbItem(
+          label: 'Detail Produk',
+        ), // Halaman aktif saat ini (onTap bernilai null)
+      ],
+    );
+  }
+}
+```
+
+### Advanced
+
+Contoh penggunaan lanjutan dengan membatasi jumlah item maksimal (`maxItems`), ikon tambahan, dan separator kustom.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class AdvancedBreadcrumbExample extends StatelessWidget {
+  const AdvancedBreadcrumbExample({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return JustBreadcrumb(
+      maxItems: 3,
+      separator: const Icon(Icons.chevron_right, size: 16),
+      items: [
+        JustBreadcrumbItem(
+          label: 'Beranda',
+          icon: const Icon(Icons.home, size: 14),
+          onTap: () => _navigateTo(context, '/'),
+        ),
+        JustBreadcrumbItem(
+          label: 'Manajemen Data',
+          onTap: () => _navigateTo(context, '/data'),
+        ),
+        JustBreadcrumbItem(
+          label: 'Pengguna',
+          onTap: () => _navigateTo(context, '/data/users'),
+        ),
+        JustBreadcrumbItem(
+          label: 'Profil Pengguna',
+          onTap: () => _navigateTo(context, '/data/users/profile'),
+        ),
+        JustBreadcrumbItem(
+          label: 'Pengaturan Hak Akses',
+        ), // Halaman aktif
+      ],
+    );
+  }
+
+  void _navigateTo(BuildContext context, String path) {
+    print('Navigasi ke $path');
+  }
+}
+```
+
+## API Reference (Props)
+
+### JustBreadcrumb
+
+| Properti    | Tipe Data                  | Nilai Bawaan | Deskripsi                                                                                                                            |
+| ----------- | -------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `items`     | `List<JustBreadcrumbItem>` | _Wajib_      | Rangkaian tautan halaman hierarki navigasi.                                                                                          |
+| `separator` | `Widget?`                  | `Text('/')`  | Widget pembatas sela antar item breadcrumb.                                                                                          |
+| `maxItems`  | `int?`                     | `null`       | Batas jumlah item yang dirender secara langsung sebelum item di tengah secara otomatis dikompresi menjadi tombol tiga titik (`...`). |
+| `collapsed` | `Widget?`                  | `null`       | Kustomisasi tombol visual indikator item yang diciutkan.                                                                             |
+
+### JustBreadcrumbItem
+
+| Properti | Tipe Data       | Nilai Bawaan | Deskripsi                                                                                                                        |
+| -------- | --------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `label`  | `String`        | _Wajib_      | Teks nama halaman/tautan navigasi.                                                                                               |
+| `onTap`  | `VoidCallback?` | `null`       | Aksi navigasi ketika item diketuk. Jika `null`, item bertindak sebagai halaman aktif saat ini (teks tebal dan tidak interaktif). |
+| `icon`   | `Widget?`       | `null`       | Ikon visual di depan teks label breadcrumb.                                                                                      |
+
+## Theming & Accessibility
+
+### Penjelasan Kustomisasi Preset & Style
+
+- **Default Style**: Warna teks dan ikon bertransisi secara halus menggunakan token `colors.textMuted` untuk tautan non-aktif dan `colors.textPrimary` untuk halaman aktif terpilih. Efek hover memicu garis bawah halus atau perubahan warna yang lembut.
+- **Neobrutalism Style**: Sudut kelengkungan tombol penciutan menggunakan `radius.none` atau `radius.xs` untuk memberikan kelengkungan sudut yang tajam. Garis pembatas dan tombol penciutan dipaksa menggunakan warna border hitam pekat (`colors.textPrimary`) dengan ketebalan border `2.5` dan bayangan kaku dengan offset solid.
+
+### Pemenuhan Standar WCAG AA
+
+- **Overlay Portal Breadcrumb**: Ketika jumlah item melebihi `maxItems`, item-item tengah didelegasikan ke tombol tiga titik (`...`). Saat diketuk, menu mengambang yang berisi daftar tautan tersembunyi akan dimunculkan menggunakan `OverlayPortal`. Koordinat lokasi portal diproyeksikan secara presisi mengikuti koordinat global tombol pengetuk melalui konversi matriks transformasi RenderBox, mencegah pemotongan kontainer induk (_layout clipping_).
+- **Aksesibilitas Kontras & Semantik**: Rasio kontras teks non-aktif (warna redup) tetap dijaga di atas 4.5:1 terhadap background latar belakang untuk keterbacaan yang jelas. Untuk pembaca layar (_screen reader_), tautan non-aktif ditandai dengan peran `link` sedangkan halaman aktif saat ini ditandai sebagai teks statis biasa untuk memperjelas alur hierarki semantik. Seluruh elemen dropdown `OverlayPortal` diintegrasikan dalam pohon semantik agar dapat diakses dengan navigasi keyboard desktop.
