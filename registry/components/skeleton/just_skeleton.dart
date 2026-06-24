@@ -768,7 +768,7 @@ class _JustSkeletonState extends State<JustSkeleton>
 
 /// A scope that provides shared synchronized shimmer parameters.
 class _JustSkeletonScope extends InheritedWidget {
-  final Animation<double> animation;
+  final AnimationController animation;
   final JustSkeletonStyle resolvedStyle;
   final Color baseColor;
   final Color highlightColor;
@@ -910,7 +910,7 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
 
       AnimationController? activeController;
       if (scope != null) {
-        activeController = scope.animation as AnimationController;
+        activeController = scope.animation;
       } else {
         _localController ??= AnimationController(
           vsync: this,

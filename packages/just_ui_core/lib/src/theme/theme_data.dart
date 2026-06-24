@@ -424,6 +424,13 @@ final class _DefaultShadowSchemeLight extends JustShadowScheme {
   List<BoxShadow> get xl => JustShadows.xl;
   @override
   List<BoxShadow> get xxl => JustShadows.xxl;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is _DefaultShadowSchemeLight;
+
+  @override
+  int get hashCode => const Symbol('_DefaultShadowSchemeLight').hashCode;
 }
 
 final class _DefaultShadowSchemeDark extends JustShadowScheme {
@@ -441,6 +448,13 @@ final class _DefaultShadowSchemeDark extends JustShadowScheme {
   List<BoxShadow> get xl => JustShadows.xlDark;
   @override
   List<BoxShadow> get xxl => JustShadows.xxlDark;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is _DefaultShadowSchemeDark;
+
+  @override
+  int get hashCode => const Symbol('_DefaultShadowSchemeDark').hashCode;
 }
 
 final class TintedShadowScheme extends JustShadowScheme {
@@ -467,6 +481,16 @@ final class TintedShadowScheme extends JustShadowScheme {
   @override
   List<BoxShadow> get xxl =>
       JustShadows.generate(seedColor: seedColor, elevation: 24, isDark: isDark);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TintedShadowScheme &&
+          seedColor == other.seedColor &&
+          isDark == other.isDark;
+
+  @override
+  int get hashCode => Object.hash(seedColor, isDark);
 }
 
 final class NeobrutalismShadowScheme extends JustShadowScheme {
@@ -521,6 +545,15 @@ final class NeobrutalismShadowScheme extends JustShadowScheme {
       blurRadius: 0.0,
     ),
   ];
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NeobrutalismShadowScheme &&
+          shadowColor == other.shadowColor;
+
+  @override
+  int get hashCode => shadowColor.hashCode;
 }
 
 // ==========================================

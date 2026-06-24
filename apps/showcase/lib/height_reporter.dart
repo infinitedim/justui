@@ -1,6 +1,5 @@
-import 'dart:js_interop';
 import 'package:flutter/material.dart';
-import 'package:web/web.dart' as web;
+import 'package:universal_html/html.dart' as web;
 
 class HeightReporter extends StatefulWidget {
   final Widget child;
@@ -25,10 +24,9 @@ class _HeightReporterState extends State<HeightReporter> {
       final renderBox = context.findRenderObject() as RenderBox?;
       if (renderBox != null) {
         final height = renderBox.size.height;
-        // Kirim tinggi widget ke Next.js parent
         web.window.parent?.postMessage(
-          '{"type": "RESIZE_IFRAME", "height": $height}'.toJS,
-          '*'.toJS, // Pada produksi, ganti dengan target origin domain spesifik
+          '{"type": "RESIZE_IFRAME", "height": $height}',
+          '*',
         );
       }
     }

@@ -116,8 +116,8 @@ class DiffFormatter {
         groups.add(currentGroup);
       } else {
         final lastIdx = currentGroup.last;
-        // Merge if changes are within 2 * contextCount + 1 lines
-        if (idx - lastIdx <= (2 * contextCount) + 1) {
+        // Merge if changes are within 2 * contextCount lines
+        if (idx - lastIdx <= 2 * contextCount) {
           currentGroup.add(idx);
         } else {
           currentGroup = [idx];

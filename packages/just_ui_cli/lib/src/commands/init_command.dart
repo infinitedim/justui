@@ -17,14 +17,42 @@ class InitCommand extends Command<void> {
   final FileSystem fileSystem;
 
   /// Creates an [InitCommand].
-  /// Creates an [InitCommand].
   InitCommand(this.fileSystem) {
     argParser.addOption(
       'preset',
-      help: 'Theme preset style to initialize.',
-      allowed: ['default', 'neobrutalism'],
+      help:
+          'Theme preset style to initialize. Aliases: neo=neobrutalism, d=default.',
+      allowed: ['default', 'd', 'neobrutalism', 'neo'],
       defaultsTo: 'default',
     );
+  }
+
+  /// Normalizes preset aliases to their canonical names.
+  String _normalizePreset(String input) {
+    switch (input.toLowerCase()) {
+      case 'neo':
+        return 'neobrutalism';
+      case 'd':
+        return 'default';
+      default:
+        return input;
+    }
+  }
+
+  /// Converts a subfolder name to a lib-rooted path.
+  ///
+  /// Strips any accidental leading 'lib/' prefix the user might type
+  /// before prepending the canonical 'lib/' root.
+  ///
+  /// Examples:
+  ///   'widgets'     → 'lib/widgets'
+  ///   'lib/widgets' → 'lib/widgets'  (not 'lib/lib/widgets')
+  String _toLibPath(String input) {
+    final trimmed = input.trim();
+    if (trimmed.startsWith('lib/')) {
+      return trimmed; // already has correct prefix
+    }
+    return 'lib/$trimmed';
   }
 
   @override
@@ -53,31 +81,55 @@ class InitCommand extends Command<void> {
 
     JustLogger.stdout('=== JustUI Initialization Wizard ===');
 
-    // Prompt for visual style preset
-    String preset = presetArg;
-    if (!wasPresetParsed) {
-      preset = JustPrompt.ask(
-        'Select visual style preset (default, neobrutalism)',
-        defaultValue: 'default',
+    // --- Preset selection ---
+    String preset;
+
+    if (wasPresetParsed) {
+      preset = _normalizePreset(presetArg);
+    } else {
+      JustLogger.stdout('');
+      JustLogger.stdout('Select visual style preset:');
+      final presetIdx = JustPrompt.selectOne(
+        'Choose preset',
+        ['default', 'neobrutalism (alias: neo)'],
+        defaultIndex: 0,
       );
-      if (preset != 'default' && preset != 'neobrutalism') {
-        preset = 'default';
-      }
+      preset = presetIdx == 1 ? 'neobrutalism' : 'default';
     }
 
-    // 3. Prompt for components directory
-    final componentsDir = JustPrompt.ask(
-      'Enter the directory for UI components',
-      defaultValue: 'lib/ui',
+    // --- Components directory selection ---
+    JustLogger.stdout('');
+    JustLogger.stdout(
+      'Select UI components directory (will be created under lib/):',
+    );
+    final compChoices = ['widgets', 'components', 'Custom...'];
+    final compIdx = JustPrompt.selectOne(
+      'Choose components dir',
+      compChoices,
+      defaultIndex: 0,
     );
 
-    // 4. Prompt for tokens directory
-    final tokensDir = JustPrompt.ask(
-      'Enter the directory for design tokens',
-      defaultValue: 'lib/tokens',
-    );
+    String componentsDir;
+    if (compIdx == 2) {
+      // Custom — ask for subfolder name, auto-prefix lib/
+      final customName = JustPrompt.ask(
+        'Enter folder name (under lib/)',
+        defaultValue: 'ui',
+      );
+      componentsDir = _toLibPath(customName);
+    } else {
+      componentsDir = 'lib/${compChoices[compIdx]}';
+    }
 
-    // 5. Prompt for brand seed color
+    // --- Tokens directory ---
+    JustLogger.stdout('');
+    final tokensInput = JustPrompt.ask(
+      'Enter design tokens folder name (under lib/)',
+      defaultValue: 'tokens',
+    );
+    final tokensDir = _toLibPath(tokensInput);
+
+    // --- Brand seed color ---
     String brandColor = '#3b82f6';
     final hexRegex = RegExp(r'^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$');
     while (true) {
@@ -101,7 +153,7 @@ class InitCommand extends Command<void> {
     }
     final hexCode = '0xFF$cleanHex';
 
-    // 6. Write configuration file
+    // Write configuration file
     try {
       final config = JustUIConfig(
         componentsDir: componentsDir,
@@ -114,7 +166,7 @@ class InitCommand extends Command<void> {
         'Configuration written to ${JustUIConfig.configFileName}',
       );
 
-      // 7. Scaffold standard theme file bootstrap
+      // Scaffold standard theme file bootstrap
       final themeDir = fileSystem.directory('lib/theme');
       themeDir.createSync(recursive: true);
       final themeFile = fileSystem.file('lib/theme/just_theme.dart');
