@@ -1,0 +1,113 @@
+---
+title: Separator
+description: Responsive layout divider line that supports inserting text labels in the center section.
+---
+
+# Separator
+
+`JustSeparator` is a decorative divider line component that separates content within an application layout. This component supports optional text label insertion at the center of the divider line, custom thickness, and dynamic/responsive orientation direction switching (horizontal to vertical) based on screen width.
+
+## Usage
+
+### Basic
+
+The following is a basic usage example of `JustSeparator` for a simple horizontal divider.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class BasicSeparatorExample extends StatelessWidget {
+  const BasicSeparatorExample({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: const [
+        Text('Top Section'),
+        JustSeparator(),
+        Text('Bottom Section'),
+      ],
+    );
+  }
+}
+```
+
+### Advanced
+
+Advanced usage example with center text label, custom thickness, start and end indentation, and responsive orientation.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class AdvancedSeparatorExample extends StatelessWidget {
+  const AdvancedSeparatorExample({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Text('Login with Social Accounts'),
+        const SizedBox(height: 16),
+        JustSeparator(
+          direction: null, // Responsive (horizontal on mobile, vertical on desktop)
+          breakpoint: 640.0,
+          thickness: 1.5,
+          indent: 16.0,
+          endIndent: 16.0,
+          label: 'OR',
+          labelStyle: context.justTypo.caption.copyWith(
+            color: context.justColors.textMuted,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            JustButton(
+              label: 'Google',
+              onPressed: () {},
+            ),
+            const SizedBox(width: 12),
+            JustButton(
+              label: 'GitHub',
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+```
+
+## API Reference (Props)
+
+### JustSeparator
+
+| Property     | Type         | Default           | Description                                                                                                                          |
+| ------------ | ------------ | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `direction`  | `Axis?`      | `Axis.horizontal` | Divider direction (horizontal or vertical). If set to `null`, the separator will automatically respond to screen width responsively. |
+| `breakpoint` | `double`     | `640.0`           | Screen width threshold (in pixels) to trigger orientation reversal from horizontal to vertical.                                      |
+| `thickness`  | `double`     | `1.0`             | Physical thickness size of the divider line.                                                                                         |
+| `color`      | `Color?`     | `null`            | Divider line color (default follows the theme border color).                                                                         |
+| `indent`     | `double`     | `0.0`             | Empty space gap clipping the line at the start/beginning.                                                                            |
+| `endIndent`  | `double`     | `0.0`             | Empty space gap clipping the line at the end.                                                                                        |
+| `label`      | `String?`    | `null`            | Optional text label placed at the center of the divider line (e.g., "OR" between forms).                                           |
+| `labelStyle` | `TextStyle?` | `null`            | Visual style of the center label text.                                                                                               |
+
+## Theming & Accessibility
+
+### Preset & Style Customization
+
+- **Default Style**: The divider line has a default thickness of `1.0` and a thin neutral gray color that blends with the main container background.
+- **Neobrutalism Style**: The default thickness is forced to `2.5` with a solid thick black/white border color. The center label text is wrapped with a hard-edged bordered box and a solid contrasting background color to clearly emphasize content separation.
+
+### WCAG AA Compliance
+
+- **Semantic Role**: By default, the divider line is marked with a decorative semantic role (`excludeSemantics: true`) so that screen readers automatically skip it and do not disrupt the content reading flow for users with disabilities.
+- **Color Contrast**: If a text `label` is supplied in the center, the text and line colors are guaranteed to pass the minimum contrast test of $\ge$ 4.5:1 against the surrounding background for optimal readability.
