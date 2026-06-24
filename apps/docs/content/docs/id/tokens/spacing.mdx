@@ -1,0 +1,141 @@
+---
+title: Spacing
+description: Nilai sistem kisi spacing 4px, kelas pembantu JustGap, utilitas JustSpacing.insets(), dan visualisasi tata letak spasial JustUI.
+---
+
+Sistem spasial JustUI didasarkan pada **kisi 4 piksel** (4px grid system). Penggunaan rasio inkremental 4px memastikan keseimbangan proporsi antarmuka, konsistensi penyelarasan visual (alignment), dan menghilangkan kebingungan dalam menentukan nilai margin, padding, atau jarak antar elemen (spacing).
+
+---
+
+## 1. Katalog Spacing (`JustSpacing`)
+
+JustUI menyediakan konstanta numerik waktu kompilasi (`const double`) untuk sembilan tingkat ukuran spasial standar dari skala mikro (`2px`) hingga skala makro vertikal (`64px`).
+
+| Token Spasi | Nilai Piksel | Ilustrasi & Kegunaan Utama                                                             |
+| :---------- | :----------- | :------------------------------------------------------------------------------------- |
+| **xxs**     | 2.0 px       | Jarak mikro (seperti jarak antara ikon segaris dengan label teks pendek).              |
+| **xs**      | 4.0 px       | Jarak ketat (jarak antara input field dengan helper text di bawahnya).                 |
+| **sm**      | 8.0 px       | Jarak dasar (jarak antar elemen kecil di dalam list, tombol, atau tag).                |
+| **md**      | 12.0 px      | Padding bawaan (padding internal lencana status atau kartu kecil).                     |
+| **lg**      | 16.0 px      | Padding kontainer utama (margin sisi luar halaman seluler atau padding kartu standar). |
+| **xl**      | 24.0 px      | Padding kartu besar (padding dialog modal, header halaman, atau kartu dashboard).      |
+| **xxl**     | 32.0 px      | Jarak antar seksi (jarak pemisah vertikal antar blok grup konten utama).               |
+| **xxxl**    | 48.0 px      | Batas tata letak (jarak pemisah layout halaman berskala besar).                        |
+| **huge**    | 64.0 px      | Jarak masif (jarak vertikal atas-bawah pada tata letak landing page/hero section).     |
+
+---
+
+## 2. Kelas Pembantu Spacer (`JustGap`)
+
+Untuk mengurangi boilerplate kode penulisan `SizedBox` manual di dalam struktur widget Flutter (seperti di dalam baris `Row` atau kolom `Column`), JustUI menyediakan kelas pembantu `JustGap`.
+
+Setiap getter di dalam `JustGap` mengembalikan instans `SizedBox` konstan dengan dimensi tinggi (`height`) dan lebar (`width`) yang sama dengan nilai token `JustSpacing` terkait.
+
+```dart
+// Contoh perbandingan penulisan spacer:
+// ❌ Metode Konvensional (Boilerplate tinggi)
+Column(
+  children: [
+    const Text('Judul'),
+    const SizedBox(height: 8.0),
+    const Text('Deskripsi'),
+  ],
+)
+
+// ✅ Metode JustUI (Bersih & Terstandar)
+Column(
+  children: [
+    const Text('Judul'),
+    JustGap.sm, // Mengembalikan SizedBox konstan berukuran 8.0 px
+    const Text('Deskripsi'),
+  ],
+)
+```
+
+---
+
+## 3. Utilitas Insets (`JustSpacing.insets()`)
+
+JustUI menyediakan metode utilitas `JustSpacing.insets()` untuk menyederhanakan pembuatan objek `EdgeInsets` berbasis token tanpa harus menulis konstruktor bawaan Flutter secara manual.
+
+Metode ini mengevaluasi parameter dengan aturan prioritas sebagai berikut:
+
+1. Jika parameter **`all`** disediakan, metode mengembalikan `EdgeInsets.all(...)`.
+2. Jika parameter horizontal **`h`** atau vertikal **`v`** disediakan, metode mengembalikan `EdgeInsets.symmetric(...)` dengan nilai default `0.0` untuk parameter yang dilewatkan kosong.
+3. Jika tidak ada parameter yang disediakan, mengembalikan `EdgeInsets.zero`.
+
+### Gaya Penulisan Shorthand (Dart Dot Shorthand)
+
+Sesuai dengan panduan gaya pengodean JustUI, utilitas ini ditulis menggunakan fitur shorthand modern Flutter (tersedia sejak Dart 3.10+):
+
+```dart
+// Implementasi internal JustSpacing.insets:
+static EdgeInsets insets({double? all, double? h, double? v}) {
+  if (all != null) {
+    return .all(all); // Memanfaatkan dot shorthand untuk EdgeInsets.all
+  }
+  return .symmetric(horizontal: h ?? 0.0, vertical: v ?? 0.0); // EdgeInsets.symmetric
+}
+```
+
+Contoh konsumsi insets di proyek Anda:
+
+```dart
+Padding(
+  padding: JustSpacing.insets(h: JustSpacing.lg, v: JustSpacing.md),
+  child: ChildWidget(),
+)
+```
+
+---
+
+## 4. Spacing Dinamis (`FluidSpacingScheme`)
+
+Untuk tata letak yang membutuhkan penyesuaian spasi secara otomatis di layar tablet atau desktop, JustUI menyediakan kelas `FluidSpacingScheme`. Properti ini menskalakan dimensi spasial secara linier berdasarkan lebar viewport saat ini.
+
+Penskalaan linier terjadi ketika lebar layar bergerak dari `640px` (minWidth) hingga `1024px` (maxWidth):
+
+- **xxs**: diskalakan dari `1.5px` hingga `2.0px`.
+- **xs**: diskalakan dari `3.0px` hingga `4.0px`.
+- **sm**: diskalakan dari `6.0px` hingga `8.0px`.
+- **md**: diskalakan dari `9.0px` hingga `12.0px`.
+- **lg**: diskalakan dari `12.0px` hingga `16.0px`.
+- **xl**: diskalakan dari `18.0px` hingga `24.0px`.
+- **xxl**: diskalakan dari `24.0px` hingga `32.0px`.
+- **xxxl**: diskalakan dari `36.0px` hingga `48.0px`.
+- **huge**: diskalakan dari `48.0px` hingga `64.0px`.
+
+---
+
+## 5. Contoh Praktik Terbaik Konsumsi Spacing di Flutter
+
+Selaras dengan optimisasi aspect-based rebuilds di `just_ui_core`, selalu konsumsi token spacing menggunakan aspek context `justSpacing` pada metode build widget Anda:
+
+```dart
+class SpacedContainer extends StatelessWidget {
+  const SpacedContainer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Meregistrasikan widget ke aspek spacing tema
+    final spacing = context.justSpacing;
+
+    return Padding(
+      padding: JustSpacing.insets(h: spacing.lg, v: spacing.md),
+      child: Container(
+        padding: JustSpacing.insets(all: spacing.md),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.info),
+            JustGap.sm, // Spacer horizontal instan 8px
+            const Text('Informasi Spasial Terverifikasi'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```

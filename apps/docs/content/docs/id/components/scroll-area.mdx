@@ -1,0 +1,147 @@
+---
+title: Scroll Area
+description: Kontainer gulir mandiri dengan bilah geser kustom, tepi transparan, dan pemicu muat data tanpa batas (infinite scroll).
+---
+
+# Scroll Area
+
+`JustScrollArea` adalah kontainer gulir berkinerja tinggi yang menggantikan scrollbar bawaan sistem operasi dengan bilah geser kustom yang mematuhi estetika sistem desain. Komponen ini mendukung efek tepi memudar transparan (_fade edges_) di batas atas dan bawah gulungan, tombol kembali ke atas otomatis, dan pemicu pemuatan data tanpa batas (_infinite scroll_).
+
+## Usage
+
+### Basic
+
+Berikut adalah contoh penggunaan dasar `JustScrollArea` untuk membungkus daftar konten gulir sederhana.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class BasicScrollAreaExample extends StatelessWidget {
+  const BasicScrollAreaExample({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 300,
+      decoration: BoxDecoration(
+        border: Border.all(color: context.justColors.border),
+        borderRadius: .all(context.justRadius.md),
+      ),
+      child: JustScrollArea(
+        child: Column(
+          children: List.generate(
+            50,
+            (index) => ListTile(
+              title: Text('Item Ke-$index'),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+### Advanced
+
+Contoh penggunaan lanjutan dengan pemudaran tepi menggunakan `ShaderMask`, tombol kembali ke atas otomatis, pemutaran keyboard, dan pagination tak terbatas (_infinite scroll_).
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class AdvancedScrollAreaExample extends StatefulWidget {
+  const AdvancedScrollAreaExample({super.key});
+
+  @override
+  State<AdvancedScrollAreaExample> createState() => _AdvancedScrollAreaExampleState();
+}
+
+class _AdvancedScrollAreaExampleState extends State<AdvancedScrollAreaExample> {
+  final List<String> _items = List.generate(20, (index) => 'Item Awal Ke-$index');
+  bool _isLoadingMore = false;
+
+  void _loadMoreData() async {
+    if (_isLoadingMore) return;
+    setState(() => _isLoadingMore = true);
+
+    // Simulasi delay jaringan
+    await Future.delayed(const Duration(seconds: 2));
+
+    setState(() {
+      _items.addAll(List.generate(10, (index) => 'Item Tambahan Ke-${_items.length + index}'));
+      _isLoadingMore = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 400,
+      decoration: BoxDecoration(
+        border: Border.all(color: context.justColors.border),
+        borderRadius: .all(context.justRadius.lg),
+      ),
+      child: JustScrollArea(
+        direction: Axis.vertical,
+        showScrollbar: true,
+        fadeEdges: true,
+        fadeMode: JustScrollFadeMode.shaderMask,
+        scrollToTopButton: true,
+        scrollToTopThreshold: 300.0,
+        keyboardScrollStep: 60.0,
+        onReachBottom: _loadMoreData, // Memicu muat data saat mendekati batas bawah
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(), // Scroll dikontrol penuh oleh JustScrollArea
+          itemCount: _items.length + (_isLoadingMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index == _items.length) {
+              return const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+            return ListTile(title: Text(_items[index]));
+          },
+        ),
+      ),
+    );
+  }
+}
+```
+
+## API Reference (Props)
+
+### JustScrollArea
+
+| Properti               | Tipe Data            | Nilai Bawaan                 | Deskripsi                                                                                                                                            |
+| ---------------------- | -------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `child`                | `Widget`             | _Wajib_                      | Widget anak berisi daftar konten yang dapat digulir.                                                                                                 |
+| `direction`            | `Axis`               | `Axis.vertical`              | Arah gulir utama kontainer (vertikal atau horizontal).                                                                                               |
+| `showScrollbar`        | `bool`               | `true`                       | Menentukan apakah bilah geser kustom JustUI ditampilkan secara visual.                                                                               |
+| `fadeEdges`            | `bool`               | `false`                      | Jika true, menerapkan efek gradasi transparan di batas tepi gulungan (menandakan adanya konten lanjutan).                                            |
+| `fadeMode`             | `JustScrollFadeMode` | `JustScrollFadeMode.overlay` | Teknik pemudaran tepi: `.overlay` (container gradasi di atas viewport) atau `.shaderMask` (masking piksel alpha asli anak menggunakan `ShaderMask`). |
+| `scrollToTopButton`    | `bool`               | `false`                      | Menampilkan tombol kembali ke posisi awal secara otomatis saat digulir jauh.                                                                         |
+| `scrollToTopThreshold` | `double`             | `400.0`                      | Jarak batas minimal gulir (dalam piksel) untuk memunculkan tombol kembali ke atas.                                                                   |
+| `onReachBottom`        | `VoidCallback?`      | `null`                       | Callback yang dipicu ketika guliran mendekati batas bawah kontainer (berguna untuk _infinite scroll_).                                               |
+| `keyboardScrollStep`   | `double`             | `50.0`                       | Jarak lompatan gulir (dalam piksel) per satu ketukan tombol panah pada keyboard.                                                                     |
+
+## Theming & Accessibility
+
+### Penjelasan Kustomisasi Preset & Style
+
+- **Default Style**: Bilah geser kustom dirancang ramping dengan transisi transparansi halus (meredup saat kursor tidak aktif di atas area gulir) dan warna yang mengikuti tema `colors.border`.
+- **Neobrutalism Style**: Bilah geser kustom dipaksa menampilkan tepi border hitam pekat (`2.5`) dengan sudut siku kaku, warna cerah kontras tinggi, dan tidak memudar secara otomatis (selalu terlihat jelas di layar).
+
+### Integrasi Keyboard & ShaderMask
+
+- **Navigasi Keyboard Desktop**: Mengikat widget dengan `FocusNode` internal untuk menangkap interaksi tombol keyboard. Tombol `PageDown` dan `PageUp` dipetakan untuk menggulir halaman sejauh ukuran tinggi viewport aktif, sementara tombol panah atas/bawah menggulir secara halus sebesar ukuran piksel yang disetel di `keyboardScrollStep`.
+- **ShaderMasking Tepi**: Masking gradien `ShaderMask` dihitung secara dinamis menggunakan linear gradien multi-stop untuk mencegah teks atau gambar terpotong kasar di ujung batas layar.
+
+### Pemenuhan Standar WCAG AA
+
+- **Aksesibilitas Target Klik**: Menjaga ukuran target klik bilah geser kustom minimal 8px lebar horizontal pada desktop/tablet agar mudah ditarik. Menambahkan semantik label vokal pada tombol scroll-to-top ("Kembali ke atas") serta menyampaikan pemberitahuan semantik ketika sistem mendeteksi pencapaian batas gulir terbawah.

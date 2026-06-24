@@ -1,0 +1,157 @@
+---
+title: Bottom Navigation
+description: Bottom navigation bar with fixed, dynamically shifting, and custom floating layout options.
+---
+
+# Bottom Navigation
+
+`JustBottomNav` is the main navigation component for mobile interfaces, positioned at the bottom of the screen. It is designed to simplify switching between main app pages by supporting a minimum of 3 to a maximum of 5 navigation items, and offering fixed, dynamically shifting, and floating style variants.
+
+## Usage
+
+### Basic
+
+Basic usage example of `JustBottomNav` with the default fixed width style for 3 main menus.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class BasicBottomNavExample extends StatefulWidget {
+  const BasicBottomNavExample({super.key});
+
+  @override
+  State<BasicBottomNavExample> createState() => _BasicBottomNavExampleState();
+}
+
+class _BasicBottomNavExampleState extends State<BasicBottomNavExample> {
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: JustBottomNav(
+        selectedIndex: _currentIndex,
+        onItemSelected: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: const [
+          JustBottomNavItem(
+            label: 'Home',
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+          ),
+          JustBottomNavItem(
+            label: 'Search',
+            icon: Icon(Icons.search),
+          ),
+          JustBottomNavItem(
+            label: 'Profile',
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+### Advanced
+
+Advanced usage example using the floating variant, haptic feedback, and icon alignment.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class AdvancedBottomNavExample extends StatefulWidget {
+  const AdvancedBottomNavExample({super.key});
+
+  @override
+  State<AdvancedBottomNavExample> createState() => _AdvancedBottomNavExampleState();
+}
+
+class _AdvancedBottomNavExampleState extends State<AdvancedBottomNavExample> {
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: JustBottomNav(
+          selectedIndex: _currentIndex,
+          variant: JustBottomNavVariant.floating,
+          showLabels: true,
+          onItemSelected: (index) {
+            HapticFeedback.lightImpact(); // Provides light haptic vibration
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          items: const [
+            JustBottomNavItem(
+              label: 'Home',
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+            ),
+            JustBottomNavItem(
+              label: 'Messages',
+              icon: Icon(Icons.chat_bubble_outline),
+              activeIcon: Icon(Icons.chat_bubble),
+            ),
+            JustBottomNavItem(
+              label: 'Cart',
+              icon: Icon(Icons.shopping_cart_outlined),
+              activeIcon: Icon(Icons.shopping_cart),
+            ),
+            JustBottomNavItem(
+              label: 'Account',
+              icon: Icon(Icons.account_circle_outlined),
+              activeIcon: Icon(Icons.account_circle),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+## API Reference (Props)
+
+### JustBottomNav
+
+| Property         | Data Type                 | Default Value                | Description                                                                                                                                                                                                        |
+| ---------------- | ------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `items`          | `List<JustBottomNavItem>` | _Required_                   | Set of bottom navigation destination menus (must contain between 3 and 5 items).                                                                   |
+| `selectedIndex`  | `int`                     | `0`                          | The currently active selected navigation item index.                                                                                               |
+| `onItemSelected` | `ValueChanged<int>?`      | `null`                       | Callback triggered when the user taps one of the menu items.                                                                                       |
+| `variant`        | `JustBottomNavVariant`    | `JustBottomNavVariant.fixed` | Bottom navigation visual style: `.fixed` (fixed width), `.shifting` (expanding transition effect when selected, hides inactive text), or `.floating` (freely floating with a soft shadow above the screen). |
+| `showLabels`     | `bool`                    | `true`                       | Determines whether the label text below icons is visually displayed.                                                                               |
+
+### JustBottomNavItem
+
+| Property     | Data Type | Default Value | Description                                                                |
+| ------------ | --------- | ------------- | -------------------------------------------------------------------------- |
+| `label`      | `String`  | _Required_    | Navigation menu title text.                                                |
+| `icon`       | `Widget`  | _Required_    | Icon displayed when the menu is inactive.                                  |
+| `activeIcon` | `Widget?` | `null`        | Alternative icon displayed when the menu is actively selected.             |
+
+## Theming & Accessibility
+
+### Preset & Style Customization
+
+- **Default Style**: Displays a thin top divider and a soft outer shadow (`JustShadows.sm`) with a background color that blends with the theme `colors.background`. Text and icon color transitions follow a linear interpolation of `JustDuration.normal` (250ms).
+- **Neobrutalism Style**: Features a thick dark black/white outer border (`2.5`), a high-contrast background, and a rigid solid shadow (`JustShadows.generate` with thick offset and no blur). On the `.floating` variant, contrast is forced to full value without dynamic HSL compensation, providing a bold pop-art aesthetic.
+
+### WCAG AA Compliance
+
+- **Item Count Limit (Touch Area)**: This component enforces a strict assertion on the `items` parameter to ensure the menu count is between `3` and `5`. This guarantees balanced navigation width distribution on mobile device screens, so each item has a touch area width of at least 48x48 pixels (WCAG AA standard for mobile interactive elements).
+- **Semantics & Voice Description**: Each item is wrapped with a `Semantics` widget that declares the selected status (`selected: true/false`), a descriptive label, and the current navigation index to the operating system's voice system. The active text/icon contrast ratio against the background is guaranteed to be $\ge$ 4.5:1 for optimal readability for users with visual impairments.
