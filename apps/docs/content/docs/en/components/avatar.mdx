@@ -1,0 +1,149 @@
+---
+title: Avatar
+description: A flexible user profile photo component with image failure tolerance, deterministic initial colors, and avatar grouping support.
+---
+
+# Avatar
+
+The `JustAvatar` and `JustAvatarGroup` components are used to visually represent users or entities. They are designed with a robust automatic fallback mechanism (using name initials or a custom vector drawing when an image fails to load) and a consistent initial color algorithm.
+
+---
+
+## Description
+
+- **`JustAvatar`**: A single round or rounded-square profile photo element. Supports remote image loading, automatic text initials, an alternative icon, and activity status indicators (such as online/offline).
+- **`JustAvatarGroup`**: A container for stacking multiple avatars horizontally with a maximum display limit and an automatic overflow count badge (`+X`).
+
+---
+
+## Usage
+
+### Basic Usage
+
+Basic usage example of `JustAvatar` with an image URL, name initials, or an icon:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicAvatars(BuildContext context) {
+  return Row(
+    spacing: context.justSpacing.md,
+    children: [
+      // Avatar with Image URL
+      JustAvatar(
+        imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb',
+        name: 'Sara Wijaya',
+      ),
+
+      // Fallback to Name Initials (Generates a consistent background color)
+      JustAvatar(
+        name: 'Budi Santoso',
+      ),
+
+      // Fallback to Icon
+      JustAvatar(
+        icon: Icons.group_outlined,
+        name: 'Developer Group',
+      ),
+    ],
+  );
+}
+```
+
+### Advanced Usage
+
+Advanced usage example showing activity status, a square shape, and stacked avatar grouping:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedAvatars(BuildContext context) {
+  return Column(
+    spacing: context.justSpacing.lg,
+    children: [
+      // Square Avatar with Online Status
+      JustAvatar(
+        name: 'Rian Hidayat',
+        shape: JustAvatarShape.square,
+        size: JustAvatarSize.lg,
+        statusDot: JustAvatarStatus.online,
+      ),
+
+      // Avatar Grouping with Maximum Display
+      JustAvatarGroup(
+        avatars: [
+          JustAvatar(name: 'Ahmad Faiz'),
+          JustAvatar(name: 'Budi Santoso'),
+          JustAvatar(name: 'Citra Dewi'),
+          JustAvatar(name: 'Dedi Setiadi'),
+        ],
+        maxDisplay: 3, // Displays 3 avatars, the rest (+1) as a count badge
+        size: JustAvatarSize.md,
+        overlap: 10.0, // Horizontal overlap distance between avatars
+      ),
+    ],
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustAvatar
+
+| Property    | Data Type           | Default Value | Description                                                                                                                  |
+| :---------- | :------------------ | :------------ | :--------------------------------------------------------------------------------------------------------------------------- |
+| `imageUrl`  | `String?`           | `null`        | User profile image URL. If it fails to load, the system will switch to the next fallback.                                    |
+| `name`      | `String?`           | `null`        | User name. Used to generate automatic text initials and calculate the background color.                                      |
+| `icon`      | `IconData?`         | `null`        | Alternative icon if the image fails to load and the user name is empty.                                                      |
+| `size`      | `JustAvatarSize`    | `.md`         | Avatar dimension size: `.xs` (24px), `.sm` (32px), `.md` (40px), `.lg` (48px), `.xl` (64px), `.xxl` (96px).                 |
+| `shape`     | `JustAvatarShape`   | `.circle`     | Avatar geometry shape: `.circle` (perfectly round) or `.square` (rounded rectangle with `radius.xl`).                      |
+| `statusDot` | `JustAvatarStatus?` | `null`        | User activity indicator dot at the bottom corner: `online` (green), `offline` (gray), `away` (yellow), `busy` (red).         |
+| `onTap`     | `VoidCallback?`     | `null`        | Interactive callback when the avatar is tapped.                                                                              |
+
+### JustAvatarGroup
+
+| Property     | Data Type          | Default Value      | Description                                                                                                           |
+| :----------- | :----------------- | :----------------- | :-------------------------------------------------------------------------------------------------------------------- |
+| `avatars`    | `List<JustAvatar>` | _Required_         | List of user avatars to be stacked together.                                                                          |
+| `maxDisplay` | `int`              | `3`                | Maximum number of avatars to display in full before the remainder is replaced by a `+X` count badge.                  |
+| `overlap`    | `double`           | `8.0`              | Horizontal overlap distance between avatars in pixels.                                                                |
+| `size`       | `JustAvatarSize`   | `.md`              | Dimension size for all avatars within the group.                                                                      |
+
+---
+
+## Theming & Accessibility
+
+### Fallback Mechanism & Rendering Safety
+
+JustUI ensures the `JustAvatar` component will never trigger a broken visual layout if the image link is broken or the device is offline:
+
+1. **Image Download Failed / Waiting**:
+   When the image is loading or fails to download, the system falls back using the `_generateInitials` function to extract the initial letters from the `name` property (e.g., "Budi Santoso" produces the initials "BS").
+2. **Deterministic Color Calculation**:
+   The background color for name initials is determined consistently using a hash of the user name:
+   ```text
+   Color Index = name.hashCode.abs() % theme_color_list_length
+   ```
+   This guarantees that every user with the same name will always receive a consistent avatar background color each time the app reloads.
+3. **Canvas Vector Silhouette (`PersonFallbackPainter`)**:
+   If the image URL is broken and the `name` property is empty, the system immediately draws a human head and body silhouette manually using Flutter's built-in `CustomPainter`. This frees JustUI from any dependency on third-party icon packages (keeping the app size small and safe).
+
+### Reverse Stack Construction in `JustAvatarGroup`
+
+In `JustAvatarGroup`, the component is rendered inside a `Stack` in reverse order (the last index is placed below the first). This order ensures:
+
+- The first avatar is always on the topmost layer (visually at the front of the stack).
+- Every surrounding avatar has a high-contrast white circular outer border (visual cutout). This border cuts through the shadow of the avatar below it, keeping the visual clean without messy stacked shadows.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Initial Label Contrast**:
+   The name initial text that appears on the avatar is guaranteed to use a high-contrast color against its deterministic background color.
+2. **Semantic Description**:
+   When the avatar has a `statusDot` (e.g., `JustAvatarStatus.online`), screen readers will announce that status as descriptive semantic text (example: "Budi Santoso - Active") for blind accessibility.

@@ -1,0 +1,122 @@
+---
+title: Breadcrumb
+description: Hierarchical page trail navigation that supports automatic collapsing and nested dropdown menus.
+---
+
+# Breadcrumb
+
+`JustBreadcrumb` is a hierarchical navigation component that helps users understand their current location within the application or site structure. It automatically collapses middle items when their count exceeds a specified maximum, and elegantly displays them again through a floating portal-based dropdown menu (`OverlayPortal`).
+
+## Usage
+
+### Basic
+
+Basic usage example of `JustBreadcrumb` for ordered page navigation with the default separator.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class BasicBreadcrumbExample extends StatelessWidget {
+  const BasicBreadcrumbExample({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return JustBreadcrumb(
+      items: [
+        JustBreadcrumbItem(
+          label: 'Home',
+          onTap: () => Navigator.pushNamed(context, '/'),
+        ),
+        JustBreadcrumbItem(
+          label: 'Category',
+          onTap: () => Navigator.pushNamed(context, '/categories'),
+        ),
+        JustBreadcrumbItem(
+          label: 'Product Detail',
+        ), // Current active page (onTap is null)
+      ],
+    );
+  }
+}
+```
+
+### Advanced
+
+Advanced usage example with a maximum item limit (`maxItems`), additional icons, and a custom separator.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class AdvancedBreadcrumbExample extends StatelessWidget {
+  const AdvancedBreadcrumbExample({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return JustBreadcrumb(
+      maxItems: 3,
+      separator: const Icon(Icons.chevron_right, size: 16),
+      items: [
+        JustBreadcrumbItem(
+          label: 'Home',
+          icon: const Icon(Icons.home, size: 14),
+          onTap: () => _navigateTo(context, '/'),
+        ),
+        JustBreadcrumbItem(
+          label: 'Data Management',
+          onTap: () => _navigateTo(context, '/data'),
+        ),
+        JustBreadcrumbItem(
+          label: 'Users',
+          onTap: () => _navigateTo(context, '/data/users'),
+        ),
+        JustBreadcrumbItem(
+          label: 'User Profile',
+          onTap: () => _navigateTo(context, '/data/users/profile'),
+        ),
+        JustBreadcrumbItem(
+          label: 'Access Permission Settings',
+        ), // Current active page
+      ],
+    );
+  }
+
+  void _navigateTo(BuildContext context, String path) {
+    print('Navigate to $path');
+  }
+}
+```
+
+## API Reference (Props)
+
+### JustBreadcrumb
+
+| Property    | Data Type                  | Default Value | Description                                                                                                                            |
+| ----------- | -------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `items`     | `List<JustBreadcrumbItem>` | _Required_    | Set of hierarchical page navigation links.                                                                                           |
+| `separator` | `Widget?`                  | `Text('/')`   | Divider widget placed between breadcrumb items.                                                                                      |
+| `maxItems`  | `int?`                     | `null`        | Maximum number of items rendered directly before middle items are automatically compressed into an ellipsis (`...`) button.         |
+| `collapsed` | `Widget?`                  | `null`        | Customization of the visual button indicator for collapsed items.                                                                    |
+
+### JustBreadcrumbItem
+
+| Property | Data Type       | Default Value | Description                                                                                                                        |
+| -------- | --------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `label`  | `String`        | _Required_    | Page name/link navigation text.                                                                                                    |
+| `onTap`  | `VoidCallback?` | `null`        | Navigation action when the item is tapped. If `null`, the item acts as the current active page (bold text and non-interactive).    |
+| `icon`   | `Widget?`       | `null`        | Visual icon in front of the breadcrumb label text.                                                                                 |
+
+## Theming & Accessibility
+
+### Preset & Style Customization
+
+- **Default Style**: Text and icon colors transition smoothly using the `colors.textMuted` token for inactive links and `colors.textPrimary` for the currently active selected page. The hover effect triggers a subtle underline or gentle color change.
+- **Neobrutalism Style**: The collapse button corner curvature uses `radius.none` or `radius.xs` for sharp corner angles. Dividers and the collapse button are forced to use a thick black border color (`colors.textPrimary`) with a border thickness of `2.5` and a rigid shadow with a solid offset.
+
+### WCAG AA Compliance
+
+- **Breadcrumb Overlay Portal**: When the number of items exceeds `maxItems`, the middle items are delegated to an ellipsis (`...`) button. When tapped, a floating menu containing the hidden link list is displayed using `OverlayPortal`. The portal location coordinates are projected precisely following the global coordinates of the tap button through RenderBox transformation matrix conversion, preventing parent container clipping.
+- **Contrast & Semantic Accessibility**: The contrast ratio of inactive (muted) text against the background is maintained above 4.5:1 for clear readability. For screen readers, inactive links are marked with the `link` role while the current active page is marked as plain static text to clarify the semantic hierarchy flow. The entire `OverlayPortal` dropdown element is integrated into the semantic tree for desktop keyboard navigation accessibility.
