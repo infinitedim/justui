@@ -1,0 +1,112 @@
+---
+title: Copy-Paste Workflow & CLI
+description: In-depth guide on the copy-paste design philosophy, zero-dependency footprint, and integration of the JustUI command-line tool (CLI).
+---
+
+JustUI adopts a component distribution model that differs from conventional Flutter UI libraries. Instead of installing JustUI as a third-party package through pub.dev, you copy component source code directly into your own Flutter project. This document explains the philosophy behind this decision, the technical advantages it offers, and how the JustUI CLI facilitates this workflow.
+
+---
+
+## Why Choose the Copy-Paste Model?
+
+The copy-paste model (inspired by the **shadcn/ui** philosophy in the web ecosystem) is designed to solve several classic problems in Flutter application development using external UI packages.
+
+### 1. Unlimited Customization
+
+When you use a UI library from pub.dev, you often encounter customization limitations. If you want to change transition behavior, add a new style parameter, or modify the internal layout of a component, you must:
+
+- Create complex wrapper widgets.
+- Fork the library repository and maintain it yourself.
+- Submit a pull request to the original repository and wait for maintainer approval.
+
+With JustUI, the component source code lives directly in your project directory (`lib/ui` or your chosen destination folder). That component is entirely yours. You are free to edit, delete, or overhaul that code according to your specific application design needs without any limitations.
+
+### 2. Zero-Dependency Footprint
+
+Many UI libraries bundle numerous third-party dependencies that you may not need. This can cause:
+
+- **Dependency Hell**: Version conflicts when the UI package requires a specific package version (such as `provider` or `intl`) that differs from the version used by your project.
+- **Bloated Binary**: Increased APK/IPA file size due to packing unused external code.
+
+JustUI is built with the **Zero-dependency footprint** principle. JustUI components only depend on built-in Flutter SDK libraries (such as `package:flutter/widgets.dart` or `painting.dart`). The only internal dependencies used are your design system token package (`just_ui_tokens`) and the basic theming engine (`just_ui_core`).
+
+### 3. Full Control Over Updates
+
+You will never be surprised by breaking changes from automatic third-party package updates. You decide when and which components to update manually using the CLI.
+
+---
+
+## JustUI CLI Integration Workflow
+
+The JustUI CLI (`just_ui_cli`) is the center of this workflow. This CLI automates the initialization, component download, local dependency resolution, and version management process.
+
+The following is the integration workflow from start to finish until the component is ready to use:
+
+### 1. Project Initialization (`justui init`)
+
+The first step is to run the initialization command in your Flutter project root directory:
+
+```bash
+justui init --preset default
+```
+
+This command performs the following steps:
+
+1. **Project Verification**: Ensures the command is called from a Flutter project root folder that has a `pubspec.yaml` file.
+2. **Interactive Configuration**: Prompts you to specify the destination folder for components (default: `lib/ui`), the token folder (default: `lib/tokens`), and your brand seed color code (HEX format).
+3. **Configuration Creation**: Generates a configuration file `justui.config.yaml` that stores your folder preferences.
+4. **Theme Scaffolding**: Creates a theme initialization file `lib/theme/just_theme.dart` according to the preset you choose (`default` or `neobrutalism`).
+
+### 2. Installing Components (`justui add`)
+
+To install a new component, you use the `add` command. For example, to add Button and Input simultaneously:
+
+```bash
+justui add button input
+```
+
+If you call the `justui add` command without component name arguments, the CLI will display an interactive multi-select checkbox prompt that allows you to visually select multiple components using the space and arrow keys.
+
+Behind the scenes, the CLI performs the following important processes:
+
+#### A. Recursive Download & Dependency Resolution
+
+The CLI contacts the official registry to download component files. If the component you install requires other components (for example, `JustInput` type OTP that requires a special focus system or keyboard listener), the CLI automatically downloads those dependency components recursively.
+
+#### B. Import Rewriting
+
+So that downloaded component files work immediately without linting errors due to incorrect file paths, the CLI's internal `ImportRewriter` class automatically detects import paths in component files and makes adjustments:
+
+- Redirects core theme file references (such as `theme_provider.dart` or `theme_data.dart`) to the global package `package:just_ui_core/just_ui_core.dart`.
+- Changes local inter-component references to dynamic relative path notation according to the target directory location configured by the user in `justui.config.yaml` (`components_dir` and `tokens_dir`).
+
+#### C. Control Metadata Injection
+
+The CLI injects a tracking comment line at the top of each component file:
+
+```dart
+// justui-meta: registry=<sha_original_remote> local=<sha_local_rewritten>
+```
+
+This comment is very important because the CLI uses it to detect local version changes and identify conflicts during future migrations.
+
+#### D. Pubspec Dependency Addition
+
+If a component requires optional pub.dev dependencies, the CLI uses the internal `PubspecEditor` library to automatically register those dependencies into your project's `pubspec.yaml` file.
+
+---
+
+## Managing Custom Components (`justui create`)
+
+In addition to copying components from the official registry, the CLI also helps you create your own custom components that comply with JustUI design standards through the `create` command:
+
+```bash
+justui create my_custom_card
+```
+
+This command will automatically generate a modular component structure containing 4 template files in your component folder:
+
+1. `my_custom_card.dart`: The main widget already connected to the context extension theme aspect reader (`justColors`, `justSpacing`, `justRadius`) for optimal widget rebuild optimization.
+2. `my_custom_card_style.dart`: Individual visual customization parameters.
+3. `my_custom_card_variants.dart`: Enum definitions for visual variants and sizes.
+4. `my_custom_card_theme.dart`: Bridge class registration to Flutter's `ThemeExtension` system so your custom component integrates seamlessly with the global JustUI theme.

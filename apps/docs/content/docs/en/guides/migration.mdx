@@ -1,0 +1,89 @@
+---
+title: Migration & Update Guide
+description: Learn how to manage local component versions, detect custom modifications, resolve conflicts, and update JustUI components using the CLI.
+---
+
+Because JustUI uses a source code copying (copy-paste) model directly into your project, maintaining component code updates can be challenging if done manually. To simplify this maintenance, the JustUI CLI (`just_ui_cli`) includes a hash-based metadata tracking system to manage component versions, detect local custom changes, and help you update code without carelessly overwriting your important modifications.
+
+---
+
+## Meta-Hash Version Tracking Mechanism
+
+When you download a component using the `justui add` command, the CLI not only copies the source code but also injects a special metadata comment line at the top of the component file:
+
+```dart
+// justui-meta: registry=<sha_original_remote> local=<sha_local_rewritten>
+```
+
+This metadata line plays a vital role in JustUI's migration workflow:
+
+- **`registry`**: Contains the **SHA-256** cryptographic hash value of the component's original source code on the official registry server at the time the component was downloaded.
+- **`local`**: Contains the **SHA-256** hash value of your local component code _immediately after_ the import rewriting process is completed by the CLI (such as redirecting core file imports and relative paths between components).
+
+### How Does the CLI Detect Changes?
+
+When you verify component status, the CLI recalculates the SHA-256 hash of the component file code currently in your project folder, then compares it with the hash values above:
+
+1. **No Changes**: If the current local file hash is identical to the recorded `local` hash value in the metadata, it means you have never edited the component file locally. The file is still pristine from the registry.
+2. **Locally Modified**: If the current local file hash differs from the `local` hash in the metadata, the CLI detects that you have made customizations or modifications to that component's source code independently.
+
+---
+
+## Conflict Detection & Interactive Conflict Resolution
+
+When a new version of a component is released on the official registry (for example, an accessibility bug fix on `JustInput` or the addition of a new parameter), the registry hash on the remote server will change. The CLI compares this new registry hash with the `registry` value in your local metadata to detect update availability.
+
+If there is a new version in the registry **AND** you have made local modifications to that component, the CLI identifies this situation as a **Potential Conflict**.
+
+When you attempt to update that component, the CLI will not blindly overwrite your code. Instead, the CLI displays an interactive prompt menu to choose one of the following conflict resolutions:
+
+- **Overwrite**:
+  The CLI will download the latest code from the registry, rewrite the file imports, and overwrite your local file entirely. **Caution**: This option will erase all local custom modifications you have ever made to that file.
+- **Skip**:
+  The CLI ignores the new version update for this component and leaves your local component code as-is. You can choose this option if your local custom modifications are far more important than the new features in the remote registry version.
+- **Show Diff**:
+  The CLI compares your current local code with the latest code from the registry and displays the differences line by line in detail directly in the terminal (using standard diff output format with green coloring for added lines and red for removed lines). This helps you manually port your local customizations to the new code.
+
+---
+
+## CLI Commands for Migration & Updates
+
+The following are the CLI commands used to perform code audits and update component versions in your Flutter project.
+
+### 1. Checking Code Differences (`justui diff`)
+
+To compare in detail between your local component files and the official version in the registry:
+
+```bash
+justui diff [component_name]
+```
+
+#### Verbose Option (`--verbose` or `-v`):
+
+By default, the `diff` command will report a concise status (whether the component is up-to-date, modified, or outdated). By adding the `-v` flag, the CLI will display a full line-by-line code comparison in the terminal:
+
+```bash
+justui diff input --verbose
+```
+
+From this comparison result, the CLI will open an interactive menu to:
+
+- `Apply all`: Apply all updates from the registry to local.
+- `Select changes`: Selectively choose which changes to pull into your local file.
+- `View full diff`: Open the full diff view in the terminal.
+
+### 2. Updating Outdated Components (`justui update`)
+
+To list and update all installed components in your project in bulk:
+
+```bash
+justui update
+```
+
+This command will run an automatic workflow:
+
+1. Reads the `justui.config.yaml` file to know your local components directory (`components_dir`).
+2. Scans all component files in that folder and reads their comment lines to extract control metadata.
+3. Contacts the registry server to compare local metadata with the latest remote version.
+4. Filters and compiles a list of components that are **outdated**.
+5. Displays a summary table of components requiring updates and requests your confirmation approval before starting the download and automatic import rewriting process.
