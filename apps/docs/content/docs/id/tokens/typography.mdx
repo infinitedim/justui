@@ -1,0 +1,148 @@
+---
+title: Typography
+description: Sistem tipografi JustUI menggunakan Inter & JetBrains Mono, skala ukuran teks, serta Fluid Typography dengan adaptasi tinggi baris dinamis.
+---
+
+Sistem tipografi JustUI dirancang untuk menghasilkan keterbacaan yang luar biasa di berbagai ukuran layar. Menggunakan jenis huruf sans-serif modern **Inter** sebagai antarmuka default dan **JetBrains Mono** untuk elemen data numerik atau kode pemrograman, JustUI mendukung penskalaan statis dan penskalaan responsif (fluid typography).
+
+---
+
+## 1. Font Family
+
+JustUI mendukung dua keluarga font utama:
+
+- **Default Sans-Serif (`JustTypo.fontFamily`)**: Menggunakan font **Inter**. Pilihan ideal untuk UI yang bersih, netral, dan profesional.
+- **Monospace (`JustTypo.monoFontFamily`)**: Menggunakan font **JetBrains Mono**. Sangat cocok untuk menampilkan potongan kode, angka log, data keuangan, atau tag metadata berformat padat.
+
+---
+
+## 2. Skala Tipografi Statis (`JustTypo`)
+
+Skala tipografi statis menyediakan konstanta waktu kompilasi (`const TextStyle`) yang mengikat properti ukuran (`fontSize`), ketebalan (`fontWeight`), tinggi baris (`height`), dan spasi huruf (`letterSpacing`).
+
+Berikut adalah katalog lengkap skala tipografi statis JustUI:
+
+| Token Gaya    | Ukuran (Size) | Tebal (Weight)   | Tinggi Baris (Height) | Spasi Huruf (Letter Spacing) | Kegunaan Utama                        |
+| :------------ | :------------ | :--------------- | :-------------------- | :--------------------------- | :------------------------------------ |
+| **displayLg** | 48.0 px       | w700 (Bold)      | 1.2                   | -0.96 px                     | Judul halaman Hero utama              |
+| **displayMd** | 36.0 px       | w700 (Bold)      | 1.2                   | -0.72 px                     | Judul bagian halaman besar            |
+| **displaySm** | 30.0 px       | w600 (Semi-Bold) | 1.3                   | -0.60 px                     | Sub-judul pendaran utama              |
+| **headingLg** | 24.0 px       | w600 (Semi-Bold) | 1.3                   | -0.24 px                     | Judul halaman standar / kontainer     |
+| **headingMd** | 20.0 px       | w600 (Semi-Bold) | 1.4                   | -0.20 px                     | Judul kartu atau widget besar         |
+| **headingSm** | 16.0 px       | w600 (Semi-Bold) | 1.4                   | -0.16 px                     | Judul sub-seksi konten kartu          |
+| **bodyLg**    | 18.0 px       | w400 (Regular)   | 1.6                   | 0.00 px                      | Teks paragraf pengantar menonjol      |
+| **bodyMd**    | 16.0 px       | w400 (Regular)   | 1.6                   | 0.00 px                      | Paragraf teks utama / isi default     |
+| **bodySm**    | 14.0 px       | w400 (Regular)   | 1.5                   | 0.00 px                      | Teks keterangan detail / catatan kaki |
+| **caption**   | 12.0 px       | w400 (Regular)   | 1.4                   | 0.00 px                      | Teks anotasi sekunder / pembantu      |
+| **overline**  | 11.0 px       | w500 (Medium)    | 1.5                   | 0.55 px                      | Label kategori kapital (spasi lebar)  |
+
+---
+
+## 3. Fluid Typography (`JustFluidTypography`)
+
+Untuk mencegah teks berukuran besar mendominasi viewport perangkat seluler (mobile screen) atau tampak terlalu kecil di layar monitor desktop lebar, JustUI menyediakan sistem **Fluid Typography** melalui ekstensi `JustFluidTypography`.
+
+Sistem ini meregangkan ukuran teks secara linier (_linear interpolation_) antara lebar layar minimum (`minWidth`) dan lebar layar maksimum (`maxWidth`).
+
+### Formula Matematika Fluid Typography
+
+Penskalaan dihitung di runtime menggunakan rumus:
+
+```text
+fontSize = minSize + ((maxSize - minSize) / (maxWidth - minWidth)) * (clampedWidth - minWidth)
+```
+
+Di mana:
+
+- `minWidth` secara default disetel ke `640.0` px (`JustBreakpoints.sm`).
+- `maxWidth` secara default disetel ke `1024.0` px (`JustBreakpoints.lg`).
+- `clampedWidth` adalah lebar viewport layar aktif saat ini yang dibatasi di antara rentang `minWidth` dan `maxWidth`.
+
+### Metode `fluid()`
+
+Metode ekstensi pada `TextStyle` ini mengembalikan instans baru dengan ukuran font yang dihitung secara dinamis berdasarkan ukuran layar saat ini:
+
+```dart
+// Contoh penerapan fluid pada TextStyle apa pun
+TextStyle gayaFluid = JustTypo.displayLg.fluid(
+  screenWidth: MediaQuery.sizeOf(context).width,
+  minSize: 36.0,
+  maxSize: 48.0,
+);
+```
+
+---
+
+## 4. Adaptasi Tinggi Baris Dinamis (`withAdaptiveHeight`)
+
+Keterbacaan yang baik menuntut tinggi baris (_line-height_) yang proporsional terhadap ukuran teks:
+
+- **Teks Kecil**: Membutuhkan tinggi baris yang lebih renggang agar mata mudah membaca antar kata tanpa merasa lelah.
+- **Teks Besar**: Membutuhkan tinggi baris yang lebih rapat agar baris teks tidak terasa terpecah dan tetap tampak sebagai satu kesatuan visual yang solid.
+
+JustUI mengimplementasikan penyesuaian ini secara dinamis melalui method `.withAdaptiveHeight(context)`. Prosedur evaluasinya adalah:
+
+1. Mengambil ukuran font dasar (`fontSize`, default: `16.0`).
+2. Menerapkan skala teks aksesibilitas sistem operasi pengguna (`MediaQuery.textScalerOf(context).scale(baseSize)`).
+3. Melakukan perhitungan tinggi baris baru:
+   - Jika ukuran font yang terukur **≤ 12.0 px**, tinggi baris disetel renggang: **`1.6`**.
+   - Jika ukuran font yang terukur **≥ 36.0 px**, tinggi baris disetel rapat: **`1.15`**.
+   - Untuk ukuran font di antaranya, tinggi baris diinterpolasi secara linear.
+
+---
+
+## 5. Presets Fluid Typography (`JustFluidTypo`)
+
+Untuk kemudahan implementasi, JustUI menyediakan presets kelas helper `JustFluidTypo`. Kelas ini secara otomatis melacak lebar layar kontainer dan menerapkan kalkulasi fluid beserta penyesuaian tinggi baris adaptif secara instan.
+
+Anda cukup memanggil fungsi instans dengan melewatkan `BuildContext`:
+
+```dart
+// Presets yang tersedia di JustFluidTypo:
+TextStyle fluidLg = JustFluidTypo.displayLg(context); // Penskalaan 36px ↔ 48px
+TextStyle fluidMd = JustFluidTypo.displayMd(context); // Penskalaan 30px ↔ 38px
+TextStyle fluidSm = JustFluidTypo.displaySm(context); // Penskalaan 24px ↔ 32px
+TextStyle headLg  = JustFluidTypo.headingLg(context); // Penskalaan 20px ↔ 24px
+TextStyle headMd  = JustFluidTypo.headingMd(context); // Penskalaan 18px ↔ 20px
+TextStyle headSm  = JustFluidTypo.headingSm(context); // Penskalaan 16px ↔ 18px
+TextStyle bodyLg  = JustFluidTypo.bodyLg(context);    // Penskalaan 15px ↔ 16px
+TextStyle bodyMd  = JustFluidTypo.bodyMd(context);    // Penskalaan 13px ↔ 14px
+TextStyle bodySm  = JustFluidTypo.bodySm(context);    // Penskalaan 11px ↔ 12px
+```
+
+---
+
+## 6. Contoh Praktik Terbaik Konsumsi Tipografi di Flutter
+
+Untuk menjaga performa rendering pohon widget tetap optimal, gunakan aspek context `justTypo` di dalam method `build()`. Hal ini meminimalisasi rebuild widget jika ada parameter tema lain (seperti warna) yang berubah.
+
+```dart
+class TextCardWidget extends StatelessWidget {
+  const TextCardWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Mendaftarkan widget HANYA pada aspek tipografi
+    final typo = context.justTypo;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Ini Judul Halaman',
+          style: typo.headingLg.copyWith(
+            color: context.justColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 8.0),
+        Text(
+          'Ini isi paragraf pendukung kartu yang bersih menggunakan Inter.',
+          style: typo.bodyMd.copyWith(
+            color: context.justColors.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+```
