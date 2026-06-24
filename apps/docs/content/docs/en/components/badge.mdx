@@ -1,0 +1,166 @@
+---
+title: Badge
+description: Small visual badges for status indication, category labeling, or notification dot stacking.
+---
+
+# Badge
+
+The `JustBadge` component is a small visual badge used to highlight status, provide category tags, or display notification indicators. It is designed to be flexible, supporting various status color variations, outline modes, and a pulsing halo animation.
+
+---
+
+## Description
+
+- **`JustBadge`**: A standard badge that displays a concise text label, an additional icon, and an optional dismiss button to remove the tag.
+- **`JustBadge.dot`**: A compact variant without text that functions as a status dot indicator (such as online/offline or unread notification indicators).
+- **`JustBadge.overlay`**: A wrapper variant that places a badge or dot indicator stacked on top of a child widget, for example in the top-right corner of a notification icon.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Basic usage example of `JustBadge` with various status colors and style variants:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicBadges(BuildContext context) {
+  return Row(
+    spacing: context.justSpacing.sm,
+    children: [
+      // Solid Variant (Full Color)
+      JustBadge(
+        label: 'New',
+        color: JustBadgeColor.primary,
+        variant: JustBadgeVariant.solid,
+      ),
+
+      // Soft Variant (Soft Transparent Color)
+      JustBadge(
+        label: 'Success',
+        color: JustBadgeColor.success,
+        variant: JustBadgeVariant.soft,
+        leading: const Icon(Icons.check, size: 12),
+      ),
+
+      // Outline Variant
+      JustBadge(
+        label: 'Draft',
+        color: JustBadgeColor.neutral,
+        variant: JustBadgeVariant.outline,
+      ),
+    ],
+  );
+}
+```
+
+### Advanced Usage
+
+Advanced usage example showing the dismissible feature, pulsing notification dot, and overlay stacking on an icon:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class BadgeAdvancedDemo extends StatefulWidget {
+  const BadgeAdvancedDemo({super.key});
+
+  @override
+  State<BadgeAdvancedDemo> createState() => _BadgeAdvancedDemoState();
+}
+
+class _BadgeAdvancedDemoState extends State<BadgeAdvancedDemo> {
+  bool _showTag = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      spacing: context.justSpacing.md,
+      children: [
+        // Badge with Dismiss Button
+        if (_showTag)
+          JustBadge(
+            label: 'Active Filter',
+            color: JustBadgeColor.info,
+            variant: JustBadgeVariant.soft,
+            onDismiss: () {
+              setState(() {
+                _showTag = false;
+              });
+            },
+          ),
+
+        // Notification Indicator Stacked on Icon (Overlay)
+        JustBadge.overlay(
+          badge: const JustBadge.dot(
+            color: JustBadgeColor.error,
+            pulse: true, // Pulsing halo animation active
+          ),
+          child: const Icon(Icons.notifications, size: 32),
+        ),
+      ],
+    );
+  }
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustBadge
+
+| Property    | Data Type          | Default Value | Description                                                                                                                                                                                                 |
+| :---------- | :----------------- | :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `label`     | `String?`          | `null`        | Text displayed inside the badge. If set to `null`, the badge automatically renders as an empty notification dot.                                                                                            |
+| `color`     | `JustBadgeColor`   | `.primary`    | Status color scheme options: `.primary`, `.secondary`, `.success`, `.warning`, `.error`, `.info`, `.neutral`.                                                                                               |
+| `variant`   | `JustBadgeVariant` | `.solid`      | Badge visual type options: `.solid` (opaque background), `.soft` (dim transparent background), `.outline` (no background, with border), `.dot` (only displays a dot indicator).                              |
+| `size`      | `JustBadgeSize`    | `.md`         | Badge dimension size: `.sm`, `.md`, `.lg`.                                                                                                                                                                  |
+| `leading`   | `Widget?`          | `null`        | Widget (such as a mini icon) placed before the label text.                                                                                                                                                  |
+| `onDismiss` | `VoidCallback?`    | `null`        | Callback for the dismiss action. If provided, a small cross icon will be rendered at the right end of the badge.                                                                                            |
+| `maxWidth`  | `double?`          | `null`        | Maximum badge width. Text exceeding this limit will be automatically truncated with an ellipsis (`...`).                                                                                                    |
+| `pulse`     | `bool`             | `false`       | Only applies to the `.dot` variant. If `true`, enables a pulsing circle animation outside the dot.                                                                                                          |
+
+### JustBadge.overlay (Constructor)
+
+| Property    | Data Type           | Default Value        | Description                                                                     |
+| :---------- | :------------------ | :------------------- | :------------------------------------------------------------------------------ |
+| `child`     | `Widget`            | _Required_           | Main widget to be overlapped by the badge (e.g., an icon or avatar).            |
+| `badge`     | `Widget`            | _Required_           | Badge (`JustBadge`) to be placed at the corner of the main widget.              |
+| `alignment` | `AlignmentGeometry` | `Alignment.topRight` | Stacking position of the badge on top of the main widget.                       |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+The visual appearance of badges adapts to the active theme preset configuration:
+
+- **Default Preset**:
+  - Badge corners are softly rounded following the `radius.sm` token (or perfectly full-round curvature for the `.dot` and `.pill` variants).
+  - The transparent background color gradation for the `.soft` variant is dynamically calculated from the status color opacity value (around 15-20%) for an aesthetically cohesive look.
+
+- **Neobrutalism Preset**:
+  - Badges are forced to use a thick dark black border (`colors.textPrimary`) of `1.5` or `2.5` proportional to the size.
+  - The `.soft` variant is replaced by a high-contrast solid color to reinforce the classic neobrutalism visual.
+  - The pulsing animation (`pulse`) on the `.dot` variant is optimized by shortening the interpolation duration to align with the snappy visual aesthetic.
+
+### Shimmer & Performance (Pulsing Halo)
+
+The pulsing circle animation (`pulse`) on the `.dot` variant is implemented efficiently using a high-performance **`FlowDelegate`**:
+
+- **Zero Layout Overhead**: Using `FlowDelegate` draws the glowing circle directly on the graphics canvas without triggering a widget tree layout recalculation pass.
+- This maintains app FPS stability, especially when multiple notification badges are pulsing simultaneously on a single list page.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Minimum Contrast Ratio**:
+   The label text color inside `JustBadge` is calculated using the `isAccessibleWith` extension to guarantee that the text color contrast ratio against the badge background always meets the **WCAG AA** standard ($\ge$ 4.5:1 for normal text).
+2. **Semantic Description**:
+   When `JustBadge` is used as a status indicator (e.g., a red dot in the top-right corner of a message icon), developers are advised to wrap the badge with a `Semantics` widget that explains the status in text (for example: "3 unread messages"), so it can be properly described by screen readers.
