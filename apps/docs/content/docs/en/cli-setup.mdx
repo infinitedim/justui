@@ -1,0 +1,140 @@
+---
+title: CLI Guide & Configuration
+description: In-depth guide on using the JustUI CLI tool for scaffolding management, local component code copying, and conflict resolution.
+---
+
+# CLI Guide & Configuration
+
+JustUI uses a **copy-paste** approach where component source code is copied locally into your project. To facilitate this workflow, JustUI provides a command-line tool (CLI) called `justui`.
+
+This document explains the configuration, internal CLI mechanisms, the full list of commands, and how to handle functionality not supported out of the box.
+
+---
+
+## 1. `justui.config.yaml` Configuration
+
+When you run the initialization command (`justui init`), a configuration file named `justui.config.yaml` is created in your project root. This file acts as the _single source of truth_ for all subsequent CLI operations.
+
+Example of the default configuration file contents:
+
+```yaml
+# JustUI CLI Configuration
+preset: default # Options: default, neobrutalism
+seed_color: '#3B82F6' # Base primary color for dynamic contrast calculation
+components_dir: lib/components/ui # Component code storage location
+tokens_dir: lib/theme # Primitive token file storage location
+```
+
+---
+
+## 2. Internal CLI Mechanism
+
+The JustUI CLI workflow is intelligently designed to handle safe local code maintenance. Here's how it works behind the scenes:
+
+### A. Local Code Copying & Dependency Recursion
+
+When you add a component, the CLI does not only copy the main component file. The CLI reads that component's dependency chart in the registry (`index.json`) and recursively downloads all of its dependency components (for example, adding `JustFormInput` will automatically download `JustInput` if it doesn't already exist).
+
+### B. Import Rewriting
+
+So that copied components can be compiled immediately without broken import errors, the internal `ImportRewriter` class automatically modifies the downloaded source code:
+
+- Core import paths (such as theme data or provider) are redirected to the global package: `package:just_ui_core/just_ui_core.dart`.
+- Local inter-component import paths are translated to relative paths according to the `components_dir` and `tokens_dir` configured in your project.
+
+### C. SHA-256 Security Verification & Metadata Control
+
+To prevent file corruption during the data transfer process, the CLI calculates the **SHA-256** hash of downloaded files and matches it with the hash in the registry.
+After successful verification, the CLI adds a metadata tracking comment line at the top of the local component file:
+
+```dart
+// justui-meta: registry=<sha_original_remote> local=<sha_local_rewritten>
+```
+
+### D. pubspec.yaml Integration
+
+If a component requires external packages from pub.dev (for example, a specific helper library), the CLI uses the `PubspecEditor` module to safely insert new dependencies into the `dependencies` section of the target `pubspec.yaml` without damaging the existing file structure.
+
+### E. Local Modification Conflict Resolution
+
+If you have modified component code locally and there is a new version in the registry, the CLI will detect that hash difference. The CLI will not arbitrarily overwrite your file, but instead presents an interactive dialog:
+
+- **Overwrite**: Overwrites your local modifications with the latest registry version.
+- **Skip**: Ignores the update and keeps your custom code.
+- **View Diff**: Displays the line-by-line differences in the terminal to help you make a decision.
+
+---
+
+## 3. CLI Command List
+
+After activating the CLI globally via `dart pub global activate just_ui_cli`, you can use the following commands:
+
+### 1. `justui init`
+
+Initializes the basic JustUI configuration in a new Flutter project.
+
+- **Options/Parameters**:
+  - `--preset`: Specifies the initial visual design preset (`default` or `neobrutalism`).
+- **Usage**: Verifies Flutter project readiness, interactively prompts for the target directory, creates `justui.config.yaml`, and generates the initial theme file `just_theme.dart`.
+
+### 2. `justui add`
+
+Downloads components and copies their source code directly to your local folder.
+
+- **Arguments**:
+  - `[component_names]`: A list of component names (space-separated, for example: `justui add button input`). If left empty, the CLI will display an interactive checkbox menu to visually select components.
+- **Usage**: Recursively copies component files along with their dependencies, applies _import rewriting_, and updates `pubspec.yaml`.
+
+### 3. `justui list`
+
+Displays all available components in the central registry.
+
+- **Usage**: Contacts the registry server to read the component index data, displays them by category, complete with functionality descriptions and versions.
+
+### 4. `justui diff`
+
+Compares the differences between local component code and the official code on the registry server.
+
+- **Arguments**:
+  - `[component_name]` (_Required_): The name of the component to compare.
+  - `--verbose` or `-v` (_Flag_): Displays detailed line-by-line code differences with red/green terminal coloring.
+- **Usage**: Checks file status (whether modified, outdated, or in conflict) and provides an action menu to selectively update files.
+
+### 5. `justui update`
+
+Scans installed components and updates outdated ones to the latest version in the registry.
+
+- **Usage**: Automatically matches the meta-hash of all files in `components_dir` with the central registry version and asks for user confirmation to update components in bulk.
+
+### 6. `justui create`
+
+Creates a basic template for a new local custom component that complies with JustUI design standards.
+
+- **Arguments**:
+  - `[custom_component_name]`: Your new custom component name (for example, `custom_card`).
+- **Usage**: Generates a standard file structure bundle:
+  1. `custom_card.dart`: Main widget already connected to the context extension (`context.justColors`, etc.).
+  2. `custom_card_style.dart`: Individual visual customization parameters.
+  3. `custom_card_variants.dart`: Visual variant and size enum definitions.
+  4. `custom_card_theme.dart`: Bridge class registration to Flutter's `ThemeExtension`.
+
+---
+
+## 4. Unsupported Commands & Workarounds
+
+Please note that the **`remove`** and **`doctor`** commands are not directly supported by the JustUI CLI at this time. Here are alternative solutions to safely perform both actions:
+
+### Workaround for `justui remove` (Removing Components)
+
+Because JustUI uses a direct source code copying model (not as a read-only library package), you can delete components manually without affecting SDK stability:
+
+1. Delete the `.dart` file(s) related to that component in your component folder (for example, `lib/components/ui/button.dart`).
+2. If there are external dependencies in `pubspec.yaml` that are only used by that component, manually delete those dependency lines and then run `flutter pub get`.
+
+### Workaround for `justui doctor` (Diagnosing Issues)
+
+If you want to diagnose the integrity of your JustUI installation:
+
+1. Run the `justui diff [component_name]` command for each installed component to detect whether there is any file corruption or accidental modification.
+2. Check whether the directory paths in `justui.config.yaml` match the physical folder paths in your project.
+3. Ensure the theme tokens in `just_theme.dart` are connected to the root provider in `main.dart`.

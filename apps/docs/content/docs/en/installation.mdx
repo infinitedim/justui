@@ -1,0 +1,36 @@
+---
+title: Installation
+description: Step-by-step initialization and integration of the JustUI CLI into your Flutter project.
+---
+
+# Installation
+
+JustUI provides a command-line tool (CLI) to copy components into your Flutter project quickly.
+
+## Step 1: Activate the CLI Globally
+
+Activate the `just_ui_cli` package globally using the Dart SDK:
+
+```bash
+dart pub global activate just_ui_cli
+```
+
+## Step 2: Initialize the Project
+
+Run the following command in the root directory of your Flutter project:
+
+```bash
+just_ui init
+```
+
+This command will create a configuration file `just_ui.json` and download the core package and tokens into your project. You will also be asked to choose a main visual preset (such as `default` or `neobrutalism`).
+
+## Step 3: Adding Components
+
+To add a new component (for example, a button), use the `add` command:
+
+```bash
+just_ui add button
+```
+
+The component will be automatically copied to your Flutter project's component directory (default: `lib/components/ui/button.dart`).
