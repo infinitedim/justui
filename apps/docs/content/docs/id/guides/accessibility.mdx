@@ -1,0 +1,106 @@
+---
+title: Pedoman Aksesibilitas WCAG AA
+description: Panduan implementasi aksesibilitas pada JustUI termasuk audit kontras, ukuran target sentuh, integrasi pembaca layar, dan traversal keyboard.
+---
+
+Aksesibilitas bukanlah fitur tambahan, melainkan pilar utama dalam perancangan JustUI. Seluruh komponen dirancang agar dapat digunakan secara nyaman oleh semua orang, termasuk mereka yang memiliki keterbatasan penglihatan, motorik, atau mengandalkan alat bantu navigasi khusus. Dokumen ini menjelaskan bagaimana JustUI memenuhi standar aksesibilitas **WCAG 2.0 AA** melalui berbagai mekanisme bawaan.
+
+---
+
+## Perhitungan Kontras Warna WCAG AA
+
+JustUI mematuhi standar aksesibilitas WCAG 2.0 dalam perhitungan kontras warna untuk menjamin keterbacaan teks dan batas elemen interaktif. Sistem audit kontras ini ditanamkan langsung pada package `just_ui_tokens` dalam file `colors_accessibility.dart`.
+
+### Formula Rasio Kontras
+
+Aksesibilitas kontras diukur berdasarkan perbandingan luminansi relatif ($L$) antara dua warna bertumpuk. Luminansi relatif dihitung oleh Flutter melalui fungsi internal `Color.computeLuminance()`, menghasilkan nilai antara `0.0` (hitam pekat) dan `1.0` (putih pekat).
+
+Formula rasio kontras WCAG 2.0 adalah:
+
+```text
+Rasio Kontras = (L1 + 0.05) / (L2 + 0.05)
+```
+
+Di mana $L_1$ adalah luminansi relatif warna yang lebih terang, dan $L_2$ adalah luminansi relatif warna yang lebih gelap. Penambahan konstanta `0.05` berfungsi untuk mencegah pembagian dengan nol ketika mendeteksi hitam pekat, serta mengimbangi adaptasi mata manusia terhadap efek pendaran cahaya (_glare_).
+
+### Implementasi Ekstensi `JustColorAccessibility`
+
+JustUI menyediakan metode ekstensi pada kelas `Color` untuk melakukan audit ini di tingkat kode:
+
+```dart
+extension JustColorAccessibility on Color {
+  double contrastRatioWith(Color other) {
+    final double l1 = computeLuminance();
+    final double l2 = other.computeLuminance();
+
+    if (l1 > l2) {
+      return (l1 + 0.05) / (l2 + 0.05);
+    } else {
+      return (l2 + 0.05) / (l1 + 0.05);
+    }
+  }
+
+  bool isAccessibleWith(Color other, {bool isLargeText = false}) {
+    final double ratio = contrastRatioWith(other);
+    return ratio >= (isLargeText ? 3.0 : 4.5);
+  }
+}
+```
+
+- **Teks Normal (Rasio $\ge$ 4.5:1)**: Standar minimum WCAG AA agar teks biasa berukuran kecil (< 18pt) dapat dibaca dengan jelas di atas latar belakangnya.
+- **Teks Besar & Elemen Interaktif (Rasio $\ge$ 3.0:1)**: Standar khusus untuk teks berukuran besar ($\ge$ 18pt atau teks tebal $\ge$ 14pt) serta komponen visual penting seperti batas kolom input fokus, tombol aktif, atau ikon status.
+
+---
+
+## Target Sentuh Minimal 48x48px (Touch Target Size)
+
+Bagi pengguna dengan keterbatasan motorik atau saat menggunakan perangkat seluler dengan satu tangan, menekan tombol berukuran kecil dapat menjadi hal yang sangat sulit. Standar aksesibilitas seluler menetapkan ukuran target sentuh interaktif minimal sebesar **48x48 density-independent pixels (dp)**.
+
+Meskipun secara visual komponen JustUI dapat berukuran sangat kecil (misalnya, `JustButton` dengan varian ukuran `xs` atau `sm`, `JustIconButton`, `JustCheckbox`, `JustSwitch`, dan `JustRadio`), JustUI menjamin keamanan interaksi ini secara internal:
+
+- **Kompensasi Dimensi**: Komponen interaktif dibungkus di dalam `ConstrainedBox` yang memaksa area deteksi ketukan minimal berukuran 48x48px.
+- **Padding Transparan**: Jika ukuran visual komponen di bawah 48px, sisa area target diisi oleh padding transparan yang tetap sensitif terhadap sentuhan jari pengguna. Hal ini memastikan estetika visual yang ramping tetap terjaga tanpa mengorbankan kenyamanan interaksi fisik.
+
+---
+
+## Integrasi Pembaca Layar (Semantics/ARIA-like)
+
+JustUI menggunakan widget `Semantics` bawaan Flutter untuk menerjemahkan struktur komponen visual menjadi deskripsi vokal yang ramah bagi pembaca layar (_screen reader_) seperti TalkBack di Android dan VoiceOver di iOS.
+
+### 1. Asersi Tooltip Wajib pada Tombol Ikon
+
+Tombol tanpa teks (seperti `JustIconButton`) sering kali membingungkan pembaca layar karena tidak memiliki label teks yang jelas. Untuk mencegah masalah ini, pengembang diwajibkan menyertakan parameter `tooltip` pada `JustIconButton`.
+JustUI menerapkan penegasan ketat pada tingkat kompilasi:
+
+```dart
+assert(tooltip != null, 'Tombol ikon wajib memiliki tooltip untuk aksesibilitas pembaca layar.');
+```
+
+Tooltip ini secara otomatis dibaca sebagai label deskripsi semantik ketika pengguna pembaca layar mengarahkan fokus ke tombol tersebut.
+
+### 2. Pengumuman Aksesibilitas Dinamis pada Form Input
+
+Pada komponen `JustInput` atau `JustFormInput`, ketika terjadi kesalahan validasi teks, pesan kesalahan tidak hanya ditampilkan secara visual (berwarna merah di bawah kolom), tetapi juga dikirimkan langsung sebagai instruksi suara ke sistem operasi menggunakan pemanggilan:
+
+```dart
+SemanticsService.announce(errorText, TextDirection.ltr);
+```
+
+Hal ini memastikan pengguna tunanetra langsung mengetahui adanya kesalahan input tanpa harus menjelajahi seluruh layar untuk mencari teks pesan error.
+
+---
+
+## Traversal Keyboard & Navigasi Tanpa Sentuh
+
+Navigasi keyboard sangat penting bagi pengguna komputer desktop yang tidak dapat menggunakan mouse, atau pengguna yang menggunakan perangkat bantu navigasi khusus.
+
+### 1. Pengikatan Fokus (`FocusNode`)
+
+Setiap komponen interaktif JustUI (seperti `JustCheckbox`, `JustRadio`, `JustSwitch`, dan `JustScrollArea`) mengelola status fokus mereka sendiri menggunakan `FocusNode`. Saat komponen menerima fokus, komponen akan menggambar cincin fokus visual (`FocusIndicator`) di sekelilingnya untuk memandu pandangan pengguna.
+
+### 2. Penangan Acara Keyboard (Keyboard Event Handlers)
+
+Komponen JustUI mendengarkan tombol keyboard secara langsung:
+
+- **Spasi (Space) & Enter**: Didaftarkan secara manual pada _key event handler_ internal. Saat pengguna menekan tombol Space atau Enter di atas `JustCheckbox`, `JustRadio`, atau `JustSwitch` yang sedang fokus, status komponen akan berubah (_toggle_) layaknya diketuk secara fisik.
+- **PageUp, PageDown, & Tombol Panah**: Pustaka `JustScrollArea` menangkap tombol ini untuk menggulir isi kontainer gulir secara presisi tanpa memerlukan mouse scroll wheel (PageDown/PageUp untuk menggulir sejauh satu tinggi viewport aktif, tombol panah untuk gulir halus).
