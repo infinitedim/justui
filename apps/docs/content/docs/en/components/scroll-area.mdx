@@ -1,0 +1,147 @@
+---
+title: Scroll Area
+description: Self-contained scrolling container with custom scrollbar, transparent fade edges, and infinite scroll data loading triggers.
+---
+
+# Scroll Area
+
+`JustScrollArea` is a high-performance scrolling container that replaces the operating system's native scrollbar with a custom scrollbar that adheres to the design system's aesthetics. This component supports transparent fade edge effects at the top and bottom boundaries of the scroll, an automatic back-to-top button, and infinite scroll data loading triggers.
+
+## Usage
+
+### Basic
+
+The following is a basic usage example of `JustScrollArea` for wrapping a simple scrollable content list.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class BasicScrollAreaExample extends StatelessWidget {
+  const BasicScrollAreaExample({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 300,
+      decoration: BoxDecoration(
+        border: Border.all(color: context.justColors.border),
+        borderRadius: .all(context.justRadius.md),
+      ),
+      child: JustScrollArea(
+        child: Column(
+          children: List.generate(
+            50,
+            (index) => ListTile(
+              title: Text('Item #$index'),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+### Advanced
+
+Advanced usage example with edge fading using `ShaderMask`, automatic back-to-top button, keyboard scrolling, and infinite scroll pagination.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class AdvancedScrollAreaExample extends StatefulWidget {
+  const AdvancedScrollAreaExample({super.key});
+
+  @override
+  State<AdvancedScrollAreaExample> createState() => _AdvancedScrollAreaExampleState();
+}
+
+class _AdvancedScrollAreaExampleState extends State<AdvancedScrollAreaExample> {
+  final List<String> _items = List.generate(20, (index) => 'Initial Item #$index');
+  bool _isLoadingMore = false;
+
+  void _loadMoreData() async {
+    if (_isLoadingMore) return;
+    setState(() => _isLoadingMore = true);
+
+    // Network delay simulation
+    await Future.delayed(const Duration(seconds: 2));
+
+    setState(() {
+      _items.addAll(List.generate(10, (index) => 'Additional Item #${_items.length + index}'));
+      _isLoadingMore = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 400,
+      decoration: BoxDecoration(
+        border: Border.all(color: context.justColors.border),
+        borderRadius: .all(context.justRadius.lg),
+      ),
+      child: JustScrollArea(
+        direction: Axis.vertical,
+        showScrollbar: true,
+        fadeEdges: true,
+        fadeMode: JustScrollFadeMode.shaderMask,
+        scrollToTopButton: true,
+        scrollToTopThreshold: 300.0,
+        keyboardScrollStep: 60.0,
+        onReachBottom: _loadMoreData, // Triggers data load when approaching bottom
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(), // Scroll fully controlled by JustScrollArea
+          itemCount: _items.length + (_isLoadingMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index == _items.length) {
+              return const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+            return ListTile(title: Text(_items[index]));
+          },
+        ),
+      ),
+    );
+  }
+}
+```
+
+## API Reference (Props)
+
+### JustScrollArea
+
+| Property               | Type                 | Default                      | Description                                                                                                          |
+| ---------------------- | -------------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `child`                | `Widget`             | _Required_                   | Child widget containing the scrollable content list.                                                                 |
+| `direction`            | `Axis`               | `Axis.vertical`              | Main scroll direction of the container (vertical or horizontal).                                                     |
+| `showScrollbar`        | `bool`               | `true`                       | Determines whether the custom JustUI scrollbar is visually displayed.                                                |
+| `fadeEdges`            | `bool`               | `false`                      | If true, applies a transparent gradient effect at the scroll boundary edges (indicating additional content).         |
+| `fadeMode`             | `JustScrollFadeMode` | `JustScrollFadeMode.overlay` | Edge fade technique: `.overlay` or `.shaderMask`.                                                                    |
+| `scrollToTopButton`    | `bool`               | `false`                      | Displays a back-to-top button automatically when scrolled far.                                                       |
+| `scrollToTopThreshold` | `double`             | `400.0`                      | Minimum scroll distance threshold (in pixels) to trigger the back-to-top button.                                     |
+| `onReachBottom`        | `VoidCallback?`      | `null`                       | Callback triggered when scrolling approaches the bottom boundary of the container (useful for infinite scroll).      |
+| `keyboardScrollStep`   | `double`             | `50.0`                       | Scroll jump distance (in pixels) per arrow key press on the keyboard.                                                |
+
+## Theming & Accessibility
+
+### Preset & Style Customization
+
+- **Default Style**: The custom scrollbar is designed to be slim with smooth transparency transitions and colors following the `colors.border` theme.
+- **Neobrutalism Style**: The custom scrollbar is forced to display thick black border edges (`2.5`) with sharp right angles, high-contrast bright colors, and does not fade automatically (always clearly visible on screen).
+
+### Keyboard Integration & ShaderMask
+
+- **Desktop Keyboard Navigation**: Binds the widget with an internal `FocusNode` to capture keyboard interactions. The `PageDown` and `PageUp` keys are mapped to scroll a full viewport height, while the up/down arrow keys scroll smoothly.
+- **Edge ShaderMasking**: The `ShaderMask` gradient fade is dynamically computed using a multi-stop linear gradient to prevent text or images from being harshly clipped at the screen boundary edges.
+
+### WCAG AA Compliance
+
+- **Click Target Accessibility**: Maintains a custom scrollbar click target width of at least 8px horizontally on desktop/tablet for easy dragging. Adds vocal label semantics to the scroll-to-top button ("Back to top") and conveys semantic notifications when the system detects reaching the bottom scroll boundary.

@@ -1,0 +1,161 @@
+---
+title: Skeleton
+description: Automatic structure-aware skeleton loader to represent application loading status naturally.
+---
+
+# Skeleton
+
+`JustSkeleton` is a skeleton loader component that automatically detects the widget tree structure beneath it (_structure-aware_) to represent application loading status naturally. This component can synchronize shimmer wave glow across the entire screen or be rendered as a manual placeholder container.
+
+## Usage
+
+### Basic
+
+The following is a basic usage example of `JustSkeleton` to automatically wrap a profile card component while loading data.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class BasicSkeletonExample extends StatelessWidget {
+  final bool isLoading;
+
+  const BasicSkeletonExample({super.key, required this.isLoading});
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSkeleton(
+      loading: isLoading,
+      child: const UserCardWidget(),
+    );
+  }
+}
+
+class UserCardWidget extends StatelessWidget {
+  const UserCardWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return JustCard(
+      child: Row(
+        children: [
+          const JustAvatar(name: 'Budi Santoso', size: JustAvatarSize.lg),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text('Budi Santoso', style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(height: 4),
+                Text('Software Engineer', style: TextStyle(color: Colors.grey)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+### Advanced
+
+Advanced usage example using manual circle (`JustSkeleton.circle`) or line (`JustSkeleton.line`) builders and _escape hatches_ (`JustSkeletonIgnore` and `JustSkeletonAtomic`) to design complex loading skeletons.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class AdvancedSkeletonExample extends StatelessWidget {
+  final bool isLoading;
+
+  const AdvancedSkeletonExample({super.key, required this.isLoading});
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSkeleton(
+      loading: isLoading,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              // Ignores skeleton loading so the back button remains visible normal & interactive
+              JustSkeletonIgnore(
+                child: JustIconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.pop(context),
+                  tooltip: 'Back',
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Using manual circle skeleton builder
+              const JustSkeleton.circle(size: 48.0),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    JustSkeleton.line(width: 120.0, height: 16.0),
+                    SizedBox(height: 8),
+                    JustSkeleton.line(width: 80.0, height: 12.0),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          // Forces complex subtree to merge into a single solid gray block
+          JustSkeletonAtomic(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              color: Colors.grey[200],
+              child: Row(
+                children: const [
+                  Icon(Icons.star, color: Colors.amber),
+                  SizedBox(width: 8),
+                  Text('5 Star Review'),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+## API Reference (Props)
+
+### JustSkeleton
+
+| Property  | Type                 | Default      | Description                                                                           |
+| --------- | -------------------- | ------------ | ------------------------------------------------------------------------------------- |
+| `child`   | `Widget`             | _Required_   | Application widget tree structure to be masked into a loading skeleton.               |
+| `loading` | `bool`               | _Required_   | Active skeleton loading status (if false, renders the original `child`).              |
+| `style`   | `JustSkeletonStyle?` | `null`       | Customization of base color, shimmer color, pulse duration, and wave direction.       |
+
+### Sub-Widget Helpers (Escape Hatches & Constructors)
+
+- **`JustSkeletonIgnore`**: Wraps a child widget to exempt it from the skeleton masking process (remains interactive and normal on screen).
+- **`JustSkeletonAtomic`**: Forces a complex child widget to be melted into a single simple gray geometric shape (simplifies the visual).
+- **`JustSkeleton.circle(double size)`**: Instant constructor for a circular gray placeholder.
+- **`JustSkeleton.line(double width, double height)`**: Instant constructor for a rectangular line placeholder.
+
+## Theming & Accessibility
+
+### Preset & Style Customization
+
+- **Default Style**: Presents a smooth shimmering light wave gradient that slides from left to right across the entire application area harmoniously using `JustDuration.slower` duration controller.
+- **Neobrutalism Style**: Under the neobrutalism preset, the shimmer gradient wave is completely eliminated to maintain retro aesthetic simplicity. It is replaced by a solid gray background color opacity pulsing animation (pulsing between `0.3` and `0.6` linearly) with consistent transitions.
+
+### Full-Screen Shimmer Wave Synchronization
+
+- To prevent shimmer wave direction between widgets from moving chaotically, JustUI launches a single `_JustSkeletonScope` controller at the top level. The absolute position coordinates of widgets on screen are obtained using `RenderBox.localToGlobal(Offset.zero).dx`. The linear gradient is specifically translated based on each element's relative position to the global screen axis, producing a harmonious shimmering light wave effect that slides from left to right across the entire application area.
+
+### WCAG AA Compliance
+
+- **Semantic Status Accessibility**: When the `loading` status is true, the component automatically marks itself with the semantic property `busy: true` and inserts an alternative voice description text for screen readers ("Loading data..."). This prevents screen readers from reading empty or raw placeholder text beneath the widget tree, meeting WCAG AA standards in conveying dynamic content loading status.
