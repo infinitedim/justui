@@ -38,7 +38,7 @@ registry_url: http://example.com/reg
 
     test('Falls back to defaults if parsing fails', () {
       final config = JustUIConfig.fromYaml('invalid yaml map');
-      expect(config.componentsDir, equals('lib/ui'));
+      expect(config.componentsDir, equals('lib/widgets'));
       expect(config.tokensDir, equals('lib/tokens'));
     });
   });
@@ -511,29 +511,83 @@ registry_url: mock_registry
       );
     });
 
+    test('JustPrompt selectOne returns correct index from input', () {
+      int idx = 0;
+      // '2' → index 1; empty → defaultIndex 0; '99' (invalid) → defaultIndex 0
+      final inputs = ['2', '', '99'];
+      JustPrompt.testInputReader = () => inputs[idx++];
+
+      final options = ['alpha', 'beta', 'gamma'];
+      expect(JustPrompt.selectOne('Pick', options, defaultIndex: 0), equals(1));
+      expect(JustPrompt.selectOne('Pick', options, defaultIndex: 0), equals(0));
+      expect(JustPrompt.selectOne('Pick', options, defaultIndex: 0), equals(0));
+    });
+
     test(
       'InitCommand wizard custom inputs generate seeded theme class',
       () async {
         fs.file('pubspec.yaml').writeAsStringSync('name: test');
 
+        // New input sequence:
+        // 1. Preset selection → '2' (neobrutalism)
+        // 2. Components dir selection → '3' (Custom...)
+        // 3. Custom components folder name → 'ui' (stored as lib/ui)
+        // 4. Tokens folder name → 'tokens' (stored as lib/tokens)
+        // 5. Brand color → '#ff00ff'
         int idx = 0;
-        final inputs = ['default', 'src/ui', 'src/tokens', '#ff00ff'];
+        final inputs = ['2', '3', 'ui', 'tokens', '#ff00ff'];
         JustPrompt.testInputReader = () => inputs[idx++];
 
         await runCli(['init'], fs);
 
         expect(fs.file('justui.config.yaml').existsSync(), isTrue);
         final configContent = fs.file('justui.config.yaml').readAsStringSync();
-        expect(configContent, contains('components_dir: src/ui'));
-        expect(configContent, contains('tokens_dir: src/tokens'));
+        expect(configContent, contains('components_dir: lib/ui'));
+        expect(configContent, contains('tokens_dir: lib/tokens'));
 
         expect(fs.file('lib/theme/just_theme.dart').existsSync(), isTrue);
         final themeContent = fs
             .file('lib/theme/just_theme.dart')
             .readAsStringSync();
         expect(themeContent, contains('const Color(0xFFFF00FF)'));
+        // Verify neobrutalism preset is written into theme file
+        expect(themeContent, contains('JustThemePreset.neobrutalism'));
       },
     );
+
+    test('InitCommand accepts preset alias --preset neo as neobrutalism', () async {
+      fs.file('pubspec.yaml').writeAsStringSync('name: test');
+
+      // No wizard prompts fired since --preset is parsed from args
+      // Only components dir (selectOne → default ''), tokens dir (''), brand color ('') needed
+      int idx = 0;
+      final inputs = ['', '', ''];
+      JustPrompt.testInputReader = () => inputs[idx++];
+
+      await runCli(['init', '--preset', 'neo'], fs);
+
+      expect(fs.file('lib/theme/just_theme.dart').existsSync(), isTrue);
+      final themeContent = fs.file('lib/theme/just_theme.dart').readAsStringSync();
+      expect(themeContent, contains('JustThemePreset.neobrutalism'));
+    });
+
+    test('InitCommand auto-prefixes lib/ and avoids double-prefix', () async {
+      fs.file('pubspec.yaml').writeAsStringSync('name: test');
+
+      // Simulate: user picks default preset (index 1), then Custom (index 3),
+      // types 'lib/widgets' (already has lib/ prefix)
+      // Expected: stored as 'lib/widgets', NOT 'lib/lib/widgets'
+      int idx = 0;
+      final inputs = ['1', '3', 'lib/widgets', 'tokens', '#3b82f6'];
+      JustPrompt.testInputReader = () => inputs[idx++];
+
+      await runCli(['init'], fs);
+
+      final configContent = fs.file('justui.config.yaml').readAsStringSync();
+      expect(configContent, contains('components_dir: lib/widgets'));
+      expect(configContent, isNot(contains('lib/lib')));
+    });
+
 
     test('AddCommand interactive selection when no arguments', () async {
       fs.file('pubspec.yaml').writeAsStringSync('name: test');

@@ -23,7 +23,7 @@ class JustUIConfig {
 
   /// Default configuration instance.
   static final JustUIConfig default_ = JustUIConfig(
-    componentsDir: 'lib/ui',
+    componentsDir: 'lib/widgets',
     tokensDir: 'lib/tokens',
     registryUrl:
         'https://raw.githubusercontent.com/infinitedim/justui/main/registry',
@@ -37,7 +37,7 @@ class JustUIConfig {
         return JustUIConfig.default_;
       }
       return JustUIConfig(
-        componentsDir: parsed['components_dir']?.toString() ?? 'lib/ui',
+        componentsDir: parsed['components_dir']?.toString() ?? 'lib/widgets',
         tokensDir: parsed['tokens_dir']?.toString() ?? 'lib/tokens',
         registryUrl:
             parsed['registry_url']?.toString() ??
