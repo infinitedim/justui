@@ -1,0 +1,140 @@
+---
+title: Panduan & Konfigurasi CLI
+description: Panduan mendalam tentang penggunaan CLI tool JustUI untuk manajemen scaffolding, penyalinan kode komponen secara lokal, dan penyelesaian konflik.
+---
+
+# Panduan & Konfigurasi CLI
+
+JustUI menggunakan pendekatan **copy-paste** di mana kode sumber komponen disalin secara lokal ke dalam proyek Anda. Untuk mempermudah alur kerja ini, JustUI menyediakan alat bantu baris perintah (CLI) bernama `justui`.
+
+Dokumen ini menjelaskan konfigurasi, mekanisme kerja internal CLI, daftar perintah lengkap, serta cara menangani fungsionalitas yang tidak didukung secara bawaan.
+
+---
+
+## 1. Konfigurasi `justui.config.yaml`
+
+Saat Anda menjalankan perintah inisialisasi (`justui init`), berkas konfigurasi bernama `justui.config.yaml` akan dibuat di root proyek Anda. Berkas ini bertindak sebagai _single source of truth_ untuk seluruh operasi CLI selanjutnya.
+
+Contoh isi berkas konfigurasi default:
+
+```yaml
+# JustUI CLI Configuration
+preset: default # Pilihan: default, neobrutalism
+seed_color: '#3B82F6' # Warna dasar utama untuk kalkulasi kontras dinamis
+components_dir: lib/components/ui # Lokasi penyimpanan kode komponen
+tokens_dir: lib/theme # Lokasi penyimpanan file primitive token
+```
+
+---
+
+## 2. Mekanisme Kerja Internal CLI
+
+Alur kerja CLI JustUI dirancang cerdas untuk menangani pemeliharaan kode lokal yang aman. Berikut adalah cara kerjanya di balik layar:
+
+### A. Penyalinan Kode Lokal & Rekursi Dependensi
+
+Saat Anda menambahkan komponen, CLI tidak hanya menyalin berkas komponen utama. CLI akan membaca bagan dependensi komponen tersebut di registry (`index.json`) dan mengunduh seluruh komponen dependensinya secara rekursif (misalnya, menambahkan `JustFormInput` otomatis akan mengunduh `JustInput` jika belum ada).
+
+### B. Import Rewriting (Penulisan Ulang Jalur Impor)
+
+Agar komponen yang disalin dapat langsung dikompilasi tanpa error pemanggilan file (_broken imports_), kelas internal `ImportRewriter` melakukan perubahan otomatis pada kode sumber yang diunduh:
+
+- Jalur impor core (seperti data tema atau provider) dialihkan ke paket global: `package:just_ui_core/just_ui_core.dart`.
+- Jalur impor antar komponen lokal diterjemahkan menjadi relatif sesuai dengan lokasi `components_dir` dan `tokens_dir` yang dikonfigurasi di dalam proyek Anda.
+
+### C. Verifikasi Keamanan SHA-256 & Kontrol Metadata
+
+Untuk mencegah kerusakan berkas selama proses transfer data, CLI menghitung hash **SHA-256** dari berkas yang diunduh dan mencocokkannya dengan hash di registry.
+Setelah verifikasi berhasil, CLI menambahkan baris komentar metadata pelacak di baris teratas berkas komponen lokal:
+
+```dart
+// justui-meta: registry=<sha_original_remote> local=<sha_local_rewritten>
+```
+
+### D. Integrasi pubspec.yaml
+
+Jika komponen membutuhkan package eksternal dari pub.dev (misalnya pustaka pembantu tertentu), CLI menggunakan modul `PubspecEditor` untuk menyisipkan dependensi baru ke bagian `dependencies` pada `pubspec.yaml` target secara aman tanpa merusak struktur file yang ada.
+
+### E. Resolusi Konflik Modifikasi Lokal
+
+Jika Anda telah memodifikasi kode komponen secara lokal dan ada versi baru di registry, CLI akan mendeteksi perbedaan hash tersebut. CLI tidak akan menimpa file Anda secara sembarangan, melainkan menyajikan dialog interaktif:
+
+- **Overwrite**: Menimpa modifikasi lokal Anda dengan versi registry terbaru.
+- **Skip**: Mengabaikan pembaruan dan mempertahankan kode kustom Anda.
+- **View Diff**: Menampilkan perbedaan baris per baris di terminal untuk membantu Anda mengambil keputusan.
+
+---
+
+## 3. Daftar Perintah CLI
+
+Setelah mengaktifkan CLI global via `dart pub global activate just_ui_cli`, Anda dapat menggunakan perintah berikut:
+
+### 1. `justui init`
+
+Menginisialisasi konfigurasi dasar JustUI di dalam proyek Flutter baru.
+
+- **Opsi/Parameter**:
+  - `--preset`: Menentukan preset desain visual awal (`default` atau `neobrutalism`).
+- **Kegunaan**: Memverifikasi kesiapan proyek Flutter, meminta input direktori target secara interaktif, membuat `justui.config.yaml`, dan menghasilkan file inisialisasi tema `just_theme.dart`.
+
+### 2. `justui add`
+
+Mengunduh komponen dan menyalin kode sumbernya langsung ke folder lokal Anda.
+
+- **Argumen**:
+  - `[component_names]`: Daftar nama komponen (dipisahkan spasi, misal: `justui add button input`). Jika dibiarkan kosong, CLI akan memunculkan menu daftar centang interaktif untuk memilih komponen secara visual.
+- **Kegunaan**: Menyalin berkas komponen secara rekursif beserta dependensinya, menerapkan _import rewriting_, dan memperbarui `pubspec.yaml`.
+
+### 3. `justui list`
+
+Menampilkan semua daftar komponen yang tersedia di registry pusat.
+
+- **Kegunaan**: Menghubungi server registry untuk membaca data indeks komponen, menampilkannya berdasarkan kategori, lengkap dengan deskripsi fungsionalitas dan versinya.
+
+### 4. `justui diff`
+
+Membandingkan perbedaan kode komponen lokal dengan kode resmi yang ada di server registry.
+
+- **Argumen**:
+  - `[component_name]` (_Wajib_): Nama komponen yang ingin dibandingkan.
+  - `--verbose` atau `-v` (_Flag_): Menampilkan perbedaan baris kode secara detail dengan pewarnaan terminal merah/hijau.
+- **Kegunaan**: Memeriksa status file (apakah dimodifikasi, usang, atau konflik) dan menyediakan menu aksi untuk memperbarui file secara selektif.
+
+### 5. `justui update`
+
+Memindai komponen terpasang dan memperbarui yang usang ke versi terbaru di registry.
+
+- **Kegunaan**: Secara otomatis mencocokkan meta-hash semua berkas di `components_dir` dengan versi registry pusat dan meminta konfirmasi pengguna untuk memperbarui komponen secara massal.
+
+### 6. `justui create`
+
+Membuat templat dasar untuk komponen kustom lokal baru yang mematuhi standar desain JustUI.
+
+- **Argumen**:
+  - `[custom_component_name]`: Nama komponen kustom baru Anda (misalnya `custom_card`).
+- **Kegunaan**: Menghasilkan bundel struktur berkas standar:
+  1. `custom_card.dart`: Widget utama yang sudah terhubung ke context extension (`context.justColors`, dll.).
+  2. `custom_card_style.dart`: Parameter kustomisasi visual individual.
+  3. `custom_card_variants.dart`: Definisienum varian visual dan ukuran.
+  4. `custom_card_theme.dart`: Pendaftaran kelas jembatan ke `ThemeExtension` milik Flutter.
+
+---
+
+## 4. Perintah yang Tidak Didukung & Solusinya
+
+Perlu diperhatikan bahwa perintah **`remove`** dan **`doctor`** tidak didukung secara langsung oleh CLI JustUI saat ini. Berikut adalah solusi alternatif untuk melakukan kedua tindakan tersebut secara aman:
+
+### Solusi untuk `justui remove` (Menghapus Komponen)
+
+Karena JustUI menggunakan model penyalinan kode sumber langsung (bukan sebagai library package read-only), Anda dapat menghapus komponen secara manual tanpa memengaruhi stabilitas SDK:
+
+1. Hapus file `.dart` terkait komponen tersebut di dalam folder komponen Anda (misalnya `lib/components/ui/button.dart`).
+2. Jika ada dependensi eksternal di `pubspec.yaml` yang hanya digunakan oleh komponen tersebut, hapus baris dependensi tersebut secara manual lalu jalankan `flutter pub get`.
+
+### Solusi untuk `justui doctor` (Mendiagnosis Masalah)
+
+Jika Anda ingin mendiagnosis kondisi integritas instalasi JustUI Anda:
+
+1. Jalankan perintah `justui diff [nama_komponen]` untuk setiap komponen terpasang untuk mendeteksi apakah ada kerusakan berkas atau modifikasi tidak disengaja.
+2. Periksa apakah jalur direktori di `justui.config.yaml` cocok dengan jalur folder fisik di proyek Anda.
+3. Pastikan token tema di `just_theme.dart` terhubung ke root provider di `main.dart`.
