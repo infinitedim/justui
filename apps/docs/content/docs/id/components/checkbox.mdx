@@ -1,0 +1,175 @@
+---
+title: Checkbox
+description: Indikator pilihan ganda bertema sistem desain yang mendukung status aktif, nonaktif, dan status campuran (indeterminate), dilengkapi aksesibilitas navigasi keyboard penuh.
+---
+
+# Checkbox
+
+Komponen `JustCheckbox` adalah elemen kontrol formulir yang memungkinkan pengguna memilih satu atau beberapa opsi dari suatu daftar pilihan. Komponen ini dirancang independen dari Material SDK, mendukung status campuran (_indeterminate_), animasi lukisan kanvas halus, dan navigasi ramah keyboard.
+
+---
+
+## Deskripsi
+
+- **`JustCheckbox`**: Kotak centang interaktif yang dapat disandingkan dengan label teks. Selain mendukung status biner Tercentang (_true_) dan Tidak Tercentang (_false_), komponen ini juga mendukung status Campuran/Sebagian (_null_ / _indeterminate_) yang berguna untuk pilihan induk dari sekumpulan anak pilihan.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Contoh penggunaan dasar `JustCheckbox` untuk persetujuan ketentuan layanan:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class CheckboxBasicDemo extends StatefulWidget {
+  const CheckboxBasicDemo({super.key});
+
+  @override
+  State<CheckboxBasicDemo> createState() => _CheckboxBasicDemoState();
+}
+
+class _CheckboxBasicDemoState extends State<CheckboxBasicDemo> {
+  bool? _isAccepted = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustCheckbox(
+      value: _isAccepted,
+      label: const Text('Saya menyetujui syarat dan ketentuan penggunaan'),
+      onChanged: (val) {
+        setState(() {
+          _isAccepted = val;
+        });
+      },
+    );
+  }
+}
+```
+
+### Advanced Usage (Indeterminate State)
+
+Contoh penggunaan tingkat lanjut untuk skenario pilihan bertingkat dengan status campuran (_indeterminate_):
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class CheckboxGroupDemo extends StatefulWidget {
+  const CheckboxGroupDemo({super.key});
+
+  @override
+  State<CheckboxGroupDemo> createState() => _CheckboxGroupDemoState();
+}
+
+class _CheckboxGroupDemoState extends State<CheckboxGroupDemo> {
+  final List<bool> _childValues = [false, false, false];
+
+  bool? get _parentValue {
+    final int checkedCount = _childValues.where((val) => val).length;
+    if (checkedCount == 0) return false;
+    if (checkedCount == _childValues.length) return true;
+    return null; // Status campuran (Indeterminate)
+  }
+
+  void _onParentChanged(bool? val) {
+    final bool targetValue = val ?? false;
+    setState(() {
+      for (int i = 0; i < _childValues.length; i++) {
+        _childValues[i] = targetValue;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: context.justSpacing.sm,
+      children: [
+        // Checkbox Induk dengan status campuran
+        JustCheckbox(
+          value: _parentValue,
+          label: Text(
+            'Pilih Semua Item',
+            style: context.justTypo.headingSm,
+          ),
+          onChanged: _onParentChanged,
+        ),
+        Padding(
+          padding: .only(left: context.justSpacing.lg),
+          child: Column(
+            spacing: context.justSpacing.xs,
+            children: List.generate(_childValues.length, (index) {
+              return JustCheckbox(
+                value: _childValues[index],
+                label: Text('Item Pilihan ${index + 1}'),
+                onChanged: (val) {
+                  setState(() {
+                    _childValues[index] = val ?? false;
+                  });
+                },
+              );
+            }),
+          ),
+        ),
+      ],
+    );
+  }
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustCheckbox
+
+| Properti     | Tipe Data              | Nilai Bawaan (Default) | Deskripsi                                                                                                          |
+| :----------- | :--------------------- | :--------------------- | :----------------------------------------------------------------------------------------------------------------- |
+| `value`      | `bool?`                | _Wajib (Required)_     | Menentukan status centang: `true` (aktif tercentang), `false` (mati kosong), atau `null` (campuran/indeterminate). |
+| `onChanged`  | `ValueChanged<bool?>?` | _Wajib (Required)_     | Callback yang dipicu setiap kali status kotak centang berubah. Jika bernilai `null`, checkbox menjadi nonaktif.    |
+| `label`      | `Widget?`              | `null`                 | Widget label (biasanya teks) yang diletakkan di samping kanan kotak centang.                                       |
+| `size`       | `JustCheckboxSize`     | `.md`                  | Ukuran geometri kotak centang: `.sm` (16px), `.md` (20px), `.lg` (24px).                                           |
+| `isDisabled` | `bool`                 | `false`                | Menonaktifkan interaksi dan meredupkan tampilan visual jika diset `true`.                                          |
+| `style`      | `JustCheckboxStyle?`   | `null`                 | Meng-override gaya desain kotak centang secara spesifik.                                                           |
+| `focusNode`  | `FocusNode?`           | `null`                 | Node fokus untuk melacak status aktif fokus navigasi keyboard.                                                     |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+Gaya visual dari kotak centang diatur berdasarkan preset tema aktif:
+
+- **Default Preset**:
+  - Sudut kotak dibulatkan tipis mengikuti token `radius.xs` (2px) atau `radius.sm` (4px) bergantung ukuran.
+  - Saat aktif tercentang, warna latar kotak bertransisi menjadi warna primer, dan garis centang putih dilukis secara bertahap.
+  - Memiliki animasi fokus ring yang lembut di sekeliling kotak.
+
+- **Neobrutalism Preset**:
+  - Kotak centang dipaksa memiliki border hitam pekat (`colors.textPrimary`) sebesar `2.5` di semua status (hover, focused, disabled, checked).
+  - Melewati penyesuaian kontras dinamis HSL (`_makeAccessible`) khusus untuk border demi estetika neobrutalis kontras tinggi.
+  - Kelengkungan sudut dipotong menjadi siku/tajam (`radius.none`).
+
+### Animasi Lukisan Kanvas Kustom
+
+Untuk menghasilkan efek centang yang organik dan mulus, JustUI menggambar garis secara manual di atas kanvas grafik dinamis:
+
+- **`_CheckmarkPainter`**: Melukis tanda centang secara progresif menggunakan koordinat garis yang diinterpolasi dengan `AnimationController` untuk menghasilkan efek coretan menulis tangan yang dinamis saat kotak dicentang.
+- **`_IndeterminatePainter`**: Melukis garis horizontal tebal di tengah kotak secara memanjang dari tengah ke samping saat mendeteksi status campuran (`value == null`).
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Target Sentuh**:
+   Meskipun ukuran kotak centang diset ke `.sm` (16px), seluruh baris komponen (termasuk label teks) dibungkus secara internal untuk menjamin area target sentuh interaktif tetap memiliki dimensi minimal **48x48px**.
+2. **Navigasi Keyboard Penuh**:
+   Komponen meregistrasikan pendengar pengetukan keyboard secara internal. Pengguna disabilitas motorik yang berselancar menggunakan keyboard dapat menekan tombol **Spasi** (_Space_) atau **Enter** untuk mengubah status centang saat komponen berada dalam fokus navigasi.
+3. **Deskripsi Status Semantik**:
+   Checkbox terintegrasi dengan node semantik Flutter yang menerangkan status interaktifnya ke pembaca layar (misal membaca "Terpilih, Kotak Centang" atau "Sebagian Terpilih, Kotak Centang").
