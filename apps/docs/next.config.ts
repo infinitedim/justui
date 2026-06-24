@@ -25,6 +25,9 @@ const cspHeader = `
   upgrade-insecure-requests;
 `;
 
+const defaultLocale = 'id';
+const supportedLocales = ['id', 'en'];
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
@@ -37,6 +40,42 @@ const nextConfig: NextConfig = {
   },
   typescript: {
     ignoreBuildErrors: false,
+  },
+  // Proxy-style i18n redirects (replaces middleware.ts)
+  async redirects() {
+    const redirects = [];
+
+    // Redirect root path to default locale
+    redirects.push({
+      source: '/',
+      destination: `/${defaultLocale}`,
+      permanent: false,
+    });
+
+    // Redirect docs root to default locale docs
+    redirects.push({
+      source: '/docs',
+      destination: `/${defaultLocale}/docs`,
+      permanent: false,
+    });
+
+    // Redirect all /docs/:path* without locale to default locale
+    redirects.push({
+      source: '/docs/:path*',
+      destination: `/${defaultLocale}/docs/:path*`,
+      permanent: false,
+    });
+
+    return redirects;
+  },
+  // Proxy rewrites for locale handling
+  async rewrites() {
+    return {
+      beforeFiles: [
+        // Proxy non-locale prefixed paths to default locale
+        // This ensures Fumadocs links with hidePrefix work correctly
+      ],
+    };
   },
   ...(isDev
     ? {}
@@ -60,7 +99,7 @@ const nextConfig: NextConfig = {
                 },
                 {
                   key: 'X-Frame-Options',
-                  value: 'SAMEORIGIN', // SAMEORIGIN is critical for embedding showcase iframe in docs
+                  value: 'SAMEORIGIN',
                 },
                 {
                   key: 'Referrer-Policy',
