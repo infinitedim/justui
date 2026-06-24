@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import HomePage from '../src/app/page';
+import HomePage from '@/app/[lang]/page';
 
 // Mock next/link to render simple anchor tags
 vi.mock('next/link', () => ({
@@ -20,8 +20,9 @@ vi.mock('next/link', () => ({
 }));
 
 describe('HomePage Component', () => {
-  it('renders the main heading and description', () => {
-    render(<HomePage />);
+  it('renders the main heading and description', async () => {
+    const page = await HomePage({ params: Promise.resolve({ lang: 'id' }) });
+    render(page);
 
     // Check header text
     const heading = screen.getByRole('heading', { level: 1 });
@@ -34,25 +35,27 @@ describe('HomePage Component', () => {
     expect(description).toBeInTheDocument();
   });
 
-  it('renders the primary action buttons', () => {
-    render(<HomePage />);
+  it('renders the primary action buttons', async () => {
+    const page = await HomePage({ params: Promise.resolve({ lang: 'id' }) });
+    render(page);
 
     // Check "Baca Dokumentasi" link
     const docsLink = screen.getByRole('link', { name: /baca dokumentasi/i });
     expect(docsLink).toBeInTheDocument();
-    expect(docsLink).toHaveAttribute('href', '/docs/introduction');
+    expect(docsLink).toHaveAttribute('href', '/id/docs/introduction');
 
     // Check "GitHub" link
     const githubLink = screen.getByRole('link', { name: /github/i });
     expect(githubLink).toBeInTheDocument();
     expect(githubLink).toHaveAttribute(
       'href',
-      'https://github.com/yourblooo/justui'
+      'https://github.com/infinitedim/justui'
     );
   });
 
-  it('renders features grid with all key benefits', () => {
-    render(<HomePage />);
+  it('renders features grid with all key benefits', async () => {
+    const page = await HomePage({ params: Promise.resolve({ lang: 'id' }) });
+    render(page);
 
     // Check feature cards headings
     expect(
