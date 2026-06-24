@@ -1,0 +1,141 @@
+---
+title: Spacing
+description: 4px grid spacing system values, JustGap helper class, JustSpacing.insets() utility, and spatial layout visualization in JustUI.
+---
+
+The JustUI spatial system is based on a **4-pixel grid** (4px grid system). Using incremental 4px ratios ensures interface proportion balance, visual alignment consistency, and eliminates confusion in determining margin, padding, or inter-element spacing values.
+
+---
+
+## 1. Spacing Catalog (`JustSpacing`)
+
+JustUI provides compile-time numeric constants (`const double`) for nine standard spatial size levels ranging from micro scale (`2px`) to vertical macro scale (`64px`).
+
+| Spacing Token | Pixel Value | Illustration & Primary Use                                                             |
+| :------------ | :---------- | :------------------------------------------------------------------------------------- |
+| **xxs**       | 2.0 px      | Micro spacing (such as the distance between an inline icon and a short text label).    |
+| **xs**        | 4.0 px      | Tight spacing (distance between an input field and its helper text below).             |
+| **sm**        | 8.0 px      | Base spacing (distance between small elements inside a list, button, or tag).          |
+| **md**        | 12.0 px     | Default padding (internal padding of status badges or small cards).                    |
+| **lg**        | 16.0 px     | Main container padding (mobile page outer margin or standard card padding).            |
+| **xl**        | 24.0 px     | Large card padding (modal dialog padding, page header, or dashboard card).             |
+| **xxl**       | 32.0 px     | Section spacing (vertical separator distance between main content group blocks).       |
+| **xxxl**      | 48.0 px     | Layout boundary (separator distance for large-scale page layouts).                     |
+| **huge**      | 64.0 px     | Massive spacing (top-bottom vertical distance on landing page/hero section layouts).   |
+
+---
+
+## 2. Spacer Helper Class (`JustGap`)
+
+To reduce boilerplate code from manually writing `SizedBox` inside Flutter widget structures (such as inside a `Row` or `Column`), JustUI provides the `JustGap` helper class.
+
+Each getter inside `JustGap` returns a constant `SizedBox` instance with height and width dimensions equal to the corresponding `JustSpacing` token value.
+
+```dart
+// Spacer writing comparison example:
+// ❌ Conventional Method (High boilerplate)
+Column(
+  children: [
+    const Text('Title'),
+    const SizedBox(height: 8.0),
+    const Text('Description'),
+  ],
+)
+
+// ✅ JustUI Method (Clean & Standard)
+Column(
+  children: [
+    const Text('Title'),
+    JustGap.sm, // Returns a constant SizedBox of size 8.0 px
+    const Text('Description'),
+  ],
+)
+```
+
+---
+
+## 3. Insets Utility (`JustSpacing.insets()`)
+
+JustUI provides the `JustSpacing.insets()` utility method to simplify creating `EdgeInsets` objects based on tokens without having to manually write Flutter's default constructor.
+
+This method evaluates parameters with the following priority rules:
+
+1. If the **`all`** parameter is provided, the method returns `EdgeInsets.all(...)`.
+2. If the horizontal **`h`** or vertical **`v`** parameter is provided, the method returns `EdgeInsets.symmetric(...)` with a default value of `0.0` for any omitted parameter.
+3. If no parameters are provided, returns `EdgeInsets.zero`.
+
+### Shorthand Writing Style (Dart Dot Shorthand)
+
+Consistent with JustUI coding style guidelines, this utility is written using modern Flutter shorthand features (available since Dart 3.10+):
+
+```dart
+// Internal JustSpacing.insets implementation:
+static EdgeInsets insets({double? all, double? h, double? v}) {
+  if (all != null) {
+    return .all(all); // Leverages dot shorthand for EdgeInsets.all
+  }
+  return .symmetric(horizontal: h ?? 0.0, vertical: v ?? 0.0); // EdgeInsets.symmetric
+}
+```
+
+Example of consuming insets in your project:
+
+```dart
+Padding(
+  padding: JustSpacing.insets(h: JustSpacing.lg, v: JustSpacing.md),
+  child: ChildWidget(),
+)
+```
+
+---
+
+## 4. Dynamic Spacing (`FluidSpacingScheme`)
+
+For layouts that require automatic spacing adjustment on tablet or desktop screens, JustUI provides the `FluidSpacingScheme` class. This property scales spatial dimensions linearly based on the current viewport width.
+
+Linear scaling occurs when screen width moves from `640px` (minWidth) to `1024px` (maxWidth):
+
+- **xxs**: scaled from `1.5px` to `2.0px`.
+- **xs**: scaled from `3.0px` to `4.0px`.
+- **sm**: scaled from `6.0px` to `8.0px`.
+- **md**: scaled from `9.0px` to `12.0px`.
+- **lg**: scaled from `12.0px` to `16.0px`.
+- **xl**: scaled from `18.0px` to `24.0px`.
+- **xxl**: scaled from `24.0px` to `32.0px`.
+- **xxxl**: scaled from `36.0px` to `48.0px`.
+- **huge**: scaled from `48.0px` to `64.0px`.
+
+---
+
+## 5. Best Practice Example for Consuming Spacing in Flutter
+
+Consistent with aspect-based rebuild optimization in `just_ui_core`, always consume spacing tokens using the `justSpacing` context aspect in your widget build method:
+
+```dart
+class SpacedContainer extends StatelessWidget {
+  const SpacedContainer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Registering widget to the spacing theme aspect
+    final spacing = context.justSpacing;
+
+    return Padding(
+      padding: JustSpacing.insets(h: spacing.lg, v: spacing.md),
+      child: Container(
+        padding: JustSpacing.insets(all: spacing.md),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.info),
+            JustGap.sm, // Instant 8px horizontal spacer
+            const Text('Verified Spatial Information'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```

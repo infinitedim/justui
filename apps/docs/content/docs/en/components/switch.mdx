@@ -1,0 +1,157 @@
+---
+title: Switch
+description: Interactive binary toggle switch with responsive thumb drag gesture, custom thumb icon styling, and precise neobrutalism proportion calculation.
+---
+
+# Switch
+
+The `JustSwitch` component is an interactive binary toggle used to instantly enable or disable an option. It is designed with realistic drag gesture interaction, smooth slide animations, and full accessibility support.
+
+---
+
+## Description
+
+- **`JustSwitch`**: A draggable toggle (switch) that provides instant visual feedback. This component supports accompanying text labels on the side, custom active track color, and icon insertion inside the thumb.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Basic usage example of `JustSwitch` to enable notification settings:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class SwitchBasicDemo extends StatefulWidget {
+  const SwitchBasicDemo({super.key});
+
+  @override
+  State<SwitchBasicDemo> createState() => _SwitchBasicDemoState();
+}
+
+class _SwitchBasicDemoState extends State<SwitchBasicDemo> {
+  bool _isNotificationEnabled = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSwitch(
+      value: _isNotificationEnabled,
+      label: const Text('Allow Notifications'),
+      onChanged: (val) {
+        setState(() {
+          _isNotificationEnabled = val;
+        });
+      },
+    );
+  }
+}
+```
+
+### Advanced Usage
+
+Advanced usage example showing a custom icon inside the thumb, custom active track color, and different size variations:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class SwitchAdvancedDemo extends StatefulWidget {
+  const SwitchAdvancedDemo({super.key});
+
+  @override
+  State<SwitchAdvancedDemo> createState() => _SwitchAdvancedDemoState();
+}
+
+class _SwitchAdvancedDemoState extends State<SwitchAdvancedDemo> {
+  bool _isDarkMode = false;
+  bool _isWifiOn = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: context.justSpacing.md,
+      children: [
+        // Switch with custom icon inside thumb
+        JustSwitch(
+          value: _isDarkMode,
+          size: JustSwitchSize.lg,
+          label: const Text('Dark Mode'),
+          thumbIcon: (val) => Icon(
+            val ? Icons.dark_mode : Icons.light_mode,
+            size: 12,
+            color: val ? Colors.indigo : Colors.orange,
+          ),
+          onChanged: (val) {
+            setState(() {
+              _isDarkMode = val;
+            });
+          },
+        ),
+
+        // Switch with custom color & small size
+        JustSwitch(
+          value: _isWifiOn,
+          size: JustSwitchSize.sm,
+          activeColor: Colors.teal,
+          label: const Text('Wi-Fi Active'),
+          onChanged: (val) {
+            setState(() {
+              _isWifiOn = val;
+            });
+          },
+        ),
+      ],
+    );
+  }
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustSwitch
+
+| Property      | Type                            | Default              | Description                                                                                                            |
+| :------------ | :------------------------------ | :------------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| `value`       | `bool`                          | _Required_           | Active switch status: `true` (ON) or `false` (OFF).                                                                    |
+| `onChanged`   | `ValueChanged<bool>?`           | _Required_           | Callback triggered every time the switch status changes or is dragged. If `null`, the switch is automatically disabled.|
+| `label`       | `Widget?`                       | `null`               | Label widget (usually text) placed beside the switch.                                                                  |
+| `size`        | `JustSwitchSize`                | `.md`                | Switch geometry size: `.sm`, `.md`, `.lg`.                                                                             |
+| `thumbIcon`   | `Widget? Function(bool value)?` | `null`               | Builder function to render a custom widget/icon inside the thumb circle based on active status.                        |
+| `activeColor` | `Color?`                        | `null`               | Custom color for the track when the switch is active (ON).                                                             |
+| `isDisabled`  | `bool`                          | `false`              | Disables interaction and dims the visual appearance when set to `true`.                                                |
+| `style`       | `JustSwitchStyle?`              | `null`               | Customization of the switch design style.                                                                              |
+
+---
+
+## Theming & Accessibility
+
+### Responsive Drag Gesture Interaction
+
+Unlike standard switches that only support click actions, `JustSwitch` fully supports horizontal drag motion tracking:
+
+1. **`onHorizontalDragUpdate`**: The system directly tracks the user's thumb movement over the track, providing instant and interactive thumb slide visual feedback.
+2. **`onHorizontalDragEnd`**: When the touch is released, if the drag percentage has exceeded the track's halfway boundary (past 50%), the switch status automatically transitions to the new target value elastically. If less than 50%, the thumb slides back to its original position.
+
+### Neobrutalism Preset Dimension Compensation
+
+According to strict design system rules, this component performs special geometric size calculations when the `neobrutalism` preset is active:
+
+- Because `BoxDecoration` draws the border to the inside of the container (`BorderAlign.inside`), a track with a `2.5` pixel border will narrow the clean inner track area.
+- **Size Compensation**: The physical thumb size is dynamically reduced by `2 * borderWidth` and the thumb placement coordinates inside the stack are tightly adjusted (`Positioned(top: padding + borderWidth, left: padding + borderWidth)`). This ensures the neobrutalism thumb will not shift outside (_overlap_ / _jitter_) and hit the track's edge border.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Touch Target**:
+   For mobile accessibility comfort, the component is wrapped to ensure an interactive touch target of at least **48x48px** even when the switch is configured to be small (`.sm`).
+2. **Keyboard Navigation**:
+   Users can focus the switch using the keyboard tab key and instantly change the switch status value by pressing the **Space** or **Enter** key.
+3. **Screen Reader**:
+   The component sends binary "Switch" semantic metadata that tracks the active value (ON/OFF) to be accurately read by the operating system's screen reader system.

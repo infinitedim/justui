@@ -1,0 +1,191 @@
+---
+title: Radio
+description: Exclusive single-option selection component within a choice group featuring a smooth radial zoom animation and built-in keyboard navigation support.
+---
+
+# Radio
+
+The `JustRadio` and `JustRadioGroup` components are used to present a set of mutually exclusive options, where the user can only select one option at a time. These components are designed to be independent, feature smooth transition animations, and support both horizontal and vertical layout arrangements.
+
+---
+
+## Description
+
+- **`JustRadio`**: The base circular single-choice button. Comes with an accompanying label and supports a radial center dot expansion animation.
+- **`JustRadioGroup`**: A grouping container that manages the active selection from a set of radio options (`JustRadioOption`). This group automatically handles value switching and flexibly arranges the option layout (vertical or horizontal).
+
+---
+
+## Usage
+
+### Basic Usage
+
+Basic usage example of `JustRadioGroup` for selecting a gender:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class RadioBasicDemo extends StatefulWidget {
+  const RadioBasicDemo({super.key});
+
+  @override
+  State<RadioBasicDemo> createState() => _RadioBasicDemoState();
+}
+
+class _RadioBasicDemoState extends State<RadioBasicDemo> {
+  String? _selectedGender;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustRadioGroup<String>(
+      value: _selectedGender,
+      direction: Axis.horizontal,
+      spacing: context.justSpacing.md,
+      options: const [
+        JustRadioOption(value: 'L', label: Text('Male')),
+        JustRadioOption(value: 'P', label: Text('Female')),
+      ],
+      onChanged: (val) {
+        setState(() {
+          _selectedGender = val;
+        });
+      },
+    );
+  }
+}
+```
+
+### Advanced Usage
+
+Advanced usage example using a custom object model type for selecting a subscription plan with additional description below the label:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class SubscriptionPlan {
+  final String id;
+  final String title;
+  final String price;
+
+  const SubscriptionPlan({required this.id, required this.title, required this.price});
+}
+
+class RadioAdvancedDemo extends StatefulWidget {
+  const RadioAdvancedDemo({super.key});
+
+  @override
+  State<RadioAdvancedDemo> createState() => _RadioAdvancedDemoState();
+}
+
+class _RadioAdvancedDemoState extends State<RadioAdvancedDemo> {
+  static const List<SubscriptionPlan> _plans = [
+    SubscriptionPlan(id: 'free', title: 'Free Plan', price: 'Rp 0 / month'),
+    SubscriptionPlan(id: 'pro', title: 'Pro Plan', price: 'Rp 49,000 / month'),
+    SubscriptionPlan(id: 'biz', title: 'Business Plan', price: 'Rp 149,000 / month'),
+  ];
+
+  SubscriptionPlan? _selectedPlan = _plans[0];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: context.justSpacing.sm,
+      children: [
+        Text('Select Your Plan:', style: context.justTypo.headingSm),
+        JustRadioGroup<SubscriptionPlan>(
+          value: _selectedPlan,
+          direction: Axis.vertical,
+          spacing: context.justSpacing.sm,
+          options: _plans.map((plan) {
+            return JustRadioOption<SubscriptionPlan>(
+              value: plan,
+              label: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(plan.title, style: context.justTypo.bodyMd),
+                  Text(
+                    plan.price,
+                    style: context.justTypo.caption.copyWith(
+                      color: context.justColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+          onChanged: (val) {
+            setState(() {
+              _selectedPlan = val;
+            });
+          },
+        ),
+      ],
+    );
+  }
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustRadio
+
+| Property     | Type               | Default              | Description                                                                                            |
+| :----------- | :----------------- | :------------------- | :----------------------------------------------------------------------------------------------------- |
+| `value`      | `T`                | _Required_           | Unique value for this radio option.                                                                    |
+| `groupValue` | `T?`               | _Required_           | Currently selected active radio group value. If `value == groupValue`, the radio is in selected state. |
+| `onChanged`  | `ValueChanged<T>?` | _Required_           | Callback triggered when this radio option is selected.                                                 |
+| `label`      | `Widget?`          | `null`               | Label widget (usually text) displayed to the right of the radio circle.                                |
+| `isDisabled` | `bool`             | `false`              | Disables the option when set to `true`.                                                                |
+| `style`      | `JustRadioStyle?`  | `null`               | Customization of the radio design style.                                                               |
+| `focusNode`  | `FocusNode?`       | `null`               | Focus node for tracking keyboard navigation.                                                           |
+
+### JustRadioGroup
+
+| Property    | Type                       | Default              | Description                                                          |
+| :---------- | :------------------------- | :------------------- | :------------------------------------------------------------------- |
+| `options`   | `List<JustRadioOption<T>>` | _Required_           | List of available radio options within the group.                    |
+| `value`     | `T?`                       | `null`               | Value of the currently selected radio option within the group.       |
+| `onChanged` | `ValueChanged<T>?`         | _Required_           | Global group callback when one of the options is selected.           |
+| `direction` | `Axis`                     | `.vertical`          | Direction of option alignment within the group.                      |
+| `spacing`   | `double?`                  | `null`               | Spacing distance between radio options within the group.             |
+| `style`     | `JustRadioStyle?`          | `null`               | Default design style for all radio options within the group.         |
+
+---
+
+## Theming & Accessibility
+
+### Radial Dot Animation (`_RadioDotPainter`)
+
+To provide an organic transition experience, the center dot of the radio circle does not simply appear instantly:
+
+- **Radial Expansion**: When an option is selected, the center of the circle (`_RadioDotPainter`) is drawn gradually expanding radially from the center of the circle outward toward the safe border boundary using the built-in `AnimationController`.
+- This animation is drawn directly onto the pixel coordinate canvas for high-performance, lag-free rendering.
+
+### Visual Presets
+
+The visual style of the radio button adapts to the active theme preset:
+
+- **Default Preset**:
+  - Smoothly shaped circular button with a dynamic border that transitions color to the primary color when selected.
+  - Features a soft circular glow shadow when in a focused state.
+
+- **Neobrutalism Preset**:
+  - The outer circle is forced to have a thick black border (`colors.textPrimary`) of `2.5` in all states (hover, focused, selected).
+  - The center dot of the circle when selected is thick black (`colors.textPrimary`) to maintain the classic neobrutalism aesthetic.
+  - Bypasses dynamic HSL contrast adjustment on the selected border color.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Touch Target**:
+   Like other form elements, the entire option row (radio circle + accompanying label text) is internally wrapped to ensure an interactive touch target of at least **48x48px** per WCAG AA standards.
+2. **Built-in Keyboard Navigation**:
+   Fully supports built-in keyboard traversal. Users can move focus between options using the arrow keys (logical navigation within the group) and press **Enter** or **Space** to select the active option.
+3. **Semantic Description**:
+   Each radio option is read by screen readers complete with its sequence number and total choices within the group (e.g., "Choice 1 of 3, Radio Button") to facilitate readability for visually impaired users.

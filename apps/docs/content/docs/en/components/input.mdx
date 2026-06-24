@@ -1,0 +1,185 @@
+---
+title: Input
+description: Advanced text input field supporting floating labels, FormField cloning with validation, and OTP digit segmentation.
+---
+
+# Input
+
+The `JustInput` component is a high-performance text input element designed without wrapping the standard Material `TextField`. It directly interacts with Flutter's `EditableText` to minimize rendering overhead and maintain design system visual integrity.
+
+---
+
+## Description
+
+- **`JustInput`**: A basic text input field with support for floating labels, prefix/suffix icons, helper text, error text, success text, and an instant clear button.
+- **`JustFormInput`**: A wrapper variant of `JustInput` integrated with Flutter's `Form` system for input value validation needs.
+- **`JustInput.otp`**: A special variant for entering OTP (One-Time Password) verification codes with one digit per field, automatic focus shifting, and smart text paste support.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Basic usage example of `JustInput` for standard text entry:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicInput(BuildContext context) {
+  return JustInput(
+    label: 'Email Address',
+    hint: 'name@domain.com',
+    keyboardType: TextInputType.emailAddress,
+    onChanged: (value) => print('Email: $value'),
+  );
+}
+```
+
+### Advanced Usage
+
+Advanced usage example for a password input with form validation, and a separate OTP field:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class InputAdvancedScreen extends StatefulWidget {
+  const InputAdvancedScreen({super.key});
+
+  @override
+  State<InputAdvancedScreen> createState() => _InputAdvancedScreenState();
+}
+
+class _InputAdvancedScreenState extends State<InputAdvancedScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        spacing: context.justSpacing.lg,
+        children: [
+          // JustFormInput with Validation & Suffix
+          JustFormInput(
+            label: 'Password',
+            hint: 'Enter at least 8 characters',
+            obscureText: true,
+            controller: _passwordController,
+            validator: (val) {
+              if (val == null || val.length < 8) {
+                return 'Password must be at least 8 characters';
+              }
+              return null;
+            },
+          ),
+
+          // Form Submit Button
+          JustButton(
+            label: 'Submit',
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                print('Form valid');
+              }
+            },
+          ),
+
+          const Divider(),
+
+          // 6-Digit OTP Segmentation
+          JustInput.otp(
+            length: 6,
+            onChanged: (otpCode) => print('OTP Code: $otpCode'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustInput
+
+| Property          | Data Type                   | Default Value | Description                                                                                              |
+| :---------------- | :-------------------------- | :------------ | :------------------------------------------------------------------------------------------------------- |
+| `label`           | `String?`                   | `null`        | Field label text that floats upward when the field is active or filled.                                  |
+| `hint`            | `String?`                   | `null`        | Placeholder text that appears faint when the field is empty.                                             |
+| `helper`          | `String?`                   | `null`        | Additional guidance or instruction text below the input field.                                           |
+| `errorText`       | `String?`                   | `null`        | Validation error message. If filled, the field turns red and vocal accessibility is activated.           |
+| `successText`     | `String?`                   | `null`        | Success confirmation message. If filled, the field receives a green visual.                              |
+| `controller`      | `TextEditingController?`    | `null`        | Text controller for reading, writing, and controlling input.                                             |
+| `focusNode`       | `FocusNode?`                | `null`        | Focus node for tracking active keyboard status.                                                          |
+| `onChanged`       | `ValueChanged<String>?`     | `null`        | Callback triggered every time the text inside the field changes.                                         |
+| `onSubmitted`     | `ValueChanged<String>?`     | `null`        | Callback when the user presses the done/enter button on the keyboard.                                    |
+| `onTap`           | `VoidCallback?`             | `null`        | Callback when the input field is tapped.                                                                 |
+| `prefix`          | `Widget?`                   | `null`        | Custom widget on the left side of the input (such as a currency symbol).                                 |
+| `prefixIcon`      | `IconData?`                 | `null`        | Quick built-in icon to be placed on the left side of the input.                                          |
+| `suffix`          | `Widget?`                   | `null`        | Custom widget on the right side of the input (such as a password visibility toggle button).              |
+| `suffixIcon`      | `IconData?`                 | `null`        | Quick built-in icon to be placed on the right side of the input.                                         |
+| `maxLength`       | `int?`                      | `null`        | Maximum character length limit that can be entered.                                                      |
+| `maxLines`        | `int?`                      | `1`           | Maximum number of text lines. Set `null` for dynamic multi-line input.                                   |
+| `minLines`        | `int?`                      | `null`        | Minimum initial number of input field lines.                                                             |
+| `obscureText`     | `bool`                      | `false`       | Masks input characters (useful for password input).                                                      |
+| `enabled`         | `bool`                      | `true`        | If `false`, disables interaction and dims the input field.                                               |
+| `readOnly`        | `bool`                      | `false`       | If `true`, text cannot be changed but the user can still focus on or copy the text.                      |
+| `autofocus`       | `bool`                      | `false`       | Automatically focuses the field when the screen opens if set to `true`.                                  |
+| `keyboardType`    | `TextInputType?`            | `null`        | Type of keyboard to display (such as number, email, text).                                               |
+| `textInputAction` | `TextInputAction?`          | `null`        | Type of action button on the keyboard (such as Next, Done, Search).                                      |
+| `inputFormatters` | `List<TextInputFormatter>?` | `null`        | Custom text formatters (such as limiting to numbers only or automatic capitalization).                   |
+| `size`            | `JustInputSize`             | `.md`         | Input field size options: `.sm`, `.md`, `.lg`.                                                           |
+| `style`           | `JustInputStyle?`           | `null`        | Override input field design style specifically.                                                          |
+| `showClearButton` | `bool`                      | `false`       | Displays a cross button on the right side of the input to instantly clear all text when the field is filled. |
+
+### JustInput.otp
+
+| Property     | Data Type               | Default Value      | Description                                                                             |
+| :----------- | :---------------------- | :----------------- | :-------------------------------------------------------------------------------------- |
+| `length`     | `int`                   | _Required_         | Number of OTP boxes to render (typically 4 or 6).                                     |
+| `onChanged`  | `ValueChanged<String>?` | `null`             | Callback that sends the entire combined OTP code every time a digit changes.          |
+| `style`      | `JustInputStyle?`       | `null`             | Visual style customization for each OTP box.                                          |
+| `isDisabled` | `bool`                  | `false`            | Disables all OTP boxes when set to `true`.                                            |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+The visual style of the input field refers to the active theme preset:
+
+- **Default Preset**:
+  - Has smooth corner curvature according to `radius.md`.
+  - The border dynamically changes color to the brand primary color (`borderFocus`) when focused.
+  - If an error occurs (`errorText` is not `null`), the border is forced to red, and success status (`successText` is not `null`) triggers a green border.
+
+- **Neobrutalism Preset**:
+  - Input fields have a thick dark black border (`colors.textPrimary`) of `2.5` in all statuses (hover, focused, error). The border color will not transition to the brand primary color.
+  - Bypasses dynamic HSL contrast adjustment (`_makeAccessible`) on the focus border color to maintain the classic high-contrast visual.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Error Vocal Accessibility**:
+   When the `errorText` property is set and is not `null`, `JustInput` automatically sends an error announcement vocal instruction to the operating system's accessibility system using the `SemanticsService.announce()` utility. This guarantees that blind users immediately know that validation has failed without needing to manually explore the screen.
+2. **Smart OTP Focus Management**:
+   On `JustInput.otp`, the system dynamically manages focus. When one digit is filled, focus is automatically moved to the box on the right. If the user performs a backspace action, focus intuitively jumps backward to the left.
+3. **Paste Text Distribution**:
+   Through the internal `KeyboardListener` on the OTP variant, if a user copies a full OTP code and pastes it into any box, the system automatically distributes the character sequence to each respective box in order.
+4. **Touch Target**:
+   The entire input field area is designed spaciously with a minimum vertical padding of 12px (meeting the minimum touch target of 48px for ease of interaction on mobile devices).
+5. **Visual Focus Indicator**:
+   When the input field is selected, a thick, high-contrast focus ring indicator appears to facilitate keyboard-based navigation.

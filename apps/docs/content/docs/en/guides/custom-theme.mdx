@@ -1,0 +1,86 @@
+---
+title: Custom Theme & Dynamic Contrast
+description: In-depth guide on JustUI's theming architecture, color generation from seed, and the WCAG AA contrast enforcement algorithm.
+---
+
+The JustUI design system is equipped with a dynamic theming engine inside the `just_ui_core` package. This library not only enables you to generate a complete color scheme instantly from a single brand seed color, but also actively ensures that all generated color combinations meet WCAG AA contrast accessibility standards at runtime without compromising your original color aesthetics.
+
+---
+
+## Generating a Theme from a Seed Color
+
+JustUI provides a factory constructor method `JustThemeData.fromSeed(Color seedColor)` that allows developers to define their application's visual identity by providing only a single primary base color.
+
+### How the HSL Scale Works
+
+Behind the scenes, JustUI converts the RGB seed color you provide into the **HSL (Hue, Saturation, Lightness)** color space. Using the HSL color space is crucial because it allows independent manipulation of lightness and saturation values without changing the base hue of your brand color.
+
+From the base seed color, JustUI automatically maps and generates complementary color palettes for various interface needs, such as:
+
+- **Primary Color**: Your original seed color.
+- **Background Color**: A very light neutral color (in light mode) or very dark (in dark mode).
+- **Surface/Card Color**: A secondary container color.
+- **Text Color (Primary/Secondary)**: High-contrast colors against the background.
+- **Accent/Status Colors**: Success, info, warning, and danger colors that have been tuned to match the saturation of your main seed color.
+
+---
+
+## Dynamic Contrast Enforcement Algorithm
+
+One of the biggest challenges in dynamic theme systems is ensuring that randomly generated or user-input colors remain clearly readable. An input focus border (`borderFocus`) or a faded button color against a certain background can make it difficult for users with visual impairments.
+
+To address this, JustUI includes an automatic contrast guarantee module (`colors_dynamic.dart`) that evaluates color contrast ratios against their backgrounds in real-time.
+
+### Lightness Adjustment Algorithm Steps
+
+If the initial contrast ratio between an interactive element/text color and the container background color (`background`) falls below the targeted minimum threshold (for example, contrast ratio $\ge$ 3.0:1 for visual/focus elements, or $\ge$ 4.5:1 for normal text), the system executes the following algorithm:
+
+#### 1. Brightness Direction Detection
+
+First, the algorithm calculates the relative luminance of the background (`bgLuminance = background.computeLuminance()`). This luminance value ranges from `0.0` (pure black) to `1.0` (pure white).
+
+- If `bgLuminance < 0.5` (background tends to be dark), then the element color must be made lighter (`makeLighter = true`) to increase contrast.
+- If `bgLuminance >= 0.5` (background tends to be light), then the element color must be made darker (`makeLighter = false`) to increase contrast.
+
+#### 2. Binary Search Lightness
+
+To keep the adjusted color as close as possible to your original seed color (preserving the original Hue and Saturation), the algorithm runs a binary search on the HSL Lightness range for **8 iterations**:
+
+- Initial bounds are defined:
+  - If `makeLighter` is active: the lower search bound (`low`) is set to the seed color's initial lightness, the upper bound (`high`) is set to `1.0` (pure white).
+  - If `makeLighter` is inactive: the lower bound (`low`) is set to `0.0` (pure black), the upper bound (`high`) is set to the seed color's initial lightness.
+- At each iteration:
+  1. Calculate the lightness midpoint: `mid = (low + high) / 2`.
+  2. Convert the new HSL color with that `mid` lightness back to RGB format.
+  3. Evaluate the contrast ratio of the new RGB color against the background color using the WCAG formula:
+     ```text
+     Contrast Ratio = (L_light + 0.05) / (L_dark + 0.05)
+     ```
+  4. Adjust the search bounds:
+     - If the new color meets the target minimum ratio:
+       - If searching for a lighter color: narrow `high = mid` (looking for a lower lightness level that still meets contrast so the color isn't too white).
+       - If searching for a darker color: narrow `low = mid` (looking for a higher lightness level that still meets contrast so the color isn't too black).
+     - If the new color does not yet meet the target minimum ratio:
+       - If searching for a lighter color: raise `low = mid` (color must be made lighter).
+       - If searching for a darker color: lower `high = mid` (color must be made darker).
+
+#### 3. Safe Fallback Limit
+
+If after completing 8 binary search iterations the minimum contrast ratio still cannot be achieved (for example, on extreme seed color combinations), the system will use a final safety mechanism:
+
+- Force the element color to **pure white** (`0xFFFFFFFF`) if the background is dark.
+- Force the element color to **pure black** (`0xFF000000`) if the background is light.
+
+---
+
+## When Is Dynamic Contrast Adjustment Bypassed?
+
+Although accessibility is the top priority, there are special design cases where this dynamic lightness manipulation would actually break the desired visual aesthetic. The primary case is the **Neobrutalism Preset**.
+
+Under the `neobrutalism` visual preset, JustUI automatically bypasses the entire `_makeAccessible` process in the `colors_dynamic.dart` file specifically for default/focus borders.
+
+### Neobrutalism Bypass Design Rationale:
+
+1. **Bold & Solid Edge Aesthetic**: Neobrutalism design heavily relies on thick, solid borders (`colors.textPrimary` or `0xFF000000` in light mode, and `0xFFFFFFFF` in dark mode) across all component states (normal, hover, focused, error).
+2. **Avoiding Color Shift to Tinted**: If the dynamic contrast algorithm were allowed to run, it would attempt to change the solid black color to a primary-tinted color to adjust contrast, which would ruin the thick black border that is a signature characteristic of the neobrutalism aesthetic.
+3. **Dimension & Shadow Combination**: Visual contrast in neobrutalism is not only guaranteed by border color, but also by border thickness (standard set at `2.5` pixels) and a solid thick-offset shadow behind it, so component boundary readability remains very clear for users without requiring color lightness manipulation.

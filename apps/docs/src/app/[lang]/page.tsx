@@ -1,6 +1,12 @@
 import Link from 'next/link';
 
-export default function HomePage() {
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const lang = (await params).lang;
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-6 dark:bg-slate-950">
       <main className="max-w-4xl space-y-8 text-center">
@@ -19,13 +25,13 @@ export default function HomePage() {
         {/* Action Buttons */}
         <div className="flex justify-center gap-4">
           <Link
-            href="/docs/introduction"
+            href={`/${lang}/docs/introduction`}
             className="rounded-lg bg-indigo-600 px-6 py-3 font-medium text-white shadow-md transition-colors hover:bg-indigo-700"
           >
             Baca Dokumentasi
           </Link>
           <a
-            href="https://github.com/yourblooo/justui"
+            href="https://github.com/infinitedim/justui"
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-lg border border-slate-200 bg-white px-6 py-3 font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"

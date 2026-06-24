@@ -1,0 +1,161 @@
+---
+title: Skeleton
+description: Pemuat kerangka struktural otomatis (structure-aware skeleton loader) untuk merepresentasikan status loading aplikasi secara natural.
+---
+
+# Skeleton
+
+`JustSkeleton` adalah komponen pemuat kerangka kerja (_skeleton loader_) yang mendeteksi struktur pohon widget di bawahnya secara otomatis (_structure-aware_) untuk merepresentasikan status pemuatan aplikasi secara alami. Komponen ini dapat menyinkronkan gelombang kilauan shimmer di seluruh layar atau dirender sebagai penampung manual.
+
+## Usage
+
+### Basic
+
+Berikut adalah contoh penggunaan dasar `JustSkeleton` untuk membungkus komponen profil kartu secara otomatis saat memuat data.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class BasicSkeletonExample extends StatelessWidget {
+  final bool isLoading;
+
+  const BasicSkeletonExample({super.key, required this.isLoading});
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSkeleton(
+      loading: isLoading,
+      child: const UserCardWidget(),
+    );
+  }
+}
+
+class UserCardWidget extends StatelessWidget {
+  const UserCardWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return JustCard(
+      child: Row(
+        children: [
+          const JustAvatar(name: 'Budi Santoso', size: JustAvatarSize.lg),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text('Budi Santoso', style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(height: 4),
+                Text('Software Engineer', style: TextStyle(color: Colors.grey)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+### Advanced
+
+Contoh penggunaan lanjutan menggunakan pembuat manual lingkaran (`JustSkeleton.circle`) atau baris (`JustSkeleton.line`) serta _escape hatches_ (`JustSkeletonIgnore` dan `JustSkeletonAtomic`) untuk merancang kerangka pemuatan yang kompleks.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class AdvancedSkeletonExample extends StatelessWidget {
+  final bool isLoading;
+
+  const AdvancedSkeletonExample({super.key, required this.isLoading});
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSkeleton(
+      loading: isLoading,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              // Mengabaikan pemuatan skeleton agar tombol kembali tetap terlihat normal & interaktif
+              JustSkeletonIgnore(
+                child: JustIconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.pop(context),
+                  tooltip: 'Kembali',
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Menggunakan pembuat lingkaran manual skeleton
+              const JustSkeleton.circle(size: 48.0),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    JustSkeleton.line(width: 120.0, height: 16.0),
+                    SizedBox(height: 8),
+                    JustSkeleton.line(width: 80.0, height: 12.0),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          // Memaksa subtree yang kompleks melebur menjadi satu blok kotak abu-abu polos tunggal
+          JustSkeletonAtomic(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              color: Colors.grey[200],
+              child: Row(
+                children: const [
+                  Icon(Icons.star, color: Colors.amber),
+                  SizedBox(width: 8),
+                  Text('Ulasan Bintang 5'),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+## API Reference (Props)
+
+### JustSkeleton
+
+| Properti  | Tipe Data            | Nilai Bawaan | Deskripsi                                                                                 |
+| --------- | -------------------- | ------------ | ----------------------------------------------------------------------------------------- |
+| `child`   | `Widget`             | _Wajib_      | Struktur pohon widget asli aplikasi yang akan di-masking menjadi kerangka pemuatan.       |
+| `loading` | `bool`               | _Wajib_      | Status aktif pemuatan skeleton (jika false, merender `child` asli).                       |
+| `style`   | `JustSkeletonStyle?` | `null`       | Kustomisasi skema warna dasar, warna shimmer, durasi denyut, dan arah gelombang pendaran. |
+
+### Sub-widget Pembantu (Escape Hatches & Constructors)
+
+- **`JustSkeletonIgnore`**: Membungkus widget anak agar terhindar dari proses masking skeleton (tetap interaktif dan tampak normal di layar).
+- **`JustSkeletonAtomic`**: Memaksa widget anak yang kompleks untuk dilebur menjadi satu bentuk geometris abu-abu sederhana tunggal (menyederhanakan visual).
+- **`JustSkeleton.circle(double size)`**: Konstruktor instan pembuat lingkaran placeholder abu-abu.
+- **`JustSkeleton.line(double width, double height)`**: Konstruktor instan pembuat garis persegi panjang placeholder abu-abu.
+
+## Theming & Accessibility
+
+### Penjelasan Kustomisasi Preset & Style
+
+- **Default Style**: Menyajikan animasi gelombang kilauan cahaya (_shimmer wave_) bergradasi lembut yang meluncur dari kiri ke kanan melintasi seluruh area aplikasi secara harmonis menggunakan pengontrol durasi `JustDuration.slower`.
+- **Neobrutalism Style**: Di bawah preset neobrutalism, gelombang kilauan gradien ditiadakan sama sekali untuk menjaga kesederhanaan estetika retro. Ini digantikan oleh animasi denyut transparansi (_opacity pulsing_) warna latar belakang padat abu-abu (berdenyut antara `0.3` dan `0.6` secara linear) dengan transisi yang konsisten.
+
+### Sinkronisasi Gelombang Shimmer Seluruh Layar
+
+- Untuk mencegah arah pendaran shimmer antar widget bergerak berantakan, JustUI meluncurkan satu pengontrol `_JustSkeletonScope` di tingkat teratas. Koordinat posisi absolut widget di atas layar diperoleh menggunakan `RenderBox.localToGlobal(Offset.zero).dx`. Gradien linier diterjemahkan secara khusus berdasarkan letak relatif masing-masing elemen terhadap sumbu global layar, menghasilkan efek gelombang kilauan cahaya (_shimmer wave_) yang selaras meluncur dari kiri ke kanan melintasi seluruh area aplikasi secara harmonis.
+
+### Pemenuhan Standar WCAG AA
+
+- **Status Aksesibilitas Semantik**: Ketika status `loading` bernilai true, komponen secara otomatis menandai dirinya dengan properti semantik `busy: true` dan menyisipkan teks deskripsi alternatif suara untuk pembaca layar ("Sedang memuat data..."). Hal ini mencegah pembaca layar membaca teks kosong atau placeholder mentah di bawah pohon widget, memenuhi standar WCAG AA dalam menyampaikan status pemuatan konten yang dinamis.

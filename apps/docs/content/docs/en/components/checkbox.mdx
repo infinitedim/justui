@@ -1,0 +1,175 @@
+---
+title: Checkbox
+description: A design-system-themed multiple-choice indicator supporting active, inactive, and indeterminate (mixed) states, equipped with full keyboard navigation accessibility.
+---
+
+# Checkbox
+
+The `JustCheckbox` component is a form control element that allows users to select one or more options from a list. It is designed independently from the Material SDK, supporting an indeterminate state, smooth canvas drawing animations, and keyboard-friendly navigation.
+
+---
+
+## Description
+
+- **`JustCheckbox`**: An interactive checkbox that can be paired with a text label. In addition to supporting binary Checked (_true_) and Unchecked (_false_) states, this component also supports a Mixed/Partial (`null` / _indeterminate_) state that is useful for a parent option of a set of child options.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Basic usage example of `JustCheckbox` for terms of service agreement:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class CheckboxBasicDemo extends StatefulWidget {
+  const CheckboxBasicDemo({super.key});
+
+  @override
+  State<CheckboxBasicDemo> createState() => _CheckboxBasicDemoState();
+}
+
+class _CheckboxBasicDemoState extends State<CheckboxBasicDemo> {
+  bool? _isAccepted = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustCheckbox(
+      value: _isAccepted,
+      label: const Text('I agree to the terms and conditions of use'),
+      onChanged: (val) {
+        setState(() {
+          _isAccepted = val;
+        });
+      },
+    );
+  }
+}
+```
+
+### Advanced Usage (Indeterminate State)
+
+Advanced usage example for a hierarchical selection scenario with an indeterminate state:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class CheckboxGroupDemo extends StatefulWidget {
+  const CheckboxGroupDemo({super.key});
+
+  @override
+  State<CheckboxGroupDemo> createState() => _CheckboxGroupDemoState();
+}
+
+class _CheckboxGroupDemoState extends State<CheckboxGroupDemo> {
+  final List<bool> _childValues = [false, false, false];
+
+  bool? get _parentValue {
+    final int checkedCount = _childValues.where((val) => val).length;
+    if (checkedCount == 0) return false;
+    if (checkedCount == _childValues.length) return true;
+    return null; // Indeterminate State
+  }
+
+  void _onParentChanged(bool? val) {
+    final bool targetValue = val ?? false;
+    setState(() {
+      for (int i = 0; i < _childValues.length; i++) {
+        _childValues[i] = targetValue;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: context.justSpacing.sm,
+      children: [
+        // Parent Checkbox with indeterminate status
+        JustCheckbox(
+          value: _parentValue,
+          label: Text(
+            'Select All Items',
+            style: context.justTypo.headingSm,
+          ),
+          onChanged: _onParentChanged,
+        ),
+        Padding(
+          padding: .only(left: context.justSpacing.lg),
+          child: Column(
+            spacing: context.justSpacing.xs,
+            children: List.generate(_childValues.length, (index) {
+              return JustCheckbox(
+                value: _childValues[index],
+                label: Text('Selection Item ${index + 1}'),
+                onChanged: (val) {
+                  setState(() {
+                    _childValues[index] = val ?? false;
+                  });
+                },
+              );
+            }),
+          ),
+        ),
+      ],
+    );
+  }
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustCheckbox
+
+| Property     | Data Type              | Default Value      | Description                                                                                                          |
+| :----------- | :--------------------- | :----------------- | :------------------------------------------------------------------------------------------------------------------- |
+| `value`      | `bool?`                | _Required_         | Determines the check status: `true` (actively checked), `false` (empty unchecked), or `null` (mixed/indeterminate).  |
+| `onChanged`  | `ValueChanged<bool?>?` | _Required_         | Callback triggered every time the checkbox status changes. If `null`, the checkbox becomes disabled.                 |
+| `label`      | `Widget?`              | `null`             | Label widget (usually text) placed to the right of the checkbox.                                                     |
+| `size`       | `JustCheckboxSize`     | `.md`              | Checkbox geometry size: `.sm` (16px), `.md` (20px), `.lg` (24px).                                                    |
+| `isDisabled` | `bool`                 | `false`            | Disables interaction and dims the visual display when set to `true`.                                                 |
+| `style`      | `JustCheckboxStyle?`   | `null`             | Overrides the checkbox design style specifically.                                                                    |
+| `focusNode`  | `FocusNode?`           | `null`             | Focus node for tracking active keyboard navigation focus status.                                                     |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+The visual style of the checkbox is set based on the active theme preset:
+
+- **Default Preset**:
+  - Checkbox corners are slightly rounded following the `radius.xs` (2px) or `radius.sm` (4px) token depending on the size.
+  - When actively checked, the checkbox background color transitions to the primary color, and the white checkmark line is drawn progressively.
+  - Has a gentle focus ring animation around the checkbox.
+
+- **Neobrutalism Preset**:
+  - The checkbox is forced to have a thick dark black border (`colors.textPrimary`) of `2.5` in all statuses (hover, focused, disabled, checked).
+  - Skips dynamic HSL contrast adjustment (`_makeAccessible`) specifically for the border to achieve a neobrutalist high-contrast aesthetic.
+  - Corner curvature is cut to sharp/right angles (`radius.none`).
+
+### Custom Canvas Drawing Animations
+
+To produce an organic and smooth check effect, JustUI draws lines manually on a dynamic graphics canvas:
+
+- **`_CheckmarkPainter`**: Progressively paints a checkmark using line coordinates interpolated with an `AnimationController` to produce a dynamic handwriting stroke effect when the checkbox is checked.
+- **`_IndeterminatePainter`**: Paints a thick horizontal line in the center of the checkbox that extends from the center outward when detecting a mixed status (`value == null`).
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Touch Target**:
+   Even when the checkbox size is set to `.sm` (16px), the entire component row (including label text) is internally wrapped to guarantee the interactive touch target area still has minimum dimensions of **48x48px**.
+2. **Full Keyboard Navigation**:
+   The component internally registers a keyboard tap listener. Motor-impaired users browsing with a keyboard can press the **Space** or **Enter** key to toggle the checkbox status when the component is in navigation focus.
+3. **Semantic Status Description**:
+   The checkbox integrates with the Flutter semantic node that explains its interactive status to the screen reader (for example, reading "Selected, Checkbox" or "Partially Selected, Checkbox").

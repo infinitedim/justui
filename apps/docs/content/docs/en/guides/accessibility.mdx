@@ -1,0 +1,106 @@
+---
+title: WCAG AA Accessibility Guidelines
+description: Guide to implementing accessibility in JustUI including contrast audits, touch target sizes, screen reader integration, and keyboard traversal.
+---
+
+Accessibility is not an add-on feature, but a primary pillar in JustUI's design. All components are designed to be comfortably usable by everyone, including those with visual impairments, motor limitations, or who rely on special navigation assistive tools. This document explains how JustUI meets **WCAG 2.0 AA** accessibility standards through various built-in mechanisms.
+
+---
+
+## WCAG AA Color Contrast Calculation
+
+JustUI complies with WCAG 2.0 accessibility standards in color contrast calculation to ensure text readability and interactive element boundaries. This audit system is embedded directly in the `just_ui_tokens` package in the `colors_accessibility.dart` file.
+
+### Contrast Ratio Formula
+
+Accessibility contrast is measured based on the relative luminance ($L$) comparison between two overlapping colors. Relative luminance is calculated by Flutter through the internal `Color.computeLuminance()` function, producing values between `0.0` (deep black) and `1.0` (pure white).
+
+The WCAG 2.0 contrast ratio formula is:
+
+```text
+Contrast Ratio = (L1 + 0.05) / (L2 + 0.05)
+```
+
+Where $L_1$ is the relative luminance of the lighter color, and $L_2$ is the relative luminance of the darker color. The constant `0.05` addition serves to prevent division by zero when detecting deep black, and to compensate for the human eye's adaptation to screen glare effects.
+
+### `JustColorAccessibility` Extension Implementation
+
+JustUI provides extension methods on the `Color` class to perform this audit at the code level:
+
+```dart
+extension JustColorAccessibility on Color {
+  double contrastRatioWith(Color other) {
+    final double l1 = computeLuminance();
+    final double l2 = other.computeLuminance();
+
+    if (l1 > l2) {
+      return (l1 + 0.05) / (l2 + 0.05);
+    } else {
+      return (l2 + 0.05) / (l1 + 0.05);
+    }
+  }
+
+  bool isAccessibleWith(Color other, {bool isLargeText = false}) {
+    final double ratio = contrastRatioWith(other);
+    return ratio >= (isLargeText ? 3.0 : 4.5);
+  }
+}
+```
+
+- **Normal Text (Ratio $\ge$ 4.5:1)**: The WCAG AA minimum standard so that normal small text (< 18pt) can be read clearly against its background.
+- **Large Text & Interactive Elements (Ratio $\ge$ 3.0:1)**: A special standard for large text ($\ge$ 18pt or bold text $\ge$ 14pt) as well as important visual components such as focused input borders, active buttons, or status icons.
+
+---
+
+## Minimum 48x48px Touch Target Size
+
+For users with motor limitations or when using mobile devices with one hand, pressing small buttons can be very difficult. Mobile accessibility standards set the minimum interactive touch target size at **48x48 density-independent pixels (dp)**.
+
+Although JustUI components can be visually very small (for example, `JustButton` with size variant `xs` or `sm`, `JustIconButton`, `JustCheckbox`, `JustSwitch`, and `JustRadio`), JustUI guarantees this interaction safety internally:
+
+- **Dimension Compensation**: Interactive components are wrapped in a `ConstrainedBox` that forces a minimum tap detection area of 48x48px.
+- **Transparent Padding**: If the visual component size is below 48px, the remaining target area is filled with transparent padding that remains sensitive to the user's finger touch. This ensures that a sleek visual aesthetic is maintained without sacrificing physical interaction comfort.
+
+---
+
+## Screen Reader Integration (Semantics/ARIA-like)
+
+JustUI uses Flutter's built-in `Semantics` widget to translate visual component structures into vocal descriptions that are friendly to screen readers such as TalkBack on Android and VoiceOver on iOS.
+
+### 1. Mandatory Tooltip Assertion on Icon Buttons
+
+Textless buttons (such as `JustIconButton`) often confuse screen readers because they lack clear text labels. To prevent this issue, developers are required to include the `tooltip` parameter on `JustIconButton`.
+JustUI enforces strict assertion at compile time:
+
+```dart
+assert(tooltip != null, 'Icon buttons must have a tooltip for screen reader accessibility.');
+```
+
+This tooltip is automatically read as a semantic label description when the screen reader user focuses on the button.
+
+### 2. Dynamic Accessibility Announcement on Form Input
+
+On the `JustInput` or `JustFormInput` component, when a text validation error occurs, the error message is not only displayed visually (colored red below the field), but also sent directly as a voice instruction to the operating system using:
+
+```dart
+SemanticsService.announce(errorText, TextDirection.ltr);
+```
+
+This ensures that visually impaired users immediately know about the input error without having to explore the entire screen to find the error message text.
+
+---
+
+## Keyboard Traversal & Touch-Free Navigation
+
+Keyboard navigation is very important for desktop computer users who cannot use a mouse, or users who use special navigation assistive devices.
+
+### 1. Focus Binding (`FocusNode`)
+
+Each JustUI interactive component (such as `JustCheckbox`, `JustRadio`, `JustSwitch`, and `JustScrollArea`) manages its own focus status using `FocusNode`. When a component receives focus, it will draw a focus ring (`FocusIndicator`) around itself to guide the user's gaze.
+
+### 2. Keyboard Event Handlers
+
+JustUI components listen for keyboard keys directly:
+
+- **Space & Enter**: Registered manually on internal _key event handler_. When the user presses the Space or Enter key over a focused `JustCheckbox`, `JustRadio`, or `JustSwitch`, the component status will change (_toggle_) as if physically tapped.
+- **PageUp, PageDown, & Arrow Keys**: The `JustScrollArea` library captures these keys to precisely scroll the scroll container content without requiring a mouse scroll wheel (PageDown/PageUp to scroll one active viewport height, arrow keys for smooth scrolling).

@@ -1,0 +1,168 @@
+---
+title: Theming System & Customization
+description: In-depth explanation of the core theming engine, aspect-based rendering optimization, and ThemeData caching management in JustUI.
+---
+
+# Theming System & Customization
+
+JustUI is designed with a primary focus on high performance and minimizing rebuild overhead. This document discusses in depth the architecture of JustUI's theming engine, how Aspect-Based Rebuilds work, the lazy caching system using `Expando`, and practical guidelines for consuming themes efficiently.
+
+---
+
+## 1. Core Theming Engine Concept
+
+The core of JustUI's visual customization is managed by the `JustThemeData` class. This class encapsulates all visual primitive tokens into a unified configuration:
+
+- **Colors (`JustColorScheme`)**: A collection of semantic colors and surface colors (background, card, textPrimary, borderFocus, etc.).
+- **Typography (`JustTypographyScheme`)**: A modern typography scale based on the Inter font (or JetBrains Mono for monospace) with support for fluid typography.
+- **Spacing (`JustSpacingScheme`)**: Margin and padding distances based on 4px multiples.
+- **Radius (`JustRadiusScheme`)**: Corner rounding for components and containers.
+- **Shadows (`JustShadowScheme`)**: Multi-layer shadow depth.
+- **Animations (`JustMotionProfile`)**: Animation duration and easing curves (standard, expressive, compact, and reduced).
+- **Preset (`JustThemePreset`)**: The main visual style determiner (modern default vs neobrutalism).
+
+The system distributes this configuration throughout the widget tree using `JustThemeProvider`.
+
+---
+
+## 2. Aspect-Based Rebuilds (`InheritedModel`)
+
+In Flutter, traditional `InheritedWidget` forces _all_ child widgets that consume theme data to rebuild themselves whenever any small change occurs in the theme.
+
+To address this, JustUI implements **Aspect-Based Rebuilds** using `InheritedModel<JustThemeAspect>`.
+
+### List of Aspects (`JustThemeAspect`)
+
+Each aspect is defined in the `JustThemeAspect` enum:
+
+```dart
+enum JustThemeAspect {
+  colors,      // Only listens for color changes
+  typography,  // Only listens for font/text style changes
+  spacing,     // Only listens for spacing changes
+  radius,      // Only listens for corner rounding changes
+  shadows,     // Only listens for shadow changes
+  animations,  // Only listens for motion profile/duration changes
+  preset,      // Listens for visual preset changes
+}
+```
+
+### How Rebuild Evaluation Works
+
+Inside the internal `_JustThemeModel`, the `updateShouldNotifyDependent` method performs aspect-specific comparison:
+
+```dart
+@override
+bool updateShouldNotifyDependent(
+  _JustThemeModel oldWidget,
+  Set<JustThemeAspect> dependencies,
+) {
+  if (dependencies.contains(JustThemeAspect.colors) &&
+      themeData.colors != oldWidget.themeData.colors) {
+    return true;
+  }
+  if (dependencies.contains(JustThemeAspect.typography) &&
+      themeData.typography != oldWidget.themeData.typography) {
+    return true;
+  }
+  if (dependencies.contains(JustThemeAspect.spacing) &&
+      themeData.spacing != oldWidget.themeData.spacing) {
+    return true;
+  }
+  if (dependencies.contains(JustThemeAspect.radius) &&
+      themeData.radius != oldWidget.themeData.radius) {
+    return true;
+  }
+  if (dependencies.contains(JustThemeAspect.shadows) &&
+      themeData.shadows != oldWidget.themeData.shadows) {
+    return true;
+  }
+  if (dependencies.contains(JustThemeAspect.animations) &&
+      themeData.animations != oldWidget.themeData.animations) {
+    return true;
+  }
+  if (dependencies.contains(JustThemeAspect.preset) &&
+      themeData.preset != oldWidget.themeData.preset) {
+    return true;
+  }
+  return false;
+}
+```
+
+**Real-World Scenario**: If a user switches theme mode from light to dark (changing `colors`), a widget that only consumes spacing (`context.justSpacing`) **will not be rebuilt**. Only widgets that register a dependency on colors (`context.justColors`) will be rebuilt. This saves significant CPU rendering cycles, especially on complex widget trees.
+
+---
+
+## 3. Lazy Caching Material `ThemeData` via `Expando`
+
+Although JustUI components are built without direct dependency on built-in Flutter Material widgets, JustUI provides an integration bridge using the `.toThemeData()` extension method on `JustThemeData`.
+
+Recalculating geometry, colors, and decorations to produce Material `ThemeData` on every render cycle is a computationally expensive process. Therefore, JustUI uses a lazy caching technique based on **weak references** through the `Expando` class:
+
+```dart
+final Expando<ThemeData> _themeDataCache = Expando<ThemeData>();
+
+extension JustThemeDataMaterialExtension on JustThemeData {
+  ThemeData toThemeData() {
+    return _themeDataCache[this] ??= _buildMaterialTheme();
+  }
+}
+```
+
+### Why use `Expando`?
+
+1. **Lazy Evaluation**: The `ThemeData` object will never be created before `.toThemeData()` is called for the first time.
+2. **Prevents Memory Leaks**: `Expando` uses weak references to map `ThemeData` instances to `JustThemeData`. If a `JustThemeData` instance is garbage collected, the cached data inside the `Expando` will be automatically removed from memory.
+
+---
+
+## 4. Theme Consumption Guide: Build vs Callback
+
+To keep your application's performance optimal, you must follow strict rules regarding how to consume the theme from context.
+
+### Inside the `build` Method (Registered Rebuild)
+
+When rendering UI, you must use specific aspect extension getters. This registers the widget as a listener (_listener_) on only a specific aspect:
+
+```dart
+@override
+Widget build(BuildContext context) {
+  // RECOMMENDED: Only rebuilds the widget when colors change
+  final colors = context.justColors;
+
+  // RECOMMENDED: Only rebuilds the widget when spacing changes
+  final spacing = context.justSpacing;
+
+  return Container(
+    color: colors.background,
+    padding: .all(spacing.md),
+    child: const Text('JustUI'),
+  );
+}
+```
+
+- **Avoid** using `context.justTheme` on small/leaf widgets, because `justTheme` will register a listener to _all_ theme aspects. As a result, that widget will rebuild when any aspect (such as spacing or radius) changes.
+
+### Inside Callbacks & Handlers (Rebuild-Free)
+
+In interactive callbacks (such as `onPressed`, `onTap`) or lifecycle methods (such as `initState`), you do not need listener registration. Using a listener here will only trigger wasteful rebuilds.
+
+Use the `context.readTheme()` method to retrieve the theme value instantly without registering a rebuild dependency:
+
+```dart
+JustButton(
+  label: 'Save',
+  onPressed: () {
+    // RECOMMENDED: Accessing theme without registering the widget for rebuild
+    final activeTheme = context.readTheme();
+
+    if (activeTheme.preset == JustThemePreset.neobrutalism) {
+      // Call haptic action or other specific logic
+    }
+
+    saveData();
+  },
+)
+```
+
+By separating **reactive** consumption in the `build` method and **imperative** consumption inside callbacks, your Flutter application's render performance will remain stable at 60fps/120fps.

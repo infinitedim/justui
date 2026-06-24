@@ -1,0 +1,154 @@
+---
+title: Button
+description: Primary interactive button component with integrated touch animations and dedicated icon buttons.
+---
+
+# Button
+
+The `JustButton` and `JustIconButton` components are the main interactive elements used to trigger actions or navigation. They are designed without external Material dependencies, offering high performance, smooth touch animations, and full accessibility compliance.
+
+---
+
+## Description
+
+- **`JustButton`**: A standard button with a text label that can be combined with icons at the front (`leading`) or back (`trailing`). This button supports a built-in loading status with a progress spinner.
+- **`JustIconButton`**: A dedicated circular or square button that only displays an icon without a text label. This component requires the `tooltip` parameter to ensure readability by screen readers.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Basic usage example for `JustButton` and `JustIconButton`:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicButtons(BuildContext context) {
+  return Row(
+    spacing: context.justSpacing.md,
+    children: [
+      // Standard JustButton
+      JustButton(
+        label: 'Save',
+        onPressed: () => print('Button pressed'),
+      ),
+
+      // Standard JustIconButton
+      JustIconButton(
+        icon: const Icon(Icons.share),
+        tooltip: 'Share this document',
+        onPressed: () => print('Share clicked'),
+      ),
+    ],
+  );
+}
+```
+
+### Advanced Usage
+
+Advanced usage example showing size variations, icons, loading status, and full-width:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedButtons(BuildContext context) {
+  return Column(
+    spacing: context.justSpacing.lg,
+    children: [
+      // Destructive Button with Front Icon
+      JustButton(
+        label: 'Delete Account',
+        variant: .destructive,
+        size: .lg,
+        leading: const Icon(Icons.delete_outline),
+        onPressed: () => _showDeleteDialog(context),
+      ),
+
+      // Button in Loading State (Displays Progress Spinner)
+      JustButton(
+        label: 'Processing...',
+        isLoading: true,
+        onPressed: () {},
+      ),
+
+      // Full Width Button
+      JustButton(
+        label: 'Proceed to Payment',
+        isFullWidth: true,
+        size: .xl,
+        trailing: const Icon(Icons.arrow_forward),
+        onPressed: () => _proceedToPayment(),
+      ),
+    ],
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustButton
+
+| Property       | Data Type           | Default Value      | Description                                                                                                                                |
+| :------------- | :------------------ | :----------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| `label`        | `String`            | _Required_         | Text displayed inside the button.                                                                                                          |
+| `onPressed`    | `VoidCallback?`     | _Required_         | Callback when the button is pressed. If `null`, the button is automatically disabled visually and interactively.                           |
+| `variant`      | `JustButtonVariant` | `.primary`         | Button visual style options: `.primary`, `.secondary`, `.ghost`, `.destructive`, `.link`.                                                  |
+| `size`         | `JustButtonSize`    | `.md`              | Button geometry size: `.xs`, `.sm`, `.md`, `.lg`, `.xl`.                                                                                   |
+| `leading`      | `Widget?`           | `null`             | Widget (usually an icon) placed before the label text.                                                                                     |
+| `trailing`     | `Widget?`           | `null`             | Widget (usually an icon) placed after the label text.                                                                                      |
+| `isLoading`    | `bool`              | `false`            | Determines whether the button is in a loading process. If `true`, text/icon is hidden and `JustProgressSpinner` is displayed.              |
+| `isDisabled`   | `bool`              | `false`            | Disables button interaction and provides a dimmed visual when set to `true`.                                                               |
+| `isFullWidth`  | `bool`              | `false`            | Stretches the button horizontally to fill the container when set to `true`.                                                                |
+| `style`        | `JustButtonStyle?`  | `null`             | Overrides the button design style specifically per instance.                                                                               |
+| `enableHaptic` | `bool?`             | `null`             | Enables light haptic feedback when the button is pressed. Defaults to active when using the `neobrutalism` preset.                         |
+
+### JustIconButton
+
+| Property       | Data Type           | Default Value      | Description                                                                                    |
+| :------------- | :------------------ | :----------------- | :--------------------------------------------------------------------------------------------- |
+| `icon`         | `Widget`            | _Required_         | Icon widget to be displayed in the center of the button.                                       |
+| `onPressed`    | `VoidCallback?`     | _Required_         | Callback when the button is pressed. If `null`, the button is automatically disabled.          |
+| `variant`      | `JustButtonVariant` | `.ghost`           | Button visual style options: `.primary`, `.secondary`, `.ghost`, `.destructive`, `.link`.      |
+| `size`         | `JustButtonSize`    | `.md`              | Button geometry size: `.xs`, `.sm`, `.md`, `.lg`, `.xl`.                                       |
+| `tooltip`      | `String?`           | _Required_         | Semantic button description for screen readers (accessibility) and hover tooltip balloon.      |
+| `isLoading`    | `bool`              | `false`            | If `true`, hides the icon and displays a loading indicator.                                    |
+| `isDisabled`   | `bool`              | `false`            | Disables interaction and dims the display when set to `true`.                                  |
+| `style`        | `JustButtonStyle?`  | `null`             | Overrides the icon button design style specifically.                                           |
+| `enableHaptic` | `bool?`             | `null`             | Enables light haptic feedback when the button is pressed.                                    |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+Button visual styles highly depend on the active theme preset configured through `JustThemeProvider`:
+
+- **Default Preset**:
+  - Buttons have dynamic corner curvature (following `radius.md` or `radius.full`).
+  - Touch animation uses `AnimatedScale` that provides a press-in effect by dynamically shrinking the button size to scale `0.97` during the transition.
+  - Text color contrast with the background is dynamically evaluated using the `_makeAccessible` HSL-based algorithm.
+
+- **Neobrutalism Preset**:
+  - Buttons are forced to have a thick dark black border (`colors.textPrimary`) of `2.5` in all statuses (hover, pressed, focused, disabled) without border color transitioning to the primary color.
+  - Dynamic HSL contrast adjustment is bypassed to preserve the original neobrutalism solid colors.
+  - To prevent visual drift (unsynchronized visual shift) when pressed, the animation duration is set to `animations.instant` (50ms). The button physically moves position (X/Y translation) simultaneously with the instant disappearance of the solid shadow behind it.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Minimum Touch Targets**:
+   Even when the button size is set to `.xs` or `.sm`, JustUI guarantees the interactive touch target area still has a minimum physical size of **48x48px** according to WCAG AA guidelines. This is implemented internally through a `ConstrainedBox` wrapper and an expanded hit-test area.
+2. **Mandatory Semantic Description**:
+   For `JustIconButton`, the `tooltip` parameter must be provided (`assert(tooltip != null)`). This ensures that screen readers can announce the button function description to users with visual impairments.
+3. **Visual Focus Indicator (Focus Ring)**:
+   When the button is accessed using a keyboard or other controller, a thick, high-contrast focus indicator is displayed around the button through the internal `FocusIndicator` helper widget.
+4. **Automatic Icon Coloring**:
+   Through `IconTheme.merge`, icon colors are automatically adjusted to match the contrast color of the active button status (for example, becoming high-contrast white when the primary button is active, or pale gray when disabled).
