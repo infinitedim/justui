@@ -1,0 +1,160 @@
+---
+title: Card
+description: Premium structured container supporting header, main content, and footer separation, with smooth tap interaction transitions.
+---
+
+# Card
+
+The `JustCard` component is a structural container used to group related information or actions into a single visual block. The card supports various decoration variants (such as soft shadow or outline) and semantic sub-widgets to simplify layout composition.
+
+---
+
+## Description
+
+- **`JustCard`**: The main container widget that structures the card area. The card can have a `header` at the top, a `footer` at the bottom, and automatically supports a tap interaction effect (`onTap`) with responsive visual feedback.
+- **Semantic Sub-Widgets**: JustUI provides dedicated components such as `JustCardHeader`, `JustCardTitle`, `JustCardDescription`, `JustCardContent`, and `JustCardFooter` to ensure consistent margins and padding within the card without needing to manually manage spacing.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Example of a simple card using the outline variant to display a title and short description:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicCard(BuildContext context) {
+  return JustCard(
+    variant: JustCardVariant.outlined,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: context.justSpacing.xs,
+      children: [
+        Text(
+          'System Notification',
+          style: context.justTypo.headingSm,
+        ),
+        Text(
+          'The latest software update has been successfully downloaded and is ready to install.',
+          style: context.justTypo.bodySm,
+        ),
+      ],
+    ),
+  );
+}
+```
+
+### Advanced Usage
+
+Advanced usage example using semantic sub-widgets, header/footer divider separation, and interactive tap callback:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedCard(BuildContext context) {
+  return JustCard(
+    variant: JustCardVariant.elevated,
+    onTap: () => print('Card clicked'),
+    header: JustCardHeader(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: context.justSpacing.xxs,
+        children: [
+          const JustCardTitle(child: Text('Sales Statistics')),
+          const JustCardDescription(child: Text('Monthly report for Q2 2026')),
+        ],
+      ),
+    ),
+    footer: JustCardFooter(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        spacing: context.justSpacing.sm,
+        children: [
+          JustButton(
+            label: 'Download CSV',
+            variant: .ghost,
+            size: .sm,
+            onPressed: () {},
+          ),
+          JustButton(
+            label: 'View Details',
+            size: .sm,
+            onPressed: () {},
+          ),
+        ],
+      ),
+    ),
+    child: JustCardContent(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: context.justSpacing.sm,
+        children: [
+          Text(
+            'Total Revenue: Rp 124,500,000',
+            style: context.justTypo.headingLg.copyWith(
+              color: context.justColors.textPrimary,
+            ),
+          ),
+          const Text('An increase of 12% compared to last month.'),
+        ],
+      ),
+    ),
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustCard
+
+| Property  | Data Type         | Default Value      | Description                                                                                                                                                      |
+| :-------- | :---------------- | :----------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `child`   | `Widget`          | _Required_         | Main content or body of the card (recommended to use `JustCardContent` for consistent margins).                                                                  |
+| `variant` | `JustCardVariant` | `.elevated`        | Card visual style options: `.elevated` (soft shadow), `.outlined` (thin border), `.filled` (solid background color without shadow or border).                    |
+| `header`  | `Widget?`         | `null`             | Top area widget of the card (recommended to use `JustCardHeader`).                                                                                               |
+| `footer`  | `Widget?`         | `null`             | Bottom area widget of the card (recommended to use `JustCardFooter`).                                                                                            |
+| `onTap`   | `VoidCallback?`   | `null`             | If provided, the card will support a tap action with a scale/color press transition effect.                                                                      |
+
+### Supporting Semantic Sub-Widgets
+
+- **`JustCardHeader`**: Manages padding and a subtle bottom divider line to separate the title from the main content.
+- **`JustCardTitle`**: Automatically applies the default heading text style (`headingMd`) to the child widget.
+- **`JustCardDescription`**: Applies the default description text style (`caption` with secondary text color).
+- **`JustCardContent`**: Main content container with balanced standard internal padding.
+- **`JustCardFooter`**: Manages bottom area padding and a subtle top divider line for action buttons.
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+The card automatically adapts to the currently active design system preset:
+
+- **Default Preset**:
+  - Card corner curvature follows `radius.lg` (12px).
+  - The `.elevated` variant applies a two-layer stacked multi-layer `BoxShadow` using `JustShadows` that softly glows for natural visual depth.
+  - If `onTap` is active, the card responds to cursor movement with a smooth scale transition (`AnimatedScale`) and a hover effect.
+
+- **Neobrutalism Preset**:
+  - Corner curvature is strictly changed using the curvature token or sharp angles.
+  - The card is forced to have a thick dark black border (`colors.textPrimary`) of `2.5` across all variants.
+  - The `.elevated` variant replaces the soft glow shadow with a solid neobrutalist black shadow with bold non-fading offset coordinates.
+  - When the card is pressed, a physical position shift occurs (X/Y translation) aligned with the instant disappearance of the solid shadow behind it (collapse shadow).
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Clear Content Structure**:
+   The use of semantic sub-widgets ensures screen readers can correctly map the element hierarchy within the card (reading Header/Title first, then Content, then actions in Footer).
+2. **Text Color Contrast**:
+   The secondary description text coloring within `JustCardDescription` is guaranteed to meet the minimum WCAG AA contrast standard ($\ge$ 4.5:1 for normal text) against the card background.
+3. **Focus Indicator**:
+   If the card has an `onTap` parameter and is accessed via keyboard, the card will receive a clear visual focus ring when in navigation focus to facilitate motor disability accessibility.
