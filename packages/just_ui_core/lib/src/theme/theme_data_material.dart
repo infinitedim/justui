@@ -1,6 +1,18 @@
 import 'package:flutter/material.dart';
 import 'theme_data.dart';
-import '../components/components.dart';
+import '../components/button/just_button_theme.dart';
+import '../components/input/just_input_theme.dart';
+import '../components/checkbox/just_checkbox_theme.dart';
+import '../components/radio/just_radio_theme.dart';
+import '../components/switch/just_switch_theme.dart';
+import '../components/card/just_card_theme.dart';
+import '../components/separator/just_separator_theme.dart';
+import '../components/skeleton/just_skeleton_theme.dart';
+import '../components/scroll/just_scroll_area_theme.dart';
+import '../components/breadcrumb/just_breadcrumb_theme.dart';
+import '../components/bottom_nav/just_bottom_nav_theme.dart';
+import '../components/sidebar/just_sidebar_theme.dart';
+import '../components/tabs/just_tabs_theme.dart';
 
 final Expando<ThemeData> _themeDataCache = Expando<ThemeData>();
 

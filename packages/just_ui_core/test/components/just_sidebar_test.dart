@@ -2,6 +2,8 @@ import 'package:flutter/gestures.dart' show PointerDeviceKind;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_core/src/components/sidebar/just_sidebar.dart';
+import 'package:just_ui_core/src/components/shared/_shared_tooltip_overlay.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

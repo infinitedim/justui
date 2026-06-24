@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_core/src/components/switch/just_switch.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

@@ -121,3 +121,46 @@ Ketika mengimplementasikan atau memodifikasi visual style preset kustom (seperti
 4. **Kompatibilitas CLI**:
    * Ketika menambah preset baru, perbarui `init_command.dart` di `just_ui_cli` untuk mendukung pilihan preset via opsi `--preset` dan scaffold file `just_theme.dart` dengan preset yang sesuai.
    * Pastikan preset baru juga terdaftar di perbandingan `operator ==`, `hashCode`, dan metode `copyWith` pada `JustThemeData`.
+
+---
+
+## 7. Registry Shared Component Convention
+
+### Pola Lama (DEPRECATED — jangan gunakan)
+Komponen internal yang dipakai lintas komponen dulunya menggunakan prefix `_shared_*` pada nama dan diinstall ke folder terpisah per-komponen:
+- nama: `_shared_pressable`
+- dipasang ke: `lib/widgets/_shared_pressable/just_pressable.dart`
+
+**Jangan buat komponen registry dengan prefix `_shared_*` — konvensi ini sudah dihapus.**
+
+### Pola Baru (GUNAKAN INI)
+Shared components kini dideteksi secara otomatis oleh CLI (`RegistryIndex.computeSharedComponents()`) berdasarkan jumlah dependent:
+
+- **Kriteria shared**: komponen yang menjadi `registryDependencies` dari ≥ 2 komponen berbeda
+- **Penempatan**: semua file komponen shared diletakkan **flat** di dalam `sharedDir`
+- **Naming**: tanpa prefix khusus — nama komponen reguler (contoh: `pressable`, `base`)
+- **Config**: `sharedDir` di `justui.config.yaml`, default `{componentsDir}/shared`
+
+**Contoh hasil di project user:**
+```
+lib/widgets/
+├── button/just_button.dart       # import '../shared/just_pressable.dart'
+├── input/just_input.dart         # import '../shared/just_pressable.dart'
+└── shared/
+    └── just_pressable.dart       # dipakai oleh button + input → shared
+```
+
+---
+
+## 8. Barrel Export & Shared File Rename Policy
+
+### Theming Kernel Barrel Isolation
+Untuk mencegah kebocoran visual/state komponen (barrel leakage) ke lokal copy di project user:
+- Berkas `packages/just_ui_core/lib/just_ui_core.dart` **hanya boleh mengekspos core theming kernel** (seperti `JustThemeProvider`, `JustThemeData`, `JustThemeAspect`, dll.).
+- **Dilarang keras mengekspos berkas komponen** (e.g. `JustButton`, `JustCard`, dll.) atau berkas private components barrel di dalam public barrel ini.
+- Berkas `packages/just_ui_core/lib/src/components/components.dart` telah dihapus sepenuhnya. Semua test package internal dan file core internal harus mengimport berkas komponen secara langsung dari direktori source masing-masing (e.g. `import 'src/components/button/just_button.dart'`).
+
+### CLI Shared File Copy-Renaming
+- Berkas shared internal di package `just_ui_core` tetap menggunakan penamaan ber-prefix `_shared_` (e.g. `_shared_pressable.dart`).
+- Saat CLI (`just_ui_cli`) menyalin file-file shared ini ke proyek user, prefix `_shared_` **wajib di-strip** menjadi `just_` (e.g. `just_pressable.dart`).
+- Logika penggantian nama dan penyesuaian import path ini dikelola secara otomatis oleh `ImportRewriter.normalizeSharedFileName()`, `AddCommand`, `DiffCommand`, dan `UpdateCommand`. Agent tidak boleh mengubah heuristic ini atau membiarkan file dengan nama `_shared_*` tersalin ke folder lokal user.

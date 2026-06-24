@@ -16,6 +16,15 @@ class JustUIMetadata {
 
 /// A helper class to rewrite relative import paths and manage metadata headers.
 class ImportRewriter {
+  /// Strips `_shared_` prefix from a filename when copying to user's project.
+  /// e.g. '_shared_pressable.dart' → 'just_pressable.dart'
+  static String normalizeSharedFileName(String fileName) {
+    if (fileName.startsWith('_shared_')) {
+      return 'just_${fileName.substring('_shared_'.length)}';
+    }
+    return fileName;
+  }
+
   static final RegExp _importRegExp = RegExp(
     r'''import\s+['"]([^'"]+)['"]\s*;''',
   );
@@ -62,6 +71,8 @@ class ImportRewriter {
     required RegistryIndex registryIndex,
     required String componentsDir,
     required String tokensDir,
+    required String sharedDir,
+    required Set<String> sharedComponents,
     required FileSystem fileSystem,
   }) {
     final cleanContent = stripMetadata(content);
@@ -79,10 +90,15 @@ class ImportRewriter {
         currentComponent.category == 'tokens' ||
             currentComponent.category == 'core'
         ? tokensDir
+        : sharedComponents.contains(currentComponentName)
+        ? sharedDir
         : pathContext.join(componentsDir, currentComponentName);
 
     final filename = pathContext.basename(sourceRegistryPath);
-    final String currentFilePath = pathContext.join(currentDir, filename);
+    final localFilename = sharedComponents.contains(currentComponentName)
+        ? normalizeSharedFileName(filename)
+        : filename;
+    final String currentFilePath = pathContext.join(currentDir, localFilename);
 
     return cleanContent.replaceAllMapped(_importRegExp, (match) {
       final importPath = match.group(1)!;
@@ -138,11 +154,18 @@ class ImportRewriter {
             targetComponent.category == 'tokens' ||
                 targetComponent.category == 'core'
             ? tokensDir
+            : sharedComponents.contains(targetComponent.name)
+            ? sharedDir
             : pathContext.join(componentsDir, targetComponent.name);
+
+        final localTargetFileName =
+            sharedComponents.contains(targetComponent.name)
+            ? normalizeSharedFileName(targetFile.name)
+            : targetFile.name;
 
         final String targetFilePath = pathContext.join(
           targetDir,
-          targetFile.name,
+          localTargetFileName,
         );
 
         // Compute the relative path from the current file's local directory to the target file
