@@ -26,7 +26,7 @@ const cspHeader = `
 `;
 
 const defaultLocale = 'id';
-const supportedLocales = ['id', 'en'];
+const _supportedLocales = ['id', 'en'];
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
