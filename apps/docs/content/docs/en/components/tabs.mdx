@@ -1,0 +1,142 @@
+---
+title: Tabs
+description: Content navigation tab arrangement with precision sliding indicator and lazy loading.
+---
+
+# Tabs
+
+`JustTabs` is a component used to divide content into multiple interconnected view panels. It is designed to maximize Flutter rendering performance by applying lazy loading techniques and active page caching, as well as smooth sliding indicator transitions.
+
+## Usage
+
+### Basic
+
+The following is a basic usage example of `JustTabs` for creating a simple navigation tab.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class BasicTabsExample extends StatelessWidget {
+  const BasicTabsExample({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return JustTabs(
+      tabs: [
+        JustTab(
+          label: 'Profile',
+          icon: const Icon(Icons.person),
+          content: const Center(child: Text('User Profile Content')),
+        ),
+        JustTab(
+          label: 'Settings',
+          icon: const Icon(Icons.settings),
+          content: const Center(child: Text('Settings Content')),
+        ),
+      ],
+    );
+  }
+}
+```
+
+### Advanced
+
+Advanced usage example using the `pill` variant, horizontally scrollable tab titles, badge addition, and disabled tabs.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class AdvancedTabsExample extends StatefulWidget {
+  const AdvancedTabsExample({super.key});
+
+  @override
+  State<AdvancedTabsExample> createState() => _AdvancedTabsExampleState();
+}
+
+class _AdvancedTabsExampleState extends State<AdvancedTabsExample> {
+  late final JustTabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = JustTabController(initialIndex: 0);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return JustTabs(
+      controller: _tabController,
+      variant: JustTabVariant.pill,
+      isScrollable: true,
+      tabs: [
+        JustTab(
+          label: 'Account',
+          icon: const Icon(Icons.account_circle),
+          content: const AccountSettingsView(),
+        ),
+        JustTab(
+          label: 'Security',
+          icon: const Icon(Icons.security),
+          content: const SecuritySettingsView(),
+          badge: const JustBadge.dot(color: JustBadgeColor.error),
+        ),
+        JustTab(
+          label: 'Notifications',
+          icon: const Icon(Icons.notifications),
+          content: const NotificationSettingsView(),
+        ),
+        JustTab(
+          label: 'Transaction History',
+          icon: const Icon(Icons.history),
+          content: const TransactionHistoryView(),
+          enabled: false, // Tab visually and functionally disabled
+        ),
+      ],
+    );
+  }
+}
+```
+
+## API Reference (Props)
+
+### JustTabs
+
+| Property       | Type                 | Default               | Description                                                                                                                |
+| -------------- | -------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `tabs`         | `List<JustTab>`      | _Required_            | Array of tab objects containing label, icon, content, and status for each panel.                                           |
+| `variant`      | `JustTabVariant`     | `JustTabVariant.line` | Visual tab style: `.line`, `.enclosed`, `.pill`, or `.vertical`.                                                           |
+| `controller`   | `JustTabController?` | `null`                | External controller to manage active index synchronization programmatically.                                               |
+| `isScrollable` | `bool`               | `false`               | Determines whether the tab title bar can be scrolled horizontally if the title text is very long.                          |
+
+### JustTab
+
+| Property  | Type      | Default      | Description                                                                      |
+| --------- | --------- | ------------ | -------------------------------------------------------------------------------- |
+| `label`   | `String`  | _Required_   | Title text displayed on the tab button bar.                                      |
+| `content` | `Widget`  | _Required_   | Page content widget displayed when the tab is active.                            |
+| `icon`    | `Widget?` | `null`       | Optional icon widget beside the label text.                                      |
+| `badge`   | `Widget?` | `null`       | Optional badge widget (such as `JustBadge.dot`) for tab notification status.     |
+| `enabled` | `bool`    | `true`       | Determines whether the tab can be clicked and activated.                         |
+
+## Theming & Accessibility
+
+### Preset & Style Customization
+
+- **Default Preset**: Uses a smooth underline sliding effect (`JustTabVariant.line`). On `.enclosed` and `.pill` variants, active switching uses a background color fade gradient transition controlled by `JustDuration.normal` (250ms) and `JustCurves.default_`.
+- **Neobrutalism Preset**: Under the neobrutalism preset, tab border edges are forced to use thick solid black/white (`colors.textPrimary`) with border thickness `2.5`. Animation duration is instantly accelerated (`JustDuration.instant`) to avoid visual jitter, and border color does not transition to primary/tinted (remains thick black/white).
+
+### WCAG AA Compliance
+
+- **Lazy Loading & Caching**: To maintain rendering performance on low-specification devices, `JustTabs` implements `Set<int> _visitedIndices`. Content pages that have never been visited by the user are not initialized in the widget tree (returning `SizedBox.shrink()`). After a tab is opened for the first time, it is stored in memory using `AutomaticKeepAliveClientMixin` so that subsequent tab transitions run instantly without triggering page state recreation.
+- **Indicator Geometry Calculation**: The active line indicator position is calculated dynamically using `GlobalKey`. The indicator slide range is linearly interpolated based on target coordinate data to create an accurate sliding transition effect.
+- **Contrast & Navigation Accessibility**: Active text-to-background contrast ratio is guaranteed $\ge$ 4.5:1. Disabled tabs (`enabled: false`) have a semi-transparent visual and are ignored from the keyboard navigation list. Each tab button is wrapped with selected semantics (`Semantics(selected: true/false)`) for screen reader identification.

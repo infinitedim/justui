@@ -1,0 +1,216 @@
+---
+title: Sidebar
+description: Responsive side drawer navigation panel for large-scale application systems or dashboards.
+---
+
+# Sidebar
+
+`JustSidebar` is a robust and responsive side navigation component for desktop, tablet, and administrative dashboard interfaces. This component supports recursive nested routing, collapsed status, and automatically adjusts its layout width independently when detecting small screens.
+
+## Usage
+
+### Basic
+
+The following is a basic usage example of `JustSidebar` for a single-level navigation menu.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class BasicSidebarExample extends StatefulWidget {
+  const BasicSidebarExample({super.key});
+
+  @override
+  State<BasicSidebarExample> createState() => _BasicSidebarExampleState();
+}
+
+class _BasicSidebarExampleState extends State<BasicSidebarExample> {
+  int _selectedIdx = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Row(
+        children: [
+          JustSidebar(
+            selectedIndex: _selectedIdx,
+            onItemSelected: (index) {
+              setState(() {
+                _selectedIdx = index;
+              });
+            },
+            items: const [
+              JustSidebarItem(
+                label: 'Dashboard',
+                icon: Icon(Icons.dashboard_outlined),
+              ),
+              JustSidebarItem(
+                label: 'Transactions',
+                icon: Icon(Icons.receipt_long),
+              ),
+              JustSidebarItem(
+                label: 'Settings',
+                icon: Icon(Icons.settings),
+              ),
+            ],
+          ),
+          const VerticalDivider(width: 1),
+          Expanded(
+            child: Center(
+              child: Text('Page Content #$_selectedIdx'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+### Advanced
+
+Advanced usage example with nested (recursive) menus, user profile header, logout footer, and collapsed status option.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+class AdvancedSidebarExample extends StatefulWidget {
+  const AdvancedSidebarExample({super.key});
+
+  @override
+  State<AdvancedSidebarExample> createState() => _AdvancedSidebarExampleState();
+}
+
+class _AdvancedSidebarExampleState extends State<AdvancedSidebarExample> {
+  int _selectedIdx = 0;
+  bool _isSidebarCollapsed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Row(
+        children: [
+          JustSidebar(
+            isCollapsed: _isSidebarCollapsed,
+            variant: JustSidebarVariant.inset,
+            header: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  const JustAvatar(name: 'Admin JustUI', size: JustAvatarSize.md),
+                  if (!_isSidebarCollapsed) ...[
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Administrator',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            footer: JustIconButton(
+              icon: Icon(_isSidebarCollapsed ? Icons.chevron_right : Icons.chevron_left),
+              tooltip: _isSidebarCollapsed ? 'Open Sidebar' : 'Close Sidebar',
+              onPressed: () {
+                setState(() {
+                  _isSidebarCollapsed = !_isSidebarCollapsed;
+                });
+              },
+            ),
+            selectedIndex: _selectedIdx,
+            onItemSelected: (index) {
+              setState(() {
+                _selectedIdx = index;
+              });
+            },
+            items: [
+              const JustSidebarItem(
+                label: 'Dashboard',
+                icon: Icon(Icons.home),
+              ),
+              JustSidebarItem(
+                label: 'Data Management',
+                icon: const Icon(Icons.folder_open),
+                children: [
+                  JustSidebarItem(
+                    label: 'Client List',
+                    icon: const Icon(Icons.people_outline),
+                    onTap: () => _navigateTo('/clients'),
+                  ),
+                  JustSidebarItem(
+                    label: 'Permissions',
+                    icon: const Icon(Icons.lock_outline),
+                    onTap: () => _navigateTo('/permissions'),
+                  ),
+                ],
+              ),
+              const JustSidebarItem(
+                label: 'Analytics Reports',
+                icon: Icon(Icons.analytics),
+              ),
+            ],
+          ),
+          const VerticalDivider(width: 1),
+          Expanded(
+            child: Center(
+              child: Text('Active page #$_selectedIdx'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateTo(String route) {
+    print('Navigating to: $route');
+  }
+}
+```
+
+## API Reference (Props)
+
+### JustSidebar
+
+| Property         | Type                    | Default                       | Description                                                                                                                          |
+| ---------------- | ----------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `items`          | `List<JustSidebarItem>` | _Required_                    | Navigation menu item array that can branch recursively (nested).                                                                       |
+| `selectedIndex`  | `int`                   | `0`                           | Index of the currently active sidebar item.                                                                                          |
+| `onItemSelected` | `ValueChanged<int>?`    | `null`                        | Callback triggered when a navigation item is tapped.                                                                                 |
+| `header`         | `Widget?`               | `null`                        | Top area widget (e.g., company logo or user profile summary).                                                                        |
+| `footer`         | `Widget?`               | `null`                        | Bottom area widget (e.g., logout button or collapse toggle).                                                                         |
+| `width`          | `double`                | `260.0`                       | Panel width when in fully open state.                                                                                                |
+| `collapsedWidth` | `double`                | `68.0`                        | Minimum panel width when in collapsed state.                                                                                         |
+| `isCollapsed`    | `bool`                  | `false`                       | Active collapse status of the panel.                                                                                                 |
+| `variant`        | `JustSidebarVariant`    | `JustSidebarVariant.default_` | Layout style: `.default_` (edge-attached), `.floating` (free-floating with shadow), or `.inset` (isolated within page frame).         |
+
+### JustSidebarItem
+
+| Property   | Type                     | Default      | Description                                                                                    |
+| ---------- | ------------------------ | ------------ | ---------------------------------------------------------------------------------------------- |
+| `label`    | `String`                 | _Required_   | Navigation menu item text label.                                                               |
+| `icon`     | `Widget?`                | `null`       | Visual icon accompanying the menu text.                                                        |
+| `onTap`    | `VoidCallback?`          | `null`       | Optional action callback when item is tapped.                                                  |
+| `children` | `List<JustSidebarItem>?` | `null`       | Child submenu list for nested foldable menu items.                                             |
+
+## Theming & Accessibility
+
+### Preset & Style Customization
+
+- **Default Style**: Width change animation uses `AnimatedContainer` with `JustDuration.normal` (250ms) duration and `JustCurves.default_` curve. Corner rounding follows `radius.lg` on the `.inset` variant.
+- **Neobrutalism Style**: Vertical border is forced to thick black (`colors.textPrimary`) with `2.5` border thickness. Container shadow is a dynamic solid type without blur, and corner rounding is set to sharp (`radius.none` or `radius.xs`).
+
+### Auto-Collapse Responsive & Folder Animation
+
+- **Auto-Collapse**: If the device screen width is detected to be $\le$ `JustBreakpoints.md` (768px), the sidebar automatically collapses to its minimum width of `68.0` px regardless of the `isCollapsed` parameter supplied by the developer. This ensures reading space on tablet/mobile screens remains spacious.
+- **Recursive Folder**: Nested child branches are arranged recursively with additional margin spacing of `depth * 16.0` px at each folder level with vertical folding animation using `SizeTransition`.
+- **Tooltip Balloon**: If the navigation drawer is collapsed (`isCollapsed` is true), visually hidden menu item names will be re-displayed as floating tooltip balloons (`JustTooltipOverlay`) when the mouse cursor hovers over the icon to maintain navigation clarity.
+
+### WCAG AA Compliance
+
+- **Contrast & Semantic Accessibility**: Sidebar collapse status (`isCollapsed`) is clearly announced by screen readers. Keyboard focus is supported using internal `FocusNode` to facilitate sequential navigation to each menu item using the up/down arrow keys and space/enter keys. Text and background colors are set to meet a contrast ratio of $\ge$ 4.5:1 to ensure high readability.

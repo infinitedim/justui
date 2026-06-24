@@ -17,7 +17,7 @@
 
   /* Box Shadows */
   --shadow-solid: var(--just-shadow-solid);
-  
+
   /* Fonts */
   --font-sans: "Inter", sans-serif;
   --font-heading: "Outfit", sans-serif;
@@ -25,10 +25,38 @@
 
 /* Base Styles & Token Initializations (Default Theme) */
 :root {
-  --just-background: #ffffff;
-  --just-text-primary: #0f172a;
-  --just-border: #e2e8f0;
+  /* === Custom Accent Palette === */
+  --color-black: #18181b;
+  --color-black-1: #18181b;
+  --color-black-2: #27272a;
+  --color-white: #f8fafc;
+  --color-gray: #333333;
+  --color-gray-1: #4f4f4f;
+  --color-gray-2: #828282;
+  --color-gray-3: #bdbdbd;
+  --color-gray-4: #e0e0e0;
+  --color-accent: #a3e635;
+  --color-accent-light: #bef264;
+  --color-accent-dark: #84cc16;
+  --color-accent-muted: rgba(163, 230, 53, 0.12);
+
+  /* === JustUI Mapped Tokens (Light Mode) === */
+  --just-background: #f8fafc;
+  --just-text-primary: #18181b;
+  --just-text-secondary: #4f4f4f;
+  --just-text-muted: #828282;
+  --just-border: #e0e0e0;
   --just-border-width: 1px;
+  --just-card-bg: #ffffff;
+  --just-elevated-bg: #ffffff;
+  --just-accent: #a3e635;
+  --just-accent-light: #bef264;
+  --just-accent-dark: #84cc16;
+  --just-accent-muted: rgba(163, 230, 53, 0.12);
+  --just-success: #22c55e;
+  --just-warning: #f59e0b;
+  --just-error: #ef4444;
+  --just-info: #06b6d4;
   --just-spacing-sm: 8px;
   --just-spacing-md: 16px;
   --just-spacing-lg: 24px;
@@ -39,20 +67,38 @@
 
 /* Dark Mode Token Overrides */
 .dark {
-  --just-background: #0f172a;
+  --just-background: #18181b;
   --just-text-primary: #f8fafc;
-  --just-border: #334155;
+  --just-text-secondary: #bdbdbd;
+  --just-text-muted: #828282;
+  --just-border: #333333;
+  --just-card-bg: #27272a;
+  --just-elevated-bg: #27272a;
+  --just-accent: #a3e635;
+  --just-accent-light: #bef264;
+  --just-accent-dark: #84cc16;
+  --just-accent-muted: rgba(163, 230, 53, 0.12);
+  --just-success: #4ade80;
+  --just-warning: #fbbf24;
+  --just-error: #f87171;
+  --just-info: #22d3ee;
 }
 
 /* Neobrutalism Preset Theme Overrides */
 .theme-neobrutalism {
   --just-border-width: 2.5px;
-  --just-border: #000000;
-  --just-shadow-solid: 4px 4px 0px 0px #000000;
+  --just-border: #18181b;
+  --just-shadow-solid: 4px 4px 0px 0px #18181b;
+  --just-accent: #a3e635;
+  --just-accent-light: #bef264;
+  --just-accent-dark: #84cc16;
 }
 
 .theme-neobrutalism-dark {
   --just-border-width: 2.5px;
-  --just-border: #ffffff;
-  --just-shadow-solid: 4px 4px 0px 0px #ffffff;
+  --just-border: #f8fafc;
+  --just-shadow-solid: 4px 4px 0px 0px #f8fafc;
+  --just-accent: #a3e635;
+  --just-accent-light: #bef264;
+  --just-accent-dark: #84cc16;
 }

@@ -1,0 +1,101 @@
+---
+title: Responsive Design & Breakpoints
+description: Guide to responsive layout using JustBreakpoints, grid spacing system, fluid typography, and built-in component responsiveness in JustUI.
+---
+
+Building interfaces that look perfect across various screen sizes — from small-screen smartphones, tablets, to ultra-wide desktop monitors — is a mandatory requirement for modern applications. JustUI provides powerful responsive layout helpers inside the `just_ui_tokens` package, supported by component-level responsiveness optimization.
+
+---
+
+## Screen Size Breakpoints (JustBreakpoints)
+
+JustUI provides screen width breakpoint constants (`JustBreakpoints` in the `breakpoints.dart` file) used to instantly detect device type and dynamically change your application layout:
+
+| Breakpoint Token      | Width Value | Device Category                                                        |
+| :-------------------- | :---------- | :--------------------------------------------------------------------- |
+| `JustBreakpoints.sm`  | `640.0` px  | Mobile devices in landscape orientation or small-sized tablets.        |
+| `JustBreakpoints.md`  | `768.0` px  | Tablets in portrait orientation (example: iPad Mini/standard iPad).    |
+| `JustBreakpoints.lg`  | `1024.0` px | Tablets in landscape orientation or standard desktop monitors.         |
+| `JustBreakpoints.xl`  | `1280.0` px | Wide desktop monitors.                                                 |
+| `JustBreakpoints.xxl` | `1536.0` px | High-resolution desktop monitors or ultra-wide screens.                |
+
+### Usage in Flutter
+
+You can use these breakpoints inside your widget's `build` method along with the current screen width:
+
+```dart
+Widget build(BuildContext context) {
+  final double screenWidth = MediaQuery.of(context).size.width;
+
+  if (screenWidth >= JustBreakpoints.lg) {
+    return const DesktopLayout();
+  } else if (screenWidth >= JustBreakpoints.md) {
+    return const TabletLayout();
+  } else {
+    return const MobileLayout();
+  }
+}
+```
+
+---
+
+## Spacing System & Grid Gaps (JustSpacing)
+
+Consistency in spacing greatly influences interface neatness. JustUI uses a **4px grid system** to define margins, padding, and gaps between elements. These constants are provided in the `JustSpacing` class and the `JustGap` helper class:
+
+- **`xxs` / `JustGap.xxs`** (`2.0` px): Micro distance for inline icons or very tight helper text.
+- **`xs` / `JustGap.xs`** (`4.0` px): Tight distance for helper elements or badges.
+- **`sm` / `JustGap.sm`** (`8.0` px): Standard base distance between small content blocks.
+- **`md` / `JustGap.md`** (`12.0` px): Medium distance (default padding for badges, small cards, or buttons).
+- **`lg` / `JustGap.lg`** (`16.0` px): Large distance (default padding for main cards, containers, or page edge margins).
+- **`xl` / `JustGap.xl`** (`24.0` px): Extra large distance (wide card padding, large titles, or distance between large components).
+- **`xxl` / `JustGap.xxl`** (`32.0` px): Page content section separator distance.
+- **`xxxl` / `JustGap.xxxl`** (`48.0` px): Outermost application page layout boundary.
+- **`huge` / `JustGap.huge`** (`64.0` px): Massive vertical distance (typically for hero pages or welcome screens).
+
+### Creating Token-Based Insets
+
+Avoid writing padding numbers manually at random. Use JustUI's inset utility functions:
+
+```dart
+padding: JustSpacing.insets(horizontal: JustSpacing.lg, vertical: JustSpacing.md)
+// Produces EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0)
+```
+
+---
+
+## Fluid Typography
+
+Text sizes that are too large on desktop monitors can look very disruptive to the layout if displayed on mobile phone screens. JustUI solves this problem with the **Fluid Typography** concept through the `JustFluidTypography` class.
+
+### 1. Linear Size Interpolation (`fluid`)
+
+The `.fluid()` method calculates font size dynamically based on the current screen width. The text size will shift smoothly (linear interpolation) between a minimum size bound (`minSize`) and a maximum size bound (`maxSize`) as the screen width moves from the lower bound (`minWidth`: 640px) to the upper bound (`maxWidth`: 1024px).
+
+### 2. Adaptive Line Height Adjustment (`withAdaptiveHeight`)
+
+Dynamic font sizes require flexible line heights to prevent text overlapping or excessively wide line spacing:
+
+- **Small Text ($\le$ 12px)** gets a loose line height (`1.6`) so small letters remain easy to read.
+- **Large Text ($\ge$ 36px)** gets a tight line height (`1.15`) to avoid excessive empty space between large title text lines.
+
+---
+
+## Built-in Component-Level Responsiveness
+
+Some JustUI components are designed with internal responsive intelligence so you don't need to write additional manual screen detection code.
+
+### 1. Auto-Collapse on `JustSidebar`
+
+The side navigation drawer component (`JustSidebar`) automatically adapts to the user's device screen size:
+
+- If the monitored screen width is **less than or equal to `JustBreakpoints.md` (768px)**, the sidebar will automatically collapse to its default collapsed size (`collapsedWidth` of 68px) regardless of the `isCollapsed` status defined by the developer.
+- When the sidebar collapses, the hidden menu text labels will automatically be redirected and displayed again as floating tooltip balloons (`JustTooltipOverlay`) when the cursor hovers over the menu icon, maintaining ease of navigation for tablet or mobile users.
+
+### 2. Dynamic Orientation on `JustSeparator`
+
+The layout divider line (`JustSeparator`) can be set to behave responsively by passing the parameter `direction: null`:
+
+- If responsive orientation is active, the separator will read the screen width.
+- If the screen width is above the responsive breakpoint threshold (default: `640.0` px), the separator will render horizontally.
+- Once the screen width drops below that breakpoint, the separator automatically flips its orientation to vertical, which is ideal for separating stacked form input columns on mobile displays.
