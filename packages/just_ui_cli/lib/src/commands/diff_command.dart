@@ -56,6 +56,12 @@ class DiffFileStatus {
     required this.expectedHash,
     this.remoteContent,
   });
+
+  /// The local filename as stored in the user's project (stripping any shared prefix).
+  String get localFileName {
+    final normalized = targetPath.replaceAll('\\', '/');
+    return normalized.split('/').last;
+  }
 }
 
 /// The CLI command to inspect local component differences against the registry version.
@@ -122,15 +128,22 @@ class DiffCommand extends Command<void> {
             throw Exception('Component "$componentName" not found in registry'),
       );
 
+      final sharedComponents = index.computeSharedComponents();
+
       final String targetDir =
           component.category == 'tokens' || component.category == 'core'
           ? config.tokensDir
+          : sharedComponents.contains(component.name)
+          ? config.sharedDir
           : fileSystem.path.join(config.componentsDir, component.name);
 
       final List<DiffFileStatus> filesStatus = [];
 
       for (final file in component.files) {
-        final targetPath = fileSystem.path.join(targetDir, file.name);
+        final localFileName = sharedComponents.contains(component.name)
+            ? ImportRewriter.normalizeSharedFileName(file.name)
+            : file.name;
+        final targetPath = fileSystem.path.join(targetDir, localFileName);
         final localFile = fileSystem.file(targetPath);
 
         final expectedHash = file.checksum.replaceAll('sha256:', '').trim();
@@ -281,6 +294,8 @@ class DiffCommand extends Command<void> {
             registryIndex: index,
             componentsDir: config.componentsDir,
             tokensDir: config.tokensDir,
+            sharedDir: config.sharedDir,
+            sharedComponents: sharedComponents,
             fileSystem: fileSystem,
           );
           _printLineDiff(fs.file.name, fs.localContent, remoteRewritten);
@@ -309,6 +324,8 @@ class DiffCommand extends Command<void> {
             registryIndex: index,
             componentsDir: config.componentsDir,
             tokensDir: config.tokensDir,
+            sharedDir: config.sharedDir,
+            sharedComponents: sharedComponents,
             fileSystem: fileSystem,
           );
           DiffFormatter.printUnifiedDiff(
@@ -423,6 +440,8 @@ class DiffCommand extends Command<void> {
       registryIndex: index,
       componentsDir: config.componentsDir,
       tokensDir: config.tokensDir,
+      sharedDir: config.sharedDir,
+      sharedComponents: index.computeSharedComponents(),
       fileSystem: fileSystem,
     );
 

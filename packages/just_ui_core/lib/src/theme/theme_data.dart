@@ -549,8 +549,7 @@ final class NeobrutalismShadowScheme extends JustShadowScheme {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is NeobrutalismShadowScheme &&
-          shadowColor == other.shadowColor;
+      other is NeobrutalismShadowScheme && shadowColor == other.shadowColor;
 
   @override
   int get hashCode => shadowColor.hashCode;

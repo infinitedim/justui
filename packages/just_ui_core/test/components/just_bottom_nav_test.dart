@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_core/src/components/bottom_nav/just_bottom_nav.dart';
+import 'package:just_ui_core/src/components/bottom_nav/just_bottom_nav_variants.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

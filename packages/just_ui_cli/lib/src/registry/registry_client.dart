@@ -107,6 +107,25 @@ class RegistryIndex {
           .toList(),
     );
   }
+
+  /// Returns the set of component names that are considered "shared" —
+  /// i.e., components that appear as a `registryDependency` of 2 or more
+  /// other components.
+  ///
+  /// These components will be placed flat inside the `sharedDir` rather than
+  /// in their own sub-folder under `componentsDir`.
+  Set<String> computeSharedComponents() {
+    final dependentCount = <String, int>{};
+    for (final comp in components) {
+      for (final dep in comp.registryDependencies) {
+        dependentCount[dep] = (dependentCount[dep] ?? 0) + 1;
+      }
+    }
+    return dependentCount.entries
+        .where((e) => e.value >= 2)
+        .map((e) => e.key)
+        .toSet();
+  }
 }
 
 /// Client class to handle fetching the registry index and files from local or remote sources.

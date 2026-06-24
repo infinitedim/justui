@@ -3,7 +3,7 @@ import 'package:flutter/material.dart' show Theme;
 
 import 'package:flutter/services.dart' show HapticFeedback;
 import '../../theme/theme_provider.dart';
-import '../shared/just_pressable.dart';
+import '../shared/_shared_pressable.dart';
 import 'just_bottom_nav_style.dart';
 import 'just_bottom_nav_theme.dart';
 import 'just_bottom_nav_variants.dart';
