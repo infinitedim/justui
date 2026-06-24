@@ -1,0 +1,157 @@
+---
+title: Shadows
+description: Gallery of two-layer stacked multi-layer shadows, seed color shadow generator, and solid neobrutalism shadows in JustUI.
+---
+
+The JustUI shadow system is designed to provide visual depth, reinforce element elevation hierarchy, and enrich interface aesthetics. JustUI supports three shadow methods: default two-layer stacked multi-layer shadows, dynamic seed-colored glow shadows, and flat solid shadows characteristic of the neobrutalism style.
+
+---
+
+## 1. Multi-Layer Shadow Gallery (`JustShadows`)
+
+To create smooth and premium depth in default mode, JustUI combines **two `BoxShadow` layers** simultaneously. The first layer serves as a bottom boundary physical emphasis (key shadow), while the second layer forms the ambient glow shadow around the element (ambient shadow).
+
+### Light Mode Shadow Scale
+
+Using solid black hexadecimal opacity to achieve clean contrast on light surfaces:
+
+- **xs** (Subtle Depth):
+  - Layer 1: Offset `(0, 1)`, blur `2.0`, spread `0.0`, color `Color(0x0D000000)` (5% black).
+- **sm** (Cards & Dropdowns):
+  - Layer 1: Offset `(0, 1)`, blur `2.0`, spread `0.0`, color `Color(0x08000000)` (3% black).
+  - Layer 2: Offset `(0, 2)`, blur `4.0`, spread `0.0`, color `Color(0x14000000)` (8% black).
+- **md** (Interactive Popovers):
+  - Layer 1: Offset `(0, 4)`, blur `6.0`, spread `-1.0`, color `Color(0x1A000000)` (10% black).
+  - Layer 2: Offset `(0, 2)`, blur `4.0`, spread `-1.0`, color `Color(0x0F000000)` (6% black).
+- **lg** (Menus & Dialogs):
+  - Layer 1: Offset `(0, 10)`, blur `15.0`, spread `-3.0`, color `Color(0x1A000000)` (10% black).
+  - Layer 2: Offset `(0, 4)`, blur `6.0`, spread `-2.0`, color `Color(0x0F000000)` (6% black).
+- **xl** (Modals):
+  - Layer 1: Offset `(0, 20)`, blur `25.0`, spread `-5.0`, color `Color(0x1A000000)` (10% black).
+  - Layer 2: Offset `(0, 10)`, blur `10.0`, spread `-5.0`, color `Color(0x0F000000)` (6% black).
+- **xxl** (Toasts & Floating Sheets):
+  - Layer 1: Offset `(0, 25)`, blur `50.0`, spread `-12.0`, color `Color(0x40000000)` (25% black).
+
+### Dark Mode Shadow Scale
+
+Using higher solid black opacity to provide stronger depth emphasis on dark surfaces:
+
+- **xsDark**: Layer 1: Offset `(0, 1)`, blur `2.0`, color `Color(0x33000000)` (20% black).
+- **smDark**: Layer 1: Offset `(0, 1)`, blur `2.0`, color `Color(0x1F000000)` (12% black); Layer 2: Offset `(0, 2)`, blur `4.0`, color `Color(0x3D000000)` (24% black).
+- **mdDark**: Layer 1: Offset `(0, 4)`, blur `6.0`, spread `-1.0`, color `Color(0x40000000)` (25% black); Layer 2: Offset `(0, 2)`, blur `4.0`, spread `-1.0`, color `Color(0x26000000)` (15% black).
+- **lgDark**: Layer 1: Offset `(0, 10)`, blur `15.0`, spread `-3.0`, color `Color(0x4D000000)` (30% black); Layer 2: Offset `(0, 4)`, blur `6.0`, spread `-2.0`, color `Color(0x33000000)` (20% black).
+- **xlDark**: Layer 1: Offset `(0, 20)`, blur `25.0`, spread `-5.0`, color `Color(0x59000000)` (35% black); Layer 2: Offset `(0, 10)`, blur `10.0`, spread `-5.0`, color `Color(0x40000000)` (25% black).
+- **xxlDark**: Layer 1: Offset `(0, 25)`, blur `50.0`, spread `-12.0`, color `Color(0x80000000)` (50% black).
+
+---
+
+## 2. Seed Color Shadow Generator (`JustShadows.generate`)
+
+JustUI supports creating soft brand-colored glow shadows (tinted glow shadow) using the `JustShadows.generate` generator method.
+
+This method accepts parameters:
+
+- `seedColor` (`Color`): Base brand color.
+- `elevation` (`double`): Shadow elevation level (represented on a scale of 1 to 24).
+- `isDark` (`bool`): Determines the target background brightness.
+
+### Generator How It Works
+
+The system combines one standard neutral key shadow with one ambient shadow tinted using the `seedColor`:
+
+```dart
+// Internal shadow generator implementation
+BoxShadow(
+  offset: ambientOffset,
+  blurRadius: ambientBlur,
+  spreadRadius: ambientSpread,
+  // Leverages modern color API to adjust glow opacity
+  color: seedColor.withValues(alpha: ambientOpacity),
+)
+```
+
+This method keeps the color glow beneath elements proportional and harmonious with your application's brand color without breaking contrast.
+
+---
+
+## 3. Neobrutalism Solid Shadows (`NeobrutalismShadowScheme`)
+
+Under the **Neobrutalism** visual preset, JustUI abandons soft fine-scale shadow aesthetics and switches to flat solid shadows with no blur (`blurRadius: 0.0`).
+
+### Neobrutalism Shadow Characteristics
+
+- **Shape**: Sharp corners with thick offset shifts.
+- **Color**: Uses solid black (`Color(0xFF000000)`) in light mode and solid white (`Color(0xFFFFFFFF)`) in dark mode.
+- **Elevation Scale**:
+  - `xs`: Offset `(1.0, 1.0)`
+  - `sm`: Offset `(2.0, 2.0)`
+  - `md`: Offset `(3.0, 3.0)`
+  - `lg`: Offset `(4.0, 4.0)`
+  - `xl`: Offset `(6.0, 6.0)`
+  - `xxl`: Offset `(8.0, 8.0)`
+
+---
+
+## 4. Pressed Animation Synchronization (Pressed Effect)
+
+One of the advantages of the JustUI Neobrutalism preset is the tightly integrated synchronization between widget physical movement and its behavior when pressed (`isPressed`):
+
+1. **Shadow Collapse**: When the widget is pressed, the solid neobrutalism shadow offset slides and shrinks to **`Offset.zero`** (the shadow hides directly behind the widget).
+2. **Geometry Translation**: Simultaneously with the shadow collapse, the widget is physically translated shifting right-down by the original offset distance (`Matrix4.translationValues(offset.dx, offset.dy, 0.0)`).
+3. **Preventing Visual Jitter**: This translation movement and shadow collapse are synchronized using instant animation duration **`JustDuration.instant` (50ms)**. This high reaction speed ensures there are no misaligned visual shifts (jitter), making the interaction feel extremely responsive and solid.
+
+```dart
+// Example of pressed effect visualization in JustThemeData:
+Widget buildPressEffect({
+  required Widget child,
+  required bool isPressed,
+}) {
+  if (preset == JustThemePreset.neobrutalism) {
+    return AnimatedContainer(
+      duration: animations.instant, // 50ms
+      transform: Matrix4.translationValues(
+        isPressed ? shadowOffset.dx : 0.0,
+        isPressed ? shadowOffset.dy : 0.0,
+        0.0,
+      ),
+      child: child,
+    );
+  }
+  // Default mode uses shrinking scale effect
+  return AnimatedScale(
+    scale: isPressed ? 0.97 : 1.0,
+    duration: animations.instant,
+    child: child,
+  );
+}
+```
+
+---
+
+## 5. Best Practice Example for Consuming Shadows in Flutter
+
+Consume shadows using the `justShadows` aspect on your widget build context:
+
+```dart
+class ShadowedCard extends StatelessWidget {
+  const ShadowedCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Registering widget ONLY on the shadow theme aspect
+    final shadows = context.justShadows;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.justColors.card,
+        border: Border.all(color: context.justColors.borderDefault),
+        boxShadow: shadows.md, // Consuming medium shadow
+      ),
+      child: const Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text('Dynamic Shadowed Card'),
+      ),
+    );
+  }
+}
+```

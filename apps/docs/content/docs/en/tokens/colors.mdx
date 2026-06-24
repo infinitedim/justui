@@ -1,0 +1,158 @@
+---
+title: Colors
+description: Catalog of color palettes, light/dark mode color schemes, and accessibility contrast ratio audit system in JustUI.
+---
+
+The JustUI color system is designed with a primary focus on visual beauty, high performance, and full compliance with **WCAG 2.0 (AA)** web accessibility standards. Color tokens are separated between raw primitive palettes and functional semantic mappings that adapt dynamically based on the active theme and selected preset.
+
+---
+
+## 1. Primitive Color Palette (`JustColorPalette`)
+
+The JustUI primitive palette provides compile-time constants (`const`) for base colors. Each color category (Neutral, Primary, Success, Warning, Error, Info) has a scale of **11 brightness levels** ranging from shade `50` (lightest) to `950` (darkest).
+
+Below is the hexadecimal value representation of the base color palette:
+
+| Shade   | Neutral (Slate-like) | Primary (Blue) | Success (Green) | Warning (Amber) | Error (Red)  | Info (Cyan)  |
+| :------ | :------------------- | :------------- | :-------------- | :-------------- | :----------- | :----------- |
+| **50**  | `0xFFF8FAFC`         | `0xFFEFF6FF`   | `0xFFF0FDF4`    | `0xFFFFFBEB`    | `0xFFFEF2F2` | `0xFFECFEFF` |
+| **100** | `0xFFF1F5F9`         | `0xFFDBEAFE`   | `0xFFDCFCE7`    | `0xFFFEF3C7`    | `0xFFFEE2E2` | `0xFFCFFAFE` |
+| **200** | `0xFFE2E8F0`         | `0xFFBFDBFE`   | `0xFFBBF7D0`    | `0xFFFDE68A`    | `0xFFFECACA` | `0xFFA5F3FC` |
+| **300** | `0xFFCBD5E1`         | `0xFF93C5FD`   | `0xFF86EFAC`    | `0xFFFCD34D`    | `0xFFFCA5A5` | `0xFF67E8F9` |
+| **400** | `0xFF94A3B8`         | `0xFF60A5FA`   | `0xFF4ADE80`    | `0xFFFBBF24`    | `0xFFF87171` | `0xFF22D3EE` |
+| **500** | `0xFF64748B`         | `0xFF3B82F6`   | `0xFF22C55E`    | `0xFFF59E0B`    | `0xFFEF4444` | `0xFF06B6D4` |
+| **600** | `0xFF475569`         | `0xFF2563EB`   | `0xFF16A34A`    | `0xFFD97706`    | `0xFFDC2626` | `0xFF0891B2` |
+| **700** | `0xFF334155`         | `0xFF1D4ED8`   | `0xFF15803D`    | `0xFFB45309`    | `0xFFB91C1C` | `0xFF0E7490` |
+| **800** | `0xFF1E293B`         | `0xFF1E40AF`   | `0xFF166534`    | `0xFF92400E`    | `0xFF991B1B` | `0xFF155E75` |
+| **900** | `0xFF0F172A`         | `0xFF1E3A8A`   | `0xFF14532D`    | `0xFF78350F`    | `0xFF7F1D1D` | `0xFF164E63` |
+| **950** | `0xFF020617`         | `0xFF172554`   | `0xFF052E16`    | `0xFF451A03`    | `0xFF450A0A` | `0xFF083344` |
+
+---
+
+## 2. Semantic Color Scheme (`JustColorScheme`)
+
+JustUI maps primitive palettes into functional semantic color schemes through the `JustColorScheme` class. This mapping ensures UI components use consistent color tokens across all states.
+
+### Key Properties of `JustColorScheme`
+
+The color scheme defines several color categories as follows:
+
+- **Surface Colors**: `background` (page background), `card` (card container), `elevated` (floating dialog/overlay), `overlay` (transparent modal background).
+- **Text Colors**: `textPrimary` (high contrast/headings), `textSecondary` (descriptions/body text), `textDisabled` (inactive text), `textInverse` (text on high-contrast backgrounds).
+- **Border Colors**: `borderDefault` (input dividers/subtle lines), `borderFocus` (active focus indicator border), `borderError` (error state border).
+- **State Colors**: `success` (success/safe), `warning` (warning/attention), `error` (error/danger), `info` (information/guidance).
+
+### Light Mode vs Dark Mode (Default)
+
+By default (`JustThemePreset.default_`), JustUI defines the semantic color scheme as follows:
+
+| Semantic Token    | Light Mode (`JustColors.light()`) | Dark Mode (`JustColors.dark()`) |
+| :---------------- | :-------------------------------- | :------------------------------ |
+| **background**    | `JustColorPalette.neutral50`      | `JustColorPalette.neutral950`   |
+| **card**          | `JustColorPalette.white`          | `JustColorPalette.neutral900`   |
+| **elevated**      | `JustColorPalette.white`          | `JustColorPalette.neutral800`   |
+| **overlay**       | `JustColorPalette.black`          | `JustColorPalette.neutral950`   |
+| **textPrimary**   | `JustColorPalette.neutral900`     | `JustColorPalette.neutral50`    |
+| **textSecondary** | `JustColorPalette.neutral600`     | `JustColorPalette.neutral400`   |
+| **textDisabled**  | `JustColorPalette.neutral400`     | `JustColorPalette.neutral600`   |
+| **textInverse**   | `JustColorPalette.neutral50`      | `JustColorPalette.neutral900`   |
+| **borderDefault** | `JustColorPalette.neutral200`     | `JustColorPalette.neutral800`   |
+| **borderFocus**   | `JustColorPalette.primary500`     | `JustColorPalette.primary400`   |
+| **borderError**   | `JustColorPalette.error500`       | `JustColorPalette.error400`     |
+| **success**       | `JustColorPalette.success600`     | `JustColorPalette.success500`   |
+| **warning**       | `JustColorPalette.warning600`     | `JustColorPalette.warning500`   |
+| **error**         | `JustColorPalette.error600`       | `JustColorPalette.error500`     |
+| **info**          | `JustColorPalette.info600`        | `JustColorPalette.info500`      |
+
+---
+
+## 3. Neobrutalism Visual Preset
+
+JustUI supports the **Neobrutalism** design style (`JustThemePreset.neobrutalism`). This preset forces the color scheme to use extremely high contrast with thick black/white borders, without gradients or soft color transitions.
+
+- **Neobrutalism Light Mode**: Uses a warm cream background (`Color(0xFFFFFDF5)`), solid black primary text (`Color(0xFF000000)`), and forces border colors (`borderDefault`, `borderFocus`, `borderError`) to solid black in every state.
+- **Neobrutalism Dark Mode**: Uses a deep dark gray background (`Color(0xFF121212)`), solid white primary text (`Color(0xFFFFFFFF)`), and forces all borders to solid white.
+
+---
+
+## 4. Color Contrast Accessibility Audit (WCAG AA)
+
+Interface readability is a top priority. JustUI includes a built-in contrast accessibility audit system through the `JustColorAccessibility` extension on the `Color` class.
+
+### Contrast Ratio Formula
+
+Relative luminance (L) is calculated based on the standard RGB color curve (obtained via Flutter's internal `Color.computeLuminance()` method), producing a value between `0.0` (solid black) and `1.0` (solid white).
+
+The WCAG 2.0 contrast ratio formula is:
+
+```text
+R = (L1 + 0.05) / (L2 + 0.05)
+```
+
+Where L1 is the luminance of the lighter color, and L2 is the luminance of the darker color. The constant `0.05` is added to compensate for human eye adaptation to screen glare.
+
+### `JustColorAccessibility` Extension Methods
+
+This extension provides two main APIs:
+
+1. `contrastRatioWith(Color other)`: Produces a ratio value between `1.0` (no contrast/same color) and `21.0` (perfect black and white contrast).
+2. `isAccessibleWith(Color other, {bool isLargeText = false})`: Checks contrast compliance against WCAG AA standards:
+   - **Normal Text**: Requires a minimum contrast ratio of **4.5:1** against the background.
+   - **Large Text / Visual Components** (such as input borders, focus indicators, or badges): Requires a minimum contrast ratio of **3.0:1**. Large text is defined as text sized ≥ 18pt/24px (or bold text ≥ 14pt/18.67px).
+
+```dart
+// Example of manual contrast audit usage:
+final Color background = context.justColors.background;
+final Color textColor = context.justColors.textSecondary;
+
+final double ratio = textColor.contrastRatioWith(background);
+final bool isAccessible = textColor.isAccessibleWith(background);
+
+print('Contrast Ratio: $ratio (Passes WCAG AA: $isAccessible)');
+```
+
+---
+
+## 5. Dynamic Contrast Enforcement (`JustThemeData.fromSeed`)
+
+When initializing a custom theme using the `JustThemeData.fromSeed(Color seedColor)` generator method, JustUI runs an automatic algorithm at runtime to ensure the resulting brand/primary colors still meet accessibility contrast against the background color.
+
+### Lightness Adjustment Algorithm (`colors_dynamic.dart`)
+
+If the original primary color does not meet the minimum contrast ratio against the background:
+
+1. **Brightness Direction Detection**: The system evaluates the brightness level of the background (`bgLuminance < 0.5`). If the background is dark, the primary color must be adjusted lighter. If the background is light, the primary color is adjusted darker.
+2. **Binary Search (8 Iterations)**: Uses a binary search algorithm on the Lightness parameter of the source color's HSL scale. This algorithm finds the nearest lightness value that meets the target contrast ratio while preserving the Hue and Saturation values to maintain brand color aesthetics.
+3. **Preset Bypass**: This dynamic HSL compensation algorithm is automatically bypassed when the active visual preset is `neobrutalism`, in order to preserve the characteristic thick black border aesthetics of neobrutalism.
+
+---
+
+## 6. Best Practice Example for Consuming Colors in Flutter
+
+To keep widget tree rendering performance optimal during color transitions (such as dark mode toggle), ensure you consume colors using the correct context aspect.
+
+```dart
+class CustomCardWidget extends StatelessWidget {
+  const CustomCardWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Registering widget ONLY on the color aspect.
+    // Widget will not rebuild if other aspects (such as spacing/typography) change.
+    final colors = context.justColors;
+
+    return Container(
+      padding: .all(16.0),
+      decoration: BoxDecoration(
+        color: colors.card,
+        border: Border.all(color: colors.borderDefault),
+        borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+      ),
+      child: Text(
+        'Visual Primitive Audit',
+        style: TextStyle(color: colors.textPrimary),
+      ),
+    );
+  }
+}
+```
