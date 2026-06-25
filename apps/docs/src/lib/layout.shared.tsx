@@ -24,12 +24,26 @@ export const translations = i18n
     },
   });
 
-export function baseOptions(_locale: string): BaseLayoutProps {
+export function baseOptions(lang: string): BaseLayoutProps {
   return {
     nav: {
-      title: 'JustUI Docs',
+      title: (
+        <span className="font-mono text-sm font-medium">
+          <span className="text-white">just</span>
+          <span className="text-accent">ui</span>
+        </span>
+      ),
+      url: `/${lang}`,
     },
     githubUrl: 'https://github.com/infinitedim/justui',
+    links: [
+      { text: 'Docs', url: `/${lang}/docs`, active: 'nested-url' },
+      {
+        text: 'Components',
+        url: `/${lang}/docs/components`,
+        active: 'nested-url',
+      },
+    ],
     i18n: true,
   };
 }

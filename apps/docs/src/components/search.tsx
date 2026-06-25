@@ -18,14 +18,14 @@ export default function CustomSearchDialog(props: SharedProps) {
 
   return (
     <SearchDialog search={search} onSearchChange={setSearch} {...props}>
-      <SearchDialogContent className="max-w-2xl rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-800 dark:bg-slate-900">
+      <SearchDialogContent className="border-border bg-card max-w-2xl rounded-lg border [border-width:var(--just-border-width)] [box-shadow:var(--just-shadow-solid)]">
         <SearchDialogInput
           placeholder="Cari dokumentasi..."
-          className="w-full border-b border-slate-200 px-4 py-3 text-lg focus:outline-none dark:border-slate-800"
+          className="border-border bg-card text-foreground placeholder:text-muted w-full border-b [border-bottom-width:var(--just-border-width)] px-4 py-3 text-lg focus:outline-none"
         />
         <SearchDialogList
           items={query.data !== 'empty' ? query.data : null}
-          className="max-h-[400px] overflow-y-auto p-2"
+          className="max-h-100 overflow-y-auto p-2"
         />
       </SearchDialogContent>
     </SearchDialog>

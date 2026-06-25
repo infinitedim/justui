@@ -2,70 +2,76 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import HomePage from '@/app/[lang]/page';
 
+vi.mock('@/lib/github', () => ({
+  fetchStarCount: vi.fn().mockResolvedValue(1200),
+  githubUrl: 'https://github.com/infinitedim/justui',
+}));
+
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/id',
+}));
+
 // Mock next/link to render simple anchor tags
 vi.mock('next/link', () => ({
   default: ({
     children,
     href,
     className,
+    ...props
   }: {
     children: React.ReactNode;
     href: string;
     className?: string;
   }) => (
-    <a href={href} className={className} data-testid="next-link">
+    <a href={href} className={className} data-testid="next-link" {...props}>
       {children}
     </a>
   ),
 }));
 
 describe('HomePage Component', () => {
-  it('renders the main heading and description', async () => {
-    const page = await HomePage({ params: Promise.resolve({ lang: 'id' }) });
+  it('renders the hero heading and description', async () => {
+    const page = await HomePage();
     render(page);
 
-    // Check header text
-    const heading = screen.getByRole('heading', { level: 1 });
-    expect(heading).toHaveTextContent('JustUI');
+    expect(
+      screen.getByRole('heading', { level: 1, name: /copy\. paste\. ship\./i })
+    ).toBeInTheDocument();
 
-    // Check description text
-    const description = screen.getByText(
-      /Flutter UI component library built on the copy-paste philosophy/i
-    );
-    expect(description).toBeInTheDocument();
+    expect(
+      screen.getByText(/A zero-dependency, copy-paste component library/i)
+    ).toBeInTheDocument();
   });
 
-  it('renders the primary action buttons', async () => {
-    const page = await HomePage({ params: Promise.resolve({ lang: 'id' }) });
+  it('renders the primary homepage actions', async () => {
+    const page = await HomePage();
     render(page);
 
-    // Check "Baca Dokumentasi" link
-    const docsLink = screen.getByRole('link', { name: /baca dokumentasi/i });
-    expect(docsLink).toBeInTheDocument();
-    expect(docsLink).toHaveAttribute('href', '/id/docs/introduction');
-
-    // Check "GitHub" link
-    const githubLink = screen.getByRole('link', { name: /github/i });
-    expect(githubLink).toBeInTheDocument();
-    expect(githubLink).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /get started/i })).toHaveAttribute(
       'href',
-      'https://github.com/infinitedim/justui'
+      '/docs/introduction'
     );
+    expect(
+      screen.getByRole('link', { name: /browse components/i })
+    ).toHaveAttribute('href', '/docs/components');
   });
 
-  it('renders features grid with all key benefits', async () => {
-    const page = await HomePage({ params: Promise.resolve({ lang: 'id' }) });
+  it('renders the install command and component grid', async () => {
+    const page = await HomePage();
     render(page);
 
-    // Check feature cards headings
     expect(
-      screen.getByRole('heading', { name: /zero-dependency/i })
+      screen.getByText('flutter pub add just_ui_core')
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { name: /copy-paste model/i })
+      screen.getByRole('heading', { name: /components/i })
     ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /JustButton/i })).toHaveAttribute(
+      'href',
+      '/docs/components/button'
+    );
     expect(
-      screen.getByRole('heading', { name: /neobrutalism style/i })
+      screen.getByRole('link', { name: /JustSwitch/i })
     ).toBeInTheDocument();
   });
 });
