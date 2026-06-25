@@ -1,0 +1,126 @@
+use std::collections::{HashMap, HashSet};
+use serde::Deserialize;
+use anyhow::{Context, Result};
+
+/// Represents a file within a registry component.
+#[derive(Debug, Clone, Deserialize)]
+pub struct RegistryFile {
+    /// File basename (e.g., 'just_button.dart').
+    pub name: String,
+    /// Relative path within the registry (e.g., 'components/button/just_button.dart').
+    pub path: String,
+    /// Expected SHA-256 checksum prefixed with 'sha256:'.
+    pub checksum: String,
+}
+
+fn default_category() -> String {
+    "general".to_string()
+}
+
+fn default_version() -> String {
+    "1".to_string()
+}
+
+/// Represents a component defined in the registry.
+#[derive(Debug, Clone, Deserialize)]
+pub struct RegistryComponent {
+    /// Unique component name identifier (e.g., 'button').
+    pub name: String,
+    /// Semantic version.
+    pub version: String,
+    /// Brief description.
+    #[serde(default)]
+    pub description: String,
+    /// Classification category (e.g. 'primitives', 'layout').
+    #[serde(default = "default_category")]
+    pub category: String,
+    /// Names of other registry components this component depends on.
+    #[serde(rename = "registryDependencies", default)]
+    pub registry_dependencies: Vec<String>,
+    /// External packages from pub.dev required by this component.
+    #[serde(rename = "pubDependencies", default)]
+    pub pub_dependencies: HashMap<String, String>,
+    /// List of files that comprise this component.
+    #[serde(default)]
+    pub files: Vec<RegistryFile>,
+}
+
+/// Represents the top-level index file of the registry.
+#[derive(Debug, Clone, Deserialize)]
+pub struct RegistryIndex {
+    /// Index schema version.
+    #[serde(default = "default_version")]
+    pub version: String,
+    /// Registered components list.
+    #[serde(default)]
+    pub components: Vec<RegistryComponent>,
+}
+
+impl RegistryIndex {
+    /// Returns the set of component names that are considered "shared" —
+    /// components that appear as a `registryDependency` of 2 or more other components.
+    pub fn compute_shared_components(&self) -> HashSet<String> {
+        let mut dependent_count: HashMap<&str, usize> = HashMap::new();
+        for comp in &self.components {
+            for dep in &comp.registry_dependencies {
+                *dependent_count.entry(dep.as_str()).or_insert(0) += 1;
+            }
+        }
+        dependent_count
+            .into_iter()
+            .filter(|(_, count)| *count >= 2)
+            .map(|(name, _)| name.to_string())
+            .collect()
+    }
+}
+
+/// Client for fetching the registry index and files from local or remote sources.
+pub struct RegistryClient {
+    /// Base URL or directory path.
+    pub base_url: String,
+}
+
+impl RegistryClient {
+    pub fn new(base_url: String) -> Self {
+        Self { base_url }
+    }
+
+    fn is_remote(&self) -> bool {
+        self.base_url.starts_with("http://") || self.base_url.starts_with("https://")
+    }
+
+    /// Fetches and parses the registry index.
+    pub fn fetch_index(&self) -> Result<RegistryIndex> {
+        let content = self.fetch_file_content("index.json")?;
+        let index: RegistryIndex =
+            serde_json::from_str(&content).context("Failed to parse registry index.json")?;
+        Ok(index)
+    }
+
+    /// Fetches content of a registry file by its relative path.
+    pub fn fetch_file_content(&self, relative_path: &str) -> Result<String> {
+        if self.is_remote() {
+            let clean_base = if self.base_url.ends_with('/') {
+                self.base_url.clone()
+            } else {
+                format!("{}/", self.base_url)
+            };
+            let url = format!("{}{}", clean_base, relative_path);
+            let response = reqwest::blocking::get(&url)
+                .with_context(|| format!("Failed to fetch from registry ({})", url))?;
+            if !response.status().is_success() {
+                return Err(anyhow::anyhow!(
+                    "Failed to fetch from registry ({}): HTTP {}",
+                    url,
+                    response.status().as_u16()
+                ));
+            }
+            Ok(response.text()?)
+        } else {
+            // Local filesystem path
+            let path = std::path::Path::new(&self.base_url).join(relative_path);
+            std::fs::read_to_string(&path)
+                .with_context(|| format!("Registry file not found at: {}", path.display()))
+        }
+    }
+}
