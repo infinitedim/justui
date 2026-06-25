@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   universal_html: ^2.3.0
   just_ui_core:
-    path: ../../packages/just_ui_core
+    path: ../../packages/core
 
 dev_dependencies:
   flutter_test:
