@@ -30,6 +30,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     // lang is set client-side by HtmlLang in [lang]/layout.tsx.
     // suppressHydrationWarning silences the initial SSR mismatch.
+    // eslint-disable-next-line jsx-a11y/html-has-lang
     <html suppressHydrationWarning>
       <head />
       <body
