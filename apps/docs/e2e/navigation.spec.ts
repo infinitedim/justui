@@ -2,32 +2,22 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Navigation Flow', () => {
   test('homepage loads and displays core elements', async ({ page }) => {
-    // Navigate to homepage
     await page.goto('/');
 
-    // Verify heading contains JustUI
-    const heading = page.locator('h1');
-    await expect(heading).toContainText('JustUI');
+    await expect(
+      page.getByRole('heading', { name: /Copy\. Paste\. Ship\./i })
+    ).toBeVisible();
+    await expect(page.getByText('flutter pub add just_ui_core')).toBeVisible();
 
-    // Verify main copy-paste CLI commands are visible
-    const cliCommand1 = page.locator('code').first();
-    await expect(cliCommand1).toContainText(
-      'dart pub global activate just_ui_cli'
-    );
-
-    // Verify Action button points to /docs/introduction
-    const docsButton = page.locator("a:has-text('Baca Dokumentasi')");
+    const docsButton = page.getByRole('link', { name: /Get started/i });
     await expect(docsButton).toHaveAttribute('href', '/docs/introduction');
   });
 
   test('can navigate from homepage to docs page', async ({ page }) => {
     await page.goto('/');
 
-    // Click on "Baca Dokumentasi"
-    const docsButton = page.locator("a:has-text('Baca Dokumentasi')");
-    await docsButton.click();
+    await page.getByRole('link', { name: /Get started/i }).click();
 
-    // Verify navigation to introduction docs page
     await expect(page).toHaveURL(/\/docs\/introduction/);
   });
 });
