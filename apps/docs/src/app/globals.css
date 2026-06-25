@@ -1,10 +1,27 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import 'fumadocs-ui/style.css';
+
+@source '../node_modules/fumadocs-ui/dist';
+@source '../node_modules/fumadocs-core/dist';
 
 @theme {
   /* Colors - Mapped to JustUI Primitives */
   --color-background: var(--just-background);
   --color-foreground: var(--just-text-primary);
+  --color-secondary: var(--just-text-secondary);
+  --color-muted: var(--just-text-muted);
   --color-border: var(--just-border);
+  --color-card: var(--just-card-bg);
+  --color-elevated: var(--just-elevated-bg);
+  --color-accent: var(--just-accent);
+  --color-accent-light: var(--just-accent-light);
+  --color-accent-dark: var(--just-accent-dark);
+  --color-accent-deep: var(--just-accent-deep);
+  --color-accent-muted: var(--just-accent-muted);
+  --color-success: var(--just-success);
+  --color-warning: var(--just-warning);
+  --color-error: var(--just-error);
+  --color-info: var(--just-info);
 
   /* Spacing */
   --spacing-sm: var(--just-spacing-sm);
@@ -19,8 +36,9 @@
   --shadow-solid: var(--just-shadow-solid);
 
   /* Fonts */
-  --font-sans: "Inter", sans-serif;
-  --font-heading: "Outfit", sans-serif;
+  --font-sans: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-heading: 'IBM Plex Sans', sans-serif;
 }
 
 /* Base Styles & Token Initializations (Default Theme) */
@@ -38,7 +56,8 @@
   --color-accent: #a3e635;
   --color-accent-light: #bef264;
   --color-accent-dark: #84cc16;
-  --color-accent-muted: rgba(163, 230, 53, 0.12);
+  --color-accent-deep: #65a30d;
+  --color-accent-muted: rgba(163, 230, 53, 0.1);
 
   /* === JustUI Mapped Tokens (Light Mode) === */
   --just-background: #f8fafc;
@@ -52,7 +71,8 @@
   --just-accent: #a3e635;
   --just-accent-light: #bef264;
   --just-accent-dark: #84cc16;
-  --just-accent-muted: rgba(163, 230, 53, 0.12);
+  --just-accent-deep: #65a30d;
+  --just-accent-muted: rgba(163, 230, 53, 0.1);
   --just-success: #22c55e;
   --just-warning: #f59e0b;
   --just-error: #ef4444;
@@ -77,7 +97,8 @@
   --just-accent: #a3e635;
   --just-accent-light: #bef264;
   --just-accent-dark: #84cc16;
-  --just-accent-muted: rgba(163, 230, 53, 0.12);
+  --just-accent-deep: #65a30d;
+  --just-accent-muted: rgba(163, 230, 53, 0.1);
   --just-success: #4ade80;
   --just-warning: #fbbf24;
   --just-error: #f87171;
@@ -92,13 +113,17 @@
   --just-accent: #a3e635;
   --just-accent-light: #bef264;
   --just-accent-dark: #84cc16;
+  --just-accent-deep: #65a30d;
 }
 
-.theme-neobrutalism-dark {
+.theme-neobrutalism-dark,
+.dark .theme-neobrutalism,
+.dark.theme-neobrutalism {
   --just-border-width: 2.5px;
   --just-border: #f8fafc;
   --just-shadow-solid: 4px 4px 0px 0px #f8fafc;
   --just-accent: #a3e635;
   --just-accent-light: #bef264;
   --just-accent-dark: #84cc16;
+  --just-accent-deep: #65a30d;
 }
