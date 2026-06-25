@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   just_ui_tokens:
-    path: ../just_ui_tokens
+    path: ../tokens
 
 dev_dependencies:
   flutter_test:

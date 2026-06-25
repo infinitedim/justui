@@ -102,14 +102,14 @@ packages:
   just_ui_core:
     dependency: "direct main"
     description:
-      path: "../../packages/just_ui_core"
+      path: "../../packages/core"
       relative: true
     source: path
     version: "0.1.0"
   just_ui_tokens:
     dependency: transitive
     description:
-      path: "../../packages/just_ui_tokens"
+      path: "../../packages/tokens"
       relative: true
     source: path
     version: "0.1.0"

@@ -42,7 +42,7 @@ void main(List<String> args) async {
       final fileMap = file as Map<String, dynamic>;
       final String relPath = fileMap['path'] as String;
       final srcFile = File(
-        p.join(projectRoot, 'packages', 'just_ui_core', 'lib', 'src', relPath),
+        p.join(projectRoot, 'packages', 'core', 'lib', 'src', relPath),
       );
       final destFile = File(p.join(projectRoot, 'registry', relPath));
 
@@ -59,7 +59,7 @@ void main(List<String> args) async {
           hasDrifts = true;
           print('  [WARNING] $relPath di registry/ berbeda dari source.');
           print(
-            '            Registry akan di-overwrite dari source packages/just_ui_core.',
+            '            Registry akan di-overwrite dari source packages/core.',
           );
           print(
             '            Jika ada edit manual di registry yang belum dipindah ke source,',
