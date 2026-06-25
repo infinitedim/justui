@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import { ComponentCard } from '@/components/component-card';
 import { HeroGraphic } from '@/components/hero-graphic';
 import { InstallSnippet } from '@/components/install-snippet';
 import { Navbar } from '@/components/navbar';
 import { fetchStarCount } from '@/lib/github';
+import { components } from '@/lib/components-data';
 
 export default async function HomePage({
   params = Promise.resolve({ lang: 'id' }),
@@ -52,6 +54,19 @@ export default async function HomePage({
 
           <div className="mx-auto w-full max-w-120 lg:ml-auto">
             <HeroGraphic />
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <h2 className="mb-8 text-2xl font-medium text-white">Components</h2>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {components.map((component) => (
+              <ComponentCard
+                key={component.slug}
+                component={component}
+                lang={lang}
+              />
+            ))}
           </div>
         </section>
       </main>
