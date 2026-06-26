@@ -12,6 +12,10 @@ mod utils;
     about = "JustUI CLI - Scaffolding and copy-paste component tool for Flutter."
 )]
 struct Cli {
+    /// Skip all confirmation prompts and use default values automatically.
+    #[arg(short = 'y', long = "yes", global = true)]
+    auto_yes: bool,
+
     #[command(subcommand)]
     command: Commands,
 }
@@ -31,6 +35,12 @@ enum Commands {
     Add {
         /// Component names to add
         components: Vec<String>,
+        /// Preview files that will be written without writing to disk.
+        #[arg(long = "dry-run")]
+        dry_run: bool,
+        /// Show diff of each file before writing. Implicitly enables --dry-run.
+        #[arg(long = "diff")]
+        show_diff: bool,
     },
     /// List all available components in the registry.
     List,
@@ -49,18 +59,44 @@ enum Commands {
         /// Component name to scaffold
         component_name: Option<String>,
     },
+    /// View the source code of a registry component.
+    View {
+        /// Component name to view
+        component: String,
+        /// Show only a specific file from the component.
+        #[arg(long = "file")]
+        file: Option<String>,
+    },
+    /// Search for components in the registry.
+    Search {
+        /// Search query (matches name, description, or category)
+        query: String,
+        /// Filter results by category.
+        #[arg(long = "category")]
+        category: Option<String>,
+    },
+    /// Show information about the CLI, config, project, and registry.
+    Info,
 }
 
 fn main() {
     let cli = Cli::parse();
+    let auto_yes = cli.auto_yes;
 
     let result = match cli.command {
-        Commands::Init { preset } => commands::init::run(preset),
-        Commands::Add { components } => commands::add::run(components),
+        Commands::Init { preset } => commands::init::run(preset, auto_yes),
+        Commands::Add {
+            components,
+            dry_run,
+            show_diff,
+        } => commands::add::run(components, dry_run, show_diff, auto_yes),
         Commands::List => commands::list::run(),
-        Commands::Diff { component, verbose } => commands::diff::run(component, verbose),
-        Commands::Update => commands::update::run(),
-        Commands::Create { component_name } => commands::create::run(component_name),
+        Commands::Diff { component, verbose } => commands::diff::run(component, verbose, auto_yes),
+        Commands::Update => commands::update::run(auto_yes),
+        Commands::Create { component_name } => commands::create::run(component_name, auto_yes),
+        Commands::View { component, file } => commands::view::run(component, file, auto_yes),
+        Commands::Search { query, category } => commands::search::run(query, category),
+        Commands::Info => commands::info::run(),
     };
 
     if let Err(e) = result {

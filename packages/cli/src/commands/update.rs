@@ -7,7 +7,7 @@ use crate::registry::RegistryClient;
 use crate::utils::{import_rewriter, logger, prompt};
 
 /// Runs the `justui update` command.
-pub fn run() -> Result<()> {
+pub fn run(auto_yes: bool) -> Result<()> {
     // 1. Verify initialization config exists
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
@@ -135,13 +135,23 @@ pub fn run() -> Result<()> {
     }
 
     logger::stdout("Outdated components found:");
-    let refs: Vec<&str> = outdated_components.iter().map(|s| s.as_str()).collect();
-    let selected_indices = prompt::select_multiple("Select components to update", &refs);
 
-    if selected_indices.is_empty() {
-        logger::warning("No updates performed.");
-        return Ok(());
-    }
+    let selected_indices: Vec<usize> = if auto_yes {
+        let names_str = outdated_components.join(", ");
+        logger::stdout(&format!(
+            "[auto] Mengupdate semua komponen yang outdated: {}",
+            names_str
+        ));
+        (0..outdated_components.len()).collect()
+    } else {
+        let refs: Vec<&str> = outdated_components.iter().map(|s| s.as_str()).collect();
+        let indices = prompt::select_multiple("Select components to update", &refs);
+        if indices.is_empty() {
+            logger::warning("No updates performed.");
+            return Ok(());
+        }
+        indices
+    };
 
     let mut visited: HashSet<String> = HashSet::new();
     for idx in selected_indices {
@@ -155,6 +165,9 @@ pub fn run() -> Result<()> {
             &config.shared_dir,
             &shared_components,
             &mut visited,
+            false,
+            false,
+            auto_yes,
         ) {
             logger::error(&format!("Failed to update \"{}\": {}", comp_name, e));
         }

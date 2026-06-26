@@ -1,6 +1,9 @@
 pub mod add;
 pub mod create;
 pub mod diff;
+pub mod info;
 pub mod init;
 pub mod list;
+pub mod search;
 pub mod update;
+pub mod view;
