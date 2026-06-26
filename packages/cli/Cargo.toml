@@ -25,7 +25,7 @@ regex = "1"
 anyhow = "1"
 colored = "2"
 dialoguer = "0.11"
-similar = "2"
+similar = "3"
 
 [dev-dependencies]
 tempfile = "3"
