@@ -7,20 +7,30 @@ updates:
       interval: "weekly"
   # Maintain dependencies for just_ui_tokens package
   - package-ecosystem: "pub"
-    directory: "/packages/just_ui_tokens"
+    directory: "/packages/tokens"
     schedule:
       interval: "weekly"
   # Maintain dependencies for just_ui_core package
   - package-ecosystem: "pub"
-    directory: "/packages/just_ui_core"
+    directory: "/packages/core"
     schedule:
       interval: "weekly"
   # Maintain dependencies for just_ui_cli package
-  - package-ecosystem: "pub"
-    directory: "/packages/just_ui_cli"
+  - package-ecosystem: "cargo"
+    directory: "/packages/cli"
     schedule:
       interval: "weekly"
-  # Maintain GitHub Actions updates
+  # Maintain dependencies for docs apps
+  - package-ecosystem: "npm"
+    directory: "/apps/docs"
+    schedule:
+      interval: "weekly"
+  # Maintain dependencies for showcase apps
+  - package-ecosystem: "pub"
+    directory: "/apps/showcase"
+    schedule:
+      interval: "weekly"
+  # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
