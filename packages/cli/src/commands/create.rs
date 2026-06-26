@@ -5,7 +5,7 @@ use crate::config::JustUIConfig;
 use crate::utils::{logger, prompt};
 
 /// Runs the `justui create [component_name]` command.
-pub fn run(component_name_arg: Option<String>) -> Result<()> {
+pub fn run(component_name_arg: Option<String>, auto_yes: bool) -> Result<()> {
     // 1. Verify initialization config exists
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
@@ -88,10 +88,15 @@ pub fn run(component_name_arg: Option<String>) -> Result<()> {
         let path = std::path::Path::new(&file_path);
 
         let should_write = if path.exists() {
-            prompt::confirm(
-                &format!("File \"{}\" already exists. Overwrite?", file_name),
-                false,
-            )
+            if auto_yes {
+                logger::stdout(&format!("[auto] Lewati {} (sudah ada)", file_name));
+                false
+            } else {
+                prompt::confirm(
+                    &format!("File \"{}\" already exists. Overwrite?", file_name),
+                    false,
+                )
+            }
         } else {
             true
         };
@@ -100,7 +105,7 @@ pub fn run(component_name_arg: Option<String>) -> Result<()> {
             std::fs::write(path, content)
                 .map_err(|e| anyhow::anyhow!("Failed to scaffold custom component: {}", e))?;
             logger::stdout(&format!("  - Generated {}", file_name));
-        } else {
+        } else if !auto_yes {
             logger::stdout(&format!("  - Skipped {}", file_name));
         }
     }

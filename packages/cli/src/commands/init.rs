@@ -25,7 +25,7 @@ fn to_lib_path(input: &str) -> String {
 }
 
 /// Runs the `justui init` command.
-pub fn run(preset_arg: Option<String>) -> Result<()> {
+pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
     // 1. Verify we are in a valid project root containing pubspec.yaml
     if !std::path::Path::new("pubspec.yaml").exists() {
         logger::error(
@@ -50,6 +50,9 @@ pub fn run(preset_arg: Option<String>) -> Result<()> {
     // ── Preset selection ──────────────────────────────────────────────────────
     let preset = if let Some(p) = preset_arg {
         normalize_preset(&p)
+    } else if auto_yes {
+        logger::stdout("[auto] Menggunakan preset: default");
+        "default".to_string()
     } else {
         logger::stdout("");
         logger::stdout("Select visual style preset:");
@@ -66,43 +69,69 @@ pub fn run(preset_arg: Option<String>) -> Result<()> {
     };
 
     // ── Components directory selection ────────────────────────────────────────
-    logger::stdout("");
-    logger::stdout("Select UI components directory (will be created under lib/):");
-    let comp_choices = &["widgets", "components", "Custom..."];
-    let comp_idx = prompt::select_one("Choose components dir", comp_choices, 0);
-
-    let components_dir = if comp_idx == 2 {
-        let custom_name = prompt::ask("Enter folder name (under lib/)", "ui");
-        to_lib_path(&custom_name)
+    let components_dir = if auto_yes {
+        let dir = "lib/widgets".to_string();
+        logger::stdout(&format!("[auto] Menggunakan components dir: {}", dir));
+        dir
     } else {
-        format!("lib/{}", comp_choices[comp_idx])
+        logger::stdout("");
+        logger::stdout("Select UI components directory (will be created under lib/):");
+        let comp_choices = &["widgets", "components", "Custom..."];
+        let comp_idx = prompt::select_one("Choose components dir", comp_choices, 0);
+
+        if comp_idx == 2 {
+            let custom_name = prompt::ask("Enter folder name (under lib/)", "ui");
+            to_lib_path(&custom_name)
+        } else {
+            format!("lib/{}", comp_choices[comp_idx])
+        }
     };
 
     // ── Tokens directory ──────────────────────────────────────────────────────
-    logger::stdout("");
-    let tokens_input = prompt::ask("Enter design tokens folder name (under lib/)", "tokens");
-    let tokens_dir = to_lib_path(&tokens_input);
+    let tokens_dir = if auto_yes {
+        let dir = "lib/tokens".to_string();
+        logger::stdout(&format!("[auto] Menggunakan tokens dir: {}", dir));
+        dir
+    } else {
+        logger::stdout("");
+        let tokens_input = prompt::ask("Enter design tokens folder name (under lib/)", "tokens");
+        to_lib_path(&tokens_input)
+    };
 
     // ── Shared components directory ───────────────────────────────────────────
     let shared_dir_default = format!("{}/shared", components_dir);
-    let raw_shared_dir = prompt::ask(
-        "Enter shared components folder (leave blank for default)",
-        &shared_dir_default,
-    );
-    let shared_dir = if raw_shared_dir.is_empty() {
+    let shared_dir = if auto_yes {
+        logger::stdout(&format!(
+            "[auto] Menggunakan shared dir: {}",
+            shared_dir_default
+        ));
         shared_dir_default
     } else {
-        raw_shared_dir
+        let raw_shared_dir = prompt::ask(
+            "Enter shared components folder (leave blank for default)",
+            &shared_dir_default,
+        );
+        if raw_shared_dir.is_empty() {
+            shared_dir_default
+        } else {
+            raw_shared_dir
+        }
     };
 
     // ── Brand seed color ──────────────────────────────────────────────────────
     let hex_regex = Regex::new(r"^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$").unwrap();
-    let brand_color = loop {
-        let input = prompt::ask("Enter your brand seed color (HEX)", "#3b82f6");
-        if hex_regex.is_match(&input) {
-            break input;
+    let brand_color = if auto_yes {
+        let color = "#3b82f6".to_string();
+        logger::stdout(&format!("[auto] Menggunakan brand color: {}", color));
+        color
+    } else {
+        loop {
+            let input = prompt::ask("Enter your brand seed color (HEX)", "#3b82f6");
+            if hex_regex.is_match(&input) {
+                break input;
+            }
+            logger::error("Invalid HEX color format. Please try again (e.g. #3b82f6 or FFF).");
         }
-        logger::error("Invalid HEX color format. Please try again (e.g. #3b82f6 or FFF).");
     };
 
     // Standardize hex → 0xFFRRGGBB

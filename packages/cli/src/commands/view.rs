@@ -1,0 +1,170 @@
+use anyhow::Result;
+use std::io::{self, Write};
+
+use crate::config::JustUIConfig;
+use crate::registry::RegistryClient;
+use crate::utils::logger;
+
+/// Runs the `justui view <component> [--file <nama_file>]` command.
+pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Result<()> {
+    // Step 1 — Read config (or use default)
+    let registry_url = if let Ok(content) = std::fs::read_to_string(JustUIConfig::CONFIG_FILE_NAME)
+    {
+        JustUIConfig::from_yaml(&content).registry_url
+    } else {
+        JustUIConfig::DEFAULT_REGISTRY_URL.to_string()
+    };
+
+    // Step 2 — Fetch registry
+    let client = RegistryClient::new(registry_url);
+    let index = match client.fetch_index() {
+        Ok(idx) => idx,
+        Err(e) => {
+            logger::error(&format!("Failed to fetch registry: {}", e));
+            std::process::exit(1);
+        }
+    };
+
+    // Step 3 — Find component (exact match)
+    let comp = match index.components.iter().find(|c| c.name == component) {
+        Some(c) => c,
+        None => {
+            logger::stdout(&format!(
+                "Komponen \"{}\" tidak ditemukan di registry.",
+                component
+            ));
+
+            // Fuzzy suggestion (case-insensitive substring)
+            let query_lc = component.to_lowercase();
+            let suggestions: Vec<&str> = index
+                .components
+                .iter()
+                .filter(|c| c.name.to_lowercase().contains(&query_lc))
+                .map(|c| c.name.as_str())
+                .collect();
+
+            if !suggestions.is_empty() {
+                logger::stdout("Maksud kamu salah satu dari ini?");
+                for s in &suggestions {
+                    logger::stdout(&format!("  - {}", s));
+                }
+            }
+
+            std::process::exit(1);
+        }
+    };
+
+    // Step 4 — Print header box
+    let name_ver = format!("  {} (v{})  ", comp.name, comp.version);
+    let desc_line = format!("  {}  ", comp.description);
+    let inner_width = name_ver.len().max(desc_line.len()).max(44);
+
+    let top_border = format!("╔{}╗", "═".repeat(inner_width));
+    let bot_border = format!("╚{}╝", "═".repeat(inner_width));
+
+    let name_ver_padded = format!("║{:<width$}║", name_ver, width = inner_width);
+    let desc_padded = format!("║{:<width$}║", desc_line, width = inner_width);
+
+    logger::stdout(&top_border);
+    logger::stdout(&name_ver_padded);
+    logger::stdout(&desc_padded);
+    logger::stdout(&bot_border);
+
+    // Metadata lines
+    let reg_deps = if comp.registry_dependencies.is_empty() {
+        "(tidak ada)".to_string()
+    } else {
+        comp.registry_dependencies.join(", ")
+    };
+
+    let pub_deps_str = if comp.pub_dependencies.is_empty() {
+        "(tidak ada)".to_string()
+    } else {
+        comp.pub_dependencies
+            .iter()
+            .map(|(k, v)| format!("{}: {}", k, v))
+            .collect::<Vec<_>>()
+            .join(", ")
+    };
+
+    logger::stdout(&format!("Kategori      : {}", comp.category));
+    logger::stdout(&format!("Dependensi    : {}", reg_deps));
+    logger::stdout(&format!("Pub deps      : {}", pub_deps_str));
+    logger::stdout(&format!("Jumlah file   : {} file", comp.files.len()));
+    logger::stdout("");
+
+    // Step 5 — Display file contents
+    let files_to_show: Vec<_> = if let Some(ref name_filter) = file_filter {
+        let found = comp.files.iter().find(|f| &f.name == name_filter);
+        match found {
+            Some(f) => vec![f],
+            None => {
+                logger::error(&format!(
+                    "File \"{}\" tidak ditemukan di komponen \"{}\".",
+                    name_filter, comp.name
+                ));
+                std::process::exit(1);
+            }
+        }
+    } else {
+        comp.files.iter().collect()
+    };
+
+    let total_files = files_to_show.len();
+    for (file_idx, file) in files_to_show.iter().enumerate() {
+        // Fetch content
+        let content = match client.fetch_file_content(&file.path) {
+            Ok(c) => c,
+            Err(e) => {
+                logger::error(&format!("Gagal mengambil \"{}\": {}", file.name, e));
+                std::process::exit(1);
+            }
+        };
+
+        // Print file header line
+        let header_prefix = format!("── {} ", file.name);
+        let dash_fill = if header_prefix.len() < 48 {
+            "─".repeat(48 - header_prefix.len())
+        } else {
+            String::new()
+        };
+        logger::stdout(&format!("{}{}", header_prefix, dash_fill));
+
+        // Print numbered lines
+        let lines: Vec<&str> = content.lines().collect();
+        let total_lines = lines.len();
+        let line_num_width = if total_lines >= 100 {
+            3
+        } else if total_lines >= 10 {
+            2
+        } else {
+            1
+        };
+
+        for (i, line) in lines.iter().enumerate() {
+            logger::stdout(&format!(
+                "  {:>width$} │ {}",
+                i + 1,
+                line,
+                width = line_num_width
+            ));
+        }
+
+        // Footer line
+        logger::stdout(&"─".repeat(48));
+
+        // Pause between files (except last) if not auto_yes
+        if file_idx < total_files - 1 && !auto_yes {
+            print!("Tampilkan file berikutnya? [Y/n]: ");
+            io::stdout().flush().unwrap_or(());
+            let mut input = String::new();
+            io::stdin().read_line(&mut input).unwrap_or(0);
+            let trimmed = input.trim();
+            if trimmed.eq_ignore_ascii_case("n") {
+                break;
+            }
+        }
+    }
+
+    Ok(())
+}
