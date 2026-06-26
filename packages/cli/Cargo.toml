@@ -23,7 +23,7 @@ sha2 = "0.10"
 hex = "0.4"
 regex = "1"
 anyhow = "1"
-colored = "2"
+colored = "3"
 dialoguer = "0.11"
 similar = "2"
 
