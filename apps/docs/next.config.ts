@@ -44,8 +44,8 @@ const cspDevelopment = `
   form-action 'self';
 `;
 
-const defaultLocale = 'id';
-const _supportedLocales = ['id', 'en'];
+const defaultLocale = 'en';
+const _supportedLocales = ['en', 'id'];
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
