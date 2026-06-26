@@ -1,9 +1,9 @@
 use anyhow::Result;
 use std::collections::HashSet;
 
-use crate::commands::add::sha256_hex;
+use crate::commands::add::{add_component, sha256_hex};
 use crate::config::JustUIConfig;
-use crate::registry::{RegistryClient, RegistryFile, RegistryIndex};
+use crate::registry::RegistryClient;
 use crate::utils::{diff_formatter, import_rewriter, logger, prompt};
 
 #[derive(Debug, Clone, PartialEq)]
@@ -16,7 +16,7 @@ pub enum DiffStatusType {
 }
 
 struct DiffFileStatus {
-    file: RegistryFile,
+    file: crate::registry::RegistryFile,
     target_path: String,
     status_type: DiffStatusType,
     local_content: String,
@@ -26,7 +26,7 @@ struct DiffFileStatus {
 }
 
 /// Runs the `justui diff <component> [--verbose]` command.
-pub fn run(component_name: String, verbose: bool) -> Result<()> {
+pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> {
     // 1. Verify initialization config exists
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
@@ -265,6 +265,28 @@ pub fn run(component_name: String, verbose: bool) -> Result<()> {
     // Show initial diffs
     show_all_diffs(&files_status, &changed_files, &remote_rewritten_map, 3);
 
+    // If auto_yes, apply all changes without prompting
+    if auto_yes {
+        logger::stdout("[auto] Menerapkan semua perubahan");
+        let mut visited: HashSet<String> = HashSet::new();
+        // Use add_component to apply changes
+        add_component(
+            &component_name,
+            &index,
+            &client,
+            &config.components_dir,
+            &config.tokens_dir,
+            &config.shared_dir,
+            &shared_components,
+            &mut visited,
+            false,
+            false,
+            true,
+        )?;
+        logger::success("All changes applied successfully.");
+        return Ok(());
+    }
+
     // Prompt loop
     loop {
         logger::stdout("\nOptions:");
@@ -374,7 +396,7 @@ fn apply_file_change(
     fs: &DiffFileStatus,
     remote_rewritten: &str,
     _component_name: &str,
-    _index: &RegistryIndex,
+    _index: &crate::registry::RegistryIndex,
     _shared_components: &HashSet<String>,
 ) -> Result<()> {
     let local_hash = sha256_hex(remote_rewritten.as_bytes());
