@@ -294,8 +294,8 @@ fn registry_component_deserializes_internal_field() {
         ]
     }"#;
     let index: RegistryIndex = serde_json::from_str(json).unwrap();
-    assert_eq!(index.components[0].internal, false);
-    assert_eq!(index.components[1].internal, true);
+    assert!(!index.components[0].internal);
+    assert!(index.components[1].internal);
 }
 
 // ─── CLI integration tests (using assert_cmd) ─────────────────────────────────
