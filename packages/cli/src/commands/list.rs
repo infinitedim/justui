@@ -15,15 +15,18 @@ pub fn run() -> Result<()> {
         JustUIConfig::DEFAULT_REGISTRY_URL.to_string()
     };
 
-    logger::info(&format!(
-        "Fetching component registry from: {}",
-        registry_url
-    ));
+    let pb_index = indicatif::ProgressBar::new_spinner();
+    pb_index.set_message("Fetching component registry...");
+    pb_index.enable_steady_tick(std::time::Duration::from_millis(100));
 
     let client = RegistryClient::new(registry_url);
     let index = match client.fetch_index() {
-        Ok(idx) => idx,
+        Ok(idx) => {
+            pb_index.finish_and_clear();
+            idx
+        }
         Err(e) => {
+            pb_index.finish_and_clear();
             logger::error(&format!("Failed to list components: {}", e));
             return Ok(());
         }

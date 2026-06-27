@@ -26,6 +26,7 @@ anyhow = "1"
 colored = "2"
 dialoguer = "0.11"
 similar = "3"
+indicatif = "0.17"
 
 [dev-dependencies]
 tempfile = "3"
