@@ -72,7 +72,6 @@ pub fn run(auto_yes: bool) -> Result<()> {
         return Ok(());
     }
 
-    let shared_components = index.compute_shared_components();
     let mut outdated_components: Vec<String> = Vec::new();
 
     for local_name in &local_component_names {
@@ -83,7 +82,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
 
         let target_dir = if component.category == "tokens" || component.category == "core" {
             config.tokens_dir.clone()
-        } else if shared_components.contains(&component.name) {
+        } else if component.internal {
             config.shared_dir.clone()
         } else {
             format!("{}/{}", config.components_dir, component.name)
@@ -92,7 +91,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
         let mut needs_update = false;
 
         for file in &component.files {
-            let local_file_name = if shared_components.contains(&component.name) {
+            let local_file_name = if component.internal {
                 import_rewriter::normalize_shared_file_name(&file.name)
             } else {
                 file.name.clone()
@@ -163,7 +162,6 @@ pub fn run(auto_yes: bool) -> Result<()> {
             &config.components_dir,
             &config.tokens_dir,
             &config.shared_dir,
-            &shared_components,
             &mut visited,
             false,
             false,

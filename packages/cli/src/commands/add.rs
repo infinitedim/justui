@@ -114,7 +114,6 @@ pub fn run(
     };
 
     let mut visited: HashSet<String> = HashSet::new();
-    let shared_components = index.compute_shared_components();
     let mut last_error: Option<anyhow::Error> = None;
     let mut total_stats = DryRunStats::new();
 
@@ -126,7 +125,6 @@ pub fn run(
             &config.components_dir,
             &config.tokens_dir,
             &config.shared_dir,
-            &shared_components,
             &mut visited,
             effective_dry_run,
             show_diff,
@@ -166,7 +164,6 @@ pub fn add_component(
     components_dir: &str,
     tokens_dir: &str,
     shared_dir: &str,
-    shared_components: &HashSet<String>,
     visited: &mut HashSet<String>,
     dry_run: bool,
     show_diff: bool,
@@ -195,7 +192,6 @@ pub fn add_component(
             components_dir,
             tokens_dir,
             shared_dir,
-            shared_components,
             visited,
             dry_run,
             show_diff,
@@ -212,7 +208,7 @@ pub fn add_component(
     // 2. Map target directory based on category and shared status
     let target_dir = if component.category == "tokens" || component.category == "core" {
         tokens_dir.to_string()
-    } else if shared_components.contains(&component.name) {
+    } else if component.internal {
         shared_dir.to_string()
     } else {
         format!("{}/{}", components_dir, component.name)
@@ -256,7 +252,6 @@ pub fn add_component(
             components_dir,
             tokens_dir,
             shared_dir,
-            shared_components,
         );
 
         let local_rewritten_hash = sha256_hex(rewritten_content.as_bytes());
@@ -266,7 +261,7 @@ pub fn add_component(
             &local_rewritten_hash,
         );
 
-        let local_file_name = if shared_components.contains(&comp_name) {
+        let local_file_name = if component.internal {
             import_rewriter::normalize_shared_file_name(&file.name)
         } else {
             file.name.clone()
