@@ -7,6 +7,7 @@ use crate::registry::{RegistryClient, RegistryIndex};
 use crate::utils::{diff_formatter, import_rewriter, logger, prompt, pubspec_editor};
 
 /// Accumulates counters during a dry-run for the final summary.
+#[derive(Default)]
 pub struct DryRunStats {
     pub will_write: usize,
     pub skipped: usize,
@@ -15,11 +16,7 @@ pub struct DryRunStats {
 
 impl DryRunStats {
     pub fn new() -> Self {
-        Self {
-            will_write: 0,
-            skipped: 0,
-            conflicts: 0,
-        }
+        Self::default()
     }
 
     pub fn merge(&mut self, other: &DryRunStats) {
@@ -157,6 +154,7 @@ pub fn run(
 
 /// Adds a single component (and its dependencies recursively) to the project.
 /// Shared between `add` and `update` commands.
+#[allow(clippy::too_many_arguments)]
 pub fn add_component(
     name: &str,
     index: &RegistryIndex,
@@ -380,6 +378,7 @@ pub fn add_component(
 
 /// Resolves a conflict when a local file already exists (normal mode, may show prompt).
 /// Returns true if the file should be overwritten.
+#[allow(clippy::needless_return)]
 fn resolve_conflict(
     target_path: &std::path::Path,
     local_file_name: &str,

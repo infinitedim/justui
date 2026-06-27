@@ -109,8 +109,7 @@ fn path_relative_unix(target: &str, from_dir: &str) -> String {
 
     // Build relative path
     let up_count = from_parts.len() - common_len;
-    let rel: Vec<String> = std::iter::repeat("..".to_string())
-        .take(up_count)
+    let rel: Vec<String> = std::iter::repeat_n("..".to_string(), up_count)
         .chain(target_parts[common_len..].iter().map(|s| s.to_string()))
         .collect();
 
@@ -157,7 +156,7 @@ pub fn rewrite(
 
     let filename = source_registry_path
         .split('/')
-        .last()
+        .next_back()
         .unwrap_or(source_registry_path);
     let local_filename = if current_component.map(|c| c.internal).unwrap_or(false) {
         normalize_shared_file_name(filename)
