@@ -4,7 +4,8 @@ import CustomSearchDialog from '../src/components/search';
 
 // Mock fumadocs-core hooks
 const mockSetSearch = vi.fn();
-const mockQueryData = { data: 'empty' };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockQueryData = { data: 'empty' as any };
 
 vi.mock('fumadocs-core/search/client', () => ({
   useDocsSearch: () => ({
@@ -78,5 +79,13 @@ describe('CustomSearchDialog Component', () => {
 
     fireEvent.change(input, { target: { value: 'neobrutalism' } });
     expect(mockSetSearch).toHaveBeenCalledWith('neobrutalism');
+  });
+
+  it('renders search list with items when query data is not empty', () => {
+    mockQueryData.data = [{ title: 'Button Component' }];
+    render(<CustomSearchDialog open={true} onOpenChange={() => {}} />);
+    expect(screen.getByTestId('search-list')).toHaveTextContent('Button Component');
+    // Restore default
+    mockQueryData.data = 'empty';
   });
 });
