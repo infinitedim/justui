@@ -1,8 +1,8 @@
 # Phase 3: Docs, DX & Showcase
 
-> **Status:** ⚪ Not Started  
+> **Status:** 🟡 In Progress  
 > **Target:** Sprint 11–16  
-> **Packages:** `just_ui_cli`, `apps/docs` (new — Next.js site)  
+> **Packages:** `justui` (CLI rewritten in Rust), `apps/docs` (Next.js site)  
 > **Dependency:** Phase 2 Milestone I–II minimal harus complete (komponen primitif + layout tersedia)  
 > **Prioritas:** High — Adopsi developer sangat bergantung pada kualitas dokumentasi dan DX.
 
@@ -406,15 +406,15 @@ $ dart run just_ui_cli doctor
 
 ### Acceptance Criteria — Milestone II
 
-- [ ] `justui add` support batch, dependency resolution, conflict detection.
+- [x] `justui add` support batch, dependency resolution, conflict detection.
 - [ ] `justui remove` dengan orphan token cleanup.
-- [ ] `justui diff` dengan visual diff dan selective apply.
-- [ ] `justui update` dengan version comparison table.
+- [x] `justui diff` dengan visual diff dan selective apply.
+- [x] `justui update` dengan version comparison table.
 - [ ] `justui doctor` dengan comprehensive health checks.
-- [ ] Colored output, spinners, progress bars berfungsi.
-- [ ] `--help` di setiap command menghasilkan output informatif.
-- [ ] Unit test coverage CLI ≥ 85%.
-- [ ] CI mode (`--no-interactive`) berfungsi.
+- [x] Colored output, spinners, progress bars berfungsi.
+- [x] `--help` di setiap command menghasilkan output informatif.
+- [x] Unit test coverage CLI ≥ 85%.
+- [x] CI mode (`--no-interactive` / `auto-yes`) berfungsi.
 
 ---
 

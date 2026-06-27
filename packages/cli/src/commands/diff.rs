@@ -54,10 +54,18 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
         component_name
     ));
 
+    let pb_index = indicatif::ProgressBar::new_spinner();
+    pb_index.set_message("Fetching registry index...");
+    pb_index.enable_steady_tick(std::time::Duration::from_millis(100));
+
     let client = RegistryClient::new(config.registry_url.clone());
     let index = match client.fetch_index() {
-        Ok(idx) => idx,
+        Ok(idx) => {
+            pb_index.finish_and_clear();
+            idx
+        }
         Err(e) => {
+            pb_index.finish_and_clear();
             logger::error(&format!(
                 "Failed to run diff for \"{}\": {}",
                 component_name, e
@@ -277,6 +285,7 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
             false,
             false,
             true,
+            &None,
         )?;
         logger::success("All changes applied successfully.");
         return Ok(());

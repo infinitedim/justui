@@ -4,6 +4,19 @@ All notable changes to the JustUI monorepo will be documented in this file.
 
 ---
 
+## [0.5.0] - 2026-06-27
+### Added
+- Integrated modular AI agent skill library with orchestrator, SEO, and domain-specific toolsets.
+- Added interactive animated spinners (`indicatif` crate) during registry fetches for `add`, `update`, `diff`, and `list` commands.
+- Added a unified download progress bar in the `add` command for multiple component file copy operations.
+- Added a detailed, minimalist terminal summary output at the end of the `add` command, displaying copied, updated, or skipped/conflicted files with colored checks and warning symbols.
+
+### Changed
+- Replaced heuristic shared component detection with an explicit `"internal": true` flag in the registry index (`index.json`).
+- Migrated the security scanning workflow job in CI from `cargo-deny` to `trivy` filesystem container scanning.
+- Enabled Git tracking for `Cargo.lock` files across the workspace by removing them from both `.gitignore` configurations.
+- Upgraded dependencies in the CLI package (`similar` to 3, `reqwest` to 0.13, `melos` to 8.0.0) and updated GitHub Actions steps to use newer checkout/artifact versions.
+
 ## [0.4.0] - 2026-06-15
 ### Added
 - Created repository fundamental documentation files in the root folder.
