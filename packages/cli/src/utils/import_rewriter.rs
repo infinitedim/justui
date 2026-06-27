@@ -1,5 +1,4 @@
 use regex::Regex;
-use std::collections::HashSet;
 use std::sync::OnceLock;
 
 use crate::{registry::RegistryIndex, utils::logger};
@@ -134,7 +133,6 @@ pub fn rewrite(
     components_dir: &str,
     tokens_dir: &str,
     shared_dir: &str,
-    shared_components: &HashSet<String>,
 ) -> String {
     let clean_content = strip_metadata(content);
 
@@ -148,7 +146,7 @@ pub fn rewrite(
         Some(comp) => {
             if comp.category == "tokens" || comp.category == "core" {
                 tokens_dir.to_string()
-            } else if shared_components.contains(current_component_name) {
+            } else if comp.internal {
                 shared_dir.to_string()
             } else {
                 format!("{}/{}", components_dir, current_component_name)
@@ -161,7 +159,7 @@ pub fn rewrite(
         .split('/')
         .last()
         .unwrap_or(source_registry_path);
-    let local_filename = if shared_components.contains(current_component_name) {
+    let local_filename = if current_component.map(|c| c.internal).unwrap_or(false) {
         normalize_shared_file_name(filename)
     } else {
         filename.to_string()
@@ -219,13 +217,13 @@ pub fn rewrite(
             if let (Some(comp), Some(file)) = (found_comp, found_file) {
                 let target_dir = if comp.category == "tokens" || comp.category == "core" {
                     tokens_dir.to_string()
-                } else if shared_components.contains(&comp.name) {
+                } else if comp.internal {
                     shared_dir.to_string()
                 } else {
                     format!("{}/{}", components_dir, comp.name)
                 };
 
-                let local_target_file_name = if shared_components.contains(&comp.name) {
+                let local_target_file_name = if comp.internal {
                     normalize_shared_file_name(&file.name)
                 } else {
                     file.name.clone()
@@ -251,11 +249,13 @@ pub fn rewrite(
 // ─── Unit-testable helpers exposed for tests ──────────────────────────────────
 
 #[cfg(test)]
+#[allow(dead_code)]
 pub(crate) fn path_relative_unix_pub(target: &str, from_dir: &str) -> String {
     path_relative_unix(target, from_dir)
 }
 
 #[cfg(test)]
+#[allow(dead_code)]
 pub(crate) fn normalize_unix_path_pub(path: &str) -> String {
     normalize_unix_path(path)
 }

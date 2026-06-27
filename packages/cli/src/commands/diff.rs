@@ -77,11 +77,9 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
         }
     };
 
-    let shared_components = index.compute_shared_components();
-
     let target_dir = if component.category == "tokens" || component.category == "core" {
         config.tokens_dir.clone()
-    } else if shared_components.contains(&component.name) {
+    } else if component.internal {
         config.shared_dir.clone()
     } else {
         format!("{}/{}", config.components_dir, component.name)
@@ -90,7 +88,7 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
     let mut files_status: Vec<DiffFileStatus> = Vec::new();
 
     for file in &component.files {
-        let local_file_name = if shared_components.contains(&component.name) {
+        let local_file_name = if component.internal {
             import_rewriter::normalize_shared_file_name(&file.name)
         } else {
             file.name.clone()
@@ -233,7 +231,6 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
                 &config.components_dir,
                 &config.tokens_dir,
                 &config.shared_dir,
-                &shared_components,
             );
             print_line_diff(&fs.file.name, &fs.local_content, &remote_rewritten);
         }
@@ -257,7 +254,6 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
             &config.components_dir,
             &config.tokens_dir,
             &config.shared_dir,
-            &shared_components,
         );
         remote_rewritten_map.insert(idx, rr);
     }
@@ -277,7 +273,6 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
             &config.components_dir,
             &config.tokens_dir,
             &config.shared_dir,
-            &shared_components,
             &mut visited,
             false,
             false,
@@ -306,7 +301,7 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
                 for &idx in &changed_files {
                     let fs = &files_status[idx];
                     if let Some(rr) = remote_rewritten_map.get(&idx) {
-                        apply_file_change(fs, rr, &component_name, &index, &shared_components)?;
+                        apply_file_change(fs, rr, &component_name, &index)?;
                     }
                 }
                 logger::success("All changes applied successfully.");
@@ -319,7 +314,7 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
                         prompt::confirm(&format!("Apply changes to \"{}\"?", fs.file.name), false);
                     if confirm {
                         if let Some(rr) = remote_rewritten_map.get(&idx) {
-                            apply_file_change(fs, rr, &component_name, &index, &shared_components)?;
+                            apply_file_change(fs, rr, &component_name, &index)?;
                         }
                     }
                 }
@@ -397,7 +392,6 @@ fn apply_file_change(
     remote_rewritten: &str,
     _component_name: &str,
     _index: &crate::registry::RegistryIndex,
-    _shared_components: &HashSet<String>,
 ) -> Result<()> {
     let local_hash = sha256_hex(remote_rewritten.as_bytes());
     let final_to_write =

@@ -4,6 +4,7 @@ use std::cmp::max;
 use crate::utils::logger;
 
 /// Kind of a diff line.
+#[allow(dead_code)]
 pub enum DiffKind {
     Unchanged,
     Added,
@@ -11,6 +12,7 @@ pub enum DiffKind {
 }
 
 /// A single line in a calculated diff.
+#[allow(dead_code)]
 pub struct DiffLine {
     pub kind: DiffKind,
     pub text: String,
@@ -21,6 +23,7 @@ pub struct DiffLine {
 }
 
 /// Computes the diff between `local` and `remote` using the `similar` crate (LCS algorithm).
+#[allow(dead_code)]
 pub fn calculate_diff(local: &str, remote: &str) -> Vec<DiffLine> {
     let local_norm = local.replace("\r\n", "\n");
     let remote_norm = remote.replace("\r\n", "\n");

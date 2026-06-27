@@ -90,3 +90,225 @@ jobs:
         run: |
           cd apps/docs
           bun run test:e2e
+
+  cli-check:
+    name: "CLI — Check"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/cli
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/cli/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('packages/cli/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install OpenSSL dev dependencies
+        run: sudo apt-get install -y pkg-config libssl-dev
+
+      - name: Run cargo check
+        run: cargo check --all-targets
+
+  cli-clippy:
+    name: "CLI — Clippy"
+    runs-on: ubuntu-latest
+    needs: cli-check
+    defaults:
+      run:
+        working-directory: packages/cli
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain with clippy
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/cli/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('packages/cli/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install OpenSSL dev dependencies
+        run: sudo apt-get install -y pkg-config libssl-dev
+
+      - name: Run Clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+  cli-cargo-audit:
+    name: "CLI — Cargo Audit"
+    runs-on: ubuntu-latest
+    needs: cli-check
+    defaults:
+      run:
+        working-directory: packages/cli
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-audit-${{ hashFiles('packages/cli/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-audit-
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+
+      - name: Run cargo audit
+        run: cargo audit
+
+  cli-security-scan:
+    name: "CLI — Security Scan"
+    runs-on: ubuntu-latest
+    needs: cli-check
+    defaults:
+      run:
+        working-directory: packages/cli
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-deny-${{ hashFiles('packages/cli/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-deny-
+
+      - name: Install cargo-deny
+        run: cargo install cargo-deny --locked
+
+      - name: Run cargo deny check
+        run: cargo deny check
+
+  cli-build:
+    name: "CLI — Build"
+    runs-on: ubuntu-latest
+    needs: [cli-check, cli-clippy]
+    defaults:
+      run:
+        working-directory: packages/cli
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/cli/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('packages/cli/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install OpenSSL dev dependencies
+        run: sudo apt-get install -y pkg-config libssl-dev
+
+      - name: Build release binary
+        run: cargo build --release
+
+  cli-test:
+    name: "CLI — Test"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/cli
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/cli/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('packages/cli/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install OpenSSL dev dependencies
+        run: sudo apt-get install -y pkg-config libssl-dev
+
+      - name: Run tests
+        run: cargo test --all-targets
+
+  cli-coverage:
+    name: "CLI — Coverage"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/cli
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain with llvm-tools
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/cli/target
+          key: ${{ runner.os }}-cargo-coverage-${{ hashFiles('packages/cli/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-coverage-
+
+      - name: Install OpenSSL dev dependencies
+        run: sudo apt-get install -y pkg-config libssl-dev
+
+      - name: Install cargo-llvm-cov
+        run: cargo install cargo-llvm-cov --locked
+
+      - name: Generate coverage report
+        run: cargo llvm-cov --all-targets --lcov --output-path lcov.info
+
+      - name: Print coverage summary
+        run: cargo llvm-cov report --summary-only

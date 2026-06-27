@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use serde::Deserialize;
 use anyhow::{Context, Result};
 
@@ -26,7 +26,7 @@ fn default_version() -> String {
 pub struct RegistryComponent {
     /// Unique component name identifier (e.g., 'button').
     pub name: String,
-    /// Semantic version.
+    /// Type safety, dynamic variant logic, etc.
     pub version: String,
     /// Brief description.
     #[serde(default)]
@@ -34,6 +34,10 @@ pub struct RegistryComponent {
     /// Classification category (e.g. 'primitives', 'layout').
     #[serde(default = "default_category")]
     pub category: String,
+    /// Apakah komponen ini merupakan internal shared utility.
+    /// Jika true, file-nya akan diletakkan di `shared_dir`, bukan di subfolder komponen.
+    #[serde(default)]
+    pub internal: bool,
     /// Names of other registry components this component depends on.
     #[serde(rename = "registryDependencies", default)]
     pub registry_dependencies: Vec<String>,
@@ -57,21 +61,6 @@ pub struct RegistryIndex {
 }
 
 impl RegistryIndex {
-    /// Returns the set of component names that are considered "shared" —
-    /// components that appear as a `registryDependency` of 2 or more other components.
-    pub fn compute_shared_components(&self) -> HashSet<String> {
-        let mut dependent_count: HashMap<&str, usize> = HashMap::new();
-        for comp in &self.components {
-            for dep in &comp.registry_dependencies {
-                *dependent_count.entry(dep.as_str()).or_insert(0) += 1;
-            }
-        }
-        dependent_count
-            .into_iter()
-            .filter(|(_, count)| *count >= 2)
-            .map(|(name, _)| name.to_string())
-            .collect()
-    }
 }
 
 /// Client for fetching the registry index and files from local or remote sources.
