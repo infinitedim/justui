@@ -57,7 +57,7 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
     // Step 3 — Combine: name matches first
     let results: Vec<&RegistryComponent> = name_matches
         .into_iter()
-        .chain(other_matches.into_iter())
+        .chain(other_matches)
         .collect();
 
     // Step 4 — Display results
