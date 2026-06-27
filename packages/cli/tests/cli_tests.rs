@@ -2,7 +2,7 @@
 ///
 /// These tests use `tempfile` for isolated filesystem environments and
 /// `assert_cmd` to run the compiled binary.
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use justui_cli::config::JustUIConfig;
 use justui_cli::registry::{RegistryComponent, RegistryFile, RegistryIndex};
@@ -150,7 +150,6 @@ fn rewrite_skips_package_and_dart_imports() {
         version: "1".to_string(),
         components: vec![],
     };
-    let shared = HashSet::new();
     let content = "import 'package:flutter/widgets.dart';\nimport 'dart:io';\n";
     let result = import_rewriter::rewrite(
         content,
@@ -160,7 +159,6 @@ fn rewrite_skips_package_and_dart_imports() {
         "lib/widgets",
         "lib/tokens",
         "lib/widgets/shared",
-        &shared,
     );
     assert_eq!(result, content);
 }
@@ -171,7 +169,6 @@ fn rewrite_converts_theme_import_to_package() {
         version: "1".to_string(),
         components: vec![],
     };
-    let shared = HashSet::new();
     let content = "import '../theme/theme_provider.dart';\n";
     let result = import_rewriter::rewrite(
         content,
@@ -181,7 +178,6 @@ fn rewrite_converts_theme_import_to_package() {
         "lib/widgets",
         "lib/tokens",
         "lib/widgets/shared",
-        &shared,
     );
     assert!(result.contains("import 'package:just_ui_core/just_ui_core.dart';"));
 }
@@ -196,6 +192,7 @@ fn rewrite_computes_relative_path_for_component_import() {
                 version: "0.1.0".to_string(),
                 description: "".to_string(),
                 category: "primitives".to_string(),
+                internal: false,
                 registry_dependencies: vec![],
                 pub_dependencies: HashMap::new(),
                 files: vec![RegistryFile {
@@ -209,6 +206,7 @@ fn rewrite_computes_relative_path_for_component_import() {
                 version: "0.1.0".to_string(),
                 description: "".to_string(),
                 category: "tokens".to_string(),
+                internal: false,
                 registry_dependencies: vec![],
                 pub_dependencies: HashMap::new(),
                 files: vec![RegistryFile {
@@ -219,7 +217,6 @@ fn rewrite_computes_relative_path_for_component_import() {
             },
         ],
     };
-    let shared = HashSet::new();
     // button imports spacing
     let content = "import '../../tokens/spacing.dart';\n";
     let result = import_rewriter::rewrite(
@@ -230,7 +227,6 @@ fn rewrite_computes_relative_path_for_component_import() {
         "lib/widgets",
         "lib/tokens",
         "lib/widgets/shared",
-        &shared,
     );
     // current file: lib/widgets/button/just_button.dart
     // target file: lib/tokens/spacing.dart
@@ -277,46 +273,29 @@ fn calculate_diff_normalizes_crlf() {
         .all(|d| matches!(d.kind, diff_formatter::DiffKind::Unchanged)));
 }
 
-// ─── RegistryIndex::compute_shared_components Tests ───────────────────────────
+// ─── RegistryIndex::internal field Tests ──────────────────────────────────────
 
 #[test]
-fn compute_shared_components_finds_multi_dependent() {
-    let index = RegistryIndex {
-        version: "1".to_string(),
-        components: vec![
-            RegistryComponent {
-                name: "button".to_string(),
-                version: "0.1.0".to_string(),
-                description: "".to_string(),
-                category: "primitives".to_string(),
-                registry_dependencies: vec!["pressable".to_string()],
-                pub_dependencies: HashMap::new(),
-                files: vec![],
+fn registry_component_deserializes_internal_field() {
+    let json = r#"{
+        "version": "1",
+        "components": [
+            {
+                "name": "button",
+                "version": "0.1.0",
+                "category": "primitives"
             },
-            RegistryComponent {
-                name: "input".to_string(),
-                version: "0.1.0".to_string(),
-                description: "".to_string(),
-                category: "primitives".to_string(),
-                registry_dependencies: vec!["pressable".to_string()],
-                pub_dependencies: HashMap::new(),
-                files: vec![],
-            },
-            RegistryComponent {
-                name: "pressable".to_string(),
-                version: "0.1.0".to_string(),
-                description: "".to_string(),
-                category: "primitives".to_string(),
-                registry_dependencies: vec![],
-                pub_dependencies: HashMap::new(),
-                files: vec![],
-            },
-        ],
-    };
-    let shared = index.compute_shared_components();
-    assert!(shared.contains("pressable"));
-    assert!(!shared.contains("button"));
-    assert!(!shared.contains("input"));
+            {
+                "name": "pressable",
+                "version": "0.1.0",
+                "category": "shared",
+                "internal": true
+            }
+        ]
+    }"#;
+    let index: RegistryIndex = serde_json::from_str(json).unwrap();
+    assert_eq!(index.components[0].internal, false);
+    assert_eq!(index.components[1].internal, true);
 }
 
 // ─── CLI integration tests (using assert_cmd) ─────────────────────────────────
