@@ -26,6 +26,23 @@ impl DryRunStats {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum OperationStatus {
+    Copied,
+    UpToDate,
+    SkippedLocalCustomization,
+    Overwritten,
+    ConflictResolvedOverwrite,
+    ConflictResolvedSkip,
+}
+
+#[derive(Debug, Clone)]
+pub struct OperationDetail {
+    pub file_name: String,
+    pub status: OperationStatus,
+    pub path: String,
+}
+
 /// Runs the `justui add [component...]` command.
 pub fn run(
     components: Vec<String>,
@@ -58,15 +75,19 @@ pub fn run(
         }
     };
 
-    logger::info(&format!(
-        "Fetching registry index from: {}",
-        config.registry_url
-    ));
+    // Show a spinner while fetching registry index
+    let pb_index = indicatif::ProgressBar::new_spinner();
+    pb_index.set_message("Fetching registry index...");
+    pb_index.enable_steady_tick(std::time::Duration::from_millis(100));
 
     let client = RegistryClient::new(config.registry_url.clone());
     let index = match client.fetch_index() {
-        Ok(idx) => idx,
+        Ok(idx) => {
+            pb_index.finish_and_clear();
+            idx
+        }
         Err(e) => {
+            pb_index.finish_and_clear();
             logger::error(&format!("Failed to add components: {}", e));
             return Ok(());
         }
@@ -110,9 +131,46 @@ pub fn run(
         components
     };
 
+    // Calculate total files for progress bar
+    let mut resolved_components = Vec::new();
+    let mut dep_visited = HashSet::new();
+    for comp_name in &components_to_add {
+        if let Err(e) = resolve_dependencies_recursive(comp_name, &index, &mut dep_visited, &mut resolved_components) {
+            logger::error(&format!("Dependency resolution error: {}", e));
+            return Ok(());
+        }
+    }
+
+    let total_files: usize = resolved_components
+        .iter()
+        .map(|name| {
+            index
+                .components
+                .iter()
+                .find(|c| c.name == *name)
+                .map(|c| c.files.len())
+                .unwrap_or(0)
+        })
+        .sum();
+
+    let pb_files = if effective_dry_run || total_files == 0 {
+        None
+    } else {
+        let bar = indicatif::ProgressBar::new(total_files as u64);
+        bar.set_style(
+            indicatif::ProgressStyle::default_bar()
+                .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} {msg}")
+                .unwrap()
+                .progress_chars("#>-")
+        );
+        bar.set_message("Copying component files...");
+        Some(bar)
+    };
+
     let mut visited: HashSet<String> = HashSet::new();
     let mut last_error: Option<anyhow::Error> = None;
     let mut total_stats = DryRunStats::new();
+    let mut all_details = Vec::new();
 
     for comp_name in &components_to_add {
         match add_component(
@@ -126,15 +184,21 @@ pub fn run(
             effective_dry_run,
             show_diff,
             auto_yes,
+            &pb_files,
         ) {
-            Ok(stats) => {
+            Ok((stats, details)) => {
                 total_stats.merge(&stats);
+                all_details.extend(details);
             }
             Err(e) => {
                 last_error = Some(e);
                 break;
             }
         }
+    }
+
+    if let Some(ref bar) = pb_files {
+        bar.finish_with_message("Done!");
     }
 
     if let Some(e) = last_error {
@@ -147,8 +211,81 @@ pub fn run(
             "\nRingkasan dry-run: {} file akan ditulis, {} dilewati, {} konflik",
             total_stats.will_write, total_stats.skipped, total_stats.conflicts
         ));
+    } else {
+        // Modern, minimalist summary output
+        let mut copied_count = 0;
+        let mut skipped_count = 0;
+        let mut success_details = Vec::new();
+        let mut skip_details = Vec::new();
+
+        for detail in &all_details {
+            match detail.status {
+                OperationStatus::Copied => {
+                    copied_count += 1;
+                    success_details.push(format!("  \x1B[32m✔\x1B[0m {} (Baru) -> {}", detail.file_name, detail.path));
+                }
+                OperationStatus::Overwritten => {
+                    copied_count += 1;
+                    success_details.push(format!("  \x1B[32m✔\x1B[0m {} (Diperbarui) -> {}", detail.file_name, detail.path));
+                }
+                OperationStatus::ConflictResolvedOverwrite => {
+                    copied_count += 1;
+                    success_details.push(format!("  \x1B[32m✔\x1B[0m {} (Konflik ditimpa) -> {}", detail.file_name, detail.path));
+                }
+                OperationStatus::UpToDate => {
+                    skipped_count += 1;
+                    skip_details.push(format!("  \x1B[33m⚠\x1B[0m {} (Sudah terbaru) -> {}", detail.file_name, detail.path));
+                }
+                OperationStatus::SkippedLocalCustomization => {
+                    skipped_count += 1;
+                    skip_details.push(format!("  \x1B[33m⚠\x1B[0m {} (Dilewati, kustomisasi lokal) -> {}", detail.file_name, detail.path));
+                }
+                OperationStatus::ConflictResolvedSkip => {
+                    skipped_count += 1;
+                    skip_details.push(format!("  \x1B[33m⚠\x1B[0m {} (Konflik dilewati) -> {}", detail.file_name, detail.path));
+                }
+            }
+        }
+
+        logger::stdout("");
+        if copied_count > 0 {
+            logger::stdout(&format!("\x1B[32m✔\x1B[0m {} file berhasil ditambahkan/diperbarui:", copied_count));
+            for line in success_details {
+                logger::stdout(&line);
+            }
+        }
+        if skipped_count > 0 {
+            logger::stdout(&format!("\x1B[33m⚠\x1B[0m {} file dilewati:", skipped_count));
+            for line in skip_details {
+                logger::stdout(&line);
+            }
+        }
     }
 
+    Ok(())
+}
+
+fn resolve_dependencies_recursive(
+    name: &str,
+    index: &RegistryIndex,
+    visited: &mut HashSet<String>,
+    resolved: &mut Vec<String>,
+) -> Result<()> {
+    if visited.contains(name) {
+        return Ok(());
+    }
+    visited.insert(name.to_string());
+    
+    let component = index
+        .components
+        .iter()
+        .find(|c| c.name == name)
+        .ok_or_else(|| anyhow::anyhow!("Component \"{}\" not found in registry", name))?;
+        
+    for dep in &component.registry_dependencies {
+        resolve_dependencies_recursive(dep, index, visited, resolved)?;
+    }
+    resolved.push(name.to_string());
     Ok(())
 }
 
@@ -166,10 +303,11 @@ pub fn add_component(
     dry_run: bool,
     show_diff: bool,
     auto_yes: bool,
-) -> Result<DryRunStats> {
+    pb: &Option<indicatif::ProgressBar>,
+) -> Result<(DryRunStats, Vec<OperationDetail>)> {
     // Circular dependency check and double-copy guard
     if visited.contains(name) {
-        return Ok(DryRunStats::new());
+        return Ok((DryRunStats::new(), Vec::new()));
     }
     visited.insert(name.to_string());
 
@@ -182,8 +320,9 @@ pub fn add_component(
     // 1. Recursively resolve registry dependencies first
     let deps: Vec<String> = component.registry_dependencies.clone();
     let mut stats = DryRunStats::new();
+    let mut details = Vec::new();
     for dep in &deps {
-        let dep_stats = add_component(
+        let (dep_stats, dep_details) = add_component(
             dep,
             index,
             client,
@@ -194,8 +333,10 @@ pub fn add_component(
             dry_run,
             show_diff,
             auto_yes,
+            pb,
         )?;
         stats.merge(&dep_stats);
+        details.extend(dep_details);
     }
 
     logger::info(&format!(
@@ -222,6 +363,11 @@ pub fn add_component(
         .collect();
 
     for file in &files {
+        if let Some(ref bar) = pb {
+            bar.inc(1);
+            bar.set_message(format!("Processing {}...", file.name));
+        }
+
         let content = client
             .fetch_file_content(&file.path)
             .map_err(|e| anyhow::anyhow!("Failed to fetch \"{}\": {}", file.name, e))?;
@@ -272,10 +418,10 @@ pub fn add_component(
         // Track the local "clean" content for diff display (populated if file exists)
         let mut local_clean_for_diff = String::new();
 
-        let (should_write, conflict_detected) = if file_exists {
+        let (should_write, conflict_detected, status) = if file_exists {
             if dry_run {
                 // In dry-run mode we read to compute status but never prompt
-                let (sw, conflict, local_clean) = resolve_conflict_dry(
+                let (sw, conflict, local_clean, st) = resolve_conflict_dry(
                     &target_path,
                     &local_file_name,
                     &expected_hash,
@@ -283,9 +429,9 @@ pub fn add_component(
                     auto_yes,
                 )?;
                 local_clean_for_diff = local_clean;
-                (sw, conflict)
+                (sw, conflict, st)
             } else {
-                let sw = resolve_conflict(
+                let (sw, st) = resolve_conflict(
                     &target_path,
                     &local_file_name,
                     &expected_hash,
@@ -293,10 +439,10 @@ pub fn add_component(
                     &final_content,
                     auto_yes,
                 )?;
-                (sw, false)
+                (sw, false, st)
             }
         } else {
-            (true, false)
+            (true, false, OperationStatus::Copied)
         };
 
         // --- Show diff block (before writing) ---
@@ -318,7 +464,7 @@ pub fn add_component(
             }
         }
 
-        // --- Dry-run: print preview, skip actual write ---
+        // --- Track stats & write ---
         if dry_run {
             if conflict_detected {
                 stats.conflicts += 1;
@@ -336,11 +482,8 @@ pub fn add_component(
                 stats.skipped += 1;
                 // Message was already printed by resolve_conflict_dry
             }
-            continue; // Skip actual file write
-        }
-
-        // --- Normal write ---
-        if should_write {
+        } else if should_write {
+            // Normal write
             if let Some(parent) = target_path.parent() {
                 std::fs::create_dir_all(parent)?;
             }
@@ -350,6 +493,12 @@ pub fn add_component(
                 local_file_name, target_dir
             ));
         }
+
+        details.push(OperationDetail {
+            file_name: local_file_name.clone(),
+            status,
+            path: format!("{}/{}", target_dir, local_file_name),
+        });
     }
 
     // 4. Inject pub dependencies into pubspec.yaml (skip in dry-run mode)
@@ -373,7 +522,7 @@ pub fn add_component(
     if !dry_run {
         logger::success(&format!("Component \"{}\" added successfully.", comp_name));
     }
-    Ok(stats)
+    Ok((stats, details))
 }
 
 /// Resolves a conflict when a local file already exists (normal mode, may show prompt).
@@ -386,7 +535,7 @@ fn resolve_conflict(
     rewritten_content: &str,
     _final_content: &str,
     auto_yes: bool,
-) -> Result<bool> {
+) -> Result<(bool, OperationStatus)> {
     let raw = std::fs::read_to_string(target_path)?;
     let local_content = raw.replace("\r\n", "\n");
 
@@ -398,20 +547,20 @@ fn resolve_conflict(
             // Unmodified locally
             if meta.registry_hash == expected_hash {
                 logger::stdout(&format!("  - {} is already up-to-date.", local_file_name));
-                return Ok(false);
+                return Ok((false, OperationStatus::UpToDate));
             } else {
                 if auto_yes {
                     logger::stdout(&format!(
                         "[auto] Overwrite {} (tidak dimodifikasi lokal)",
                         local_file_name
                     ));
-                    return Ok(true);
+                    return Ok((true, OperationStatus::Overwritten));
                 }
                 logger::info(&format!(
                     "  - Updating {} to latest registry version.",
                     local_file_name
                 ));
-                return Ok(true);
+                return Ok((true, OperationStatus::Overwritten));
             }
         } else {
             // Locally modified
@@ -421,13 +570,13 @@ fn resolve_conflict(
                         "[auto] Lewati {} (dimodifikasi lokal)",
                         local_file_name
                     ));
-                    return Ok(false);
+                    return Ok((false, OperationStatus::SkippedLocalCustomization));
                 }
                 logger::stdout(&format!(
                     "  - {} has been customized locally. Skipping.",
                     local_file_name
                 ));
-                return Ok(false);
+                return Ok((false, OperationStatus::SkippedLocalCustomization));
             } else {
                 // True conflict: prompt
                 if auto_yes {
@@ -435,13 +584,18 @@ fn resolve_conflict(
                         "[auto] Lewati {} (dimodifikasi lokal)",
                         local_file_name
                     ));
-                    return Ok(false);
+                    return Ok((false, OperationStatus::ConflictResolvedSkip));
                 }
                 logger::warning(&format!(
                     "Conflict: Local file \"{}\" has been modified, and a registry update is available.",
                     local_file_name
                 ));
-                return conflict_prompt(local_file_name, &local_clean, rewritten_content);
+                let proceed = conflict_prompt(local_file_name, &local_clean, rewritten_content)?;
+                if proceed {
+                    return Ok((true, OperationStatus::ConflictResolvedOverwrite));
+                } else {
+                    return Ok((false, OperationStatus::ConflictResolvedSkip));
+                }
             }
         }
     } else {
@@ -452,33 +606,38 @@ fn resolve_conflict(
                 "  - {} is already up-to-date (no metadata).",
                 local_file_name
             ));
-            return Ok(false);
+            return Ok((false, OperationStatus::UpToDate));
         } else {
             if auto_yes {
                 logger::stdout(&format!(
                     "[auto] Overwrite {} (tidak dimodifikasi lokal)",
                     local_file_name
                 ));
-                return Ok(true);
+                return Ok((true, OperationStatus::ConflictResolvedOverwrite));
             }
             logger::warning(&format!(
                 "Conflict: Local file \"{}\" exists and differs (no metadata).",
                 local_file_name
             ));
-            return conflict_prompt(local_file_name, &local_content, rewritten_content);
+            let proceed = conflict_prompt(local_file_name, &local_content, rewritten_content)?;
+            if proceed {
+                return Ok((true, OperationStatus::ConflictResolvedOverwrite));
+            } else {
+                return Ok((false, OperationStatus::ConflictResolvedSkip));
+            }
         }
     }
 }
 
 /// Resolves conflict in dry-run mode — never prompts, never writes.
-/// Returns (should_write_preview, is_conflict, local_clean_content).
+/// Returns (should_write_preview, is_conflict, local_clean_content, status).
 fn resolve_conflict_dry(
     target_path: &std::path::Path,
     local_file_name: &str,
     expected_hash: &str,
     _rewritten_content: &str,
     _auto_yes: bool,
-) -> Result<(bool, bool, String)> {
+) -> Result<(bool, bool, String, OperationStatus)> {
     let raw = std::fs::read_to_string(target_path)?;
     let local_content = raw.replace("\r\n", "\n");
 
@@ -493,10 +652,10 @@ fn resolve_conflict_dry(
                     "  [dry-run] Sudah up-to-date: {}",
                     local_file_name
                 ));
-                Ok((false, false, local_clean))
+                Ok((false, false, local_clean, OperationStatus::UpToDate))
             } else {
                 // Update available — treat as will_write
-                Ok((true, false, local_clean))
+                Ok((true, false, local_clean, OperationStatus::Overwritten))
             }
         } else {
             // Locally modified
@@ -505,10 +664,10 @@ fn resolve_conflict_dry(
                     "  [dry-run] Dilewati (dimodifikasi lokal): {}",
                     local_file_name
                 ));
-                Ok((false, false, local_clean))
+                Ok((false, false, local_clean, OperationStatus::SkippedLocalCustomization))
             } else {
                 // Conflict: show as will_write for preview purposes
-                Ok((true, true, local_clean))
+                Ok((true, true, local_clean, OperationStatus::ConflictResolvedOverwrite))
             }
         }
     } else {
@@ -519,13 +678,13 @@ fn resolve_conflict_dry(
                 "  [dry-run] Sudah up-to-date: {}",
                 local_file_name
             ));
-            Ok((false, false, local_content))
+            Ok((false, false, local_content, OperationStatus::UpToDate))
         } else {
             logger::stdout(&format!(
                 "  [dry-run] Dilewati (dimodifikasi lokal): {}",
                 local_file_name
             ));
-            Ok((false, false, local_content))
+            Ok((false, false, local_content, OperationStatus::SkippedLocalCustomization))
         }
     }
 }

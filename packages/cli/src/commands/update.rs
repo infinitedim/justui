@@ -30,12 +30,18 @@ pub fn run(auto_yes: bool) -> Result<()> {
         }
     };
 
-    logger::info("Checking for updates...");
+    let pb_index = indicatif::ProgressBar::new_spinner();
+    pb_index.set_message("Checking for updates...");
+    pb_index.enable_steady_tick(std::time::Duration::from_millis(100));
 
     let client = RegistryClient::new(config.registry_url.clone());
     let index = match client.fetch_index() {
-        Ok(idx) => idx,
+        Ok(idx) => {
+            pb_index.finish_and_clear();
+            idx
+        }
         Err(e) => {
+            pb_index.finish_and_clear();
             logger::error(&format!("Failed to perform update: {}", e));
             return Ok(());
         }
@@ -166,6 +172,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
             false,
             false,
             auto_yes,
+            &None,
         ) {
             logger::error(&format!("Failed to update \"{}\": {}", comp_name, e));
         }
