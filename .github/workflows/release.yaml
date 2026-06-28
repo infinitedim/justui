@@ -2,6 +2,8 @@ name: Release CLI
 
 on:
   push:
+    branches:
+      - main
     tags:
       - "v*"
 
@@ -9,10 +11,69 @@ permissions:
   contents: write
 
 jobs:
+  apply-changesets:
+    name: "Apply Changesets & Bump Versions"
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install root dependencies
+        run: bun install
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          cache: true
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Check for pending changesets
+        id: check-changesets
+        run: |
+          COUNT=$(find .changeset -name "*.md" ! -name "README.md" | wc -l | tr -d ' ')
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+          echo "Pending changesets: $COUNT"
+
+      - name: Apply Dart package version bumps
+        if: steps.check-changesets.outputs.count != '0'
+        run: dart run tools/apply_changesets.dart
+
+      - name: Apply Rust CLI version bump
+        if: steps.check-changesets.outputs.count != '0'
+        run: |
+          chmod +x tools/apply_changesets_cargo.sh
+          bash tools/apply_changesets_cargo.sh
+
+      - name: Generate changelogs
+        if: steps.check-changesets.outputs.count != '0'
+        run: bun changeset version
+
+      - name: Commit version bumps and changelogs
+        if: steps.check-changesets.outputs.count != '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: apply changesets and bump versions [skip ci]"
+          git push
+
   # ── Linux cross-compilation via `cross` ──────────────────────────────────────
   build-linux:
     name: Build Linux (${{ matrix.target }})
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         target:
@@ -49,6 +110,7 @@ jobs:
   build-macos:
     name: Build macOS (${{ matrix.target }})
     runs-on: ${{ matrix.runner }}
+    if: startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         include:
@@ -84,6 +146,7 @@ jobs:
   build-windows:
     name: Build Windows (x86_64-pc-windows-msvc)
     runs-on: windows-latest
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v7
 
@@ -118,6 +181,7 @@ jobs:
       - build-macos
       - build-windows
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v7
 
