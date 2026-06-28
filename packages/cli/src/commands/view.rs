@@ -31,7 +31,7 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
         Some(c) => c,
         None => {
             logger::stdout(&format!(
-                "Komponen \"{}\" tidak ditemukan di registry.",
+                "Component \"{}\" not found in registry.",
                 component
             ));
 
@@ -45,7 +45,7 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
                 .collect();
 
             if !suggestions.is_empty() {
-                logger::stdout("Maksud kamu salah satu dari ini?");
+                logger::stdout("Did you mean one of these?");
                 for s in &suggestions {
                     logger::stdout(&format!("  - {}", s));
                 }
@@ -73,13 +73,13 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
 
     // Metadata lines
     let reg_deps = if comp.registry_dependencies.is_empty() {
-        "(tidak ada)".to_string()
+        "(none)".to_string()
     } else {
         comp.registry_dependencies.join(", ")
     };
 
     let pub_deps_str = if comp.pub_dependencies.is_empty() {
-        "(tidak ada)".to_string()
+        "(none)".to_string()
     } else {
         comp.pub_dependencies
             .iter()
@@ -88,10 +88,10 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
             .join(", ")
     };
 
-    logger::stdout(&format!("Kategori      : {}", comp.category));
-    logger::stdout(&format!("Dependensi    : {}", reg_deps));
+    logger::stdout(&format!("Category      : {}", comp.category));
+    logger::stdout(&format!("Dependencies  : {}", reg_deps));
     logger::stdout(&format!("Pub deps      : {}", pub_deps_str));
-    logger::stdout(&format!("Jumlah file   : {} file", comp.files_for_preset(&preset).len()));
+    logger::stdout(&format!("File count    : {} file(s)", comp.files_for_preset(&preset).len()));
     logger::stdout("");
 
     // Step 5 — Display file contents
@@ -101,7 +101,7 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
             Some(f) => vec![f],
             None => {
                 logger::error(&format!(
-                    "File \"{}\" tidak ditemukan di komponen \"{}\".",
+                    "File \"{}\" not found in component \"{}\".",
                     name_filter, comp.name
                 ));
                 std::process::exit(1);
@@ -117,7 +117,7 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
         let content = match client.fetch_file_content(&file.path) {
             Ok(c) => c,
             Err(e) => {
-                logger::error(&format!("Gagal mengambil \"{}\": {}", file.name, e));
+                logger::error(&format!("Failed to fetch \"{}\": {}", file.name, e));
                 std::process::exit(1);
             }
         };
@@ -156,7 +156,7 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
 
         // Pause between files (except last) if not auto_yes
         if file_idx < total_files - 1 && !auto_yes {
-            print!("Tampilkan file berikutnya? [Y/n]: ");
+            print!("Show next file? [Y/n]: ");
             io::stdout().flush().unwrap_or(());
             let mut input = String::new();
             io::stdin().read_line(&mut input).unwrap_or(0);

@@ -111,7 +111,7 @@ pub fn run(
             // Select all components
             let names: Vec<String> = index.components.iter().map(|c| c.name.clone()).collect();
             let names_str = names.join(", ");
-            logger::stdout(&format!("[auto] Memilih semua komponen: {}", names_str));
+            logger::stdout(&format!("[auto] Selecting all components: {}", names_str));
             names
         } else {
             logger::stdout("Select components to add:");
@@ -210,7 +210,7 @@ pub fn run(
     // Print dry-run summary
     if effective_dry_run {
         logger::stdout(&format!(
-            "\nRingkasan dry-run: {} file akan ditulis, {} dilewati, {} konflik",
+            "\nDry-run summary: {} files to write, {} skipped, {} conflicts",
             total_stats.will_write, total_stats.skipped, total_stats.conflicts
         ));
     } else {
@@ -224,40 +224,40 @@ pub fn run(
             match detail.status {
                 OperationStatus::Copied => {
                     copied_count += 1;
-                    success_details.push(format!("  \x1B[32m✔\x1B[0m {} (Baru) -> {}", detail.file_name, detail.path));
+                    success_details.push(format!("  \x1B[32m✔\x1B[0m {} (New) -> {}", detail.file_name, detail.path));
                 }
                 OperationStatus::Overwritten => {
                     copied_count += 1;
-                    success_details.push(format!("  \x1B[32m✔\x1B[0m {} (Diperbarui) -> {}", detail.file_name, detail.path));
+                    success_details.push(format!("  \x1B[32m✔\x1B[0m {} (Updated) -> {}", detail.file_name, detail.path));
                 }
                 OperationStatus::ConflictResolvedOverwrite => {
                     copied_count += 1;
-                    success_details.push(format!("  \x1B[32m✔\x1B[0m {} (Konflik ditimpa) -> {}", detail.file_name, detail.path));
+                    success_details.push(format!("  \x1B[32m✔\x1B[0m {} (Conflict overwritten) -> {}", detail.file_name, detail.path));
                 }
                 OperationStatus::UpToDate => {
                     skipped_count += 1;
-                    skip_details.push(format!("  \x1B[33m⚠\x1B[0m {} (Sudah terbaru) -> {}", detail.file_name, detail.path));
+                    skip_details.push(format!("  \x1B[33m⚠\x1B[0m {} (Up-to-date) -> {}", detail.file_name, detail.path));
                 }
                 OperationStatus::SkippedLocalCustomization => {
                     skipped_count += 1;
-                    skip_details.push(format!("  \x1B[33m⚠\x1B[0m {} (Dilewati, kustomisasi lokal) -> {}", detail.file_name, detail.path));
+                    skip_details.push(format!("  \x1B[33m⚠\x1B[0m {} (Skipped, local customization) -> {}", detail.file_name, detail.path));
                 }
                 OperationStatus::ConflictResolvedSkip => {
                     skipped_count += 1;
-                    skip_details.push(format!("  \x1B[33m⚠\x1B[0m {} (Konflik dilewati) -> {}", detail.file_name, detail.path));
+                    skip_details.push(format!("  \x1B[33m⚠\x1B[0m {} (Conflict skipped) -> {}", detail.file_name, detail.path));
                 }
             }
         }
 
         logger::stdout("");
         if copied_count > 0 {
-            logger::stdout(&format!("\x1B[32m✔\x1B[0m {} file berhasil ditambahkan/diperbarui:", copied_count));
+            logger::stdout(&format!("\x1B[32m✔\x1B[0m {} file(s) added/updated:", copied_count));
             for line in success_details {
                 logger::stdout(&line);
             }
         }
         if skipped_count > 0 {
-            logger::stdout(&format!("\x1B[33m⚠\x1B[0m {} file dilewati:", skipped_count));
+            logger::stdout(&format!("\x1B[33m⚠\x1B[0m {} file(s) skipped:", skipped_count));
             for line in skip_details {
                 logger::stdout(&line);
             }
@@ -287,7 +287,7 @@ pub fn run(
 
     if !summary_items.is_empty() && !dry_run {
         logger::summary(
-            &format!("{} komponen berhasil ditambahkan", summary_items.len()),
+            &format!("{} component(s) added successfully", summary_items.len()),
             &summary_items,
         );
     }
@@ -502,13 +502,13 @@ pub fn add_component(
             if conflict_detected {
                 stats.conflicts += 1;
                 logger::stdout(&format!(
-                    "  [dry-run] Konflik (akan ditulis jika dipilih): {}",
+                    "  [dry-run] Conflict (will write if selected): {}",
                     local_file_name
                 ));
             } else if should_write {
                 stats.will_write += 1;
                 logger::stdout(&format!(
-                    "  [dry-run] Akan ditulis: {}",
+                    "  [dry-run] Will write: {}",
                     target_path.display()
                 ));
             } else {
@@ -584,7 +584,7 @@ fn resolve_conflict(
             } else {
                 if auto_yes {
                     logger::stdout(&format!(
-                        "[auto] Overwrite {} (tidak dimodifikasi lokal)",
+                        "[auto] Overwriting {} (not modified locally)",
                         local_file_name
                     ));
                     return Ok((true, OperationStatus::Overwritten));
@@ -600,7 +600,7 @@ fn resolve_conflict(
             if meta.registry_hash == expected_hash {
                 if auto_yes {
                     logger::stdout(&format!(
-                        "[auto] Lewati {} (dimodifikasi lokal)",
+                        "[auto] Skipping {} (modified locally)",
                         local_file_name
                     ));
                     return Ok((false, OperationStatus::SkippedLocalCustomization));
@@ -614,7 +614,7 @@ fn resolve_conflict(
                 // True conflict: prompt
                 if auto_yes {
                     logger::stdout(&format!(
-                        "[auto] Lewati {} (dimodifikasi lokal)",
+                        "[auto] Skipping {} (modified locally)",
                         local_file_name
                     ));
                     return Ok((false, OperationStatus::ConflictResolvedSkip));
@@ -643,7 +643,7 @@ fn resolve_conflict(
         } else {
             if auto_yes {
                 logger::stdout(&format!(
-                    "[auto] Overwrite {} (tidak dimodifikasi lokal)",
+                    "[auto] Overwriting {} (not modified locally)",
                     local_file_name
                 ));
                 return Ok((true, OperationStatus::ConflictResolvedOverwrite));
@@ -682,7 +682,7 @@ fn resolve_conflict_dry(
             // Unmodified locally
             if meta.registry_hash == expected_hash {
                 logger::stdout(&format!(
-                    "  [dry-run] Sudah up-to-date: {}",
+                    "  [dry-run] Already up-to-date: {}",
                     local_file_name
                 ));
                 Ok((false, false, local_clean, OperationStatus::UpToDate))
@@ -694,7 +694,7 @@ fn resolve_conflict_dry(
             // Locally modified
             if meta.registry_hash == expected_hash {
                 logger::stdout(&format!(
-                    "  [dry-run] Dilewati (dimodifikasi lokal): {}",
+                    "  [dry-run] Skipped (modified locally): {}",
                     local_file_name
                 ));
                 Ok((false, false, local_clean, OperationStatus::SkippedLocalCustomization))
@@ -708,13 +708,13 @@ fn resolve_conflict_dry(
         let local_hash = sha256_hex(local_content.as_bytes());
         if local_hash == expected_hash {
             logger::stdout(&format!(
-                "  [dry-run] Sudah up-to-date: {}",
+                "  [dry-run] Already up-to-date: {}",
                 local_file_name
             ));
             Ok((false, false, local_content, OperationStatus::UpToDate))
         } else {
             logger::stdout(&format!(
-                "  [dry-run] Dilewati (dimodifikasi lokal): {}",
+                "  [dry-run] Skipped (modified locally): {}",
                 local_file_name
             ));
             Ok((false, false, local_content, OperationStatus::SkippedLocalCustomization))

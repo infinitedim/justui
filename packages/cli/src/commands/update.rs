@@ -144,7 +144,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
     let selected_indices: Vec<usize> = if auto_yes {
         let names_str = outdated_components.join(", ");
         logger::stdout(&format!(
-            "[auto] Mengupdate semua komponen yang outdated: {}",
+            "[auto] Updating all outdated components: {}",
             names_str
         ));
         (0..outdated_components.len()).collect()

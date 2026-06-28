@@ -449,7 +449,7 @@ mod cli_integration {
                 "Component \"button\" added successfully.",
             ))
             .stdout(predicate::str::contains(
-                "1 komponen berhasil ditambahkan",
+                "1 component(s) added successfully",
             ))
             .stdout(predicate::str::contains(
                 "→  button",
@@ -582,7 +582,6 @@ mod cli_integration {
             );
         }
     }
-}
 
 #[test]
 fn syntax_highlighter_highlights_dart_code() {
@@ -593,4 +592,208 @@ fn syntax_highlighter_highlights_dart_code() {
     assert!(highlighted[0].contains("\x1b["));
     assert!(highlighted[1].contains("\x1b["));
 }
+
+#[test]
+fn preset_list_and_info_commands_work() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let registry_dir = dir.path().join("mock_registry");
+    std::fs::create_dir_all(registry_dir.join("components/button/default")).unwrap();
+
+    std::fs::write(
+        registry_dir.join("index.json"),
+        serde_json::to_string(&serde_json::json!({
+            "version": "0.1.0",
+            "presets": ["default", "neobrutalism"],
+            "components": [{
+                "name": "button",
+                "version": "0.1.0",
+                "description": "A button",
+                "category": "primitives",
+                "supportedPresets": ["default", "neobrutalism"],
+                "registryDependencies": [],
+                "pubDependencies": {},
+                "files": {
+                    "default": [{
+                        "name": "just_button.dart",
+                        "path": "components/button/default/just_button.dart",
+                        "checksum": "sha256:aabbcc"
+                    }],
+                    "neobrutalism": [{
+                        "name": "just_button.dart",
+                        "path": "components/button/neobrutalism/just_button.dart",
+                        "checksum": "sha256:ddeeff"
+                    }]
+                }
+            }]
+        }))
+        .unwrap(),
+    )
+    .unwrap();
+
+    std::fs::write(
+        dir.path().join("pubspec.yaml"),
+        "name: test\ndependencies:\n  flutter:\n    sdk: flutter\n",
+    )
+    .unwrap();
+
+    std::fs::write(
+        dir.path().join("justui.config.yaml"),
+        format!(
+            "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\nregistry_url: {}\npreset: default\n",
+            registry_dir.display()
+        ),
+    )
+    .unwrap();
+
+    // 1. Test 'preset list' (flag)
+    justui()
+        .current_dir(dir.path())
+        .args(["preset", "--list"])
+        .assert()
+        .success()
+        .stdout(predicates::str::contains("default (active)"))
+        .stdout(predicates::str::contains("neobrutalism"));
+
+    // 2. Test 'preset list' (positional shortcut)
+    justui()
+        .current_dir(dir.path())
+        .args(["preset", "list"])
+        .assert()
+        .success()
+        .stdout(predicates::str::contains("default (active)"))
+        .stdout(predicates::str::contains("neobrutalism"));
+
+    // 3. Test 'preset info' (flag)
+    justui()
+        .current_dir(dir.path())
+        .args(["preset", "--info", "default"])
+        .assert()
+        .success()
+        .stdout(predicates::str::contains("Preset: default (active)"))
+        .stdout(predicates::str::contains("Supported components"))
+        .stdout(predicates::str::contains("button"));
+
+    // 4. Test 'preset <name>' (positional shortcut)
+    justui()
+        .current_dir(dir.path())
+        .args(["preset", "default"])
+        .assert()
+        .success()
+        .stdout(predicates::str::contains("Preset: default (active)"))
+        .stdout(predicates::str::contains("Supported components"))
+        .stdout(predicates::str::contains("button"));
+}
+
+#[test]
+fn preset_apply_command_works() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let registry_dir = dir.path().join("mock_registry");
+    std::fs::create_dir_all(registry_dir.join("components/button/default")).unwrap();
+    std::fs::create_dir_all(registry_dir.join("components/button/neobrutalism")).unwrap();
+
+    let default_content = "default_button_code";
+    let neobrutalism_content = "neobrutalism_button_code";
+
+    let default_hash = {
+        use sha2::{Digest, Sha256};
+        let mut h = Sha256::new();
+        h.update(default_content.as_bytes());
+        hex::encode(h.finalize())
+    };
+    let neobrutalism_hash = {
+        use sha2::{Digest, Sha256};
+        let mut h = Sha256::new();
+        h.update(neobrutalism_content.as_bytes());
+        hex::encode(h.finalize())
+    };
+
+    std::fs::write(
+        registry_dir.join("index.json"),
+        serde_json::to_string(&serde_json::json!({
+            "version": "0.1.0",
+            "presets": ["default", "neobrutalism"],
+            "components": [{
+                "name": "button",
+                "version": "0.1.0",
+                "description": "A button",
+                "category": "primitives",
+                "supportedPresets": ["default", "neobrutalism"],
+                "registryDependencies": [],
+                "pubDependencies": {},
+                "files": {
+                    "default": [{
+                        "name": "just_button.dart",
+                        "path": "components/button/default/just_button.dart",
+                        "checksum": format!("sha256:{}", default_hash)
+                    }],
+                    "neobrutalism": [{
+                        "name": "just_button.dart",
+                        "path": "components/button/neobrutalism/just_button.dart",
+                        "checksum": format!("sha256:{}", neobrutalism_hash)
+                    }]
+                }
+            }]
+        }))
+        .unwrap(),
+    )
+    .unwrap();
+
+    std::fs::write(
+        registry_dir.join("components/button/default/just_button.dart"),
+        default_content,
+    )
+    .unwrap();
+
+    std::fs::write(
+        registry_dir.join("components/button/neobrutalism/just_button.dart"),
+        neobrutalism_content,
+    )
+    .unwrap();
+
+    std::fs::write(
+        dir.path().join("pubspec.yaml"),
+        "name: test\ndependencies:\n  flutter:\n    sdk: flutter\n",
+    )
+    .unwrap();
+
+    std::fs::write(
+        dir.path().join("justui.config.yaml"),
+        format!(
+            "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\nregistry_url: {}\npreset: default\n",
+            registry_dir.display()
+        ),
+    )
+    .unwrap();
+
+    // Install the button component first (under default preset)
+    justui()
+        .current_dir(dir.path())
+        .args(["add", "button"])
+        .assert()
+        .success();
+
+    let installed_file = dir.path().join("lib/ui/button/just_button.dart");
+    assert!(installed_file.exists());
+    let content = std::fs::read_to_string(&installed_file).unwrap();
+    assert!(content.contains(default_content));
+
+    // Now apply the 'neobrutalism' preset
+    justui()
+        .current_dir(dir.path())
+        .args(["preset", "neobrutalism", "--apply", "--yes"])
+        .assert()
+        .success()
+        .stdout(predicates::str::contains("Preset \"neobrutalism\" applied successfully"))
+        .stdout(predicates::str::contains("Succeeded"));
+
+    // Verify config is updated
+    let config_content = std::fs::read_to_string(dir.path().join("justui.config.yaml")).unwrap();
+    assert!(config_content.contains("preset: neobrutalism"));
+
+    // Verify file is rewritten
+    let content_after = std::fs::read_to_string(&installed_file).unwrap();
+    assert!(content_after.contains(neobrutalism_content));
+}
+}
+
 
