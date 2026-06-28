@@ -7,7 +7,7 @@ import { fetchStarCount } from '@/lib/github';
 import { components } from '@/lib/components-data';
 
 export default async function HomePage({
-  params = Promise.resolve({ lang: 'id' }),
+  params = Promise.resolve({ lang: 'en' }),
 }: {
   params?: Promise<{ lang: string }>;
 } = {}) {

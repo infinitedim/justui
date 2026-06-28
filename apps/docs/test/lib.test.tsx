@@ -74,10 +74,10 @@ describe('Library Helpers', () => {
     });
 
     it('returns correct baseOptions configuration', () => {
-      const options = baseOptions('id');
+      const options = baseOptions('en');
       expect(options.githubUrl).toBe('https://github.com/infinitedim/justui');
       expect(options.i18n).toBe(true);
-      expect(options.nav?.url).toBe('/id');
+      expect(options.nav?.url).toBe('/en');
     });
   });
 });

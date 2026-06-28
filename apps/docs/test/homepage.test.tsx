@@ -8,7 +8,7 @@ vi.mock('@/lib/github', () => ({
 }));
 
 vi.mock('next/navigation', () => ({
-  usePathname: () => '/id',
+  usePathname: () => '/en',
 }));
 
 // Mock next/link to render simple anchor tags
@@ -49,11 +49,11 @@ describe('HomePage Component', () => {
 
     expect(screen.getByRole('link', { name: /get started/i })).toHaveAttribute(
       'href',
-      '/id/docs/introduction'
+      '/en/docs/introduction'
     );
     expect(
       screen.getByRole('link', { name: /browse components/i })
-    ).toHaveAttribute('href', '/id/docs/components');
+    ).toHaveAttribute('href', '/en/docs/components');
   });
 
   it('renders the install command and component grid', async () => {
@@ -68,7 +68,7 @@ describe('HomePage Component', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /JustButton/i })).toHaveAttribute(
       'href',
-      '/id/docs/components/button'
+      '/en/docs/components/button'
     );
     expect(
       screen.getByRole('link', { name: /JustSwitch/i })
