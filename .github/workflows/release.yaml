@@ -91,17 +91,28 @@ jobs:
         uses: taiki-e/install-action@cross
 
       - name: Build with cross
+        env:
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
         run: cross build --release --target ${{ matrix.target }} --manifest-path packages/cli/Cargo.toml
+
+      - name: Debug — find binary
+        run: |
+          echo "=== Searching for justui binary ==="
+          find . -name "justui" -type f 2>/dev/null || echo "No binary named 'justui' found"
+          echo "=== Contents of packages/cli/target (if exists) ==="
+          ls -la packages/cli/target/ 2>/dev/null || echo "packages/cli/target/ does not exist"
+          echo "=== Contents of target/ (if exists) ==="
+          ls -la target/ 2>/dev/null || echo "target/ does not exist at root"
 
       - name: Package archive
         run: |
-          BINARY=packages/cli/target/${{ matrix.target }}/release/justui
+          BINARY=${{ github.workspace }}/target/${{ matrix.target }}/release/justui
           ARCHIVE=justui-${{ matrix.target }}.tar.gz
           tar -czf "$ARCHIVE" -C "$(dirname $BINARY)" justui
           echo "ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: justui-${{ matrix.target }}
           path: ${{ env.ARCHIVE }}
@@ -127,17 +138,19 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Build
+        env:
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
         run: cargo build --release --target ${{ matrix.target }} --manifest-path packages/cli/Cargo.toml
 
       - name: Package archive
         run: |
-          BINARY=packages/cli/target/${{ matrix.target }}/release/justui
+          BINARY=${{ github.workspace }}/target/${{ matrix.target }}/release/justui
           ARCHIVE=justui-${{ matrix.target }}.tar.gz
           tar -czf "$ARCHIVE" -C "$(dirname $BINARY)" justui
           echo "ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: justui-${{ matrix.target }}
           path: ${{ env.ARCHIVE }}
@@ -156,19 +169,21 @@ jobs:
           targets: x86_64-pc-windows-msvc
 
       - name: Build
+        env:
+          CARGO_TARGET_DIR: ${{ github.workspace }}\target
         run: cargo build --release --target x86_64-pc-windows-msvc --manifest-path packages/cli/Cargo.toml
 
       - name: Package archive
         shell: pwsh
         run: |
           $target = "x86_64-pc-windows-msvc"
-          $binary = "packages/cli/target\$target\release\justui.exe"
+          $binary = "${{ github.workspace }}\target\$target\release\justui.exe"
           $archive = "justui-$target.zip"
           Compress-Archive -Path $binary -DestinationPath $archive
           echo "ARCHIVE=$archive" | Out-File -Append $env:GITHUB_ENV
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: justui-x86_64-pc-windows-msvc
           path: ${{ env.ARCHIVE }}
