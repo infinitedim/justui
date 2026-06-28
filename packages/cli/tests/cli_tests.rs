@@ -148,6 +148,7 @@ fn inject_metadata_strips_existing_before_prepend() {
 fn rewrite_skips_package_and_dart_imports() {
     let index = RegistryIndex {
         version: "1".to_string(),
+        presets: vec!["default".to_string()],
         components: vec![],
     };
     let content = "import 'package:flutter/widgets.dart';\nimport 'dart:io';\n";
@@ -159,6 +160,7 @@ fn rewrite_skips_package_and_dart_imports() {
         "lib/widgets",
         "lib/tokens",
         "lib/widgets/shared",
+        "default",
     );
     assert_eq!(result, content);
 }
@@ -167,6 +169,7 @@ fn rewrite_skips_package_and_dart_imports() {
 fn rewrite_converts_theme_import_to_package() {
     let index = RegistryIndex {
         version: "1".to_string(),
+        presets: vec!["default".to_string()],
         components: vec![],
     };
     let content = "import '../theme/theme_provider.dart';\n";
@@ -178,6 +181,7 @@ fn rewrite_converts_theme_import_to_package() {
         "lib/widgets",
         "lib/tokens",
         "lib/widgets/shared",
+        "default",
     );
     assert!(result.contains("import 'package:just_ui_core/just_ui_core.dart';"));
 }
@@ -186,6 +190,7 @@ fn rewrite_converts_theme_import_to_package() {
 fn rewrite_computes_relative_path_for_component_import() {
     let index = RegistryIndex {
         version: "1".to_string(),
+        presets: vec!["default".to_string()],
         components: vec![
             RegistryComponent {
                 name: "button".to_string(),
@@ -193,13 +198,16 @@ fn rewrite_computes_relative_path_for_component_import() {
                 description: "".to_string(),
                 category: "primitives".to_string(),
                 internal: false,
+                supported_presets: vec!["default".to_string()],
                 registry_dependencies: vec![],
                 pub_dependencies: HashMap::new(),
-                files: vec![RegistryFile {
-                    name: "just_button.dart".to_string(),
-                    path: "components/button/just_button.dart".to_string(),
-                    checksum: "sha256:aabbcc".to_string(),
-                }],
+                files: HashMap::from([
+                    ("default".to_string(), vec![RegistryFile {
+                        name: "just_button.dart".to_string(),
+                        path: "components/button/just_button.dart".to_string(),
+                        checksum: "sha256:aabbcc".to_string(),
+                    }])
+                ]),
             },
             RegistryComponent {
                 name: "spacing".to_string(),
@@ -207,13 +215,16 @@ fn rewrite_computes_relative_path_for_component_import() {
                 description: "".to_string(),
                 category: "tokens".to_string(),
                 internal: false,
+                supported_presets: vec!["default".to_string()],
                 registry_dependencies: vec![],
                 pub_dependencies: HashMap::new(),
-                files: vec![RegistryFile {
-                    name: "spacing.dart".to_string(),
-                    path: "tokens/spacing.dart".to_string(),
-                    checksum: "sha256:ddeeff".to_string(),
-                }],
+                files: HashMap::from([
+                    ("default".to_string(), vec![RegistryFile {
+                        name: "spacing.dart".to_string(),
+                        path: "tokens/spacing.dart".to_string(),
+                        checksum: "sha256:ddeeff".to_string(),
+                    }])
+                ]),
             },
         ],
     };
@@ -227,6 +238,7 @@ fn rewrite_computes_relative_path_for_component_import() {
         "lib/widgets",
         "lib/tokens",
         "lib/widgets/shared",
+        "default",
     );
     // current file: lib/widgets/button/just_button.dart
     // target file: lib/tokens/spacing.dart
@@ -386,19 +398,23 @@ mod cli_integration {
         std::fs::write(
             registry_dir.join("index.json"),
             serde_json::to_string(&serde_json::json!({
-                "version": "1",
+                "version": "0.1.0",
+                "presets": ["default"],
                 "components": [{
                     "name": "button",
                     "version": "0.1.0",
                     "description": "A button",
                     "category": "primitives",
+                    "supportedPresets": ["default"],
                     "registryDependencies": [],
                     "pubDependencies": {},
-                    "files": [{
-                        "name": "just_button.dart",
-                        "path": "components/button/just_button.dart",
-                        "checksum": format!("sha256:{}", hash)
-                    }]
+                    "files": {
+                        "default": [{
+                            "name": "just_button.dart",
+                            "path": "components/button/just_button.dart",
+                            "checksum": format!("sha256:{}", hash)
+                        }]
+                    }
                 }]
             }))
             .unwrap(),
@@ -463,19 +479,23 @@ mod cli_integration {
         std::fs::write(
             registry_dir.join("index.json"),
             serde_json::to_string(&serde_json::json!({
-                "version": "1",
+                "version": "0.1.0",
+                "presets": ["default"],
                 "components": [{
                     "name": "button",
                     "version": "0.1.0",
                     "description": "A button",
                     "category": "primitives",
+                    "supportedPresets": ["default"],
                     "registryDependencies": [],
                     "pubDependencies": {},
-                    "files": [{
-                        "name": "just_button.dart",
-                        "path": "components/button/just_button.dart",
-                        "checksum": format!("sha256:{}", hash)
-                    }]
+                    "files": {
+                        "default": [{
+                            "name": "just_button.dart",
+                            "path": "components/button/just_button.dart",
+                            "checksum": format!("sha256:{}", hash)
+                        }]
+                    }
                 }]
             }))
             .unwrap(),

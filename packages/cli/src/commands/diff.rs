@@ -95,7 +95,7 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
 
     let mut files_status: Vec<DiffFileStatus> = Vec::new();
 
-    for file in &component.files {
+    for file in component.files_for_preset(&config.preset) {
         let local_file_name = if component.internal {
             import_rewriter::normalize_shared_file_name(&file.name)
         } else {
@@ -239,6 +239,7 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
                 &config.components_dir,
                 &config.tokens_dir,
                 &config.shared_dir,
+                &config.preset,
             );
             print_line_diff(&fs.file.name, &fs.local_content, &remote_rewritten);
         }
@@ -262,6 +263,7 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
             &config.components_dir,
             &config.tokens_dir,
             &config.shared_dir,
+            &config.preset,
         );
         remote_rewritten_map.insert(idx, rr);
     }
@@ -286,6 +288,7 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
             false,
             true,
             &None,
+            &config.preset,
         )?;
         logger::success("All changes applied successfully.");
         return Ok(());

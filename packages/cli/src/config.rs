@@ -9,6 +9,8 @@ pub struct JustUIConfig {
     pub shared_dir: String,
     /// Base URL of the remote component registry.
     pub registry_url: String,
+    /// Active style preset to use (e.g., 'default', 'neobrutalism').
+    pub preset: String,
 }
 
 impl JustUIConfig {
@@ -38,6 +40,7 @@ impl JustUIConfig {
             get_str("components_dir").unwrap_or_else(|| "lib/widgets".to_string());
         let shared_dir = get_str("shared_dir")
             .unwrap_or_else(|| format!("{}/shared", components_dir));
+        let preset = get_str("preset").unwrap_or_else(|| "default".to_string());
 
         Self {
             components_dir,
@@ -45,6 +48,7 @@ impl JustUIConfig {
             shared_dir,
             registry_url: get_str("registry_url")
                 .unwrap_or_else(|| Self::DEFAULT_REGISTRY_URL.to_string()),
+            preset,
         }
     }
 
@@ -66,8 +70,11 @@ impl JustUIConfig {
              shared_dir: {}\n\
              \n\
              # Base registry URL/path to download component sources from\n\
-             registry_url: {}\n",
-            self.components_dir, self.tokens_dir, self.shared_dir, self.registry_url
+             registry_url: {}\n\
+             \n\
+             # Active style preset to use (e.g., 'default', 'neobrutalism')\n\
+             preset: {}\n",
+            self.components_dir, self.tokens_dir, self.shared_dir, self.registry_url, self.preset
         )
     }
 }
@@ -79,6 +86,7 @@ impl Default for JustUIConfig {
             tokens_dir: "lib/tokens".to_string(),
             shared_dir: "lib/widgets/shared".to_string(),
             registry_url: Self::DEFAULT_REGISTRY_URL.to_string(),
+            preset: "default".to_string(),
         }
     }
 }

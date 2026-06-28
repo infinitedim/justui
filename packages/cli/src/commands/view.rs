@@ -8,11 +8,12 @@ use crate::utils::logger;
 /// Runs the `justui view <component> [--file <nama_file>]` command.
 pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Result<()> {
     // Step 1 — Read config (or use default)
-    let registry_url = if let Ok(content) = std::fs::read_to_string(JustUIConfig::CONFIG_FILE_NAME)
+    let (registry_url, preset) = if let Ok(content) = std::fs::read_to_string(JustUIConfig::CONFIG_FILE_NAME)
     {
-        JustUIConfig::from_yaml(&content).registry_url
+        let config = JustUIConfig::from_yaml(&content);
+        (config.registry_url, config.preset)
     } else {
-        JustUIConfig::DEFAULT_REGISTRY_URL.to_string()
+        (JustUIConfig::DEFAULT_REGISTRY_URL.to_string(), "default".to_string())
     };
 
     // Step 2 — Fetch registry
@@ -90,12 +91,12 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
     logger::stdout(&format!("Kategori      : {}", comp.category));
     logger::stdout(&format!("Dependensi    : {}", reg_deps));
     logger::stdout(&format!("Pub deps      : {}", pub_deps_str));
-    logger::stdout(&format!("Jumlah file   : {} file", comp.files.len()));
+    logger::stdout(&format!("Jumlah file   : {} file", comp.files_for_preset(&preset).len()));
     logger::stdout("");
 
     // Step 5 — Display file contents
     let files_to_show: Vec<_> = if let Some(ref name_filter) = file_filter {
-        let found = comp.files.iter().find(|f| &f.name == name_filter);
+        let found = comp.files_for_preset(&preset).iter().find(|f| &f.name == name_filter);
         match found {
             Some(f) => vec![f],
             None => {
@@ -107,7 +108,7 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
             }
         }
     } else {
-        comp.files.iter().collect()
+        comp.files_for_preset(&preset).iter().collect()
     };
 
     let total_files = files_to_show.len();
