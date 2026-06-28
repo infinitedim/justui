@@ -695,6 +695,150 @@
       "supportedPresets": [
         "default"
       ]
+    },
+    {
+      "name": "toast",
+      "version": "0.1.0",
+      "description": "Stacked/queued notification toasts with auto-dismiss, swipe-to-dismiss, and variant icons.",
+      "category": "overlay",
+      "hidden": false,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_toast.dart",
+            "path": "components/toast/default/just_toast.dart",
+            "checksum": "sha256:b93741d38f5497aa0201311c9ed76fd65ca8248c616d4ff70441d93a2ac7c4a3"
+          },
+          {
+            "name": "just_toast_style.dart",
+            "path": "components/toast/default/just_toast_style.dart",
+            "checksum": "sha256:95a5a28a8737a921cc6bc6e11bdb2a6b0a529f3ce95ec21d83ae3532e8e4e300"
+          },
+          {
+            "name": "just_toast_theme.dart",
+            "path": "components/toast/default/just_toast_theme.dart",
+            "checksum": "sha256:271749c9692badfba623467e99bcfbf2959e4dd1b1de109eed0b2a3ceb053db5"
+          },
+          {
+            "name": "just_toast_variants.dart",
+            "path": "components/toast/default/just_toast_variants.dart",
+            "checksum": "sha256:fe4c3e22ecba3d8a339f6d61ec007682ce61d651a87d6e7fe3fcb39f8696b82f"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
+      ]
+    },
+    {
+      "name": "dialog",
+      "version": "0.1.0",
+      "description": "Modal dialog overlay with barrier, focus trapping, and position-aware animations.",
+      "category": "overlay",
+      "hidden": false,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_dialog.dart",
+            "path": "components/dialog/default/just_dialog.dart",
+            "checksum": "sha256:049c8309b8f53c2430ef36f431b6e5862a8fcdcc8bd750f5540329ee0bfa6246"
+          },
+          {
+            "name": "just_dialog_style.dart",
+            "path": "components/dialog/default/just_dialog_style.dart",
+            "checksum": "sha256:85b4a82dff5b71c75b4c84a15df335794dd2ed5ceb2109c958fa5a9c07655a72"
+          },
+          {
+            "name": "just_dialog_theme.dart",
+            "path": "components/dialog/default/just_dialog_theme.dart",
+            "checksum": "sha256:dab9682ccca590444e9a4754e7dc1fe97e49379ce60bf109fa36448a5cf750d5"
+          },
+          {
+            "name": "just_dialog_variants.dart",
+            "path": "components/dialog/default/just_dialog_variants.dart",
+            "checksum": "sha256:d77c224dfb1a039f527f5f3cdd5354ad7591f90a26b771992af13898b2c693d6"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
+      ]
+    },
+    {
+      "name": "sheet",
+      "version": "0.1.0",
+      "description": "Slide-in sheet overlay with drag-to-dismiss, directional animations, and barrier support.",
+      "category": "overlay",
+      "hidden": false,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_sheet.dart",
+            "path": "components/sheet/default/just_sheet.dart",
+            "checksum": "sha256:00bd439023cbd66b7f862cd1616423bc97e91a03e979c45be870f82c261cd6fb"
+          },
+          {
+            "name": "just_sheet_style.dart",
+            "path": "components/sheet/default/just_sheet_style.dart",
+            "checksum": "sha256:e689b222b500aa761532f9be5d16a6272ba7fbffe6f45cbcc3d0962bcecd27ca"
+          },
+          {
+            "name": "just_sheet_theme.dart",
+            "path": "components/sheet/default/just_sheet_theme.dart",
+            "checksum": "sha256:1d68255254f3c18ce95a8cfe0dba9fabe98e28439379df799bdb3cac299eea16"
+          },
+          {
+            "name": "just_sheet_variants.dart",
+            "path": "components/sheet/default/just_sheet_variants.dart",
+            "checksum": "sha256:874bc18c34e88271407881b731e61c3c47fbc42975996a54e98d652e8bec202f"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
+      ]
+    },
+    {
+      "name": "tooltip",
+      "version": "0.1.0",
+      "description": "Declarative tooltip widget with auto-positioning, hover/long-press triggers, and delay controls.",
+      "category": "overlay",
+      "hidden": false,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_tooltip.dart",
+            "path": "components/tooltip/default/just_tooltip.dart",
+            "checksum": "sha256:29c031d02e86aaeac47d9459584d971985c82eb0799a190aa20b0a7b842c2bed"
+          },
+          {
+            "name": "just_tooltip_style.dart",
+            "path": "components/tooltip/default/just_tooltip_style.dart",
+            "checksum": "sha256:eefae82bba14db811b5961ce543c32f202a53da08bcf771568fbe9306301aeea"
+          },
+          {
+            "name": "just_tooltip_theme.dart",
+            "path": "components/tooltip/default/just_tooltip_theme.dart",
+            "checksum": "sha256:2dddd9e6ba342aae85eeb4d558438bc976463397bd065bb9d29b7ed901b1f1e1"
+          },
+          {
+            "name": "just_tooltip_variants.dart",
+            "path": "components/tooltip/default/just_tooltip_variants.dart",
+            "checksum": "sha256:a422e8ee007e739de9a41c7dd635d76c44a9a513b2992fbdfbd467d567e4b6df"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
+      ]
     }
   ],
   "presets": [

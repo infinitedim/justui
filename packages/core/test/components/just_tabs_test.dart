@@ -9,7 +9,7 @@ void main() {
 
   Widget buildTestableWidget(Widget child) {
     return JustThemeProvider(
-      child: Directionality(textDirection: TextDirection.ltr, child: child),
+      child: Directionality(textDirection: .ltr, child: child),
     );
   }
 
@@ -191,7 +191,7 @@ void main() {
         JustThemeProvider(
           lightTheme: JustThemeData.neobrutalismLight,
           child: const Directionality(
-            textDirection: TextDirection.ltr,
+            textDirection: .ltr,
             child: SizedBox(
               height: 300,
               child: JustTabs(

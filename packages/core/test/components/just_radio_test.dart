@@ -181,7 +181,7 @@ void main() {
         JustThemeProvider(
           lightTheme: JustThemeData.neobrutalismLight,
           child: Directionality(
-            textDirection: TextDirection.ltr,
+            textDirection: .ltr,
             child: JustRadio<int>(
               value: 1,
               groupValue: 2,
