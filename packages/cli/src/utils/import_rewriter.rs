@@ -124,6 +124,7 @@ fn path_relative_unix(target: &str, from_dir: &str) -> String {
 
 /// Rewrites relative imports inside `content` to align with the local directory setup.
 /// Matches the Dart `ImportRewriter.rewrite` behavior exactly.
+#[allow(clippy::too_many_arguments)]
 pub fn rewrite(
     content: &str,
     source_registry_path: &str,
