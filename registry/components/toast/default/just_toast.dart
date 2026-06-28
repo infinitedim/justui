@@ -141,7 +141,8 @@ class JustToastController extends JustOverlayController {
   }
 
   void _showToast(_ToastPending pending) {
-    final animController = pending.animationController ??
+    final animController =
+        pending.animationController ??
         AnimationController(
           vsync: _vsync!,
           duration: const Duration(milliseconds: 300),
@@ -155,11 +156,12 @@ class JustToastController extends JustOverlayController {
 
         final theme = JustThemeProvider.of(context).theme;
         final spacing = theme.spacing;
-        
+
         // Approximate toast height + spacing for stack offset calculations
         const double toastHeight = 56.0;
         final double toastSpacing = spacing.sm;
-        final offset = (_activeToasts.length - 1 - index) * (toastHeight + toastSpacing);
+        final offset =
+            (_activeToasts.length - 1 - index) * (toastHeight + toastSpacing);
 
         Widget toastCard = _JustToastWidget(
           entry: entry,
@@ -168,7 +170,11 @@ class JustToastController extends JustOverlayController {
         );
 
         if (pending.animationBuilder != null) {
-          toastCard = pending.animationBuilder!(context, animController, toastCard);
+          toastCard = pending.animationBuilder!(
+            context,
+            animController,
+            toastCard,
+          );
         }
 
         return RepaintBoundary(
@@ -213,10 +219,19 @@ class JustToastController extends JustOverlayController {
     entry.animationController.reverse().then((_) {
       entry.overlayEntry.remove();
       entry.overlayEntry.dispose();
-      
+
       // Only dispose if it was created locally
-      final wasLocal = !_queue.any((q) => q.animationController == entry.animationController) &&
-                       _activeToasts.where((t) => t != entry && t.animationController == entry.animationController).isEmpty;
+      final wasLocal =
+          !_queue.any(
+            (q) => q.animationController == entry.animationController,
+          ) &&
+          _activeToasts
+              .where(
+                (t) =>
+                    t != entry &&
+                    t.animationController == entry.animationController,
+              )
+              .isEmpty;
       if (wasLocal) {
         entry.animationController.dispose();
       }
@@ -271,8 +286,14 @@ class _ToastPositionedWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
-    final motion = JustThemeProvider.of(context, aspect: .animations).theme.animations.resolve(context);
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
+    final motion = JustThemeProvider.of(
+      context,
+      aspect: .animations,
+    ).theme.animations.resolve(context);
     final double margin = spacing.lg;
 
     double? left;
@@ -298,9 +319,10 @@ class _ToastPositionedWrapper extends StatelessWidget {
 
     double? top;
     double? bottom;
-    final isTop = position == ToastPosition.topLeft ||
-                  position == ToastPosition.topCenter ||
-                  position == ToastPosition.topRight;
+    final isTop =
+        position == ToastPosition.topLeft ||
+        position == ToastPosition.topCenter ||
+        position == ToastPosition.topRight;
 
     if (isTop) {
       top = margin + offset;
@@ -311,7 +333,8 @@ class _ToastPositionedWrapper extends StatelessWidget {
     }
 
     Widget positionedChild = child;
-    if (position == ToastPosition.topCenter || position == ToastPosition.bottomCenter) {
+    if (position == ToastPosition.topCenter ||
+        position == ToastPosition.bottomCenter) {
       positionedChild = Center(child: child);
     }
 
@@ -359,7 +382,8 @@ class _JustToastWidget extends StatefulWidget {
   State<_JustToastWidget> createState() => _JustToastWidgetState();
 }
 
-class _JustToastWidgetState extends State<_JustToastWidget> with SingleTickerProviderStateMixin {
+class _JustToastWidgetState extends State<_JustToastWidget>
+    with SingleTickerProviderStateMixin {
   double _dragX = 0.0;
   late AnimationController _swipeBackController;
   late Animation<double> _swipeBackAnimation;
@@ -371,7 +395,10 @@ class _JustToastWidgetState extends State<_JustToastWidget> with SingleTickerPro
       vsync: this,
       duration: const Duration(milliseconds: 200),
     );
-    _swipeBackAnimation = Tween<double>(begin: 0.0, end: 0.0).animate(_swipeBackController);
+    _swipeBackAnimation = Tween<double>(
+      begin: 0.0,
+      end: 0.0,
+    ).animate(_swipeBackController);
   }
 
   @override
@@ -392,13 +419,9 @@ class _JustToastWidgetState extends State<_JustToastWidget> with SingleTickerPro
     if (_dragX.abs() > 100.0) {
       widget.onDismiss();
     } else {
-      _swipeBackAnimation = Tween<double>(
-        begin: _dragX,
-        end: 0.0,
-      ).animate(CurvedAnimation(
-        parent: _swipeBackController,
-        curve: Curves.easeOut,
-      ));
+      _swipeBackAnimation = Tween<double>(begin: _dragX, end: 0.0).animate(
+        CurvedAnimation(parent: _swipeBackController, curve: Curves.easeOut),
+      );
       _swipeBackController.forward(from: 0.0);
     }
   }
@@ -408,7 +431,9 @@ class _JustToastWidgetState extends State<_JustToastWidget> with SingleTickerPro
     return AnimatedBuilder(
       animation: _swipeBackController,
       builder: (context, child) {
-        final currentX = _swipeBackController.isAnimating ? _swipeBackAnimation.value : _dragX;
+        final currentX = _swipeBackController.isAnimating
+            ? _swipeBackAnimation.value
+            : _dragX;
         final opacity = (1.0 - (currentX.abs() / 300.0)).clamp(0.0, 1.0);
         return Transform.translate(
           offset: Offset(currentX, 0.0),
@@ -434,7 +459,7 @@ class _JustToastWidgetState extends State<_JustToastWidget> with SingleTickerPro
     final shadows = theme.shadows;
 
     final globalTheme = Theme.of(context).extension<JustToastTheme>();
-    
+
     // Resolve variant style from theme extension
     JustToastStyle? variantThemeStyle;
     switch (widget.entry.variant) {
@@ -455,42 +480,56 @@ class _JustToastWidgetState extends State<_JustToastWidget> with SingleTickerPro
     final entryStyle = widget.entry.style;
 
     // Resolve visual styles
-    final bgColor = entryStyle?.backgroundColor ??
+    final bgColor =
+        entryStyle?.backgroundColor ??
         variantThemeStyle?.backgroundColor ??
         colors.card;
-    final borderColor = entryStyle?.borderColor ??
+    final borderColor =
+        entryStyle?.borderColor ??
         variantThemeStyle?.borderColor ??
         colors.borderDefault;
-    final borderRadius = entryStyle?.borderRadius ??
+    final borderRadius =
+        entryStyle?.borderRadius ??
         variantThemeStyle?.borderRadius ??
         .all(radius.md);
-    final padding = entryStyle?.padding ??
+    final padding =
+        entryStyle?.padding ??
         variantThemeStyle?.padding ??
         .symmetric(horizontal: spacing.md, vertical: spacing.sm);
-    final textStyle = entryStyle?.textStyle ??
+    final textStyle =
+        entryStyle?.textStyle ??
         variantThemeStyle?.textStyle ??
         JustFluidTypo.bodySm(context).copyWith(color: colors.textPrimary);
-    final maxWidth = entryStyle?.maxWidth ??
-        variantThemeStyle?.maxWidth ??
-        360.0;
-    final minWidth = entryStyle?.minWidth ??
-        variantThemeStyle?.minWidth ??
-        280.0;
-    final toastShadows = entryStyle?.shadows ??
-        variantThemeStyle?.shadows ??
-        shadows.md;
+    final maxWidth =
+        entryStyle?.maxWidth ?? variantThemeStyle?.maxWidth ?? 360.0;
+    final minWidth =
+        entryStyle?.minWidth ?? variantThemeStyle?.minWidth ?? 280.0;
+    final toastShadows =
+        entryStyle?.shadows ?? variantThemeStyle?.shadows ?? shadows.md;
 
     // Default icons
     Widget defaultIcon;
     switch (widget.entry.variant) {
       case ToastVariant.success:
-        defaultIcon = Icon(Icons.check_circle_outline, color: colors.success, size: 20.0);
+        defaultIcon = Icon(
+          Icons.check_circle_outline,
+          color: colors.success,
+          size: 20.0,
+        );
         break;
       case ToastVariant.warning:
-        defaultIcon = Icon(Icons.warning_amber_outlined, color: colors.warning, size: 20.0);
+        defaultIcon = Icon(
+          Icons.warning_amber_outlined,
+          color: colors.warning,
+          size: 20.0,
+        );
         break;
       case ToastVariant.error:
-        defaultIcon = Icon(Icons.error_outline, color: colors.error, size: 20.0);
+        defaultIcon = Icon(
+          Icons.error_outline,
+          color: colors.error,
+          size: 20.0,
+        );
         break;
       case ToastVariant.info:
         defaultIcon = Icon(Icons.info_outline, color: colors.info, size: 20.0);
@@ -525,12 +564,7 @@ class _JustToastWidgetState extends State<_JustToastWidget> with SingleTickerPro
           children: [
             resolvedIcon,
             SizedBox(width: spacing.sm),
-            Expanded(
-              child: Text(
-                widget.entry.message,
-                style: textStyle,
-              ),
-            ),
+            Expanded(child: Text(widget.entry.message, style: textStyle)),
             if (widget.entry.action != null) ...[
               SizedBox(width: spacing.sm),
               widget.entry.action!,
@@ -569,7 +603,8 @@ class JustToastScope extends StatefulWidget {
 
   /// Retrieves the nearest [JustToastController] from the ancestor scope.
   static JustToastController of(BuildContext context) {
-    final scope = context.dependOnInheritedWidgetOfExactType<_JustToastScopeInherited>();
+    final scope = context
+        .dependOnInheritedWidgetOfExactType<_JustToastScopeInherited>();
     assert(scope != null, 'No JustToastScope found in context');
     return scope!.controller;
   }
@@ -578,7 +613,8 @@ class JustToastScope extends StatefulWidget {
   State<JustToastScope> createState() => _JustToastScopeState();
 }
 
-class _JustToastScopeState extends State<JustToastScope> with TickerProviderStateMixin {
+class _JustToastScopeState extends State<JustToastScope>
+    with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();

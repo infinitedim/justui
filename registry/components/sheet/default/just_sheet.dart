@@ -64,7 +64,8 @@ class JustSheetController extends JustOverlayController {
     final id = DateTime.now().microsecondsSinceEpoch.toString();
 
     final isLocalController = animationController == null;
-    final animController = animationController ??
+    final animController =
+        animationController ??
         AnimationController(
           vsync: _vsync!,
           duration: const Duration(milliseconds: 300),
@@ -77,7 +78,8 @@ class JustSheetController extends JustOverlayController {
       builder: (context) {
         final theme = JustThemeProvider.of(context).theme;
         final colors = theme.colors;
-        final resolvedBarrierColor = style?.barrierColor ??
+        final resolvedBarrierColor =
+            style?.barrierColor ??
             barrierColor ??
             colors.overlay.withValues(alpha: 0.5);
 
@@ -87,10 +89,10 @@ class JustSheetController extends JustOverlayController {
             curve: Curves.linear,
           ),
           child: GestureDetector(
-            onTap: barrierDismissable ? () => _dismissSheet(instance, null) : null,
-            child: Container(
-              color: resolvedBarrierColor,
-            ),
+            onTap: barrierDismissable
+                ? () => _dismissSheet(instance, null)
+                : null,
+            child: Container(color: resolvedBarrierColor),
           ),
         );
       },
@@ -214,7 +216,7 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     if (!widget.draggable) return;
     final screenHeight = MediaQuery.of(context).size.height;
     final delta = details.primaryDelta! / screenHeight;
-    
+
     // For bottom: dragging down (positive delta) reduces animation value.
     // For top: dragging up (negative delta) reduces animation value.
     if (widget.direction == SheetDirection.bottom) {
@@ -281,38 +283,42 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     final entryStyle = widget.style;
 
     // Resolve styles
-    final bgColor = entryStyle?.backgroundColor ??
+    final bgColor =
+        entryStyle?.backgroundColor ??
         directionThemeStyle?.backgroundColor ??
         colors.card;
-    final padding = entryStyle?.padding ??
-        directionThemeStyle?.padding ??
-        .all(spacing.lg);
-    final handleColor = entryStyle?.handleColor ??
+    final padding =
+        entryStyle?.padding ?? directionThemeStyle?.padding ?? .all(spacing.lg);
+    final handleColor =
+        entryStyle?.handleColor ??
         directionThemeStyle?.handleColor ??
         colors.borderDefault;
-    final sheetShadows = entryStyle?.shadows ??
-        directionThemeStyle?.shadows ??
-        shadows.lg;
+    final sheetShadows =
+        entryStyle?.shadows ?? directionThemeStyle?.shadows ?? shadows.lg;
 
     final BorderRadius resolvedRadius;
     switch (widget.direction) {
       case SheetDirection.bottom:
-        resolvedRadius = entryStyle?.borderRadius ??
+        resolvedRadius =
+            entryStyle?.borderRadius ??
             directionThemeStyle?.borderRadius ??
             .vertical(top: radius.lg);
         break;
       case SheetDirection.top:
-        resolvedRadius = entryStyle?.borderRadius ??
+        resolvedRadius =
+            entryStyle?.borderRadius ??
             directionThemeStyle?.borderRadius ??
             .vertical(bottom: radius.lg);
         break;
       case SheetDirection.left:
-        resolvedRadius = entryStyle?.borderRadius ??
+        resolvedRadius =
+            entryStyle?.borderRadius ??
             directionThemeStyle?.borderRadius ??
             .horizontal(right: radius.lg);
         break;
       case SheetDirection.right:
-        resolvedRadius = entryStyle?.borderRadius ??
+        resolvedRadius =
+            entryStyle?.borderRadius ??
             directionThemeStyle?.borderRadius ??
             .horizontal(left: radius.lg);
         break;
@@ -369,8 +375,9 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     }
 
     // Drag handle bar
-    final isVertical = widget.direction == SheetDirection.bottom ||
-                       widget.direction == SheetDirection.top;
+    final isVertical =
+        widget.direction == SheetDirection.bottom ||
+        widget.direction == SheetDirection.top;
 
     Widget card = Container(
       width: width,
@@ -430,7 +437,11 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
 
     Widget animatedChild;
     if (widget.animationBuilder != null) {
-      animatedChild = widget.animationBuilder!(context, widget.instance.animationController, card);
+      animatedChild = widget.animationBuilder!(
+        context,
+        widget.instance.animationController,
+        card,
+      );
     } else {
       Offset beginOffset;
       switch (widget.direction) {
@@ -449,7 +460,10 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
       }
 
       animatedChild = SlideTransition(
-        position: Tween<Offset>(begin: beginOffset, end: Offset.zero).animate(curvedAnimation),
+        position: Tween<Offset>(
+          begin: beginOffset,
+          end: Offset.zero,
+        ).animate(curvedAnimation),
         child: card,
       );
     }
@@ -460,7 +474,8 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
         child: KeyboardListener(
           focusNode: _focusNode,
           onKeyEvent: (event) {
-            if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+            if (event is KeyDownEvent &&
+                event.logicalKey == LogicalKeyboardKey.escape) {
               widget.onDismiss(null);
             }
           },
@@ -500,7 +515,8 @@ class JustSheetScope extends StatefulWidget {
 
   /// Retrieves the nearest [JustSheetController] from the ancestor scope.
   static JustSheetController of(BuildContext context) {
-    final scope = context.dependOnInheritedWidgetOfExactType<_JustSheetScopeInherited>();
+    final scope = context
+        .dependOnInheritedWidgetOfExactType<_JustSheetScopeInherited>();
     assert(scope != null, 'No JustSheetScope found in context');
     return scope!.controller;
   }
@@ -509,7 +525,8 @@ class JustSheetScope extends StatefulWidget {
   State<JustSheetScope> createState() => _JustSheetScopeState();
 }
 
-class _JustSheetScopeState extends State<JustSheetScope> with TickerProviderStateMixin {
+class _JustSheetScopeState extends State<JustSheetScope>
+    with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
