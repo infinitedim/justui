@@ -48,4 +48,4 @@ export function getSearchData(lang: string): SearchItem[] {
   return docItems(lang);
 }
 
-export const searchData = docItems('id');
+export const searchData = docItems('en');
