@@ -74,6 +74,10 @@ pub fn print_unified_diff(file_name: &str, local: &str, remote: &str, context_co
         return;
     }
 
+    // Pre-highlight the full files to maintain correct multiline parser state
+    let local_highlighted = super::syntax_highlighter::highlight_code(&local_norm, "dart");
+    let remote_highlighted = super::syntax_highlighter::highlight_code(&remote_norm, "dart");
+
     // Print header border: "┌─ {filename} ──────..."
     // border_length = max(40, filename_char_count + 8)
     let fn_chars = file_name.chars().count();
@@ -134,9 +138,21 @@ pub fn print_unified_diff(file_name: &str, local: &str, remote: &str, context_co
             for change in diff.iter_changes(op) {
                 let text = change.value().trim_end_matches('\n');
                 match change.tag() {
-                    ChangeTag::Insert => logger::stdout(&format!("\x1B[32m│ +  {}\x1B[0m", text)),
-                    ChangeTag::Delete => logger::stdout(&format!("\x1B[31m│ -  {}\x1B[0m", text)),
-                    ChangeTag::Equal => logger::stdout(&format!("│    {}", text)),
+                    ChangeTag::Insert => {
+                        let idx = change.new_index().unwrap();
+                        let highlighted = remote_highlighted.get(idx).map(|s| s.as_str()).unwrap_or(text);
+                        logger::stdout(&format!("\x1B[32m│ +  {}\x1B[0m", highlighted));
+                    }
+                    ChangeTag::Delete => {
+                        let idx = change.old_index().unwrap();
+                        let highlighted = local_highlighted.get(idx).map(|s| s.as_str()).unwrap_or(text);
+                        logger::stdout(&format!("\x1B[31m│ -  {}\x1B[0m", highlighted));
+                    }
+                    ChangeTag::Equal => {
+                        let idx = change.new_index().unwrap();
+                        let highlighted = remote_highlighted.get(idx).map(|s| s.as_str()).unwrap_or(text);
+                        logger::stdout(&format!("│    {}", highlighted));
+                    }
                 }
             }
         }

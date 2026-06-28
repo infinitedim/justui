@@ -583,3 +583,14 @@ mod cli_integration {
         }
     }
 }
+
+#[test]
+fn syntax_highlighter_highlights_dart_code() {
+    let code = "void main() {\n  print('hello');\n}";
+    let highlighted = justui_cli::utils::syntax_highlighter::highlight_code(code, "dart");
+    assert_eq!(highlighted.len(), 3);
+    // Syntect should generate ANSI escape sequences (starting with \x1b[)
+    assert!(highlighted[0].contains("\x1b["));
+    assert!(highlighted[1].contains("\x1b["));
+}
+
