@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { createMDX } from 'fumadocs-mdx/next';
 import type { NextConfig } from 'next';
 import bundleAnalyzer from '@next/bundle-analyzer';
@@ -56,6 +57,9 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   experimental: {
     typedEnv: true,
+  },
+  turbopack: {
+    root: path.resolve(process.cwd(), '../../'),
   },
   typescript: {
     ignoreBuildErrors: false,

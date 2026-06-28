@@ -23,8 +23,8 @@ function formatStars(stars: number | null) {
 
 function LanguageSwitcher({ lang }: { lang: string }) {
   const pathname = usePathname();
-  const otherLang = lang === 'id' ? 'en' : 'id';
-  const otherLabel = lang === 'id' ? 'EN' : 'ID';
+  const otherLang = lang === 'en' ? 'id' : 'en';
+  const otherLabel = lang === 'en' ? 'ID' : 'EN';
 
   const otherPath = pathname.replace(
     new RegExp(`^/(id|en)(?=/|$)`),

@@ -106,7 +106,7 @@ describe('App Router Pages and Layouts', () => {
   describe('LangLayout', () => {
     it('resolves params Promise and renders RootProvider', async () => {
       const layout = await LangLayout({
-        params: Promise.resolve({ lang: 'id' }),
+        params: Promise.resolve({ lang: 'en' }),
         children: <div data-testid="lang-child" />,
       });
       render(layout);
@@ -134,7 +134,7 @@ describe('App Router Pages and Layouts', () => {
   describe('Layout (DocsLayout)', () => {
     it('resolves params and renders DocsLayout wrapper', async () => {
       const layout = await Layout({
-        params: Promise.resolve({ lang: 'id' }),
+        params: Promise.resolve({ lang: 'en' }),
         children: <div data-testid="docs-child" />,
       });
       render(layout);
@@ -157,7 +157,7 @@ describe('App Router Pages and Layouts', () => {
       });
 
       const page = await Page({
-        params: Promise.resolve({ lang: 'id', slug: ['intro'] }),
+        params: Promise.resolve({ lang: 'en', slug: ['intro'] }),
       });
       render(page);
 
@@ -170,7 +170,7 @@ describe('App Router Pages and Layouts', () => {
       mockGetPage.mockReturnValue(null);
       await expect(
         Page({
-          params: Promise.resolve({ lang: 'id', slug: ['invalid-page'] }),
+          params: Promise.resolve({ lang: 'en', slug: ['invalid-page'] }),
         })
       ).rejects.toThrow('NEXT_NOT_FOUND');
       expect(mockNotFound).toHaveBeenCalled();
