@@ -132,6 +132,7 @@ pub fn rewrite(
     components_dir: &str,
     tokens_dir: &str,
     shared_dir: &str,
+    preset: &str,
 ) -> String {
     let clean_content = strip_metadata(content);
 
@@ -173,7 +174,6 @@ pub fn rewrite(
         "theme_data_material.dart",
     ];
 
-    let source_reg_dir = unix_dirname(source_registry_path);
     let current_file_dir = unix_dirname(&current_file_path);
 
     import_regex()
@@ -185,15 +185,18 @@ pub fn rewrite(
                 return caps[0].to_string();
             }
 
-            // Resolve registry-relative path
-            let joined = unix_join(source_reg_dir, import_path);
-            let resolved_reg_path = normalize_unix_path(&joined);
+            // Resolve registry-relative path (flat-mode equivalent)
+            let preset_segment = format!("/{}/", preset);
+            let flat_source_path = source_registry_path.replace(&preset_segment, "/");
+            let flat_source_dir = unix_dirname(&flat_source_path);
+            let joined = unix_join(flat_source_dir, import_path);
+            let resolved_flat_path = normalize_unix_path(&joined);
 
             // Theme import heuristic
-            let is_theme_import = resolved_reg_path.starts_with("components/theme/")
+            let is_theme_import = resolved_flat_path.starts_with("components/theme/")
                 || THEME_SUFFIXES
                     .iter()
-                    .any(|suffix| resolved_reg_path.ends_with(suffix));
+                    .any(|suffix| resolved_flat_path.ends_with(suffix));
 
             if is_theme_import {
                 return "import 'package:just_ui_core/just_ui_core.dart';".to_string();
@@ -204,8 +207,9 @@ pub fn rewrite(
             let mut found_file = None;
 
             'outer: for comp in &registry_index.components {
-                for file in &comp.files {
-                    if file.path == resolved_reg_path {
+                for file in comp.files_for_preset(preset) {
+                    let flat_file_path = file.path.replace(&preset_segment, "/");
+                    if flat_file_path == resolved_flat_path {
                         found_comp = Some(comp);
                         found_file = Some(file);
                         break 'outer;

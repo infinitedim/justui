@@ -33,59 +33,65 @@ void main(List<String> args) async {
 
   for (final dynamic component in components) {
     final compMap = component as Map<String, dynamic>;
-    final List<dynamic> files = compMap['files'] as List<dynamic>;
+    final Map<String, dynamic> filesMap = compMap['files'] as Map<String, dynamic>;
     final name = compMap['name'] as String;
     print('-----------------------------------------');
     print('Component: $name');
 
-    for (final dynamic file in files) {
-      final fileMap = file as Map<String, dynamic>;
-      final String relPath = fileMap['path'] as String;
-      final srcFile = File(
-        p.join(projectRoot, 'packages', 'core', 'lib', 'src', relPath),
-      );
-      final destFile = File(p.join(projectRoot, 'registry', relPath));
+    for (final String preset in filesMap.keys) {
+      final List<dynamic> files = filesMap[preset] as List<dynamic>;
+      print('  Preset: $preset');
+      for (final dynamic file in files) {
+        final fileMap = file as Map<String, dynamic>;
+        final String relPath = fileMap['path'] as String;
+        // Strip '/default/' from relPath to locate the flat source file in core
+        final String srcRelPath = relPath.replaceFirst('/default/', '/');
+        final srcFile = File(
+          p.join(projectRoot, 'packages', 'core', 'lib', 'src', srcRelPath),
+        );
+        final destFile = File(p.join(projectRoot, 'registry', relPath));
 
-      if (!srcFile.existsSync()) {
-        print('Error: Source file not found: ${srcFile.path}');
-        exit(1);
-      }
-
-      // Check for drift (difference between existing registry file and source)
-      if (destFile.existsSync()) {
-        final existingBytes = await destFile.readAsBytes();
-        final srcBytes = await srcFile.readAsBytes();
-        if (!_bytesEqual(existingBytes, srcBytes)) {
-          hasDrifts = true;
-          print('  [WARNING] $relPath di registry/ berbeda dari source.');
-          print(
-            '            Registry akan di-overwrite dari source packages/core.',
-          );
-          print(
-            '            Jika ada edit manual di registry yang belum dipindah ke source,',
-          );
-          print('            edit itu akan HILANG.');
+        if (!srcFile.existsSync()) {
+          print('Error: Source file not found: ${srcFile.path}');
+          exit(1);
         }
-      }
 
-      final Digest digest;
-      if (isDryRun) {
-        // Compute checksum from source
-        final bytes = await srcFile.readAsBytes();
-        digest = sha256.convert(bytes);
-        print('  [DRY-RUN] Checksum for $relPath: sha256:$digest');
-      } else {
-        // Ensure destination folder exists
-        await destFile.parent.create(recursive: true);
+        // Check for drift (difference between existing registry file and source)
+        if (destFile.existsSync()) {
+          final existingBytes = await destFile.readAsBytes();
+          final srcBytes = await srcFile.readAsBytes();
+          if (!_bytesEqual(existingBytes, srcBytes)) {
+            hasDrifts = true;
+            print('    [WARNING] $relPath di registry/ berbeda dari source.');
+            print(
+              '              Registry akan di-overwrite dari source packages/core.',
+            );
+            print(
+              '              Jika ada edit manual di registry yang belum dipindah ke source,',
+            );
+            print('              edit itu akan HILANG.');
+          }
+        }
 
-        // Copy source file to destination registry directory
-        await srcFile.copy(destFile.path);
-        print('  Synced: $relPath');
+        final Digest digest;
+        if (isDryRun) {
+          // Compute checksum from source
+          final bytes = await srcFile.readAsBytes();
+          digest = sha256.convert(bytes);
+          print('    [DRY-RUN] Checksum for $relPath: sha256:$digest');
+        } else {
+          // Ensure destination folder exists
+          await destFile.parent.create(recursive: true);
 
-        // Calculate SHA-256 checksum
-        final bytes = await destFile.readAsBytes();
-        digest = sha256.convert(bytes);
-        fileMap['checksum'] = 'sha256:$digest';
+          // Copy source file to destination registry directory
+          await srcFile.copy(destFile.path);
+          print('    Synced: $relPath');
+
+          // Calculate SHA-256 checksum
+          final bytes = await destFile.readAsBytes();
+          digest = sha256.convert(bytes);
+          fileMap['checksum'] = 'sha256:$digest';
+        }
       }
     }
   }

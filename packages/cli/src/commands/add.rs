@@ -149,7 +149,7 @@ pub fn run(
                 .components
                 .iter()
                 .find(|c| c.name == *name)
-                .map(|c| c.files.len())
+                .map(|c| c.files_for_preset(&config.preset).len())
                 .unwrap_or(0)
         })
         .sum();
@@ -186,6 +186,7 @@ pub fn run(
             show_diff,
             auto_yes,
             &pb_files,
+            &config.preset,
         ) {
             Ok((stats, details)) => {
                 total_stats.merge(&stats);
@@ -333,6 +334,7 @@ pub fn add_component(
     show_diff: bool,
     auto_yes: bool,
     pb: &Option<indicatif::ProgressBar>,
+    preset: &str,
 ) -> Result<(DryRunStats, Vec<OperationDetail>)> {
     // Circular dependency check and double-copy guard
     if visited.contains(name) {
@@ -363,6 +365,7 @@ pub fn add_component(
             show_diff,
             auto_yes,
             pb,
+            preset,
         )?;
         stats.merge(&dep_stats);
         details.extend(dep_details);
@@ -383,7 +386,7 @@ pub fn add_component(
     };
 
     // 3. Download, validate, rewrite, and write each file
-    let files: Vec<_> = component.files.clone();
+    let files: Vec<_> = component.files_for_preset(preset).clone();
     let comp_name = component.name.clone();
     let pub_deps: Vec<(String, String)> = component
         .pub_dependencies
@@ -425,6 +428,7 @@ pub fn add_component(
             components_dir,
             tokens_dir,
             shared_dir,
+            preset,
         );
 
         let local_rewritten_hash = sha256_hex(rewritten_content.as_bytes());

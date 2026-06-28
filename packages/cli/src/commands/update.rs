@@ -96,7 +96,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
 
         let mut needs_update = false;
 
-        for file in &component.files {
+        for file in component.files_for_preset(&config.preset) {
             let local_file_name = if component.internal {
                 import_rewriter::normalize_shared_file_name(&file.name)
             } else {
@@ -173,6 +173,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
             false,
             auto_yes,
             &None,
+            &config.preset,
         ) {
             logger::error(&format!("Failed to update \"{}\": {}", comp_name, e));
         }
