@@ -1,5 +1,5 @@
 {
-  "version": "1",
+  "version": "0.1.0",
   "components": [
     {
       "name": "button",
@@ -13,27 +13,32 @@
         "_shared_progress_spinner"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_button.dart",
-          "path": "components/button/just_button.dart",
-          "checksum": "sha256:25a23a56b232acbd60fbe6f39c4ada97044b62eaaf9aad5952b8e1e1bc68d997"
-        },
-        {
-          "name": "just_button_style.dart",
-          "path": "components/button/just_button_style.dart",
-          "checksum": "sha256:f5c1e9ba55db0ce246422aecad03fb552d73d5ed08cd29213d99bae9320d347c"
-        },
-        {
-          "name": "just_button_theme.dart",
-          "path": "components/button/just_button_theme.dart",
-          "checksum": "sha256:f4d0f2c52f56f910dbe00f92a4e1549994c3ced627b383987d2a620c109dc7bc"
-        },
-        {
-          "name": "just_button_variants.dart",
-          "path": "components/button/just_button_variants.dart",
-          "checksum": "sha256:9bea3b598953dd5286287ab5c798c28ed738c1a57204fccd3842d03a468f30cc"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_button.dart",
+            "path": "components/button/default/just_button.dart",
+            "checksum": "sha256:25a23a56b232acbd60fbe6f39c4ada97044b62eaaf9aad5952b8e1e1bc68d997"
+          },
+          {
+            "name": "just_button_style.dart",
+            "path": "components/button/default/just_button_style.dart",
+            "checksum": "sha256:f5c1e9ba55db0ce246422aecad03fb552d73d5ed08cd29213d99bae9320d347c"
+          },
+          {
+            "name": "just_button_theme.dart",
+            "path": "components/button/default/just_button_theme.dart",
+            "checksum": "sha256:f4d0f2c52f56f910dbe00f92a4e1549994c3ced627b383987d2a620c109dc7bc"
+          },
+          {
+            "name": "just_button_variants.dart",
+            "path": "components/button/default/just_button_variants.dart",
+            "checksum": "sha256:9bea3b598953dd5286287ab5c798c28ed738c1a57204fccd3842d03a468f30cc"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -49,12 +54,17 @@
         "_shared_progress_spinner"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_icon_button.dart",
-          "path": "components/button/just_icon_button.dart",
-          "checksum": "sha256:3a9bbec090569e23fd349bb1ec3a54d667e6f4c49458f53408df54667760622a"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_icon_button.dart",
+            "path": "components/button/default/just_icon_button.dart",
+            "checksum": "sha256:3a9bbec090569e23fd349bb1ec3a54d667e6f4c49458f53408df54667760622a"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -65,27 +75,32 @@
       "hidden": false,
       "registryDependencies": [],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_input.dart",
-          "path": "components/input/just_input.dart",
-          "checksum": "sha256:da0db7b7adc3624b0f3b35cbae945787136bc6057fc6f07160d3876fa93e9bc6"
-        },
-        {
-          "name": "just_input_style.dart",
-          "path": "components/input/just_input_style.dart",
-          "checksum": "sha256:8d26d2dd9c4e46687fde7180abbf6d3715cac3c825c1d740f9d428f2831cbc53"
-        },
-        {
-          "name": "just_input_theme.dart",
-          "path": "components/input/just_input_theme.dart",
-          "checksum": "sha256:0e95e9ddde2ed83abee07e4212bfcbf76a0069feb54451ab6b84eece481d1209"
-        },
-        {
-          "name": "just_input_variants.dart",
-          "path": "components/input/just_input_variants.dart",
-          "checksum": "sha256:6c24b485a5d5140fd3195ddd83de963b6c62987813f734e06f41bc8b5f677408"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_input.dart",
+            "path": "components/input/default/just_input.dart",
+            "checksum": "sha256:da0db7b7adc3624b0f3b35cbae945787136bc6057fc6f07160d3876fa93e9bc6"
+          },
+          {
+            "name": "just_input_style.dart",
+            "path": "components/input/default/just_input_style.dart",
+            "checksum": "sha256:8d26d2dd9c4e46687fde7180abbf6d3715cac3c825c1d740f9d428f2831cbc53"
+          },
+          {
+            "name": "just_input_theme.dart",
+            "path": "components/input/default/just_input_theme.dart",
+            "checksum": "sha256:0e95e9ddde2ed83abee07e4212bfcbf76a0069feb54451ab6b84eece481d1209"
+          },
+          {
+            "name": "just_input_variants.dart",
+            "path": "components/input/default/just_input_variants.dart",
+            "checksum": "sha256:6c24b485a5d5140fd3195ddd83de963b6c62987813f734e06f41bc8b5f677408"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -96,22 +111,27 @@
       "hidden": false,
       "registryDependencies": [],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_badge.dart",
-          "path": "components/badge/just_badge.dart",
-          "checksum": "sha256:95e99802084b52321c95d32505a73508b8453cbf668672a15311b3cb27aaa771"
-        },
-        {
-          "name": "just_badge_style.dart",
-          "path": "components/badge/just_badge_style.dart",
-          "checksum": "sha256:f94f7833c7b52d3727492ccd4e47e8dab8a413e9b8024491b684c996bce9c32f"
-        },
-        {
-          "name": "just_badge_variants.dart",
-          "path": "components/badge/just_badge_variants.dart",
-          "checksum": "sha256:5cccf772fdeecec5ac32f4a3589c2421671cb9b3374e44e5c058b15919763822"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_badge.dart",
+            "path": "components/badge/default/just_badge.dart",
+            "checksum": "sha256:95e99802084b52321c95d32505a73508b8453cbf668672a15311b3cb27aaa771"
+          },
+          {
+            "name": "just_badge_style.dart",
+            "path": "components/badge/default/just_badge_style.dart",
+            "checksum": "sha256:f94f7833c7b52d3727492ccd4e47e8dab8a413e9b8024491b684c996bce9c32f"
+          },
+          {
+            "name": "just_badge_variants.dart",
+            "path": "components/badge/default/just_badge_variants.dart",
+            "checksum": "sha256:5cccf772fdeecec5ac32f4a3589c2421671cb9b3374e44e5c058b15919763822"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -122,22 +142,27 @@
       "hidden": false,
       "registryDependencies": [],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_avatar.dart",
-          "path": "components/avatar/just_avatar.dart",
-          "checksum": "sha256:31d7f7ca35b803583c82d750a0512a054bbdc4aa3279e52deb42355ee2b69cb0"
-        },
-        {
-          "name": "just_avatar_style.dart",
-          "path": "components/avatar/just_avatar_style.dart",
-          "checksum": "sha256:fdf9159cb5d738d1b3b511f7bcca9314f764738beb458a9c8071872151592dbd"
-        },
-        {
-          "name": "just_avatar_variants.dart",
-          "path": "components/avatar/just_avatar_variants.dart",
-          "checksum": "sha256:c924f3f83a250f154c975722148828042a49db34f03c8be11987119346a01ea9"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_avatar.dart",
+            "path": "components/avatar/default/just_avatar.dart",
+            "checksum": "sha256:31d7f7ca35b803583c82d750a0512a054bbdc4aa3279e52deb42355ee2b69cb0"
+          },
+          {
+            "name": "just_avatar_style.dart",
+            "path": "components/avatar/default/just_avatar_style.dart",
+            "checksum": "sha256:fdf9159cb5d738d1b3b511f7bcca9314f764738beb458a9c8071872151592dbd"
+          },
+          {
+            "name": "just_avatar_variants.dart",
+            "path": "components/avatar/default/just_avatar_variants.dart",
+            "checksum": "sha256:c924f3f83a250f154c975722148828042a49db34f03c8be11987119346a01ea9"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -150,12 +175,17 @@
         "avatar"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_avatar_group.dart",
-          "path": "components/avatar/just_avatar_group.dart",
-          "checksum": "sha256:75aa4ac3c580f260de8bd5a913b0faee42b0205bf56f7dc01942cc025d6e0759"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_avatar_group.dart",
+            "path": "components/avatar/default/just_avatar_group.dart",
+            "checksum": "sha256:75aa4ac3c580f260de8bd5a913b0faee42b0205bf56f7dc01942cc025d6e0759"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -169,22 +199,27 @@
         "_shared_focus_indicator"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_checkbox.dart",
-          "path": "components/checkbox/just_checkbox.dart",
-          "checksum": "sha256:69e2748cf97b7d1543988f518ee3184dd9f6fcb240548418d6cbd258828ee417"
-        },
-        {
-          "name": "just_checkbox_style.dart",
-          "path": "components/checkbox/just_checkbox_style.dart",
-          "checksum": "sha256:b551eaaf05face31a54bc719bdfa7d9e14be6b0df961ee7931b109491f4f1ab6"
-        },
-        {
-          "name": "just_checkbox_theme.dart",
-          "path": "components/checkbox/just_checkbox_theme.dart",
-          "checksum": "sha256:4c19a9d2fcd13ccc7889e596cb9fe745ca1efcd3c226f935add0d737c8f3659a"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_checkbox.dart",
+            "path": "components/checkbox/default/just_checkbox.dart",
+            "checksum": "sha256:69e2748cf97b7d1543988f518ee3184dd9f6fcb240548418d6cbd258828ee417"
+          },
+          {
+            "name": "just_checkbox_style.dart",
+            "path": "components/checkbox/default/just_checkbox_style.dart",
+            "checksum": "sha256:b551eaaf05face31a54bc719bdfa7d9e14be6b0df961ee7931b109491f4f1ab6"
+          },
+          {
+            "name": "just_checkbox_theme.dart",
+            "path": "components/checkbox/default/just_checkbox_theme.dart",
+            "checksum": "sha256:4c19a9d2fcd13ccc7889e596cb9fe745ca1efcd3c226f935add0d737c8f3659a"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -198,22 +233,27 @@
         "_shared_focus_indicator"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_radio.dart",
-          "path": "components/radio/just_radio.dart",
-          "checksum": "sha256:53b431db7ce7987b2775d651bbcb3de2775121273e889343ce8197f20c68250c"
-        },
-        {
-          "name": "just_radio_style.dart",
-          "path": "components/radio/just_radio_style.dart",
-          "checksum": "sha256:227c384e0b4fb2c34183df1fbc34b6bac081d3ae253270d8aaeb809e3cc2c3ec"
-        },
-        {
-          "name": "just_radio_theme.dart",
-          "path": "components/radio/just_radio_theme.dart",
-          "checksum": "sha256:1c5a9700ba0a6c05818a69838bbd06b2b52ddc3ac052b9a547de8d50e302b001"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_radio.dart",
+            "path": "components/radio/default/just_radio.dart",
+            "checksum": "sha256:53b431db7ce7987b2775d651bbcb3de2775121273e889343ce8197f20c68250c"
+          },
+          {
+            "name": "just_radio_style.dart",
+            "path": "components/radio/default/just_radio_style.dart",
+            "checksum": "sha256:227c384e0b4fb2c34183df1fbc34b6bac081d3ae253270d8aaeb809e3cc2c3ec"
+          },
+          {
+            "name": "just_radio_theme.dart",
+            "path": "components/radio/default/just_radio_theme.dart",
+            "checksum": "sha256:1c5a9700ba0a6c05818a69838bbd06b2b52ddc3ac052b9a547de8d50e302b001"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -226,12 +266,17 @@
         "radio"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_radio_group.dart",
-          "path": "components/radio/just_radio_group.dart",
-          "checksum": "sha256:4c05ed5b58fcb80b6b4e4c9c6ac61b1c623587a50cf2dd527031b311ac30261f"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_radio_group.dart",
+            "path": "components/radio/default/just_radio_group.dart",
+            "checksum": "sha256:4c05ed5b58fcb80b6b4e4c9c6ac61b1c623587a50cf2dd527031b311ac30261f"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -245,22 +290,27 @@
         "_shared_focus_indicator"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_switch.dart",
-          "path": "components/switch/just_switch.dart",
-          "checksum": "sha256:d55a8ada683f60f50367a1bfbc89f7ea1b1b27e8f97a86c5d2d81f298985ba6b"
-        },
-        {
-          "name": "just_switch_style.dart",
-          "path": "components/switch/just_switch_style.dart",
-          "checksum": "sha256:63619e4d947f55eba60a33dea53c33349eac77fb2bc972d1022dadbbc9ba990e"
-        },
-        {
-          "name": "just_switch_theme.dart",
-          "path": "components/switch/just_switch_theme.dart",
-          "checksum": "sha256:597bef4c8d1faffa38e9b882c1e2079c459d0c33e884c9ab8f816dfa95aa13d5"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_switch.dart",
+            "path": "components/switch/default/just_switch.dart",
+            "checksum": "sha256:d55a8ada683f60f50367a1bfbc89f7ea1b1b27e8f97a86c5d2d81f298985ba6b"
+          },
+          {
+            "name": "just_switch_style.dart",
+            "path": "components/switch/default/just_switch_style.dart",
+            "checksum": "sha256:63619e4d947f55eba60a33dea53c33349eac77fb2bc972d1022dadbbc9ba990e"
+          },
+          {
+            "name": "just_switch_theme.dart",
+            "path": "components/switch/default/just_switch_theme.dart",
+            "checksum": "sha256:597bef4c8d1faffa38e9b882c1e2079c459d0c33e884c9ab8f816dfa95aa13d5"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -274,22 +324,27 @@
         "_shared_focus_indicator"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_card.dart",
-          "path": "components/card/just_card.dart",
-          "checksum": "sha256:b20db50be6156804fbe497802c722cbd1edad3691b2f620918387b3ef3f5f05c"
-        },
-        {
-          "name": "just_card_style.dart",
-          "path": "components/card/just_card_style.dart",
-          "checksum": "sha256:4cc522d8baf358ff9124eaf8fc75016ccc674c41c00daf37d5ae6952cc8c0251"
-        },
-        {
-          "name": "just_card_theme.dart",
-          "path": "components/card/just_card_theme.dart",
-          "checksum": "sha256:afecb0ad46b9fd3c0bfecbbb04978d58d899621018a09d7ef7c6497a9681bf64"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_card.dart",
+            "path": "components/card/default/just_card.dart",
+            "checksum": "sha256:b20db50be6156804fbe497802c722cbd1edad3691b2f620918387b3ef3f5f05c"
+          },
+          {
+            "name": "just_card_style.dart",
+            "path": "components/card/default/just_card_style.dart",
+            "checksum": "sha256:4cc522d8baf358ff9124eaf8fc75016ccc674c41c00daf37d5ae6952cc8c0251"
+          },
+          {
+            "name": "just_card_theme.dart",
+            "path": "components/card/default/just_card_theme.dart",
+            "checksum": "sha256:afecb0ad46b9fd3c0bfecbbb04978d58d899621018a09d7ef7c6497a9681bf64"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -300,22 +355,27 @@
       "hidden": false,
       "registryDependencies": [],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_separator.dart",
-          "path": "components/separator/just_separator.dart",
-          "checksum": "sha256:9ef50e87faaef74331911339536133b19c750cfc5e4c441bded5b7abe98bdab7"
-        },
-        {
-          "name": "just_separator_style.dart",
-          "path": "components/separator/just_separator_style.dart",
-          "checksum": "sha256:5bc01c4cc457cc8c49d6da3b416444114406cb859c9c719e6b294490eec93cc7"
-        },
-        {
-          "name": "just_separator_theme.dart",
-          "path": "components/separator/just_separator_theme.dart",
-          "checksum": "sha256:88f3edda6ec1934d7c17fae3049310529d026d7b01bd4d159a671c2043d1041e"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_separator.dart",
+            "path": "components/separator/default/just_separator.dart",
+            "checksum": "sha256:9ef50e87faaef74331911339536133b19c750cfc5e4c441bded5b7abe98bdab7"
+          },
+          {
+            "name": "just_separator_style.dart",
+            "path": "components/separator/default/just_separator_style.dart",
+            "checksum": "sha256:5bc01c4cc457cc8c49d6da3b416444114406cb859c9c719e6b294490eec93cc7"
+          },
+          {
+            "name": "just_separator_theme.dart",
+            "path": "components/separator/default/just_separator_theme.dart",
+            "checksum": "sha256:88f3edda6ec1934d7c17fae3049310529d026d7b01bd4d159a671c2043d1041e"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -329,22 +389,27 @@
         "_shared_focus_indicator"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_scroll_area.dart",
-          "path": "components/scroll/just_scroll_area.dart",
-          "checksum": "sha256:7f5d81b4b0e02e77374b2219e3501983a28d2a11c5782f857dd317e85006ceea"
-        },
-        {
-          "name": "just_scroll_area_style.dart",
-          "path": "components/scroll/just_scroll_area_style.dart",
-          "checksum": "sha256:bf64b9b20c32b128b834311e5c81c1c5dceb8a6785811b3385c48cc3af01d198"
-        },
-        {
-          "name": "just_scroll_area_theme.dart",
-          "path": "components/scroll/just_scroll_area_theme.dart",
-          "checksum": "sha256:2b55eeecc198cdd428a4f0cc5fa96d4003e5aa3cc4d5cd215fedf1106837c8c8"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_scroll_area.dart",
+            "path": "components/scroll/default/just_scroll_area.dart",
+            "checksum": "sha256:7f5d81b4b0e02e77374b2219e3501983a28d2a11c5782f857dd317e85006ceea"
+          },
+          {
+            "name": "just_scroll_area_style.dart",
+            "path": "components/scroll/default/just_scroll_area_style.dart",
+            "checksum": "sha256:bf64b9b20c32b128b834311e5c81c1c5dceb8a6785811b3385c48cc3af01d198"
+          },
+          {
+            "name": "just_scroll_area_theme.dart",
+            "path": "components/scroll/default/just_scroll_area_theme.dart",
+            "checksum": "sha256:2b55eeecc198cdd428a4f0cc5fa96d4003e5aa3cc4d5cd215fedf1106837c8c8"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -356,12 +421,17 @@
       "hidden": true,
       "registryDependencies": [],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_pressable.dart",
-          "path": "components/shared/_shared_pressable.dart",
-          "checksum": "sha256:277d08e1ae2dc2d18bbfbdb5ae37bda65c2ff54595b908bd80ed181b9b29996a"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_pressable.dart",
+            "path": "components/shared/default/_shared_pressable.dart",
+            "checksum": "sha256:277d08e1ae2dc2d18bbfbdb5ae37bda65c2ff54595b908bd80ed181b9b29996a"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -373,12 +443,17 @@
       "hidden": true,
       "registryDependencies": [],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_focus_indicator.dart",
-          "path": "components/shared/_shared_focus_indicator.dart",
-          "checksum": "sha256:addfd270a1841aa5f3e6a328401a4c71b74e0a4dfe1e3811e34eb6ab212bee37"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_focus_indicator.dart",
+            "path": "components/shared/default/_shared_focus_indicator.dart",
+            "checksum": "sha256:addfd270a1841aa5f3e6a328401a4c71b74e0a4dfe1e3811e34eb6ab212bee37"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -396,22 +471,27 @@
         "_shared_progress_spinner"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_skeleton.dart",
-          "path": "components/skeleton/just_skeleton.dart",
-          "checksum": "sha256:ac56e0e2fe4c846474c9737b9275b1721c3b42400cc02bf2e59f479f075a02b9"
-        },
-        {
-          "name": "just_skeleton_style.dart",
-          "path": "components/skeleton/just_skeleton_style.dart",
-          "checksum": "sha256:66b55fa18e23fafd773ea0e5cc832c997aff3ac4e7668cf7f37c3ac2a691db85"
-        },
-        {
-          "name": "just_skeleton_theme.dart",
-          "path": "components/skeleton/just_skeleton_theme.dart",
-          "checksum": "sha256:489938e3a08ac1d1f8c4434dd00d8c7f144afa72b4836c79090f3395c99b2ad7"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_skeleton.dart",
+            "path": "components/skeleton/default/just_skeleton.dart",
+            "checksum": "sha256:ac56e0e2fe4c846474c9737b9275b1721c3b42400cc02bf2e59f479f075a02b9"
+          },
+          {
+            "name": "just_skeleton_style.dart",
+            "path": "components/skeleton/default/just_skeleton_style.dart",
+            "checksum": "sha256:66b55fa18e23fafd773ea0e5cc832c997aff3ac4e7668cf7f37c3ac2a691db85"
+          },
+          {
+            "name": "just_skeleton_theme.dart",
+            "path": "components/skeleton/default/just_skeleton_theme.dart",
+            "checksum": "sha256:489938e3a08ac1d1f8c4434dd00d8c7f144afa72b4836c79090f3395c99b2ad7"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -423,12 +503,17 @@
       "hidden": true,
       "registryDependencies": [],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_progress_spinner.dart",
-          "path": "components/shared/_shared_progress_spinner.dart",
-          "checksum": "sha256:840b18272408dca9471db7828131cc467607959aa6aac6af9a0eddd3dae8b2f7"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_progress_spinner.dart",
+            "path": "components/shared/default/_shared_progress_spinner.dart",
+            "checksum": "sha256:840b18272408dca9471db7828131cc467607959aa6aac6af9a0eddd3dae8b2f7"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -441,27 +526,32 @@
         "_shared_pressable"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_breadcrumb.dart",
-          "path": "components/breadcrumb/just_breadcrumb.dart",
-          "checksum": "sha256:8d140047cf3753680daa8403dcc555e703a4aab0f3096b5401d1ea86d186d0b2"
-        },
-        {
-          "name": "just_breadcrumb_style.dart",
-          "path": "components/breadcrumb/just_breadcrumb_style.dart",
-          "checksum": "sha256:a7553d5fb73586b0bb533878e37ee0fd5fc5851c643d6d5ec209d0f0c1c570bc"
-        },
-        {
-          "name": "just_breadcrumb_theme.dart",
-          "path": "components/breadcrumb/just_breadcrumb_theme.dart",
-          "checksum": "sha256:bcb139a8e00021ae81c83ce5f4144ba5c29f454c2cae206bf7e663260c1e6d4e"
-        },
-        {
-          "name": "just_breadcrumb_variants.dart",
-          "path": "components/breadcrumb/just_breadcrumb_variants.dart",
-          "checksum": "sha256:ff63d18f651b1ad6dca2270c3226eec4096577bee717302a3846b77d7d1419ad"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_breadcrumb.dart",
+            "path": "components/breadcrumb/default/just_breadcrumb.dart",
+            "checksum": "sha256:8d140047cf3753680daa8403dcc555e703a4aab0f3096b5401d1ea86d186d0b2"
+          },
+          {
+            "name": "just_breadcrumb_style.dart",
+            "path": "components/breadcrumb/default/just_breadcrumb_style.dart",
+            "checksum": "sha256:a7553d5fb73586b0bb533878e37ee0fd5fc5851c643d6d5ec209d0f0c1c570bc"
+          },
+          {
+            "name": "just_breadcrumb_theme.dart",
+            "path": "components/breadcrumb/default/just_breadcrumb_theme.dart",
+            "checksum": "sha256:bcb139a8e00021ae81c83ce5f4144ba5c29f454c2cae206bf7e663260c1e6d4e"
+          },
+          {
+            "name": "just_breadcrumb_variants.dart",
+            "path": "components/breadcrumb/default/just_breadcrumb_variants.dart",
+            "checksum": "sha256:ff63d18f651b1ad6dca2270c3226eec4096577bee717302a3846b77d7d1419ad"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -474,32 +564,37 @@
         "_shared_pressable"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_tabs.dart",
-          "path": "components/tabs/just_tabs.dart",
-          "checksum": "sha256:d16176573b58a89037819c6bcec1c3a87bb198106c9e370873d1ecd95bbd6dee"
-        },
-        {
-          "name": "just_tabs_style.dart",
-          "path": "components/tabs/just_tabs_style.dart",
-          "checksum": "sha256:db43c2121251066d59dbf3b6e0d6154cd1f553ab400c898d4a527ddaabc2bbc9"
-        },
-        {
-          "name": "just_tabs_theme.dart",
-          "path": "components/tabs/just_tabs_theme.dart",
-          "checksum": "sha256:b94c297a00d7d8aba8ee5039534fc9c2b72527955dabaf2299afeb8ce72bd828"
-        },
-        {
-          "name": "just_tabs_variants.dart",
-          "path": "components/tabs/just_tabs_variants.dart",
-          "checksum": "sha256:1b314729be3321a83cdc0f888e6167a252b8c7c87069c2ddd7d4142273f25ccc"
-        },
-        {
-          "name": "just_tab_indicator.dart",
-          "path": "components/tabs/just_tab_indicator.dart",
-          "checksum": "sha256:284f52b372ce24d6a8946d2ccedc2a19be8c2d6d8ece9b1d4f154c952ee3ca93"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_tabs.dart",
+            "path": "components/tabs/default/just_tabs.dart",
+            "checksum": "sha256:d16176573b58a89037819c6bcec1c3a87bb198106c9e370873d1ecd95bbd6dee"
+          },
+          {
+            "name": "just_tabs_style.dart",
+            "path": "components/tabs/default/just_tabs_style.dart",
+            "checksum": "sha256:db43c2121251066d59dbf3b6e0d6154cd1f553ab400c898d4a527ddaabc2bbc9"
+          },
+          {
+            "name": "just_tabs_theme.dart",
+            "path": "components/tabs/default/just_tabs_theme.dart",
+            "checksum": "sha256:b94c297a00d7d8aba8ee5039534fc9c2b72527955dabaf2299afeb8ce72bd828"
+          },
+          {
+            "name": "just_tabs_variants.dart",
+            "path": "components/tabs/default/just_tabs_variants.dart",
+            "checksum": "sha256:1b314729be3321a83cdc0f888e6167a252b8c7c87069c2ddd7d4142273f25ccc"
+          },
+          {
+            "name": "just_tab_indicator.dart",
+            "path": "components/tabs/default/just_tab_indicator.dart",
+            "checksum": "sha256:284f52b372ce24d6a8946d2ccedc2a19be8c2d6d8ece9b1d4f154c952ee3ca93"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -512,27 +607,32 @@
         "_shared_pressable"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_bottom_nav.dart",
-          "path": "components/bottom_nav/just_bottom_nav.dart",
-          "checksum": "sha256:b539b1ea2c95b168b4bc25a328ca38c3c36e1bd71a59c667dd5b7879ae9bef39"
-        },
-        {
-          "name": "just_bottom_nav_style.dart",
-          "path": "components/bottom_nav/just_bottom_nav_style.dart",
-          "checksum": "sha256:d517f647275b5c9b21b6092ffd5326a48259d5d362593769f7aeb92048a58536"
-        },
-        {
-          "name": "just_bottom_nav_theme.dart",
-          "path": "components/bottom_nav/just_bottom_nav_theme.dart",
-          "checksum": "sha256:be2951079a93b308c7aaba437290592c2196bdaebbc630baefe7c2469256525f"
-        },
-        {
-          "name": "just_bottom_nav_variants.dart",
-          "path": "components/bottom_nav/just_bottom_nav_variants.dart",
-          "checksum": "sha256:85eacd8b822b79acee41f3e30d0690e7525fc057eccd4ded7af6fbc8b8bb166f"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_bottom_nav.dart",
+            "path": "components/bottom_nav/default/just_bottom_nav.dart",
+            "checksum": "sha256:b539b1ea2c95b168b4bc25a328ca38c3c36e1bd71a59c667dd5b7879ae9bef39"
+          },
+          {
+            "name": "just_bottom_nav_style.dart",
+            "path": "components/bottom_nav/default/just_bottom_nav_style.dart",
+            "checksum": "sha256:d517f647275b5c9b21b6092ffd5326a48259d5d362593769f7aeb92048a58536"
+          },
+          {
+            "name": "just_bottom_nav_theme.dart",
+            "path": "components/bottom_nav/default/just_bottom_nav_theme.dart",
+            "checksum": "sha256:be2951079a93b308c7aaba437290592c2196bdaebbc630baefe7c2469256525f"
+          },
+          {
+            "name": "just_bottom_nav_variants.dart",
+            "path": "components/bottom_nav/default/just_bottom_nav_variants.dart",
+            "checksum": "sha256:85eacd8b822b79acee41f3e30d0690e7525fc057eccd4ded7af6fbc8b8bb166f"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -544,12 +644,17 @@
       "hidden": true,
       "registryDependencies": [],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_tooltip_overlay.dart",
-          "path": "components/shared/_shared_tooltip_overlay.dart",
-          "checksum": "sha256:4ca6f370665bc5b858360cbd1c6b48606f7425570e3b96fd816e69d812cc77ff"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_tooltip_overlay.dart",
+            "path": "components/shared/default/_shared_tooltip_overlay.dart",
+            "checksum": "sha256:4ca6f370665bc5b858360cbd1c6b48606f7425570e3b96fd816e69d812cc77ff"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -563,28 +668,37 @@
         "_shared_tooltip_overlay"
       ],
       "pubDependencies": {},
-      "files": [
-        {
-          "name": "just_sidebar.dart",
-          "path": "components/sidebar/just_sidebar.dart",
-          "checksum": "sha256:344ecddbd972b89a32b8224df4eb73b313c83f2507a07fc073ba7ce164360f54"
-        },
-        {
-          "name": "just_sidebar_style.dart",
-          "path": "components/sidebar/just_sidebar_style.dart",
-          "checksum": "sha256:111c6472e6d09a40c909d25dadeca1ec0f272840a6ab9f2182cf2dff0d49b0da"
-        },
-        {
-          "name": "just_sidebar_theme.dart",
-          "path": "components/sidebar/just_sidebar_theme.dart",
-          "checksum": "sha256:0471b599f1058bec41894917d167ba777e243c4d6ea0032ba2aa35982c6437af"
-        },
-        {
-          "name": "just_sidebar_variants.dart",
-          "path": "components/sidebar/just_sidebar_variants.dart",
-          "checksum": "sha256:4509d3dff6284e23475df95701dcfd1f747f7a6d242d610787c151772a77522a"
-        }
+      "files": {
+        "default": [
+          {
+            "name": "just_sidebar.dart",
+            "path": "components/sidebar/default/just_sidebar.dart",
+            "checksum": "sha256:344ecddbd972b89a32b8224df4eb73b313c83f2507a07fc073ba7ce164360f54"
+          },
+          {
+            "name": "just_sidebar_style.dart",
+            "path": "components/sidebar/default/just_sidebar_style.dart",
+            "checksum": "sha256:111c6472e6d09a40c909d25dadeca1ec0f272840a6ab9f2182cf2dff0d49b0da"
+          },
+          {
+            "name": "just_sidebar_theme.dart",
+            "path": "components/sidebar/default/just_sidebar_theme.dart",
+            "checksum": "sha256:0471b599f1058bec41894917d167ba777e243c4d6ea0032ba2aa35982c6437af"
+          },
+          {
+            "name": "just_sidebar_variants.dart",
+            "path": "components/sidebar/default/just_sidebar_variants.dart",
+            "checksum": "sha256:4509d3dff6284e23475df95701dcfd1f747f7a6d242d610787c151772a77522a"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     }
+  ],
+  "presets": [
+    "default",
+    "neobrutalism"
   ]
 }

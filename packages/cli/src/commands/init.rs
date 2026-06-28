@@ -147,6 +147,7 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         tokens_dir: tokens_dir.clone(),
         shared_dir: shared_dir.clone(),
         registry_url: JustUIConfig::DEFAULT_REGISTRY_URL.to_string(),
+        preset: preset.clone(),
     };
     std::fs::write(config_path, config.to_yaml_string())
         .map_err(|e| anyhow::anyhow!("Failed to initialize JustUI: {}", e))?;

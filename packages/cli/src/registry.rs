@@ -38,15 +38,31 @@ pub struct RegistryComponent {
     /// Jika true, file-nya akan diletakkan di `shared_dir`, bukan di subfolder komponen.
     #[serde(default)]
     pub internal: bool,
+    /// Presets supported by this component.
+    #[serde(rename = "supportedPresets", default)]
+    pub supported_presets: Vec<String>,
     /// Names of other registry components this component depends on.
     #[serde(rename = "registryDependencies", default)]
     pub registry_dependencies: Vec<String>,
     /// External packages from pub.dev required by this component.
     #[serde(rename = "pubDependencies", default)]
     pub pub_dependencies: HashMap<String, String>,
-    /// List of files that comprise this component.
+    /// List of files that comprise this component, grouped by preset.
     #[serde(default)]
-    pub files: Vec<RegistryFile>,
+    pub files: HashMap<String, Vec<RegistryFile>>,
+}
+
+impl RegistryComponent {
+    /// Mengembalikan files untuk preset yang diminta.
+    /// Jika preset tidak ditemukan, fallback ke "default".
+    /// Jika "default" juga tidak ada, return empty vec.
+    pub fn files_for_preset<'a>(&'a self, preset: &str) -> &'a Vec<RegistryFile> {
+        static EMPTY: Vec<RegistryFile> = Vec::new();
+        self.files
+            .get(preset)
+            .or_else(|| self.files.get("default"))
+            .unwrap_or(&EMPTY)
+    }
 }
 
 /// Represents the top-level index file of the registry.
@@ -55,6 +71,9 @@ pub struct RegistryIndex {
     /// Index schema version.
     #[serde(default = "default_version")]
     pub version: String,
+    /// Supported presets.
+    #[serde(default)]
+    pub presets: Vec<String>,
     /// Registered components list.
     #[serde(default)]
     pub components: Vec<RegistryComponent>,
