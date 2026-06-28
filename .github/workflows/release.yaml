@@ -95,7 +95,7 @@ jobs:
 
       - name: Package archive
         run: |
-          BINARY=target/${{ matrix.target }}/release/justui
+          BINARY=packages/cli/target/${{ matrix.target }}/release/justui
           ARCHIVE=justui-${{ matrix.target }}.tar.gz
           tar -czf "$ARCHIVE" -C "$(dirname $BINARY)" justui
           echo "ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
@@ -131,7 +131,7 @@ jobs:
 
       - name: Package archive
         run: |
-          BINARY=target/${{ matrix.target }}/release/justui
+          BINARY=packages/cli/target/${{ matrix.target }}/release/justui
           ARCHIVE=justui-${{ matrix.target }}.tar.gz
           tar -czf "$ARCHIVE" -C "$(dirname $BINARY)" justui
           echo "ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
@@ -162,7 +162,7 @@ jobs:
         shell: pwsh
         run: |
           $target = "x86_64-pc-windows-msvc"
-          $binary = "target\$target\release\justui.exe"
+          $binary = "packages/cli/target\$target\release\justui.exe"
           $archive = "justui-$target.zip"
           Compress-Archive -Path $binary -DestinationPath $archive
           echo "ARCHIVE=$archive" | Out-File -Append $env:GITHUB_ENV
