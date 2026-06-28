@@ -5,6 +5,7 @@ use std::collections::HashSet;
 use crate::config::JustUIConfig;
 use crate::registry::{RegistryClient, RegistryIndex};
 use crate::utils::{diff_formatter, import_rewriter, logger, prompt, pubspec_editor};
+use crate::utils::logger::SummaryItem;
 
 /// Accumulates counters during a dry-run for the final summary.
 #[derive(Default)]
@@ -260,6 +261,34 @@ pub fn run(
                 logger::stdout(&line);
             }
         }
+    }
+
+    // Kumpulkan hasil untuk summary
+    let mut summary_items: Vec<SummaryItem> = Vec::new();
+
+    for name in &components_to_add {
+        // Cari komponen di index untuk dapat versi dan target path
+        if let Some(component) = index.components.iter().find(|c| c.name == *name) {
+            let target_dir = if component.category == "tokens" || component.category == "core" {
+                config.tokens_dir.clone()
+            } else if component.internal {
+                config.shared_dir.clone()
+            } else {
+                format!("{}/{}", config.components_dir, component.name)
+            };
+
+            summary_items.push(SummaryItem {
+                label: name.clone(),
+                value: format!("v{}  {}/", component.version, target_dir),
+            });
+        }
+    }
+
+    if !summary_items.is_empty() && !dry_run {
+        logger::summary(
+            &format!("{} komponen berhasil ditambahkan", summary_items.len()),
+            &summary_items,
+        );
     }
 
     Ok(())

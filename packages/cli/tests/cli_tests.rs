@@ -431,6 +431,12 @@ mod cli_integration {
             .success()
             .stdout(predicate::str::contains(
                 "Component \"button\" added successfully.",
+            ))
+            .stdout(predicate::str::contains(
+                "1 komponen berhasil ditambahkan",
+            ))
+            .stdout(predicate::str::contains(
+                "→  button",
             ));
 
         let written = dir.path().join("lib/ui/button/just_button.dart");
@@ -438,6 +444,69 @@ mod cli_integration {
         let content = std::fs::read_to_string(&written).unwrap();
         let stripped = justui_cli::utils::import_rewriter::strip_metadata(&content);
         assert_eq!(stripped.trim(), button_content);
+    }
+
+    #[test]
+    fn add_button_dry_run_does_not_show_summary() {
+        let dir = TempDir::new().unwrap();
+        let registry_dir = dir.path().join("mock_registry");
+        std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+
+        let button_content = "button_code";
+        let hash = {
+            use sha2::{Digest, Sha256};
+            let mut h = Sha256::new();
+            h.update(button_content.as_bytes());
+            hex::encode(h.finalize())
+        };
+
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "1",
+                "components": [{
+                    "name": "button",
+                    "version": "0.1.0",
+                    "description": "A button",
+                    "category": "primitives",
+                    "registryDependencies": [],
+                    "pubDependencies": {},
+                    "files": [{
+                        "name": "just_button.dart",
+                        "path": "components/button/just_button.dart",
+                        "checksum": format!("sha256:{}", hash)
+                    }]
+                }]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+        std::fs::write(
+            registry_dir.join("components/button/just_button.dart"),
+            button_content,
+        )
+        .unwrap();
+
+        std::fs::write(
+            dir.path().join("pubspec.yaml"),
+            "name: test\ndependencies:\n  flutter:\n    sdk: flutter\n",
+        )
+        .unwrap();
+        std::fs::write(
+            dir.path().join("justui.config.yaml"),
+            format!(
+                "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\nregistry_url: {}\n",
+                registry_dir.display()
+            ),
+        )
+        .unwrap();
+
+        justui()
+            .current_dir(dir.path())
+            .args(["add", "button", "--dry-run"])
+            .assert()
+            .success()
+            .stdout(predicate::str::contains("1 komponen berhasil ditambahkan").not());
     }
 
     #[test]
