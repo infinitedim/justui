@@ -33,7 +33,8 @@ void main(List<String> args) async {
 
   for (final dynamic component in components) {
     final compMap = component as Map<String, dynamic>;
-    final Map<String, dynamic> filesMap = compMap['files'] as Map<String, dynamic>;
+    final Map<String, dynamic> filesMap =
+        compMap['files'] as Map<String, dynamic>;
     final name = compMap['name'] as String;
     print('-----------------------------------------');
     print('Component: $name');

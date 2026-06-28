@@ -23,6 +23,7 @@ fn default_version() -> String {
 
 /// Represents a component defined in the registry.
 #[derive(Debug, Clone, Deserialize)]
+#[allow(dead_code)]
 pub struct RegistryComponent {
     /// Unique component name identifier (e.g., 'button').
     pub name: String,
@@ -67,6 +68,7 @@ impl RegistryComponent {
 
 /// Represents the top-level index file of the registry.
 #[derive(Debug, Clone, Deserialize)]
+#[allow(dead_code)]
 pub struct RegistryIndex {
     /// Index schema version.
     #[serde(default = "default_version")]
