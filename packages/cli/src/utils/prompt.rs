@@ -1,3 +1,4 @@
+use inquire::{MultiSelect, Select};
 use std::io::{self, Write};
 
 /// Reads a trimmed line from stdin. Returns empty string on EOF.
@@ -20,53 +21,34 @@ pub fn confirm(message: &str, default: bool) -> bool {
     input == "y" || input == "yes"
 }
 
-/// Prompts the user to select a single item from a numbered list.
-/// Returns the 0-based index. Falls back to `default_index` on empty/invalid input.
-/// Matches Dart `JustPrompt.selectOne` exactly.
+/// Menampilkan interactive single-select dengan arrow key dan fuzzy search.
+/// Fallback ke default_index jika user menekan Escape atau terjadi error.
 pub fn select_one(message: &str, options: &[&str], default_index: usize) -> usize {
-    for (i, opt) in options.iter().enumerate() {
-        let marker = if i == default_index { '*' } else { ' ' };
-        println!("  [{}{}] {}", marker, i + 1, opt);
+    let result = Select::new(message, options.to_vec())
+        .with_starting_cursor(default_index)
+        .prompt();
+
+    match result {
+        Ok(selected) => options
+            .iter()
+            .position(|&o| o == selected)
+            .unwrap_or(default_index),
+        Err(_) => default_index,
     }
-    print!("{} (default: {}): ", message, default_index + 1);
-    io::stdout().flush().unwrap();
-    let input = read_line();
-    if input.is_empty() {
-        return default_index;
-    }
-    if let Ok(parsed) = input.parse::<usize>() {
-        if parsed >= 1 && parsed <= options.len() {
-            return parsed - 1;
-        }
-    }
-    default_index
 }
 
-/// Prompts the user to select multiple items from a numbered list.
-/// Returns a Vec of 0-based selected indices.
-/// Matches Dart `JustPrompt.selectMultiple` exactly.
+/// Menampilkan interactive multi-select dengan arrow key dan fuzzy search.
+/// Fallback ke Vec kosong jika user menekan Escape atau terjadi error.
 pub fn select_multiple(message: &str, options: &[&str]) -> Vec<usize> {
-    for (i, opt) in options.iter().enumerate() {
-        println!("  [{}] {}", i + 1, opt);
-    }
-    print!("{} (e.g. 1, 3 or \"all\"): ", message);
-    io::stdout().flush().unwrap();
-    let input = read_line().to_lowercase();
+    let result = MultiSelect::new(message, options.to_vec()).prompt();
 
-    if input == "all" {
-        return (0..options.len()).collect();
+    match result {
+        Ok(selected) => selected
+            .iter()
+            .filter_map(|s| options.iter().position(|o| o == s))
+            .collect(),
+        Err(_) => Vec::new(),
     }
-
-    let mut selected = Vec::new();
-    for part in input.split(',') {
-        let trimmed = part.trim();
-        if let Ok(parsed) = trimmed.parse::<usize>() {
-            if parsed >= 1 && parsed <= options.len() {
-                selected.push(parsed - 1);
-            }
-        }
-    }
-    selected
 }
 
 /// Prompts for a string input.
