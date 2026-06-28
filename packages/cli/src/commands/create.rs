@@ -89,7 +89,7 @@ pub fn run(component_name_arg: Option<String>, auto_yes: bool) -> Result<()> {
 
         let should_write = if path.exists() {
             if auto_yes {
-                logger::stdout(&format!("[auto] Lewati {} (sudah ada)", file_name));
+                logger::stdout(&format!("[auto] Skipping {} (already exists)", file_name));
                 false
             } else {
                 prompt::confirm(

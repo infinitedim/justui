@@ -63,13 +63,13 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
     // Step 4 — Display results
     if results.is_empty() {
         logger::stdout(&format!(
-            "Tidak ada komponen yang cocok dengan \"{}\".",
+            "No components found matching \"{}\".",
             query
         ));
         return Ok(());
     }
 
-    logger::stdout(&format!("Hasil pencarian untuk \"{}\":\n", query));
+    logger::stdout(&format!("Search results for \"{}\":\n", query));
 
     // Group by category (preserving insertion order)
     let mut grouped: HashMap<String, Vec<&&RegistryComponent>> = HashMap::new();
@@ -116,7 +116,7 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
     }
 
     logger::stdout("");
-    logger::stdout(&format!("{} komponen ditemukan.", results.len()));
+    logger::stdout(&format!("{} component(s) found.", results.len()));
 
     Ok(())
 }
