@@ -1,11 +1,11 @@
-// justui-meta: registry=64c02ff66efff713015fd92fbf9adf71a29e29dcfefa47e9f686fd3f95177f21 local=0f6ca00db2fe701bf6ef26b6073ee31d3d15466bc885939677473efa933472a5
+// justui-meta: registry=25a23a56b232acbd60fbe6f39c4ada97044b62eaaf9aad5952b8e1e1bc68d997 local=2f8e325e71e348b491958b68d1afb63b138c795e0abe639e6c16359d171a995e
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_core/just_ui_core.dart' show JustThemeProvider;
-import 'just_focus_indicator.dart';
-import 'just_pressable.dart';
-import 'just_progress_spinner.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:showcase/shared/just_focus_indicator.dart';
+import 'package:showcase/shared/just_pressable.dart';
+import 'package:showcase/shared/just_progress_spinner.dart';
 import 'just_button_style.dart';
 import 'just_button_variants.dart';
 import 'just_button_theme.dart';
