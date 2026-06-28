@@ -7,20 +7,14 @@ class JustTooltipTheme extends ThemeExtension<JustTooltipTheme> {
   final JustTooltipStyle? style;
 
   /// Creates a [JustTooltipTheme] configuration.
-  const JustTooltipTheme({
-    this.style,
-  });
+  const JustTooltipTheme({this.style});
 
   /// Default configuration for the theme.
   static const defaults = JustTooltipTheme();
 
   @override
-  JustTooltipTheme copyWith({
-    JustTooltipStyle? style,
-  }) {
-    return JustTooltipTheme(
-      style: style ?? this.style,
-    );
+  JustTooltipTheme copyWith({JustTooltipStyle? style}) {
+    return JustTooltipTheme(style: style ?? this.style);
   }
 
   @override

@@ -61,7 +61,8 @@ class JustDialogController extends JustOverlayController {
     final id = DateTime.now().microsecondsSinceEpoch.toString();
 
     final isLocalController = animationController == null;
-    final animController = animationController ??
+    final animController =
+        animationController ??
         AnimationController(
           vsync: _vsync!,
           duration: const Duration(milliseconds: 300),
@@ -74,7 +75,8 @@ class JustDialogController extends JustOverlayController {
       builder: (context) {
         final theme = JustThemeProvider.of(context).theme;
         final colors = theme.colors;
-        final resolvedBarrierColor = style?.barrierColor ??
+        final resolvedBarrierColor =
+            style?.barrierColor ??
             barrierColor ??
             colors.overlay.withValues(alpha: 0.5);
 
@@ -84,10 +86,10 @@ class JustDialogController extends JustOverlayController {
             curve: Curves.linear,
           ),
           child: GestureDetector(
-            onTap: barrierDismissable ? () => _dismissDialog(instance, null) : null,
-            child: Container(
-              color: resolvedBarrierColor,
-            ),
+            onTap: barrierDismissable
+                ? () => _dismissDialog(instance, null)
+                : null,
+            child: Container(color: resolvedBarrierColor),
           ),
         );
       },
@@ -210,7 +212,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
     final motion = theme.animations.resolve(context);
 
     final globalTheme = Theme.of(context).extension<JustDialogTheme>();
-    
+
     JustDialogStyle? positionThemeStyle;
     switch (widget.position) {
       case DialogPosition.center:
@@ -227,35 +229,37 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
     final entryStyle = widget.style;
 
     // Resolve visual styles
-    final bgColor = entryStyle?.backgroundColor ??
+    final bgColor =
+        entryStyle?.backgroundColor ??
         positionThemeStyle?.backgroundColor ??
         colors.card;
-    final padding = entryStyle?.padding ??
-        positionThemeStyle?.padding ??
-        .all(spacing.lg);
-    final maxWidth = entryStyle?.maxWidth ??
+    final padding =
+        entryStyle?.padding ?? positionThemeStyle?.padding ?? .all(spacing.lg);
+    final maxWidth =
+        entryStyle?.maxWidth ??
         positionThemeStyle?.maxWidth ??
         (widget.position == DialogPosition.center ? 480.0 : double.infinity);
-    final maxHeight = entryStyle?.maxHeight ??
-        positionThemeStyle?.maxHeight;
-    final dialogShadows = entryStyle?.shadows ??
-        positionThemeStyle?.shadows ??
-        shadows.lg;
+    final maxHeight = entryStyle?.maxHeight ?? positionThemeStyle?.maxHeight;
+    final dialogShadows =
+        entryStyle?.shadows ?? positionThemeStyle?.shadows ?? shadows.lg;
 
     final BorderRadius resolvedRadius;
     switch (widget.position) {
       case DialogPosition.center:
-        resolvedRadius = entryStyle?.borderRadius ??
+        resolvedRadius =
+            entryStyle?.borderRadius ??
             positionThemeStyle?.borderRadius ??
             .all(radius.lg);
         break;
       case DialogPosition.bottom:
-        resolvedRadius = entryStyle?.borderRadius ??
+        resolvedRadius =
+            entryStyle?.borderRadius ??
             positionThemeStyle?.borderRadius ??
             .vertical(top: radius.lg);
         break;
       case DialogPosition.top:
-        resolvedRadius = entryStyle?.borderRadius ??
+        resolvedRadius =
+            entryStyle?.borderRadius ??
             positionThemeStyle?.borderRadius ??
             .vertical(bottom: radius.lg);
         break;
@@ -329,27 +333,40 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
 
     Widget animatedChild;
     if (widget.animationBuilder != null) {
-      animatedChild = widget.animationBuilder!(context, widget.instance.animationController, card);
+      animatedChild = widget.animationBuilder!(
+        context,
+        widget.instance.animationController,
+        card,
+      );
     } else {
       switch (widget.position) {
         case DialogPosition.center:
           animatedChild = FadeTransition(
             opacity: curvedAnimation,
             child: ScaleTransition(
-              scale: Tween<double>(begin: 0.95, end: 1.0).animate(curvedAnimation),
+              scale: Tween<double>(
+                begin: 0.95,
+                end: 1.0,
+              ).animate(curvedAnimation),
               child: card,
             ),
           );
           break;
         case DialogPosition.bottom:
           animatedChild = SlideTransition(
-            position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero).animate(curvedAnimation),
+            position: Tween<Offset>(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).animate(curvedAnimation),
             child: card,
           );
           break;
         case DialogPosition.top:
           animatedChild = SlideTransition(
-            position: Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(curvedAnimation),
+            position: Tween<Offset>(
+              begin: const Offset(0, -1),
+              end: Offset.zero,
+            ).animate(curvedAnimation),
             child: card,
           );
           break;
@@ -363,7 +380,8 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
         child: KeyboardListener(
           focusNode: _focusNode,
           onKeyEvent: (event) {
-            if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+            if (event is KeyDownEvent &&
+                event.logicalKey == LogicalKeyboardKey.escape) {
               widget.onDismiss(null);
             }
           },
@@ -408,7 +426,8 @@ class JustDialogScope extends StatefulWidget {
 
   /// Retrieves the nearest [JustDialogController] from the ancestor scope.
   static JustDialogController of(BuildContext context) {
-    final scope = context.dependOnInheritedWidgetOfExactType<_JustDialogScopeInherited>();
+    final scope = context
+        .dependOnInheritedWidgetOfExactType<_JustDialogScopeInherited>();
     assert(scope != null, 'No JustDialogScope found in context');
     return scope!.controller;
   }
@@ -417,7 +436,8 @@ class JustDialogScope extends StatefulWidget {
   State<JustDialogScope> createState() => _JustDialogScopeState();
 }
 
-class _JustDialogScopeState extends State<JustDialogScope> with TickerProviderStateMixin {
+class _JustDialogScopeState extends State<JustDialogScope>
+    with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();

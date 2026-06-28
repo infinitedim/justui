@@ -38,7 +38,8 @@ class JustTooltip extends StatefulWidget {
   final AnimationController? animationController;
 
   /// Optional custom animation builder.
-  final Widget Function(BuildContext, Animation<double>, Widget)? animationBuilder;
+  final Widget Function(BuildContext, Animation<double>, Widget)?
+  animationBuilder;
 
   /// Creates a [JustTooltip].
   const JustTooltip({
@@ -59,9 +60,11 @@ class JustTooltip extends StatefulWidget {
   State<JustTooltip> createState() => _JustTooltipState();
 }
 
-class _JustTooltipState extends State<JustTooltip> with SingleTickerProviderStateMixin {
+class _JustTooltipState extends State<JustTooltip>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _localAnimController;
-  AnimationController get _animController => widget.animationController ?? _localAnimController;
+  AnimationController get _animController =>
+      widget.animationController ?? _localAnimController;
 
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
@@ -124,21 +127,24 @@ class _JustTooltipState extends State<JustTooltip> with SingleTickerProviderStat
         final entryStyle = widget.style;
 
         // Resolve styles
-        final bgColor = entryStyle?.backgroundColor ??
+        final bgColor =
+            entryStyle?.backgroundColor ??
             themeStyle?.backgroundColor ??
-            colors.textPrimary; // Dark background by default for high contrast tooltips
-        final fgColor = entryStyle?.foregroundColor ??
+            colors
+                .textPrimary; // Dark background by default for high contrast tooltips
+        final fgColor =
+            entryStyle?.foregroundColor ??
             themeStyle?.foregroundColor ??
             colors.background; // Light text by default
-        final borderRadius = entryStyle?.borderRadius ??
+        final borderRadius =
+            entryStyle?.borderRadius ??
             themeStyle?.borderRadius ??
             .all(radius.xs);
-        final padding = entryStyle?.padding ??
+        final padding =
+            entryStyle?.padding ??
             themeStyle?.padding ??
             .symmetric(horizontal: spacing.sm, vertical: spacing.xs);
-        final maxWidth = entryStyle?.maxWidth ??
-            themeStyle?.maxWidth ??
-            240.0;
+        final maxWidth = entryStyle?.maxWidth ?? themeStyle?.maxWidth ?? 240.0;
 
         final isNeobrutalism = theme.preset == .neobrutalism;
         final borderSide = BorderSide(
@@ -186,15 +192,16 @@ class _JustTooltipState extends State<JustTooltip> with SingleTickerProviderStat
             color: bgColor,
             borderRadius: borderRadius,
             border: isNeobrutalism ? .fromBorderSide(borderSide) : null,
-            boxShadow: isNeobrutalism ? theme.resolveShadows(const [], isPressed: false) : null,
+            boxShadow: isNeobrutalism
+                ? theme.resolveShadows(const [], isPressed: false)
+                : null,
           ),
           padding: padding,
           child: Text(
             widget.message,
-            style: JustFluidTypo.bodySm(context).copyWith(
-              color: fgColor,
-              fontSize: 12.0,
-            ),
+            style: JustFluidTypo.bodySm(
+              context,
+            ).copyWith(color: fgColor, fontSize: 12.0),
           ),
         );
 
@@ -206,12 +213,19 @@ class _JustTooltipState extends State<JustTooltip> with SingleTickerProviderStat
 
         Widget animatedBubble;
         if (widget.animationBuilder != null) {
-          animatedBubble = widget.animationBuilder!(context, _animController, tooltipBubble);
+          animatedBubble = widget.animationBuilder!(
+            context,
+            _animController,
+            tooltipBubble,
+          );
         } else {
           animatedBubble = FadeTransition(
             opacity: curvedAnimation,
             child: ScaleTransition(
-              scale: Tween<double>(begin: 0.95, end: 1.0).animate(curvedAnimation),
+              scale: Tween<double>(
+                begin: 0.95,
+                end: 1.0,
+              ).animate(curvedAnimation),
               child: tooltipBubble,
             ),
           );
@@ -226,10 +240,7 @@ class _JustTooltipState extends State<JustTooltip> with SingleTickerProviderStat
             offset: offset,
             child: Align(
               alignment: Alignment.topLeft,
-              child: Semantics(
-                tooltip: widget.message,
-                child: animatedBubble,
-              ),
+              child: Semantics(tooltip: widget.message, child: animatedBubble),
             ),
           ),
         );
