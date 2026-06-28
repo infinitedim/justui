@@ -4,6 +4,7 @@ pub mod diff;
 pub mod info;
 pub mod init;
 pub mod list;
+pub mod preset;
 pub mod search;
 pub mod update;
 pub mod view;

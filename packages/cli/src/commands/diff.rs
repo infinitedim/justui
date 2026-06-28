@@ -273,7 +273,7 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
 
     // If auto_yes, apply all changes without prompting
     if auto_yes {
-        logger::stdout("[auto] Menerapkan semua perubahan");
+        logger::stdout("[auto] Applying all changes");
         let mut visited: HashSet<String> = HashSet::new();
         // Use add_component to apply changes
         add_component(

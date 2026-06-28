@@ -77,6 +77,20 @@ enum Commands {
     },
     /// Show information about the CLI, config, project, and registry.
     Info,
+    /// Manage style presets for installed components.
+    Preset {
+        /// Preset name to apply or inspect.
+        name: Option<String>,
+        /// Apply the specified preset to all installed components.
+        #[arg(long = "apply")]
+        apply: bool,
+        /// List all available presets in the registry.
+        #[arg(long = "list")]
+        list: bool,
+        /// Show info about a specific preset.
+        #[arg(long = "info")]
+        info: Option<String>,
+    },
 }
 
 fn main() {
@@ -97,6 +111,9 @@ fn main() {
         Commands::View { component, file } => commands::view::run(component, file, auto_yes),
         Commands::Search { query, category } => commands::search::run(query, category),
         Commands::Info => commands::info::run(),
+        Commands::Preset { name, apply, list, info } => {
+            commands::preset::run(name, apply, list, info, auto_yes)
+        }
     };
 
     if let Err(e) = result {

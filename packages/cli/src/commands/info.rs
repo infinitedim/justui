@@ -18,11 +18,11 @@ pub fn run() -> Result<()> {
 
     let (config_status, config) = if config_path.exists() {
         match std::fs::read_to_string(config_path) {
-            Ok(content) => ("[ditemukan]".to_string(), JustUIConfig::from_yaml(&content)),
-            Err(_) => ("[error membaca]".to_string(), JustUIConfig::default()),
+            Ok(content) => ("[found]".to_string(), JustUIConfig::from_yaml(&content)),
+            Err(_) => ("[read error]".to_string(), JustUIConfig::default()),
         }
     } else {
-        ("[tidak ditemukan]".to_string(), JustUIConfig::default())
+        ("[not found]".to_string(), JustUIConfig::default())
     };
 
     logger::stdout("Config");
@@ -49,9 +49,9 @@ pub fn run() -> Result<()> {
             .and_then(|caps| caps.get(1))
             .map(|m| m.as_str().trim().to_string())
             .unwrap_or_else(|| "-".to_string());
-        ("[ditemukan]".to_string(), name)
+        ("[found]".to_string(), name)
     } else {
-        ("[tidak ditemukan]".to_string(), "-".to_string())
+        ("[not found]".to_string(), "-".to_string())
     };
 
     logger::stdout("Project");
@@ -59,7 +59,7 @@ pub fn run() -> Result<()> {
         "  {:<14}: {}",
         "pubspec.yaml", pubspec_status
     ));
-    logger::stdout(&format!("  {:<14}: {}", "Nama project", project_name));
+    logger::stdout(&format!("  {:<14}: {}", "Project name", project_name));
     logger::stdout("");
 
     // Part 4 — Registry info
@@ -68,17 +68,17 @@ pub fn run() -> Result<()> {
     match client.fetch_index() {
         Ok(index) => {
             logger::stdout(&format!("  {:<14}: OK", "Status"));
-            logger::stdout(&format!("  {:<14}: {}", "Versi index", index.version));
+            logger::stdout(&format!("  {:<14}: {}", "Index version", index.version));
             logger::stdout(&format!(
                 "  {:<14}: {}",
-                "Jumlah komponen",
+                "Components",
                 index.components.len()
             ));
         }
         Err(_) => {
-            logger::stdout(&format!("  {:<14}: Tidak dapat dijangkau", "Status"));
-            logger::stdout(&format!("  {:<14}: -", "Versi index"));
-            logger::stdout(&format!("  {:<14}: -", "Jumlah komponen"));
+            logger::stdout(&format!("  {:<14}: Unreachable", "Status"));
+            logger::stdout(&format!("  {:<14}: -", "Index version"));
+            logger::stdout(&format!("  {:<14}: -", "Components"));
         }
     }
 

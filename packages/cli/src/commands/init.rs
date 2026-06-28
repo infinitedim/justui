@@ -51,7 +51,7 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
     let preset = if let Some(p) = preset_arg {
         normalize_preset(&p)
     } else if auto_yes {
-        logger::stdout("[auto] Menggunakan preset: default");
+        logger::stdout("[auto] Using preset: default");
         "default".to_string()
     } else {
         logger::stdout("");
@@ -71,7 +71,7 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
     // ── Components directory selection ────────────────────────────────────────
     let components_dir = if auto_yes {
         let dir = "lib/widgets".to_string();
-        logger::stdout(&format!("[auto] Menggunakan components dir: {}", dir));
+        logger::stdout(&format!("[auto] Using components dir: {}", dir));
         dir
     } else {
         logger::stdout("");
@@ -90,7 +90,7 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
     // ── Tokens directory ──────────────────────────────────────────────────────
     let tokens_dir = if auto_yes {
         let dir = "lib/tokens".to_string();
-        logger::stdout(&format!("[auto] Menggunakan tokens dir: {}", dir));
+        logger::stdout(&format!("[auto] Using tokens dir: {}", dir));
         dir
     } else {
         logger::stdout("");
@@ -102,7 +102,7 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
     let shared_dir_default = format!("{}/shared", components_dir);
     let shared_dir = if auto_yes {
         logger::stdout(&format!(
-            "[auto] Menggunakan shared dir: {}",
+            "[auto] Using shared dir: {}",
             shared_dir_default
         ));
         shared_dir_default
@@ -122,7 +122,7 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
     let hex_regex = Regex::new(r"^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$").unwrap();
     let brand_color = if auto_yes {
         let color = "#3b82f6".to_string();
-        logger::stdout(&format!("[auto] Menggunakan brand color: {}", color));
+        logger::stdout(&format!("[auto] Using brand color: {}", color));
         color
     } else {
         loop {
