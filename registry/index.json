@@ -116,7 +116,7 @@
           {
             "name": "just_badge.dart",
             "path": "components/badge/default/just_badge.dart",
-            "checksum": "sha256:95e99802084b52321c95d32505a73508b8453cbf668672a15311b3cb27aaa771"
+            "checksum": "sha256:e2212d3ee32dd8cbbdb94eb933bb3f520ae972b562a03d9b7b3f63c11d44c0a9"
           },
           {
             "name": "just_badge_style.dart",
@@ -147,7 +147,7 @@
           {
             "name": "just_avatar.dart",
             "path": "components/avatar/default/just_avatar.dart",
-            "checksum": "sha256:31d7f7ca35b803583c82d750a0512a054bbdc4aa3279e52deb42355ee2b69cb0"
+            "checksum": "sha256:f6f412154c07f06d3955cb5289a5a6bf08c15116711bcfd7a904818a6789fa6d"
           },
           {
             "name": "just_avatar_style.dart",

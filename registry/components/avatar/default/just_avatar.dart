@@ -18,7 +18,7 @@ class PersonFallbackPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
-      ..style = PaintingStyle.fill;
+      ..style = .fill;
 
     // Draw head (circle)
     final headRadius = size.width * 0.22;

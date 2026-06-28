@@ -344,7 +344,7 @@ class JustBadge extends StatelessWidget {
               : null);
 
     final List<BoxShadow>? resolvedShadows = isNeobrutalism
-        ? (size == JustBadgeSize.sm ? theme.shadows.xs : theme.shadows.sm)
+        ? (size == .sm ? theme.shadows.xs : theme.shadows.sm)
         : null;
 
     return Container(

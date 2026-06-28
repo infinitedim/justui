@@ -114,7 +114,7 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         if raw_shared_dir.is_empty() {
             shared_dir_default
         } else {
-            raw_shared_dir
+            to_lib_path(&raw_shared_dir)
         }
     };
 
