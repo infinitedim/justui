@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/username/justui/actions/workflows/ci.yaml"><img src="https://github.com/infinitedim/justui/actions/workflows/ci.yaml/badge.svg" alt="CI" /></a>
+  <a href="https://github.com/infinitedim/justui/actions/workflows/ci.yaml"><img src="https://github.com/infinitedim/justui/actions/workflows/ci.yaml/badge.svg" alt="CI" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License" /></a>
   <a href="https://docs.justui.dev"><img src="https://img.shields.io/badge/docs-justui.dev-lime" alt="Docs" /></a>
 </p>
@@ -61,16 +61,16 @@ justui/
 
 ```bash
 # macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/username/justui/main/packages/cli/install/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/infinitedim/justui/main/packages/cli/install/install.sh | sh
 
 # Windows (PowerShell)
-irm https://raw.githubusercontent.com/username/justui/main/packages/cli/install/install.ps1 | iex
+irm https://raw.githubusercontent.com/infinitedim/justui/main/packages/cli/install/install.ps1 | iex
 ```
 
 **From source:**
 
 ```bash
-git clone https://github.com/username/justui.git
+git clone https://github.com/infinitedim/justui.git
 cd justui/packages/cli
 cargo install --path .
 ```
