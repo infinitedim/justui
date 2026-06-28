@@ -1,0 +1,28 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [],
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [],
+  "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
+    "onlyUpdatePeerDependentsWhenOutOfRange": true
+  },
+  "packages": {
+    "just_ui_tokens": {
+      "path": "packages/tokens",
+      "type": "dart"
+    },
+    "just_ui_core": {
+      "path": "packages/core",
+      "type": "dart"
+    },
+    "justui_cli": {
+      "path": "packages/cli",
+      "type": "rust"
+    }
+  }
+}
