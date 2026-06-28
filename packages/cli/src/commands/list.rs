@@ -1,25 +1,44 @@
 use anyhow::Result;
-use std::collections::HashMap;
+use crossterm::{
+    event::{self, Event, KeyCode},
+    execute,
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+};
+use ratatui::{
+    backend::CrosstermBackend,
+    layout::{Constraint, Direction, Layout},
+    style::{Color, Modifier, Style, Stylize},
+    widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Wrap},
+    Terminal,
+};
+use std::collections::HashSet;
+use std::io::{self, Write};
 
+use crate::commands::add::{add_component, sha256_hex};
 use crate::config::JustUIConfig;
-use crate::registry::RegistryClient;
+use crate::registry::{RegistryClient, RegistryComponent};
 use crate::utils::logger;
 
-/// Runs the `justui list` command.
+#[derive(PartialEq, Eq)]
+enum InputMode {
+    Normal,
+    Searching,
+}
+
+/// Runs the interactive `justui list` TUI command.
 pub fn run() -> Result<()> {
     // 1. Resolve registry URL from configuration or use default
-    let registry_url = if let Ok(content) = std::fs::read_to_string(JustUIConfig::CONFIG_FILE_NAME)
-    {
-        JustUIConfig::from_yaml(&content).registry_url
+    let config = if let Ok(content) = std::fs::read_to_string(JustUIConfig::CONFIG_FILE_NAME) {
+        JustUIConfig::from_yaml(&content)
     } else {
-        JustUIConfig::DEFAULT_REGISTRY_URL.to_string()
+        JustUIConfig::default()
     };
 
     let pb_index = indicatif::ProgressBar::new_spinner();
     pb_index.set_message("Fetching component registry...");
     pb_index.enable_steady_tick(std::time::Duration::from_millis(100));
 
-    let client = RegistryClient::new(registry_url);
+    let client = RegistryClient::new(config.registry_url.clone());
     let index = match client.fetch_index() {
         Ok(idx) => {
             pb_index.finish_and_clear();
@@ -37,44 +56,437 @@ pub fn run() -> Result<()> {
         return Ok(());
     }
 
-    logger::stdout("\nAvailable components:");
+    // 2. Setup terminal for TUI
+    enable_raw_mode()?;
+    let mut stdout = io::stdout();
+    execute!(stdout, EnterAlternateScreen)?;
+    let backend = CrosstermBackend::new(stdout);
+    let mut terminal = Terminal::new(backend)?;
 
-    // Group components by category (preserving insertion order)
-    let mut grouped: HashMap<String, Vec<_>> = HashMap::new();
-    let mut category_order: Vec<String> = Vec::new();
-    for comp in &index.components {
-        if !grouped.contains_key(&comp.category) {
-            category_order.push(comp.category.clone());
-        }
-        grouped.entry(comp.category.clone()).or_default().push(comp);
-    }
+    // 3. TUI State
+    let mut list_state = ListState::default();
+    list_state.select(Some(0));
 
-    for category in &category_order {
-        let comps = &grouped[category];
+    let mut search_query = String::new();
+    let mut input_mode = InputMode::Normal;
 
-        // Capitalize first letter of category
-        let capitalized = {
-            let mut chars = category.chars();
-            match chars.next() {
-                None => String::new(),
-                Some(c) => c.to_uppercase().to_string() + chars.as_str(),
+    // 4. Main Event Loop
+    let loop_result = (|| -> Result<()> {
+        loop {
+            // Get filtered components
+            let query_lc = search_query.to_lowercase();
+            let filtered_components: Vec<&RegistryComponent> = index
+                .components
+                .iter()
+                .filter(|c| {
+                    c.name.to_lowercase().contains(&query_lc)
+                        || c.description.to_lowercase().contains(&query_lc)
+                })
+                .collect();
+
+            // Clamp selection
+            if let Some(selected) = list_state.selected() {
+                if filtered_components.is_empty() {
+                    list_state.select(None);
+                } else if selected >= filtered_components.len() {
+                    list_state.select(Some(filtered_components.len() - 1));
+                }
+            } else if !filtered_components.is_empty() {
+                list_state.select(Some(0));
             }
-        };
-        logger::stdout(&format!("  {}:", capitalized));
 
-        for comp in comps {
-            // Green bullet
-            let dot = "\x1B[32m●\x1B[0m";
-            let name_str = format!("{:<16}", comp.name);
-            let version_str = format!("({:<})", comp.version);
-            let version_padded = format!("{:<10}", version_str);
-            logger::stdout(&format!(
-                "    {} {} {} {}",
-                dot, name_str, version_padded, comp.description
-            ));
+            // Render
+            terminal.draw(|f| {
+                let size = f.size();
+
+                // Vertical Layout: Header (3), Main Body (Min 0), Footer (3)
+                let chunks = Layout::default()
+                    .direction(Direction::Vertical)
+                    .constraints([
+                        Constraint::Length(3),
+                        Constraint::Min(0),
+                        Constraint::Length(3),
+                    ])
+                    .split(size);
+
+                // ─── Header ───
+                let header = Paragraph::new(" JustUI Component Explorer ")
+                    .alignment(ratatui::layout::Alignment::Center)
+                    .block(
+                        Block::default()
+                            .borders(Borders::ALL)
+                            .border_style(Style::default().fg(Color::Cyan))
+                            .style(Style::default().add_modifier(Modifier::BOLD)),
+                    );
+                f.render_widget(header, chunks[0]);
+
+                // ─── Main Body (Columns: List & Details) ───
+                let main_chunks = Layout::default()
+                    .direction(Direction::Horizontal)
+                    .constraints([Constraint::Percentage(35), Constraint::Percentage(65)])
+                    .split(chunks[1]);
+
+                // Left Pane: Component List
+                let list_title = if input_mode == InputMode::Searching {
+                    format!(" Components (Filter: {}) ", search_query)
+                } else {
+                    " Components ".to_string()
+                };
+
+                let items: Vec<ListItem> = filtered_components
+                    .iter()
+                    .map(|comp| {
+                        let status = get_component_status(comp, &config);
+                        let status_style = match status.as_str() {
+                            "Installed" => Style::default().fg(Color::Green),
+                            "Outdated / Modified" => Style::default().fg(Color::Yellow),
+                            "Partially Installed" => Style::default().fg(Color::LightYellow),
+                            _ => Style::default().fg(Color::DarkGray),
+                        };
+
+                        let content = ratatui::text::Line::from(vec![
+                            ratatui::text::Span::raw(format!("{:<18}", comp.name)),
+                            ratatui::text::Span::styled(format!(" [{}]", status), status_style),
+                        ]);
+                        ListItem::new(content)
+                    })
+                    .collect();
+
+                let list_block = Block::default()
+                    .borders(Borders::ALL)
+                    .title(list_title)
+                    .border_style(if input_mode == InputMode::Searching {
+                        Style::default().fg(Color::Yellow)
+                    } else {
+                        Style::default().fg(Color::Gray)
+                    });
+
+                let list_widget = List::new(items)
+                    .block(list_block)
+                    .highlight_style(
+                        Style::default()
+                            .bg(Color::Rgb(59, 130, 246)) // Brand Blue
+                            .fg(Color::White)
+                            .add_modifier(Modifier::BOLD),
+                    )
+                    .highlight_symbol("▶ ");
+                f.render_stateful_widget(list_widget, main_chunks[0], &mut list_state);
+
+                // Right Pane: Details
+                let details_block = Block::default()
+                    .borders(Borders::ALL)
+                    .title(" Component Details ")
+                    .border_style(Style::default().fg(Color::Gray));
+
+                if let Some(selected_idx) = list_state.selected() {
+                    if let Some(comp) = filtered_components.get(selected_idx) {
+                        let mut detail_lines = vec![
+                            ratatui::text::Line::from(vec![
+                                ratatui::text::Span::styled(
+                                    &comp.name,
+                                    Style::default()
+                                        .fg(Color::Cyan)
+                                        .add_modifier(Modifier::BOLD),
+                                ),
+                                ratatui::text::Span::raw(format!(" (v{})", comp.version)),
+                            ]),
+                            ratatui::text::Line::from(vec![
+                                ratatui::text::Span::styled(
+                                    "Category:     ",
+                                    Style::default().fg(Color::DarkGray),
+                                ),
+                                ratatui::text::Span::raw(&comp.category),
+                            ]),
+                        ];
+
+                        // Presets
+                        let presets_str = if comp.supported_presets.is_empty() {
+                            "default".to_string()
+                        } else {
+                            comp.supported_presets.join(", ")
+                        };
+                        detail_lines.push(ratatui::text::Line::from(vec![
+                            ratatui::text::Span::styled(
+                                "Presets:      ",
+                                Style::default().fg(Color::DarkGray),
+                            ),
+                            ratatui::text::Span::raw(presets_str),
+                        ]));
+
+                        // Registry Dependencies
+                        let reg_deps = if comp.registry_dependencies.is_empty() {
+                            "none".to_string()
+                        } else {
+                            comp.registry_dependencies.join(", ")
+                        };
+                        detail_lines.push(ratatui::text::Line::from(vec![
+                            ratatui::text::Span::styled(
+                                "Registry Deps:",
+                                Style::default().fg(Color::DarkGray),
+                            ),
+                            ratatui::text::Span::raw(reg_deps),
+                        ]));
+
+                        // Pub Dependencies
+                        let pub_deps = if comp.pub_dependencies.is_empty() {
+                            "none".to_string()
+                        } else {
+                            comp.pub_dependencies
+                                .iter()
+                                .map(|(k, v)| format!("{}: {}", k, v))
+                                .collect::<Vec<_>>()
+                                .join(", ")
+                        };
+                        detail_lines.push(ratatui::text::Line::from(vec![
+                            ratatui::text::Span::styled(
+                                "Pub.dev Deps: ",
+                                Style::default().fg(Color::DarkGray),
+                            ),
+                            ratatui::text::Span::raw(pub_deps),
+                        ]));
+
+                        detail_lines.push(ratatui::text::Line::from(""));
+                        detail_lines.push(ratatui::text::Line::from(ratatui::text::Span::styled(
+                            "Description:",
+                            Style::default()
+                                .fg(Color::DarkGray)
+                                .add_modifier(Modifier::UNDERLINED),
+                        )));
+                        detail_lines.push(ratatui::text::Line::from(comp.description.as_str()));
+
+                        detail_lines.push(ratatui::text::Line::from(""));
+                        detail_lines.push(ratatui::text::Line::from(ratatui::text::Span::styled(
+                            "Files:",
+                            Style::default()
+                                .fg(Color::DarkGray)
+                                .add_modifier(Modifier::UNDERLINED),
+                        )));
+
+                        for file in comp.files_for_preset(&config.preset) {
+                            detail_lines.push(ratatui::text::Line::from(vec![
+                                ratatui::text::Span::raw("  • "),
+                                ratatui::text::Span::styled(
+                                    &file.name,
+                                    Style::default().fg(Color::LightGreen),
+                                ),
+                                ratatui::text::Span::styled(
+                                    format!(" ({})", file.path),
+                                    Style::default().fg(Color::DarkGray),
+                                ),
+                            ]));
+                        }
+
+                        let details_paragraph = Paragraph::new(detail_lines)
+                            .block(details_block)
+                            .wrap(Wrap { trim: true });
+                        f.render_widget(details_paragraph, main_chunks[1]);
+                    }
+                } else {
+                    let no_selection = Paragraph::new("No component selected.")
+                        .block(details_block)
+                        .alignment(ratatui::layout::Alignment::Center);
+                    f.render_widget(no_selection, main_chunks[1]);
+                }
+
+                // ─── Footer ───
+                let footer_text = match input_mode {
+                    InputMode::Normal => {
+                        vec![
+                            "[↑/↓] Navigate".cyan(),
+                            "  |  ".into(),
+                            "[/] Search".yellow(),
+                            "  |  ".into(),
+                            "[i/Enter] Install".green(),
+                            "  |  ".into(),
+                            "[q/Esc] Quit".red(),
+                        ]
+                    }
+                    InputMode::Searching => {
+                        vec![
+                            "[Esc] Normal Mode".yellow(),
+                            "  |  ".into(),
+                            "[Type] Filter".cyan(),
+                        ]
+                    }
+                };
+
+                let footer = Paragraph::new(ratatui::text::Line::from(footer_text))
+                    .alignment(ratatui::layout::Alignment::Center)
+                    .block(
+                        Block::default()
+                            .borders(Borders::ALL)
+                            .border_style(Style::default().fg(Color::Gray)),
+                    );
+                f.render_widget(footer, chunks[2]);
+            })?;
+
+            // Handle Input Events
+            if event::poll(std::time::Duration::from_millis(100))? {
+                if let Event::Key(key) = event::read()? {
+                    match input_mode {
+                        InputMode::Normal => match key.code {
+                            KeyCode::Char('q') | KeyCode::Esc => break,
+                            KeyCode::Up | KeyCode::Char('k') => {
+                                if let Some(selected) = list_state.selected() {
+                                    if selected > 0 {
+                                        list_state.select(Some(selected - 1));
+                                    }
+                                }
+                            }
+                            KeyCode::Down | KeyCode::Char('j') => {
+                                if let Some(selected) = list_state.selected() {
+                                    if !filtered_components.is_empty()
+                                        && selected < filtered_components.len() - 1
+                                    {
+                                        list_state.select(Some(selected + 1));
+                                    }
+                                }
+                            }
+                            KeyCode::Char('/') => {
+                                input_mode = InputMode::Searching;
+                            }
+                            KeyCode::Char('i') | KeyCode::Enter => {
+                                if let Some(selected_idx) = list_state.selected() {
+                                    if let Some(comp) = filtered_components.get(selected_idx) {
+                                        let comp_name = comp.name.clone();
+
+                                        // 1. Suspend TUI
+                                        disable_raw_mode()?;
+                                        execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+                                        println!("\nInstalling component \"{}\"...", comp_name);
+
+                                        // 2. Run installation logic
+                                        let mut visited = HashSet::new();
+                                        let pb_files = indicatif::ProgressBar::new_spinner();
+                                        pb_files.set_message("Installing files...");
+                                        pb_files.enable_steady_tick(
+                                            std::time::Duration::from_millis(100),
+                                        );
+
+                                        match add_component(
+                                            &comp_name,
+                                            &index,
+                                            &client,
+                                            &config.components_dir,
+                                            &config.tokens_dir,
+                                            &config.shared_dir,
+                                            &mut visited,
+                                            false, // dry_run
+                                            false, // show_diff
+                                            true,  // auto_yes
+                                            &Some(pb_files.clone()),
+                                            &config.preset,
+                                        ) {
+                                            Ok((_stats, details)) => {
+                                                pb_files.finish_and_clear();
+                                                logger::success(&format!(
+                                                    "Component \"{}\" added successfully.",
+                                                    comp_name
+                                                ));
+                                                // Print summary box
+                                                let mut summary_items = Vec::new();
+                                                for detail in details {
+                                                    summary_items.push(logger::SummaryItem {
+                                                        label: detail.file_name,
+                                                        value: detail.path,
+                                                    });
+                                                }
+                                                logger::summary("File Summary", &summary_items);
+                                            }
+                                            Err(e) => {
+                                                pb_files.finish_and_clear();
+                                                logger::error(&format!(
+                                                    "Failed to install \"{}\": {}",
+                                                    comp_name, e
+                                                ));
+                                            }
+                                        }
+
+                                        print!("\nPress Enter to return to the component list...");
+                                        io::stdout().flush()?;
+                                        let mut buffer = String::new();
+                                        io::stdin().read_line(&mut buffer)?;
+
+                                        // 3. Resume TUI
+                                        enable_raw_mode()?;
+                                        execute!(terminal.backend_mut(), EnterAlternateScreen)?;
+                                        terminal.clear()?;
+                                    }
+                                }
+                            }
+                            _ => {}
+                        },
+                        InputMode::Searching => match key.code {
+                            KeyCode::Esc => {
+                                input_mode = InputMode::Normal;
+                            }
+                            KeyCode::Backspace => {
+                                search_query.pop();
+                            }
+                            KeyCode::Char(c) => {
+                                search_query.push(c);
+                            }
+                            _ => {}
+                        },
+                    }
+                }
+            }
+        }
+        Ok(())
+    })();
+
+    // 5. Shutdown terminal and restore raw mode
+    disable_raw_mode()?;
+    execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+
+    loop_result
+}
+
+fn get_component_status(comp: &RegistryComponent, config: &JustUIConfig) -> String {
+    let target_dir = if comp.category == "tokens" || comp.category == "core" {
+        config.tokens_dir.clone()
+    } else if comp.internal {
+        config.shared_dir.clone()
+    } else {
+        format!("{}/{}", config.components_dir, comp.name)
+    };
+
+    let files = comp.files_for_preset(&config.preset);
+    if files.is_empty() {
+        return "N/A".to_string();
+    }
+
+    let mut existing_count = 0;
+    let mut matching_count = 0;
+
+    for file in files {
+        let local_file_name = if comp.internal {
+            crate::utils::import_rewriter::normalize_shared_file_name(&file.name)
+        } else {
+            file.name.clone()
+        };
+        let path = std::path::Path::new(&target_dir).join(local_file_name);
+        if path.exists() {
+            existing_count += 1;
+            if let Ok(content) = std::fs::read_to_string(&path) {
+                let local_clean =
+                    crate::utils::import_rewriter::strip_metadata(&content.replace("\r\n", "\n"));
+                let local_hash = sha256_hex(local_clean.as_bytes());
+                let expected_hash = file.checksum.replace("sha256:", "").trim().to_string();
+                if local_hash == expected_hash {
+                    matching_count += 1;
+                }
+            }
         }
     }
-    logger::stdout("");
 
-    Ok(())
+    if existing_count == 0 {
+        "Not Installed".to_string()
+    } else if matching_count == files.len() {
+        "Installed".to_string()
+    } else if existing_count == files.len() {
+        "Outdated / Modified".to_string()
+    } else {
+        "Partially Installed".to_string()
+    }
 }

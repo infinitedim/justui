@@ -28,6 +28,9 @@ dialoguer = "0.11"
 similar = "3"
 indicatif = "0.17"
 inquire = "0.7"
+ratatui = "0.26"
+crossterm = "0.27"
+syntect = { version = "5.2", default-features = false, features = ["parsing", "default-syntaxes", "default-themes", "regex-fancy"] }
 
 [dev-dependencies]
 tempfile = "3"
