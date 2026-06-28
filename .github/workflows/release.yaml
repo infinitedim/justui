@@ -112,7 +112,7 @@ jobs:
           echo "ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: justui-${{ matrix.target }}
           path: ${{ env.ARCHIVE }}
@@ -150,7 +150,7 @@ jobs:
           echo "ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: justui-${{ matrix.target }}
           path: ${{ env.ARCHIVE }}
@@ -183,7 +183,7 @@ jobs:
           echo "ARCHIVE=$archive" | Out-File -Append $env:GITHUB_ENV
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: justui-x86_64-pc-windows-msvc
           path: ${{ env.ARCHIVE }}
