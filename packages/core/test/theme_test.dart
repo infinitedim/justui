@@ -219,7 +219,7 @@ void main() {
 
         await tester.pumpWidget(
           Directionality(
-            textDirection: TextDirection.ltr,
+            textDirection: .ltr,
             child: JustThemeProvider(
               initialThemeMode: ThemeMode.light,
               onThemeChanged: (mode) {
@@ -265,7 +265,7 @@ void main() {
 
       await tester.pumpWidget(
         Directionality(
-          textDirection: TextDirection.ltr,
+          textDirection: .ltr,
           child: JustThemeProvider(
             initialThemeMode: ThemeMode.light,
             lightTheme: JustThemeData.light.copyWith(
@@ -400,7 +400,7 @@ void main() {
 
         await tester.pumpWidget(
           Directionality(
-            textDirection: TextDirection.ltr,
+            textDirection: .ltr,
             child: JustThemeProvider(
               initialThemeMode: ThemeMode.system,
               child: Builder(

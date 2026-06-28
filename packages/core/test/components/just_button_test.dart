@@ -365,7 +365,7 @@ void main() {
         JustThemeProvider(
           lightTheme: JustThemeData.neobrutalismLight,
           child: Directionality(
-            textDirection: TextDirection.ltr,
+            textDirection: .ltr,
             child: JustButton(label: 'Neobrutalist Button', onPressed: () {}),
           ),
         ),

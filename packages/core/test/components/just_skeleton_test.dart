@@ -371,7 +371,7 @@ void main() {
         JustThemeProvider(
           lightTheme: JustThemeData.neobrutalismLight,
           child: const Directionality(
-            textDirection: TextDirection.ltr,
+            textDirection: .ltr,
             child: JustSkeleton(
               loading: true,
               child: Text('Neobrutalist Loading...'),

@@ -11,7 +11,7 @@ void main() {
   Widget buildTestableWidget(Widget child, {double width = 800.0}) {
     return JustThemeProvider(
       child: Directionality(
-        textDirection: TextDirection.ltr,
+        textDirection: .ltr,
         child: MediaQuery(
           data: MediaQueryData(size: Size(width, 600.0)),
           child: Overlay(
@@ -133,7 +133,7 @@ void main() {
         JustThemeProvider(
           lightTheme: JustThemeData.neobrutalismLight,
           child: const Directionality(
-            textDirection: TextDirection.ltr,
+            textDirection: .ltr,
             child: JustSidebar(
               items: [JustSidebarItem(label: 'Home', icon: Text('HomeIcon'))],
             ),

@@ -219,7 +219,7 @@ void main() {
         JustThemeProvider(
           lightTheme: JustThemeData.neobrutalismLight,
           child: const Directionality(
-            textDirection: TextDirection.ltr,
+            textDirection: .ltr,
             child: JustInput(label: 'Neobrutalist Username'),
           ),
         ),

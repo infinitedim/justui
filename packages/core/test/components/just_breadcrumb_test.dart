@@ -9,7 +9,7 @@ void main() {
   Widget buildTestableWidget(Widget child) {
     return JustThemeProvider(
       child: Directionality(
-        textDirection: TextDirection.ltr,
+        textDirection: .ltr,
         child: Overlay(
           initialEntries: [OverlayEntry(builder: (context) => child)],
         ),
@@ -140,7 +140,7 @@ void main() {
         JustThemeProvider(
           lightTheme: JustThemeData.neobrutalismLight,
           child: Directionality(
-            textDirection: TextDirection.ltr,
+            textDirection: .ltr,
             child: Overlay(
               initialEntries: [
                 OverlayEntry(
