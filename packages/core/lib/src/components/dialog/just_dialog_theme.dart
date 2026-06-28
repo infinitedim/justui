@@ -13,11 +13,7 @@ class JustDialogTheme extends ThemeExtension<JustDialogTheme> {
   final JustDialogStyle? topStyle;
 
   /// Creates a [JustDialogTheme] configuration.
-  const JustDialogTheme({
-    this.centerStyle,
-    this.bottomStyle,
-    this.topStyle,
-  });
+  const JustDialogTheme({this.centerStyle, this.bottomStyle, this.topStyle});
 
   /// Default configuration for the theme.
   static const defaults = JustDialogTheme();

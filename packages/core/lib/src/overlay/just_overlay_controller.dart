@@ -1,11 +1,12 @@
 import 'package:flutter/widgets.dart';
 
 /// Callback signature for custom overlay transition animations.
-typedef JustOverlayAnimationBuilder = Widget Function(
-  BuildContext context,
-  Animation<double> animation,
-  Widget child,
-);
+typedef JustOverlayAnimationBuilder =
+    Widget Function(
+      BuildContext context,
+      Animation<double> animation,
+      Widget child,
+    );
 
 /// Base contract for all imperative overlay controllers in JustUI.
 abstract class JustOverlayController {
