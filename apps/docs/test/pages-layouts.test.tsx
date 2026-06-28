@@ -83,6 +83,14 @@ import Page, { generateStaticParams as docsStaticParams } from '@/app/[lang]/doc
 describe('App Router Pages and Layouts', () => {
   describe('RootLayout', () => {
     it('renders HTML body and ThemeProvider', () => {
+      const consoleError = console.error;
+      console.error = vi.fn((msg, ...args) => {
+        if (typeof msg === 'string' && msg.includes('cannot be a child of')) {
+          return;
+        }
+        consoleError(msg, ...args);
+      });
+
       render(
         <RootLayout>
           <div data-testid="test-child" />
@@ -90,6 +98,8 @@ describe('App Router Pages and Layouts', () => {
       );
       expect(screen.getByTestId('theme-provider')).toBeInTheDocument();
       expect(screen.getByTestId('test-child')).toBeInTheDocument();
+
+      console.error = consoleError;
     });
   });
 
