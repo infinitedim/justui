@@ -1,148 +1,315 @@
 # Contributing to JustUI
 
-Thank you for your interest in contributing to JustUI! We are building a high-performance, premium, copy-paste Flutter UI component library.
-
-Before you start contributing, please read through this document to understand our codebase architecture, design guidelines, and code conventions.
+Thanks for wanting to contribute! This document covers everything you need to know before opening a PR — architecture, dev setup, coding rules, and how to add components to the registry.
 
 ---
 
-## 1. Project Philosophy & Architecture
+## Table of Contents
 
-JustUI is not a standard third-party Flutter package. It is a **copy-paste component library** (inspired by shadcn/ui).
-
-- Developers do not add JustUI to their `pubspec.yaml` as an external dependency.
-- Instead, they copy the raw component source code directly into their own projects using our CLI tool.
-- This means our components must be highly portable, easy to understand, and follow a **zero-dependency footprint** (i.e. no external pub.dev packages except native Flutter).
-
-### Repository Structure (Monorepo)
-
-- **`packages/just_ui_tokens`**: Single source of truth for design system constants (`const` colors, spacing, typography, shadow, curves, and durations) and the accessibility contrast ratio auditor.
-- **`packages/just_ui_core`**: Theming engine, lazy-cached Material `ThemeData` compiler, dynamic contrast-enforcing seed generator, and aspect-based rebuild optimizations.
-- **`packages/just_ui_cli`**: The command-line interface tool (`justui`) used to initialize configs, download, resolve dependencies recursively, and diff component files.
-- **`registry/`**: Holds metadata indices (`index.json`) and raw registry source files for components.
+1. [Philosophy](#1-philosophy)
+2. [Monorepo Structure](#2-monorepo-structure)
+3. [Development Setup](#3-development-setup)
+4. [Coding Rules](#4-coding-rules)
+5. [Adding a Component to the Registry](#5-adding-a-component-to-the-registry)
+6. [Working on the CLI](#6-working-on-the-cli)
+7. [Pull Request Guidelines](#7-pull-request-guidelines)
 
 ---
 
-## 2. Setting Up Your Development Environment
+## 1. Philosophy
 
-We use [Melos](https://melos.invertase.dev/) to manage our multi-package repository.
+JustUI is a **copy-paste component library**, not a traditional Flutter package. The key implications:
+
+- Components must be **fully self-contained** — no external pub.dev dependencies (unless absolutely necessary, and declared in `pubDependencies` in `index.json`).
+- Code must be **readable and modifiable** by developers who copy it into their project. Complexity should be justified.
+- Every token value, every style, every spacing unit must come from `packages/tokens/` — **no hardcoded values**.
+- Performance is non-negotiable: `const` constructors everywhere possible, `ValueNotifier` over `setState`, `RepaintBoundary` around all animated components.
+
+---
+
+## 2. Monorepo Structure
+
+```
+justui/
+├── packages/
+│   ├── tokens/          # Design system primitives — colors, spacing, typography, shadows
+│   ├── core/            # Theming engine, InheritedModel, lazy ThemeData cache
+│   └── cli/             # Rust CLI binary
+├── registry/
+│   ├── components/      # Raw component source files (what the CLI copies)
+│   └── index.json       # Registry manifest with versions, deps, and checksums
+├── apps/
+│   ├── docs/            # Next.js + Fumadocs documentation site
+│   └── showcase/        # Flutter showcase app
+└── docs/                # Phase specs and architecture decision records
+```
+
+**Package name mapping:**
+
+| Folder             | Dart package name      |
+| ------------------ | ---------------------- |
+| `packages/tokens/` | `just_ui_tokens`       |
+| `packages/core/`   | `just_ui_core`         |
+| `packages/cli/`    | `justui` (Rust binary) |
+
+---
+
+## 3. Development Setup
 
 ### Prerequisites
 
-- Flutter SDK installed locally.
-- Melos CLI (`dart pub global activate melos`).
+- Flutter SDK (stable channel)
+- Melos (`dart pub global activate melos`)
+- Rust toolchain (`rustup` + `cargo`) — only needed for CLI work
+- Bun — only needed for docs site work
 
-### Scaffolding & Bootstrap
-
-To install all dependencies across the monorepo packages and link them locally:
+### Bootstrap Monorepo
 
 ```bash
-# Override HOME directory to local if Dart telemetry errors occur
-export HOME=~/development/justui/.home
+# Clone the repo
+git clone https://github.com/username/justui.git
+cd justui
+
+# Bootstrap all Dart/Flutter packages
 melos bootstrap
 ```
 
+> If you hit Dart telemetry path errors, prefix with `export HOME=~/development/justui/.home`
+
 ### Static Analysis
 
-Always verify your code passes clean analysis before submitting a pull request:
+```bash
+melos exec --flutter -- "flutter analyze ."
+melos exec --no-flutter -- "dart analyze ."
+```
+
+### Running Tests
 
 ```bash
-export HOME=~/development/justui/.home
-dart analyze packages/just_ui_tokens
-dart analyze packages/just_ui_core
-dart analyze packages/just_ui_cli
+# Flutter packages
+melos exec --flutter --dir-exists="test" -- "flutter test"
+
+# Dart-only packages
+melos exec --no-flutter --dir-exists="test" -- "dart test"
+
+# CLI (Rust)
+cd packages/cli
+cargo test
+```
+
+### CLI Development
+
+```bash
+cd packages/cli
+
+# Build and install locally
+cargo install --path .
+
+# Run tests
+cargo test
+
+# Lint
+cargo clippy --all-targets -- -D warnings
 ```
 
 ---
 
-## 3. Strict Coding Style & Rules
+## 4. Coding Rules
 
-All contributions must adhere to these rules to maintain codebase consistency:
+These rules are enforced in CI and in code review. PRs that violate them will not be merged.
 
-### A. Dart Dot Shorthand (Constructor Shorthands)
+### A. No Material imports without `show`
 
-Since Dart 3.10, the compiler supports constructor shorthands when the type is statically declared by a parameter. We utilize this feature heavily.
+Never import `flutter/material.dart` without a restrictive `show` clause:
 
-- **Always use dot shorthand** for widgets and constructors (e.g. `BorderRadius`, `EdgeInsets`, `FontWeight`, `Radius`, etc.):
+```dart
+// ✅ Correct
+import 'package:flutter/material.dart' show Theme, ThemeData, ThemeExtension;
 
-  ```dart
-  // Correct (Dot Shorthand):
-  borderRadius: .all(radius.lg)
-  padding: .symmetric(horizontal: spacing.md)
-  fontWeight: .w600
-  borderRadius: .circular(12)
-
-  // Incorrect (Verbose):
-  borderRadius: BorderRadius.all(radius.lg)
-  padding: EdgeInsets.symmetric(horizontal: spacing.md)
-  fontWeight: FontWeight.w600
-  ```
-
-- **Do NOT** modify existing dot shorthands or change them back to their long, verbose form.
-
-### B. Aspect-Based Theme Consumption
-
-To maintain 60/120fps rendering speeds, we use `InheritedModel` inside `JustThemeProvider` to avoid rebuilding the entire widget tree when only specific theme tokens change.
-
-- **Use specific aspect extensions** within `build` methods:
-  - `context.justColors` (only rebuilds when colors change).
-  - `context.justTypo` (only rebuilds when typography changes).
-  - `context.justSpacing` (only rebuilds when spacing changes).
-- **Avoid** `context.justTheme` in small widgets as it registers listeners for _all_ theme aspects, resulting in unnecessary rebuilds.
-- **Use the non-registering API** in interactive event callbacks (e.g. `onPressed`, `onTap`):
-  - `context.readTheme()` (accesses theme values statically without registering a rebuild listener).
-
----
-
-## 4. Design & Motion Excellence
-
-We prioritize premium visual and interactive design:
-
-- **HSL Derived Colors:** Colors must be derived using clean HSL scales for harmonious palettes (sleek dark modes, balanced light modes).
-- **Transitions and Motion:** All components should incorporate micro-animations and smooth state transitions. Use default custom transition durations and curves (`transitionDuration` / `transitionCurve`) exposed by `JustThemeProvider`.
-- **Zero-dependency footprint:** Always build layout primitives using native Flutter components rather than introducing external packages.
-
----
-
-## 5. Contributing to the Component Registry
-
-If you are adding a new component or updating an existing one:
-
-### A. Place Raw Code in `registry`
-
-Add the raw source code of the component under `registry/components/<component_name>/`. For example, `registry/components/button/just_button.dart`.
-
-### B. Register in `registry/index.json`
-
-Every component must be cataloged inside the registry index file [index.json](file:///home/yourblooo/development/justui/registry/index.json).
-
-- Structure of a component in `index.json`:
-  ```json
-  {
-    "name": "button",
-    "version": "0.1.0",
-    "description": "Versatile button with multiple variants",
-    "category": "primitives",
-    "registryDependencies": ["spacing"],
-    "pubDependencies": {
-      "flutter_animate": "^1.0.0"
-    },
-    "files": [
-      {
-        "name": "just_button.dart",
-        "path": "components/button/just_button.dart",
-        "checksum": "sha256:e3b0c442..."
-      }
-    ]
-  }
-  ```
-
-### C. Calculating SHA-256 Checksums
-
-Every file in `index.json` must have a valid `checksum` field. To compute the checksum for your component files, use the following bash command:
-
-```bash
-sha256sum registry/components/button/just_button.dart
+// ❌ Wrong — imports the entire Material library
+import 'package:flutter/material.dart';
 ```
 
-Prefix the output string with `sha256:`. This is critical for `justui diff` to work properly.
+### B. Dot shorthand everywhere
+
+Use Dart dot shorthand for constructors wherever the type is statically inferred:
+
+```dart
+// ✅ Correct
+borderRadius: .all(radius.lg)
+padding: .symmetric(horizontal: spacing.md)
+fontWeight: .w600
+
+// ❌ Wrong
+borderRadius: BorderRadius.all(radius.lg)
+padding: EdgeInsets.symmetric(horizontal: spacing.md)
+fontWeight: FontWeight.w600
+```
+
+### C. `Color.withValues(alpha:)` not `withOpacity`
+
+```dart
+// ✅ Correct
+color.withValues(alpha: 0.5)
+
+// ❌ Wrong — deprecated API
+color.withOpacity(0.5)
+```
+
+### D. `ValueNotifier` over `setState`
+
+Use `ValueNotifier` + `ValueListenableBuilder` for local widget state. Avoid `setState` in components.
+
+### E. `const` constructors everywhere
+
+Every component must have a `const` constructor. Every style class must have a `const` constructor.
+
+### F. `RepaintBoundary` for animated components
+
+Wrap every animated component in a `RepaintBoundary` to isolate repaints:
+
+```dart
+return RepaintBoundary(
+  child: AnimatedBuilder(
+    animation: _controller,
+    builder: (context, child) => ...,
+  ),
+);
+```
+
+### G. Aspect-based theme consumption
+
+Always use specific aspect extensions in `build()`. Never use the generic `context.justTheme` in small components.
+
+```dart
+// ✅ Correct — only rebuilds when colors change
+final colors = context.justColors;
+
+// ❌ Avoid in small widgets — rebuilds on any theme change
+final theme = context.justTheme;
+```
+
+### H. Border widths (neobrutalism preset)
+
+- Component containers: `2.5` logical pixels
+- Sidebar active-item accent border only: `3.0` logical pixels
+
+---
+
+## 5. Adding a Component to the Registry
+
+### Step 1 — Build the component in `packages/core/`
+
+Place your component files under:
+
+```
+packages/core/lib/src/components/<component_name>/
+├── just_<name>.dart           # Widget implementation
+├── just_<name>_style.dart     # Per-instance style overrides
+├── just_<name>_variants.dart  # Size/variant enums
+└── just_<name>_theme.dart     # ThemeExtension for global overrides
+```
+
+Every component that depends on shared internal utilities (`_shared_pressable`, `_shared_focus_indicator`, etc.) must import them from their respective paths — the CLI handles path rewriting on install.
+
+### Step 2 — Copy files to `registry/components/<name>/`
+
+Registry files are synced from `packages/core/` source using the checksum tool:
+
+```bash
+dart run tools/generate_checksums.dart
+```
+
+This copies files, computes SHA-256 checksums, and updates `registry/index.json` automatically. Do **not** manually edit files under `registry/components/` — always edit the source in `packages/core/` first.
+
+To preview without writing:
+
+```bash
+dart run tools/generate_checksums.dart --dry-run
+```
+
+### Step 3 — Register in `registry/index.json`
+
+The checksum tool updates `index.json` automatically, but you must ensure the component entry exists with the correct metadata before running the tool. Add your component entry:
+
+```json
+{
+  "name": "my-component",
+  "version": "0.1.0",
+  "description": "Short description of what the component does",
+  "category": "primitives",
+  "hidden": false,
+  "internal": false,
+  "registryDependencies": ["_shared_pressable"],
+  "pubDependencies": {},
+  "files": []
+}
+```
+
+**Field reference:**
+
+| Field                  | Description                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------ |
+| `name`                 | Kebab-case component name (used in `justui add <name>`)                        |
+| `version`              | Semver string, start at `0.1.0`                                                |
+| `category`             | One of: `primitives`, `layout`, `navigation`, `tokens`, `core`                 |
+| `hidden`               | `true` hides from `justui list` (use for internal/WIP components)              |
+| `internal`             | `true` for `_shared_*` utilities — files go to `shared/` not a named subfolder |
+| `registryDependencies` | Other JustUI components this one depends on                                    |
+| `pubDependencies`      | External pub.dev packages required (will be auto-added to `pubspec.yaml`)      |
+| `files`                | Populated automatically by the checksum tool                                   |
+
+### Step 4 — Export from `packages/core/`
+
+Add your component to the barrel export at `packages/core/lib/just_ui_core.dart`.
+
+### Step 5 — Write tests
+
+Add widget tests under `packages/core/test/components/just_<name>_test.dart`. Tests must include at minimum: renders without error, responds to theme changes, and handles all variants.
+
+---
+
+## 6. Working on the CLI
+
+The CLI lives in `packages/cli/` and is written in Rust. Key files:
+
+```
+packages/cli/src/
+├── main.rs              # Clap command definitions
+├── registry.rs          # RegistryIndex, RegistryComponent structs + fetch logic
+├── config.rs            # JustUIConfig (reads justui.config.yaml)
+├── commands/
+│   ├── add.rs           # justui add
+│   ├── init.rs          # justui init
+│   ├── diff.rs          # justui diff
+│   ├── update.rs        # justui update
+│   ├── list.rs          # justui list
+│   ├── search.rs        # justui search
+│   ├── view.rs          # justui view
+│   ├── info.rs          # justui info
+│   └── create.rs        # justui create
+└── utils/
+    ├── logger.rs         # Colored terminal output
+    ├── prompt.rs         # Interactive prompts (inquire-based)
+    ├── import_rewriter.rs # Rewrites import paths after file copy
+    ├── diff_formatter.rs  # Unified diff renderer
+    └── pubspec_editor.rs  # pubspec.yaml dependency injection
+```
+
+**Key architectural rules for CLI:**
+
+- Component routing to output folder is controlled by `component.internal` field (`true` → `shared/`, `false` → `{components_dir}/{name}/`).
+- `compute_shared_components()` has been removed — never re-add heuristic-based shared detection.
+- Import paths are rewritten by `import_rewriter::rewrite()` after file copy — always verify rewrite logic when adding new file categories.
+
+---
+
+## 7. Pull Request Guidelines
+
+- **One concern per PR.** Don't mix new components with CLI changes.
+- **All CI checks must pass** before requesting review — format, analyze, test, clippy.
+- **Describe what and why** in the PR description. Link to a relevant issue if one exists.
+- **Screenshots or terminal output** for visual or CLI changes.
+- For new components, include a usage example in the PR description.
+
+If you're unsure whether a change fits the project direction, open an issue first to discuss before spending time on implementation.
