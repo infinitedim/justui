@@ -67,7 +67,8 @@ class JustProgress extends StatefulWidget {
   State<JustProgress> createState() => _JustProgressState();
 }
 
-class _JustProgressState extends State<JustProgress> with SingleTickerProviderStateMixin {
+class _JustProgressState extends State<JustProgress>
+    with SingleTickerProviderStateMixin {
   AnimationController? _indeterminateController;
 
   @override
@@ -118,27 +119,38 @@ class _JustProgressState extends State<JustProgress> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     final customTheme = JustThemeProvider.of(context).theme;
-    final progressTheme = customTheme.toThemeData().extension<JustProgressTheme>();
+    final progressTheme = customTheme
+        .toThemeData()
+        .extension<JustProgressTheme>();
     final themeStyle = progressTheme?.style;
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
     final radius = customTheme.radius;
-    final typography = JustThemeProvider.of(context, aspect: .typography).theme.typography;
+    final typography = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
     final isNeobrutalism = true;
 
     // Resolve Style Properties
-    final finalTrackColor = widget.style?.trackColor ??
+    final finalTrackColor =
+        widget.style?.trackColor ??
         themeStyle?.trackColor ??
-        (isNeobrutalism ? const Color(0x00000000) : colors.borderDefault.withValues(alpha: 0.3));
-
-    final finalFillColor = widget.style?.fillColor ??
-        themeStyle?.fillColor ??
         (isNeobrutalism
-            ? colors.textPrimary
-            : colors.borderFocus);
+            ? const Color(0x00000000)
+            : colors.borderDefault.withValues(alpha: 0.3));
 
-    final finalLabelColor = widget.style?.labelColor ??
+    final finalFillColor =
+        widget.style?.fillColor ??
+        themeStyle?.fillColor ??
+        (isNeobrutalism ? colors.textPrimary : colors.borderFocus);
+
+    final finalLabelColor =
+        widget.style?.labelColor ??
         themeStyle?.labelColor ??
         colors.textPrimary;
 
@@ -148,8 +160,28 @@ class _JustProgressState extends State<JustProgress> with SingleTickerProviderSt
       label: 'Progress indicator',
       value: widget.value != null ? _resolvedLabel : 'Loading',
       child: widget.variant == JustProgressVariant.linear
-          ? _buildLinear(context, colors, spacing, radius, typography, isNeobrutalism, finalTrackColor, finalFillColor, finalLabelColor)
-          : _buildCircular(context, colors, spacing, radius, typography, isNeobrutalism, finalTrackColor, finalFillColor, finalLabelColor),
+          ? _buildLinear(
+              context,
+              colors,
+              spacing,
+              radius,
+              typography,
+              isNeobrutalism,
+              finalTrackColor,
+              finalFillColor,
+              finalLabelColor,
+            )
+          : _buildCircular(
+              context,
+              colors,
+              spacing,
+              radius,
+              typography,
+              isNeobrutalism,
+              finalTrackColor,
+              finalFillColor,
+              finalLabelColor,
+            ),
     );
   }
 
@@ -178,14 +210,21 @@ class _JustProgressState extends State<JustProgress> with SingleTickerProviderSt
         break;
     }
 
-    final defaultRadius = isNeobrutalism ? BorderRadius.zero : .all(radius.full);
-    final finalRadius = widget.style?.borderRadius ?? themeStyleBorderRadius(context) ?? defaultRadius;
+    final defaultRadius = isNeobrutalism
+        ? BorderRadius.zero
+        : .all(radius.full);
+    final finalRadius =
+        widget.style?.borderRadius ??
+        themeStyleBorderRadius(context) ??
+        defaultRadius;
 
     Widget bar = Container(
       height: height,
       decoration: BoxDecoration(
         color: trackBg,
-        border: isNeobrutalism ? Border.all(color: colors.textPrimary, width: 2.5) : null,
+        border: isNeobrutalism
+            ? Border.all(color: colors.textPrimary, width: 2.5)
+            : null,
         borderRadius: finalRadius,
       ),
       clipBehavior: Clip.antiAlias,
@@ -195,7 +234,8 @@ class _JustProgressState extends State<JustProgress> with SingleTickerProviderSt
             // Determinate Linear Progress
             TweenAnimationBuilder<double>(
               tween: Tween<double>(begin: 0.0, end: _fraction),
-              duration: widget.animationDuration ?? const Duration(milliseconds: 200),
+              duration:
+                  widget.animationDuration ?? const Duration(milliseconds: 200),
               curve: Curves.easeOutCubic,
               builder: (context, value, child) {
                 return FractionallySizedBox(
@@ -243,16 +283,18 @@ class _JustProgressState extends State<JustProgress> with SingleTickerProviderSt
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: bar,
-              ),
+              Expanded(child: bar),
               SizedBox(width: spacing.md),
               Text(
                 _resolvedLabel,
-                style: (widget.size == JustProgressSize.sm ? typography.caption : typography.bodySm).copyWith(
-                  color: labelColor,
-                  fontWeight: isNeobrutalism ? .w700 : .w500,
-                ),
+                style:
+                    (widget.size == JustProgressSize.sm
+                            ? typography.caption
+                            : typography.bodySm)
+                        .copyWith(
+                          color: labelColor,
+                          fontWeight: isNeobrutalism ? .w700 : .w500,
+                        ),
               ),
             ],
           ),
@@ -339,21 +381,21 @@ class _JustProgressState extends State<JustProgress> with SingleTickerProviderSt
             indicator,
             Text(
               _resolvedLabel,
-              style: (widget.size == JustProgressSize.lg ? typography.bodySm : typography.caption).copyWith(
-                color: labelColor,
-                fontWeight: isNeobrutalism ? .w700 : .w500,
-              ),
+              style:
+                  (widget.size == JustProgressSize.lg
+                          ? typography.bodySm
+                          : typography.caption)
+                      .copyWith(
+                        color: labelColor,
+                        fontWeight: isNeobrutalism ? .w700 : .w500,
+                      ),
             ),
           ],
         ),
       );
     }
 
-    return SizedBox(
-      width: diameter,
-      height: diameter,
-      child: indicator,
-    );
+    return SizedBox(width: diameter, height: diameter, child: indicator);
   }
 
   BorderRadius? themeStyleBorderRadius(BuildContext context) {

@@ -14,9 +14,7 @@ class JustToggleTheme extends ThemeExtension<JustToggleTheme> {
 
   @override
   JustToggleTheme copyWith({JustToggleStyle? style}) {
-    return JustToggleTheme(
-      style: style ?? this.style,
-    );
+    return JustToggleTheme(style: style ?? this.style);
   }
 
   @override

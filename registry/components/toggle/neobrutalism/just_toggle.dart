@@ -79,10 +79,16 @@ class JustToggle extends StatelessWidget {
     final themeStyle = toggleTheme?.style;
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
     final radius = customTheme.radius;
     final shadows = customTheme.shadows;
-    final typography = JustThemeProvider.of(context, aspect: .typography).theme.typography;
+    final typography = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
     final isNeobrutalism = true;
 
     final isInteractive = enabled && onPressed != null;
@@ -112,8 +118,11 @@ class JustToggle extends StatelessWidget {
 
     // Resolve BorderRadius with Group Collapse
     final groupInfo = JustToggleGroupInfo.of(context);
-    final BorderRadius defaultRadius = isNeobrutalism ? BorderRadius.zero : .all(radius.md);
-    BorderRadius resolvedRadius = style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius;
+    final BorderRadius defaultRadius = isNeobrutalism
+        ? BorderRadius.zero
+        : .all(radius.md);
+    BorderRadius resolvedRadius =
+        style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius;
 
     if (groupInfo != null && !isNeobrutalism) {
       final isFirst = groupInfo.index == 0;
@@ -151,27 +160,35 @@ class JustToggle extends StatelessWidget {
     }
 
     // Resolve Color States
-    final finalSelectedBg = style?.selectedBackgroundColor ??
+    final finalSelectedBg =
+        style?.selectedBackgroundColor ??
         themeStyle?.selectedBackgroundColor ??
-        (isNeobrutalism ? colors.textPrimary : colors.borderFocus.withValues(alpha: 0.15));
+        (isNeobrutalism
+            ? colors.textPrimary
+            : colors.borderFocus.withValues(alpha: 0.15));
 
-    final finalUnselectedBg = style?.unselectedBackgroundColor ??
+    final finalUnselectedBg =
+        style?.unselectedBackgroundColor ??
         themeStyle?.unselectedBackgroundColor ??
         (isNeobrutalism ? colors.background : const Color(0x00000000));
 
-    final finalSelectedBorder = style?.selectedBorderColor ??
+    final finalSelectedBorder =
+        style?.selectedBorderColor ??
         themeStyle?.selectedBorderColor ??
         (isNeobrutalism ? colors.textPrimary : colors.borderFocus);
 
-    final finalUnselectedBorder = style?.unselectedBorderColor ??
+    final finalUnselectedBorder =
+        style?.unselectedBorderColor ??
         themeStyle?.unselectedBorderColor ??
         (isNeobrutalism ? colors.textPrimary : colors.borderDefault);
 
-    final finalSelectedText = style?.selectedTextColor ??
+    final finalSelectedText =
+        style?.selectedTextColor ??
         themeStyle?.selectedTextColor ??
         (isNeobrutalism ? colors.textInverse : colors.borderFocus);
 
-    final finalUnselectedText = style?.unselectedTextColor ??
+    final finalUnselectedText =
+        style?.unselectedTextColor ??
         themeStyle?.unselectedTextColor ??
         colors.textPrimary;
 
@@ -196,7 +213,9 @@ class JustToggle extends StatelessWidget {
             if (isNeobrutalism) {
               // Press effect handled by customTheme.buildPressEffect
             } else {
-              bg = selected ? finalSelectedBg.withValues(alpha: 0.8) : colors.borderDefault.withValues(alpha: 0.15);
+              bg = selected
+                  ? finalSelectedBg.withValues(alpha: 0.8)
+                  : colors.borderDefault.withValues(alpha: 0.15);
             }
           } else if (isHovered) {
             if (isNeobrutalism) {
@@ -204,52 +223,48 @@ class JustToggle extends StatelessWidget {
                 bg = colors.borderDefault.withValues(alpha: 0.08);
               }
             } else {
-              bg = selected ? finalSelectedBg.withValues(alpha: 0.9) : colors.borderDefault.withValues(alpha: 0.08);
+              bg = selected
+                  ? finalSelectedBg.withValues(alpha: 0.9)
+                  : colors.borderDefault.withValues(alpha: 0.08);
             }
           }
 
-            BoxBorder resolvedBorder;
-            if (isNeobrutalism) {
-              resolvedBorder = Border.all(
-                color: border,
-                width: 2.5,
+          BoxBorder resolvedBorder;
+          if (isNeobrutalism) {
+            resolvedBorder = Border.all(color: border, width: 2.5);
+          } else if (groupInfo != null) {
+            if (groupInfo.direction == Axis.horizontal) {
+              resolvedBorder = Border(
+                top: BorderSide(color: border),
+                bottom: BorderSide(color: border),
+                right: BorderSide(color: border),
+                left: groupInfo.index == 0
+                    ? BorderSide(color: border)
+                    : BorderSide.none,
               );
-            } else if (groupInfo != null) {
-              if (groupInfo.direction == Axis.horizontal) {
-                resolvedBorder = Border(
-                  top: BorderSide(color: border),
-                  bottom: BorderSide(color: border),
-                  right: BorderSide(color: border),
-                  left: groupInfo.index == 0
-                      ? BorderSide(color: border)
-                      : BorderSide.none,
-                );
-              } else {
-                resolvedBorder = Border(
-                  left: BorderSide(color: border),
-                  right: BorderSide(color: border),
-                  bottom: BorderSide(color: border),
-                  top: groupInfo.index == 0
-                      ? BorderSide(color: border)
-                      : BorderSide.none,
-                );
-              }
             } else {
-              resolvedBorder = Border.all(
-                color: border,
-                width: 1.0,
+              resolvedBorder = Border(
+                left: BorderSide(color: border),
+                right: BorderSide(color: border),
+                bottom: BorderSide(color: border),
+                top: groupInfo.index == 0
+                    ? BorderSide(color: border)
+                    : BorderSide.none,
               );
             }
+          } else {
+            resolvedBorder = Border.all(color: border, width: 1.0);
+          }
 
-            Widget buttonContent = Container(
-              height: height,
-              padding: .symmetric(horizontal: paddingH),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: bg,
-                border: resolvedBorder,
-                borderRadius: isNeobrutalism ? BorderRadius.zero : resolvedRadius,
-              ),
+          Widget buttonContent = Container(
+            height: height,
+            padding: .symmetric(horizontal: paddingH),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: bg,
+              border: resolvedBorder,
+              borderRadius: isNeobrutalism ? BorderRadius.zero : resolvedRadius,
+            ),
             child: DefaultTextStyle.merge(
               style: textStyle.copyWith(
                 color: text,

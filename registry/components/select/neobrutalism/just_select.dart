@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' show Theme;
-import 'package:flutter/services.dart' show HapticFeedback, LogicalKeyboardKey, TextInputAction, TextInputType;
+import 'package:flutter/services.dart'
+    show HapticFeedback, LogicalKeyboardKey, TextInputAction, TextInputType;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../shared/default/_shared_theme_provider.dart';
@@ -37,11 +38,11 @@ class JustSelectOption<T> {
 
   /// Creates a divider option.
   const JustSelectOption.divider()
-      : value = null,
-        label = '',
-        icon = null,
-        enabled = false,
-        isDivider = true;
+    : value = null,
+      label = '',
+      icon = null,
+      enabled = false,
+      isDivider = true;
 }
 
 /// A highly customizable, accessible dropdown select component.
@@ -111,7 +112,8 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   final TextEditingController _searchController = TextEditingController();
 
   String _searchQuery = '';
-  int _focusedOptionIndex = -1; // Keyboard navigation index within filtered options
+  int _focusedOptionIndex =
+      -1; // Keyboard navigation index within filtered options
 
   @override
   void initState() {
@@ -255,10 +257,16 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     final themeStyle = selectTheme?.style;
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
     final radius = customTheme.radius;
     final shadows = customTheme.shadows;
-    final typography = JustThemeProvider.of(context, aspect: .typography).theme.typography;
+    final typography = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
     final isNeobrutalism = true;
 
     // Resolve Size Properties
@@ -285,23 +293,26 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     }
 
     // Style Resolution
-    final finalBg = widget.style?.triggerBackgroundColor ??
+    final finalBg =
+        widget.style?.triggerBackgroundColor ??
         themeStyle?.triggerBackgroundColor ??
         colors.background;
-    final finalBorderColor = widget.style?.triggerBorderColor ??
+    final finalBorderColor =
+        widget.style?.triggerBorderColor ??
         themeStyle?.triggerBorderColor ??
         colors.borderDefault;
-    final finalTextColor = widget.style?.textColor ??
-        themeStyle?.textColor ??
-        colors.textPrimary;
-    final finalPlaceholderColor = widget.style?.placeholderColor ??
+    final finalTextColor =
+        widget.style?.textColor ?? themeStyle?.textColor ?? colors.textPrimary;
+    final finalPlaceholderColor =
+        widget.style?.placeholderColor ??
         themeStyle?.placeholderColor ??
         colors.textSecondary;
-    final finalRadius = widget.style?.borderRadius ??
-        themeStyle?.borderRadius ??
-        defaultRadius;
+    final finalRadius =
+        widget.style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius;
 
-    final selectedOption = widget.options.cast<JustSelectOption<T>?>().firstWhere(
+    final selectedOption = widget.options
+        .cast<JustSelectOption<T>?>()
+        .firstWhere(
           (opt) => opt != null && !opt.isDivider && opt.value == widget.value,
           orElse: () => null,
         );
@@ -314,8 +325,8 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
         color: hasError
             ? colors.error
             : (_overlayController.isShowing
-                ? colors.borderFocus
-                : finalBorderColor),
+                  ? colors.borderFocus
+                  : finalBorderColor),
         width: isNeobrutalism ? 2.5 : 1.0,
       ),
       borderRadius: isNeobrutalism ? BorderRadius.zero : finalRadius,
@@ -349,7 +360,9 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                             Expanded(
                               child: Text(
                                 selectedOption.label,
-                                style: textStyle.copyWith(color: finalTextColor),
+                                style: textStyle.copyWith(
+                                  color: finalTextColor,
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -357,7 +370,9 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                         )
                       : Text(
                           widget.placeholder ?? 'Select option...',
-                          style: textStyle.copyWith(color: finalPlaceholderColor),
+                          style: textStyle.copyWith(
+                            color: finalPlaceholderColor,
+                          ),
                           overflow: TextOverflow.ellipsis,
                         ),
                 ),
@@ -372,7 +387,9 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                     size: widget.size == JustSelectSize.sm ? 16 : 20,
                     color: hasError
                         ? colors.error
-                        : (widget.enabled ? finalTextColor : finalTextColor.withValues(alpha: 0.5)),
+                        : (widget.enabled
+                              ? finalTextColor
+                              : finalTextColor.withValues(alpha: 0.5)),
                   ),
                 ),
               ],
@@ -438,10 +455,13 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
 
               // Calculate flip logic
               final double dropdownHeight = widget.maxDropdownHeight.toDouble();
-              final double totalDropdownHeightNeeded = dropdownHeight + spacing.xs;
+              final double totalDropdownHeightNeeded =
+                  dropdownHeight + spacing.xs;
               final bool fitsBelow =
-                  targetOffset.dy + triggerHeight + totalDropdownHeightNeeded <= screenHeight;
-              final bool fitsAbove = targetOffset.dy - totalDropdownHeightNeeded >= 0;
+                  targetOffset.dy + triggerHeight + totalDropdownHeightNeeded <=
+                  screenHeight;
+              final bool fitsAbove =
+                  targetOffset.dy - totalDropdownHeightNeeded >= 0;
 
               final double topPosition;
               if (fitsBelow || !fitsAbove) {
@@ -452,14 +472,17 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
 
               final filtered = _filteredOptions;
 
-              final dropdownContainerBg = widget.style?.dropdownBackgroundColor ??
+              final dropdownContainerBg =
+                  widget.style?.dropdownBackgroundColor ??
                   themeStyle?.dropdownBackgroundColor ??
                   colors.background;
 
               final dropdownDecoration = BoxDecoration(
                 color: dropdownContainerBg,
                 border: Border.all(
-                  color: isNeobrutalism ? colors.textPrimary : colors.borderDefault,
+                  color: isNeobrutalism
+                      ? colors.textPrimary
+                      : colors.borderDefault,
                   width: isNeobrutalism ? 2.5 : 1.0,
                 ),
                 borderRadius: isNeobrutalism ? BorderRadius.zero : finalRadius,
@@ -469,7 +492,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                           color: colors.textPrimary,
                           offset: const Offset(6, 6),
                           blurRadius: 0,
-                        )
+                        ),
                       ]
                     : shadows.lg,
               );
@@ -485,7 +508,8 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                         padding: .all(spacing.sm),
                         child: Focus(
                           focusNode: _searchFocusNode,
-                          onKeyEvent: (node, event) => _handleKeyEvent(node, event),
+                          onKeyEvent: (node, event) =>
+                              _handleKeyEvent(node, event),
                           child: Container(
                             height: 36,
                             decoration: BoxDecoration(
@@ -494,13 +518,18 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                 color: colors.borderDefault,
                                 width: isNeobrutalism ? 2.0 : 1.0,
                               ),
-                              borderRadius: isNeobrutalism ? BorderRadius.zero : .all(radius.sm),
+                              borderRadius: isNeobrutalism
+                                  ? BorderRadius.zero
+                                  : .all(radius.sm),
                             ),
                             padding: .symmetric(horizontal: spacing.sm),
                             child: Row(
                               children: [
                                 Icon(
-                                  const IconData(0xe554, fontFamily: 'MaterialIcons'),
+                                  const IconData(
+                                    0xe554,
+                                    fontFamily: 'MaterialIcons',
+                                  ),
                                   size: 16,
                                   color: colors.textSecondary,
                                 ),
@@ -508,8 +537,11 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                 Expanded(
                                   child: EditableText(
                                     controller: _searchController,
-                                    focusNode: FocusNode(), // internal dummy focus
-                                    style: textStyle.copyWith(color: colors.textPrimary),
+                                    focusNode:
+                                        FocusNode(), // internal dummy focus
+                                    style: textStyle.copyWith(
+                                      color: colors.textPrimary,
+                                    ),
                                     cursorColor: colors.borderFocus,
                                     backgroundCursorColor: colors.background,
                                     textInputAction: TextInputAction.search,
@@ -528,7 +560,9 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                 padding: .all(spacing.md),
                                 child: Text(
                                   'No options found',
-                                  style: textStyle.copyWith(color: colors.textSecondary),
+                                  style: textStyle.copyWith(
+                                    color: colors.textSecondary,
+                                  ),
                                 ),
                               ),
                             )
@@ -547,79 +581,103 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                 }
 
                                 final isSelected = option.value == widget.value;
-                                final isKeyboardFocused = index == _focusedOptionIndex;
+                                final isKeyboardFocused =
+                                    index == _focusedOptionIndex;
 
                                 final optionBg = isSelected
                                     ? (isNeobrutalism
-                                        ? colors.textPrimary
-                                        : (widget.style?.selectedOptionColor ??
-                                            themeStyle?.selectedOptionColor ??
-                                            colors.borderFocus.withValues(alpha: 0.15)))
+                                          ? colors.textPrimary
+                                          : (widget
+                                                    .style
+                                                    ?.selectedOptionColor ??
+                                                themeStyle
+                                                    ?.selectedOptionColor ??
+                                                colors.borderFocus.withValues(
+                                                  alpha: 0.15,
+                                                )))
                                     : const Color(0x00000000);
 
                                 final optionText = isSelected
                                     ? (isNeobrutalism
-                                        ? colors.textInverse
-                                        : (widget.style?.textColor ?? themeStyle?.textColor ?? colors.borderFocus))
+                                          ? colors.textInverse
+                                          : (widget.style?.textColor ??
+                                                themeStyle?.textColor ??
+                                                colors.borderFocus))
                                     : (option.enabled
-                                        ? finalTextColor
-                                        : finalTextColor.withValues(alpha: 0.4));
+                                          ? finalTextColor
+                                          : finalTextColor.withValues(
+                                              alpha: 0.4,
+                                            ));
 
                                 return JustPressable(
                                   enabled: option.enabled,
                                   onTap: () => _selectOption(option),
-                                  builder: (context, isHovered, isPressed, _, __) {
-                                    final showHover = isHovered || isKeyboardFocused;
-                                    Color itemBg = optionBg;
+                                  builder:
+                                      (context, isHovered, isPressed, _, __) {
+                                        final showHover =
+                                            isHovered || isKeyboardFocused;
+                                        Color itemBg = optionBg;
 
-                                    if (showHover && !isSelected) {
-                                      itemBg = widget.style?.optionHoverColor ??
-                                          themeStyle?.optionHoverColor ??
-                                          colors.borderDefault.withValues(alpha: 0.1);
-                                    }
+                                        if (showHover && !isSelected) {
+                                          itemBg =
+                                              widget.style?.optionHoverColor ??
+                                              themeStyle?.optionHoverColor ??
+                                              colors.borderDefault.withValues(
+                                                alpha: 0.1,
+                                              );
+                                        }
 
-                                    return Container(
-                                      height: height - 4,
-                                      padding: .symmetric(horizontal: spacing.md),
-                                      decoration: BoxDecoration(
-                                        color: itemBg,
-                                        border: isNeobrutalism && showHover
-                                            ? Border(
-                                                left: BorderSide(
-                                                  color: colors.textPrimary,
-                                                  width: 3.0,
-                                                ),
-                                              )
-                                            : null,
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          if (option.icon != null) ...[
-                                            option.icon!,
-                                            SizedBox(width: spacing.sm),
-                                          ],
-                                          Expanded(
-                                            child: Text(
-                                              option.label,
-                                              style: textStyle.copyWith(
-                                                color: optionText,
-                                                fontWeight: isSelected ? .w600 : .w400,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
+                                        return Container(
+                                          height: height - 4,
+                                          padding: .symmetric(
+                                            horizontal: spacing.md,
                                           ),
-                                          if (isSelected && !isNeobrutalism) ...[
-                                            SizedBox(width: spacing.sm),
-                                            Icon(
-                                              const IconData(0xe156, fontFamily: 'MaterialIcons'),
-                                              size: 16,
-                                              color: optionText,
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                    );
-                                  },
+                                          decoration: BoxDecoration(
+                                            color: itemBg,
+                                            border: isNeobrutalism && showHover
+                                                ? Border(
+                                                    left: BorderSide(
+                                                      color: colors.textPrimary,
+                                                      width: 3.0,
+                                                    ),
+                                                  )
+                                                : null,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              if (option.icon != null) ...[
+                                                option.icon!,
+                                                SizedBox(width: spacing.sm),
+                                              ],
+                                              Expanded(
+                                                child: Text(
+                                                  option.label,
+                                                  style: textStyle.copyWith(
+                                                    color: optionText,
+                                                    fontWeight: isSelected
+                                                        ? .w600
+                                                        : .w400,
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                              if (isSelected &&
+                                                  !isNeobrutalism) ...[
+                                                SizedBox(width: spacing.sm),
+                                                Icon(
+                                                  const IconData(
+                                                    0xe156,
+                                                    fontFamily: 'MaterialIcons',
+                                                  ),
+                                                  size: 16,
+                                                  color: optionText,
+                                                ),
+                                              ],
+                                            ],
+                                          ),
+                                        );
+                                      },
                                 );
                               },
                             ),
@@ -668,9 +726,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
             SizedBox(height: spacing.xs),
             Text(
               widget.errorText!,
-              style: typography.caption.copyWith(
-                color: colors.error,
-              ),
+              style: typography.caption.copyWith(color: colors.error),
             ),
           ],
         ],

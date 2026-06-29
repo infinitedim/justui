@@ -22,7 +22,7 @@ class JustTableColumn<T> {
   /// Whether this column can be sorted by tapping its header.
   final bool sortable;
 
-  /// Alignment of the content within the column. Defaults to [MainAxisAlignment.start].
+  /// Alignment of the content within the column. Defaults to [.start].
   final MainAxisAlignment alignment;
 
   /// Creates a [JustTableColumn].
@@ -31,7 +31,7 @@ class JustTableColumn<T> {
     required this.cell,
     this.width,
     this.sortable = false,
-    this.alignment = MainAxisAlignment.start,
+    this.alignment = .start,
   });
 }
 
@@ -226,7 +226,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
         typography.bodySm.copyWith(color: colors.textPrimary);
 
     final BorderRadius defaultBorderRadius = isNeobrutalism
-        ? BorderRadius.zero
+        ? .zero
         : .all(radius.md);
     final finalRadius = defaultBorderRadius;
 
@@ -247,11 +247,9 @@ class _JustTableState<T> extends State<JustTable<T>> {
       final Widget cellChild = Container(
         height: isHeader ? 44.0 : widget.rowHeight,
         padding: .symmetric(horizontal: cellPadding),
-        alignment: alignment == MainAxisAlignment.start
-            ? Alignment.centerLeft
-            : (alignment == MainAxisAlignment.end
-                  ? Alignment.centerRight
-                  : Alignment.center),
+        alignment: alignment == .start
+            ? .centerLeft
+            : (alignment == .end ? .centerRight : .center),
         child: content,
       );
 
@@ -279,7 +277,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
             colors: colors,
           ),
           48.0,
-          MainAxisAlignment.center,
+          .center,
           isHeader: true,
         ),
       );
@@ -290,7 +288,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
       final isSorted = widget.sortColumnIndex == i;
 
       Widget headerContent = Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Flexible(
             child: Text(
@@ -340,7 +338,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
           widget.emptyState ??
           Container(
             height: 150,
-            alignment: Alignment.center,
+            alignment: .center,
             child: Text(
               'No data available',
               style: typography.bodyMd.copyWith(color: colors.textSecondary),
@@ -372,7 +370,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
                   colors: colors,
                 ),
                 48.0,
-                MainAxisAlignment.center,
+                .center,
               ),
             );
           }
@@ -433,8 +431,8 @@ class _JustTableState<T> extends State<JustTable<T>> {
 
     if (widget.stickyHeader) {
       tableContent = Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: .min,
+        crossAxisAlignment: .stretch,
         children: [
           headerRow,
           Container(height: isNeobrutalism ? 2.5 : 1.0, color: borderColor),
@@ -444,8 +442,8 @@ class _JustTableState<T> extends State<JustTable<T>> {
     } else {
       tableContent = SingleChildScrollView(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: .min,
+          crossAxisAlignment: .stretch,
           children: [
             headerRow,
             Container(height: isNeobrutalism ? 2.5 : 1.0, color: borderColor),
@@ -462,9 +460,9 @@ class _JustTableState<T> extends State<JustTable<T>> {
           'Data table with ${widget.columns.length} columns and ${widget.rows.length} rows',
       child: Container(
         decoration: tableDecoration,
-        clipBehavior: Clip.antiAlias,
+        clipBehavior: .antiAlias,
         child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
+          scrollDirection: .horizontal,
           child: SizedBox(
             // Estimate total table width
             width: _estimateTableWidth(widget.columns, widget.selectable),
@@ -527,11 +525,9 @@ class _CustomCheckbox extends StatelessWidget {
                   : (value ? colors.borderFocus : colors.borderDefault),
               width: borderSize,
             ),
-            borderRadius: isNeobrutalism
-                ? BorderRadius.zero
-                : const BorderRadius.all(Radius.circular(4)),
+            borderRadius: isNeobrutalism ? .zero : const .all(.circular(4)),
           ),
-          alignment: Alignment.center,
+          alignment: .center,
           child: value
               ? Icon(
                   const IconData(0xe156, fontFamily: 'MaterialIcons'),
@@ -544,9 +540,7 @@ class _CustomCheckbox extends StatelessWidget {
         return FocusIndicator(
           isFocused: isFocused,
           focusColor: colors.borderFocus,
-          borderRadius: isNeobrutalism
-              ? BorderRadius.zero
-              : const BorderRadius.all(Radius.circular(4)),
+          borderRadius: isNeobrutalism ? .zero : const .all(.circular(4)),
           child: box,
         );
       },

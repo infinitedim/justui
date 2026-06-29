@@ -14,9 +14,7 @@ class JustSelectTheme extends ThemeExtension<JustSelectTheme> {
 
   @override
   JustSelectTheme copyWith({JustSelectStyle? style}) {
-    return JustSelectTheme(
-      style: style ?? this.style,
-    );
+    return JustSelectTheme(style: style ?? this.style);
   }
 
   @override

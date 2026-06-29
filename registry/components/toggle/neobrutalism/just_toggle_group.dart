@@ -105,10 +105,7 @@ class JustToggleGroup extends StatelessWidget {
     });
 
     if (direction == Axis.horizontal) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: children,
-      );
+      return Row(mainAxisSize: MainAxisSize.min, children: children);
     } else {
       return Column(
         mainAxisSize: MainAxisSize.min,
