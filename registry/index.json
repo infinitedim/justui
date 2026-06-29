@@ -1294,6 +1294,329 @@
       ]
     },
     {
+      "name": "select",
+      "version": "0.1.0",
+      "description": "Dropdown select component with customizable overlay positioning and optional search filter.",
+      "category": "primitive",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator",
+        "_shared_theme_provider"
+      ],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_select.dart",
+            "path": "components/select/default/just_select.dart",
+            "checksum": "sha256:32257353726d417605ad445f122362067908972b3fb7812537ac9af175ab2866"
+          },
+          {
+            "name": "just_select_style.dart",
+            "path": "components/select/default/just_select_style.dart",
+            "checksum": "sha256:737ad822841aebd371561a5674633a89c15f7bd470dad0c3178e08f4fe6e60a4"
+          },
+          {
+            "name": "just_select_theme.dart",
+            "path": "components/select/default/just_select_theme.dart",
+            "checksum": "sha256:903a6bbc6bb26956d0bd4eb2a7115164a8644972d0b558f413824db1863633e1"
+          },
+          {
+            "name": "just_select_variants.dart",
+            "path": "components/select/default/just_select_variants.dart",
+            "checksum": "sha256:05a5ef8d8248350c597c7d34e3cacc68179c95f13dc9ae1bf46865d3fdc61997"
+          }
+        ],
+        "neobrutalism": [
+          {
+            "name": "just_select.dart",
+            "path": "components/select/neobrutalism/just_select.dart",
+            "checksum": "sha256:04afe818dedfc4a76256d227b2820ac084cf1e10627e8b57dbb0998fc54c3d74"
+          },
+          {
+            "name": "just_select_style.dart",
+            "path": "components/select/neobrutalism/just_select_style.dart",
+            "checksum": "sha256:737ad822841aebd371561a5674633a89c15f7bd470dad0c3178e08f4fe6e60a4"
+          },
+          {
+            "name": "just_select_theme.dart",
+            "path": "components/select/neobrutalism/just_select_theme.dart",
+            "checksum": "sha256:4c1de20c96f2eebcb7a2daf4201ce915699679552b9568ddc5c476fbb213fe25"
+          },
+          {
+            "name": "just_select_variants.dart",
+            "path": "components/select/neobrutalism/just_select_variants.dart",
+            "checksum": "sha256:05a5ef8d8248350c597c7d34e3cacc68179c95f13dc9ae1bf46865d3fdc61997"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
+    },
+    {
+      "name": "progress",
+      "version": "0.1.0",
+      "description": "Linear progress bar and circular progress indicator supporting both determinate and indeterminate states.",
+      "category": "primitive",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_theme_provider"
+      ],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_progress.dart",
+            "path": "components/progress/default/just_progress.dart",
+            "checksum": "sha256:5fead5f07c3d318987d0ed273544145958807bd587d3c649dee405a354c58335"
+          },
+          {
+            "name": "just_progress_style.dart",
+            "path": "components/progress/default/just_progress_style.dart",
+            "checksum": "sha256:98ace42b2ed03d342ce9ecf7e425b59a268bc18ee7d695a7c87355c4de6be7db"
+          },
+          {
+            "name": "just_progress_theme.dart",
+            "path": "components/progress/default/just_progress_theme.dart",
+            "checksum": "sha256:ada643ab543ccecaa501093889cd6d786d1e5762616174f80358e40b85602d83"
+          },
+          {
+            "name": "just_progress_variants.dart",
+            "path": "components/progress/default/just_progress_variants.dart",
+            "checksum": "sha256:e9525762015b5efb6d4a9823c4e27993b3af01e37e625fa96f9fa16e7db64f72"
+          }
+        ],
+        "neobrutalism": [
+          {
+            "name": "just_progress.dart",
+            "path": "components/progress/neobrutalism/just_progress.dart",
+            "checksum": "sha256:b12e78c01bd3ac54f763678cc7de0a5bae5f34674717b20b2ed046f385538d99"
+          },
+          {
+            "name": "just_progress_style.dart",
+            "path": "components/progress/neobrutalism/just_progress_style.dart",
+            "checksum": "sha256:98ace42b2ed03d342ce9ecf7e425b59a268bc18ee7d695a7c87355c4de6be7db"
+          },
+          {
+            "name": "just_progress_theme.dart",
+            "path": "components/progress/neobrutalism/just_progress_theme.dart",
+            "checksum": "sha256:131e7d6e8883050893615a3a0e038cb99e3d932c21bb515726362c31f0186d65"
+          },
+          {
+            "name": "just_progress_variants.dart",
+            "path": "components/progress/neobrutalism/just_progress_variants.dart",
+            "checksum": "sha256:e9525762015b5efb6d4a9823c4e27993b3af01e37e625fa96f9fa16e7db64f72"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
+    },
+    {
+      "name": "accordion",
+      "version": "0.1.0",
+      "description": "Expandable panel accordion with single-expand or multi-expand modes.",
+      "category": "primitive",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator",
+        "_shared_theme_provider"
+      ],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_accordion.dart",
+            "path": "components/accordion/default/just_accordion.dart",
+            "checksum": "sha256:78b36111d9d6ab6cd77a5c4a9771135c788545a59cae42135bd24cbe3f713c41"
+          },
+          {
+            "name": "just_accordion_style.dart",
+            "path": "components/accordion/default/just_accordion_style.dart",
+            "checksum": "sha256:f0106050f3c0ca69278768bdb62c61dead9de441ee0e4077ce22b75441bfe04b"
+          },
+          {
+            "name": "just_accordion_theme.dart",
+            "path": "components/accordion/default/just_accordion_theme.dart",
+            "checksum": "sha256:c09e809962340453172dfe1485eb860f60a1a90563a18ee0c12719217c132839"
+          },
+          {
+            "name": "just_accordion_variants.dart",
+            "path": "components/accordion/default/just_accordion_variants.dart",
+            "checksum": "sha256:e59f69bc31adab16bbd7b29cbbc301bddc3a934b715d9034eef401fcd383785c"
+          }
+        ],
+        "neobrutalism": [
+          {
+            "name": "just_accordion.dart",
+            "path": "components/accordion/neobrutalism/just_accordion.dart",
+            "checksum": "sha256:a16c77dd5d076c4596690ad8fc25c3340e814a0d02103c784fb963f8d199d324"
+          },
+          {
+            "name": "just_accordion_style.dart",
+            "path": "components/accordion/neobrutalism/just_accordion_style.dart",
+            "checksum": "sha256:f0106050f3c0ca69278768bdb62c61dead9de441ee0e4077ce22b75441bfe04b"
+          },
+          {
+            "name": "just_accordion_theme.dart",
+            "path": "components/accordion/neobrutalism/just_accordion_theme.dart",
+            "checksum": "sha256:db076d4cc82e8ce00ada4db491b4aeaeb1547126a7ad9e5dfeb5cd7daa302eb1"
+          },
+          {
+            "name": "just_accordion_variants.dart",
+            "path": "components/accordion/neobrutalism/just_accordion_variants.dart",
+            "checksum": "sha256:e59f69bc31adab16bbd7b29cbbc301bddc3a934b715d9034eef401fcd383785c"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
+    },
+    {
+      "name": "toggle",
+      "version": "0.1.0",
+      "description": "Single toggle button and toggle groups for radio or checkbox behaviors.",
+      "category": "primitive",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator",
+        "_shared_theme_provider"
+      ],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_toggle.dart",
+            "path": "components/toggle/default/just_toggle.dart",
+            "checksum": "sha256:a92854c53d53c6742f652fbf2a57f6c6f31c996ba4a5f5f49f875561e67396bf"
+          },
+          {
+            "name": "just_toggle_group.dart",
+            "path": "components/toggle/default/just_toggle_group.dart",
+            "checksum": "sha256:90057600a2dbbe373a3020aa8bd22131cae6cb25b79cf30f8eecfd88bd761334"
+          },
+          {
+            "name": "just_toggle_style.dart",
+            "path": "components/toggle/default/just_toggle_style.dart",
+            "checksum": "sha256:911b91bf22fd12556d21a4b85c1494191d5ec71464835f03534f056fc6e228c8"
+          },
+          {
+            "name": "just_toggle_theme.dart",
+            "path": "components/toggle/default/just_toggle_theme.dart",
+            "checksum": "sha256:c84d48b88f4d42f4db726afafbb0be9dbd6b28bb5b5a74269a1024585d7c300a"
+          },
+          {
+            "name": "just_toggle_variants.dart",
+            "path": "components/toggle/default/just_toggle_variants.dart",
+            "checksum": "sha256:10e727dc4fb7211021cddbe21cba08c07d4288817a902f8f60bbc6e33733b658"
+          }
+        ],
+        "neobrutalism": [
+          {
+            "name": "just_toggle.dart",
+            "path": "components/toggle/neobrutalism/just_toggle.dart",
+            "checksum": "sha256:aef271b5dd81b72a5b05a1b4cac272e29219c500a61d1cc473e978f031aa266a"
+          },
+          {
+            "name": "just_toggle_group.dart",
+            "path": "components/toggle/neobrutalism/just_toggle_group.dart",
+            "checksum": "sha256:937e797d260a3d8d0cf85e098730c1812dac267e8432be93f7e8885e6e45816c"
+          },
+          {
+            "name": "just_toggle_style.dart",
+            "path": "components/toggle/neobrutalism/just_toggle_style.dart",
+            "checksum": "sha256:911b91bf22fd12556d21a4b85c1494191d5ec71464835f03534f056fc6e228c8"
+          },
+          {
+            "name": "just_toggle_theme.dart",
+            "path": "components/toggle/neobrutalism/just_toggle_theme.dart",
+            "checksum": "sha256:cf9ad3ab4086964eafaa481ba94b083ae4efc9ebccdbb4f482bac452a837b260"
+          },
+          {
+            "name": "just_toggle_variants.dart",
+            "path": "components/toggle/neobrutalism/just_toggle_variants.dart",
+            "checksum": "sha256:10e727dc4fb7211021cddbe21cba08c07d4288817a902f8f60bbc6e33733b658"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
+    },
+    {
+      "name": "table",
+      "version": "0.1.0",
+      "description": "Data table supporting sorting, selection, and sticky header.",
+      "category": "primitive",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator",
+        "_shared_theme_provider"
+      ],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_table.dart",
+            "path": "components/table/default/just_table.dart",
+            "checksum": "sha256:2a93aad54517711a423f15f63d346ad6a7ba82ac5e0056febbe9e8b1d80337fa"
+          },
+          {
+            "name": "just_table_style.dart",
+            "path": "components/table/default/just_table_style.dart",
+            "checksum": "sha256:bfeeef2414db3840256f4f6f22cde2efdbf754865862faa098cc34b3d00c6ce3"
+          },
+          {
+            "name": "just_table_theme.dart",
+            "path": "components/table/default/just_table_theme.dart",
+            "checksum": "sha256:118c7e2341de37dde76aea2511bf4f6bbc1d89aa69ceccca386e4cde3f01a5e8"
+          },
+          {
+            "name": "just_table_variants.dart",
+            "path": "components/table/default/just_table_variants.dart",
+            "checksum": "sha256:3dd8a1844817fa1de3e75f27e8ff14dde0e6ead2cd024315cab44b5937a1bbcf"
+          }
+        ],
+        "neobrutalism": [
+          {
+            "name": "just_table.dart",
+            "path": "components/table/neobrutalism/just_table.dart",
+            "checksum": "sha256:d02f8c31d497f911875917cde369781b6a009018c0785c8478e18bd926de25da"
+          },
+          {
+            "name": "just_table_style.dart",
+            "path": "components/table/neobrutalism/just_table_style.dart",
+            "checksum": "sha256:bfeeef2414db3840256f4f6f22cde2efdbf754865862faa098cc34b3d00c6ce3"
+          },
+          {
+            "name": "just_table_theme.dart",
+            "path": "components/table/neobrutalism/just_table_theme.dart",
+            "checksum": "sha256:18a17179f96aa4df7b8c5b35170c20c0d883723eda675a0d52ae3b7d8cd965ce"
+          },
+          {
+            "name": "just_table_variants.dart",
+            "path": "components/table/neobrutalism/just_table_variants.dart",
+            "checksum": "sha256:3dd8a1844817fa1de3e75f27e8ff14dde0e6ead2cd024315cab44b5937a1bbcf"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
+    },
+    {
       "name": "_shared_tokens",
       "version": "0.1.0",
       "description": "Internal shared design token definitions (colors, spacing, radius, shadows, duration).",
