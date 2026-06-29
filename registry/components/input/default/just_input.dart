@@ -1,7 +1,7 @@
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
+import '../../../shared/default/_shared_tokens.dart';
 import '../../theme/theme_provider.dart';
 import 'just_input_style.dart';
 import 'just_input_variants.dart';
