@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import '../../../shared/default/_shared_tokens.dart';
 
 import '../../overlay/just_overlay_controller.dart';
-import '../../theme/theme_provider.dart';
+import '../../shared/default/_shared_theme_provider.dart';
 import 'just_toast_style.dart';
 import 'just_toast_theme.dart';
 import 'just_toast_variants.dart';

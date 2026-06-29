@@ -8,7 +8,6 @@ import 'package:path/path.dart' as p;
 void main(List<String> args) async {
   final isDryRun = args.contains('--dry-run');
 
-  // Find the project root relative to this script's location
   final scriptPath = File(Platform.script.toFilePath()).canonicalPath();
   final projectRoot = p.dirname(p.dirname(scriptPath));
 
@@ -30,65 +29,86 @@ void main(List<String> args) async {
   }
 
   bool hasDrifts = false;
+  bool hasErrors = false;
 
   for (final dynamic component in components) {
     final compMap = component as Map<String, dynamic>;
     final Map<String, dynamic> filesMap =
         compMap['files'] as Map<String, dynamic>;
     final name = compMap['name'] as String;
+    final bool isInternal = compMap['internal'] == true;
     print('-----------------------------------------');
-    print('Component: $name');
+    print('Component: $name${isInternal ? ' [internal]' : ''}');
 
     for (final String preset in filesMap.keys) {
       final List<dynamic> files = filesMap[preset] as List<dynamic>;
       print('  Preset: $preset');
+
       for (final dynamic file in files) {
         final fileMap = file as Map<String, dynamic>;
         final String relPath = fileMap['path'] as String;
-        // Strip '/default/' from relPath to locate the flat source file in core
-        final String srcRelPath = relPath.replaceFirst('/default/', '/');
-        final srcFile = File(
-          p.join(projectRoot, 'packages', 'core', 'lib', 'src', srcRelPath),
-        );
+
+        // --- Path resolution ---
+        //
+        // default preset + non-internal → source lives in packages/core/lib/src/
+        //   (strip '/default/' segment so 'components/button/default/x.dart'
+        //    becomes 'components/button/x.dart' under core/lib/src/)
+        //
+        // neobrutalism preset OR internal component → source lives directly
+        //   in registry/ (no mirroring from core)
+        //
+        final bool sourcedFromCore = preset == 'default' && !isInternal;
+
+        final File srcFile;
+        if (sourcedFromCore) {
+          final String srcRelPath = relPath.replaceFirst('/default/', '/');
+          srcFile = File(
+            p.join(projectRoot, 'packages', 'core', 'lib', 'src', srcRelPath),
+          );
+        } else {
+          srcFile = File(p.join(projectRoot, 'registry', relPath));
+        }
+
         final destFile = File(p.join(projectRoot, 'registry', relPath));
 
         if (!srcFile.existsSync()) {
-          print('Error: Source file not found: ${srcFile.path}');
-          exit(1);
+          print('    Error: Source file not found: ${srcFile.path}');
+          hasErrors = true;
+          continue;
         }
 
-        // Check for drift (difference between existing registry file and source)
-        if (destFile.existsSync()) {
+        // Drift check only applies when source != dest (i.e. sourced from core)
+        if (sourcedFromCore && destFile.existsSync()) {
           final existingBytes = await destFile.readAsBytes();
           final srcBytes = await srcFile.readAsBytes();
           if (!_bytesEqual(existingBytes, srcBytes)) {
             hasDrifts = true;
-            print('    [WARNING] $relPath di registry/ berbeda dari source.');
+            print('    [WARNING] $relPath differs from core source.');
             print(
-              '              Registry akan di-overwrite dari source packages/core.',
+              '              Registry will be overwritten from packages/core.',
             );
             print(
-              '              Jika ada edit manual di registry yang belum dipindah ke source,',
+              '              Manual edits in registry/ not yet moved to core will be LOST.',
             );
-            print('              edit itu akan HILANG.');
           }
         }
 
         final Digest digest;
         if (isDryRun) {
-          // Compute checksum from source
           final bytes = await srcFile.readAsBytes();
           digest = sha256.convert(bytes);
-          print('    [DRY-RUN] Checksum for $relPath: sha256:$digest');
+          print('    [DRY-RUN] $relPath → sha256:$digest');
         } else {
-          // Ensure destination folder exists
           await destFile.parent.create(recursive: true);
 
-          // Copy source file to destination registry directory
-          await srcFile.copy(destFile.path);
-          print('    Synced: $relPath');
+          // Only copy if sourced from core; registry-native files are already in place
+          if (sourcedFromCore) {
+            await srcFile.copy(destFile.path);
+            print('    Synced: $relPath');
+          } else {
+            print('    Registry-native: $relPath');
+          }
 
-          // Calculate SHA-256 checksum
           final bytes = await destFile.readAsBytes();
           digest = sha256.convert(bytes);
           fileMap['checksum'] = 'sha256:$digest';
@@ -99,18 +119,25 @@ void main(List<String> args) async {
 
   print('-----------------------------------------');
 
+  if (hasErrors) {
+    print('Completed with errors. Fix missing source files above and re-run.');
+    exit(1);
+  }
+
   if (isDryRun) {
-    print('Dry-run completed. Checksums calculated from source files.');
+    print('Dry-run completed.');
     if (hasDrifts) {
-      print('Status: Differences detected between registry and source files.');
+      print('Status: Differences detected between registry and core source.');
     } else {
-      print('Status: Registry and source files are in sync.');
+      print('Status: All files in sync.');
     }
   } else {
-    // Write updated index.json back with formatting
     const encoder = JsonEncoder.withIndent('  ');
     await indexFile.writeAsString('${encoder.convert(indexJson)}\n');
     print('Success: Updated registry/index.json and synced all files.');
+    if (hasDrifts) {
+      print('Warning: Some registry files were overwritten from core source.');
+    }
   }
 }
 
