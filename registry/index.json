@@ -10,7 +10,8 @@
       "registryDependencies": [
         "_shared_pressable",
         "_shared_focus_indicator",
-        "_shared_progress_spinner"
+        "_shared_progress_spinner",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -74,7 +75,8 @@
         "button",
         "_shared_pressable",
         "_shared_focus_indicator",
-        "_shared_progress_spinner"
+        "_shared_progress_spinner",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -104,7 +106,9 @@
       "description": "Interactive text field component with dynamic label animations and form state bindings.",
       "category": "primitive",
       "hidden": false,
-      "registryDependencies": [],
+      "registryDependencies": [
+        "_shared_theme_provider"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -163,7 +167,9 @@
       "description": "Tag indicator widget supporting outline states and animated pulsing dot halos.",
       "category": "primitive",
       "hidden": false,
-      "registryDependencies": [],
+      "registryDependencies": [
+        "_shared_theme_provider"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -212,7 +218,9 @@
       "description": "Image avatar with fallback initials generator and presence status indicators.",
       "category": "primitive",
       "hidden": false,
-      "registryDependencies": [],
+      "registryDependencies": [
+        "_shared_theme_provider"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -262,7 +270,8 @@
       "category": "composite",
       "hidden": false,
       "registryDependencies": [
-        "avatar"
+        "avatar",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -294,7 +303,8 @@
       "hidden": false,
       "registryDependencies": [
         "_shared_pressable",
-        "_shared_focus_indicator"
+        "_shared_focus_indicator",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -346,7 +356,8 @@
       "hidden": false,
       "registryDependencies": [
         "_shared_pressable",
-        "_shared_focus_indicator"
+        "_shared_focus_indicator",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -397,7 +408,8 @@
       "category": "composite",
       "hidden": false,
       "registryDependencies": [
-        "radio"
+        "radio",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -429,7 +441,8 @@
       "hidden": false,
       "registryDependencies": [
         "_shared_pressable",
-        "_shared_focus_indicator"
+        "_shared_focus_indicator",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -481,7 +494,8 @@
       "hidden": false,
       "registryDependencies": [
         "_shared_pressable",
-        "_shared_focus_indicator"
+        "_shared_focus_indicator",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -531,7 +545,9 @@
       "description": "Visual divider widget supporting horizontal and vertical directions and centered text labels.",
       "category": "layout",
       "hidden": false,
-      "registryDependencies": [],
+      "registryDependencies": [
+        "_shared_theme_provider"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -582,7 +598,8 @@
       "hidden": false,
       "registryDependencies": [
         "_shared_pressable",
-        "_shared_focus_indicator"
+        "_shared_focus_indicator",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -682,7 +699,8 @@
         "button",
         "card",
         "separator",
-        "_shared_progress_spinner"
+        "_shared_progress_spinner",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -755,7 +773,8 @@
       "category": "navigation",
       "hidden": false,
       "registryDependencies": [
-        "_shared_pressable"
+        "_shared_pressable",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -816,7 +835,8 @@
       "category": "navigation",
       "hidden": false,
       "registryDependencies": [
-        "_shared_pressable"
+        "_shared_pressable",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -887,7 +907,8 @@
       "category": "navigation",
       "hidden": false,
       "registryDependencies": [
-        "_shared_pressable"
+        "_shared_pressable",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -948,7 +969,9 @@
       "category": "internal",
       "internal": true,
       "hidden": true,
-      "registryDependencies": [],
+      "registryDependencies": [
+        "_shared_theme_provider"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -971,7 +994,8 @@
       "hidden": false,
       "registryDependencies": [
         "_shared_pressable",
-        "_shared_tooltip_overlay"
+        "_shared_tooltip_overlay",
+        "_shared_theme_provider"
       ],
       "pubDependencies": {},
       "files": {
@@ -1031,7 +1055,9 @@
       "description": "Stacked/queued notification toasts with auto-dismiss, swipe-to-dismiss, and variant icons.",
       "category": "overlay",
       "hidden": false,
-      "registryDependencies": [],
+      "registryDependencies": [
+        "_shared_theme_provider"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -1090,7 +1116,9 @@
       "description": "Modal dialog overlay with barrier, focus trapping, and position-aware animations.",
       "category": "overlay",
       "hidden": false,
-      "registryDependencies": [],
+      "registryDependencies": [
+        "_shared_theme_provider"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -1149,7 +1177,9 @@
       "description": "Slide-in sheet overlay with drag-to-dismiss, directional animations, and barrier support.",
       "category": "overlay",
       "hidden": false,
-      "registryDependencies": [],
+      "registryDependencies": [
+        "_shared_theme_provider"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -1208,7 +1238,9 @@
       "description": "Declarative tooltip widget with auto-positioning, hover/long-press triggers, and delay controls.",
       "category": "overlay",
       "hidden": false,
-      "registryDependencies": [],
+      "registryDependencies": [
+        "_shared_theme_provider"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -1276,6 +1308,30 @@
             "name": "_shared_tokens.dart",
             "path": "components/shared/default/_shared_tokens.dart",
             "checksum": "sha256:9a8e0061d244cc1acdd6d842540b716ab28cbc905b03d4b388c1488826f322e1"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
+      ]
+    },
+    {
+      "name": "_shared_theme_provider",
+      "version": "0.1.0",
+      "description": "Lightweight copy of JustThemeProvider, JustThemeData, and related theme infrastructure for copy-paste usage.",
+      "category": "internal",
+      "internal": true,
+      "hidden": true,
+      "registryDependencies": [
+        "_shared_tokens"
+      ],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "_shared_theme_provider.dart",
+            "path": "components/shared/default/_shared_theme_provider.dart",
+            "checksum": "sha256:4807372e683752fecf2c12a08b778092f356366d68e27b865b8fb1b46371007d"
           }
         ]
       },

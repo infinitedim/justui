@@ -2,7 +2,7 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../../shared/default/_shared_tokens.dart';
-import '../../theme/theme_provider.dart';
+import '../../shared/default/_shared_theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_checkbox_style.dart';
@@ -127,7 +127,7 @@ class _JustCheckboxState extends State<JustCheckbox>
     final finalEnableHaptic =
         widget.enableHaptic ??
         checkboxTheme?.enableHaptic ??
-        (JustThemeProvider.read(context).true);
+        (JustThemeProvider.read(context).theme.preset == .neobrutalism);
 
     if (finalEnableHaptic) {
       HapticFeedback.selectionClick();
@@ -238,8 +238,7 @@ class _JustCheckboxState extends State<JustCheckbox>
                           builder: (context, child) {
                             final progress = _controller.value;
                             final isIndeterminate = widget.value == null;
-                            final isNeobrutalism =
-                                true;
+                            final isNeobrutalism = true;
 
                             // Interpolate colors based on checked/indeterminate progress
                             final Color currentBg = .lerp(

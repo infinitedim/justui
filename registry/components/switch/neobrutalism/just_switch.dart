@@ -2,7 +2,7 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../../shared/default/_shared_tokens.dart';
-import '../../theme/theme_provider.dart';
+import '../../shared/default/_shared_theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_switch_style.dart';
@@ -137,7 +137,7 @@ class _JustSwitchState extends State<JustSwitch>
     final finalEnableHaptic =
         widget.enableHaptic ??
         switchTheme?.enableHaptic ??
-        (JustThemeProvider.read(context).true);
+        (JustThemeProvider.read(context).theme.preset == .neobrutalism);
 
     if (finalEnableHaptic) {
       HapticFeedback.selectionClick();
