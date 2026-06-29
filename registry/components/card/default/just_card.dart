@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
-import '../../../shared/default/_shared_tokens.dart';
-import '../../shared/default/_shared_theme_provider.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import '../shared/_shared_focus_indicator.dart';
 import 'just_card_style.dart';
