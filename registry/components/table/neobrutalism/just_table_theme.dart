@@ -14,9 +14,7 @@ class JustTableTheme extends ThemeExtension<JustTableTheme> {
 
   @override
   JustTableTheme copyWith({JustTableStyle? style}) {
-    return JustTableTheme(
-      style: style ?? this.style,
-    );
+    return JustTableTheme(style: style ?? this.style);
   }
 
   @override
