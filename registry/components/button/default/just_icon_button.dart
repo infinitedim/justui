@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
-import '../../shared/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import '../shared/_shared_progress_spinner.dart';
