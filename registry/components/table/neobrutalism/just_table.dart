@@ -161,86 +161,105 @@ class _JustTableState<T> extends State<JustTable<T>> {
     final themeStyle = tableTheme?.style;
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
     final radius = customTheme.radius;
-    final typography = JustThemeProvider.of(context, aspect: .typography).theme.typography;
+    final typography = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
     final isNeobrutalism = true;
 
     // Resolve Styles
-    final headerBg = widget.style?.headerBackgroundColor ??
+    final headerBg =
+        widget.style?.headerBackgroundColor ??
         themeStyle?.headerBackgroundColor ??
-        (isNeobrutalism ? colors.textPrimary : colors.borderDefault.withValues(alpha: 0.1));
+        (isNeobrutalism
+            ? colors.textPrimary
+            : colors.borderDefault.withValues(alpha: 0.1));
 
-    final headerText = widget.style?.headerTextColor ??
+    final headerText =
+        widget.style?.headerTextColor ??
         themeStyle?.headerTextColor ??
         (isNeobrutalism ? colors.textInverse : colors.textPrimary);
 
-    final rowBg = widget.style?.rowBackgroundColor ??
+    final rowBg =
+        widget.style?.rowBackgroundColor ??
         themeStyle?.rowBackgroundColor ??
         colors.background;
 
-    final alternateRowBg = widget.style?.alternateRowBackgroundColor ??
+    final alternateRowBg =
+        widget.style?.alternateRowBackgroundColor ??
         themeStyle?.alternateRowBackgroundColor ??
         colors.borderDefault.withValues(alpha: 0.04);
 
-    final borderColor = widget.style?.borderColor ??
+    final borderColor =
+        widget.style?.borderColor ??
         themeStyle?.borderColor ??
         (isNeobrutalism ? colors.textPrimary : colors.borderDefault);
 
-    final hoverBg = widget.style?.hoverColor ??
+    final hoverBg =
+        widget.style?.hoverColor ??
         themeStyle?.hoverColor ??
         colors.borderDefault.withValues(alpha: 0.08);
 
-    final selectedBg = widget.style?.selectedRowColor ??
+    final selectedBg =
+        widget.style?.selectedRowColor ??
         themeStyle?.selectedRowColor ??
         colors.borderFocus.withValues(alpha: 0.15);
 
-    final cellPadding = widget.style?.horizontalPadding ??
+    final cellPadding =
+        widget.style?.horizontalPadding ??
         themeStyle?.horizontalPadding ??
         spacing.md;
 
-    final headerTextStyle = widget.style?.headerTextStyle ??
+    final headerTextStyle =
+        widget.style?.headerTextStyle ??
         themeStyle?.headerTextStyle ??
         typography.bodyMd.copyWith(fontWeight: .w700, color: headerText);
 
-    final cellTextStyle = widget.style?.cellTextStyle ??
+    final cellTextStyle =
+        widget.style?.cellTextStyle ??
         themeStyle?.cellTextStyle ??
         typography.bodySm.copyWith(color: colors.textPrimary);
 
-    final BorderRadius defaultBorderRadius = isNeobrutalism ? BorderRadius.zero : .all(radius.md);
+    final BorderRadius defaultBorderRadius = isNeobrutalism
+        ? BorderRadius.zero
+        : .all(radius.md);
     final finalRadius = defaultBorderRadius;
 
     // Outer Container Border
     final tableDecoration = BoxDecoration(
-      border: Border.all(
-        color: borderColor,
-        width: isNeobrutalism ? 2.5 : 1.0,
-      ),
+      border: Border.all(color: borderColor, width: isNeobrutalism ? 2.5 : 1.0),
       borderRadius: finalRadius,
     );
 
     // Build Column Widgets
     final int columnCount = widget.columns.length + (widget.selectable ? 1 : 0);
 
-    Widget buildCell(Widget content, double? width, MainAxisAlignment alignment, {bool isHeader = false}) {
+    Widget buildCell(
+      Widget content,
+      double? width,
+      MainAxisAlignment alignment, {
+      bool isHeader = false,
+    }) {
       Widget cellChild = Container(
         height: isHeader ? 44.0 : widget.rowHeight,
         padding: .symmetric(horizontal: cellPadding),
         alignment: alignment == MainAxisAlignment.start
             ? Alignment.centerLeft
-            : (alignment == MainAxisAlignment.end ? Alignment.centerRight : Alignment.center),
+            : (alignment == MainAxisAlignment.end
+                  ? Alignment.centerRight
+                  : Alignment.center),
         child: content,
       );
 
       if (width != null) {
-        return SizedBox(
-          width: width,
-          child: cellChild,
-        );
+        return SizedBox(width: width, child: cellChild);
       } else {
-        return Expanded(
-          child: cellChild,
-        );
+        return Expanded(child: cellChild);
       }
     }
 
@@ -249,7 +268,9 @@ class _JustTableState<T> extends State<JustTable<T>> {
 
     // Optional Checkbox Column
     if (widget.selectable) {
-      final isAllSelected = widget.rows.isNotEmpty && _internalSelectedRows.length == widget.rows.length;
+      final isAllSelected =
+          widget.rows.isNotEmpty &&
+          _internalSelectedRows.length == widget.rows.length;
       headerCells.add(
         buildCell(
           _CustomCheckbox(
@@ -284,8 +305,8 @@ class _JustTableState<T> extends State<JustTable<T>> {
             Icon(
               isSorted
                   ? (widget.sortAscending
-                      ? const IconData(0xe5c7, fontFamily: 'MaterialIcons')
-                      : const IconData(0xe5c5, fontFamily: 'MaterialIcons'))
+                        ? const IconData(0xe5c7, fontFamily: 'MaterialIcons')
+                        : const IconData(0xe5c5, fontFamily: 'MaterialIcons'))
                   : const IconData(0xe5d2, fontFamily: 'MaterialIcons'),
               size: 16,
               color: isSorted ? headerText : headerText.withValues(alpha: 0.4),
@@ -303,12 +324,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
       }
 
       headerCells.add(
-        buildCell(
-          headerContent,
-          col.width,
-          col.alignment,
-          isHeader: true,
-        ),
+        buildCell(headerContent, col.width, col.alignment, isHeader: true),
       );
     }
 
@@ -321,7 +337,8 @@ class _JustTableState<T> extends State<JustTable<T>> {
     Widget bodyContent;
 
     if (widget.rows.isEmpty) {
-      bodyContent = widget.emptyState ??
+      bodyContent =
+          widget.emptyState ??
           Container(
             height: 150,
             alignment: Alignment.center,
@@ -333,12 +350,15 @@ class _JustTableState<T> extends State<JustTable<T>> {
     } else {
       bodyContent = ListView.builder(
         shrinkWrap: true,
-        physics: widget.stickyHeader ? const ClampingScrollPhysics() : const NeverScrollableScrollPhysics(),
+        physics: widget.stickyHeader
+            ? const ClampingScrollPhysics()
+            : const NeverScrollableScrollPhysics(),
         itemCount: widget.rows.length,
         itemBuilder: (context, rowIndex) {
           final rowData = widget.rows[rowIndex];
           final isSelected = _internalSelectedRows.contains(rowIndex);
-          final isAlternate = widget.variant == JustTableVariant.striped && rowIndex.isOdd;
+          final isAlternate =
+              widget.variant == JustTableVariant.striped && rowIndex.isOdd;
 
           final List<Widget> rowCells = [];
 
@@ -373,14 +393,18 @@ class _JustTableState<T> extends State<JustTable<T>> {
             );
           }
 
-          Color currentBg = isSelected ? selectedBg : (isAlternate ? alternateRowBg : rowBg);
+          Color currentBg = isSelected
+              ? selectedBg
+              : (isAlternate ? alternateRowBg : rowBg);
 
           Widget rowWidget = JustPressable(
             onTap: widget.selectable ? () => _toggleRow(rowIndex) : () {},
             builder: (context, isHovered, isPressed, _, __) {
               Color finalRowBg = currentBg;
               if (isHovered) {
-                finalRowBg = isSelected ? selectedBg.withValues(alpha: 0.9) : hoverBg;
+                finalRowBg = isSelected
+                    ? selectedBg.withValues(alpha: 0.9)
+                    : hoverBg;
               }
 
               return Container(
@@ -414,15 +438,8 @@ class _JustTableState<T> extends State<JustTable<T>> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           headerRow,
-          Container(
-            height: isNeobrutalism ? 2.5 : 1.0,
-            color: borderColor,
-          ),
-          Flexible(
-            child: SingleChildScrollView(
-              child: bodyContent,
-            ),
-          ),
+          Container(height: isNeobrutalism ? 2.5 : 1.0, color: borderColor),
+          Flexible(child: SingleChildScrollView(child: bodyContent)),
         ],
       );
     } else {
@@ -432,10 +449,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             headerRow,
-            Container(
-              height: isNeobrutalism ? 2.5 : 1.0,
-              color: borderColor,
-            ),
+            Container(height: isNeobrutalism ? 2.5 : 1.0, color: borderColor),
             bodyContent,
           ],
         ),
@@ -445,7 +459,8 @@ class _JustTableState<T> extends State<JustTable<T>> {
     // Support horizontal scrolling if table is wider than the viewport
     return Semantics(
       container: true,
-      label: 'Data table with ${widget.columns.length} columns and ${widget.rows.length} rows',
+      label:
+          'Data table with ${widget.columns.length} columns and ${widget.rows.length} rows',
       child: Container(
         decoration: tableDecoration,
         clipBehavior: Clip.antiAlias,
@@ -461,7 +476,10 @@ class _JustTableState<T> extends State<JustTable<T>> {
     );
   }
 
-  double _estimateTableWidth(List<JustTableColumn<T>> columns, bool selectable) {
+  double _estimateTableWidth(
+    List<JustTableColumn<T>> columns,
+    bool selectable,
+  ) {
     double totalWidth = selectable ? 48.0 : 0.0;
     bool hasFlex = false;
 
@@ -512,7 +530,9 @@ class _CustomCheckbox extends StatelessWidget {
                   : (value ? colors.borderFocus : colors.borderDefault),
               width: borderSize,
             ),
-            borderRadius: isNeobrutalism ? BorderRadius.zero : const BorderRadius.all(Radius.circular(4)),
+            borderRadius: isNeobrutalism
+                ? BorderRadius.zero
+                : const BorderRadius.all(Radius.circular(4)),
           ),
           alignment: Alignment.center,
           child: value
@@ -527,7 +547,9 @@ class _CustomCheckbox extends StatelessWidget {
         return FocusIndicator(
           isFocused: isFocused,
           focusColor: colors.borderFocus,
-          borderRadius: isNeobrutalism ? BorderRadius.zero : const BorderRadius.all(Radius.circular(4)),
+          borderRadius: isNeobrutalism
+              ? BorderRadius.zero
+              : const BorderRadius.all(Radius.circular(4)),
           child: box,
         );
       },

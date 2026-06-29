@@ -45,12 +45,12 @@ class JustProgress extends StatefulWidget {
     this.value,
     this.min = 0.0,
     this.max = 1.0,
-    this.size = JustProgressSize.md,
+    this.size = .md,
     this.showLabel = false,
     this.label,
     this.style,
     this.animationDuration,
-  }) : variant = JustProgressVariant.linear;
+  }) : variant = .linear;
 
   /// Named constructor creating a circular progress indicator.
   const JustProgress.circular({
@@ -58,12 +58,12 @@ class JustProgress extends StatefulWidget {
     this.value,
     this.min = 0.0,
     this.max = 1.0,
-    this.size = JustProgressSize.md,
+    this.size = .md,
     this.showLabel = false,
     this.label,
     this.style,
     this.animationDuration,
-  }) : variant = JustProgressVariant.circular;
+  }) : variant = .circular;
 
   @override
   State<JustProgress> createState() => _JustProgressState();
@@ -159,7 +159,7 @@ class _JustProgressState extends State<JustProgress>
       container: true,
       label: 'Progress indicator',
       value: widget.value != null ? _resolvedLabel : 'Loading',
-      child: widget.variant == JustProgressVariant.linear
+      child: widget.variant == .linear
           ? _buildLinear(
               context,
               colors,
@@ -199,13 +199,13 @@ class _JustProgressState extends State<JustProgress>
     // Resolve height based on size
     double height;
     switch (widget.size) {
-      case JustProgressSize.sm:
+      case .sm:
         height = 4.0;
         break;
-      case JustProgressSize.md:
+      case .md:
         height = 8.0;
         break;
-      case JustProgressSize.lg:
+      case .lg:
         height = 12.0;
         break;
     }
@@ -277,18 +277,18 @@ class _JustProgressState extends State<JustProgress>
 
     if (widget.showLabel) {
       return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: .min,
+        crossAxisAlignment: .start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               Expanded(child: bar),
               SizedBox(width: spacing.md),
               Text(
                 _resolvedLabel,
                 style:
-                    (widget.size == JustProgressSize.sm
+                    (widget.size == .sm
                             ? typography.caption
                             : typography.bodySm)
                         .copyWith(
@@ -320,15 +320,15 @@ class _JustProgressState extends State<JustProgress>
     double diameter;
     double defaultStrokeWidth;
     switch (widget.size) {
-      case JustProgressSize.sm:
+      case .sm:
         diameter = 32.0;
         defaultStrokeWidth = isNeobrutalism ? 3.0 : 2.0;
         break;
-      case JustProgressSize.md:
+      case .md:
         diameter = 48.0;
         defaultStrokeWidth = isNeobrutalism ? 4.0 : 3.0;
         break;
-      case JustProgressSize.lg:
+      case .lg:
         diameter = 64.0;
         defaultStrokeWidth = isNeobrutalism ? 5.0 : 4.0;
         break;
@@ -382,9 +382,7 @@ class _JustProgressState extends State<JustProgress>
             Text(
               _resolvedLabel,
               style:
-                  (widget.size == JustProgressSize.lg
-                          ? typography.bodySm
-                          : typography.caption)
+                  (widget.size == .lg ? typography.bodySm : typography.caption)
                       .copyWith(
                         color: labelColor,
                         fontWeight: isNeobrutalism ? .w700 : .w500,

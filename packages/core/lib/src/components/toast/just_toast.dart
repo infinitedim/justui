@@ -83,7 +83,7 @@ class JustToastController extends JustOverlayController {
 
   /// Creates a [JustToastController].
   JustToastController({
-    this.behavior = ToastBehavior.stacked,
+    this.behavior = .stacked,
     this.limit = 3,
     this.position = .bottomCenter,
     this.enableDragDismiss = true,
@@ -125,7 +125,7 @@ class JustToastController extends JustOverlayController {
       animationBuilder: animationBuilder,
     );
 
-    if (behavior == ToastBehavior.queue) {
+    if (behavior == .queue) {
       if (_activeToasts.isNotEmpty) {
         _queue.add(pending);
       } else {
@@ -243,7 +243,7 @@ class JustToastController extends JustOverlayController {
 
       _updatePositions();
 
-      if (behavior == ToastBehavior.queue && _queue.isNotEmpty) {
+      if (behavior == .queue && _queue.isNotEmpty) {
         _showToast(_queue.removeAt(0));
       }
     });

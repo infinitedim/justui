@@ -14,9 +14,7 @@ class JustProgressTheme extends ThemeExtension<JustProgressTheme> {
 
   @override
   JustProgressTheme copyWith({JustProgressStyle? style}) {
-    return JustProgressTheme(
-      style: style ?? this.style,
-    );
+    return JustProgressTheme(style: style ?? this.style);
   }
 
   @override

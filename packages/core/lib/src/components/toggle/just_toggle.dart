@@ -67,7 +67,7 @@ class JustToggle extends StatelessWidget {
     required this.onPressed,
     required this.child,
     this.enabled = true,
-    this.size = JustToggleSize.md,
+    this.size = .md,
     this.style,
   });
 
@@ -94,17 +94,17 @@ class JustToggle extends StatelessWidget {
     TextStyle textStyle;
 
     switch (size) {
-      case JustToggleSize.sm:
+      case .sm:
         height = 32.0;
         paddingH = 12.0;
         textStyle = typography.bodySm;
         break;
-      case JustToggleSize.md:
+      case .md:
         height = 40.0;
         paddingH = 16.0;
         textStyle = typography.bodyMd;
         break;
-      case JustToggleSize.lg:
+      case .lg:
         height = 48.0;
         paddingH = 20.0;
         textStyle = typography.bodyLg;
@@ -113,9 +113,7 @@ class JustToggle extends StatelessWidget {
 
     // Resolve BorderRadius with Group Collapse
     final groupInfo = JustToggleGroupInfo.of(context);
-    final BorderRadius defaultRadius = isNeobrutalism
-        ? BorderRadius.zero
-        : .all(radius.md);
+    final BorderRadius defaultRadius = isNeobrutalism ? .zero : .all(radius.md);
     BorderRadius resolvedRadius =
         style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius;
 
@@ -233,18 +231,14 @@ class JustToggle extends StatelessWidget {
                 top: BorderSide(color: border),
                 bottom: BorderSide(color: border),
                 right: BorderSide(color: border),
-                left: groupInfo.index == 0
-                    ? BorderSide(color: border)
-                    : BorderSide.none,
+                left: groupInfo.index == 0 ? BorderSide(color: border) : .none,
               );
             } else {
               resolvedBorder = Border(
                 left: BorderSide(color: border),
                 right: BorderSide(color: border),
                 bottom: BorderSide(color: border),
-                top: groupInfo.index == 0
-                    ? BorderSide(color: border)
-                    : BorderSide.none,
+                top: groupInfo.index == 0 ? BorderSide(color: border) : .none,
               );
             }
           } else {
@@ -258,7 +252,7 @@ class JustToggle extends StatelessWidget {
             decoration: BoxDecoration(
               color: bg,
               border: resolvedBorder,
-              borderRadius: isNeobrutalism ? BorderRadius.zero : resolvedRadius,
+              borderRadius: isNeobrutalism ? .zero : resolvedRadius,
             ),
             child: DefaultTextStyle.merge(
               style: textStyle.copyWith(
@@ -279,7 +273,7 @@ class JustToggle extends StatelessWidget {
                       shadows.md,
                       isPressed: isPressed,
                     ),
-                    borderRadius: BorderRadius.zero,
+                    borderRadius: .zero,
                   ),
                   child: buttonContent,
                 ),
@@ -295,7 +289,7 @@ class JustToggle extends StatelessWidget {
           return FocusIndicator(
             isFocused: isFocused,
             focusColor: colors.borderFocus,
-            borderRadius: isNeobrutalism ? BorderRadius.zero : resolvedRadius,
+            borderRadius: isNeobrutalism ? .zero : resolvedRadius,
             child: buttonContent,
           );
         },

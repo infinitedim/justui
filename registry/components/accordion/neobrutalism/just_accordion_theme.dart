@@ -14,9 +14,7 @@ class JustAccordionTheme extends ThemeExtension<JustAccordionTheme> {
 
   @override
   JustAccordionTheme copyWith({JustAccordionStyle? style}) {
-    return JustAccordionTheme(
-      style: style ?? this.style,
-    );
+    return JustAccordionTheme(style: style ?? this.style);
   }
 
   @override

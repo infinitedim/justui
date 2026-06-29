@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' show Theme;
-import 'package:flutter/services.dart' show HapticFeedback, LogicalKeyboardKey, KeyDownEvent, KeyEvent;
+import 'package:flutter/services.dart'
+    show HapticFeedback, LogicalKeyboardKey, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../shared/default/_shared_theme_provider.dart';
@@ -110,17 +111,29 @@ class _JustAccordionState extends State<JustAccordion> {
     final themeStyle = accordionTheme?.style;
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(context, aspect: .spacing).theme.spacing;
+    final spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
     final radius = customTheme.radius;
     final shadows = customTheme.shadows;
-    final typography = JustThemeProvider.of(context, aspect: .typography).theme.typography;
+    final typography = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
     final isNeobrutalism = true;
 
     final resolvedGap = widget.style?.gap ?? themeStyle?.gap ?? 8.0;
-    final BorderRadius defaultBorderRadius = isNeobrutalism ? BorderRadius.zero : .all(radius.md);
-    final finalRadius = widget.style?.borderRadius ?? themeStyle?.borderRadius ?? defaultBorderRadius;
+    final BorderRadius defaultBorderRadius = isNeobrutalism
+        ? BorderRadius.zero
+        : .all(radius.md);
+    final finalRadius =
+        widget.style?.borderRadius ??
+        themeStyle?.borderRadius ??
+        defaultBorderRadius;
 
-    final borderColor = widget.style?.borderColor ??
+    final borderColor =
+        widget.style?.borderColor ??
         themeStyle?.borderColor ??
         (isNeobrutalism ? colors.textPrimary : colors.borderDefault);
 
@@ -259,7 +272,8 @@ class _JustAccordionItemWidget extends StatefulWidget {
   });
 
   @override
-  State<_JustAccordionItemWidget> createState() => _JustAccordionItemWidgetState();
+  State<_JustAccordionItemWidget> createState() =>
+      _JustAccordionItemWidgetState();
 }
 
 class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
@@ -279,9 +293,10 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       CurveTween(curve: widget.customTheme.animations.defaultCurve),
     );
     _rotationAnimation = _controller.drive(
-      Tween<double>(begin: 0.0, end: 0.5).chain(
-        CurveTween(curve: widget.customTheme.animations.defaultCurve),
-      ),
+      Tween<double>(
+        begin: 0.0,
+        end: 0.5,
+      ).chain(CurveTween(curve: widget.customTheme.animations.defaultCurve)),
     );
 
     if (widget.isExpanded) {
@@ -310,40 +325,55 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
   @override
   Widget build(BuildContext context) {
     // Resolve styling parameters
-    final headerBg = widget.style?.headerBackgroundColor ??
+    final headerBg =
+        widget.style?.headerBackgroundColor ??
         widget.themeStyle?.headerBackgroundColor ??
         const Color(0x00000000);
 
-    final contentBg = widget.style?.contentBackgroundColor ??
+    final contentBg =
+        widget.style?.contentBackgroundColor ??
         widget.themeStyle?.contentBackgroundColor ??
         const Color(0x00000000);
 
-    final titleColor = widget.style?.titleColor ??
+    final titleColor =
+        widget.style?.titleColor ??
         widget.themeStyle?.titleColor ??
         widget.colors.textPrimary;
 
-    final subtitleColor = widget.style?.subtitleColor ??
+    final subtitleColor =
+        widget.style?.subtitleColor ??
         widget.themeStyle?.subtitleColor ??
         widget.colors.textSecondary;
 
-    final iconColor = widget.style?.iconColor ??
+    final iconColor =
+        widget.style?.iconColor ??
         widget.themeStyle?.iconColor ??
         widget.colors.textPrimary;
 
-    final headerPadding = widget.style?.headerPadding ??
+    final headerPadding =
+        widget.style?.headerPadding ??
         widget.themeStyle?.headerPadding ??
         .symmetric(horizontal: widget.spacing.lg, vertical: widget.spacing.md);
 
-    final contentPadding = widget.style?.contentPadding ??
+    final contentPadding =
+        widget.style?.contentPadding ??
         widget.themeStyle?.contentPadding ??
         .symmetric(horizontal: widget.spacing.lg, vertical: widget.spacing.md);
 
-    final borderColor = widget.style?.borderColor ??
+    final borderColor =
+        widget.style?.borderColor ??
         widget.themeStyle?.borderColor ??
-        (widget.isNeobrutalism ? widget.colors.textPrimary : widget.colors.borderDefault);
+        (widget.isNeobrutalism
+            ? widget.colors.textPrimary
+            : widget.colors.borderDefault);
 
-    final BorderRadius defaultBorderRadius = widget.isNeobrutalism ? BorderRadius.zero : .all(widget.radius.md);
-    final finalRadius = widget.style?.borderRadius ?? widget.themeStyle?.borderRadius ?? defaultBorderRadius;
+    final BorderRadius defaultBorderRadius = widget.isNeobrutalism
+        ? BorderRadius.zero
+        : .all(widget.radius.md);
+    final finalRadius =
+        widget.style?.borderRadius ??
+        widget.themeStyle?.borderRadius ??
+        defaultBorderRadius;
 
     Widget header = Row(
       children: [
@@ -392,7 +422,9 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       builder: (context, isHovered, isPressed, isFocused, focusNode) {
         Color resolvedHeaderBg = headerBg;
         if (isHovered && widget.item.enabled) {
-          resolvedHeaderBg = widget.colors.borderDefault.withValues(alpha: 0.08);
+          resolvedHeaderBg = widget.colors.borderDefault.withValues(
+            alpha: 0.08,
+          );
         }
 
         Widget innerHeader = Container(
@@ -424,10 +456,16 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
             focusColor: widget.colors.borderFocus,
             borderRadius: widget.variant == JustAccordionVariant.contained
                 ? (widget.index == 0
-                    ? .only(topLeft: finalRadius.topLeft, topRight: finalRadius.topRight)
-                    : (widget.index == widget.totalItems - 1
-                        ? .only(bottomLeft: finalRadius.bottomLeft, bottomRight: finalRadius.bottomRight)
-                        : BorderRadius.zero))
+                      ? .only(
+                          topLeft: finalRadius.topLeft,
+                          topRight: finalRadius.topRight,
+                        )
+                      : (widget.index == widget.totalItems - 1
+                            ? .only(
+                                bottomLeft: finalRadius.bottomLeft,
+                                bottomRight: finalRadius.bottomRight,
+                              )
+                            : BorderRadius.zero))
                 : finalRadius,
             child: innerHeader,
           ),
@@ -447,10 +485,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
     final itemWidget = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        headerButton,
-        contentArea,
-      ],
+      children: [headerButton, contentArea],
     );
 
     // Styling for Default Variant (Card-based)
@@ -464,14 +499,14 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
         borderRadius: finalRadius,
         boxShadow: widget.isExpanded
             ? (widget.isNeobrutalism
-                ? [
-                    BoxShadow(
-                      color: widget.colors.textPrimary,
-                      offset: const Offset(4, 4),
-                      blurRadius: 0,
-                    )
-                  ]
-                : widget.shadows.sm)
+                  ? [
+                      BoxShadow(
+                        color: widget.colors.textPrimary,
+                        offset: const Offset(4, 4),
+                        blurRadius: 0,
+                      ),
+                    ]
+                  : widget.shadows.sm)
             : null,
       );
 

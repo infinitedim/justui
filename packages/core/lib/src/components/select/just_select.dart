@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart'
-    show
-        LogicalKeyboardKey,
-        TextInputAction,
-        TextInputType,
-        KeyDownEvent,
-        KeyEvent;
+    show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
@@ -99,7 +94,7 @@ class JustSelect<T> extends StatefulWidget {
     this.errorText,
     this.enabled = true,
     this.searchable = false,
-    this.size = JustSelectSize.md,
+    this.size = .md,
     this.style,
     this.prefixIcon,
     this.maxDropdownHeight = 300,
@@ -190,43 +185,43 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    if (event is! KeyDownEvent) return .ignored;
 
     final filtered = _filteredOptions;
     if (!_overlayController.isShowing) {
-      if (event.logicalKey == LogicalKeyboardKey.enter ||
-          event.logicalKey == LogicalKeyboardKey.space ||
-          event.logicalKey == LogicalKeyboardKey.arrowDown ||
-          event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      if (event.logicalKey == .enter ||
+          event.logicalKey == .space ||
+          event.logicalKey == .arrowDown ||
+          event.logicalKey == .arrowUp) {
         _openDropdown();
-        return KeyEventResult.handled;
+        return .handled;
       }
-      return KeyEventResult.ignored;
+      return .ignored;
     }
 
-    if (event.logicalKey == LogicalKeyboardKey.escape) {
+    if (event.logicalKey == .escape) {
       _closeDropdown();
-      return KeyEventResult.handled;
+      return .handled;
     }
 
-    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+    if (event.logicalKey == .arrowDown) {
       _moveFocus(1);
-      return KeyEventResult.handled;
+      return .handled;
     }
 
-    if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+    if (event.logicalKey == .arrowUp) {
       _moveFocus(-1);
-      return KeyEventResult.handled;
+      return .handled;
     }
 
-    if (event.logicalKey == LogicalKeyboardKey.enter) {
+    if (event.logicalKey == .enter) {
       if (_focusedOptionIndex >= 0 && _focusedOptionIndex < filtered.length) {
         _selectOption(filtered[_focusedOptionIndex]);
       }
-      return KeyEventResult.handled;
+      return .handled;
     }
 
-    return KeyEventResult.ignored;
+    return .ignored;
   }
 
   void _moveFocus(int direction) {
@@ -279,17 +274,17 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     final BorderRadius defaultRadius;
 
     switch (widget.size) {
-      case JustSelectSize.sm:
+      case .sm:
         height = 36.0;
         textStyle = typography.bodySm;
         defaultRadius = .all(radius.sm);
         break;
-      case JustSelectSize.md:
+      case .md:
         height = 44.0;
         textStyle = typography.bodyMd;
         defaultRadius = .all(radius.md);
         break;
-      case JustSelectSize.lg:
+      case .lg:
         height = 52.0;
         textStyle = typography.bodyLg;
         defaultRadius = .all(radius.lg);
@@ -333,7 +328,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                   : finalBorderColor),
         width: isNeobrutalism ? 2.5 : 1.0,
       ),
-      borderRadius: isNeobrutalism ? BorderRadius.zero : finalRadius,
+      borderRadius: isNeobrutalism ? .zero : finalRadius,
     );
 
     final Widget triggerChild = Focus(
@@ -367,7 +362,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                 style: textStyle.copyWith(
                                   color: finalTextColor,
                                 ),
-                                overflow: TextOverflow.ellipsis,
+                                overflow: .ellipsis,
                               ),
                             ),
                           ],
@@ -377,7 +372,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                           style: textStyle.copyWith(
                             color: finalPlaceholderColor,
                           ),
-                          overflow: TextOverflow.ellipsis,
+                          overflow: .ellipsis,
                         ),
                 ),
                 SizedBox(width: spacing.sm),
@@ -388,7 +383,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                   curve: customTheme.animations.defaultCurve,
                   child: Icon(
                     const IconData(0xe150, fontFamily: 'MaterialIcons'),
-                    size: widget.size == JustSelectSize.sm ? 16 : 20,
+                    size: widget.size == .sm ? 16 : 20,
                     color: hasError
                         ? colors.error
                         : (widget.enabled
@@ -409,7 +404,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                     shadows.md,
                     isPressed: isPressed,
                   ),
-                  borderRadius: BorderRadius.zero,
+                  borderRadius: .zero,
                 ),
                 child: inner,
               ),
@@ -419,7 +414,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
           return FocusIndicator(
             isFocused: isFocused,
             focusColor: colors.borderFocus,
-            borderRadius: isNeobrutalism ? BorderRadius.zero : finalRadius,
+            borderRadius: isNeobrutalism ? .zero : finalRadius,
             child: inner,
           );
         },
@@ -433,8 +428,8 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       hint: widget.enabled ? 'Double tap to open list of options' : 'Disabled',
       enabled: widget.enabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           if (widget.label != null) ...[
             Text(
@@ -489,7 +484,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                       : colors.borderDefault,
                   width: isNeobrutalism ? 2.5 : 1.0,
                 ),
-                borderRadius: isNeobrutalism ? BorderRadius.zero : finalRadius,
+                borderRadius: isNeobrutalism ? .zero : finalRadius,
                 boxShadow: isNeobrutalism
                     ? [
                         BoxShadow(
@@ -523,7 +518,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                 width: isNeobrutalism ? 2.0 : 1.0,
                               ),
                               borderRadius: isNeobrutalism
-                                  ? BorderRadius.zero
+                                  ? .zero
                                   : .all(radius.sm),
                             ),
                             padding: .symmetric(horizontal: spacing.sm),
@@ -662,8 +657,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                                         ? .w600
                                                         : .w400,
                                                   ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
+                                                  overflow: .ellipsis,
                                                 ),
                                               ),
                                               if (isSelected &&
