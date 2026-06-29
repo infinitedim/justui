@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
-import '../../../shared/default/_shared_tokens.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
 
-import '../../shared/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
 import 'just_tooltip_style.dart';
 import 'just_tooltip_theme.dart';
 import 'just_tooltip_variants.dart';
@@ -16,7 +16,7 @@ class JustTooltip extends StatefulWidget {
   /// The target widget that triggers the tooltip.
   final Widget child;
 
-  /// The position of the tooltip relative to the target. Defaults to [TooltipPosition.auto].
+  /// The position of the tooltip relative to the target. Defaults to [.auto].
   final TooltipPosition position;
 
   /// Whether the tooltip should trigger on hover (mouse hover).
@@ -46,7 +46,7 @@ class JustTooltip extends StatefulWidget {
     super.key,
     required this.message,
     required this.child,
-    this.position = TooltipPosition.auto,
+    this.position = .auto,
     this.triggerOnHover = true,
     this.triggerOnLongPress = true,
     this.showDelay = Duration.zero,
@@ -159,29 +159,29 @@ class _JustTooltipState extends State<JustTooltip>
         final double gap = spacing.xs;
 
         switch (resolvedPosition) {
-          case TooltipPosition.top:
-            targetAnchor = Alignment.topCenter;
-            followerAnchor = Alignment.bottomCenter;
+          case .top:
+            targetAnchor = .topCenter;
+            followerAnchor = .bottomCenter;
             offset = Offset(0.0, -gap);
             break;
-          case TooltipPosition.bottom:
-            targetAnchor = Alignment.bottomCenter;
-            followerAnchor = Alignment.topCenter;
+          case .bottom:
+            targetAnchor = .bottomCenter;
+            followerAnchor = .topCenter;
             offset = Offset(0.0, gap);
             break;
-          case TooltipPosition.left:
-            targetAnchor = Alignment.centerLeft;
-            followerAnchor = Alignment.centerRight;
+          case .left:
+            targetAnchor = .centerLeft;
+            followerAnchor = .centerRight;
             offset = Offset(-gap, 0.0);
             break;
-          case TooltipPosition.right:
-            targetAnchor = Alignment.centerRight;
-            followerAnchor = Alignment.centerLeft;
+          case .right:
+            targetAnchor = .centerRight;
+            followerAnchor = .centerLeft;
             offset = Offset(gap, 0.0);
             break;
-          case TooltipPosition.auto:
-            targetAnchor = Alignment.topCenter;
-            followerAnchor = Alignment.bottomCenter;
+          case .auto:
+            targetAnchor = .topCenter;
+            followerAnchor = .bottomCenter;
             offset = Offset(0.0, -gap);
             break;
         }
@@ -239,7 +239,7 @@ class _JustTooltipState extends State<JustTooltip>
             followerAnchor: followerAnchor,
             offset: offset,
             child: Align(
-              alignment: Alignment.topLeft,
+              alignment: .topLeft,
               child: Semantics(tooltip: widget.message, child: animatedBubble),
             ),
           ),
@@ -267,13 +267,13 @@ class _JustTooltipState extends State<JustTooltip>
   }
 
   TooltipPosition _resolvePosition() {
-    if (widget.position != TooltipPosition.auto) {
+    if (widget.position != .auto) {
       return widget.position;
     }
 
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null || !renderBox.hasSize) {
-      return TooltipPosition.top;
+      return .top;
     }
 
     final offset = renderBox.localToGlobal(Offset.zero);
@@ -287,16 +287,16 @@ class _JustTooltipState extends State<JustTooltip>
 
     // Priority: top -> bottom -> left -> right
     if (spaceTop > 48.0) {
-      return TooltipPosition.top;
+      return .top;
     } else if (spaceBottom > 48.0) {
-      return TooltipPosition.bottom;
+      return .bottom;
     } else if (spaceLeft > 80.0) {
-      return TooltipPosition.left;
+      return .left;
     } else if (spaceRight > 80.0) {
-      return TooltipPosition.right;
+      return .right;
     }
 
-    return TooltipPosition.top;
+    return .top;
   }
 
   @override

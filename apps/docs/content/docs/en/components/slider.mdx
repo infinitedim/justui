@@ -1,0 +1,217 @@
+---
+title: Slider
+description: A custom slider component supporting single-value and range modes with integrated haptic feedback and visual presets.
+---
+
+# Slider
+
+`JustSlider` is a high-performance, custom slider component built without wrapping the native Material Design `Slider`. It is constructed using `GestureDetector` and `LayoutBuilder` to provide full control over interactions and rendering. It supports both single-value selection and range-value selection in a single widget, and adapts to **Default** and **Neobrutalism** presets out of the box.
+
+---
+
+## Description
+
+- **`JustSlider`**: Standard slider component for selecting a single value.
+- **`JustSlider.range`**: A named constructor for selecting a range of values between a start and end point using two thumbs.
+- **`JustRangeValues`**: An immutable data class holding the `start` and `end` values for range mode. Constructor: `JustRangeValues(double start, double end)` with a `start <= end` assertion.
+
+---
+
+## Usage
+
+### Basic Usage
+
+A simple example of using `JustSlider` to select a single numeric value.
+
+```dart
+import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class SliderBasicExample extends StatefulWidget {
+  const SliderBasicExample({super.key});
+
+  @override
+  State<SliderBasicExample> createState() => _SliderBasicExampleState();
+}
+
+class _SliderBasicExampleState extends State<SliderBasicExample> {
+  double _value = 0.5;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSlider(
+      value: _value,
+      min: 0.0,
+      max: 1.0,
+      onChanged: (newValue) {
+        setState(() {
+          _value = newValue;
+        });
+      },
+    );
+  }
+}
+```
+
+### Range Usage
+
+An example of using `JustSlider.range` to select a range of values with two thumbs.
+
+```dart
+import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class SliderRangeExample extends StatefulWidget {
+  const SliderRangeExample({super.key});
+
+  @override
+  State<SliderRangeExample> createState() => _SliderRangeExampleState();
+}
+
+class _SliderRangeExampleState extends State<SliderRangeExample> {
+  JustRangeValues _range = const JustRangeValues(0.2, 0.8);
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSlider.range(
+      rangeValues: _range,
+      min: 0.0,
+      max: 1.0,
+      onRangeChanged: (newRange) {
+        setState(() {
+          _range = newRange;
+        });
+      },
+    );
+  }
+}
+```
+
+### Advanced Usage
+
+An advanced example showing discrete snapping (`divisions`), a floating value tooltip (`showTooltip`), and global styling configurations using `JustSliderTheme`.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class SliderAdvancedExample extends StatefulWidget {
+  const SliderAdvancedExample({super.key});
+
+  @override
+  State<SliderAdvancedExample> createState() => _SliderAdvancedExampleState();
+}
+
+class _SliderAdvancedExampleState extends State<SliderAdvancedExample> {
+  double _value = 20.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        extensions: const [
+          JustSliderTheme(
+            enableHaptic: true,
+            style: JustSliderStyle(
+              trackHeight: 8.0,
+              thumbSize: 24.0,
+            ),
+          ),
+        ],
+      ),
+      home: Center(
+        child: JustSlider(
+          value: _value,
+          min: 0.0,
+          max: 100.0,
+          divisions: 10,
+          showTooltip: true,
+          onChanged: (newValue) {
+            setState(() {
+              _value = newValue;
+            });
+          },
+        ),
+      ),
+    );
+  }
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustSlider
+
+| Property | Data Type | Default Value | Description |
+| :--- | :--- | :--- | :--- |
+| `value` | `double?` | _Required_ | The current value of the slider. |
+| `onChanged` | `ValueChanged<double>?` | _Required_ | Callback invoked when the slider value changes. |
+| `min` | `double` | `0.0` | The minimum value of the slider. |
+| `max` | `double` | `1.0` | The maximum value of the slider. |
+| `divisions` | `int?` | `null` | The number of discrete divisions. If specified, the slider snaps to these steps. |
+| `showTooltip` | `bool` | `false` | Whether to display a floating value tooltip above the active thumb while dragging. |
+| `enableHaptic` | `bool?` | `null` | Explicitly enables or disables haptic feedback. If `null`, falls back to `JustSliderTheme.enableHaptic`. |
+| `size` | `JustSliderSize` | `JustSliderSize.md` | The physical size classification of the slider: `.sm`, `.md`, or `.lg`. |
+| `style` | `JustSliderStyle?` | `null` | Custom style overrides for this specific instance. |
+
+### JustSlider.range
+
+| Property | Data Type | Default Value | Description |
+| :--- | :--- | :--- | :--- |
+| `rangeValues` | `JustRangeValues?` | _Required_ | The current start and end range values of the slider. |
+| `onRangeChanged` | `ValueChanged<JustRangeValues>?` | _Required_ | Callback invoked when the range values change. |
+| `min` | `double` | `0.0` | The minimum value of the slider. |
+| `max` | `double` | `1.0` | The maximum value of the slider. |
+| `divisions` | `int?` | `null` | The number of discrete divisions to split the track. |
+| `showTooltip` | `bool` | `false` | Whether to display a floating value tooltip above the active thumb while dragging. |
+| `enableHaptic` | `bool?` | `null` | Explicitly enables or disables haptic feedback. |
+| `size` | `JustSliderSize` | `JustSliderSize.md` | The physical size classification of the slider (`.sm`, `.md`, or `.lg`). |
+| `style` | `JustSliderStyle?` | `null` | Custom style overrides for this specific instance. |
+
+### JustSliderStyle
+
+| Property | Data Type | Description |
+| :--- | :--- | :--- |
+| `activeTrackColor` | `Color?` | Color of the active (filled) portion of the track. |
+| `inactiveTrackColor` | `Color?` | Color of the inactive (empty) portion of the track. |
+| `thumbColor` | `Color?` | Color of the interactive thumb. |
+| `thumbBorderColor` | `Color?` | Border color of the thumb. |
+| `tickMarkColor` | `Color?` | Color of the tick marks when `divisions` are active. |
+| `trackHeight` | `double?` | Custom thickness of the slider track. |
+| `thumbSize` | `double?` | Custom diameter or side length of the thumb. |
+| `borderRadius` | `BorderRadius?` | Custom border radius of the slider track. |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+`JustSlider` automatically adapts its layout and aesthetics based on the active `JustThemeData` preset:
+
+- **Default Preset**:
+  - The track is fully rounded (`radius.full`).
+  - The thumb is a perfect circle with a soft, organic drop shadow.
+  - Features a smooth scale-up animation (`scale: 1.15`) when the thumb is pressed or dragged.
+- **Neobrutalism Preset**:
+  - The track is rectangular with slightly rounded corners (`radius.xs`) and a thick `2.5px` solid black border.
+  - The thumb is a chunky square with a thick `2.5px` solid black border and a solid `(2.5, 2.5)` offset shadow.
+  - When pressed, the solid shadow collapses to zero, and the thumb visually translates by `(2.5, 2.5)`.
+
+### Haptic Feedback
+
+Haptic feedback is resolved through a priority chain:
+`widget.enableHaptic` (highest priority) → `JustSliderTheme.enableHaptic` → `isNeobrutalism` (defaults to `true` under Neobrutalism).
+
+Haptics are triggered on the following events:
+1. When the user first presses or starts dragging a thumb (`onPanStart`).
+2. When the thumb snaps to a new division step (if `divisions` are active).
+3. When the thumb reaches the minimum (`min`) or maximum (`max`) boundary in continuous mode.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Touch Target Size**: The slider widget has a fixed height of `48.0px` to guarantee a comfortable touch target size (meeting WCAG AA requirements) on mobile and touch-screen devices.
+2. **Visual Value Assistance**: An optional floating tooltip provides immediate visual feedback of the exact numeric value while dragging.
+3. **Proximity-Based Selection**: In range mode, if the user taps near overlapping thumbs, the system automatically selects the thumb closest to the touch coordinate to prevent interaction lock.

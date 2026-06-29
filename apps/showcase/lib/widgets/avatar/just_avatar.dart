@@ -1,6 +1,5 @@
 // justui-meta: registry=31d7f7ca35b803583c82d750a0512a054bbdc4aa3279e52deb42355ee2b69cb0 local=e2465c7b9700b443dda902bf4d5f122928290ca4368ea57611eecc5ee00dd9d8
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'just_avatar_style.dart';
 import 'just_avatar_variants.dart';

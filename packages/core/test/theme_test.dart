@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
