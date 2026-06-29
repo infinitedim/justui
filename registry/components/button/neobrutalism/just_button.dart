@@ -201,9 +201,7 @@ class _JustButtonState extends State<JustButton> {
       }
     }
     final finalEnableHaptic =
-        widget.enableHaptic ??
-        buttonTheme?.enableHaptic ??
-        (true);
+        widget.enableHaptic ?? buttonTheme?.enableHaptic ?? (true);
 
     // We register dependency to colors aspect
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;

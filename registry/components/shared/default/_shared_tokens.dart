@@ -14,7 +14,7 @@ abstract final class JustColorPalette {
   static const Color black = Color(0xFF000000);
 
   // Neutral (Slate)
-  static const Color neutral50  = Color(0xFFF8FAFC);
+  static const Color neutral50 = Color(0xFFF8FAFC);
   static const Color neutral100 = Color(0xFFF1F5F9);
   static const Color neutral200 = Color(0xFFE2E8F0);
   static const Color neutral300 = Color(0xFFCBD5E1);
@@ -27,7 +27,7 @@ abstract final class JustColorPalette {
   static const Color neutral950 = Color(0xFF020617);
 
   // Primary (Blue)
-  static const Color primary50  = Color(0xFFEFF6FF);
+  static const Color primary50 = Color(0xFFEFF6FF);
   static const Color primary100 = Color(0xFFDBEAFE);
   static const Color primary200 = Color(0xFFBFDBFE);
   static const Color primary300 = Color(0xFF93C5FD);
@@ -40,7 +40,7 @@ abstract final class JustColorPalette {
   static const Color primary950 = Color(0xFF172554);
 
   // Success (Green)
-  static const Color success50  = Color(0xFFF0FDF4);
+  static const Color success50 = Color(0xFFF0FDF4);
   static const Color success100 = Color(0xFFDCFCE7);
   static const Color success200 = Color(0xFFBBF7D0);
   static const Color success300 = Color(0xFF86EFAC);
@@ -53,7 +53,7 @@ abstract final class JustColorPalette {
   static const Color success950 = Color(0xFF052E16);
 
   // Warning (Amber)
-  static const Color warning50  = Color(0xFFFFFBEB);
+  static const Color warning50 = Color(0xFFFFFBEB);
   static const Color warning100 = Color(0xFFFEF3C7);
   static const Color warning200 = Color(0xFFFDE68A);
   static const Color warning300 = Color(0xFFFCD34D);
@@ -66,7 +66,7 @@ abstract final class JustColorPalette {
   static const Color warning950 = Color(0xFF451A03);
 
   // Error (Red)
-  static const Color error50  = Color(0xFFFEF2F2);
+  static const Color error50 = Color(0xFFFEF2F2);
   static const Color error100 = Color(0xFFFEE2E2);
   static const Color error200 = Color(0xFFFECACA);
   static const Color error300 = Color(0xFFFCA5A5);
@@ -79,7 +79,7 @@ abstract final class JustColorPalette {
   static const Color error950 = Color(0xFF450A0A);
 
   // Info (Cyan)
-  static const Color info50  = Color(0xFFECFEFF);
+  static const Color info50 = Color(0xFFECFEFF);
   static const Color info100 = Color(0xFFCFFAFE);
   static const Color info200 = Color(0xFFA5F3FC);
   static const Color info300 = Color(0xFF67E8F9);
@@ -94,34 +94,34 @@ abstract final class JustColorPalette {
 
 abstract final class JustRadius {
   static const Radius none = Radius.zero;
-  static const Radius xs   = Radius.circular(2.0);
-  static const Radius sm   = Radius.circular(4.0);
-  static const Radius md   = Radius.circular(8.0);
-  static const Radius lg   = Radius.circular(12.0);
-  static const Radius xl   = Radius.circular(16.0);
-  static const Radius xxl  = Radius.circular(24.0);
+  static const Radius xs = Radius.circular(2.0);
+  static const Radius sm = Radius.circular(4.0);
+  static const Radius md = Radius.circular(8.0);
+  static const Radius lg = Radius.circular(12.0);
+  static const Radius xl = Radius.circular(16.0);
+  static const Radius xxl = Radius.circular(24.0);
   static const Radius full = Radius.circular(9999.0);
 }
 
 abstract final class JustBorderRadius {
   static const BorderRadius none = BorderRadius.zero;
-  static const BorderRadius xs   = BorderRadius.all(JustRadius.xs);
-  static const BorderRadius sm   = BorderRadius.all(JustRadius.sm);
-  static const BorderRadius md   = BorderRadius.all(JustRadius.md);
-  static const BorderRadius lg   = BorderRadius.all(JustRadius.lg);
-  static const BorderRadius xl   = BorderRadius.all(JustRadius.xl);
-  static const BorderRadius xxl  = BorderRadius.all(JustRadius.xxl);
+  static const BorderRadius xs = BorderRadius.all(JustRadius.xs);
+  static const BorderRadius sm = BorderRadius.all(JustRadius.sm);
+  static const BorderRadius md = BorderRadius.all(JustRadius.md);
+  static const BorderRadius lg = BorderRadius.all(JustRadius.lg);
+  static const BorderRadius xl = BorderRadius.all(JustRadius.xl);
+  static const BorderRadius xxl = BorderRadius.all(JustRadius.xxl);
   static const BorderRadius full = BorderRadius.all(JustRadius.full);
 }
 
 abstract final class JustSpacing {
-  static const double xxs  = 2.0;
-  static const double xs   = 4.0;
-  static const double sm   = 8.0;
-  static const double md   = 12.0;
-  static const double lg   = 16.0;
-  static const double xl   = 24.0;
-  static const double xxl  = 32.0;
+  static const double xxs = 2.0;
+  static const double xs = 4.0;
+  static const double sm = 8.0;
+  static const double md = 12.0;
+  static const double lg = 16.0;
+  static const double xl = 24.0;
+  static const double xxl = 32.0;
   static const double xxxl = 48.0;
   static const double huge = 64.0;
 
@@ -132,100 +132,239 @@ abstract final class JustSpacing {
 }
 
 abstract final class JustGap {
-  static Widget get xxs  => const SizedBox(height: JustSpacing.xxs,  width: JustSpacing.xxs);
-  static Widget get xs   => const SizedBox(height: JustSpacing.xs,   width: JustSpacing.xs);
-  static Widget get sm   => const SizedBox(height: JustSpacing.sm,   width: JustSpacing.sm);
-  static Widget get md   => const SizedBox(height: JustSpacing.md,   width: JustSpacing.md);
-  static Widget get lg   => const SizedBox(height: JustSpacing.lg,   width: JustSpacing.lg);
-  static Widget get xl   => const SizedBox(height: JustSpacing.xl,   width: JustSpacing.xl);
-  static Widget get xxl  => const SizedBox(height: JustSpacing.xxl,  width: JustSpacing.xxl);
-  static Widget get xxxl => const SizedBox(height: JustSpacing.xxxl, width: JustSpacing.xxxl);
-  static Widget get huge => const SizedBox(height: JustSpacing.huge, width: JustSpacing.huge);
+  static Widget get xxs =>
+      const SizedBox(height: JustSpacing.xxs, width: JustSpacing.xxs);
+  static Widget get xs =>
+      const SizedBox(height: JustSpacing.xs, width: JustSpacing.xs);
+  static Widget get sm =>
+      const SizedBox(height: JustSpacing.sm, width: JustSpacing.sm);
+  static Widget get md =>
+      const SizedBox(height: JustSpacing.md, width: JustSpacing.md);
+  static Widget get lg =>
+      const SizedBox(height: JustSpacing.lg, width: JustSpacing.lg);
+  static Widget get xl =>
+      const SizedBox(height: JustSpacing.xl, width: JustSpacing.xl);
+  static Widget get xxl =>
+      const SizedBox(height: JustSpacing.xxl, width: JustSpacing.xxl);
+  static Widget get xxxl =>
+      const SizedBox(height: JustSpacing.xxxl, width: JustSpacing.xxxl);
+  static Widget get huge =>
+      const SizedBox(height: JustSpacing.huge, width: JustSpacing.huge);
 }
 
 abstract final class JustShadows {
   // Light mode
   static const List<BoxShadow> xs = [
-    BoxShadow(offset: Offset(0, 1), blurRadius: 2.0,  spreadRadius: 0.0,   color: Color(0x0D000000)),
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2.0,
+      spreadRadius: 0.0,
+      color: Color(0x0D000000),
+    ),
   ];
   static const List<BoxShadow> sm = [
-    BoxShadow(offset: Offset(0, 1), blurRadius: 2.0,  spreadRadius: 0.0,   color: Color(0x08000000)),
-    BoxShadow(offset: Offset(0, 2), blurRadius: 4.0,  spreadRadius: 0.0,   color: Color(0x14000000)),
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2.0,
+      spreadRadius: 0.0,
+      color: Color(0x08000000),
+    ),
+    BoxShadow(
+      offset: Offset(0, 2),
+      blurRadius: 4.0,
+      spreadRadius: 0.0,
+      color: Color(0x14000000),
+    ),
   ];
   static const List<BoxShadow> md = [
-    BoxShadow(offset: Offset(0, 4), blurRadius: 6.0,  spreadRadius: -1.0,  color: Color(0x1A000000)),
-    BoxShadow(offset: Offset(0, 2), blurRadius: 4.0,  spreadRadius: -1.0,  color: Color(0x0F000000)),
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 6.0,
+      spreadRadius: -1.0,
+      color: Color(0x1A000000),
+    ),
+    BoxShadow(
+      offset: Offset(0, 2),
+      blurRadius: 4.0,
+      spreadRadius: -1.0,
+      color: Color(0x0F000000),
+    ),
   ];
   static const List<BoxShadow> lg = [
-    BoxShadow(offset: Offset(0, 10), blurRadius: 15.0, spreadRadius: -3.0, color: Color(0x1A000000)),
-    BoxShadow(offset: Offset(0, 4),  blurRadius: 6.0,  spreadRadius: -2.0, color: Color(0x0F000000)),
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 15.0,
+      spreadRadius: -3.0,
+      color: Color(0x1A000000),
+    ),
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 6.0,
+      spreadRadius: -2.0,
+      color: Color(0x0F000000),
+    ),
   ];
   static const List<BoxShadow> xl = [
-    BoxShadow(offset: Offset(0, 20), blurRadius: 25.0, spreadRadius: -5.0, color: Color(0x1A000000)),
-    BoxShadow(offset: Offset(0, 10), blurRadius: 10.0, spreadRadius: -5.0, color: Color(0x0F000000)),
+    BoxShadow(
+      offset: Offset(0, 20),
+      blurRadius: 25.0,
+      spreadRadius: -5.0,
+      color: Color(0x1A000000),
+    ),
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 10.0,
+      spreadRadius: -5.0,
+      color: Color(0x0F000000),
+    ),
   ];
   static const List<BoxShadow> xxl = [
-    BoxShadow(offset: Offset(0, 25), blurRadius: 50.0, spreadRadius: -12.0, color: Color(0x40000000)),
+    BoxShadow(
+      offset: Offset(0, 25),
+      blurRadius: 50.0,
+      spreadRadius: -12.0,
+      color: Color(0x40000000),
+    ),
   ];
 
   // Dark mode
   static const List<BoxShadow> xsDark = [
-    BoxShadow(offset: Offset(0, 1), blurRadius: 2.0,  spreadRadius: 0.0,   color: Color(0x33000000)),
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2.0,
+      spreadRadius: 0.0,
+      color: Color(0x33000000),
+    ),
   ];
   static const List<BoxShadow> smDark = [
-    BoxShadow(offset: Offset(0, 1), blurRadius: 2.0,  spreadRadius: 0.0,   color: Color(0x1F000000)),
-    BoxShadow(offset: Offset(0, 2), blurRadius: 4.0,  spreadRadius: 0.0,   color: Color(0x3D000000)),
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2.0,
+      spreadRadius: 0.0,
+      color: Color(0x1F000000),
+    ),
+    BoxShadow(
+      offset: Offset(0, 2),
+      blurRadius: 4.0,
+      spreadRadius: 0.0,
+      color: Color(0x3D000000),
+    ),
   ];
   static const List<BoxShadow> mdDark = [
-    BoxShadow(offset: Offset(0, 4), blurRadius: 6.0,  spreadRadius: -1.0,  color: Color(0x40000000)),
-    BoxShadow(offset: Offset(0, 2), blurRadius: 4.0,  spreadRadius: -1.0,  color: Color(0x26000000)),
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 6.0,
+      spreadRadius: -1.0,
+      color: Color(0x40000000),
+    ),
+    BoxShadow(
+      offset: Offset(0, 2),
+      blurRadius: 4.0,
+      spreadRadius: -1.0,
+      color: Color(0x26000000),
+    ),
   ];
   static const List<BoxShadow> lgDark = [
-    BoxShadow(offset: Offset(0, 10), blurRadius: 15.0, spreadRadius: -3.0, color: Color(0x4D000000)),
-    BoxShadow(offset: Offset(0, 4),  blurRadius: 6.0,  spreadRadius: -2.0, color: Color(0x33000000)),
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 15.0,
+      spreadRadius: -3.0,
+      color: Color(0x4D000000),
+    ),
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 6.0,
+      spreadRadius: -2.0,
+      color: Color(0x33000000),
+    ),
   ];
   static const List<BoxShadow> xlDark = [
-    BoxShadow(offset: Offset(0, 20), blurRadius: 25.0, spreadRadius: -5.0, color: Color(0x59000000)),
-    BoxShadow(offset: Offset(0, 10), blurRadius: 10.0, spreadRadius: -5.0, color: Color(0x40000000)),
+    BoxShadow(
+      offset: Offset(0, 20),
+      blurRadius: 25.0,
+      spreadRadius: -5.0,
+      color: Color(0x59000000),
+    ),
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 10.0,
+      spreadRadius: -5.0,
+      color: Color(0x40000000),
+    ),
   ];
   static const List<BoxShadow> xxlDark = [
-    BoxShadow(offset: Offset(0, 25), blurRadius: 50.0, spreadRadius: -12.0, color: Color(0x80000000)),
+    BoxShadow(
+      offset: Offset(0, 25),
+      blurRadius: 50.0,
+      spreadRadius: -12.0,
+      color: Color(0x80000000),
+    ),
   ];
 
   // Neobrutalism offset shadows (flat, no blur)
   static const List<BoxShadow> neoSm = [
-    BoxShadow(offset: Offset(2, 2), blurRadius: 0.0, spreadRadius: 0.0, color: Color(0xFF000000)),
+    BoxShadow(
+      offset: Offset(2, 2),
+      blurRadius: 0.0,
+      spreadRadius: 0.0,
+      color: Color(0xFF000000),
+    ),
   ];
   static const List<BoxShadow> neoMd = [
-    BoxShadow(offset: Offset(4, 4), blurRadius: 0.0, spreadRadius: 0.0, color: Color(0xFF000000)),
+    BoxShadow(
+      offset: Offset(4, 4),
+      blurRadius: 0.0,
+      spreadRadius: 0.0,
+      color: Color(0xFF000000),
+    ),
   ];
   static const List<BoxShadow> neoLg = [
-    BoxShadow(offset: Offset(6, 6), blurRadius: 0.0, spreadRadius: 0.0, color: Color(0xFF000000)),
+    BoxShadow(
+      offset: Offset(6, 6),
+      blurRadius: 0.0,
+      spreadRadius: 0.0,
+      color: Color(0xFF000000),
+    ),
   ];
   static const List<BoxShadow> neoSmDark = [
-    BoxShadow(offset: Offset(2, 2), blurRadius: 0.0, spreadRadius: 0.0, color: Color(0xFFFFFFFF)),
+    BoxShadow(
+      offset: Offset(2, 2),
+      blurRadius: 0.0,
+      spreadRadius: 0.0,
+      color: Color(0xFFFFFFFF),
+    ),
   ];
   static const List<BoxShadow> neoMdDark = [
-    BoxShadow(offset: Offset(4, 4), blurRadius: 0.0, spreadRadius: 0.0, color: Color(0xFFFFFFFF)),
+    BoxShadow(
+      offset: Offset(4, 4),
+      blurRadius: 0.0,
+      spreadRadius: 0.0,
+      color: Color(0xFFFFFFFF),
+    ),
   ];
   static const List<BoxShadow> neoLgDark = [
-    BoxShadow(offset: Offset(6, 6), blurRadius: 0.0, spreadRadius: 0.0, color: Color(0xFFFFFFFF)),
+    BoxShadow(
+      offset: Offset(6, 6),
+      blurRadius: 0.0,
+      spreadRadius: 0.0,
+      color: Color(0xFFFFFFFF),
+    ),
   ];
 }
 
 abstract final class JustDuration {
   static const Duration instant = Duration(milliseconds: 50);
-  static const Duration fast    = Duration(milliseconds: 150);
-  static const Duration normal  = Duration(milliseconds: 250);
-  static const Duration slow    = Duration(milliseconds: 400);
-  static const Duration slower  = Duration(milliseconds: 600);
+  static const Duration fast = Duration(milliseconds: 150);
+  static const Duration normal = Duration(milliseconds: 250);
+  static const Duration slow = Duration(milliseconds: 400);
+  static const Duration slower = Duration(milliseconds: 600);
 }
 
 abstract final class JustCurves {
   static const Curve default_ = Curves.easeInOut;
-  static const Curve enter    = Curves.easeOut;
-  static const Curve exit     = Curves.easeIn;
-  static const Curve spring   = Curves.elasticOut;
+  static const Curve enter = Curves.easeOut;
+  static const Curve exit = Curves.easeIn;
+  static const Curve spring = Curves.elasticOut;
 }
 
 abstract final class JustColorScheme {
@@ -249,94 +388,156 @@ abstract final class JustColorScheme {
 
 final class _JustColorSchemeLight extends JustColorScheme {
   const _JustColorSchemeLight();
-  @override Color get background    => JustColorPalette.neutral50;
-  @override Color get card          => JustColorPalette.white;
-  @override Color get elevated      => JustColorPalette.white;
-  @override Color get overlay       => JustColorPalette.black;
-  @override Color get textPrimary   => JustColorPalette.neutral900;
-  @override Color get textSecondary => JustColorPalette.neutral600;
-  @override Color get textDisabled  => JustColorPalette.neutral400;
-  @override Color get textInverse   => JustColorPalette.neutral50;
-  @override Color get borderDefault => JustColorPalette.neutral200;
-  @override Color get borderFocus   => JustColorPalette.primary500;
-  @override Color get borderError   => JustColorPalette.error500;
-  @override Color get success       => JustColorPalette.success600;
-  @override Color get warning       => JustColorPalette.warning600;
-  @override Color get error         => JustColorPalette.error600;
-  @override Color get info          => JustColorPalette.info600;
+  @override
+  Color get background => JustColorPalette.neutral50;
+  @override
+  Color get card => JustColorPalette.white;
+  @override
+  Color get elevated => JustColorPalette.white;
+  @override
+  Color get overlay => JustColorPalette.black;
+  @override
+  Color get textPrimary => JustColorPalette.neutral900;
+  @override
+  Color get textSecondary => JustColorPalette.neutral600;
+  @override
+  Color get textDisabled => JustColorPalette.neutral400;
+  @override
+  Color get textInverse => JustColorPalette.neutral50;
+  @override
+  Color get borderDefault => JustColorPalette.neutral200;
+  @override
+  Color get borderFocus => JustColorPalette.primary500;
+  @override
+  Color get borderError => JustColorPalette.error500;
+  @override
+  Color get success => JustColorPalette.success600;
+  @override
+  Color get warning => JustColorPalette.warning600;
+  @override
+  Color get error => JustColorPalette.error600;
+  @override
+  Color get info => JustColorPalette.info600;
 }
 
 final class _JustColorSchemeDark extends JustColorScheme {
   const _JustColorSchemeDark();
-  @override Color get background    => JustColorPalette.neutral950;
-  @override Color get card          => JustColorPalette.neutral900;
-  @override Color get elevated      => JustColorPalette.neutral800;
-  @override Color get overlay       => JustColorPalette.neutral950;
-  @override Color get textPrimary   => JustColorPalette.neutral50;
-  @override Color get textSecondary => JustColorPalette.neutral400;
-  @override Color get textDisabled  => JustColorPalette.neutral600;
-  @override Color get textInverse   => JustColorPalette.neutral900;
-  @override Color get borderDefault => JustColorPalette.neutral800;
-  @override Color get borderFocus   => JustColorPalette.primary400;
-  @override Color get borderError   => JustColorPalette.error400;
-  @override Color get success       => JustColorPalette.success500;
-  @override Color get warning       => JustColorPalette.warning500;
-  @override Color get error         => JustColorPalette.error500;
-  @override Color get info          => JustColorPalette.info500;
+  @override
+  Color get background => JustColorPalette.neutral950;
+  @override
+  Color get card => JustColorPalette.neutral900;
+  @override
+  Color get elevated => JustColorPalette.neutral800;
+  @override
+  Color get overlay => JustColorPalette.neutral950;
+  @override
+  Color get textPrimary => JustColorPalette.neutral50;
+  @override
+  Color get textSecondary => JustColorPalette.neutral400;
+  @override
+  Color get textDisabled => JustColorPalette.neutral600;
+  @override
+  Color get textInverse => JustColorPalette.neutral900;
+  @override
+  Color get borderDefault => JustColorPalette.neutral800;
+  @override
+  Color get borderFocus => JustColorPalette.primary400;
+  @override
+  Color get borderError => JustColorPalette.error400;
+  @override
+  Color get success => JustColorPalette.success500;
+  @override
+  Color get warning => JustColorPalette.warning500;
+  @override
+  Color get error => JustColorPalette.error500;
+  @override
+  Color get info => JustColorPalette.info500;
 }
 
 final class _JustColorSchemeNeobrutalismLight extends JustColorScheme {
   const _JustColorSchemeNeobrutalismLight();
-  @override Color get background    => const Color(0xFFFFFDF5);
-  @override Color get card          => const Color(0xFFFFFFFF);
-  @override Color get elevated      => const Color(0xFFFFFFFF);
-  @override Color get overlay       => const Color(0x99000000);
-  @override Color get textPrimary   => const Color(0xFF000000);
-  @override Color get textSecondary => const Color(0xFF222222);
-  @override Color get textDisabled  => const Color(0xFF777777);
-  @override Color get textInverse   => const Color(0xFFFFFFFF);
-  @override Color get borderDefault => const Color(0xFF000000);
-  @override Color get borderFocus   => const Color(0xFF000000);
-  @override Color get borderError   => const Color(0xFF000000);
-  @override Color get success       => const Color(0xFF3CD070);
-  @override Color get warning       => const Color(0xFFFFC000);
-  @override Color get error         => const Color(0xFFFF3B30);
-  @override Color get info          => const Color(0xFF007AFF);
+  @override
+  Color get background => const Color(0xFFFFFDF5);
+  @override
+  Color get card => const Color(0xFFFFFFFF);
+  @override
+  Color get elevated => const Color(0xFFFFFFFF);
+  @override
+  Color get overlay => const Color(0x99000000);
+  @override
+  Color get textPrimary => const Color(0xFF000000);
+  @override
+  Color get textSecondary => const Color(0xFF222222);
+  @override
+  Color get textDisabled => const Color(0xFF777777);
+  @override
+  Color get textInverse => const Color(0xFFFFFFFF);
+  @override
+  Color get borderDefault => const Color(0xFF000000);
+  @override
+  Color get borderFocus => const Color(0xFF000000);
+  @override
+  Color get borderError => const Color(0xFF000000);
+  @override
+  Color get success => const Color(0xFF3CD070);
+  @override
+  Color get warning => const Color(0xFFFFC000);
+  @override
+  Color get error => const Color(0xFFFF3B30);
+  @override
+  Color get info => const Color(0xFF007AFF);
 }
 
 final class _JustColorSchemeNeobrutalismDark extends JustColorScheme {
   const _JustColorSchemeNeobrutalismDark();
-  @override Color get background    => const Color(0xFF121212);
-  @override Color get card          => const Color(0xFF1E1E1E);
-  @override Color get elevated      => const Color(0xFF2D2D2D);
-  @override Color get overlay       => const Color(0xCC000000);
-  @override Color get textPrimary   => const Color(0xFFFFFFFF);
-  @override Color get textSecondary => const Color(0xFFCCCCCC);
-  @override Color get textDisabled  => const Color(0xFF666666);
-  @override Color get textInverse   => const Color(0xFF000000);
-  @override Color get borderDefault => const Color(0xFFFFFFFF);
-  @override Color get borderFocus   => const Color(0xFFFFFFFF);
-  @override Color get borderError   => const Color(0xFFFFFFFF);
-  @override Color get success       => const Color(0xFF4ADE80);
-  @override Color get warning       => const Color(0xFFFBBF24);
-  @override Color get error         => const Color(0xFFF87171);
-  @override Color get info          => const Color(0xFF60A5FA);
+  @override
+  Color get background => const Color(0xFF121212);
+  @override
+  Color get card => const Color(0xFF1E1E1E);
+  @override
+  Color get elevated => const Color(0xFF2D2D2D);
+  @override
+  Color get overlay => const Color(0xCC000000);
+  @override
+  Color get textPrimary => const Color(0xFFFFFFFF);
+  @override
+  Color get textSecondary => const Color(0xFFCCCCCC);
+  @override
+  Color get textDisabled => const Color(0xFF666666);
+  @override
+  Color get textInverse => const Color(0xFF000000);
+  @override
+  Color get borderDefault => const Color(0xFFFFFFFF);
+  @override
+  Color get borderFocus => const Color(0xFFFFFFFF);
+  @override
+  Color get borderError => const Color(0xFFFFFFFF);
+  @override
+  Color get success => const Color(0xFF4ADE80);
+  @override
+  Color get warning => const Color(0xFFFBBF24);
+  @override
+  Color get error => const Color(0xFFF87171);
+  @override
+  Color get info => const Color(0xFF60A5FA);
 }
 
 abstract final class JustColors {
-  static const JustColorScheme lightScheme             = _JustColorSchemeLight();
-  static const JustColorScheme darkScheme              = _JustColorSchemeDark();
-  static const JustColorScheme neobrutalismLightScheme = _JustColorSchemeNeobrutalismLight();
-  static const JustColorScheme neobrutalismDarkScheme  = _JustColorSchemeNeobrutalismDark();
+  static const JustColorScheme lightScheme = _JustColorSchemeLight();
+  static const JustColorScheme darkScheme = _JustColorSchemeDark();
+  static const JustColorScheme neobrutalismLightScheme =
+      _JustColorSchemeNeobrutalismLight();
+  static const JustColorScheme neobrutalismDarkScheme =
+      _JustColorSchemeNeobrutalismDark();
 
-  static JustColorScheme light()             => lightScheme;
-  static JustColorScheme dark()              => darkScheme;
+  static JustColorScheme light() => lightScheme;
+  static JustColorScheme dark() => darkScheme;
   static JustColorScheme neobrutalismLight() => neobrutalismLightScheme;
-  static JustColorScheme neobrutalismDark()  => neobrutalismDarkScheme;
+  static JustColorScheme neobrutalismDark() => neobrutalismDarkScheme;
 
-  static const Color white      = JustColorPalette.white;
-  static const Color black      = JustColorPalette.black;
-  static const Color neutral50  = JustColorPalette.neutral50;
+  static const Color white = JustColorPalette.white;
+  static const Color black = JustColorPalette.black;
+  static const Color neutral50 = JustColorPalette.neutral50;
   static const Color neutral100 = JustColorPalette.neutral100;
   static const Color neutral200 = JustColorPalette.neutral200;
   static const Color neutral300 = JustColorPalette.neutral300;
@@ -353,13 +554,10 @@ abstract final class JustColors {
   static const Color success600 = JustColorPalette.success600;
   static const Color warning500 = JustColorPalette.warning500;
   static const Color warning600 = JustColorPalette.warning600;
-  static const Color error500   = JustColorPalette.error500;
-  static const Color error600   = JustColorPalette.error600;
-  static const Color info500    = JustColorPalette.info500;
-  static const Color info600    = JustColorPalette.info600;
+  static const Color error500 = JustColorPalette.error500;
+  static const Color error600 = JustColorPalette.error600;
+  static const Color info500 = JustColorPalette.info500;
+  static const Color info600 = JustColorPalette.info600;
 }
 
-enum JustThemePreset {
-  default_,
-  neobrutalism,
-}
+enum JustThemePreset { default_, neobrutalism }
