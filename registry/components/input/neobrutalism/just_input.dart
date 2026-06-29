@@ -856,9 +856,7 @@ class _JustInputState extends State<JustInput> {
       style: textStyle,
       cursorColor:
           widget.style?.focusedBorderColor ??
-          (true
-              ? theme.colors.textPrimary
-              : JustColorPalette.primary500),
+          (true ? theme.colors.textPrimary : JustColorPalette.primary500),
       backgroundCursorColor: const Color(0xFF888888),
       onChanged: widget.onChanged,
       onSubmitted: widget.onSubmitted,

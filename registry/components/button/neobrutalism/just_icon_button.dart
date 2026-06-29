@@ -86,9 +86,7 @@ class _JustIconButtonState extends State<JustIconButton> {
       }
     }
     final finalEnableHaptic =
-        widget.enableHaptic ??
-        buttonTheme?.enableHaptic ??
-        (true);
+        widget.enableHaptic ?? buttonTheme?.enableHaptic ?? (true);
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
     final radius = customTheme.radius;
