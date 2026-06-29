@@ -64,8 +64,7 @@ class JustBreadcrumb extends StatelessWidget {
       aspect: .spacing,
     ).theme.spacing;
 
-    final isNeobrutalism =
-        true;
+    final isNeobrutalism = true;
 
     // Resolve separator widget
     final resolvedSeparator =
