@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import '../../theme/theme_provider.dart';
+import '_shared_theme_provider.dart';
 
 /// A premium, declarative tooltip overlay that positions itself relative to its anchor
 /// using the native [OverlayPortal.overlayChildLayoutBuilder] API.

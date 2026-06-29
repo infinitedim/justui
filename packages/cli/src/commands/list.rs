@@ -97,7 +97,7 @@ pub fn run() -> Result<()> {
 
             // Render
             terminal.draw(|f| {
-                let size = f.size();
+                let size = f.area();
 
                 // Vertical Layout: Header (3), Main Body (Min 0), Footer (3)
                 let chunks = Layout::default()
