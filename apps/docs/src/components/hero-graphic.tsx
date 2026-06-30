@@ -8,7 +8,7 @@ export function HeroGraphic() {
     >
       <defs>
         <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
-          <circle cx="1" cy="1" r="1" fill="var(--color-gray)" opacity="0.15" />
+          <circle cx="1" cy="1" r="1" fill="var(--color-border)" opacity="0.4" />
         </pattern>
       </defs>
 
@@ -20,8 +20,8 @@ export function HeroGraphic() {
         width="236"
         height="152"
         rx="18"
-        fill="var(--color-black-2)"
-        stroke="var(--color-gray)"
+        fill="var(--color-card)"
+        stroke="var(--color-border)"
       />
       <rect
         x="88"
@@ -29,7 +29,7 @@ export function HeroGraphic() {
         width="148"
         height="12"
         rx="6"
-        fill="var(--color-gray-1)"
+        fill="var(--color-muted)"
       />
       <rect
         x="88"
@@ -37,7 +37,7 @@ export function HeroGraphic() {
         width="96"
         height="10"
         rx="5"
-        fill="var(--color-gray-1)"
+        fill="var(--color-muted)"
       />
       <rect
         x="88"
@@ -54,8 +54,8 @@ export function HeroGraphic() {
         width="220"
         height="132"
         rx="16"
-        fill="var(--color-black-2)"
-        stroke="var(--color-gray)"
+        fill="var(--color-card)"
+        stroke="var(--color-border)"
       />
       <rect
         x="224"
@@ -63,7 +63,7 @@ export function HeroGraphic() {
         width="128"
         height="8"
         rx="4"
-        fill="var(--color-gray-1)"
+        fill="var(--color-muted)"
       />
       <rect
         x="224"
@@ -71,7 +71,7 @@ export function HeroGraphic() {
         width="92"
         height="8"
         rx="4"
-        fill="var(--color-gray-1)"
+        fill="var(--color-muted)"
       />
       <rect
         x="224"
@@ -79,7 +79,7 @@ export function HeroGraphic() {
         width="148"
         height="8"
         rx="4"
-        fill="var(--color-gray-1)"
+        fill="var(--color-muted)"
       />
 
       <rect
@@ -88,8 +88,8 @@ export function HeroGraphic() {
         width="156"
         height="82"
         rx="14"
-        fill="var(--color-black-2)"
-        stroke="var(--color-gray)"
+        fill="var(--color-card)"
+        stroke="var(--color-border)"
       />
       <rect
         x="124"
@@ -97,7 +97,7 @@ export function HeroGraphic() {
         width="82"
         height="8"
         rx="4"
-        fill="var(--color-gray-1)"
+        fill="var(--color-muted)"
       />
       <rect
         x="124"
@@ -105,7 +105,7 @@ export function HeroGraphic() {
         width="48"
         height="8"
         rx="4"
-        fill="var(--color-gray-1)"
+        fill="var(--color-muted)"
       />
 
       <circle cx="366" cy="94" r="10" fill="var(--color-accent)" />
@@ -114,3 +114,4 @@ export function HeroGraphic() {
     </svg>
   );
 }
+
