@@ -339,8 +339,8 @@ class _ToastPositionedWrapper extends StatelessWidget {
     }
 
     final slideTween = isTop
-        ? Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero)
-        : Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero);
+        ? Tween<Offset>(begin: const Offset(0, -1), end: .zero)
+        : Tween<Offset>(begin: const Offset(0, 1), end: .zero);
 
     final curvedAnimation = CurvedAnimation(
       parent: animation,

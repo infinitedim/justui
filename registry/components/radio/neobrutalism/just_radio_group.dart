@@ -60,9 +60,7 @@ class JustRadioGroup<T> extends StatelessWidget {
     return Flex(
       direction: direction,
       mainAxisSize: .min,
-      crossAxisAlignment: direction == .vertical
-          ? CrossAxisAlignment.start
-          : CrossAxisAlignment.center,
+      crossAxisAlignment: direction == .vertical ? .start : .center,
       spacing: resolvedSpacing,
       children: [
         for (final option in options)

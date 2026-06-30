@@ -114,7 +114,7 @@ void main() {
 
       // Simulate mouse enter to trigger hover
       final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
-      await gesture.addPointer(location: Offset.zero);
+      await gesture.addPointer(location: .zero);
       addTearDown(gesture.removePointer);
 
       // Hover over the icon widget

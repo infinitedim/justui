@@ -278,10 +278,10 @@ class _JustProgressState extends State<JustProgress>
     if (widget.showLabel) {
       return Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               Expanded(child: bar),
               SizedBox(width: spacing.md),

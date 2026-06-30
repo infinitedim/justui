@@ -629,18 +629,18 @@ class JustThemeData {
 
   /// Resolves the shadow offset based on the preset.
   Offset get shadowOffset =>
-      preset == .neobrutalism ? const Offset(3.0, 3.0) : Offset.zero;
+      preset == .neobrutalism ? const Offset(3.0, 3.0) : .zero;
 
   /// Resolves the shadow list for the current preset and press state.
   ///
   /// Under neobrutalism, if the component is pressed, all solid shadows collapse
-  /// to [Offset.zero] (i.e. disappear behind the element).
+  /// to [.zero] (i.e. disappear behind the element).
   List<BoxShadow> resolveShadows(
     List<BoxShadow> baseShadows, {
     required bool isPressed,
   }) {
     if (preset == .neobrutalism && isPressed) {
-      return baseShadows.map((s) => s.copyWith(offset: Offset.zero)).toList();
+      return baseShadows.map((s) => s.copyWith(offset: .zero)).toList();
     }
     return baseShadows;
   }

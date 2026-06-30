@@ -396,7 +396,7 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
         right: widget.direction == SheetDirection.right,
         child: Column(
           mainAxisSize: .max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             if (widget.draggable && isVertical) ...[
               Center(
@@ -462,7 +462,7 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
       animatedChild = SlideTransition(
         position: Tween<Offset>(
           begin: beginOffset,
-          end: Offset.zero,
+          end: .zero,
         ).animate(curvedAnimation),
         child: card,
       );

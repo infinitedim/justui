@@ -367,7 +367,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
         widths.add(
           widget.variant == .vertical ? box.size.height : box.size.width,
         );
-        final localOffset = box.localToGlobal(Offset.zero, ancestor: parentBox);
+        final localOffset = box.localToGlobal(.zero, ancestor: parentBox);
         offsets.add(
           widget.variant == .vertical ? localOffset.dy : localOffset.dx,
         );
