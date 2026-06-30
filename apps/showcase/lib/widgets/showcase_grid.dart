@@ -1,13 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
-import 'package:just_ui_core/src/components/button/just_button.dart';
-import 'package:just_ui_core/src/components/badge/just_badge.dart';
-import 'package:just_ui_core/src/components/avatar/just_avatar.dart';
-import 'package:just_ui_core/src/components/checkbox/just_checkbox.dart';
-import 'package:just_ui_core/src/components/radio/just_radio.dart';
-import 'package:just_ui_core/src/components/switch/just_switch.dart';
-import 'package:just_ui_core/src/components/card/just_card.dart';
-import 'package:just_ui_core/src/components/input/just_input.dart';
+import 'package:showcase/widgets/avatar/just_avatar.dart';
+import 'package:showcase/widgets/badge/just_badge.dart';
+import 'package:showcase/widgets/button/just_button.dart';
+import 'package:showcase/widgets/card/just_card.dart';
+import 'package:showcase/widgets/checkbox/just_checkbox.dart';
+import 'package:showcase/widgets/input/just_input.dart';
+import 'package:showcase/widgets/radio/just_radio.dart';
+import 'package:showcase/widgets/switch/just_switch.dart';
 
 class ShowcaseGrid extends StatelessWidget {
   const ShowcaseGrid({super.key});
@@ -23,8 +23,8 @@ class ShowcaseGrid extends StatelessWidget {
       child: Wrap(
         spacing: spacing.md,
         runSpacing: spacing.md,
-        alignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.start,
+        alignment: .center,
+        crossAxisAlignment: .start,
         children: [
           _buildCard(
             theme,
@@ -46,7 +46,7 @@ class ShowcaseGrid extends StatelessWidget {
             child: Wrap(
               spacing: spacing.sm,
               runSpacing: spacing.sm,
-              crossAxisAlignment: WrapCrossAlignment.center,
+              crossAxisAlignment: .center,
               children: const [
                 JustBadge(label: 'Success', color: .success),
                 JustBadge(label: 'Warning', color: .warning, variant: .outline),
@@ -61,7 +61,7 @@ class ShowcaseGrid extends StatelessWidget {
             child: Wrap(
               spacing: spacing.sm,
               runSpacing: spacing.sm,
-              crossAxisAlignment: WrapCrossAlignment.center,
+              crossAxisAlignment: .center,
               children: const [
                 JustAvatar(name: 'John Doe', size: .sm),
                 JustAvatar(name: 'Sarah Chen', size: .md),
@@ -73,8 +73,8 @@ class ShowcaseGrid extends StatelessWidget {
             theme,
             title: 'Inputs & Controls',
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: .start,
+              mainAxisSize: .min,
               children: [
                 const JustInput(label: 'Username', hint: 'enter username'),
                 SizedBox(height: spacing.md),
@@ -98,8 +98,8 @@ class ShowcaseGrid extends StatelessWidget {
       child: JustCard.outlined(
         padding: EdgeInsets.all(spacing.md),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: .start,
+          mainAxisSize: .min,
           children: [
             Text(
               title,
@@ -135,8 +135,8 @@ class _InteractiveControlsState extends State<InteractiveControls> {
     final spacing = theme.spacing;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: .start,
+      mainAxisSize: .min,
       children: [
         JustSwitch(
           value: _switchVal,
@@ -161,7 +161,7 @@ class _InteractiveControlsState extends State<InteractiveControls> {
         ),
         SizedBox(height: spacing.sm),
         Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             JustRadio<String>(
               value: 'A',

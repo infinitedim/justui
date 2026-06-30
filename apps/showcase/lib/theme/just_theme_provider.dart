@@ -1,7 +1,7 @@
 // justui-meta: registry=16147ecb289b201424e805f79fa0312c2302a55dfa4b3edd2b9589439b32cb9d local=de34c548ae0c508f454bbb894ea0e1b2a0be3ef2c0382a0303ab965458345e14
 import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter/widgets.dart';
-import 'just_tokens.dart';
+import '../../shared/just_tokens.dart';
 
 // ============================================================
 // JustUI Shared Theme Provider
@@ -411,16 +411,16 @@ class JustThemeProviderState extends State<JustThemeProvider>
   JustThemeData get theme {
     final JustThemeData baseTheme;
     switch (_themeMode) {
-      case ThemeMode.light:
+      case .light:
         baseTheme = _lightTheme;
         break;
-      case ThemeMode.dark:
+      case .dark:
         baseTheme = _darkTheme;
         break;
-      case ThemeMode.system:
+      case .system:
         final brightness =
             WidgetsBinding.instance.platformDispatcher.platformBrightness;
-        baseTheme = brightness == Brightness.dark ? _darkTheme : _lightTheme;
+        baseTheme = brightness == .dark ? _darkTheme : _lightTheme;
         break;
     }
 
@@ -438,9 +438,9 @@ class JustThemeProviderState extends State<JustThemeProvider>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _themeMode = widget.initialThemeMode ?? ThemeMode.system;
-    _lightTheme = widget.lightTheme ?? JustThemeData.light;
-    _darkTheme = widget.darkTheme ?? JustThemeData.dark;
+    _themeMode = widget.initialThemeMode ?? .system;
+    _lightTheme = widget.lightTheme ?? .light;
+    _darkTheme = widget.darkTheme ?? .dark;
   }
 
   @override
@@ -453,16 +453,16 @@ class JustThemeProviderState extends State<JustThemeProvider>
   void didUpdateWidget(covariant JustThemeProvider oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.lightTheme != oldWidget.lightTheme) {
-      _lightTheme = widget.lightTheme ?? JustThemeData.light;
+      _lightTheme = widget.lightTheme ?? .light;
     }
     if (widget.darkTheme != oldWidget.darkTheme) {
-      _darkTheme = widget.darkTheme ?? JustThemeData.dark;
+      _darkTheme = widget.darkTheme ?? .dark;
     }
   }
 
   @override
   void didChangePlatformBrightness() {
-    if (_themeMode == ThemeMode.system) setState(() {});
+    if (_themeMode == .system) setState(() {});
   }
 
   void setThemeMode(ThemeMode mode) {
@@ -472,9 +472,7 @@ class JustThemeProviderState extends State<JustThemeProvider>
   }
 
   void toggleTheme() {
-    setThemeMode(
-      _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light,
-    );
+    setThemeMode(_themeMode == .light ? .dark : .light);
   }
 
   void applyTheme({JustThemeData? light, JustThemeData? dark}) {
@@ -517,23 +515,29 @@ class _JustThemeModel extends InheritedModel<JustThemeAspect> {
     Set<JustThemeAspect> dependencies,
   ) {
     if (dependencies.contains(JustThemeAspect.colors) &&
-        themeData.colors != oldWidget.themeData.colors)
+        themeData.colors != oldWidget.themeData.colors) {
       return true;
+    }
     if (dependencies.contains(JustThemeAspect.spacing) &&
-        themeData.spacing != oldWidget.themeData.spacing)
+        themeData.spacing != oldWidget.themeData.spacing) {
       return true;
+    }
     if (dependencies.contains(JustThemeAspect.radius) &&
-        themeData.radius != oldWidget.themeData.radius)
+        themeData.radius != oldWidget.themeData.radius) {
       return true;
+    }
     if (dependencies.contains(JustThemeAspect.shadows) &&
-        themeData.shadows != oldWidget.themeData.shadows)
+        themeData.shadows != oldWidget.themeData.shadows) {
       return true;
+    }
     if (dependencies.contains(JustThemeAspect.animations) &&
-        themeData.animations != oldWidget.themeData.animations)
+        themeData.animations != oldWidget.themeData.animations) {
       return true;
+    }
     if (dependencies.contains(JustThemeAspect.preset) &&
-        themeData.preset != oldWidget.themeData.preset)
+        themeData.preset != oldWidget.themeData.preset) {
       return true;
+    }
     return false;
   }
 }

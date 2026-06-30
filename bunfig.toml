@@ -1,0 +1,10 @@
+[test]
+preload = [
+  "./tests/bun-preload.ts",
+  "./apps/docs/test/setup.ts"
+]
+pathIgnorePatterns = [
+  "**/e2e/**",
+  "**/node_modules/**",
+  "**/.next/**"
+]
