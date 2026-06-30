@@ -460,7 +460,7 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
       animatedChild = SlideTransition(
         position: Tween<Offset>(
           begin: beginOffset,
-          end: Offset.zero,
+          end: .zero,
         ).animate(curvedAnimation),
         child: card,
       );

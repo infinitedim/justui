@@ -22,7 +22,7 @@ class JustTableColumn<T> {
   /// Whether this column can be sorted by tapping its header.
   final bool sortable;
 
-  /// Alignment of the content within the column. Defaults to [MainAxisAlignment.start].
+  /// Alignment of the content within the column. Defaults to [.start].
   final MainAxisAlignment alignment;
 
   /// Creates a [JustTableColumn].
@@ -31,7 +31,7 @@ class JustTableColumn<T> {
     required this.cell,
     this.width,
     this.sortable = false,
-    this.alignment = MainAxisAlignment.start,
+    this.alignment = .start,
   });
 }
 
@@ -248,11 +248,9 @@ class _JustTableState<T> extends State<JustTable<T>> {
       Widget cellChild = Container(
         height: isHeader ? 44.0 : widget.rowHeight,
         padding: .symmetric(horizontal: cellPadding),
-        alignment: alignment == MainAxisAlignment.start
+        alignment: alignment == .start
             ? Alignment.centerLeft
-            : (alignment == MainAxisAlignment.end
-                  ? Alignment.centerRight
-                  : Alignment.center),
+            : (alignment == .end ? Alignment.centerRight : Alignment.center),
         child: content,
       );
 
@@ -280,7 +278,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
             colors: colors,
           ),
           48.0,
-          MainAxisAlignment.center,
+          .center,
           isHeader: true,
         ),
       );
@@ -297,7 +295,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
             child: Text(
               col.header,
               style: headerTextStyle,
-              overflow: TextOverflow.ellipsis,
+              overflow: .ellipsis,
             ),
           ),
           if (col.sortable) ...[
@@ -373,7 +371,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
                   colors: colors,
                 ),
                 48.0,
-                MainAxisAlignment.center,
+                .center,
               ),
             );
           }
@@ -435,7 +433,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
     if (widget.stickyHeader) {
       tableContent = Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           headerRow,
           Container(height: isNeobrutalism ? 2.5 : 1.0, color: borderColor),
@@ -446,7 +444,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
       tableContent = SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             headerRow,
             Container(height: isNeobrutalism ? 2.5 : 1.0, color: borderColor),

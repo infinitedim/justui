@@ -210,7 +210,7 @@ abstract final class JustShadows {
       keyBlur = 2.0;
       keySpread = 0.0;
 
-      ambientOffset = Offset.zero;
+      ambientOffset = .zero;
       ambientBlur = 1.0;
       ambientSpread = 0.0;
     } else if (elev <= 2) {

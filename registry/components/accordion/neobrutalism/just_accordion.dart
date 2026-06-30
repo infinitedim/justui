@@ -383,7 +383,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
         ],
         Expanded(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
@@ -484,7 +484,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
 
     final itemWidget = Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: .stretch,
       children: [headerButton, contentArea],
     );
 

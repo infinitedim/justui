@@ -70,7 +70,7 @@ void main() {
 
       // Verify default state
       final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
-      await gesture.addPointer(location: Offset.zero);
+      await gesture.addPointer(location: .zero);
       await tester.pump();
 
       // Hover over the card
@@ -78,7 +78,7 @@ void main() {
       await tester.pump();
 
       // Mouse leaves the card
-      await gesture.moveTo(Offset.zero);
+      await gesture.moveTo(.zero);
       await tester.pump();
 
       await gesture.removePointer();

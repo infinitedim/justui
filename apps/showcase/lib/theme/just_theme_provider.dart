@@ -262,16 +262,15 @@ class JustThemeData {
     preset: JustThemePreset.neobrutalism,
   );
 
-  Offset get shadowOffset => preset == JustThemePreset.neobrutalism
-      ? const Offset(3.0, 3.0)
-      : Offset.zero;
+  Offset get shadowOffset =>
+      preset == JustThemePreset.neobrutalism ? const Offset(3.0, 3.0) : .zero;
 
   List<BoxShadow> resolveShadows(
     List<BoxShadow> baseShadows, {
     required bool isPressed,
   }) {
     if (preset == JustThemePreset.neobrutalism && isPressed) {
-      return baseShadows.map((s) => s.copyWith(offset: Offset.zero)).toList();
+      return baseShadows.map((s) => s.copyWith(offset: .zero)).toList();
     }
     return baseShadows;
   }

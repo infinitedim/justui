@@ -276,7 +276,7 @@ class _JustTooltipState extends State<JustTooltip>
       return .top;
     }
 
-    final offset = renderBox.localToGlobal(Offset.zero);
+    final offset = renderBox.localToGlobal(.zero);
     final size = renderBox.size;
     final screenSize = MediaQuery.of(context).size;
 

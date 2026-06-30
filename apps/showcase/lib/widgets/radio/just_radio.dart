@@ -310,7 +310,7 @@ class _RadioDotPainter extends CustomPainter {
 
     // Dot is approximately 50% of the visual outer circle size
     final radius = (size.width / 2.0) * 0.5 * progress;
-    canvas.drawCircle(size.center(Offset.zero), radius, paint);
+    canvas.drawCircle(size.center(.zero), radius, paint);
   }
 
   @override
