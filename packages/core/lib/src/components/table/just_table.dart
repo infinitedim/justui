@@ -294,7 +294,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
             child: Text(
               col.header,
               style: headerTextStyle,
-              overflow: TextOverflow.ellipsis,
+              overflow: .ellipsis,
             ),
           ),
           if (col.sortable) ...[

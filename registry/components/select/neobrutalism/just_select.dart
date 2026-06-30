@@ -363,7 +363,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                 style: textStyle.copyWith(
                                   color: finalTextColor,
                                 ),
-                                overflow: TextOverflow.ellipsis,
+                                overflow: .ellipsis,
                               ),
                             ),
                           ],
@@ -373,7 +373,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                           style: textStyle.copyWith(
                             color: finalPlaceholderColor,
                           ),
-                          overflow: TextOverflow.ellipsis,
+                          overflow: .ellipsis,
                         ),
                 ),
                 SizedBox(width: spacing.sm),
@@ -429,7 +429,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       hint: widget.enabled ? 'Double tap to open list of options' : 'Disabled',
       enabled: widget.enabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         mainAxisSize: MainAxisSize.min,
         children: [
           if (widget.label != null) ...[
@@ -447,7 +447,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
             overlayChildBuilder: (context, info) {
               final targetOffset = MatrixUtils.transformPoint(
                 info.childPaintTransform,
-                Offset.zero,
+                .zero,
               );
               final triggerHeight = info.childSize.height;
               final triggerWidth = info.childSize.width;
@@ -658,8 +658,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                                         ? .w600
                                                         : .w400,
                                                   ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
+                                                  overflow: .ellipsis,
                                                 ),
                                               ),
                                               if (isSelected &&

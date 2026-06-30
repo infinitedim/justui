@@ -356,7 +356,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
           animatedChild = SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(0, 1),
-              end: Offset.zero,
+              end: .zero,
             ).animate(curvedAnimation),
             child: card,
           );
@@ -365,7 +365,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
           animatedChild = SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(0, -1),
-              end: Offset.zero,
+              end: .zero,
             ).animate(curvedAnimation),
             child: card,
           );

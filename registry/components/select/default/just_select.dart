@@ -446,7 +446,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
             overlayChildBuilder: (context, info) {
               final targetOffset = MatrixUtils.transformPoint(
                 info.childPaintTransform,
-                Offset.zero,
+                .zero,
               );
               final triggerHeight = info.childSize.height;
               final triggerWidth = info.childSize.width;

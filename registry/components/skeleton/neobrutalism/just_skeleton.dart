@@ -795,7 +795,7 @@ class _JustSkeletonScope extends InheritedWidget {
     double globalX = 0.0;
     if (renderBox != null && renderBox.hasSize) {
       try {
-        globalX = renderBox.localToGlobal(Offset.zero).dx;
+        globalX = renderBox.localToGlobal(.zero).dx;
       } catch (_) {}
     }
 
@@ -1009,7 +1009,7 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
                 double globalX = 0.0;
                 if (renderBox != null && renderBox.hasSize) {
                   try {
-                    globalX = renderBox.localToGlobal(Offset.zero).dx;
+                    globalX = renderBox.localToGlobal(.zero).dx;
                   } catch (_) {}
                 }
 
