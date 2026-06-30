@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import CustomSearchDialog from '../src/components/search';
 
 // Mock fumadocs-core hooks
 const mockSetSearch = vi.fn();
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockQueryData = { data: 'empty' as any };
+(globalThis as any).mockSetSearch = mockSetSearch;
+(globalThis as any).mockQueryData = mockQueryData;
 
 vi.mock('fumadocs-core/search/client', () => ({
   useDocsSearch: () => ({

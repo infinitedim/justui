@@ -1,7 +1,6 @@
 // justui-meta: registry=b20db50be6156804fbe497802c722cbd1edad3691b2f620918387b3ef3f5f05c local=e0f48bc02ff024f938f955d6757119c942c9aa18e5ac3c3c0ec7abfc1437cc35
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import '../../../shared/just_pressable.dart';
 import '../../../shared/just_focus_indicator.dart';

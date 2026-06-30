@@ -3,8 +3,19 @@ import { describe, expect, it, vi } from 'vitest';
 import { Navbar } from '@/components/navbar';
 
 // Mock next-themes
-const mockSetTheme = vi.fn();
+const mockSetTheme = vi.fn((theme) => {
+  console.log('DEBUG: mockSetTheme called with:', theme);
+});
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(globalThis as any).mockSetTheme = mockSetTheme;
+
 let mockResolvedTheme = 'dark';
+Object.defineProperty(globalThis, 'mockResolvedTheme', {
+  get: () => mockResolvedTheme,
+  set: (val) => { mockResolvedTheme = val; },
+  configurable: true,
+});
+
 vi.mock('next-themes', () => ({
   useTheme: () => ({
     resolvedTheme: mockResolvedTheme,
@@ -14,12 +25,19 @@ vi.mock('next-themes', () => ({
 
 // Mock next/navigation
 let mockPathname = '/id';
+Object.defineProperty(globalThis, 'mockPathname', {
+  get: () => mockPathname,
+  set: (val) => { mockPathname = val; },
+  configurable: true,
+});
+
 vi.mock('next/navigation', () => ({
   usePathname: () => mockPathname,
 }));
 
 // Mock next/link to render simple anchors
 vi.mock('next/link', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   default: ({ children, href, className, onClick, ...props }: any) => (
     <a href={href} className={className} onClick={onClick} {...props}>
       {children}
@@ -44,19 +62,19 @@ describe('Navbar & SearchModal Components', () => {
 
   it('renders LanguageSwitcher correctly', () => {
     const { rerender } = render(<Navbar starCount={100} lang="id" />);
-    const linkId = screen.getByRole('link', { name: /ganti ke EN/i });
+    const linkId = screen.getByRole('link', { name: /ganti ke Bahasa Inggris/i });
     expect(linkId).toHaveAttribute('href', '/en');
 
     mockPathname = '/en';
     rerender(<Navbar starCount={100} lang="en" />);
-    const linkEn = screen.getByRole('link', { name: /ganti ke ID/i });
+    const linkEn = screen.getByRole('link', { name: /Switch to Indonesian/i });
     expect(linkEn).toHaveAttribute('href', '/id');
   });
 
   it('toggles theme correctly via ThemeSwitcher', () => {
     mockResolvedTheme = 'dark';
     const { rerender } = render(<Navbar starCount={100} lang="id" />);
-    const themeBtn = screen.getByRole('button', { name: /toggle tema/i });
+    const themeBtn = screen.getByRole('button', { name: /ubah tema/i });
     
     fireEvent.click(themeBtn);
     expect(mockSetTheme).toHaveBeenCalledWith('light');
@@ -74,7 +92,7 @@ describe('Navbar & SearchModal Components', () => {
     expect(screen.queryByPlaceholderText(/Search components, docs\.\.\./i)).not.toBeInTheDocument();
 
     // Click search button to open
-    const searchBtn = screen.getByRole('button', { name: /buka pencarian/i });
+    const searchBtn = screen.getByRole('button', { name: /open search/i });
     fireEvent.click(searchBtn);
 
     // Search modal should be open
