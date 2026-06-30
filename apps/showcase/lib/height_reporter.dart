@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:universal_html/html.dart' as web;
+import 'dart:async';
+import 'dart:js_interop';
+import 'package:flutter/widgets.dart';
+import 'package:web/web.dart' as web;
 
 class HeightReporter extends StatefulWidget {
   final Widget child;
@@ -11,6 +13,27 @@ class HeightReporter extends StatefulWidget {
 
 class _HeightReporterState extends State<HeightReporter> {
   final GlobalKey _key = GlobalKey();
+  Timer? _debounce;
+  double _lastReportedHeight = 0;
+
+  void _reportHeight() {
+    if (!mounted) return;
+    final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    final height = renderBox.size.height;
+    if (height == _lastReportedHeight || height <= 0) return;
+
+    _lastReportedHeight = height;
+    web.window.parent?.postMessage(
+      {'type': 'justui-showcase-height', 'height': height}.jsify()!,
+      '*'.toJS,
+    );
+  }
+
+  void _scheduleReport() {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 50), _reportHeight);
+  }
 
   @override
   void initState() {
@@ -18,22 +41,24 @@ class _HeightReporterState extends State<HeightReporter> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _reportHeight());
   }
 
-  void _reportHeight() {
-    final context = _key.currentContext;
-    if (context != null) {
-      final renderBox = context.findRenderObject() as RenderBox?;
-      if (renderBox != null) {
-        final height = renderBox.size.height;
-        web.window.parent?.postMessage(
-          '{"type": "RESIZE_IFRAME", "height": $height}',
-          '*',
-        );
-      }
-    }
+  @override
+  void didUpdateWidget(covariant HeightReporter oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _scheduleReport();
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(key: _key, child: widget.child);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scheduleReport());
+    return KeyedSubtree(
+      key: _key,
+      child: widget.child,
+    );
   }
 }

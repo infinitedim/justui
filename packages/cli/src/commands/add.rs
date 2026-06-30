@@ -76,6 +76,16 @@ pub fn run(
         }
     };
 
+    // Warn if shared_dir is not nested under components_dir — likely misconfiguration
+    if !config.shared_dir.starts_with(&config.components_dir) {
+        logger::warning(&format!(
+            "shared_dir ('{}') is not nested under components_dir ('{}').\n\
+             This is unusual and may cause shared component imports to resolve incorrectly.\n\
+             If this is unintentional, fix it in {} and re-run.",
+            config.shared_dir, config.components_dir, JustUIConfig::CONFIG_FILE_NAME
+        ));
+    }
+
     // Show a spinner while fetching registry index
     let pb_index = indicatif::ProgressBar::new_spinner();
     pb_index.set_message("Fetching registry index...");

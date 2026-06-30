@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ComponentCard } from '@/components/component-card';
-import { HeroGraphic } from '@/components/hero-graphic';
+import { ShowcaseFrame } from '@/components/showcase-frame';
 import { InstallSnippet } from '@/components/install-snippet';
 import { Navbar } from '@/components/navbar';
 import { fetchStarCount } from '@/lib/github';
@@ -54,7 +54,7 @@ export default async function HomePage({
           </div>
 
           <div className="mx-auto w-full max-w-120 lg:ml-auto">
-            <HeroGraphic />
+            <ShowcaseFrame />
           </div>
         </section>
 
