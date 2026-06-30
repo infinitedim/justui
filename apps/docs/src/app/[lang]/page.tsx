@@ -5,6 +5,7 @@ import { InstallSnippet } from '@/components/install-snippet';
 import { Navbar } from '@/components/navbar';
 import { fetchStarCount } from '@/lib/github';
 import { components } from '@/lib/components-data';
+import { getHomepageDictionary } from '@/lib/homepage-translations';
 
 export default async function HomePage({
   params = Promise.resolve({ lang: 'en' }),
@@ -13,23 +14,23 @@ export default async function HomePage({
 } = {}) {
   const { lang } = await params;
   const starCount = await fetchStarCount();
+  const t = getHomepageDictionary(lang);
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar starCount={starCount} lang={lang} />
 
       <main>
         <section className="mx-auto grid min-h-[calc(100vh-56px)] max-w-6xl items-center gap-16 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-24">
           <div className="max-w-2xl">
             <p className="text-accent mb-5 font-mono text-sm font-medium">
-              Copy-paste Flutter components
+              {t.tagline}
             </p>
-            <h1 className="max-w-4xl text-5xl font-medium tracking-tight text-white sm:text-6xl lg:text-7xl">
-              Copy. Paste. Ship.
+            <h1 className="max-w-4xl text-5xl font-medium tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+              {t.heroTitle}
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-(--color-gray-3)">
-              A zero-dependency, copy-paste component library for Flutter. No
-              Material. No boilerplate. Just UI.
+            <p className="mt-6 max-w-xl text-lg leading-8 text-secondary">
+              {t.heroDescription}
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -37,18 +38,18 @@ export default async function HomePage({
                 href={`/${lang}/docs/introduction`}
                 className="bg-accent hover:bg-accent-deep inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium text-[#1a2e05] transition-colors"
               >
-                Get started →
+                {t.getStarted}
               </Link>
               <Link
                 href={`/${lang}/docs/components`}
-                className="hover:border-accent-dark hover:bg-accent-muted inline-flex h-10 items-center justify-center rounded-md border border-(--color-gray) bg-transparent px-4 text-sm font-medium text-white transition-colors"
+                className="hover:border-accent-dark hover:bg-accent-muted inline-flex h-10 items-center justify-center rounded-md border border-border bg-transparent px-4 text-sm font-medium text-foreground transition-colors"
               >
-                Browse components
+                {t.browseComponents}
               </Link>
             </div>
 
             <div className="mt-6">
-              <InstallSnippet />
+              <InstallSnippet lang={lang} />
             </div>
           </div>
 
@@ -58,7 +59,9 @@ export default async function HomePage({
         </section>
 
         <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-          <h2 className="mb-8 text-2xl font-medium text-white">Components</h2>
+          <h2 className="mb-8 text-2xl font-medium text-foreground">
+            {t.componentsHeading}
+          </h2>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             {components.map((component) => (
               <ComponentCard
@@ -73,3 +76,4 @@ export default async function HomePage({
     </div>
   );
 }
+

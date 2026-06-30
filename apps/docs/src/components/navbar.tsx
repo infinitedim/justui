@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { githubUrl } from '@/lib/github';
 import { SearchModal } from '@/components/search-modal';
+import { getHomepageDictionary } from '@/lib/homepage-translations';
 
 interface NavbarProps {
   starCount: number | null;
@@ -25,6 +26,7 @@ function LanguageSwitcher({ lang }: { lang: string }) {
   const pathname = usePathname();
   const otherLang = lang === 'en' ? 'id' : 'en';
   const otherLabel = lang === 'en' ? 'ID' : 'EN';
+  const t = getHomepageDictionary(lang);
 
   const otherPath = pathname.replace(
     new RegExp(`^/(id|en)(?=/|$)`),
@@ -34,17 +36,18 @@ function LanguageSwitcher({ lang }: { lang: string }) {
   return (
     <Link
       href={otherPath as Route}
-      className="inline-flex h-7 items-center rounded-full border border-(--color-gray) px-2.5 font-mono text-[11px] text-(--color-gray-2) transition-colors hover:text-white"
-      aria-label={`Ganti ke ${otherLabel}`}
+      className="inline-flex h-7 items-center rounded-full border border-border px-2.5 font-mono text-[11px] text-muted transition-colors hover:text-foreground"
+      aria-label={t.changeLanguage}
     >
       {otherLabel}
     </Link>
   );
 }
 
-function ThemeSwitcher() {
+function ThemeSwitcher({ lang }: { lang: string }) {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const t = getHomepageDictionary(lang);
 
   useEffect(() => setMounted(true), []);
 
@@ -54,8 +57,8 @@ function ThemeSwitcher() {
     <button
       type="button"
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-(--color-gray) text-(--color-gray-2) transition-colors hover:text-white"
-      aria-label="Toggle tema"
+      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted transition-colors hover:text-foreground"
+      aria-label={t.toggleTheme}
     >
       {resolvedTheme === 'dark' ? (
         <Sun size={13} aria-hidden="true" />
@@ -67,11 +70,12 @@ function ThemeSwitcher() {
 }
 
 export function Navbar({ starCount, lang }: NavbarProps) {
+  const t = getHomepageDictionary(lang);
   const links = [
-    { label: 'Home', href: `/${lang}`, activeHref: '/' },
-    { label: 'Docs', href: `/${lang}/docs`, activeHref: '/docs' },
+    { label: t.navHome, href: `/${lang}`, activeHref: '/' },
+    { label: t.navDocs, href: `/${lang}/docs`, activeHref: '/docs' },
     {
-      label: 'Components',
+      label: t.navComponents,
       href: `/${lang}/components`,
       activeHref: '/components',
     },
@@ -105,14 +109,14 @@ export function Navbar({ starCount, lang }: NavbarProps) {
 
   return (
     <>
-      <header className="border-[ rgb(51_51_51/0.3)] sticky top-0 z-40 h-14 border-b bg-black/80 backdrop-blur-sm">
+      <header className="sticky top-0 z-40 h-14 border-b border-border bg-background/80 backdrop-blur-sm">
         <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href={`/${lang}` as Route}
             aria-label="JustUI home"
             className="shrink-0"
           >
-            <span className="font-mono text-sm font-medium text-white">
+            <span className="font-mono text-sm font-medium text-foreground">
               just
             </span>
             <span className="text-accent font-mono text-sm font-medium">
@@ -127,8 +131,8 @@ export function Navbar({ starCount, lang }: NavbarProps) {
                 href={link.href as Route}
                 className={
                   activeHref === link.activeHref
-                    ? 'text-sm text-white transition-colors'
-                    : 'text-sm text-(--color-gray-2) transition-colors hover:text-white'
+                    ? 'text-sm text-foreground transition-colors'
+                    : 'text-sm text-muted transition-colors hover:text-foreground'
                 }
               >
                 {link.label}
@@ -138,15 +142,15 @@ export function Navbar({ starCount, lang }: NavbarProps) {
 
           <div className="flex items-center gap-2">
             <LanguageSwitcher lang={lang} />
-            <ThemeSwitcher />
+            <ThemeSwitcher lang={lang} />
             <button
               type="button"
-              className="hidden items-center gap-3 rounded-full border border-(--color-gray) bg-transparent px-3 py-1.5 font-mono text-xs text-(--color-gray-2) transition-colors hover:text-white sm:flex"
+              className="hidden items-center gap-3 rounded-full border border-border bg-transparent px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:text-foreground sm:flex"
               onClick={() => setOpen(true)}
-              aria-label="Buka pencarian"
+              aria-label={lang === 'en' ? 'Open search' : 'Buka pencarian'}
             >
-              <span>Search...</span>
-              <kbd className="rounded border border-(--color-gray) px-1.5 py-0.5 font-mono text-[10px] text-(--color-gray-2)">
+              <span>{t.searchPlaceholder}</span>
+              <kbd className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted">
                 {shortcut}
               </kbd>
             </button>
@@ -154,7 +158,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
               href={githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-(--color-gray) bg-transparent px-3 py-1.5 font-mono text-xs text-(--color-gray-2) transition-colors hover:text-white"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-transparent px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:text-foreground"
             >
               <FaGithub size={14} aria-hidden="true" />
               <span>{formatStars(starCount)}</span>
@@ -166,3 +170,4 @@ export function Navbar({ starCount, lang }: NavbarProps) {
     </>
   );
 }
+

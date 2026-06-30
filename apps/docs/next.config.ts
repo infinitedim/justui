@@ -53,7 +53,7 @@ const nextConfig: NextConfig = {
   images: {
     qualities: [25, 50, 75, 100],
   },
-  reactCompiler: true,
+  reactCompiler: false,
   typedRoutes: true,
   experimental: {
     typedEnv: true,
