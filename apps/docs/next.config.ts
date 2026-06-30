@@ -17,7 +17,7 @@ const isDev = process.env.NODE_ENV === 'development';
 // img-src is scoped to known domains instead of the broad 'https:' wildcard.
 const cspProduction = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com;
+  script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://va.vercel-scripts.com;
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https://github.com https://raw.githubusercontent.com https://avatars.githubusercontent.com https://opengraph.githubassets.com;
   font-src 'self' data:;
@@ -34,7 +34,7 @@ const cspProduction = `
 // and React DevTools while still applying a baseline policy.
 const cspDevelopment = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval';
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https:;
   font-src 'self' data:;
