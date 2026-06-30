@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
-import '../../shared/default/_shared_theme_provider.dart';
+import '../../theme/default/_shared_theme_provider.dart';
 import 'just_progress_style.dart';
 import 'just_progress_theme.dart';
 import 'just_progress_variants.dart';

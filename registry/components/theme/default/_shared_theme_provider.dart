@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter/widgets.dart';
-import '_shared_tokens.dart';
+import '../../shared/default/_shared_tokens.dart';
 
 // ============================================================
 // JustUI Shared Theme Provider

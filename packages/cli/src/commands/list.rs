@@ -445,6 +445,8 @@ pub fn run() -> Result<()> {
 fn get_component_status(comp: &RegistryComponent, config: &JustUIConfig) -> String {
     let target_dir = if comp.category == "tokens" || comp.category == "core" {
         config.tokens_dir.clone()
+    } else if comp.name == "_shared_theme_provider" {
+        "lib/theme".to_string()
     } else if comp.internal {
         config.shared_dir.clone()
     } else {
@@ -460,7 +462,9 @@ fn get_component_status(comp: &RegistryComponent, config: &JustUIConfig) -> Stri
     let mut matching_count = 0;
 
     for file in files {
-        let local_file_name = if comp.internal {
+        let local_file_name = if comp.name == "_shared_theme_provider" {
+            file.name.clone()
+        } else if comp.internal {
             crate::utils::import_rewriter::normalize_shared_file_name(&file.name)
         } else {
             file.name.clone()

@@ -2,7 +2,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../../shared/default/_shared_tokens.dart';
-import '../../shared/default/_shared_theme_provider.dart';
+import '../../theme/default/_shared_theme_provider.dart';
 import 'just_input_style.dart';
 import 'just_input_variants.dart';
 

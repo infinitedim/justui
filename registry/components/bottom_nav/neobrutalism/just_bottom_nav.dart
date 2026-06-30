@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' show Theme;
 
 import 'package:flutter/services.dart' show HapticFeedback;
-import '../../shared/default/_shared_theme_provider.dart';
+import '../../theme/default/_shared_theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_bottom_nav_style.dart';
 import 'just_bottom_nav_theme.dart';
