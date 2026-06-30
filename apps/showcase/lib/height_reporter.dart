@@ -56,9 +56,6 @@ class _HeightReporterState extends State<HeightReporter> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) => _scheduleReport());
-    return KeyedSubtree(
-      key: _key,
-      child: widget.child,
-    );
+    return KeyedSubtree(key: _key, child: widget.child);
   }
 }
