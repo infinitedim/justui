@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
@@ -18,6 +19,7 @@ vi.mock('next-themes', () => ({
 
 // Mock next/navigation
 const mockNotFound = vi.fn();
+(globalThis as any).mockNotFound = mockNotFound;
 vi.mock('next/navigation', () => ({
   usePathname: () => '/id',
   notFound: () => {
@@ -62,6 +64,8 @@ vi.mock('@/lib/github', () => ({
 // Mock source loader
 const mockGetPage = vi.fn();
 const mockGenerateParams = vi.fn().mockReturnValue([{ lang: 'en', slug: ['intro'] }]);
+(globalThis as any).mockGetPage = mockGetPage;
+(globalThis as any).mockGenerateParams = mockGenerateParams;
 vi.mock('@/lib/source', () => ({
   source: {
     pageTree: {
