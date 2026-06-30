@@ -24,6 +24,31 @@ fn to_lib_path(input: &str) -> String {
     }
 }
 
+/// Resolves the shared components directory from raw user input.
+///
+/// Behavior:
+/// - Empty input → use the full default (e.g. "lib/widgets/shared")
+/// - Input that already looks like a full path (contains '/' or starts with 'lib/')
+///   → treat as an explicit override, normalize via `to_lib_path`
+/// - Plain folder name (no slashes, e.g. "shared", "common") → nest it under
+///   `components_dir` automatically (e.g. "lib/widgets/shared"), matching what
+///   the prompt's example showed the user.
+fn resolve_shared_dir(raw_input: &str, components_dir: &str, default_full_path: &str) -> String {
+    let trimmed = raw_input.trim();
+
+    if trimmed.is_empty() {
+        return default_full_path.to_string();
+    }
+
+    if trimmed.contains('/') || trimmed.starts_with("lib") {
+        // User explicitly typed a path-like value — respect it as an override.
+        return to_lib_path(trimmed);
+    }
+
+    // Plain folder name — nest under components_dir as originally intended.
+    format!("{}/{}", components_dir, trimmed)
+}
+
 /// Runs the `justui init` command.
 pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
     // 1. Verify we are in a valid project root containing pubspec.yaml
@@ -107,15 +132,15 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         ));
         shared_dir_default
     } else {
+        logger::stdout(&format!(
+            "  (Folder ini akan dibuat relatif terhadap '{}', contoh: '{}')",
+            components_dir, shared_dir_default
+        ));
         let raw_shared_dir = prompt::ask(
-            "Enter shared components folder (leave blank for default)",
-            &shared_dir_default,
+            "Enter shared components folder name (leave blank for default)",
+            "shared",
         );
-        if raw_shared_dir.is_empty() {
-            shared_dir_default
-        } else {
-            to_lib_path(&raw_shared_dir)
-        }
+        resolve_shared_dir(&raw_shared_dir, &components_dir, &shared_dir_default)
     };
 
     // ── Brand seed color ──────────────────────────────────────────────────────
