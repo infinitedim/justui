@@ -282,6 +282,8 @@ pub fn run(
         if let Some(component) = index.components.iter().find(|c| c.name == *name) {
             let target_dir = if component.category == "tokens" || component.category == "core" {
                 config.tokens_dir.clone()
+            } else if component.name == "_shared_theme_provider" {
+                "lib/theme".to_string()
             } else if component.internal {
                 config.shared_dir.clone()
             } else {
@@ -389,6 +391,8 @@ pub fn add_component(
     // 2. Map target directory based on category and shared status
     let target_dir = if component.category == "tokens" || component.category == "core" {
         tokens_dir.to_string()
+    } else if component.name == "_shared_theme_provider" {
+        "lib/theme".to_string()
     } else if component.internal {
         shared_dir.to_string()
     } else {
@@ -448,7 +452,9 @@ pub fn add_component(
             &local_rewritten_hash,
         );
 
-        let local_file_name = if component.internal {
+        let local_file_name = if component.name == "_shared_theme_provider" {
+            file.name.clone()
+        } else if component.internal {
             import_rewriter::normalize_shared_file_name(&file.name)
         } else {
             file.name.clone()

@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
+import 'preset_tokens.dart';
 
 // ==========================================
 // --- Spacing Scheme ---
@@ -577,6 +578,10 @@ class JustThemeData {
 
   /// The visual style preset.
   final JustThemePreset preset;
+
+  /// Resolved preset-specific visual token implementation.
+  /// Convenience accessor equivalent to `preset.tokens`.
+  JustPresetTokens get presetTokens => preset.tokens;
 
   /// The active color scheme.
   final JustColorScheme colors;

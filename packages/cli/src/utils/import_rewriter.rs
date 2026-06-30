@@ -147,6 +147,8 @@ pub fn rewrite(
         Some(comp) => {
             if comp.category == "tokens" || comp.category == "core" {
                 tokens_dir.to_string()
+            } else if comp.name == "_shared_theme_provider" {
+                "lib/theme".to_string()
             } else if comp.internal {
                 shared_dir.to_string()
             } else {
@@ -160,7 +162,9 @@ pub fn rewrite(
         .split('/')
         .next_back()
         .unwrap_or(source_registry_path);
-    let local_filename = if current_component.map(|c| c.internal).unwrap_or(false) {
+    let local_filename = if current_component.map(|c| c.name == "_shared_theme_provider").unwrap_or(false) {
+        filename.to_string()
+    } else if current_component.map(|c| c.internal).unwrap_or(false) {
         normalize_shared_file_name(filename)
     } else {
         filename.to_string()
@@ -221,13 +225,17 @@ pub fn rewrite(
             if let (Some(comp), Some(file)) = (found_comp, found_file) {
                 let target_dir = if comp.category == "tokens" || comp.category == "core" {
                     tokens_dir.to_string()
+                } else if comp.name == "_shared_theme_provider" {
+                    "lib/theme".to_string()
                 } else if comp.internal {
                     shared_dir.to_string()
                 } else {
                     format!("{}/{}", components_dir, comp.name)
                 };
 
-                let local_target_file_name = if comp.internal {
+                let local_target_file_name = if comp.name == "_shared_theme_provider" {
+                    file.name.clone()
+                } else if comp.internal {
                     normalize_shared_file_name(&file.name)
                 } else {
                     file.name.clone()

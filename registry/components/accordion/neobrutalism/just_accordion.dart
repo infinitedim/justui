@@ -3,7 +3,7 @@ import 'package:flutter/services.dart'
     show HapticFeedback, LogicalKeyboardKey, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
-import '../../shared/default/_shared_theme_provider.dart';
+import '../../theme/default/_shared_theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_accordion_style.dart';

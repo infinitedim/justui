@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import '../../shared/default/_shared_theme_provider.dart';
+import '../../theme/default/_shared_theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_breadcrumb_style.dart';
 
