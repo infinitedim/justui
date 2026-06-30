@@ -48,7 +48,9 @@ class _ShowcaseAppState extends State<ShowcaseApp> {
 
           setState(() {
             _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
-            _preset = isNeobrutalism ? JustThemePreset.neobrutalism : JustThemePreset.default_;
+            _preset = isNeobrutalism
+                ? JustThemePreset.neobrutalism
+                : JustThemePreset.default_;
           });
         }
       }
@@ -71,9 +73,7 @@ class _ShowcaseAppState extends State<ShowcaseApp> {
       lightTheme: lightTheme,
       darkTheme: darkTheme,
       initialThemeMode: _themeMode,
-      child: const HeightReporter(
-        child: ShowcaseGrid(),
-      ),
+      child: const HeightReporter(child: ShowcaseGrid()),
     );
   }
 }
