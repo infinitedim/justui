@@ -73,7 +73,18 @@ class _ShowcaseAppState extends State<ShowcaseApp> {
       lightTheme: lightTheme,
       darkTheme: darkTheme,
       initialThemeMode: _themeMode,
-      child: const HeightReporter(child: ShowcaseGrid()),
+      child: Builder(
+        builder: (context) {
+          final theme = JustThemeProvider.of(context).theme;
+          return DefaultTextStyle(
+            style: TextStyle(
+              fontFamily: 'IBM Plex Sans',
+              color: theme.colors.textPrimary,
+            ),
+            child: const HeightReporter(child: ShowcaseGrid()),
+          );
+        },
+      ),
     );
   }
 }
