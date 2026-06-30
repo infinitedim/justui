@@ -2,7 +2,7 @@ import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import '../../../shared/default/_shared_tokens.dart';
-import '../../shared/default/_shared_theme_provider.dart';
+import '../../theme/default/_shared_theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_tab_indicator.dart';
 import 'just_tabs_style.dart';

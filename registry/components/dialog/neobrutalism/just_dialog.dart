@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../overlay/just_overlay_controller.dart';
-import '../../shared/default/_shared_theme_provider.dart';
+import '../../theme/default/_shared_theme_provider.dart';
 import 'just_dialog_style.dart';
 import 'just_dialog_theme.dart';
 import 'just_dialog_variants.dart';

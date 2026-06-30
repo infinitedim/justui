@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import '../../../shared/default/_shared_tokens.dart';
-import '../../shared/default/_shared_theme_provider.dart';
+import '../../theme/default/_shared_theme_provider.dart';
 import 'just_separator_style.dart';
 import 'just_separator_theme.dart';
 

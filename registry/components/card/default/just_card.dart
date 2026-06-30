@@ -114,9 +114,9 @@ class JustCard extends StatelessWidget {
     final spacing = theme.spacing;
     final radius = theme.radius;
     final shadows = theme.shadows;
+    final presetTokens = theme.presetTokens;
 
     final isInteractive = onTap != null;
-    final isNeobrutalism = theme.preset == .neobrutalism;
 
     // Resolve base colors and shadows depending on the card variant
     Color defaultBg;
@@ -129,26 +129,30 @@ class JustCard extends StatelessWidget {
     switch (variant) {
       case .elevated:
         defaultBg = colors.card;
-        defaultBorderColor = isNeobrutalism
+        defaultBorderColor = presetTokens.showsDefaultBorder
             ? colors.borderDefault
             : const Color(0x00000000);
-        defaultBorderWidth = isNeobrutalism ? 2.5 : 0.0;
+        defaultBorderWidth = presetTokens.showsDefaultBorder
+            ? presetTokens.borderWidth
+            : 0.0;
         defaultShadows = shadows.sm;
         break;
       case .outlined:
         defaultBg = colors.card;
         defaultBorderColor = colors.borderDefault;
-        defaultBorderWidth = isNeobrutalism ? 2.5 : 1.0;
+        defaultBorderWidth = presetTokens.borderWidth;
         defaultShadows = const [];
         break;
       case .filled:
         defaultBg = isDark
             ? const Color(0xFF1E293B)
             : const Color(0xFFF1F5F9); // Slate-800 / Slate-100
-        defaultBorderColor = isNeobrutalism
+        defaultBorderColor = presetTokens.showsDefaultBorder
             ? colors.borderDefault
             : const Color(0x00000000);
-        defaultBorderWidth = isNeobrutalism ? 2.5 : 0.0;
+        defaultBorderWidth = presetTokens.showsDefaultBorder
+            ? presetTokens.borderWidth
+            : 0.0;
         defaultShadows = const [];
         break;
     }
@@ -161,7 +165,9 @@ class JustCard extends StatelessWidget {
     final resolvedBorderWidth =
         style?.borderWidth ?? themeStyle?.borderWidth ?? defaultBorderWidth;
     final resolvedBorderRadius =
-        style?.borderRadius ?? themeStyle?.borderRadius ?? .all(radius.lg);
+        style?.borderRadius ??
+        themeStyle?.borderRadius ??
+        presetTokens.resolveBorderRadius(radius);
     final resolvedPadding =
         style?.padding ?? themeStyle?.padding ?? .all(spacing.lg);
     final resolvedMargin = style?.margin ?? themeStyle?.margin ?? .zero;
@@ -202,11 +208,36 @@ class JustCard extends StatelessWidget {
         }
       }
 
-      // Resolve shadows for press state (collapses in neobrutalism)
-      currentShadows = theme.resolveShadows(
-        currentShadows,
-        isPressed: isPressed,
-      );
+      // Resolve shadows for press state
+      List<BoxShadow> resolvedShadows;
+      if (style?.shadows != null || themeStyle?.shadows != null) {
+        if (isPressed) {
+          if (presetTokens.showsDefaultBorder) {
+            resolvedShadows = const [];
+          } else {
+            resolvedShadows = currentShadows
+                .map(
+                  (s) => s.copyWith(
+                    blurRadius: s.blurRadius * 0.6,
+                    offset: s.offset * 0.5,
+                  ),
+                )
+                .toList();
+          }
+        } else {
+          resolvedShadows = currentShadows;
+        }
+      } else {
+        if (variant == .elevated) {
+          resolvedShadows = presetTokens.resolveShadow(
+            shadows,
+            (isHovered || isFocused) ? .md : .sm,
+            isPressed: isPressed,
+          );
+        } else {
+          resolvedShadows = const [];
+        }
+      }
 
       final BorderSide borderSide = currentBorderWidth > 0.0
           ? BorderSide(color: currentBorderColor, width: currentBorderWidth)
@@ -220,7 +251,7 @@ class JustCard extends StatelessWidget {
           color: resolvedBgColor,
           borderRadius: resolvedBorderRadius,
           border: .fromBorderSide(borderSide),
-          boxShadow: currentShadows,
+          boxShadow: resolvedShadows,
         ),
         child: Column(
           mainAxisSize: .min,
@@ -242,10 +273,11 @@ class JustCard extends StatelessWidget {
       if (isInteractive) {
         final scaleFactor =
             style?.scaleOnPress ?? themeStyle?.scaleOnPress ?? 0.99;
-        return theme.buildPressEffect(
+        return presetTokens.buildPressEffect(
           child: cardLayout,
           isPressed: isPressed,
-          scaleFactor: scaleFactor,
+          animations: theme.animations,
+          customScale: scaleFactor,
         );
       }
 
