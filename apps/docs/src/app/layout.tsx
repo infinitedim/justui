@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
+import { PresetProvider } from '@/lib/preset-context';
 import './globals.css';
 
 const sans = IBM_Plex_Sans({
@@ -34,7 +35,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html suppressHydrationWarning>
       <head />
       <body
-        className={`${sans.variable} ${mono.variable} theme-neobrutalism bg-background text-foreground flex min-h-screen flex-col font-sans antialiased`}
+        className={`${sans.variable} ${mono.variable} bg-background text-foreground flex min-h-screen flex-col font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -42,7 +43,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <PresetProvider>
+            {children}
+          </PresetProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -1,5 +1,4 @@
 // justui-meta: registry=6b1cdebc9e3af914198394524660b3e15837d877e5b6f37cd5f75ff986437564 local=6b1cdebc9e3af914198394524660b3e15837d877e5b6f37cd5f75ff986437564
-import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 
 // ============================================================
