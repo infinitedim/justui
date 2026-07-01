@@ -99,7 +99,9 @@ class JustSeparator extends StatelessWidget {
     final resolvedThickness =
         style?.thickness ??
         themeStyle?.thickness ??
-        JustThemeProvider.of(context).theme.presetTokens.resolveSeparatorThickness(thickness);
+        JustThemeProvider.of(
+          context,
+        ).theme.presetTokens.resolveSeparatorThickness(thickness);
     final resolvedIndent = style?.indent ?? themeStyle?.indent ?? indent;
     final resolvedEndIndent =
         style?.endIndent ?? themeStyle?.endIndent ?? endIndent;

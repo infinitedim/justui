@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_provider.dart';
+import '../../theme/preset_tokens.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_switch_style.dart';
@@ -137,7 +138,9 @@ class _JustSwitchState extends State<JustSwitch>
     final finalEnableHaptic =
         widget.enableHaptic ??
         switchTheme?.enableHaptic ??
-        (JustThemeProvider.read(context).theme.preset == .neobrutalism);
+        JustThemeProvider.read(
+          context,
+        ).theme.presetTokens.selectionHapticDefault;
 
     if (finalEnableHaptic) {
       HapticFeedback.selectionClick();
@@ -190,8 +193,8 @@ class _JustSwitchState extends State<JustSwitch>
 
     final isInteractive = !widget.isDisabled && widget.onChanged != null;
 
-    final isNeobrutalism = customTheme.preset == .neobrutalism;
-    final borderWidth = isNeobrutalism ? 2.5 : 0.0;
+    final hasBorder = customTheme.presetTokens.showsDefaultBorder;
+    final borderWidth = hasBorder ? customTheme.presetTokens.borderWidth : 0.0;
 
     // Resolve sizing values
     double trackWidth;
@@ -220,7 +223,7 @@ class _JustSwitchState extends State<JustSwitch>
         break;
     }
 
-    final resolvedThumbSize = isNeobrutalism
+    final resolvedThumbSize = hasBorder
         ? thumbSize - 2 * borderWidth
         : thumbSize;
 
@@ -230,11 +233,11 @@ class _JustSwitchState extends State<JustSwitch>
         widget.activeColor ??
         widget.style?.activeTrackColor ??
         themeStyle?.activeTrackColor ??
-        (isNeobrutalism ? colors.success : colors.borderFocus);
+        (hasBorder ? colors.success : colors.borderFocus);
     final resolvedInactiveTrackColor =
         widget.style?.inactiveTrackColor ??
         themeStyle?.inactiveTrackColor ??
-        (isNeobrutalism ? colors.background : colors.borderDefault);
+        (hasBorder ? colors.background : colors.borderDefault);
     final resolvedActiveThumbColor =
         widget.style?.activeThumbColor ??
         themeStyle?.activeThumbColor ??
@@ -310,7 +313,7 @@ class _JustSwitchState extends State<JustSwitch>
                                   borderRadius: .all(
                                     .circular(trackHeight / 2),
                                   ),
-                                  border: isNeobrutalism
+                                  border: hasBorder
                                       ? .all(
                                           color: colors.textPrimary,
                                           width: borderWidth,
@@ -334,15 +337,20 @@ class _JustSwitchState extends State<JustSwitch>
                                           decoration: BoxDecoration(
                                             color: currentThumbColor,
                                             shape: .circle,
-                                            border: isNeobrutalism
+                                            border: hasBorder
                                                 ? .all(
                                                     color: colors.textPrimary,
                                                     width: 1.5,
                                                   )
                                                 : null,
-                                            boxShadow: isNeobrutalism
+                                            boxShadow: hasBorder
                                                 ? null
-                                                : customTheme.shadows.xs,
+                                                : customTheme.presetTokens
+                                                      .resolveShadow(
+                                                        customTheme.shadows,
+                                                        JustShadowLevel.xs,
+                                                        isPressed: false,
+                                                      ),
                                           ),
                                           child: widget.thumbIcon != null
                                               ? Center(

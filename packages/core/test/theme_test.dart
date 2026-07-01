@@ -601,23 +601,59 @@ void main() {
       const neobrutalismTokens = NeobrutalismPresetTokens();
 
       test('Slider track height resolution', () {
-        expect(defaultTokens.resolveSliderTrackHeight(JustSliderSize.sm), equals(4.0));
-        expect(defaultTokens.resolveSliderTrackHeight(JustSliderSize.md), equals(6.0));
-        expect(defaultTokens.resolveSliderTrackHeight(JustSliderSize.lg), equals(8.0));
+        expect(
+          defaultTokens.resolveSliderTrackHeight(JustSliderSize.sm),
+          equals(4.0),
+        );
+        expect(
+          defaultTokens.resolveSliderTrackHeight(JustSliderSize.md),
+          equals(6.0),
+        );
+        expect(
+          defaultTokens.resolveSliderTrackHeight(JustSliderSize.lg),
+          equals(8.0),
+        );
 
-        expect(neobrutalismTokens.resolveSliderTrackHeight(JustSliderSize.sm), equals(6.0));
-        expect(neobrutalismTokens.resolveSliderTrackHeight(JustSliderSize.md), equals(10.0));
-        expect(neobrutalismTokens.resolveSliderTrackHeight(JustSliderSize.lg), equals(14.0));
+        expect(
+          neobrutalismTokens.resolveSliderTrackHeight(JustSliderSize.sm),
+          equals(6.0),
+        );
+        expect(
+          neobrutalismTokens.resolveSliderTrackHeight(JustSliderSize.md),
+          equals(10.0),
+        );
+        expect(
+          neobrutalismTokens.resolveSliderTrackHeight(JustSliderSize.lg),
+          equals(14.0),
+        );
       });
 
       test('Slider thumb size resolution', () {
-        expect(defaultTokens.resolveSliderThumbSize(JustSliderSize.sm), equals(14.0));
-        expect(defaultTokens.resolveSliderThumbSize(JustSliderSize.md), equals(20.0));
-        expect(defaultTokens.resolveSliderThumbSize(JustSliderSize.lg), equals(26.0));
+        expect(
+          defaultTokens.resolveSliderThumbSize(JustSliderSize.sm),
+          equals(14.0),
+        );
+        expect(
+          defaultTokens.resolveSliderThumbSize(JustSliderSize.md),
+          equals(20.0),
+        );
+        expect(
+          defaultTokens.resolveSliderThumbSize(JustSliderSize.lg),
+          equals(26.0),
+        );
 
-        expect(neobrutalismTokens.resolveSliderThumbSize(JustSliderSize.sm), equals(16.0));
-        expect(neobrutalismTokens.resolveSliderThumbSize(JustSliderSize.md), equals(22.0));
-        expect(neobrutalismTokens.resolveSliderThumbSize(JustSliderSize.lg), equals(28.0));
+        expect(
+          neobrutalismTokens.resolveSliderThumbSize(JustSliderSize.sm),
+          equals(16.0),
+        );
+        expect(
+          neobrutalismTokens.resolveSliderThumbSize(JustSliderSize.md),
+          equals(22.0),
+        );
+        expect(
+          neobrutalismTokens.resolveSliderThumbSize(JustSliderSize.lg),
+          equals(28.0),
+        );
       });
 
       test('Slider haptic feedback default', () {
@@ -626,18 +662,39 @@ void main() {
       });
 
       test('Progress stroke width resolution', () {
-        expect(defaultTokens.resolveProgressStrokeWidth(JustProgressSize.sm), equals(2.0));
-        expect(defaultTokens.resolveProgressStrokeWidth(JustProgressSize.md), equals(3.0));
-        expect(defaultTokens.resolveProgressStrokeWidth(JustProgressSize.lg), equals(4.0));
+        expect(
+          defaultTokens.resolveProgressStrokeWidth(JustProgressSize.sm),
+          equals(2.0),
+        );
+        expect(
+          defaultTokens.resolveProgressStrokeWidth(JustProgressSize.md),
+          equals(3.0),
+        );
+        expect(
+          defaultTokens.resolveProgressStrokeWidth(JustProgressSize.lg),
+          equals(4.0),
+        );
 
-        expect(neobrutalismTokens.resolveProgressStrokeWidth(JustProgressSize.sm), equals(3.0));
-        expect(neobrutalismTokens.resolveProgressStrokeWidth(JustProgressSize.md), equals(4.0));
-        expect(neobrutalismTokens.resolveProgressStrokeWidth(JustProgressSize.lg), equals(5.0));
+        expect(
+          neobrutalismTokens.resolveProgressStrokeWidth(JustProgressSize.sm),
+          equals(3.0),
+        );
+        expect(
+          neobrutalismTokens.resolveProgressStrokeWidth(JustProgressSize.md),
+          equals(4.0),
+        );
+        expect(
+          neobrutalismTokens.resolveProgressStrokeWidth(JustProgressSize.lg),
+          equals(5.0),
+        );
       });
 
       test('Progress label font weight resolution', () {
         expect(defaultTokens.progressLabelFontWeight, equals(FontWeight.w500));
-        expect(neobrutalismTokens.progressLabelFontWeight, equals(FontWeight.w700));
+        expect(
+          neobrutalismTokens.progressLabelFontWeight,
+          equals(FontWeight.w700),
+        );
       });
 
       test('Separator thickness resolution', () {
@@ -655,20 +712,38 @@ void main() {
 
       test('Focus transition duration resolution', () {
         final animations = JustThemeData.light.animations;
-        expect(defaultTokens.resolveFocusTransitionDuration(animations), equals(animations.fast));
-        expect(neobrutalismTokens.resolveFocusTransitionDuration(animations), equals(animations.instant));
+        expect(
+          defaultTokens.resolveFocusTransitionDuration(animations),
+          equals(animations.fast),
+        );
+        expect(
+          neobrutalismTokens.resolveFocusTransitionDuration(animations),
+          equals(animations.instant),
+        );
       });
 
       test('Dropdown duration resolution', () {
         final animations = JustThemeData.light.animations;
-        expect(defaultTokens.resolveDropdownDuration(animations), equals(animations.fast));
-        expect(neobrutalismTokens.resolveDropdownDuration(animations), equals(animations.instant));
+        expect(
+          defaultTokens.resolveDropdownDuration(animations),
+          equals(animations.fast),
+        );
+        expect(
+          neobrutalismTokens.resolveDropdownDuration(animations),
+          equals(animations.instant),
+        );
       });
 
       test('Dropdown curve resolution', () {
         final animations = JustThemeData.light.animations;
-        expect(defaultTokens.resolveDropdownCurve(animations), equals(animations.defaultCurve));
-        expect(neobrutalismTokens.resolveDropdownCurve(animations), equals(animations.defaultCurve));
+        expect(
+          defaultTokens.resolveDropdownCurve(animations),
+          equals(animations.defaultCurve),
+        );
+        expect(
+          neobrutalismTokens.resolveDropdownCurve(animations),
+          equals(animations.defaultCurve),
+        );
       });
 
       test('Selection haptic default resolution', () {
@@ -683,7 +758,10 @@ void main() {
 
       test('JustThemePresetTokensX extension returns correct tokens', () {
         expect(JustThemePreset.default_.tokens, isA<DefaultPresetTokens>());
-        expect(JustThemePreset.neobrutalism.tokens, isA<NeobrutalismPresetTokens>());
+        expect(
+          JustThemePreset.neobrutalism.tokens,
+          isA<NeobrutalismPresetTokens>(),
+        );
       });
     });
   });

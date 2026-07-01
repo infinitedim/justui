@@ -34,7 +34,7 @@ class JustAvatarGroup extends StatelessWidget {
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
     final customTheme = JustThemeProvider.of(context).theme;
-    final isNeobrutalism = customTheme.preset == .neobrutalism;
+    final presetTokens = customTheme.presetTokens;
 
     final int displayCount = avatars.length > maxDisplay
         ? maxDisplay
@@ -88,7 +88,7 @@ class JustAvatarGroup extends StatelessWidget {
               original.border ??
               BorderSide(
                 color: colors.background,
-                width: isNeobrutalism ? 2.5 : 2.0,
+                width: presetTokens.borderWidth,
               ),
           statusDot: original.statusDot,
           backgroundColor: original.backgroundColor,
@@ -105,7 +105,7 @@ class JustAvatarGroup extends StatelessWidget {
           backgroundColor: colors.borderDefault,
           border: BorderSide(
             color: colors.background,
-            width: isNeobrutalism ? 2.5 : 2.0,
+            width: presetTokens.borderWidth,
           ),
         );
       }

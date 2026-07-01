@@ -324,10 +324,12 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
         break;
     }
 
-    final isNeobrutalism = theme.preset == .neobrutalism;
+    final presetTokens = theme.presetTokens;
     final borderSide = BorderSide(
-      color: isNeobrutalism ? colors.textPrimary : colors.borderDefault,
-      width: isNeobrutalism ? 2.5 : 1.0,
+      color: presetTokens.showsDefaultBorder
+          ? colors.textPrimary
+          : colors.borderDefault,
+      width: presetTokens.borderWidth,
     );
 
     // Calculate layout sizing based on direction and screen dimensions

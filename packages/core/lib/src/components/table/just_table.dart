@@ -184,7 +184,9 @@ class _JustTableState<T> extends State<JustTable<T>> {
     final headerText =
         widget.style?.headerTextColor ??
         themeStyle?.headerTextColor ??
-        (presetTokens.showsDefaultBorder ? colors.textInverse : colors.textPrimary);
+        (presetTokens.showsDefaultBorder
+            ? colors.textInverse
+            : colors.textPrimary);
 
     final rowBg =
         widget.style?.rowBackgroundColor ??
@@ -199,7 +201,9 @@ class _JustTableState<T> extends State<JustTable<T>> {
     final borderColor =
         widget.style?.borderColor ??
         themeStyle?.borderColor ??
-        (presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderDefault);
+        (presetTokens.showsDefaultBorder
+            ? colors.textPrimary
+            : colors.borderDefault);
 
     final hoverBg =
         widget.style?.hoverColor ??
@@ -226,7 +230,9 @@ class _JustTableState<T> extends State<JustTable<T>> {
         themeStyle?.cellTextStyle ??
         typography.bodySm.copyWith(color: colors.textPrimary);
 
-    final BorderRadius defaultBorderRadius = presetTokens.resolveBorderRadius(radius);
+    final BorderRadius defaultBorderRadius = presetTokens.resolveBorderRadius(
+      radius,
+    );
     final finalRadius = defaultBorderRadius;
 
     // Outer Container Border
@@ -516,7 +522,9 @@ class _CustomCheckbox extends StatelessWidget {
           height: 18,
           decoration: BoxDecoration(
             color: value
-                ? (presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderFocus)
+                ? (presetTokens.showsDefaultBorder
+                      ? colors.textPrimary
+                      : colors.borderFocus)
                 : colors.background,
             border: Border.all(
               color: presetTokens.showsDefaultBorder
@@ -524,7 +532,9 @@ class _CustomCheckbox extends StatelessWidget {
                   : (value ? colors.borderFocus : colors.borderDefault),
               width: borderSize,
             ),
-            borderRadius: presetTokens.showsDefaultBorder ? .zero : const .all(.circular(4)),
+            borderRadius: presetTokens.showsDefaultBorder
+                ? .zero
+                : const .all(.circular(4)),
           ),
           alignment: .center,
           child: value
@@ -539,7 +549,9 @@ class _CustomCheckbox extends StatelessWidget {
         return FocusIndicator(
           isFocused: isFocused,
           focusColor: colors.borderFocus,
-          borderRadius: presetTokens.showsDefaultBorder ? .zero : const .all(.circular(4)),
+          borderRadius: presetTokens.showsDefaultBorder
+              ? .zero
+              : const .all(.circular(4)),
           child: box,
         );
       },

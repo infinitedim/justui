@@ -125,7 +125,9 @@ class _JustAccordionState extends State<JustAccordion> {
     final presetTokens = customTheme.presetTokens;
 
     final resolvedGap = widget.style?.gap ?? themeStyle?.gap ?? 8.0;
-    final BorderRadius defaultBorderRadius = presetTokens.resolveBorderRadius(radius);
+    final BorderRadius defaultBorderRadius = presetTokens.resolveBorderRadius(
+      radius,
+    );
     final finalRadius =
         widget.style?.borderRadius ??
         themeStyle?.borderRadius ??
@@ -134,7 +136,9 @@ class _JustAccordionState extends State<JustAccordion> {
     final borderColor =
         widget.style?.borderColor ??
         themeStyle?.borderColor ??
-        (presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderDefault);
+        (presetTokens.showsDefaultBorder
+            ? colors.textPrimary
+            : colors.borderDefault);
 
     if (widget.variant == .contained) {
       // Contained Variant: single outer container
@@ -220,10 +224,7 @@ class _JustAccordionState extends State<JustAccordion> {
             children: [
               child,
               if (!isLast)
-                Container(
-                  height: presetTokens.borderWidth,
-                  color: borderColor,
-                ),
+                Container(height: presetTokens.borderWidth, color: borderColor),
             ],
           );
         }
@@ -358,7 +359,8 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
             ? widget.colors.textPrimary
             : widget.colors.borderDefault);
 
-    final BorderRadius defaultBorderRadius = widget.presetTokens.resolveBorderRadius(widget.radius);
+    final BorderRadius defaultBorderRadius = widget.presetTokens
+        .resolveBorderRadius(widget.radius);
     final finalRadius =
         widget.style?.borderRadius ??
         widget.themeStyle?.borderRadius ??

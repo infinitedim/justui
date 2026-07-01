@@ -751,10 +751,12 @@ class _JustInputState extends State<JustInput> {
                     final double borderWidth = presetTokens.showsDefaultBorder
                         ? presetTokens.borderWidth
                         : (isFocused ? 2.0 : 1.0);
-                    final Color finalBorderColor = presetTokens.showsDefaultBorder
+                    final Color finalBorderColor =
+                        presetTokens.showsDefaultBorder
                         ? colors.textPrimary
                         : border;
-                    final List<BoxShadow>? resolvedShadows = presetTokens.showsDefaultBorder
+                    final List<BoxShadow>? resolvedShadows =
+                        presetTokens.showsDefaultBorder
                         ? theme.shadows.sm
                         : null;
 

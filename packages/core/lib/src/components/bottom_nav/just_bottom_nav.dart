@@ -286,7 +286,10 @@ class _JustBottomNavState extends State<JustBottomNav> {
     final Border borderStyle = widget.variant == .floating
         ? .all(color: colors.borderDefault, width: presetTokens.borderWidth)
         : Border(
-            top: BorderSide(color: colors.borderDefault, width: presetTokens.borderWidth),
+            top: BorderSide(
+              color: colors.borderDefault,
+              width: presetTokens.borderWidth,
+            ),
           );
 
     final Widget contentBar = Container(

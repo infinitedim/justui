@@ -666,7 +666,10 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
           borderRadius: containerBorderRadius,
           border: presetTokens.showsDefaultBorder
               ? (widget.variant == .enclosed || widget.variant == .pill
-                    ? .all(color: colors.textPrimary, width: presetTokens.borderWidth)
+                    ? .all(
+                        color: colors.textPrimary,
+                        width: presetTokens.borderWidth,
+                      )
                     : null)
               : (widget.variant == .enclosed
                     ? .all(color: colors.borderDefault, width: 1.0)

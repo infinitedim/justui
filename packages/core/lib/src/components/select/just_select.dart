@@ -484,7 +484,9 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                       : colors.borderDefault,
                   width: presetTokens.borderWidth,
                 ),
-                borderRadius: presetTokens.showsDefaultBorder ? .zero : finalRadius,
+                borderRadius: presetTokens.showsDefaultBorder
+                    ? .zero
+                    : finalRadius,
                 boxShadow: presetTokens.showsDefaultBorder
                     ? [
                         BoxShadow(
@@ -515,7 +517,9 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                               color: colors.background,
                               border: Border.all(
                                 color: colors.borderDefault,
-                                width: presetTokens.showsDefaultBorder ? 2.0 : 1.0,
+                                width: presetTokens.showsDefaultBorder
+                                    ? 2.0
+                                    : 1.0,
                               ),
                               borderRadius: presetTokens.showsDefaultBorder
                                   ? .zero
@@ -633,7 +637,10 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: itemBg,
-                                            border: presetTokens.showsDefaultBorder && showHover
+                                            border:
+                                                presetTokens
+                                                        .showsDefaultBorder &&
+                                                    showHover
                                                 ? Border(
                                                     left: BorderSide(
                                                       color: colors.textPrimary,
@@ -661,7 +668,8 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                                 ),
                                               ),
                                               if (isSelected &&
-                                                  !presetTokens.showsDefaultBorder) ...[
+                                                  !presetTokens
+                                                      .showsDefaultBorder) ...[
                                                 SizedBox(width: spacing.sm),
                                                 Icon(
                                                   const IconData(
