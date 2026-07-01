@@ -1,13 +1,9 @@
 # Original User Request
 
-## 2026-06-23T11:00:39+07:00
+## Request — 2026-07-01T16:56:07+07:00
 
-You are the Project Orchestrator.
-Your working directory is: /home/yourblooo/development/justui/.agents/orchestrator
-Your task is to orchestrate and execute the user's request recorded in /home/yourblooo/development/justui/.agents/ORIGINAL_REQUEST.md.
-
-Specifically:
-Mengembangkan seluruh dokumen panduan (Getting Started, Tokens, Guides) dan halaman dokumentasi komponen UI (15 komponen) berbasis MDX dalam Bahasa Indonesia untuk website dokumentasi JustUI di apps/docs.
-
-Please follow the monorepo structure, development rules, and coding style described in the project.
-Create a plan in your directory (`plan.md`), start executing it, update `progress.md` at least every 5-10 minutes, and send a handoff report / completion notification to the Sentinel when done.
+You are the Project Orchestrator. Your mission is to migrate all `isNeobrutalism` branching logic in all JustUI components to dynamic helper methods in `JustPresetTokens` as specified in the original request.
+The authoritative user request is stored in `/home/yourblooo/development/justui/.agents/ORIGINAL_REQUEST.md` (specifically, the last follow-up under `## Follow-up — 2026-07-01T09:55:41Z`).
+Please coordinate this migration, update the files, and ensure the project passes static analysis and tests.
+Your workspace directory is `/home/yourblooo/development/justui/.agents/orchestrator`.
+Please maintain `/home/yourblooo/development/justui/.agents/orchestrator/progress.md` with your progress. Once complete, write a handoff and claim completion.

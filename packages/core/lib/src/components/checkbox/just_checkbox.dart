@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_provider.dart';
+import '../../theme/preset_tokens.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_checkbox_style.dart';
@@ -127,7 +128,7 @@ class _JustCheckboxState extends State<JustCheckbox>
     final finalEnableHaptic =
         widget.enableHaptic ??
         checkboxTheme?.enableHaptic ??
-        (JustThemeProvider.read(context).theme.preset == .neobrutalism);
+        JustThemeProvider.read(context).theme.presetTokens.selectionHapticDefault;
 
     if (finalEnableHaptic) {
       HapticFeedback.selectionClick();
@@ -199,7 +200,7 @@ class _JustCheckboxState extends State<JustCheckbox>
     final resolvedRadius =
         widget.style?.borderRadius ??
         themeStyle?.borderRadius ??
-        .all(radius.xs);
+        (customTheme.presetTokens.showsDefaultBorder ? .zero : .all(radius.xs));
     final resolvedTextStyle =
         widget.style?.textStyle ??
         themeStyle?.textStyle ??
@@ -238,8 +239,8 @@ class _JustCheckboxState extends State<JustCheckbox>
                           builder: (context, child) {
                             final progress = _controller.value;
                             final isIndeterminate = widget.value == null;
-                            final isNeobrutalism =
-                                customTheme.preset == .neobrutalism;
+                            final hasBorder =
+                                customTheme.presetTokens.showsDefaultBorder;
 
                             // Interpolate colors based on checked/indeterminate progress
                             final Color currentBg = .lerp(
@@ -248,7 +249,7 @@ class _JustCheckboxState extends State<JustCheckbox>
                               progress,
                             )!;
 
-                            final Color currentBorder = isNeobrutalism
+                            final Color currentBorder = hasBorder
                                 ? colors.textPrimary
                                 : (isHovered
                                       ? colors.textSecondary
@@ -258,13 +259,13 @@ class _JustCheckboxState extends State<JustCheckbox>
                                           progress,
                                         )!);
 
-                            List<BoxShadow> currentShadows = isNeobrutalism
-                                ? customTheme.shadows.xs
+                            final List<BoxShadow> currentShadows = hasBorder
+                                ? customTheme.presetTokens.resolveShadow(
+                                    customTheme.shadows,
+                                    JustShadowLevel.xs,
+                                    isPressed: isPressed,
+                                  )
                                 : const [];
-                            currentShadows = customTheme.resolveShadows(
-                              currentShadows,
-                              isPressed: isPressed,
-                            );
 
                             final checkboxBox = Container(
                               width: boxSize,
@@ -274,7 +275,7 @@ class _JustCheckboxState extends State<JustCheckbox>
                                 borderRadius: resolvedRadius,
                                 border: .all(
                                   color: currentBorder,
-                                  width: isNeobrutalism ? 2.5 : 1.5,
+                                  width: hasBorder ? customTheme.presetTokens.borderWidth : 1.5,
                                 ),
                                 boxShadow: currentShadows.isNotEmpty
                                     ? currentShadows
@@ -297,8 +298,10 @@ class _JustCheckboxState extends State<JustCheckbox>
                                     ),
                             );
 
-                            return customTheme.buildPressEffect(
+                            return customTheme.presetTokens.buildPressEffect(
                               isPressed: isPressed,
+                              animations: customTheme.animations,
+                              customOffset: const Offset(1.0, 1.0),
                               child: checkboxBox,
                             );
                           },

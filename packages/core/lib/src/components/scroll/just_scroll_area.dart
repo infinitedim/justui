@@ -317,9 +317,9 @@ class _JustScrollAreaState extends State<JustScrollArea> {
         widget.style?.scrollbarThickness ??
         themeStyle?.scrollbarThickness ??
         6.0;
-    final isNeobrutalism =
-        JustThemeProvider.of(context).theme.preset == .neobrutalism;
-    final scrollbarRadius = isNeobrutalism
+    final presetTokens =
+        JustThemeProvider.of(context).theme.presetTokens;
+    final scrollbarRadius = presetTokens.showsDefaultBorder
         ? Radius.zero
         : (widget.style?.scrollbarRadius ??
               themeStyle?.scrollbarRadius ??

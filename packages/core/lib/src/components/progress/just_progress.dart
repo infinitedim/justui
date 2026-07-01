@@ -4,6 +4,7 @@ import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_data.dart';
 import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
+import '../../theme/preset_tokens.dart';
 import 'just_progress_style.dart';
 import 'just_progress_theme.dart';
 import 'just_progress_variants.dart';
@@ -119,6 +120,7 @@ class _JustProgressState extends State<JustProgress>
   @override
   Widget build(BuildContext context) {
     final customTheme = JustThemeProvider.of(context).theme;
+    final presetTokens = customTheme.presetTokens;
     final progressTheme = customTheme
         .toThemeData()
         .extension<JustProgressTheme>();
@@ -134,20 +136,19 @@ class _JustProgressState extends State<JustProgress>
       context,
       aspect: .typography,
     ).theme.typography;
-    final isNeobrutalism = customTheme.preset == .neobrutalism;
 
     // Resolve Style Properties
     final finalTrackColor =
         widget.style?.trackColor ??
         themeStyle?.trackColor ??
-        (isNeobrutalism
+        (presetTokens.showsDefaultBorder
             ? const Color(0x00000000)
             : colors.borderDefault.withValues(alpha: 0.3));
 
     final finalFillColor =
         widget.style?.fillColor ??
         themeStyle?.fillColor ??
-        (isNeobrutalism ? colors.textPrimary : colors.borderFocus);
+        (presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderFocus);
 
     final finalLabelColor =
         widget.style?.labelColor ??
@@ -166,7 +167,7 @@ class _JustProgressState extends State<JustProgress>
               spacing,
               radius,
               typography,
-              isNeobrutalism,
+              presetTokens,
               finalTrackColor,
               finalFillColor,
               finalLabelColor,
@@ -177,7 +178,7 @@ class _JustProgressState extends State<JustProgress>
               spacing,
               radius,
               typography,
-              isNeobrutalism,
+              presetTokens,
               finalTrackColor,
               finalFillColor,
               finalLabelColor,
@@ -191,7 +192,7 @@ class _JustProgressState extends State<JustProgress>
     JustSpacingScheme spacing,
     JustRadiusScheme radius,
     JustTypographyScheme typography,
-    bool isNeobrutalism,
+    JustPresetTokens presetTokens,
     Color trackBg,
     Color fillBg,
     Color labelColor,
@@ -210,7 +211,7 @@ class _JustProgressState extends State<JustProgress>
         break;
     }
 
-    final BorderRadius defaultRadius = isNeobrutalism
+    final BorderRadius defaultRadius = presetTokens.showsDefaultBorder
         ? BorderRadius.zero
         : .all(radius.full);
     final finalRadius =
@@ -222,8 +223,8 @@ class _JustProgressState extends State<JustProgress>
       height: height,
       decoration: BoxDecoration(
         color: trackBg,
-        border: isNeobrutalism
-            ? Border.all(color: colors.textPrimary, width: 2.5)
+        border: presetTokens.showsDefaultBorder
+            ? Border.all(color: colors.textPrimary, width: presetTokens.borderWidth)
             : null,
         borderRadius: finalRadius,
       ),
@@ -293,7 +294,7 @@ class _JustProgressState extends State<JustProgress>
                             : typography.bodySm)
                         .copyWith(
                           color: labelColor,
-                          fontWeight: isNeobrutalism ? .w700 : .w500,
+                          fontWeight: presetTokens.progressLabelFontWeight,
                         ),
               ),
             ],
@@ -311,7 +312,7 @@ class _JustProgressState extends State<JustProgress>
     JustSpacingScheme spacing,
     JustRadiusScheme radius,
     JustTypographyScheme typography,
-    bool isNeobrutalism,
+    JustPresetTokens presetTokens,
     Color trackBg,
     Color fillBg,
     Color labelColor,
@@ -322,17 +323,15 @@ class _JustProgressState extends State<JustProgress>
     switch (widget.size) {
       case .sm:
         diameter = 32.0;
-        defaultStrokeWidth = isNeobrutalism ? 3.0 : 2.0;
         break;
       case .md:
         diameter = 48.0;
-        defaultStrokeWidth = isNeobrutalism ? 4.0 : 3.0;
         break;
       case .lg:
         diameter = 64.0;
-        defaultStrokeWidth = isNeobrutalism ? 5.0 : 4.0;
         break;
     }
+    defaultStrokeWidth = presetTokens.resolveProgressStrokeWidth(widget.size);
 
     final strokeWidth = widget.style?.strokeWidth ?? defaultStrokeWidth;
 
@@ -385,7 +384,7 @@ class _JustProgressState extends State<JustProgress>
                   (widget.size == .lg ? typography.bodySm : typography.caption)
                       .copyWith(
                         color: labelColor,
-                        fontWeight: isNeobrutalism ? .w700 : .w500,
+                        fontWeight: presetTokens.progressLabelFontWeight,
                       ),
             ),
           ],
