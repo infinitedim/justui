@@ -128,7 +128,9 @@ class _JustCheckboxState extends State<JustCheckbox>
     final finalEnableHaptic =
         widget.enableHaptic ??
         checkboxTheme?.enableHaptic ??
-        JustThemeProvider.read(context).theme.presetTokens.selectionHapticDefault;
+        JustThemeProvider.read(
+          context,
+        ).theme.presetTokens.selectionHapticDefault;
 
     if (finalEnableHaptic) {
       HapticFeedback.selectionClick();
@@ -275,7 +277,9 @@ class _JustCheckboxState extends State<JustCheckbox>
                                 borderRadius: resolvedRadius,
                                 border: .all(
                                   color: currentBorder,
-                                  width: hasBorder ? customTheme.presetTokens.borderWidth : 1.5,
+                                  width: hasBorder
+                                      ? customTheme.presetTokens.borderWidth
+                                      : 1.5,
                                 ),
                                 boxShadow: currentShadows.isNotEmpty
                                     ? currentShadows

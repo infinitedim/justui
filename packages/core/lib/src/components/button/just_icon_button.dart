@@ -195,11 +195,15 @@ class _JustIconButtonState extends State<JustIconButton> {
                     border = border.withValues(alpha: 0.4);
                   } else if (isPressed) {
                     bg = primaryBg.withValues(alpha: 0.15);
-                    border = presetTokens.showsDefaultBorder ? colors.textPrimary : primaryBg;
+                    border = presetTokens.showsDefaultBorder
+                        ? colors.textPrimary
+                        : primaryBg;
                     text = primaryBg;
                   } else if (isHovered) {
                     bg = primaryBg.withValues(alpha: 0.08);
-                    border = presetTokens.showsDefaultBorder ? colors.textPrimary : primaryBg;
+                    border = presetTokens.showsDefaultBorder
+                        ? colors.textPrimary
+                        : primaryBg;
                     text = primaryBg;
                   }
                   break;
@@ -283,7 +287,8 @@ class _JustIconButtonState extends State<JustIconButton> {
 
               // Shadows resolution (flat solid offset shadow for neobrutalism)
               List<BoxShadow> defaultShadows;
-              if (presetTokens.showsDefaultBorder && widget.variant != JustButtonVariant.link) {
+              if (presetTokens.showsDefaultBorder &&
+                  widget.variant != JustButtonVariant.link) {
                 defaultShadows = widget.size == JustButtonSize.xs
                     ? customTheme.shadows.xs
                     : customTheme.shadows.sm;
@@ -310,7 +315,8 @@ class _JustIconButtonState extends State<JustIconButton> {
               );
 
               final double finalBorderWidth =
-                  presetTokens.showsDefaultBorder && widget.variant != JustButtonVariant.link
+                  presetTokens.showsDefaultBorder &&
+                      widget.variant != JustButtonVariant.link
                   ? presetTokens.borderWidth
                   : (finalBorder != const Color(0x00000000) ? 1.0 : 0.0);
 

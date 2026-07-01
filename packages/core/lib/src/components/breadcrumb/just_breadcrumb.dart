@@ -393,7 +393,9 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
             child: DefaultTextStyle(
               style: (widget.style?.textStyle ?? typography.bodyMd).copyWith(
                 color: isHovered || isPressed
-                    ? (presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderFocus)
+                    ? (presetTokens.showsDefaultBorder
+                          ? colors.textPrimary
+                          : colors.borderFocus)
                     : colors.textSecondary,
               ),
               child: widget.collapsedIndicator,

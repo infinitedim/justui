@@ -114,7 +114,8 @@ class JustToggle extends StatelessWidget {
 
     // Resolve BorderRadius with Group Collapse
     final groupInfo = JustToggleGroupInfo.of(context);
-    final BorderRadius defaultRadius = customTheme.presetTokens.resolveBorderRadius(radius);
+    final BorderRadius defaultRadius = customTheme.presetTokens
+        .resolveBorderRadius(radius);
     BorderRadius resolvedRadius =
         style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius;
 
@@ -225,7 +226,10 @@ class JustToggle extends StatelessWidget {
 
           BoxBorder resolvedBorder;
           if (hasBorder) {
-            resolvedBorder = Border.all(color: border, width: customTheme.presetTokens.borderWidth);
+            resolvedBorder = Border.all(
+              color: border,
+              width: customTheme.presetTokens.borderWidth,
+            );
           } else if (groupInfo != null) {
             if (groupInfo.direction == Axis.horizontal) {
               resolvedBorder = Border(

@@ -148,7 +148,9 @@ class _JustProgressState extends State<JustProgress>
     final finalFillColor =
         widget.style?.fillColor ??
         themeStyle?.fillColor ??
-        (presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderFocus);
+        (presetTokens.showsDefaultBorder
+            ? colors.textPrimary
+            : colors.borderFocus);
 
     final finalLabelColor =
         widget.style?.labelColor ??
@@ -224,7 +226,10 @@ class _JustProgressState extends State<JustProgress>
       decoration: BoxDecoration(
         color: trackBg,
         border: presetTokens.showsDefaultBorder
-            ? Border.all(color: colors.textPrimary, width: presetTokens.borderWidth)
+            ? Border.all(
+                color: colors.textPrimary,
+                width: presetTokens.borderWidth,
+              )
             : null,
         borderRadius: finalRadius,
       ),
