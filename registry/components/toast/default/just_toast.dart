@@ -535,10 +535,10 @@ class _JustToastWidgetState extends State<_JustToastWidget>
 
     final resolvedIcon = widget.entry.icon ?? defaultIcon;
 
-    final isNeobrutalism = theme.preset == .neobrutalism;
+    final presetTokens = theme.presetTokens;
     final borderSide = BorderSide(
-      color: isNeobrutalism ? colors.textPrimary : borderColor,
-      width: isNeobrutalism ? 2.5 : 1.0,
+      color: presetTokens.showsDefaultBorder ? colors.textPrimary : borderColor,
+      width: presetTokens.borderWidth,
     );
 
     return Semantics(

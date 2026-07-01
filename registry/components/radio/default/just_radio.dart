@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_provider.dart';
+import '../../theme/preset_tokens.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_radio_style.dart';
@@ -130,7 +131,9 @@ class _JustRadioState<T> extends State<JustRadio<T>>
       final finalEnableHaptic =
           widget.enableHaptic ??
           radioTheme?.enableHaptic ??
-          (JustThemeProvider.read(context).theme.preset == .neobrutalism);
+          JustThemeProvider.read(
+            context,
+          ).theme.presetTokens.selectionHapticDefault;
 
       if (finalEnableHaptic) {
         HapticFeedback.selectionClick();
@@ -193,7 +196,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
         textStyle.copyWith(color: colors.textPrimary);
 
     final customTheme = JustThemeProvider.of(context).theme;
-    final isNeobrutalism = customTheme.preset == .neobrutalism;
+    final hasBorder = customTheme.presetTokens.showsDefaultBorder;
 
     return Semantics(
       checked: _isSelected,
@@ -229,7 +232,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                           builder: (context, child) {
                             final progress = _controller.value;
 
-                            final Color currentBorder = isNeobrutalism
+                            final Color currentBorder = hasBorder
                                 ? colors.textPrimary
                                 : (isHovered
                                       ? colors.textSecondary
@@ -239,13 +242,13 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                                           progress,
                                         )!);
 
-                            List<BoxShadow> currentShadows = isNeobrutalism
-                                ? customTheme.shadows.xs
+                            final List<BoxShadow> currentShadows = hasBorder
+                                ? customTheme.presetTokens.resolveShadow(
+                                    customTheme.shadows,
+                                    JustShadowLevel.xs,
+                                    isPressed: isPressed,
+                                  )
                                 : const [];
-                            currentShadows = customTheme.resolveShadows(
-                              currentShadows,
-                              isPressed: isPressed,
-                            );
 
                             final radioBox = Container(
                               width: circleSize,
@@ -254,7 +257,9 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                                 shape: .circle,
                                 border: .all(
                                   color: currentBorder,
-                                  width: isNeobrutalism ? 2.5 : 1.5,
+                                  width: hasBorder
+                                      ? customTheme.presetTokens.borderWidth
+                                      : 1.5,
                                 ),
                                 boxShadow: currentShadows.isNotEmpty
                                     ? currentShadows
@@ -268,8 +273,10 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                               ),
                             );
 
-                            return customTheme.buildPressEffect(
+                            return customTheme.presetTokens.buildPressEffect(
                               isPressed: isPressed,
+                              animations: customTheme.animations,
+                              customOffset: const Offset(1.0, 1.0),
                               child: radioBox,
                             );
                           },

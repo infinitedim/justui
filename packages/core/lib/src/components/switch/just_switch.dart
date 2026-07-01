@@ -138,7 +138,9 @@ class _JustSwitchState extends State<JustSwitch>
     final finalEnableHaptic =
         widget.enableHaptic ??
         switchTheme?.enableHaptic ??
-        JustThemeProvider.read(context).theme.presetTokens.selectionHapticDefault;
+        JustThemeProvider.read(
+          context,
+        ).theme.presetTokens.selectionHapticDefault;
 
     if (finalEnableHaptic) {
       HapticFeedback.selectionClick();
@@ -343,11 +345,12 @@ class _JustSwitchState extends State<JustSwitch>
                                                 : null,
                                             boxShadow: hasBorder
                                                 ? null
-                                                : customTheme.presetTokens.resolveShadow(
-                                                    customTheme.shadows,
-                                                    JustShadowLevel.xs,
-                                                    isPressed: false,
-                                                  ),
+                                                : customTheme.presetTokens
+                                                      .resolveShadow(
+                                                        customTheme.shadows,
+                                                        JustShadowLevel.xs,
+                                                        isPressed: false,
+                                                      ),
                                           ),
                                           child: widget.thumbIcon != null
                                               ? Center(

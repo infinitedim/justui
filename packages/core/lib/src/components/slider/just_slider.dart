@@ -124,10 +124,14 @@ class _JustSliderState extends State<JustSlider> {
 
     final globalTheme = Theme.of(context).extension<JustSliderTheme>();
     final finalEnableHaptic =
-        widget.enableHaptic ?? globalTheme?.enableHaptic ?? presetTokens.sliderHapticDefault;
+        widget.enableHaptic ??
+        globalTheme?.enableHaptic ??
+        presetTokens.sliderHapticDefault;
 
     // Resolve size metrics
-    final double trackHeight = presetTokens.resolveSliderTrackHeight(widget.size);
+    final double trackHeight = presetTokens.resolveSliderTrackHeight(
+      widget.size,
+    );
     final double thumbSize = presetTokens.resolveSliderThumbSize(widget.size);
 
     // Resolve colors
@@ -135,11 +139,15 @@ class _JustSliderState extends State<JustSlider> {
     final activeTrackColor =
         widget.style?.activeTrackColor ??
         globalTheme?.style?.activeTrackColor ??
-        (presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderFocus);
+        (presetTokens.showsDefaultBorder
+            ? colors.textPrimary
+            : colors.borderFocus);
     final inactiveTrackColor =
         widget.style?.inactiveTrackColor ??
         globalTheme?.style?.inactiveTrackColor ??
-        (presetTokens.showsDefaultBorder ? colors.background : colors.borderDefault);
+        (presetTokens.showsDefaultBorder
+            ? colors.background
+            : colors.borderDefault);
     final thumbColor =
         widget.style?.thumbColor ??
         globalTheme?.style?.thumbColor ??
@@ -151,7 +159,9 @@ class _JustSliderState extends State<JustSlider> {
     final tickMarkColor =
         widget.style?.tickMarkColor ??
         globalTheme?.style?.tickMarkColor ??
-        (presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderDefault);
+        (presetTokens.showsDefaultBorder
+            ? colors.textPrimary
+            : colors.borderDefault);
 
     final BorderRadius trackBorderRadius =
         widget.style?.borderRadius ??
@@ -405,10 +415,7 @@ class _JustSliderState extends State<JustSlider> {
         children: [
           thumbWidget,
           if (widget.showTooltip && isPressed)
-            Positioned(
-              top: -36.0,
-              child: _buildTooltip(value, colors, theme),
-            ),
+            Positioned(top: -36.0, child: _buildTooltip(value, colors, theme)),
         ],
       ),
     );

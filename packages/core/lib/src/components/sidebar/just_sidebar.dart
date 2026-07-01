@@ -217,7 +217,10 @@ class _JustSidebarState extends State<JustSidebar>
                   width: presetTokens.borderWidth,
                 ),
               )
-            : .all(color: colors.borderDefault, width: presetTokens.borderWidth);
+            : .all(
+                color: colors.borderDefault,
+                width: presetTokens.borderWidth,
+              );
 
         return Container(
           width: currentWidth,

@@ -64,8 +64,7 @@ class JustBreadcrumb extends StatelessWidget {
       aspect: .spacing,
     ).theme.spacing;
 
-    final isNeobrutalism =
-        JustThemeProvider.of(context).theme.preset == .neobrutalism;
+    final presetTokens = JustThemeProvider.of(context).theme.presetTokens;
 
     // Resolve separator widget
     final resolvedSeparator =
@@ -75,7 +74,7 @@ class JustBreadcrumb extends StatelessWidget {
           style:
               style?.separatorStyle ??
               typography.bodyMd.copyWith(
-                color: isNeobrutalism
+                color: presetTokens.showsDefaultBorder
                     ? colors.borderDefault
                     : colors.textSecondary,
               ),
@@ -265,7 +264,7 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
     final typography = customTheme.typography;
     final spacing = customTheme.spacing;
     final radius = customTheme.radius;
-    final isNeobrutalism = customTheme.preset == .neobrutalism;
+    final presetTokens = customTheme.presetTokens;
 
     return OverlayPortal.overlayChildLayoutBuilder(
       controller: _controller,
@@ -297,10 +296,10 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
                     color: colors.elevated,
                     borderRadius: .all(radius.md),
                     border: .all(
-                      color: isNeobrutalism
+                      color: presetTokens.showsDefaultBorder
                           ? colors.textPrimary
                           : colors.borderDefault,
-                      width: isNeobrutalism ? 2.5 : 1.0,
+                      width: presetTokens.borderWidth,
                     ),
                     boxShadow: customTheme.shadows.md,
                   ),
@@ -387,14 +386,16 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
         onTap: () => _controller.toggle(),
         builder: (context, isHovered, isPressed, isFocused, focusNode) {
           final customTheme = JustThemeProvider.of(context).theme;
-          final isNeobrutalism = customTheme.preset == .neobrutalism;
+          final presetTokens = customTheme.presetTokens;
           final Widget collapsedIndicatorWidget = Container(
             padding:
                 widget.style?.itemPadding ?? .symmetric(horizontal: spacing.xs),
             child: DefaultTextStyle(
               style: (widget.style?.textStyle ?? typography.bodyMd).copyWith(
                 color: isHovered || isPressed
-                    ? (isNeobrutalism ? colors.textPrimary : colors.borderFocus)
+                    ? (presetTokens.showsDefaultBorder
+                          ? colors.textPrimary
+                          : colors.borderFocus)
                     : colors.textSecondary,
               ),
               child: widget.collapsedIndicator,

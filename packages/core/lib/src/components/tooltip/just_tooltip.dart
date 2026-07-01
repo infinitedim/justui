@@ -148,7 +148,9 @@ class _JustTooltipState extends State<JustTooltip>
 
         final presetTokens = theme.presetTokens;
         final borderSide = BorderSide(
-          color: presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderDefault,
+          color: presetTokens.showsDefaultBorder
+              ? colors.textPrimary
+              : colors.borderDefault,
           width: presetTokens.borderWidth,
         );
 
@@ -191,7 +193,9 @@ class _JustTooltipState extends State<JustTooltip>
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: borderRadius,
-            border: presetTokens.showsDefaultBorder ? .fromBorderSide(borderSide) : null,
+            border: presetTokens.showsDefaultBorder
+                ? .fromBorderSide(borderSide)
+                : null,
             boxShadow: presetTokens.showsDefaultBorder
                 ? theme.resolveShadows(const [], isPressed: false)
                 : null,

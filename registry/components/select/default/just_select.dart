@@ -266,7 +266,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       context,
       aspect: .typography,
     ).theme.typography;
-    final isNeobrutalism = customTheme.preset == .neobrutalism;
+    final presetTokens = customTheme.presetTokens;
 
     // Resolve Size Properties
     double height;
@@ -277,17 +277,17 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       case .sm:
         height = 36.0;
         textStyle = typography.bodySm;
-        defaultRadius = .all(radius.sm);
+        defaultRadius = presetTokens.resolveBorderRadius(radius);
         break;
       case .md:
         height = 44.0;
         textStyle = typography.bodyMd;
-        defaultRadius = .all(radius.md);
+        defaultRadius = presetTokens.resolveBorderRadius(radius);
         break;
       case .lg:
         height = 52.0;
         textStyle = typography.bodyLg;
-        defaultRadius = .all(radius.lg);
+        defaultRadius = presetTokens.resolveBorderRadius(radius);
         break;
     }
 
@@ -326,9 +326,9 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
             : (_overlayController.isShowing
                   ? colors.borderFocus
                   : finalBorderColor),
-        width: isNeobrutalism ? 2.5 : 1.0,
+        width: presetTokens.borderWidth,
       ),
-      borderRadius: isNeobrutalism ? .zero : finalRadius,
+      borderRadius: presetTokens.showsDefaultBorder ? .zero : finalRadius,
     );
 
     final Widget triggerChild = Focus(
@@ -395,7 +395,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
             ),
           );
 
-          if (isNeobrutalism) {
+          if (presetTokens.showsDefaultBorder) {
             inner = customTheme.buildPressEffect(
               isPressed: isPressed,
               child: Container(
@@ -414,7 +414,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
           return FocusIndicator(
             isFocused: isFocused,
             focusColor: colors.borderFocus,
-            borderRadius: isNeobrutalism ? .zero : finalRadius,
+            borderRadius: presetTokens.showsDefaultBorder ? .zero : finalRadius,
             child: inner,
           );
         },
@@ -479,13 +479,15 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
               final dropdownDecoration = BoxDecoration(
                 color: dropdownContainerBg,
                 border: Border.all(
-                  color: isNeobrutalism
+                  color: presetTokens.showsDefaultBorder
                       ? colors.textPrimary
                       : colors.borderDefault,
-                  width: isNeobrutalism ? 2.5 : 1.0,
+                  width: presetTokens.borderWidth,
                 ),
-                borderRadius: isNeobrutalism ? .zero : finalRadius,
-                boxShadow: isNeobrutalism
+                borderRadius: presetTokens.showsDefaultBorder
+                    ? .zero
+                    : finalRadius,
+                boxShadow: presetTokens.showsDefaultBorder
                     ? [
                         BoxShadow(
                           color: colors.textPrimary,
@@ -515,9 +517,11 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                               color: colors.background,
                               border: Border.all(
                                 color: colors.borderDefault,
-                                width: isNeobrutalism ? 2.0 : 1.0,
+                                width: presetTokens.showsDefaultBorder
+                                    ? 2.0
+                                    : 1.0,
                               ),
-                              borderRadius: isNeobrutalism
+                              borderRadius: presetTokens.showsDefaultBorder
                                   ? .zero
                                   : .all(radius.sm),
                             ),
@@ -584,7 +588,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                     index == _focusedOptionIndex;
 
                                 final optionBg = isSelected
-                                    ? (isNeobrutalism
+                                    ? (presetTokens.showsDefaultBorder
                                           ? colors.textPrimary
                                           : (widget
                                                     .style
@@ -597,7 +601,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                     : const Color(0x00000000);
 
                                 final optionText = isSelected
-                                    ? (isNeobrutalism
+                                    ? (presetTokens.showsDefaultBorder
                                           ? colors.textInverse
                                           : (widget.style?.textColor ??
                                                 themeStyle?.textColor ??
@@ -633,7 +637,10 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: itemBg,
-                                            border: isNeobrutalism && showHover
+                                            border:
+                                                presetTokens
+                                                        .showsDefaultBorder &&
+                                                    showHover
                                                 ? Border(
                                                     left: BorderSide(
                                                       color: colors.textPrimary,
@@ -661,7 +668,8 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                                 ),
                                               ),
                                               if (isSelected &&
-                                                  !isNeobrutalism) ...[
+                                                  !presetTokens
+                                                      .showsDefaultBorder) ...[
                                                 SizedBox(width: spacing.sm),
                                                 Icon(
                                                   const IconData(
@@ -684,7 +692,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                 ),
               );
 
-              if (!isNeobrutalism) {
+              if (!presetTokens.showsDefaultBorder) {
                 // Fade and Slide transition for non-neobrutalism
                 dropdownContent = TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0.0, end: 1.0),

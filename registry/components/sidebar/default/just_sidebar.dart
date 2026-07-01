@@ -209,24 +209,18 @@ class _JustSidebarState extends State<JustSidebar>
             widget.collapsedWidth +
             (widget.width - widget.collapsedWidth) * _collapseAnimation.value;
 
-        final isNeobrutalism = customTheme.preset == .neobrutalism;
-        final Border borderStyle = isNeobrutalism
-            ? (widget.variant == .default_
-                  ? Border(
-                      right: BorderSide(
-                        color: colors.borderDefault,
-                        width: 2.5,
-                      ),
-                    )
-                  : .all(color: colors.borderDefault, width: 2.5))
-            : (widget.variant == .default_
-                  ? Border(
-                      right: BorderSide(
-                        color: colors.borderDefault,
-                        width: 1.0,
-                      ),
-                    )
-                  : .all(color: colors.borderDefault, width: 1.0));
+        final presetTokens = customTheme.presetTokens;
+        final Border borderStyle = widget.variant == .default_
+            ? Border(
+                right: BorderSide(
+                  color: colors.borderDefault,
+                  width: presetTokens.borderWidth,
+                ),
+              )
+            : .all(
+                color: colors.borderDefault,
+                width: presetTokens.borderWidth,
+              );
 
         return Container(
           width: currentWidth,
@@ -236,7 +230,7 @@ class _JustSidebarState extends State<JustSidebar>
             borderRadius: borderRadius,
             border: borderStyle,
             boxShadow: widget.variant != .default_
-                ? (isNeobrutalism
+                ? (presetTokens.showsDefaultBorder
                       ? customTheme.resolveShadows(shadows.lg, isPressed: false)
                       : shadows.md)
                 : null,
@@ -355,10 +349,10 @@ class _JustSidebarState extends State<JustSidebar>
       builder: (context, isHovered, isPressed, isFocused, focusNode) {
         final double itemOpacity = item.enabled ? 1.0 : 0.5;
 
-        final isNeobrutalism = customTheme.preset == .neobrutalism;
+        final presetTokens = customTheme.presetTokens;
 
         final Color itemBg = isSelected
-            ? (isNeobrutalism
+            ? (presetTokens.showsDefaultBorder
                   ? activeColor.withValues(alpha: 0.35)
                   : (widget.variant == .default_
                         ? colors.card
@@ -369,7 +363,7 @@ class _JustSidebarState extends State<JustSidebar>
                         ? activeColor.withValues(alpha: 0.05)
                         : const Color(0x00000000)));
 
-        final Color foregroundColor = isNeobrutalism
+        final Color foregroundColor = presetTokens.showsDefaultBorder
             ? colors.textPrimary
             : (isSelected
                   ? activeColor
@@ -377,7 +371,7 @@ class _JustSidebarState extends State<JustSidebar>
 
         final resolvedTextStyle = isSelected ? activeTextStyle : textStyle;
 
-        final Border? itemBorder = isNeobrutalism
+        final Border? itemBorder = presetTokens.showsDefaultBorder
             ? .all(
                 color: (isSelected || isHovered)
                     ? colors.textPrimary
@@ -564,14 +558,14 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
                         ? widget.activeColor.withValues(alpha: 0.05)
                         : const Color(0x00000000));
 
-              final isNeobrutalism = customTheme.preset == .neobrutalism;
-              final Color foregroundColor = isNeobrutalism
+              final presetTokens = customTheme.presetTokens;
+              final Color foregroundColor = presetTokens.showsDefaultBorder
                   ? colors.textPrimary
                   : (isHovered || isPressed
                         ? widget.activeColor
                         : widget.inactiveColor);
 
-              final Border? itemBorder = isNeobrutalism
+              final Border? itemBorder = presetTokens.showsDefaultBorder
                   ? .all(
                       color: isHovered
                           ? colors.textPrimary
@@ -714,12 +708,12 @@ class _JustSidebarItemWidget extends StatelessWidget {
                   ? activeColor.withValues(alpha: 0.05)
                   : const Color(0x00000000));
 
-        final isNeobrutalism = customTheme.preset == .neobrutalism;
-        final Color foregroundColor = isNeobrutalism
+        final presetTokens = customTheme.presetTokens;
+        final Color foregroundColor = presetTokens.showsDefaultBorder
             ? colors.textPrimary
             : (isHovered || isPressed ? activeColor : inactiveColor);
 
-        final Border? itemBorder = isNeobrutalism
+        final Border? itemBorder = presetTokens.showsDefaultBorder
             ? .all(
                 color: isHovered ? colors.textPrimary : const Color(0x00000000),
                 width: 1.5,

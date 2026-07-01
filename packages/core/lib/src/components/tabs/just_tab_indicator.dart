@@ -94,7 +94,9 @@ class JustTabIndicator extends StatelessWidget {
             color: style?.containerBackgroundColor ?? colors.card,
             borderRadius: indicatorRadius,
             border: .all(
-              color: presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderDefault,
+              color: presetTokens.showsDefaultBorder
+                  ? colors.textPrimary
+                  : colors.borderDefault,
               width: presetTokens.borderWidth,
             ),
           ),

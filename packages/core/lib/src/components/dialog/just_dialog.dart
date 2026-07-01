@@ -267,7 +267,9 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
 
     final presetTokens = theme.presetTokens;
     final borderSide = BorderSide(
-      color: presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderDefault,
+      color: presetTokens.showsDefaultBorder
+          ? colors.textPrimary
+          : colors.borderDefault,
       width: presetTokens.borderWidth,
     );
 

@@ -131,7 +131,9 @@ class _JustRadioState<T> extends State<JustRadio<T>>
       final finalEnableHaptic =
           widget.enableHaptic ??
           radioTheme?.enableHaptic ??
-          JustThemeProvider.read(context).theme.presetTokens.selectionHapticDefault;
+          JustThemeProvider.read(
+            context,
+          ).theme.presetTokens.selectionHapticDefault;
 
       if (finalEnableHaptic) {
         HapticFeedback.selectionClick();
@@ -255,7 +257,9 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                                 shape: .circle,
                                 border: .all(
                                   color: currentBorder,
-                                  width: hasBorder ? customTheme.presetTokens.borderWidth : 1.5,
+                                  width: hasBorder
+                                      ? customTheme.presetTokens.borderWidth
+                                      : 1.5,
                                 ),
                                 boxShadow: currentShadows.isNotEmpty
                                     ? currentShadows

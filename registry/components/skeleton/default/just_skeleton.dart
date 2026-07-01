@@ -886,9 +886,9 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
     );
 
     final theme = JustThemeProvider.of(context).theme;
-    final isNeobrutalism = theme.preset == .neobrutalism;
+    final usePulsing = theme.presetTokens.usePulsingSkeleton;
 
-    if (isNeobrutalism) {
+    if (usePulsing) {
       final animations = JustThemeProvider.of(
         context,
         aspect: .animations,

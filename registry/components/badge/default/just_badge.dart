@@ -335,15 +335,15 @@ class JustBadge extends StatelessWidget {
       );
     }
 
-    final isNeobrutalism = theme.preset == .neobrutalism;
+    final presetTokens = theme.presetTokens;
 
-    final Border? resolvedBorder = isNeobrutalism
-        ? .all(color: colors.textPrimary, width: 2.5)
+    final Border? resolvedBorder = presetTokens.showsDefaultBorder
+        ? .all(color: colors.textPrimary, width: presetTokens.borderWidth)
         : (finalBorder != const Color(0x00000000)
               ? .all(color: finalBorder, width: 1.0)
               : null);
 
-    final List<BoxShadow>? resolvedShadows = isNeobrutalism
+    final List<BoxShadow>? resolvedShadows = presetTokens.showsDefaultBorder
         ? (size == .sm ? theme.shadows.xs : theme.shadows.sm)
         : null;
 
