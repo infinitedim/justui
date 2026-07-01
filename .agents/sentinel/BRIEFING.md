@@ -1,22 +1,22 @@
-# BRIEFING — 2026-06-23T04:00:01Z
+# BRIEFING — 2026-07-01T05:24:32Z
 
 ## Mission
-Orchestrate and verify the development of MDX documentation pages (getting started, tokens, guides, and 15 components) in Indonesian for the JustUI monorepo.
+Rebuild the Flutter Showcase Web app into a smooth, infinite horizontal marquee and update the Next.js docs homepage layout.
 
 ## 🔒 My Identity
 - Archetype: sentinel
 - Working directory: /home/yourblooo/development/justui/.agents/sentinel
-- Orchestrator: 7fb48422-b71a-4d69-9590-0b36af1d5c4f
-- Victory Auditor: cf341a8e-466a-4a9c-8b7d-e53b1909de4e
+- Orchestrator: 538b11f3-c870-44cc-b7c7-f8ac15427fe5
+- Victory Auditor: 86ce5ba1-656a-49e4-bab2-33b19d53daa1
 
 ## 🔒 Key Constraints
 - No technical decisions — relay only
 - Victory Audit is MANDATORY before reporting completion
 
 ## User Context
-- **Last user request**: Develop MDX docs for Getting Started, Tokens, Guides, and 15 UI Components in Indonesian.
+- **Last user request**: Rebuild the Flutter Showcase Web app from a static grid to a smooth, infinite horizontal marquee using AnimationController. Update the Next.js docs homepage layout to position the marquee full-width below the centered hero section.
 - **Pending clarifications**: none
-- **Delivered results**: 29 MDX documentation files successfully generated and build verified.
+- **Delivered results**: Rebuilt Showcase Flutter Web into smooth infinite horizontal marquee with hoisted synchronized controls, restored dynamic height reporting under a 180px parent constraint, simplified Next.js frame component to 180px, and redesigned Next.js homepage with centered hero and full-width marquee.
 
 ## Project Status
 - **Phase**: complete
@@ -27,4 +27,8 @@ Orchestrate and verify the development of MDX documentation pages (getting start
 - **Retry count**: 0
 
 ## Artifact Index
-- /home/yourblooo/development/justui/apps/docs/content/docs/ — Generated MDX documentation pages
+- /home/yourblooo/development/justui/apps/showcase/lib/widgets/showcase_marquee.dart — Showcase marquee widget
+- /home/yourblooo/development/justui/apps/showcase/lib/height_reporter.dart — Height reporter
+- /home/yourblooo/development/justui/apps/showcase/lib/main.dart — Showcase main entry point
+- /home/yourblooo/development/justui/apps/docs/src/components/showcase-frame.tsx — Showcase frame component
+- /home/yourblooo/development/justui/apps/docs/src/app/[lang]/page.tsx — Docs homepage layout

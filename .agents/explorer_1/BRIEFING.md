@@ -1,14 +1,14 @@
-# BRIEFING — 2026-06-20T04:28:20Z
+# BRIEFING — 2026-07-01T12:43:10+07:00
 
 ## Mission
-Explore the JustUI monorepo to audit tokens, accessibility, core theming system, components, CLI architecture, and development constraints.
+Analyze the forensic auditor's integrity violation report and recommend a remediation strategy.
 
 ## 🔒 My Identity
 - Archetype: teamwork_preview_explorer
 - Roles: explorer, analyst, investigator
 - Working directory: /home/yourblooo/development/justui/.agents/explorer_1
 - Original parent: d1e0b0c5-0f61-4eee-863c-f9b6fdd3a2be
-- Milestone: Exploration & Analysis
+- Milestone: Showcase & Docs Integration Analysis
 
 ## 🔒 Key Constraints
 - Read-only investigation — do NOT implement
@@ -17,27 +17,25 @@ Explore the JustUI monorepo to audit tokens, accessibility, core theming system,
 
 ## Current Parent
 - Conversation ID: d1e0b0c5-0f61-4eee-863c-f9b6fdd3a2be
-- Updated: not yet
+- Updated: 2026-07-01T12:43:10+07:00
 
 ## Investigation State
 - **Explored paths**:
-  - `packages/just_ui_tokens/` (Color palette, semantic mapping, accessibility contrast equations, responsive breakpoints, fluid typography, motion/duration profiles)
-  - `packages/just_ui_core/` (InheritedModel aspect propagation, JustThemeData lazy-cached builder, fromSeed lightness/contrast loop, component widget structure)
-  - `packages/just_ui_cli/` (Scaffolding workflow, registry client, commands: init, add, list, diff, update, create)
-  - Monorepo root files (`AGENTS.md`, `melos.yaml`, local `registry/` index)
+  - `apps/showcase/lib/height_reporter.dart`
+  - `apps/showcase/lib/main.dart`
+  - `apps/docs/src/components/showcase-frame.tsx`
 - **Key findings**:
-  - `just_ui_tokens`: Custom extension methods `contrastRatioWith` and `isAccessibleWith` implementing standard WCAG AA contrast ratio constraints. `JustColorScale.fromSeed` and `adjustLightnessForContrast` utilizing dynamic saturation curving and HSL-based binary search correction.
-  - `just_ui_core`: Highly performant theme provider leveraging `InheritedModel<JustThemeAspect>` to avoid rebuild overhead on unrelated widgets. Lazy-caching of Material `ThemeData` via private field `_cachedThemeData` and getter `toThemeData()`. Standardized component pattern (widget + variants + style + theme).
-  - `just_ui_cli`: Implements code generator and copy-paste component downloader. Works against a local or remote HTTP registry (resolves registry dependencies, performs integrity checks using SHA-256 checksums, handles local modifications via diff comparison prompt, and edits `pubspec.yaml` using `PubspecEditor`).
-  - Development Constraints: Configured offline local packages via `.dart_tool/package_config.json`. Requires `HOME` override (`/home/yourblooo/development/justui/.home`) to bypass telemetry write failures. Local tests cannot run without Flutter SDK.
+  - Located the hardcoded `180.0` in `height_reporter.dart` creating an integrity violation (facade implementation).
+  - Confirmed that the fixed layout constraint of `180.0` is already enforced by the parent `SizedBox` in `main.dart` and `style={{ height: '180px' }}` in `showcase-frame.tsx`.
+  - Propose restoring dynamic `RenderBox` size measurement, which naturally resolves to `180.0` without any hardcoding.
 - **Unexplored areas**:
-  - None (exploration complete).
+  - None (Audit analysis complete).
 
 ## Key Decisions Made
-- Concluded investigation of monorepo packages.
-- Prepared to compile findings into the handoff report.
+- Outlined a remediation strategy to restore dynamic `RenderBox` height measurement in `height_reporter.dart`.
 
 ## Artifact Index
 - /home/yourblooo/development/justui/.agents/explorer_1/ORIGINAL_REQUEST.md — Original request details
 - /home/yourblooo/development/justui/.agents/explorer_1/BRIEFING.md — Briefing file
 - /home/yourblooo/development/justui/.agents/explorer_1/progress.md — Progress tracking file
+- /home/yourblooo/development/justui/.agents/explorer_1/handoff.md — Handoff report with remediation strategy

@@ -58,12 +58,10 @@ flutter:
   uses-material-design: false
 
   fonts:
-    - family: Inter
+    - family: Roboto
       fonts:
-        - asset: assets/fonts/IBMPlexSans-Regular.ttf
+        - asset: assets/fonts/Roboto-Regular.ttf
           weight: 400
-        - asset: assets/fonts/IBMPlexSans-Medium.ttf
-          weight: 500
     - family: IBM Plex Sans
       fonts:
         - asset: assets/fonts/IBMPlexSans-Regular.ttf
