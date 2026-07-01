@@ -20,3 +20,33 @@ Please perform the following verification:
    (Make sure to override HOME as specified).
 
 Save your review report in your working directory in handoff.md. Report whether the report passes or has issues, and detail the static analysis outputs.
+
+## 2026-07-01T05:37:21Z
+
+You are a reviewer. Verify the correctness, visual design compliance with presets (neobrutalism vs default), code quality, and style conventions (including dot shorthand constructor usage) in the modified files:
+- apps/showcase/lib/widgets/showcase_marquee.dart
+- apps/showcase/lib/height_reporter.dart
+- apps/showcase/lib/main.dart
+- apps/docs/src/components/showcase-frame.tsx
+- apps/docs/src/app/[lang]/page.tsx
+
+Confirm that:
+1. Standard components (Buttons, Badges, Avatars, Controls, Input) are correctly styled dynamically.
+2. Neobrutalism styling (2.5px border, BorderRadius.zero, solid 4x4 shadow) and default styling are applied cleanly.
+3. The layout conforms to context and codebase guidelines in AGENTS.md.
+Write your handoff report to handoff.md in your working directory and notify the parent.
+
+## 2026-07-01T12:48:35Z
+
+Verify the correctness, visual design compliance with presets (neobrutalism vs default), code quality, and style conventions (including dot shorthand constructor usage and state hoisting in apps/showcase/lib/widgets/showcase_marquee.dart) in the modified files:
+- apps/showcase/lib/widgets/showcase_marquee.dart
+- apps/showcase/lib/height_reporter.dart
+- apps/showcase/lib/main.dart
+- apps/docs/src/components/showcase-frame.tsx
+- apps/docs/src/app/[lang]/page.tsx
+
+Confirm that:
+1. Standard components (Buttons, Badges, Avatars, Controls, Input) are correctly styled dynamically.
+2. Neobrutalism styling (2.5px border, BorderRadius.zero, solid 4x4 shadow) and default styling are applied cleanly.
+3. The state of interactive controls is properly hoisted to prevent looping visual desynchronization.
+Write your handoff report to handoff.md in your working directory and notify the parent.

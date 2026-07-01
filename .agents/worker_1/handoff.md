@@ -1,71 +1,128 @@
-# JustUI Monorepo Architectural Documentation & Code Audit Report Handoff
+# Handoff Report: Showcase Marquee & Homepage Layout Update
 
 ## 1. Observation
 
-During the execution of this task, the following actions and outputs were directly observed:
-*   Read upstream explorer handoff findings in `file:///home/yourblooo/development/justui/.agents/explorer_1/handoff.md`.
-*   Inspected core primitive files, classes, and constants in `just_ui_tokens`:
-    *   `lib/src/breakpoints.dart` (lines 4-18) defining `abstract final class JustBreakpoints`.
-    *   `lib/src/colors/colors_accessibility.dart` (lines 6-31) implementing WCAG AA compliance ratios check.
-    *   `lib/src/colors/colors_dynamic.dart` (lines 108-152) implementing `adjustLightnessForContrast` binary search algorithm.
-    *   `lib/src/radius.dart` (lines 7-60) defining `JustRadius` and `JustBorderRadius`.
-    *   `lib/src/spacing.dart` (lines 7-88) defining `JustSpacing` and `JustGap`.
-    *   `lib/src/duration.dart` (lines 8-59) defining `JustDuration` and `JustCurves`.
-*   Inspected theme model and extensions in `just_ui_core`:
-    *   `lib/src/theme/theme_aspects.dart` (lines 5-23) defining `enum JustThemeAspect`.
-    *   `lib/src/theme/theme_provider.dart` (lines 54-79) defining `JustThemeProvider.of` and `read` methods.
-    *   `lib/src/theme/theme_provider.dart` (lines 185-233) implementing `_JustThemeModel` inheriting from `InheritedModel<JustThemeAspect>`.
-    *   `lib/src/theme/theme_data.dart` (lines 399-407) implementing lazy-caching of Flutter `ThemeData` via `.toThemeData()`.
-    *   `lib/src/theme/theme_data.dart` (lines 525-552) implementing `_makeAccessible` HSL-based lightness adjustment.
-    *   `lib/just_ui_core.dart` (lines 12-61) defining context extension methods (e.g. `justColors`, `justTypo`, `justSpacing`, `readTheme()`).
-*   Inspected components under `packages/just_ui_core/lib/src/components`:
-    *   `lib/src/components/components.dart` (lines 1-74) exporting 16 component directories (`avatar`, `badge`, `bottom_nav`, `breadcrumb`, `button`, `card`, `checkbox`, `input`, `radio`, `scroll`, `separator`, `shared`, `sidebar`, `skeleton`, `switch`, `tabs`).
-    *   `lib/src/components/button/just_button.dart` (lines 207-217) fetching tokens via specific aspects (`.colors`, `.typography`, `.spacing`).
-    *   `lib/src/components/button/just_button.dart` (lines 306-320) enforcing 48px touch targets using `ConstrainedBox`.
-    *   `lib/src/components/button/just_button.dart` (lines 310-313) wrapping widget in `Semantics`.
-    *   `lib/src/components/shared/just_pressable.dart` (lines 135-146) wrapping interaction callbacks using `ValueNotifier` and `AnimatedBuilder`.
-    *   `lib/src/components/shared/just_focus_indicator.dart` (lines 4-37) drawing focus rings offset by 3px outside bounds via `FocusIndicator`.
-*   Inspected CLI config and commands in `just_ui_cli`:
-    *   `lib/src/config/justui_config.dart` (lines 4-67) parsing YAML structure options.
-    *   `lib/src/commands/add_command.dart` (lines 129-144) performing SHA-256 validation.
-    *   `lib/src/commands/add_command.dart` (lines 150-182) managing conflict resolution.
-    *   `lib/src/commands/add_command.dart` (lines 115-118) recursively resolving component dependencies.
-    *   `lib/src/utils/pubspec_editor.dart` (lines 12-72) modifying the user's `pubspec.yaml` dependencies.
-*   Generated the complete architectural documentation and code audit report in `file:///home/yourblooo/development/justui/docs/justui_architectural_audit.md`.
+During execution, the following files and directories were inspected and modified:
+
+*   **Marquee Implementation**: Created `apps/showcase/lib/widgets/showcase_marquee.dart` containing the `ShowcaseMarquee` stateful widget. It utilizes `AnimationController` and `Transform.translate` to shift two identical component strips side-by-side by `-_controller.value * stripWidth`. Width is measured dynamically using a `GlobalKey` in a post-frame callback.
+*   **Height Reporting**:
+    *   File: `apps/showcase/lib/height_reporter.dart`. Changed the `_reportHeight` method to send a fixed height of `180.0` to the parent window:
+        ```dart
+        void _reportHeight() {
+          if (!mounted) return;
+          const double height = 180.0;
+          if (height == _lastReportedHeight) return;
+
+          _lastReportedHeight = height;
+          web.window.parent?.postMessage(
+            {'type': 'justui-showcase-height', 'height': height}.jsify()!,
+            '*'.toJS,
+          );
+        }
+        ```
+    *   File: `apps/showcase/lib/main.dart`. Import changed to `widgets/showcase_marquee.dart` instead of `widgets/showcase_grid.dart`. Wrapped the `DefaultTextStyle` child in a `SizedBox(height: 180.0)` block:
+        ```dart
+        child: Builder(
+          builder: (context) {
+            final theme = JustThemeProvider.of(context).theme;
+            return SizedBox(
+              height: 180.0,
+              child: DefaultTextStyle(
+                style: TextStyle(
+                  fontFamily: 'IBM Plex Sans',
+                  color: theme.colors.textPrimary,
+                ),
+                child: const HeightReporter(child: ShowcaseMarquee()),
+              ),
+            );
+          },
+        ),
+        ```
+*   **Next.js Docs Integration**:
+    *   File: `apps/docs/src/components/showcase-frame.tsx`. Removed the message handler for `justui-showcase-height` and the `height` state. Hardcoded the height of the `iframe` and fallback `div` to `180px`. Left the dark/light mode `postMessage` sender active.
+    *   File: `apps/docs/src/app/[lang]/page.tsx`. Centered the hero section text using flex container and centered styles, removing the grid layout. Placed `<ShowcaseFrame />` in a full-width container section with a `border-y` (top/bottom borders) and light background (`bg-muted/10`):
+        ```tsx
+        <section className="w-full border-y border-border py-4 bg-muted/10">
+          <ShowcaseFrame />
+        </section>
+        ```
+
+### Verification Commands & Outputs
+*   **Showcase Code Analysis**:
+    `export HOME=/home/yourblooo/development/justui/.home && dart analyze apps/showcase`
+    Output:
+    ```
+    Analyzing showcase...
+    No issues found!
+    ```
+*   **TypeScript Check**:
+    `bun run type-check` (in `apps/docs`)
+    Output:
+    ```
+    $ tsc --project tsconfig.json --pretty --noEmit
+    ```
+    (Exited with 0 errors)
+*   **Flutter Web Build**:
+    `bun run build:showcase` (in `apps/docs`)
+    Output:
+    ```
+    Compiling lib/main.dart for the Web...                             31.9s
+    ✓ Built build/web
+    ```
+*   **Next.js Production Build**:
+    `bun run build` (in `apps/docs`)
+    Output:
+    ```
+    ✓ Compiled successfully in 7.4s
+    ✓ Finished TypeScript in 3.2s
+    ✓ Generating static pages using 7 workers (65/65) in 2.5s
+    ```
 
 ---
 
 ## 2. Logic Chain
 
-1.  **Observing primary tokens & formulas**: The mathematical linearizations and relative luminance values computed by Flutter's standard color rendering pipeline were matched against the documentation.
-2.  **Observing dynamic accessibility**: In `theme_data.dart` and `colors_dynamic.dart`, the contrast correction routines (`_makeAccessible` and `adjustLightnessForContrast`) execute step-by-step contrast corrections via lightness increments/decrements (or binary searches), which aligns with the WCAG AA contrast compliance rules.
-3.  **Observing rebuilt optimizations**: Inspecting `_JustThemeModel` confirms that it extends `InheritedModel<JustThemeAspect>` and uses `updateShouldNotifyDependent` to limit rendering notifications to widgets registered to changed aspects only. Extension methods on `BuildContext` register correct aspects to support this optimization.
-4.  **Observing lazy-caching**: Caching of built `ThemeData` instances in `_cachedThemeData` ensures zero-recalculation overhead, and the immutability of `JustThemeData` ensures correct cache invalidation when a new copied instance is instantiated.
-5.  **Observing scaffolding workflow**: Inspecting `just_ui_cli` codebases confirms that `add` downloads components, checks file integrity via SHA-256 hashes, recursively downloads dependencies, prompts on conflicts, and injects pub packages into `pubspec.yaml` using Targeted Line Insertion.
-6.  **Writing Documentation**: Synthesizing all the above details into `justui_architectural_audit.md` delivers a comprehensive, highly technical, and precise architectural report without any placeholders or TBD tags.
+1.  **Marquee infinite scrolling**: To prevent jerking or seam gaps during horizontal scrolling, we need two copies of the same strip rendered side-by-side in a `Row` and translated to the left by `_controller.value * stripWidth`. The `AnimationController` runs continuously from `0.0` to `1.0`. When the animation loops back from `1.0` to `0.0`, the second copy is positioned exactly where the first copy started, making the transition visually seamless.
+2.  **Explicit Context Types**: Dart's dot shorthand compiler relies on statically known types of parameters or variables. Directly assigning `.all(...)` or `.zero` to `final` variables causes compilation failures because the target type is inferred as unknown (`_`). Explicitly declaring the variables as `final Border border` and `final BorderRadius borderRadius` ensures the compiler resolves `.all` and `.zero` correctly.
+3.  **Fixed Height Reporting**: Standardizing the showcase iframe and content layout height to a fixed `180px` simplifies page layout, avoids height jittering during loading, and aligns the layout perfectly on the Next.js landing page.
+4.  **Homepage layout updates**: Moving `<ShowcaseFrame />` into a separate full-width section below the hero removes side-by-side crowding, giving the marquee ample screen width to show off components across the screen.
 
 ---
 
 ## 3. Caveats
 
-*   **Offline environment**: We could not run remote download commands during CLI execution. The CLI operations was verified solely based on parsing code in `add_command.dart`, `registry_client.dart`, and `pubspec_editor.dart`.
-*   **No Flutter SDK**: Flutter SDK commands (`flutter test`) could not be run synchronously in the sandbox.
+No caveats. All tasks are completed, fully built, and statically checked without errors.
 
 ---
 
 ## 4. Conclusion
 
-The JustUI monorepo architecture and CLI copy-paste system has been fully audited and documented. The generated file at `/home/yourblooo/development/justui/docs/justui_architectural_audit.md` represents a complete, precise, and actionable blueprint of the monorepo's token systems, optimization engines, and components.
+The horizontal infinite marquee showcase has been successfully implemented and integrated:
+*   The Flutter Web showcase app builds correctly and is exported cleanly to the Next.js `public/` directory.
+*   The Next.js website compiles successfully and builds for production with the new layout without type errors.
 
 ---
 
 ## 5. Verification Method
 
-To verify the generated document:
-1.  Open and inspect `docs/justui_architectural_audit.md` to confirm it covers all details comprehensively with zero placeholders or TBD tags.
-2.  Ensure that all code citations match the actual implementations in:
-    *   `packages/just_ui_tokens/lib/src/colors/colors_accessibility.dart`
-    *   `packages/just_ui_core/lib/src/theme/theme_provider.dart`
-    *   `packages/just_ui_core/lib/src/theme/theme_data.dart`
-    *   `packages/just_ui_cli/lib/src/commands/add_command.dart`
-    *   `packages/just_ui_cli/lib/src/utils/pubspec_editor.dart`
+To independently verify the implementation, execute the following commands in order:
+
+1.  **Analyze the Showcase codebase**:
+    ```bash
+    export HOME=/home/yourblooo/development/justui/.home
+    dart analyze apps/showcase
+    ```
+    *Expectation*: Output should report "No issues found!".
+
+2.  **Run the Flutter build script**:
+    ```bash
+    bun --cwd apps/docs run build:showcase
+    ```
+    *Expectation*: Compiles successfully and copies the assets to `apps/docs/public/showcase`.
+
+3.  **Run Next.js type check & build**:
+    ```bash
+    bun --cwd apps/docs run type-check
+    bun --cwd apps/docs run build
+    ```
+    *Expectation*: Builds without TypeScript compilation or bundling errors.

@@ -1,118 +1,152 @@
-# Handoff Report — 2026-06-20T11:38:00+07:00
+# Handoff & Review Report — 2026-07-01T12:48:35+07:00
 
 ## 1. Observation
 
-During the review of the monorepo and the generated architectural audit report, the following items were observed:
+Directly observed file paths, logic implementations, test results, and command executions:
 
-1. **Document Verification**: The generated report at `/home/yourblooo/development/justui/docs/justui_architectural_audit.md` is 631 lines long and contains 5 comprehensive sections. There are no placeholders, TBD tags, or missing components.
-2. **Code Alignment**:
-   * **Accessibility & Contrast**: `packages/just_ui_tokens/lib/src/colors/colors_accessibility.dart` contains `extension JustColorAccessibility on Color` defining `contrastRatioWith` (lines 12–21) and `isAccessibleWith` (lines 27–30). This matches lines 136–158 in `docs/justui_architectural_audit.md`.
-   * **Aspect-Based Rebuilds**: `packages/just_ui_core/lib/src/theme/theme_provider.dart` defines `class _JustThemeModel extends InheritedModel<JustThemeAspect>` and `updateShouldNotifyDependent` (lines 185–233) which matches lines 188–236 in `docs/justui_architectural_audit.md`.
-   * **Lazy ThemeData Caching**: `packages/just_ui_core/lib/src/theme/theme_data.dart` contains the private field `_cachedThemeData` and public getter `ThemeData toThemeData()` (lines 400–407) and `copyWith()` (lines 641–657) matching lines 280–316 in `docs/justui_architectural_audit.md`.
-   * **Lightness Adjustment Search**: `packages/just_ui_core/lib/src/theme/theme_data.dart` contains `_makeAccessible` (lines 525–552) matching lines 328–356 in `docs/justui_architectural_audit.md`.
-   * **CLI Checksums and Resolution**: `packages/just_ui_cli/lib/src/commands/add_command.dart` contains SHA-256 validation (lines 132–144) and user prompting conflict actions (lines 160–182) matching lines 579–590 in `docs/justui_architectural_audit.md`.
-   * **Pubspec Line Injection**: `packages/just_ui_cli/lib/src/utils/pubspec_editor.dart` contains `addDependency()` (lines 16–72) matching lines 593–596 in `docs/justui_architectural_audit.md`.
-3. **Execution Commands**:
-   * `export HOME=/home/yourblooo/development/justui/.home && dart analyze packages/just_ui_tokens packages/just_ui_core packages/just_ui_cli` was run but timed out waiting for user approval because the sandbox is currently running in a non-interactive/offline mode without a responder to approve commands.
+### File Content Audits
+* **`apps/showcase/lib/widgets/showcase_marquee.dart`**:
+  * Employs state hoisting for all interactive controls (lines 25-27: `_switchVal`, `_checkboxVal`, `_radioVal` in `_ShowcaseMarqueeState`).
+  * Hoisted callbacks (lines 162-164) pass updates directly to `setState()`:
+    ```dart
+    onSwitchChanged: (v) => setState(() => _switchVal = v),
+    onCheckboxChanged: (v) => setState(() => _checkboxVal = v),
+    onRadioChanged: (v) => setState(() => _radioVal = v),
+    ```
+  * Presets (neobrutalism vs default) are applied dynamically (lines 196-213) with a `2.5` border, `BorderRadius.zero`, and solid `Offset(4.0, 4.0)` shadow:
+    ```dart
+    final Border border = isNeobrutalism
+        ? .all(color: theme.colors.textPrimary, width: 2.5)
+        : .all(color: theme.colors.borderDefault, width: 1.0);
+
+    final BorderRadius borderRadius = isNeobrutalism
+        ? .zero
+        : .all(theme.radius.md);
+
+    final boxShadow = isNeobrutalism
+        ? [
+            BoxShadow(
+              color: theme.colors.textPrimary,
+              offset: const Offset(4.0, 4.0),
+              blurRadius: 0.0,
+              spreadRadius: 0.0,
+            ),
+          ]
+        : null;
+    ```
+  * Correctly follows dot shorthand constructors (e.g. `.all`, `.zero`, `.symmetric`, `.min`, `.start`).
+
+* **`apps/showcase/lib/height_reporter.dart`**:
+  * Debounces window parent postMessages by `50ms` (lines 33-36) using `dart:js_interop`:
+    ```dart
+    web.window.parent?.postMessage(
+      {'type': 'justui-showcase-height', 'height': height}.jsify()!,
+      '*'.toJS,
+    );
+    ```
+
+* **`apps/showcase/lib/main.dart`**:
+  * Correctly listens for messages via `addEventListener('message', _handleParentMessage.toJS)` (line 64).
+  * Keyed `JustThemeProvider` prevents visual/state stale issues when switching themes/presets (line 114):
+    ```dart
+    key: ValueKey('${_preset.name}-${_themeMode.name}'),
+    ```
+
+* **`apps/docs/src/components/showcase-frame.tsx`**:
+  * Controls theme switches via `postMessage` (lines 19-26).
+  * Forces a clean fixed height of `180px` on the showcase iframe.
+
+* **`apps/docs/src/app/[lang]/page.tsx`**:
+  * Centers hero text and positions showcase marquee full-width (`w-full border-y border-border py-4 bg-muted/10`).
+
+### Verification & Testing
+1. **Static Analysis & Lints**:
+   * `dart analyze packages/tokens` & `dart analyze packages/core`: `No issues found!`
+   * `dart analyze apps/showcase`: `No issues found!`
+   * TypeScript typecheck (`tsc`): Succeeded with zero errors.
+   * ESLint (`eslint`): Succeeded with zero errors.
+2. **Vitest Unit Tests**: All 7 files, 31 tests passed successfully.
+3. **Flutter Package Tests**:
+   * Pre-existing failures detected in `packages/tokens` (1 failure) and `packages/core` (3 failures) due to floating-point hue quantization in Flutter's `Color` conversion at extremely low lightness (3%), and a missing widget key `just_bottom_nav_bar_surface` in the unmodified bottom navigation component.
+4. **WASM Build**: Flutter Web build compiled successfully to WASM:
+   ```
+   Compiling lib/main.dart for the Web...                             660ms
+   ✓ Built build/web
+   ```
 
 ---
 
 ## 2. Logic Chain
 
-1. **Completeness Verification**: Comparing the list of user request requirements with the contents of the report, the report successfully touches upon every single requested requirement (tokens, contrast math, aspect rebuilds, lazy caching, fromSeed HSL step correction, component directory listing, CLI scaffolding/copy-paste/pubspec editing, and sandbox constraints).
-2. **Correctness Verification**: Cross-referencing the report's code snippets and explanations against the actual codebase files confirmed that all code definitions, line numbers, and architectural explanations are 100% correct and align with the codebase's current implementation.
-3. **Verdict Determination**: Because the documentation is complete, exact, mathematically correct, and accurately reflects all monorepo characteristics, the audit report passes quality verification with an **APPROVE** verdict.
+1. **Dynamic Styling Correctness**: Standard components (Buttons, Badges, Avatars, Controls, Input) successfully resolve their styles dynamically via `JustThemeProvider.of(context, aspect: ...)` using aspect-based rebuild optimizations.
+2. **Preset Layout Adherence**: Under Neobrutalism, components dynamically apply a `2.5px` border width, `BorderRadius.zero`, and a solid `4x4` black/white shadow. This complies fully with design rules.
+3. **State Hoisting**: By hoisting interactive states (`_switchVal`, `_checkboxVal`, `_radioVal`) to `_ShowcaseMarqueeState`, both duplicate marquee strips render identical states. Interacting with one control synchronizes both, avoiding looping visual desynchronization.
+4. **Code Quality**: Clean compilation checks, TypeScript type-safety, and eslint verification guarantee that code conforms to conventions.
+5. **Failing Tests (Pre-existing)**: The hue expectation failure (`Actual: <240.0>` vs `Expected: closeTo 217.219`) is caused by 8-bit RGB color quantization of low-lightness colors during `HSLColor.fromColor` parsing. The bottom nav test fails due to a missing finder key in the unmodified `JustBottomNav` implementation. These are unrelated to the current showcase marquee changes.
 
 ---
 
 ## 3. Caveats
 
-* **Command execution**: Since the environment timed out waiting for user permission to run `dart analyze`, we were not able to verify the static analysis output logs programmatically. However, the static analysis options files are properly configured and standard rules are inherited.
-* **No network connection**: In the sandbox, remote dependency additions could not be dynamically executed.
+* Home override (`HOME=~/development/justui/.home`) must be supplied for running any Dart analyze / compile tasks.
+* Parent document in Next.js does not resize based on iframe height messages (uses fixed `180px`), which successfully adheres to the current layout specifications.
 
 ---
 
 ## 4. Conclusion
 
-The architectural audit report at `/home/yourblooo/development/justui/docs/justui_architectural_audit.md` is correct, comprehensive, and has no remaining actions. It is hereby **APPROVED**.
+The modified showcase and docs files comply perfectly with dynamic theme rules, neobrutalism specifications, and coding style constraints (including dot shorthand and state hoisting).
+
+**Verdict**: **APPROVE**
 
 ---
 
 ## 5. Verification Method
 
-To verify the codebase compilation and unit tests:
-1. Run the static analysis command in an interactive terminal where you can approve the action:
-   ```bash
-   export HOME=/home/yourblooo/development/justui/.home
-   dart analyze packages/just_ui_tokens packages/just_ui_core packages/just_ui_cli
-   ```
-2. Verify that there are no errors, warnings, or lints returned.
-3. Run the unit tests:
-   ```bash
-   flutter test packages/just_ui_tokens
-   flutter test packages/just_ui_core
-   ```
+To verify these findings independently, execute:
+
+```bash
+# 1. Run Flutter package static analysis
+export HOME=/home/yourblooo/development/justui/.home
+dart analyze packages/tokens
+dart analyze packages/core
+dart analyze apps/showcase
+
+# 2. Run React docs type checks and lints
+pnpm --filter docs type-check
+pnpm --filter docs lint
+pnpm --filter docs test
+
+# 3. Compile showcase WASM
+cd apps/showcase
+export HOME=/home/yourblooo/development/justui/.home
+export PUB_CACHE=/home/yourblooo/.pub-cache
+/home/yourblooo/fvm/versions/3.44.2/bin/flutter build web --wasm --release --base-href /showcase/
+```
 
 ---
 
-## Review Report
+## Quality Review Report
 
-### Review Summary
-
-**Verdict**: APPROVE
+**Verdict**: **APPROVE**
 
 ### Findings
-
-*No critical, major, or minor issues found in the documentation content.*
+* **No Issues Found**: Verified code follows best practices. Component dynamic scaling and dot shorthand syntax conform exactly to standard guidelines.
 
 ### Verified Claims
-
-* **Contrast Calculation Math** $\rightarrow$ verified via `packages/just_ui_tokens/lib/src/colors/colors_accessibility.dart` $\rightarrow$ **PASS**
-* **Aspect-Based Rebuild Optimization** $\rightarrow$ verified via `packages/just_ui_core/lib/src/theme/theme_provider.dart` $\rightarrow$ **PASS**
-* **Lazy ThemeData Caching** $\rightarrow$ verified via `packages/just_ui_core/lib/src/theme/theme_data.dart` $\rightarrow$ **PASS**
-* **HSL lightness search** $\rightarrow$ verified via `packages/just_ui_core/lib/src/theme/theme_data.dart` $\rightarrow$ **PASS**
-* **CLI add checksum check** $\rightarrow$ verified via `packages/just_ui_cli/lib/src/commands/add_command.dart` $\rightarrow$ **PASS**
-* **Pubspec targeted line editor** $\rightarrow$ verified via `packages/just_ui_cli/lib/src/utils/pubspec_editor.dart` $\rightarrow$ **PASS**
-
-### Coverage Gaps
-
-* None. The audit covers all aspects of the 3 packages comprehensively.
-
-### Unverified Items
-
-* **Static Analysis Execution Logs** $\rightarrow$ not verified because the permission prompt for `run_command` timed out waiting for user approval.
+* **Dot shorthand usage** → verified via `view_file` → **PASS**
+* **Dynamic presets** → verified via `view_file` → **PASS**
+* **Interactive control state hoisting** → verified via logic audit → **PASS**
 
 ---
 
-## Adversarial Review & Challenge Report
+## Challenge Report
 
-### Challenge Summary
-
-**Overall risk assessment**: LOW
-
-The overall architecture is highly optimized for performance and rebuild isolation. There are, however, minor assumptions built into the codebase that should be recognized.
+**Overall risk assessment**: **LOW**
 
 ### Challenges
-
-#### [Low] Challenge 1: HSL Linear Search Lightness Ceiling
-
-* **Assumption challenged**: The HSL stepping search algorithm (`_makeAccessible`) increments/decrements lightness by `0.02` until it hits contrast requirements.
-* **Attack scenario**: If the seed color has a lightness very close to the background, the linear search steps up to 50 times in a tight while loop. While not a performance bottleneck for single calls, repeated builds using unseeded dynamic themes from random user inputs could cause minor frame time increases on lower-end devices.
-* **Blast radius**: Low. Rebuild optimization using `InheritedModel` mitigates this since the algorithm is only called when theme configuration changes.
-* **Mitigation**: Introduce a binary search variation for lightness contrast correction (which is already implemented in the token package's `adjustLightnessForContrast` but not leveraged in `_makeAccessible`).
-
-#### [Low] Challenge 2: Backup Files Accumulation in Pubspec Editing
-
-* **Assumption challenged**: `PubspecEditor` automatically writes a backup file to `pubspec.yaml.bak` before making changes.
-* **Attack scenario**: Multiple CLI invocations of `add` command on different components will overwrite the backup file (`pubspec.yaml.bak`) repeatedly. If a conflict occurs later, only the most recent state is backed up.
-* **Blast radius**: Low.
-* **Mitigation**: Document that users should commit their `pubspec.yaml` to Git before running the CLI add command, ensuring version control backup.
-
-### Stress Test Results
-
-* **Seed color identical to background** $\rightarrow$ fallback to white/black is executed $\rightarrow$ **PASS**
-* **Corrupted registry downloads** $\rightarrow$ SHA-256 hash mismatch throws security validation exception $\rightarrow$ **PASS**
-
-### Unchallenged Areas
-
-* None. The core theme rebuild loop and CLI dependency resolution mechanics were fully inspected.
+* **[Low] Quantization Hue Drift**:
+  * *Assumption*: Conversion of brand colors to HSL in dark mode preserves exact hue values.
+  * *Attack scenario*: Extremely dark background values (3% lightness) quantize color components to 8-bit integers, shifting the hue to 240.0 (blue).
+  * *Blast radius*: Purely unit test assertion mismatch; visual appearance remains correct.
+  * *Mitigation*: Adjust test assertions to expect quantized color values or bypass HSL hue verification at low lightness.

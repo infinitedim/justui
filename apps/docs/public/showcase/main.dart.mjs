@@ -407,6 +407,12 @@ class CompiledApp {
       _1314: () => typeof dartUseDateNowForTicks !== "undefined",
       _1315: () => 1000 * performance.now(),
       _1316: () => Date.now(),
+      _1319: () => new WeakMap(),
+      _1320: (map, o) => map.get(o),
+      _1321: (map, o, v) => map.set(o, v),
+      _1322: x0 => new WeakRef(x0),
+      _1323: x0 => x0.deref(),
+      _1330: () => globalThis.WeakRef,
       _1334: s => JSON.stringify(s),
       _1335: s => printToConsole(s),
       _1336: o => {
@@ -574,16 +580,34 @@ class CompiledApp {
           jsArray[jsArrayOffset + i] = getValue(wasmArray, wasmArrayOffset + i);
         }
       },
+      _1528: (jsArray, jsArrayOffset, wasmArray, wasmArrayOffset, length) => {
+        const setValue = dartInstance.exports.$wasmI32ArraySet;
+        for (let i = 0; i < length; i++) {
+          setValue(wasmArray, wasmArrayOffset + i, jsArray[jsArrayOffset + i]);
+        }
+      },
       _1529: (jsArray, jsArrayOffset, wasmArray, wasmArrayOffset, length) => {
         const getValue = dartInstance.exports.$wasmF32ArrayGet;
         for (let i = 0; i < length; i++) {
           jsArray[jsArrayOffset + i] = getValue(wasmArray, wasmArrayOffset + i);
         }
       },
+      _1530: (jsArray, jsArrayOffset, wasmArray, wasmArrayOffset, length) => {
+        const setValue = dartInstance.exports.$wasmF32ArraySet;
+        for (let i = 0; i < length; i++) {
+          setValue(wasmArray, wasmArrayOffset + i, jsArray[jsArrayOffset + i]);
+        }
+      },
       _1531: (jsArray, jsArrayOffset, wasmArray, wasmArrayOffset, length) => {
         const getValue = dartInstance.exports.$wasmF64ArrayGet;
         for (let i = 0; i < length; i++) {
           jsArray[jsArrayOffset + i] = getValue(wasmArray, wasmArrayOffset + i);
+        }
+      },
+      _1532: (jsArray, jsArrayOffset, wasmArray, wasmArrayOffset, length) => {
+        const setValue = dartInstance.exports.$wasmF64ArraySet;
+        for (let i = 0; i < length; i++) {
+          setValue(wasmArray, wasmArrayOffset + i, jsArray[jsArrayOffset + i]);
         }
       },
       _1533: x0 => new ArrayBuffer(x0),
@@ -606,8 +630,10 @@ class CompiledApp {
       _1570: a => a.pop(),
       _1571: (a, i) => a.splice(i, 1),
       _1572: (a, s) => a.join(s),
+      _1573: (a, s, e) => a.slice(s, e),
       _1576: a => a.length,
       _1578: (a, i) => a[i],
+      _1579: (a, i, v) => a[i] = v,
       _1581: o => {
         if (o === null || o === undefined) return 0;
         if (o instanceof ArrayBuffer) return 1;
@@ -616,6 +642,11 @@ class CompiledApp {
           return 2;
         }
         return 3;
+      },
+      _1582: (o, offsetInBytes, lengthInBytes) => {
+        var dst = new ArrayBuffer(lengthInBytes);
+        new Uint8Array(dst).set(new Uint8Array(o, offsetInBytes, lengthInBytes));
+        return new DataView(dst);
       },
       _1584: o => {
         if (o === null || o === undefined) return 0;
@@ -647,6 +678,7 @@ class CompiledApp {
         return 2;
       },
       _1597: (o, start, length) => new Int32Array(o.buffer, o.byteOffset + start, length),
+      _1599: (o, start, length) => new BigInt64Array(o.buffer, o.byteOffset + start, length),
       _1600: o => {
         if (o === null || o === undefined) return 0;
         if (o instanceof Float32Array) return 1;
@@ -680,6 +712,7 @@ class CompiledApp {
       _1624: Function.prototype.call.bind(DataView.prototype.getInt32),
       _1625: Function.prototype.call.bind(DataView.prototype.setInt32),
       _1628: Function.prototype.call.bind(DataView.prototype.getBigInt64),
+      _1629: Function.prototype.call.bind(DataView.prototype.setBigInt64),
       _1630: Function.prototype.call.bind(DataView.prototype.getFloat32),
       _1631: Function.prototype.call.bind(DataView.prototype.setFloat32),
       _1632: Function.prototype.call.bind(DataView.prototype.getFloat64),

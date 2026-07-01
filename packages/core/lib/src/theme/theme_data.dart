@@ -137,7 +137,7 @@ final class FluidSpacingScheme extends JustSpacingScheme {
 // ==========================================
 
 /// Defines the typography styles configuration.
-abstract final class JustTypographyScheme {
+abstract class JustTypographyScheme {
   /// Base constructor.
   const JustTypographyScheme();
 
@@ -234,6 +234,43 @@ final class _DefaultTypographyScheme extends JustTypographyScheme {
   TextStyle get caption => JustTypo.caption;
   @override
   TextStyle get overline => JustTypo.overline;
+}
+
+/// A configurable typography scheme allowing custom font families.
+/// Use this when your project uses fonts other than Inter/JetBrains Mono.
+final class JustCustomTypographyScheme extends JustTypographyScheme {
+  final String fontFamily;
+  final String monoFontFamily;
+
+  const JustCustomTypographyScheme({
+    this.fontFamily = JustTypo.fontFamily,
+    this.monoFontFamily = JustTypo.monoFontFamily,
+  });
+
+  TextStyle _apply(TextStyle base) => base.copyWith(fontFamily: fontFamily);
+
+  @override
+  TextStyle get displayLg => _apply(JustTypo.displayLg);
+  @override
+  TextStyle get displayMd => _apply(JustTypo.displayMd);
+  @override
+  TextStyle get displaySm => _apply(JustTypo.displaySm);
+  @override
+  TextStyle get headingLg => _apply(JustTypo.headingLg);
+  @override
+  TextStyle get headingMd => _apply(JustTypo.headingMd);
+  @override
+  TextStyle get headingSm => _apply(JustTypo.headingSm);
+  @override
+  TextStyle get bodyLg => _apply(JustTypo.bodyLg);
+  @override
+  TextStyle get bodyMd => _apply(JustTypo.bodyMd);
+  @override
+  TextStyle get bodySm => _apply(JustTypo.bodySm);
+  @override
+  TextStyle get caption => _apply(JustTypo.caption);
+  @override
+  TextStyle get overline => _apply(JustTypo.overline);
 }
 
 // ==========================================
