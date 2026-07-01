@@ -55,7 +55,7 @@ class ShowcaseApp extends StatefulWidget {
 }
 
 class _ShowcaseAppState extends State<ShowcaseApp> {
-  JustThemePreset _preset = .neobrutalism;
+  JustThemePreset _preset = .default_;
   ThemeMode _themeMode = .light;
 
   @override

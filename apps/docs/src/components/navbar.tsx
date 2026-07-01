@@ -10,6 +10,7 @@ import { useTheme } from 'next-themes';
 import { githubUrl } from '@/lib/github';
 import { SearchModal } from '@/components/search-modal';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
+import { usePreset } from '@/lib/preset-context';
 
 interface NavbarProps {
   starCount: number | null;
@@ -65,6 +66,32 @@ function ThemeSwitcher({ lang }: { lang: string }) {
       ) : (
         <Moon size={13} aria-hidden="true" />
       )}
+    </button>
+  );
+}
+
+function PresetSwitcher({ lang }: { lang: string }) {
+  const { preset, setPreset } = usePreset();
+  const [mounted, setMounted] = useState(false);
+  const t = getHomepageDictionary(lang);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return <div className="h-7 w-7" />;
+
+  const isNeo = preset === 'neobrutalism';
+
+  return (
+    <button
+      type="button"
+      onClick={() => setPreset(isNeo ? 'default' : 'neobrutalism')}
+      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted transition-colors hover:text-foreground"
+      aria-label={t.togglePreset}
+      title={isNeo ? 'Switch to Default preset' : 'Switch to Neobrutalism preset'}
+    >
+      <span className="font-mono text-[10px] font-bold">
+        {isNeo ? 'N' : 'D'}
+      </span>
     </button>
   );
 }
@@ -142,6 +169,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
 
           <div className="flex items-center gap-2">
             <LanguageSwitcher lang={lang} />
+            <PresetSwitcher lang={lang} />
             <ThemeSwitcher lang={lang} />
             <button
               type="button"

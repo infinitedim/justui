@@ -13,6 +13,7 @@ export type HomepageDictionary = {
   changeLanguage: string;
   copyCommand: string;
   copied: string;
+  togglePreset: string;
   componentsPageTitle: string;
   componentsPageDescription: string;
   componentsPageCount: string; // We can use string replacement or simple interpolation
@@ -35,6 +36,7 @@ export const homepageTranslations: Record<string, HomepageDictionary> = {
     changeLanguage: 'Switch to Indonesian',
     copyCommand: 'Copy install command',
     copied: 'Copied!',
+    togglePreset: 'Toggle preset',
     componentsPageTitle: 'Components',
     componentsPageDescription:
       'All components are ready to use. Copy, paste, and customize directly in your Flutter project.',
@@ -56,6 +58,7 @@ export const homepageTranslations: Record<string, HomepageDictionary> = {
     changeLanguage: 'Ganti ke Bahasa Inggris',
     copyCommand: 'Salin perintah instalasi',
     copied: 'Tersalin!',
+    togglePreset: 'Ganti preset',
     componentsPageTitle: 'Komponen',
     componentsPageDescription:
       'Semua komponen siap pakai. Copy, paste, dan sesuaikan langsung di project Flutter kamu.',
