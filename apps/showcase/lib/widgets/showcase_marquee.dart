@@ -45,7 +45,8 @@ class _ShowcaseMarqueeState extends State<ShowcaseMarquee>
 
   void _measureWidth() {
     if (!mounted) return;
-    final renderBox = _stripKey.currentContext?.findRenderObject() as RenderBox?;
+    final renderBox =
+        _stripKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null) {
       final width = renderBox.size.width;
       if (width > 0 && width != _stripWidth) {
@@ -69,10 +70,7 @@ class _ShowcaseMarqueeState extends State<ShowcaseMarquee>
             child: Row(
               mainAxisSize: .min,
               children: [
-                Container(
-                  key: _stripKey,
-                  child: _buildComponentStrip(context),
-                ),
+                Container(key: _stripKey, child: _buildComponentStrip(context)),
                 _buildComponentStrip(context),
               ],
             ),
@@ -99,9 +97,7 @@ class _ShowcaseMarqueeState extends State<ShowcaseMarquee>
               JustButton.secondary(
                 label: 'Secondary',
                 style: JustButtonStyle(
-                  textStyle: TextStyle(
-                    color: theme.colors.textPrimary,
-                  ),
+                  textStyle: TextStyle(color: theme.colors.textPrimary),
                 ),
                 onPressed: () {},
               ),
@@ -120,13 +116,29 @@ class _ShowcaseMarqueeState extends State<ShowcaseMarquee>
           child: Row(
             mainAxisSize: .min,
             children: [
-              const JustBadge(label: 'Success', color: .success, variant: .solid),
+              const JustBadge(
+                label: 'Success',
+                color: .success,
+                variant: .solid,
+              ),
               SizedBox(width: spacing.sm),
-              const JustBadge(label: 'Success', color: .success, variant: .outline),
+              const JustBadge(
+                label: 'Success',
+                color: .success,
+                variant: .outline,
+              ),
               SizedBox(width: spacing.sm),
-              const JustBadge(label: 'Success', color: .success, variant: .soft),
+              const JustBadge(
+                label: 'Success',
+                color: .success,
+                variant: .soft,
+              ),
               SizedBox(width: spacing.sm),
-              const JustBadge(label: 'Warning', color: .warning, variant: .outline),
+              const JustBadge(
+                label: 'Warning',
+                color: .warning,
+                variant: .outline,
+              ),
               SizedBox(width: spacing.sm),
               const JustBadge(label: 'Error', color: .error, variant: .soft),
               SizedBox(width: spacing.sm),
@@ -254,14 +266,11 @@ class _Separator extends StatelessWidget {
     final theme = JustThemeProvider.of(context).theme;
     final isNeobrutalism = theme.preset == .neobrutalism;
     final width = isNeobrutalism ? 2.5 : 1.0;
-    final color =
-        isNeobrutalism ? theme.colors.textPrimary : theme.colors.borderDefault;
+    final color = isNeobrutalism
+        ? theme.colors.textPrimary
+        : theme.colors.borderDefault;
 
-    return Container(
-      width: width,
-      height: 64.0,
-      color: color,
-    );
+    return Container(width: width, height: 64.0, color: color);
   }
 }
 

@@ -2,11 +2,13 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
+import { usePreset } from '@/lib/preset-context';
 
 export function ShowcaseFrame() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [supported, setSupported] = useState(true);
   const { resolvedTheme } = useTheme();
+  const { preset } = usePreset();
 
   useEffect(() => {
     // Deteksi Wasm support dasar — Flutter Web Wasm butuh browser modern
@@ -14,26 +16,33 @@ export function ShowcaseFrame() {
     setSupported(hasWasm);
   }, []);
 
+  // Kirim theme + preset ke Flutter setiap kali salah satunya berubah
   useEffect(() => {
-    // Kirim theme mode ke iframe setiap kali resolvedTheme berubah
     iframeRef.current?.contentWindow?.postMessage(
       {
         type: 'justui-theme',
-        preset: 'neobrutalism',
+        preset,
         mode: resolvedTheme === 'dark' ? 'dark' : 'light',
       },
       '*',
     );
-  }, [resolvedTheme]);
+  }, [resolvedTheme, preset]);
+
+  const handleLoad = () => {
+    // Kirim juga saat iframe pertama kali load
+    iframeRef.current?.contentWindow?.postMessage(
+      {
+        type: 'justui-theme',
+        preset,
+        mode: resolvedTheme === 'dark' ? 'dark' : 'light',
+      },
+      '*',
+    );
+  };
 
   if (!supported) {
     return (
-      <div className="flex h-45 w-full items-center justify-center rounded-lg border border-border bg-card">
-        {/* 
-          TODO: Capture screenshot of the showcase grid when running locally,
-          then save it to apps/docs/public/showcase-fallback.png as a fallback
-          for non-WASM browsers.
-        */}
+      <div className="flex h-[180px] w-full items-center justify-center border border-border bg-card">
         <img
           src="/showcase-fallback.png"
           alt="JustUI component showcase"
@@ -51,7 +60,7 @@ export function ShowcaseFrame() {
       className="w-full border-0"
       style={{ height: '180px' }}
       loading="lazy"
-      suppressHydrationWarning
+      onLoad={handleLoad}
     />
   );
 }
