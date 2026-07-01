@@ -747,19 +747,19 @@ class _JustInputState extends State<JustInput> {
                       ],
                     );
 
-                    final isNeobrutalism = theme.preset == .neobrutalism;
-                    final double borderWidth = isNeobrutalism
-                        ? 2.5
+                    final presetTokens = theme.presetTokens;
+                    final double borderWidth = presetTokens.showsDefaultBorder
+                        ? presetTokens.borderWidth
                         : (isFocused ? 2.0 : 1.0);
-                    final Color finalBorderColor = isNeobrutalism
+                    final Color finalBorderColor = presetTokens.showsDefaultBorder
                         ? colors.textPrimary
                         : border;
-                    final List<BoxShadow>? resolvedShadows = isNeobrutalism
+                    final List<BoxShadow>? resolvedShadows = presetTokens.showsDefaultBorder
                         ? theme.shadows.sm
                         : null;
 
                     return AnimatedContainer(
-                      duration: isNeobrutalism
+                      duration: presetTokens.showsDefaultBorder
                           ? theme.animations.instant
                           : theme.animations.fast,
                       curve: animations.defaultCurve,
@@ -856,7 +856,7 @@ class _JustInputState extends State<JustInput> {
       style: textStyle,
       cursorColor:
           widget.style?.focusedBorderColor ??
-          (theme.preset == .neobrutalism
+          (theme.presetTokens.showsDefaultBorder
               ? theme.colors.textPrimary
               : JustColorPalette.primary500),
       backgroundCursorColor: const Color(0xFF888888),

@@ -146,10 +146,10 @@ class _JustTooltipState extends State<JustTooltip>
             .symmetric(horizontal: spacing.sm, vertical: spacing.xs);
         final maxWidth = entryStyle?.maxWidth ?? themeStyle?.maxWidth ?? 240.0;
 
-        final isNeobrutalism = theme.preset == .neobrutalism;
+        final presetTokens = theme.presetTokens;
         final borderSide = BorderSide(
-          color: isNeobrutalism ? colors.textPrimary : colors.borderDefault,
-          width: isNeobrutalism ? 2.5 : 1.0,
+          color: presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderDefault,
+          width: presetTokens.borderWidth,
         );
 
         // Map TooltipPosition to CompositedTransformFollower anchors
@@ -191,8 +191,8 @@ class _JustTooltipState extends State<JustTooltip>
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: borderRadius,
-            border: isNeobrutalism ? .fromBorderSide(borderSide) : null,
-            boxShadow: isNeobrutalism
+            border: presetTokens.showsDefaultBorder ? .fromBorderSide(borderSide) : null,
+            boxShadow: presetTokens.showsDefaultBorder
                 ? theme.resolveShadows(const [], isPressed: false)
                 : null,
           ),

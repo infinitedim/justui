@@ -128,3 +128,37 @@ Modify [page.tsx](file:///home/yourblooo/development/justui/apps/docs/src/app/%5
 - [ ] `ShowcaseFrame` has a fixed height of 180px and does not trigger dynamic resizing.
 - [ ] Next.js homepage is updated to show the centered hero and full-width marquee below it.
 - [ ] Dark/Light mode switching correctly triggers theme updates in the Flutter showcase iframe via postMessage.
+
+## Follow-up — 2026-07-01T09:55:41Z
+
+Migrate `isNeobrutalism` branching logic in all JustUI components to dynamic helper methods in `JustPresetTokens`.
+
+Working directory: /home/yourblooo/development/justui
+Integrity mode: demo
+
+## Requirements
+
+### R1. Extend JustPresetTokens
+In [preset_tokens.dart](file:///home/yourblooo/development/justui/packages/core/lib/src/theme/preset_tokens.dart), add new helper methods for:
+- Slider track height & thumb size & haptic default
+- Progress stroke width & label font weight
+- Separator thickness
+- Tab indicator thickness
+- Focus transition duration & Dropdown curves/durations
+Import required enums from components (`JustSliderSize` and `JustProgressSize`) and avoid circular dependencies.
+
+### R2. Migrate Component Codebase
+Remove all direct checks for `isNeobrutalism`, `preset == .neobrutalism`, or `JustThemePreset.neobrutalism` across all 26 components in [packages/core/lib/src/components](file:///home/yourblooo/development/justui/packages/core/lib/src/components). Cleanly delegate these visual decisions to the corresponding method in `presetTokens`.
+Update any private helper methods/widgets that take `isNeobrutalism` parameters to accept `presetTokens` instead.
+
+## Acceptance Criteria
+
+### Preset Tokens
+- [ ] New preset tokens compile correctly and handle default and neobrutalism overrides correctly.
+- [ ] No circular dependencies are introduced between `preset_tokens.dart` and component files.
+
+### Components Migration
+- [ ] All 26 components compile and pass the static analysis check (`dart analyze packages/core`).
+- [ ] Direct references to `neobrutalism` preset in widget building logic are eliminated.
+- [ ] Custom Neobrutalism styling details (like borders, shadows, and radii) are preserved exactly as they were before the migration.
+- [ ] All existing unit tests pass successfully.

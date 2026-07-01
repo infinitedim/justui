@@ -120,44 +120,30 @@ class _JustSliderState extends State<JustSlider> {
   @override
   Widget build(BuildContext context) {
     final theme = JustThemeProvider.of(context);
-    final isNeobrutalism = theme.theme.preset == JustThemePreset.neobrutalism;
+    final presetTokens = theme.theme.presetTokens;
 
     final globalTheme = Theme.of(context).extension<JustSliderTheme>();
     final finalEnableHaptic =
-        widget.enableHaptic ?? globalTheme?.enableHaptic ?? isNeobrutalism;
+        widget.enableHaptic ?? globalTheme?.enableHaptic ?? presetTokens.sliderHapticDefault;
 
     // Resolve size metrics
-    final double trackHeight;
-    final double thumbSize;
-    switch (widget.size) {
-      case .sm:
-        trackHeight = isNeobrutalism ? 6.0 : 4.0;
-        thumbSize = isNeobrutalism ? 16.0 : 14.0;
-        break;
-      case .md:
-        trackHeight = isNeobrutalism ? 10.0 : 6.0;
-        thumbSize = isNeobrutalism ? 22.0 : 20.0;
-        break;
-      case .lg:
-        trackHeight = isNeobrutalism ? 14.0 : 8.0;
-        thumbSize = isNeobrutalism ? 28.0 : 26.0;
-        break;
-    }
+    final double trackHeight = presetTokens.resolveSliderTrackHeight(widget.size);
+    final double thumbSize = presetTokens.resolveSliderThumbSize(widget.size);
 
     // Resolve colors
     final colors = theme.theme.colors;
     final activeTrackColor =
         widget.style?.activeTrackColor ??
         globalTheme?.style?.activeTrackColor ??
-        (isNeobrutalism ? colors.textPrimary : colors.borderFocus);
+        (presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderFocus);
     final inactiveTrackColor =
         widget.style?.inactiveTrackColor ??
         globalTheme?.style?.inactiveTrackColor ??
-        (isNeobrutalism ? colors.background : colors.borderDefault);
+        (presetTokens.showsDefaultBorder ? colors.background : colors.borderDefault);
     final thumbColor =
         widget.style?.thumbColor ??
         globalTheme?.style?.thumbColor ??
-        (isNeobrutalism ? colors.warning : colors.background);
+        (presetTokens.showsDefaultBorder ? colors.warning : colors.background);
     final thumbBorderColor =
         widget.style?.thumbBorderColor ??
         globalTheme?.style?.thumbBorderColor ??
@@ -165,12 +151,12 @@ class _JustSliderState extends State<JustSlider> {
     final tickMarkColor =
         widget.style?.tickMarkColor ??
         globalTheme?.style?.tickMarkColor ??
-        (isNeobrutalism ? colors.textPrimary : colors.borderDefault);
+        (presetTokens.showsDefaultBorder ? colors.textPrimary : colors.borderDefault);
 
     final BorderRadius trackBorderRadius =
         widget.style?.borderRadius ??
         globalTheme?.style?.borderRadius ??
-        (isNeobrutalism
+        (presetTokens.showsDefaultBorder
             ? .all(theme.theme.radius.xs)
             : .all(theme.theme.radius.full));
 
@@ -243,7 +229,7 @@ class _JustSliderState extends State<JustSlider> {
                   decoration: BoxDecoration(
                     color: inactiveTrackColor,
                     borderRadius: trackBorderRadius,
-                    border: isNeobrutalism
+                    border: theme.theme.presetTokens.showsDefaultBorder
                         ? .all(color: colors.textPrimary, width: 2.5)
                         : null,
                   ),
@@ -262,7 +248,7 @@ class _JustSliderState extends State<JustSlider> {
                       borderRadius: _isRange
                           ? null
                           : trackBorderRadius, // Rounded left edge for single mode
-                      border: isNeobrutalism
+                      border: theme.theme.presetTokens.showsDefaultBorder
                           ? .symmetric(
                               horizontal: BorderSide(
                                 color: colors.textPrimary,
@@ -306,7 +292,6 @@ class _JustSliderState extends State<JustSlider> {
                     leftPosition: startPosition,
                     value: _currentStart,
                     thumbSize: thumbSize,
-                    isNeobrutalism: isNeobrutalism,
                     colors: colors,
                     thumbColor: thumbColor,
                     thumbBorderColor: thumbBorderColor,
@@ -318,7 +303,6 @@ class _JustSliderState extends State<JustSlider> {
                     leftPosition: endPosition,
                     value: _currentEnd,
                     thumbSize: thumbSize,
-                    isNeobrutalism: isNeobrutalism,
                     colors: colors,
                     thumbColor: thumbColor,
                     thumbBorderColor: thumbBorderColor,
@@ -331,7 +315,6 @@ class _JustSliderState extends State<JustSlider> {
                     leftPosition: startPosition,
                     value: _currentStart,
                     thumbSize: thumbSize,
-                    isNeobrutalism: isNeobrutalism,
                     colors: colors,
                     thumbColor: thumbColor,
                     thumbBorderColor: thumbBorderColor,
@@ -351,17 +334,17 @@ class _JustSliderState extends State<JustSlider> {
     required double leftPosition,
     required double value,
     required double thumbSize,
-    required bool isNeobrutalism,
     required JustColorScheme colors,
     required Color thumbColor,
     required Color thumbBorderColor,
     required JustThemeProviderState theme,
   }) {
     final isPressed = _activeThumbIndex == index;
+    final presetTokens = theme.theme.presetTokens;
 
     Widget thumbWidget;
 
-    if (isNeobrutalism) {
+    if (presetTokens.showsDefaultBorder) {
       final Offset shadowOffset = isPressed ? .zero : const Offset(2.5, 2.5);
       final Offset translation = isPressed ? const Offset(2.5, 2.5) : .zero;
 
@@ -424,7 +407,7 @@ class _JustSliderState extends State<JustSlider> {
           if (widget.showTooltip && isPressed)
             Positioned(
               top: -36.0,
-              child: _buildTooltip(value, isNeobrutalism, colors, theme),
+              child: _buildTooltip(value, colors, theme),
             ),
         ],
       ),
@@ -433,13 +416,13 @@ class _JustSliderState extends State<JustSlider> {
 
   Widget _buildTooltip(
     double value,
-    bool isNeobrutalism,
     JustColorScheme colors,
     JustThemeProviderState theme,
   ) {
     final valueText = value.toStringAsFixed(widget.divisions == null ? 1 : 0);
+    final presetTokens = theme.theme.presetTokens;
 
-    if (isNeobrutalism) {
+    if (presetTokens.showsDefaultBorder) {
       return Container(
         padding: .symmetric(
           horizontal: theme.theme.spacing.xs,
