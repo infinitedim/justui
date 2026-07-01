@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
+import '../components/slider/just_slider_style.dart' show JustSliderSize;
+import '../components/progress/just_progress_variants.dart' show JustProgressSize;
 import 'theme_data.dart';
 
 /// Semantic shadow elevation levels, decoupled from preset-specific
@@ -65,6 +67,42 @@ abstract class JustPresetTokens {
   /// Whether this preset shows a visible border by default on neutral
   /// (non-emphasized) containers like cards and inputs.
   bool get showsDefaultBorder;
+
+  /// Resolves the track height for a slider size.
+  double resolveSliderTrackHeight(JustSliderSize size);
+
+  /// Resolves the thumb size (diameter) for a slider size.
+  double resolveSliderThumbSize(JustSliderSize size);
+
+  /// Whether slider haptic feedback is enabled by default.
+  bool get sliderHapticDefault;
+
+  /// Resolves the stroke width for a circular/linear progress indicator size.
+  double resolveProgressStrokeWidth(JustProgressSize size);
+
+  /// Resolves the font weight for a progress indicator's label.
+  FontWeight get progressLabelFontWeight;
+
+  /// Resolves the thickness for a separator.
+  double resolveSeparatorThickness(double thickness);
+
+  /// The default thickness for a tab indicator.
+  double get tabIndicatorThickness;
+
+  /// Resolves the transition duration for a focus ring/effect.
+  Duration resolveFocusTransitionDuration(JustMotionProfile animations);
+
+  /// Resolves the dropdown menu animation duration.
+  Duration resolveDropdownDuration(JustMotionProfile animations);
+
+  /// Resolves the dropdown menu animation curve.
+  Curve resolveDropdownCurve(JustMotionProfile animations);
+
+  /// Whether selection controls (Switch, Radio, Checkbox) default to triggering haptic feedback.
+  bool get selectionHapticDefault;
+
+  /// Whether the skeleton loader should pulse opacity instead of showing a gradient sweep shimmer.
+  bool get usePulsingSkeleton;
 }
 
 /// Default preset — soft shadows, minimal/no borders, rounded corners,
@@ -148,6 +186,63 @@ class DefaultPresetTokens extends JustPresetTokens {
       borderRadius: borderRadius,
     );
   }
+
+  @override
+  double resolveSliderTrackHeight(JustSliderSize size) {
+    return switch (size) {
+      .sm => 4.0,
+      .md => 6.0,
+      .lg => 8.0,
+    };
+  }
+
+  @override
+  double resolveSliderThumbSize(JustSliderSize size) {
+    return switch (size) {
+      .sm => 14.0,
+      .md => 20.0,
+      .lg => 26.0,
+    };
+  }
+
+  @override
+  bool get sliderHapticDefault => false;
+
+  @override
+  double resolveProgressStrokeWidth(JustProgressSize size) {
+    return switch (size) {
+      .sm => 2.0,
+      .md => 3.0,
+      .lg => 4.0,
+    };
+  }
+
+  @override
+  FontWeight get progressLabelFontWeight => FontWeight.w500;
+
+  @override
+  double resolveSeparatorThickness(double thickness) => thickness;
+
+  @override
+  double get tabIndicatorThickness => 2.0;
+
+  @override
+  Duration resolveFocusTransitionDuration(JustMotionProfile animations) =>
+      animations.fast;
+
+  @override
+  Duration resolveDropdownDuration(JustMotionProfile animations) =>
+      animations.fast;
+
+  @override
+  Curve resolveDropdownCurve(JustMotionProfile animations) =>
+      animations.defaultCurve;
+
+  @override
+  bool get selectionHapticDefault => false;
+
+  @override
+  bool get usePulsingSkeleton => false;
 }
 
 /// Neobrutalism preset — thick solid borders, flat offset shadows,
@@ -230,6 +325,63 @@ class NeobrutalismPresetTokens extends JustPresetTokens {
       borderRadius: borderRadius ?? .zero,
     );
   }
+
+  @override
+  double resolveSliderTrackHeight(JustSliderSize size) {
+    return switch (size) {
+      .sm => 6.0,
+      .md => 10.0,
+      .lg => 14.0,
+    };
+  }
+
+  @override
+  double resolveSliderThumbSize(JustSliderSize size) {
+    return switch (size) {
+      .sm => 16.0,
+      .md => 22.0,
+      .lg => 28.0,
+    };
+  }
+
+  @override
+  bool get sliderHapticDefault => true;
+
+  @override
+  double resolveProgressStrokeWidth(JustProgressSize size) {
+    return switch (size) {
+      .sm => 3.0,
+      .md => 4.0,
+      .lg => 5.0,
+    };
+  }
+
+  @override
+  FontWeight get progressLabelFontWeight => FontWeight.w700;
+
+  @override
+  double resolveSeparatorThickness(double thickness) => 2.0;
+
+  @override
+  double get tabIndicatorThickness => 4.0;
+
+  @override
+  Duration resolveFocusTransitionDuration(JustMotionProfile animations) =>
+      animations.instant;
+
+  @override
+  Duration resolveDropdownDuration(JustMotionProfile animations) =>
+      animations.instant;
+
+  @override
+  Curve resolveDropdownCurve(JustMotionProfile animations) =>
+      animations.defaultCurve;
+
+  @override
+  bool get selectionHapticDefault => true;
+
+  @override
+  bool get usePulsingSkeleton => true;
 }
 
 /// Resolves the [JustPresetTokens] implementation for a given preset.

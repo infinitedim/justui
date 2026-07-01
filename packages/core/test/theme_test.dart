@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_core/src/components/progress/just_progress_variants.dart';
+import 'package:just_ui_core/src/components/slider/just_slider_style.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -591,6 +593,97 @@ void main() {
         await tester.pump();
 
         expect(rebuildCount, equals(2));
+      });
+    });
+
+    group('JustPresetTokens Helpers Tests', () {
+      const defaultTokens = DefaultPresetTokens();
+      const neobrutalismTokens = NeobrutalismPresetTokens();
+
+      test('Slider track height resolution', () {
+        expect(defaultTokens.resolveSliderTrackHeight(JustSliderSize.sm), equals(4.0));
+        expect(defaultTokens.resolveSliderTrackHeight(JustSliderSize.md), equals(6.0));
+        expect(defaultTokens.resolveSliderTrackHeight(JustSliderSize.lg), equals(8.0));
+
+        expect(neobrutalismTokens.resolveSliderTrackHeight(JustSliderSize.sm), equals(6.0));
+        expect(neobrutalismTokens.resolveSliderTrackHeight(JustSliderSize.md), equals(10.0));
+        expect(neobrutalismTokens.resolveSliderTrackHeight(JustSliderSize.lg), equals(14.0));
+      });
+
+      test('Slider thumb size resolution', () {
+        expect(defaultTokens.resolveSliderThumbSize(JustSliderSize.sm), equals(14.0));
+        expect(defaultTokens.resolveSliderThumbSize(JustSliderSize.md), equals(20.0));
+        expect(defaultTokens.resolveSliderThumbSize(JustSliderSize.lg), equals(26.0));
+
+        expect(neobrutalismTokens.resolveSliderThumbSize(JustSliderSize.sm), equals(16.0));
+        expect(neobrutalismTokens.resolveSliderThumbSize(JustSliderSize.md), equals(22.0));
+        expect(neobrutalismTokens.resolveSliderThumbSize(JustSliderSize.lg), equals(28.0));
+      });
+
+      test('Slider haptic feedback default', () {
+        expect(defaultTokens.sliderHapticDefault, isFalse);
+        expect(neobrutalismTokens.sliderHapticDefault, isTrue);
+      });
+
+      test('Progress stroke width resolution', () {
+        expect(defaultTokens.resolveProgressStrokeWidth(JustProgressSize.sm), equals(2.0));
+        expect(defaultTokens.resolveProgressStrokeWidth(JustProgressSize.md), equals(3.0));
+        expect(defaultTokens.resolveProgressStrokeWidth(JustProgressSize.lg), equals(4.0));
+
+        expect(neobrutalismTokens.resolveProgressStrokeWidth(JustProgressSize.sm), equals(3.0));
+        expect(neobrutalismTokens.resolveProgressStrokeWidth(JustProgressSize.md), equals(4.0));
+        expect(neobrutalismTokens.resolveProgressStrokeWidth(JustProgressSize.lg), equals(5.0));
+      });
+
+      test('Progress label font weight resolution', () {
+        expect(defaultTokens.progressLabelFontWeight, equals(FontWeight.w500));
+        expect(neobrutalismTokens.progressLabelFontWeight, equals(FontWeight.w700));
+      });
+
+      test('Separator thickness resolution', () {
+        expect(defaultTokens.resolveSeparatorThickness(1.0), equals(1.0));
+        expect(defaultTokens.resolveSeparatorThickness(3.5), equals(3.5));
+
+        expect(neobrutalismTokens.resolveSeparatorThickness(1.0), equals(2.0));
+        expect(neobrutalismTokens.resolveSeparatorThickness(3.5), equals(2.0));
+      });
+
+      test('Tab indicator thickness resolution', () {
+        expect(defaultTokens.tabIndicatorThickness, equals(2.0));
+        expect(neobrutalismTokens.tabIndicatorThickness, equals(4.0));
+      });
+
+      test('Focus transition duration resolution', () {
+        final animations = JustThemeData.light.animations;
+        expect(defaultTokens.resolveFocusTransitionDuration(animations), equals(animations.fast));
+        expect(neobrutalismTokens.resolveFocusTransitionDuration(animations), equals(animations.instant));
+      });
+
+      test('Dropdown duration resolution', () {
+        final animations = JustThemeData.light.animations;
+        expect(defaultTokens.resolveDropdownDuration(animations), equals(animations.fast));
+        expect(neobrutalismTokens.resolveDropdownDuration(animations), equals(animations.instant));
+      });
+
+      test('Dropdown curve resolution', () {
+        final animations = JustThemeData.light.animations;
+        expect(defaultTokens.resolveDropdownCurve(animations), equals(animations.defaultCurve));
+        expect(neobrutalismTokens.resolveDropdownCurve(animations), equals(animations.defaultCurve));
+      });
+
+      test('Selection haptic default resolution', () {
+        expect(defaultTokens.selectionHapticDefault, isFalse);
+        expect(neobrutalismTokens.selectionHapticDefault, isTrue);
+      });
+
+      test('Use pulsing skeleton resolution', () {
+        expect(defaultTokens.usePulsingSkeleton, isFalse);
+        expect(neobrutalismTokens.usePulsingSkeleton, isTrue);
+      });
+
+      test('JustThemePresetTokensX extension returns correct tokens', () {
+        expect(JustThemePreset.default_.tokens, isA<DefaultPresetTokens>());
+        expect(JustThemePreset.neobrutalism.tokens, isA<NeobrutalismPresetTokens>());
       });
     });
   });

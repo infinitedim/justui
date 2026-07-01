@@ -99,7 +99,7 @@ class _JustBottomNavState extends State<JustBottomNav> {
     final radius = customTheme.radius;
     final animations = customTheme.animations;
 
-    final isNeobrutalism = customTheme.preset == .neobrutalism;
+    final presetTokens = customTheme.presetTokens;
 
     // Resolve theme-specific styles
     JustBottomNavStyle? themeStyle;
@@ -283,17 +283,11 @@ class _JustBottomNavState extends State<JustBottomNav> {
       }
     }
 
-    final Border borderStyle = isNeobrutalism
-        ? (widget.variant == .floating
-              ? .all(color: colors.borderDefault, width: 2.5)
-              : Border(
-                  top: BorderSide(color: colors.borderDefault, width: 2.5),
-                ))
-        : (widget.variant == .floating
-              ? .all(color: colors.borderDefault, width: 1.0)
-              : Border(
-                  top: BorderSide(color: colors.borderDefault, width: 1.0),
-                ));
+    final Border borderStyle = widget.variant == .floating
+        ? .all(color: colors.borderDefault, width: presetTokens.borderWidth)
+        : Border(
+            top: BorderSide(color: colors.borderDefault, width: presetTokens.borderWidth),
+          );
 
     final Widget contentBar = Container(
       height: height,
