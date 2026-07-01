@@ -1,0 +1,810 @@
+{
+  "generated_at": "2026-07-01T12:22:51.153740",
+  "skills_root": "/home/yourblooo/development/justui/.agents/skills",
+  "skills": [
+    {
+      "name": "antigravity-skill-orchestrator",
+      "description": "A meta-skill that understands task requirements, dynamically selects appropriate skills, tracks successful skill combinations using agent-memory-mcp, and prevents skill overuse for simple tasks.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/antigravity-skill-orchestrator",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/antigravity-skill-orchestrator/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "context-management"
+      ],
+      "triggers": [
+        "memory"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.982028"
+    },
+    {
+      "name": "architect-review",
+      "description": "Master software architect specializing in modern architecture",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/architect-review",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/architect-review/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T23:01:28.060299"
+    },
+    {
+      "name": "changelog-generator",
+      "description": "Produce consistent, auditable release notes from Conventional Commits. Separates commit parsing, semantic-bump logic, and changelog rendering for automated releases with editorial control. Use when cutting a release, generating CHANGELOG.md from git history, computing the next semantic version from commits, automating release notes in CI, or planning a hotfix/rollback. Examples: 'generate the changelog for v1.4.0', 'what version bump do these commits require', 'we need an emergency hotfix process'.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/changelog-generator",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/changelog-generator/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T22:25:05.437434"
+    },
+    {
+      "name": "code-to-prd",
+      "description": "Reverse-engineer any codebase into a complete Product Requirements Document (PRD). Analyzes routes, components, state management, API integrations, and user interactions to produce business-readable documentation detailed enough for engineers or AI agents to fully reconstruct every page and endpoint. Works with frontend frameworks (React, Vue, Angular, Svelte, Next.js, Nuxt), backend frameworks (NestJS, Django, Express, FastAPI), and fullstack applications. Use when users mention: generate PRD, reverse-engineer requirements, code to documentation, extract product specs from code, document page logic, analyze page fields and interactions, create a functional inventory, write requirements from an existing codebase, document API endpoints, or analyze backend routes.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/code-to-prd",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/code-to-prd/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "api-integration",
+        "data-extraction"
+      ],
+      "triggers": [
+        "api",
+        "endpoint",
+        "extract"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.952419"
+    },
+    {
+      "name": "deploy-to-vercel",
+      "description": "Deploy applications and websites to Vercel. Use when the user requests deployment actions like \"deploy my app\", \"deploy and give me the link\", \"push this live\", or \"create a preview deployment\".",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/deploy-to-vercel",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/deploy-to-vercel/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T23:06:23.060989"
+    },
+    {
+      "name": "ethical-hacking-methodology",
+      "description": "Master the complete penetration testing lifecycle from reconnaissance through reporting. This skill covers the five stages of ethical hacking methodology, essential tools, attack techniques, and professional reporting for authorized security assessments.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/ethical-hacking-methodology",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/ethical-hacking-methodology/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "security"
+      ],
+      "triggers": [
+        "security"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T23:00:38.037012"
+    },
+    {
+      "name": "flutter-expert",
+      "description": "Master Flutter development with Dart 3, advanced widgets, and multi-platform deployment.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/flutter-expert",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/flutter-expert/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.973287"
+    },
+    {
+      "name": "i18n-localization",
+      "description": "Internationalization and localization patterns. Detecting hardcoded strings, managing translations, locale files, RTL support.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/i18n-localization",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/i18n-localization/SKILL.md",
+      "registered": false,
+      "has_scripts": true,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "python",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.990975"
+    },
+    {
+      "name": "monorepo-architect",
+      "description": "Expert in monorepo architecture, build systems, and dependency management at scale. Masters Nx, Turborepo, Bazel, and Lerna for efficient multi-project development. Use PROACTIVELY for monorepo setup,",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/monorepo-architect",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/monorepo-architect/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T23:01:46.212403"
+    },
+    {
+      "name": "nextjs-seo-indexing",
+      "description": "Fix SEO indexing issues, crawl budget problems, and Search Console coverage errors for Next.js apps. Covers canonical tags, noindex audits, sitemap health, static rendering, and internal linking.",
+      "version": "1.0.0",
+      "location": "/home/yourblooo/development/justui/.agents/skills/nextjs-seo-indexing",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/nextjs-seo-indexing/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "data-extraction",
+        "monitoring"
+      ],
+      "triggers": [
+        "crawl",
+        "health"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.971783"
+    },
+    {
+      "name": "performance-profiler",
+      "description": "Systematic performance profiling for Node.js, Python, and Go applications. Identifies CPU, memory, and I/O bottlenecks, generates flamegraphs, analyzes bundle sizes, optimizes database queries, runs load tests with k6 and Artillery. Always measures before and after. Use when investigating a slow endpoint, planning a performance budget, or hunting a memory leak in production.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/performance-profiler",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/performance-profiler/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "api-integration",
+        "context-management"
+      ],
+      "triggers": [
+        "endpoint",
+        "memory"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-29T16:06:22.847587"
+    },
+    {
+      "name": "red-team",
+      "description": "Use when planning or executing authorized red team engagements, attack path analysis, or offensive security simulations. Covers MITRE ATT&CK kill-chain planning, technique scoring, choke point identification, OPSEC risk assessment, and crown jewel targeting.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/red-team",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/red-team/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "security"
+      ],
+      "triggers": [
+        "security"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.947265"
+    },
+    {
+      "name": "reverse-engineer",
+      "description": "Expert reverse engineer specializing in binary analysis, disassembly, decompilation, and software analysis. Masters IDA Pro, Ghidra, radare2, x64dbg, and modern RE toolchains.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/reverse-engineer",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/reverse-engineer/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T23:03:12.764899"
+    },
+    {
+      "name": "rust-pro",
+      "description": "Master Rust 1.75+ with modern async patterns, advanced type system features, and production-ready systems programming.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/rust-pro",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/rust-pro/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.983509"
+    },
+    {
+      "name": "security-pen-testing",
+      "description": "Use when the user asks to perform security audits, penetration testing, vulnerability scanning, OWASP Top 10 checks, or offensive security assessments. Covers static analysis, dependency scanning, secret detection, API security testing, and pen test report generation.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/security-pen-testing",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/security-pen-testing/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "analytics",
+        "api-integration",
+        "security"
+      ],
+      "triggers": [
+        "api",
+        "owasp",
+        "report",
+        "security",
+        "vulnerability"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T23:00:09.012846"
+    },
+    {
+      "name": "senior-architect",
+      "description": "Complete toolkit for senior architect with modern tools and best practices.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/SKILL.md",
+      "registered": false,
+      "has_scripts": true,
+      "has_references": true,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "python",
+      "status": "active",
+      "last_modified": "2026-06-27T11:00:23.463430"
+    },
+    {
+      "name": "senior-backend",
+      "description": "Designs and implements backend systems including REST APIs, microservices, database architectures, authentication flows, and security hardening. Use when the user asks to \"design REST APIs\", \"optimize database queries\", \"implement authentication\", \"build microservices\", \"review backend code\", \"set up GraphQL\", \"handle database migrations\", or \"load test APIs\". Covers Node.js/Express/Fastify development, PostgreSQL optimization, API security, and backend architecture patterns.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/senior-backend",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/senior-backend/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "api-integration",
+        "image-generation",
+        "security"
+      ],
+      "triggers": [
+        "api",
+        "design",
+        "rest",
+        "security"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.936327"
+    },
+    {
+      "name": "senior-devops",
+      "description": "Comprehensive DevOps skill for CI/CD, infrastructure automation, containerization, and cloud platforms (AWS, GCP, Azure). Includes pipeline setup, infrastructure as code, deployment automation, and monitoring. Use when setting up pipelines, deploying applications, managing infrastructure, implementing monitoring, or optimizing deployment processes.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/senior-devops",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/senior-devops/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.941360"
+    },
+    {
+      "name": "senior-frontend",
+      "description": "Frontend development skill for React, Next.js, TypeScript, and Tailwind CSS applications. Use when building React components, optimizing Next.js performance, analyzing bundle sizes, scaffolding frontend projects, implementing accessibility, or reviewing frontend code quality.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/senior-frontend",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/senior-frontend/SKILL.md",
+      "registered": false,
+      "has_scripts": true,
+      "has_references": true,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "python",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.939685"
+    },
+    {
+      "name": "senior-fullstack",
+      "description": "Complete toolkit for senior fullstack with modern tools and best practices.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/senior-fullstack",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/senior-fullstack/SKILL.md",
+      "registered": false,
+      "has_scripts": true,
+      "has_references": true,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "python",
+      "status": "active",
+      "last_modified": "2026-06-27T22:59:08.225355"
+    },
+    {
+      "name": "senior-qa",
+      "description": "Generates unit tests, integration tests, and E2E tests for React/Next.js applications. Scans components to create Jest + React Testing Library test stubs, analyzes Istanbul/LCOV coverage reports to surface gaps, scaffolds Playwright test files from Next.js routes, mocks API calls with MSW, creates test fixtures, and configures test runners. Use when the user asks to \"generate tests\", \"write unit tests\", \"analyze test coverage\", \"scaffold E2E tests\", \"set up Playwright\", \"configure Jest\", \"implement testing patterns\", or \"improve test quality\".",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/senior-qa",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/senior-qa/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "api-integration",
+        "web-automation"
+      ],
+      "triggers": [
+        "api",
+        "playwright"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.944463"
+    },
+    {
+      "name": "senior-secops",
+      "description": "Senior SecOps engineer skill for application security, vulnerability management, compliance verification, and secure development practices. Runs SAST/DAST scans, generates CVE remediation plans, checks dependency vulnerabilities, creates security policies, enforces secure coding patterns, and automates compliance checks against SOC2, PCI-DSS, HIPAA, and GDPR. Use when conducting a security review or audit, responding to a CVE or security incident, hardening infrastructure, implementing authentication or secrets management, running penetration test prep, checking OWASP Top 10 exposure, or enforcing security controls in CI/CD pipelines.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/senior-secops",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/senior-secops/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "monitoring",
+        "security"
+      ],
+      "triggers": [
+        "audit",
+        "cve",
+        "incident",
+        "owasp",
+        "security",
+        "vulnerability"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.942928"
+    },
+    {
+      "name": "senior-security",
+      "description": "Use when the user asks for STRIDE threat modeling, DREAD risk scoring, data-flow-diagram threat analysis, or a quick secret scan — or when a security request needs routing to the right specialist skill (pen-testing, incident response, cloud posture, red team, AI security, threat hunting, secure code review). This skill owns threat modeling; everything else routes to a sibling.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/senior-security",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/senior-security/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "security"
+      ],
+      "triggers": [
+        "incident",
+        "security"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.945973"
+    },
+    {
+      "name": "seo",
+      "description": "Run a broad SEO audit across technical SEO, on-page SEO, schema, sitemaps, content quality, AI search readiness, and GEO. Use as the umbrella skill when the user asks for a full SEO analysis or strategy.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/seo",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/seo/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": true,
+      "has_data": false,
+      "capabilities": [
+        "content-management",
+        "monitoring"
+      ],
+      "triggers": [
+        "audit",
+        "content"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.954126"
+    },
+    {
+      "name": "seo-audit",
+      "description": "Diagnose and audit SEO issues affecting crawlability, indexation, rankings, and organic performance.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/seo-audit",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/seo-audit/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "monitoring"
+      ],
+      "triggers": [
+        "audit"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.956320"
+    },
+    {
+      "name": "seo-content",
+      "description": "Content quality and E-E-A-T analysis with AI citation readiness assessment. Use when user says \"content quality\", \"E-E-A-T\", \"content analysis\", \"readability check\", \"thin content\", or \"content audit\".\n",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/seo-content",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/seo-content/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "content-management",
+        "monitoring"
+      ],
+      "triggers": [
+        "audit",
+        "check",
+        "content"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.970682"
+    },
+    {
+      "name": "seo-fundamentals",
+      "description": "Core principles of SEO including E-E-A-T, Core Web Vitals, technical foundations, content quality, and how modern search engines evaluate pages.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/seo-fundamentals",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/seo-fundamentals/SKILL.md",
+      "registered": false,
+      "has_scripts": true,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "content-management"
+      ],
+      "triggers": [
+        "content"
+      ],
+      "language": "python",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.969431"
+    },
+    {
+      "name": "seo-geo",
+      "description": "Optimize content for AI Overviews, ChatGPT, Perplexity, and other AI search systems. Use when improving GEO, AI citations, llms.txt readiness, crawler accessibility, and passage-level citability.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/seo-geo",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/seo-geo/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "content-management"
+      ],
+      "triggers": [
+        "content"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.967428"
+    },
+    {
+      "name": "seo-hreflang",
+      "description": "Hreflang and international SEO audit, validation, and generation. Detects common mistakes, validates language/region codes, and generates correct hreflang implementations. Use when user says \"hreflang\", \"i18n SEO\", \"international SEO\", \"multi-language\", \"multi-region\", or \"language tags\".\n",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/seo-hreflang",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/seo-hreflang/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "monitoring"
+      ],
+      "triggers": [
+        "audit"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.965905"
+    },
+    {
+      "name": "seo-images",
+      "description": "Image optimization analysis for SEO and performance. Checks alt text, file sizes, formats, responsive images, lazy loading, and CLS prevention. Use when user says \"image optimization\", \"alt text\", \"image SEO\", \"image size\", or \"image audit\".\n",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/seo-images",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/seo-images/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "image-generation",
+        "monitoring"
+      ],
+      "triggers": [
+        "audit",
+        "image"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.964479"
+    },
+    {
+      "name": "seo-meta-optimizer",
+      "description": "Creates optimized meta titles, descriptions, and URL suggestions based on character limits and best practices. Generates compelling, keyword-rich metadata. Use PROACTIVELY for new content.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/seo-meta-optimizer",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/seo-meta-optimizer/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "content-management"
+      ],
+      "triggers": [
+        "content"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.962841"
+    },
+    {
+      "name": "seo-plan",
+      "description": "Strategic SEO planning for new or existing websites. Industry-specific templates, competitive analysis, content strategy, and implementation roadmap. Use when user says \"SEO plan\", \"SEO strategy\", \"content strategy\", \"site architecture\", or \"SEO roadmap\".\n",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/seo-plan",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/seo-plan/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "content-management"
+      ],
+      "triggers": [
+        "content"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.959435"
+    },
+    {
+      "name": "seo-technical",
+      "description": "Audit technical SEO across crawlability, indexability, security, URLs, mobile, Core Web Vitals, structured data, JavaScript rendering, and related platform signals like robots.txt and AI crawler access.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/seo-technical",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/seo-technical/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "monitoring",
+        "security"
+      ],
+      "triggers": [
+        "audit",
+        "security"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.957778"
+    },
+    {
+      "name": "subagent-orchestrator",
+      "description": "Coordinate quota-aware parallel subagents for large, multi-file Antigravity tasks.",
+      "version": "1.0.0",
+      "location": "/home/yourblooo/development/justui/.agents/skills/subagent-orchestrator",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/subagent-orchestrator/SKILL.md",
+      "registered": false,
+      "has_scripts": true,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "nodejs",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.978376"
+    },
+    {
+      "name": "typescript-advanced-types",
+      "description": "Comprehensive guidance for mastering TypeScript's advanced type system including generics, conditional types, mapped types, template literal types, and utility types for building robust, type-safe applications.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/typescript-advanced-types",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/typescript-advanced-types/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "content-management"
+      ],
+      "triggers": [
+        "template"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.984924"
+    },
+    {
+      "name": "typescript-expert",
+      "description": "TypeScript and JavaScript expert with deep knowledge of type-level programming, performance optimization, monorepo management, migration strategies, and modern tooling.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/typescript-expert",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/typescript-expert/SKILL.md",
+      "registered": false,
+      "has_scripts": true,
+      "has_references": true,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "python",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.986745"
+    },
+    {
+      "name": "typescript-pro",
+      "description": "Master TypeScript with advanced types, generics, and strict type safety. Handles complex type systems, decorators, and enterprise-grade patterns.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/typescript-pro",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/typescript-pro/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.989025"
+    },
+    {
+      "name": "ui-a11y",
+      "description": "Audit a StyleSeed-based component or page for WCAG 2.2 AA issues and apply practical accessibility fixes where the code makes them safe.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/ui-a11y",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/ui-a11y/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "monitoring"
+      ],
+      "triggers": [
+        "audit"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T11:17:07.950406"
+    },
+    {
+      "name": "ux-audit",
+      "description": "Audit screens against Nielsen's heuristics and mobile UX best practices using the StyleSeed Toss design language as the implementation context.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/ux-audit",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/ux-audit/SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "context-management",
+        "image-generation",
+        "monitoring"
+      ],
+      "triggers": [
+        "audit",
+        "context",
+        "design"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T22:59:49.949737"
+    },
+    {
+      "name": "vercel-optimize",
+      "description": "Audit deployed Vercel apps for cost and performance issues using metrics, project config, code scans, and version-aware recommendations.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/vercel-optimize",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/vercel-optimize/SKILL.md",
+      "registered": false,
+      "has_scripts": true,
+      "has_references": true,
+      "has_data": false,
+      "capabilities": [
+        "analytics",
+        "monitoring"
+      ],
+      "triggers": [
+        "audit",
+        "metrics"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-06-27T23:06:38.525077"
+    },
+    {
+      "name": "vulnerability-scanner",
+      "description": "Advanced vulnerability analysis principles. OWASP 2025, Supply Chain Security, attack surface mapping, risk prioritization.",
+      "version": "",
+      "location": "/home/yourblooo/development/justui/.agents/skills/vulnerability-scanner",
+      "skill_md": "/home/yourblooo/development/justui/.agents/skills/vulnerability-scanner/SKILL.md",
+      "registered": false,
+      "has_scripts": true,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "security"
+      ],
+      "triggers": [
+        "owasp",
+        "security",
+        "vulnerability"
+      ],
+      "language": "python",
+      "status": "active",
+      "last_modified": "2026-06-27T23:03:49.190107"
+    }
+  ]
+}

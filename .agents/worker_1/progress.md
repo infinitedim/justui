@@ -1,13 +1,16 @@
 # Progress — worker_1
 
-- Last visited: 2026-06-20T11:32:00+07:00
+- Last visited: 2026-07-01T12:36:00+07:00
 
 ## Status
-- [x] Read explorer_1/handoff.md and other package source files to verify details.
-- [x] Formulate outline of justui_architectural_audit.md.
-- [x] Draft design tokens and accessibility contrast engine section.
-- [x] Draft theme engine, InheritedModel, and provider section.
-- [x] Draft components catalog and CLI workflow section.
-- [x] Draft development constraints section.
-- [x] Generate and verify justui_architectural_audit.md.
+- [x] Understand existing showcase code and height_reporter.dart.
+- [x] Implement `ShowcaseMarquee` in `apps/showcase/lib/widgets/showcase_marquee.dart`.
+- [x] Modify `apps/showcase/lib/height_reporter.dart` and `apps/showcase/lib/main.dart` to use/report a fixed height of 180px.
+- [x] Update `apps/docs/src/components/showcase-frame.tsx` to simplify iframe height handling.
+- [x] Update `apps/docs/src/app/[lang]/page.tsx` for centered hero layout and full-width showcase integration.
+- [x] Verify compilation, linting, type safety, and build of Flutter showcase and Next.js docs.
+  - [x] Lint & analyze Flutter showcase: passed.
+  - [x] TypeScript type-check docs site: passed.
+  - [x] Build Flutter showcase: passed.
+  - [x] Build Next.js docs: passed.
 - [x] Write handoff.md and submit.

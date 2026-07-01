@@ -1,9 +1,15 @@
 # Progress — worker_m7
 
-Last visited: 2026-06-23T04:24:20Z
+Last visited: 2026-07-01T05:47:45Z
 
-- [x] Run `bun run type-check` in `apps/docs` (Passed successfully)
-- [x] Run `bun run build` in `apps/docs` (Passed successfully)
-- [x] Record outputs and verify correctness (Done)
+- [x] Update ORIGINAL_REQUEST.md with new requests (Done)
+- [x] Restore dynamic RenderBox height measurement in `height_reporter.dart` (Done)
+- [x] Hoist interactive controls state to `_ShowcaseMarqueeState` in `showcase_marquee.dart` (Done)
+- [x] Update test expectations in `showcase_marquee_test.dart` to assert synchronized behavior (Done)
+- [x] Run Dart linter check on showcase app (Passed with no issues)
+- [x] Run showcase unit tests (Passed)
+- [x] Run showcase web build (Passed)
+- [x] Run Next.js type-check (Passed)
+- [x] Run Next.js build (Passed)
 - [x] Write handoff.md (Done)
-- [x] Notify parent orchestrator (Done)
+- [x] Send completion message to parent orchestrator (Done)

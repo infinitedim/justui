@@ -1,7 +1,7 @@
-# BRIEFING — 2026-06-20T11:37:00+07:00
+# BRIEFING — 2026-07-01T12:48:35+07:00
 
 ## Mission
-Verify the quality and completeness of `/home/yourblooo/development/justui/docs/justui_architectural_audit.md` and validate code compilation using static analysis.
+Verify the correctness, visual design compliance with presets, code quality, and style conventions (including dot shorthand and state hoisting) in modified showcase and docs files.
 
 ## 🔒 My Identity
 - Archetype: teamwork_preview_reviewer
@@ -17,19 +17,25 @@ Verify the quality and completeness of `/home/yourblooo/development/justui/docs/
 - HOME override to `/home/yourblooo/development/justui/.home` required for all Dart/Flutter tools.
 
 ## Current Parent
-- Conversation ID: 97a9044b-0def-4d58-8143-52d0fd5a6c64
-- Updated: not yet
+- Conversation ID: f1e76331-daeb-48a2-be4e-9ccd3f3509e7
+- Updated: 2026-07-01T12:48:35+07:00
 
 ## Review Scope
-- **Files to review**: `/home/yourblooo/development/justui/docs/justui_architectural_audit.md`
+- **Files to review**:
+  - `apps/showcase/lib/widgets/showcase_marquee.dart`
+  - `apps/showcase/lib/height_reporter.dart`
+  - `apps/showcase/lib/main.dart`
+  - `apps/docs/src/components/showcase-frame.tsx`
+  - `apps/docs/src/app/[lang]/page.tsx`
 - **Interface contracts**: `/home/yourblooo/development/justui/AGENTS.md`
-- **Review criteria**: correctness, completeness, offline environment constraints validation, and static analysis compilation checks.
+- **Review criteria**:
+  - Dynamic styling of standard components (Buttons, Badges, Avatars, Controls, Input)
+  - Clean application of Neobrutalism styling (2.5px border, BorderRadius.zero, solid 4x4 shadow) vs default styling
+  - State hoisting of interactive controls to prevent looping visual desynchronization
+  - Dot shorthand constructor usage compliance
 
 ## Key Decisions Made
-- Performed detailed manual code review of core contract files.
-- Attempted to run static analysis (which timed out due to offline/interactive constraints).
-- Confirmed the generated report matches the codebase exactly and has no gaps.
-- Approved the report as fully passing.
+- Commenced review of the modified showcase files.
 
 ## Artifact Index
 - `/home/yourblooo/development/justui/.agents/reviewer_1/ORIGINAL_REQUEST.md` — Original request
@@ -38,19 +44,11 @@ Verify the quality and completeness of `/home/yourblooo/development/justui/docs/
 - `/home/yourblooo/development/justui/.agents/reviewer_1/handoff.md` — Handoff and review report
 
 ## Review Checklist
-- **Items reviewed**:
-  - `/home/yourblooo/development/justui/docs/justui_architectural_audit.md`
-  - `/home/yourblooo/development/justui/packages/just_ui_tokens/lib/src/colors/colors_accessibility.dart`
-  - `/home/yourblooo/development/justui/packages/just_ui_core/lib/src/theme/theme_provider.dart`
-  - `/home/yourblooo/development/justui/packages/just_ui_core/lib/src/theme/theme_data.dart`
-  - `/home/yourblooo/development/justui/packages/just_ui_cli/lib/src/commands/add_command.dart`
-  - `/home/yourblooo/development/justui/packages/just_ui_cli/lib/src/utils/pubspec_editor.dart`
-- **Verdict**: APPROVE
-- **Unverified claims**: Static analysis compilation cleanliness via CLI (due to sandbox permission approval timeout).
+- **Items reviewed**: None
+- **Verdict**: pending
+- **Unverified claims**: All files and style assertions.
 
 ## Attack Surface
-- **Hypotheses tested**:
-  - *Hypothesis 1*: Does `updateShouldNotifyDependent` in `_JustThemeModel` compare all aspects properly? *Result*: Yes, verified it correctly filters color, typography, spacing, radius, shadows, animations.
-  - *Hypothesis 2*: Does `toThemeData` correctly cache the generated theme data? *Result*: Yes, verified `_cachedThemeData ??= _buildMaterialTheme()` caches it, and copyWith returns a new instance starting with null cache (safe invalidation).
-- **Vulnerabilities found**: none
-- **Untested angles**: Runtime download behavior of the CLI since network connection is offline in the sandbox.
+- **Hypotheses tested**: None
+- **Vulnerabilities found**: None
+- **Untested angles**: Verification of dynamic style transitions and visual state loop behavior.
