@@ -69,35 +69,65 @@ abstract class JustPresetTokens {
   /// (non-emphasized) containers like cards and inputs.
   bool get showsDefaultBorder;
 
-  /// Resolves the track height for a slider size.
-  double resolveSliderTrackHeight(JustSliderSize size);
+  // ── Slider ──────────────────────────────────────────────────────────────────
 
-  /// Resolves the thumb size (diameter) for a slider size.
-  double resolveSliderThumbSize(JustSliderSize size);
+  /// Resolves track height for slider based on size.
+  /// Neobrutalism uses thicker tracks for visual weight.
+  double resolveSliderTrackHeight(JustSliderSize size) => switch (size) {
+    JustSliderSize.sm => 4.0,
+    JustSliderSize.md => 6.0,
+    JustSliderSize.lg => 8.0,
+  };
 
-  /// Whether slider haptic feedback is enabled by default.
-  bool get sliderHapticDefault;
+  /// Resolves thumb size (diameter) for slider based on size.
+  double resolveSliderThumbSize(JustSliderSize size) => switch (size) {
+    JustSliderSize.sm => 14.0,
+    JustSliderSize.md => 20.0,
+    JustSliderSize.lg => 26.0,
+  };
 
-  /// Resolves the stroke width for a circular/linear progress indicator size.
-  double resolveProgressStrokeWidth(JustProgressSize size);
+  /// Whether slider uses haptic feedback by default (neobrutalism = true).
+  bool get sliderDefaultHaptic => false;
 
-  /// Resolves the font weight for a progress indicator's label.
-  FontWeight get progressLabelFontWeight;
+  // ── Progress ─────────────────────────────────────────────────────────────────
 
-  /// Resolves the thickness for a separator.
-  double resolveSeparatorThickness(double thickness);
+  /// Resolves stroke width for circular progress based on size.
+  double resolveProgressStrokeWidth(JustProgressSize size) => switch (size) {
+    JustProgressSize.sm => 2.0,
+    JustProgressSize.md => 3.0,
+    JustProgressSize.lg => 4.0,
+  };
 
-  /// The default thickness for a tab indicator.
-  double get tabIndicatorThickness;
+  /// Label font weight for progress — neobrutalism uses bold.
+  FontWeight get progressLabelWeight => FontWeight.w500;
+
+  // ── Separator ────────────────────────────────────────────────────────────────
+
+  /// Resolves separator thickness — neobrutalism uses 2.0px minimum.
+  double resolveSeparatorThickness(double base) => base;
+
+  // ── Tab Indicator ────────────────────────────────────────────────────────────
+
+  /// Resolves tab indicator thickness (underline or pill).
+  double resolveTabIndicatorThickness(double? custom) => custom ?? 2.0;
 
   /// Resolves the transition duration for a focus ring/effect.
   Duration resolveFocusTransitionDuration(JustMotionProfile animations);
+
+  /// Focus animation duration.
+  Duration get focusTransitionDuration => const Duration(milliseconds: 150);
 
   /// Resolves the dropdown menu animation duration.
   Duration resolveDropdownDuration(JustMotionProfile animations);
 
   /// Resolves the dropdown menu animation curve.
   Curve resolveDropdownCurve(JustMotionProfile animations);
+
+  /// Dropdown menu open curve.
+  Curve get dropdownOpenCurve => Curves.easeOut;
+
+  /// Dropdown menu open duration.
+  Duration get dropdownOpenDuration => const Duration(milliseconds: 200);
 
   /// Whether selection controls (Switch, Radio, Checkbox) default to triggering haptic feedback.
   bool get selectionHapticDefault;
@@ -188,44 +218,7 @@ class DefaultPresetTokens extends JustPresetTokens {
     );
   }
 
-  @override
-  double resolveSliderTrackHeight(JustSliderSize size) {
-    return switch (size) {
-      .sm => 4.0,
-      .md => 6.0,
-      .lg => 8.0,
-    };
-  }
-
-  @override
-  double resolveSliderThumbSize(JustSliderSize size) {
-    return switch (size) {
-      .sm => 14.0,
-      .md => 20.0,
-      .lg => 26.0,
-    };
-  }
-
-  @override
-  bool get sliderHapticDefault => false;
-
-  @override
-  double resolveProgressStrokeWidth(JustProgressSize size) {
-    return switch (size) {
-      .sm => 2.0,
-      .md => 3.0,
-      .lg => 4.0,
-    };
-  }
-
-  @override
-  FontWeight get progressLabelFontWeight => FontWeight.w500;
-
-  @override
-  double resolveSeparatorThickness(double thickness) => thickness;
-
-  @override
-  double get tabIndicatorThickness => 2.0;
+  // Extended Slider, Progress, Separator, Tab Indicator tokens are inherited from JustPresetTokens.
 
   @override
   Duration resolveFocusTransitionDuration(JustMotionProfile animations) =>
@@ -328,47 +321,44 @@ class NeobrutalismPresetTokens extends JustPresetTokens {
   }
 
   @override
-  double resolveSliderTrackHeight(JustSliderSize size) {
-    return switch (size) {
-      .sm => 6.0,
-      .md => 10.0,
-      .lg => 14.0,
-    };
-  }
+  double resolveSliderTrackHeight(JustSliderSize size) => switch (size) {
+    JustSliderSize.sm => 6.0,
+    JustSliderSize.md => 10.0,
+    JustSliderSize.lg => 14.0,
+  };
 
   @override
-  double resolveSliderThumbSize(JustSliderSize size) {
-    return switch (size) {
-      .sm => 16.0,
-      .md => 22.0,
-      .lg => 28.0,
-    };
-  }
+  double resolveSliderThumbSize(JustSliderSize size) => switch (size) {
+    JustSliderSize.sm => 16.0,
+    JustSliderSize.md => 22.0,
+    JustSliderSize.lg => 28.0,
+  };
 
   @override
-  bool get sliderHapticDefault => true;
+  bool get sliderDefaultHaptic => true;
 
   @override
-  double resolveProgressStrokeWidth(JustProgressSize size) {
-    return switch (size) {
-      .sm => 3.0,
-      .md => 4.0,
-      .lg => 5.0,
-    };
-  }
+  double resolveProgressStrokeWidth(JustProgressSize size) => switch (size) {
+    JustProgressSize.sm => 3.0,
+    JustProgressSize.md => 4.0,
+    JustProgressSize.lg => 5.0,
+  };
 
   @override
-  FontWeight get progressLabelFontWeight => FontWeight.w700;
+  FontWeight get progressLabelWeight => FontWeight.w700;
 
   @override
-  double resolveSeparatorThickness(double thickness) => 2.0;
+  double resolveSeparatorThickness(double base) => base < 2.0 ? 2.0 : base;
 
   @override
-  double get tabIndicatorThickness => 4.0;
+  double resolveTabIndicatorThickness(double? custom) => custom ?? 4.0;
 
   @override
   Duration resolveFocusTransitionDuration(JustMotionProfile animations) =>
       animations.instant;
+
+  @override
+  Duration get focusTransitionDuration => const Duration(milliseconds: 50);
 
   @override
   Duration resolveDropdownDuration(JustMotionProfile animations) =>
@@ -377,6 +367,12 @@ class NeobrutalismPresetTokens extends JustPresetTokens {
   @override
   Curve resolveDropdownCurve(JustMotionProfile animations) =>
       animations.defaultCurve;
+
+  @override
+  Curve get dropdownOpenCurve => Curves.linear;
+
+  @override
+  Duration get dropdownOpenDuration => const Duration(milliseconds: 80);
 
   @override
   bool get selectionHapticDefault => true;

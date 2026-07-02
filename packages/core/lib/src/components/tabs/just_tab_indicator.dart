@@ -49,8 +49,9 @@ class JustTabIndicator extends StatelessWidget {
 
     switch (variant) {
       case .line:
-        final thickness =
-            style?.indicatorThickness ?? presetTokens.tabIndicatorThickness;
+        final thickness = presetTokens.resolveTabIndicatorThickness(
+          style?.indicatorThickness,
+        );
         if (orientation == .horizontal) {
           return Align(
             alignment: .bottomCenter,
@@ -118,8 +119,9 @@ class JustTabIndicator extends StatelessWidget {
 
       case .vertical:
         // Fallback for vertical: line by default, or similar to line
-        final thickness =
-            style?.indicatorThickness ?? presetTokens.tabIndicatorThickness;
+        final thickness = presetTokens.resolveTabIndicatorThickness(
+          style?.indicatorThickness,
+        );
         final isRtl = Directionality.of(context) == .rtl;
         return Align(
           alignment: isRtl ? .centerRight : .centerLeft,

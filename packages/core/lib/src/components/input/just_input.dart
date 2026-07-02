@@ -761,9 +761,7 @@ class _JustInputState extends State<JustInput> {
                         : null;
 
                     return AnimatedContainer(
-                      duration: presetTokens.showsDefaultBorder
-                          ? theme.animations.instant
-                          : theme.animations.fast,
+                      duration: presetTokens.focusTransitionDuration,
                       curve: animations.defaultCurve,
                       alignment: .centerLeft,
                       padding: finalPadding,

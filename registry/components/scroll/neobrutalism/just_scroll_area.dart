@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import '../shared/_shared_focus_indicator.dart';
 import 'just_scroll_area_style.dart';
@@ -317,8 +317,8 @@ class _JustScrollAreaState extends State<JustScrollArea> {
         widget.style?.scrollbarThickness ??
         themeStyle?.scrollbarThickness ??
         6.0;
-    final isNeobrutalism = true;
-    final scrollbarRadius = isNeobrutalism
+    final presetTokens = JustThemeProvider.of(context).theme.presetTokens;
+    final scrollbarRadius = presetTokens.showsDefaultBorder
         ? Radius.zero
         : (widget.style?.scrollbarRadius ??
               themeStyle?.scrollbarRadius ??

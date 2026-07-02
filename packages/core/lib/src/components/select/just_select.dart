@@ -379,8 +379,8 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                 // Chevron Icon
                 AnimatedRotation(
                   turns: _overlayController.isShowing ? 0.5 : 0.0,
-                  duration: customTheme.animations.fast,
-                  curve: customTheme.animations.defaultCurve,
+                  duration: presetTokens.dropdownOpenDuration,
+                  curve: presetTokens.dropdownOpenCurve,
                   child: Icon(
                     const IconData(0xe150, fontFamily: 'MaterialIcons'),
                     size: widget.size == .sm ? 16 : 20,
@@ -692,24 +692,21 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                 ),
               );
 
-              if (!presetTokens.showsDefaultBorder) {
-                // Fade and Slide transition for non-neobrutalism
-                dropdownContent = TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  duration: customTheme.animations.fast,
-                  curve: customTheme.animations.defaultCurve,
-                  builder: (context, val, child) {
-                    return Opacity(
-                      opacity: val,
-                      child: Transform.translate(
-                        offset: Offset(0, (1 - val) * 10),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: dropdownContent,
-                );
-              }
+              dropdownContent = TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: presetTokens.dropdownOpenDuration,
+                curve: presetTokens.dropdownOpenCurve,
+                builder: (context, val, child) {
+                  return Opacity(
+                    opacity: val,
+                    child: Transform.translate(
+                      offset: Offset(0, (1 - val) * 10),
+                      child: child,
+                    ),
+                  );
+                },
+                child: dropdownContent,
+              );
 
               return Stack(
                 children: [

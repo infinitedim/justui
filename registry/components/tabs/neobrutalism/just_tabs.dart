@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
-import '../../../shared/default/_shared_tokens.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_tab_indicator.dart';
 import 'just_tabs_style.dart';
@@ -656,7 +656,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       ],
     );
 
-    final isNeobrutalism = true;
+    final presetTokens = customTheme.presetTokens;
     final Widget headerContainer = KeyboardListener(
       focusNode: _focusNode,
       onKeyEvent: _handleKeyEvent,
@@ -664,9 +664,12 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           color: containerBg,
           borderRadius: containerBorderRadius,
-          border: isNeobrutalism
+          border: presetTokens.showsDefaultBorder
               ? (widget.variant == .enclosed || widget.variant == .pill
-                    ? .all(color: colors.textPrimary, width: 2.5)
+                    ? .all(
+                        color: colors.textPrimary,
+                        width: presetTokens.borderWidth,
+                      )
                     : null)
               : (widget.variant == .enclosed
                     ? .all(color: colors.borderDefault, width: 1.0)

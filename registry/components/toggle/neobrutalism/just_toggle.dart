@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
+import '../../theme/preset_tokens.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_toggle_style.dart';
@@ -68,7 +68,7 @@ class JustToggle extends StatelessWidget {
     required this.onPressed,
     required this.child,
     this.enabled = true,
-    this.size = JustToggleSize.md,
+    this.size = .md,
     this.style,
   });
 
@@ -79,17 +79,13 @@ class JustToggle extends StatelessWidget {
     final themeStyle = toggleTheme?.style;
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(
-      context,
-      aspect: .spacing,
-    ).theme.spacing;
     final radius = customTheme.radius;
     final shadows = customTheme.shadows;
     final typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final isNeobrutalism = true;
+    final hasBorder = customTheme.presetTokens.showsDefaultBorder;
 
     final isInteractive = enabled && onPressed != null;
 
@@ -99,17 +95,17 @@ class JustToggle extends StatelessWidget {
     TextStyle textStyle;
 
     switch (size) {
-      case JustToggleSize.sm:
+      case .sm:
         height = 32.0;
         paddingH = 12.0;
         textStyle = typography.bodySm;
         break;
-      case JustToggleSize.md:
+      case .md:
         height = 40.0;
         paddingH = 16.0;
         textStyle = typography.bodyMd;
         break;
-      case JustToggleSize.lg:
+      case .lg:
         height = 48.0;
         paddingH = 20.0;
         textStyle = typography.bodyLg;
@@ -118,13 +114,12 @@ class JustToggle extends StatelessWidget {
 
     // Resolve BorderRadius with Group Collapse
     final groupInfo = JustToggleGroupInfo.of(context);
-    final BorderRadius defaultRadius = isNeobrutalism
-        ? BorderRadius.zero
-        : .all(radius.md);
+    final BorderRadius defaultRadius = customTheme.presetTokens
+        .resolveBorderRadius(radius);
     BorderRadius resolvedRadius =
         style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius;
 
-    if (groupInfo != null && !isNeobrutalism) {
+    if (groupInfo != null && !hasBorder) {
       final isFirst = groupInfo.index == 0;
       final isLast = groupInfo.index == groupInfo.totalCount - 1;
 
@@ -163,29 +158,29 @@ class JustToggle extends StatelessWidget {
     final finalSelectedBg =
         style?.selectedBackgroundColor ??
         themeStyle?.selectedBackgroundColor ??
-        (isNeobrutalism
+        (hasBorder
             ? colors.textPrimary
             : colors.borderFocus.withValues(alpha: 0.15));
 
     final finalUnselectedBg =
         style?.unselectedBackgroundColor ??
         themeStyle?.unselectedBackgroundColor ??
-        (isNeobrutalism ? colors.background : const Color(0x00000000));
+        (hasBorder ? colors.background : const Color(0x00000000));
 
     final finalSelectedBorder =
         style?.selectedBorderColor ??
         themeStyle?.selectedBorderColor ??
-        (isNeobrutalism ? colors.textPrimary : colors.borderFocus);
+        (hasBorder ? colors.textPrimary : colors.borderFocus);
 
     final finalUnselectedBorder =
         style?.unselectedBorderColor ??
         themeStyle?.unselectedBorderColor ??
-        (isNeobrutalism ? colors.textPrimary : colors.borderDefault);
+        (hasBorder ? colors.textPrimary : colors.borderDefault);
 
     final finalSelectedText =
         style?.selectedTextColor ??
         themeStyle?.selectedTextColor ??
-        (isNeobrutalism ? colors.textInverse : colors.borderFocus);
+        (hasBorder ? colors.textInverse : colors.borderFocus);
 
     final finalUnselectedText =
         style?.unselectedTextColor ??
@@ -210,15 +205,15 @@ class JustToggle extends StatelessWidget {
             text = text.withValues(alpha: 0.4);
             border = border.withValues(alpha: 0.4);
           } else if (isPressed) {
-            if (isNeobrutalism) {
-              // Press effect handled by customTheme.buildPressEffect
+            if (hasBorder) {
+              // Press effect handled by customTheme.presetTokens.buildPressEffect
             } else {
               bg = selected
                   ? finalSelectedBg.withValues(alpha: 0.8)
                   : colors.borderDefault.withValues(alpha: 0.15);
             }
           } else if (isHovered) {
-            if (isNeobrutalism) {
+            if (hasBorder) {
               if (!selected) {
                 bg = colors.borderDefault.withValues(alpha: 0.08);
               }
@@ -230,26 +225,25 @@ class JustToggle extends StatelessWidget {
           }
 
           BoxBorder resolvedBorder;
-          if (isNeobrutalism) {
-            resolvedBorder = Border.all(color: border, width: 2.5);
+          if (hasBorder) {
+            resolvedBorder = Border.all(
+              color: border,
+              width: customTheme.presetTokens.borderWidth,
+            );
           } else if (groupInfo != null) {
             if (groupInfo.direction == Axis.horizontal) {
               resolvedBorder = Border(
                 top: BorderSide(color: border),
                 bottom: BorderSide(color: border),
                 right: BorderSide(color: border),
-                left: groupInfo.index == 0
-                    ? BorderSide(color: border)
-                    : BorderSide.none,
+                left: groupInfo.index == 0 ? BorderSide(color: border) : .none,
               );
             } else {
               resolvedBorder = Border(
                 left: BorderSide(color: border),
                 right: BorderSide(color: border),
                 bottom: BorderSide(color: border),
-                top: groupInfo.index == 0
-                    ? BorderSide(color: border)
-                    : BorderSide.none,
+                top: groupInfo.index == 0 ? BorderSide(color: border) : .none,
               );
             }
           } else {
@@ -263,7 +257,7 @@ class JustToggle extends StatelessWidget {
             decoration: BoxDecoration(
               color: bg,
               border: resolvedBorder,
-              borderRadius: isNeobrutalism ? BorderRadius.zero : resolvedRadius,
+              borderRadius: hasBorder ? .zero : resolvedRadius,
             ),
             child: DefaultTextStyle.merge(
               style: textStyle.copyWith(
@@ -274,24 +268,27 @@ class JustToggle extends StatelessWidget {
             ),
           );
 
-          if (isNeobrutalism) {
+          if (hasBorder) {
             if (selected) {
-              buttonContent = customTheme.buildPressEffect(
+              buttonContent = customTheme.presetTokens.buildPressEffect(
                 isPressed: isPressed,
+                animations: customTheme.animations,
                 child: Container(
                   decoration: BoxDecoration(
-                    boxShadow: customTheme.resolveShadows(
-                      shadows.md,
+                    boxShadow: customTheme.presetTokens.resolveShadow(
+                      shadows,
+                      JustShadowLevel.md,
                       isPressed: isPressed,
                     ),
-                    borderRadius: BorderRadius.zero,
+                    borderRadius: .zero,
                   ),
                   child: buttonContent,
                 ),
               );
             } else {
-              buttonContent = customTheme.buildPressEffect(
+              buttonContent = customTheme.presetTokens.buildPressEffect(
                 isPressed: isPressed,
+                animations: customTheme.animations,
                 child: buttonContent,
               );
             }
@@ -300,7 +297,7 @@ class JustToggle extends StatelessWidget {
           return FocusIndicator(
             isFocused: isFocused,
             focusColor: colors.borderFocus,
-            borderRadius: isNeobrutalism ? BorderRadius.zero : resolvedRadius,
+            borderRadius: hasBorder ? .zero : resolvedRadius,
             child: buttonContent,
           );
         },

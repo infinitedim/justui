@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
 import 'just_avatar.dart';
 import 'just_avatar_variants.dart';
 
@@ -34,7 +34,7 @@ class JustAvatarGroup extends StatelessWidget {
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
     final customTheme = JustThemeProvider.of(context).theme;
-    final isNeobrutalism = true;
+    final presetTokens = customTheme.presetTokens;
 
     final int displayCount = avatars.length > maxDisplay
         ? maxDisplay
@@ -88,7 +88,7 @@ class JustAvatarGroup extends StatelessWidget {
               original.border ??
               BorderSide(
                 color: colors.background,
-                width: isNeobrutalism ? 2.5 : 2.0,
+                width: presetTokens.borderWidth,
               ),
           statusDot: original.statusDot,
           backgroundColor: original.backgroundColor,
@@ -105,7 +105,7 @@ class JustAvatarGroup extends StatelessWidget {
           backgroundColor: colors.borderDefault,
           border: BorderSide(
             color: colors.background,
-            width: isNeobrutalism ? 2.5 : 2.0,
+            width: presetTokens.borderWidth,
           ),
         );
       }

@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../overlay/just_overlay_controller.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
 import 'just_sheet_style.dart';
 import 'just_sheet_theme.dart';
 import 'just_sheet_variants.dart';
@@ -41,7 +41,7 @@ class JustSheetController extends JustOverlayController {
   /// passed when the sheet is dismissed or confirmed.
   Future<T?> show<T>({
     required Widget content,
-    SheetDirection direction = SheetDirection.bottom,
+    SheetDirection direction = .bottom,
     bool barrierDismissable = true,
     Color? barrierColor,
     double? size,
@@ -219,10 +219,10 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
 
     // For bottom: dragging down (positive delta) reduces animation value.
     // For top: dragging up (negative delta) reduces animation value.
-    if (widget.direction == SheetDirection.bottom) {
+    if (widget.direction == .bottom) {
       widget.instance.animationController.value =
           (widget.instance.animationController.value - delta).clamp(0.0, 1.0);
-    } else if (widget.direction == SheetDirection.top) {
+    } else if (widget.direction == .top) {
       widget.instance.animationController.value =
           (widget.instance.animationController.value + delta).clamp(0.0, 1.0);
     }
@@ -235,10 +235,10 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
 
     // For right: dragging right (positive delta) reduces animation value.
     // For left: dragging left (negative delta) reduces animation value.
-    if (widget.direction == SheetDirection.right) {
+    if (widget.direction == .right) {
       widget.instance.animationController.value =
           (widget.instance.animationController.value - delta).clamp(0.0, 1.0);
-    } else if (widget.direction == SheetDirection.left) {
+    } else if (widget.direction == .left) {
       widget.instance.animationController.value =
           (widget.instance.animationController.value + delta).clamp(0.0, 1.0);
     }
@@ -266,16 +266,16 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
 
     JustSheetStyle? directionThemeStyle;
     switch (widget.direction) {
-      case SheetDirection.bottom:
+      case .bottom:
         directionThemeStyle = globalTheme?.bottomStyle;
         break;
-      case SheetDirection.top:
+      case .top:
         directionThemeStyle = globalTheme?.topStyle;
         break;
-      case SheetDirection.left:
+      case .left:
         directionThemeStyle = globalTheme?.leftStyle;
         break;
-      case SheetDirection.right:
+      case .right:
         directionThemeStyle = globalTheme?.rightStyle;
         break;
     }
@@ -298,25 +298,25 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
 
     final BorderRadius resolvedRadius;
     switch (widget.direction) {
-      case SheetDirection.bottom:
+      case .bottom:
         resolvedRadius =
             entryStyle?.borderRadius ??
             directionThemeStyle?.borderRadius ??
             .vertical(top: radius.lg);
         break;
-      case SheetDirection.top:
+      case .top:
         resolvedRadius =
             entryStyle?.borderRadius ??
             directionThemeStyle?.borderRadius ??
             .vertical(bottom: radius.lg);
         break;
-      case SheetDirection.left:
+      case .left:
         resolvedRadius =
             entryStyle?.borderRadius ??
             directionThemeStyle?.borderRadius ??
             .horizontal(right: radius.lg);
         break;
-      case SheetDirection.right:
+      case .right:
         resolvedRadius =
             entryStyle?.borderRadius ??
             directionThemeStyle?.borderRadius ??
@@ -324,10 +324,12 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
         break;
     }
 
-    final isNeobrutalism = true;
+    final presetTokens = theme.presetTokens;
     final borderSide = BorderSide(
-      color: isNeobrutalism ? colors.textPrimary : colors.borderDefault,
-      width: isNeobrutalism ? 2.5 : 1.0,
+      color: presetTokens.showsDefaultBorder
+          ? colors.textPrimary
+          : colors.borderDefault,
+      width: presetTokens.borderWidth,
     );
 
     // Calculate layout sizing based on direction and screen dimensions
@@ -340,44 +342,42 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     Alignment alignment;
 
     switch (widget.direction) {
-      case SheetDirection.bottom:
+      case .bottom:
         height = screenSize.height * fraction;
         if (widget.maxSize != null) {
           height = height.clamp(0.0, screenSize.height * widget.maxSize!);
         }
-        width = double.infinity;
-        alignment = Alignment.bottomCenter;
+        width = .infinity;
+        alignment = .bottomCenter;
         break;
-      case SheetDirection.top:
+      case .top:
         height = screenSize.height * fraction;
         if (widget.maxSize != null) {
           height = height.clamp(0.0, screenSize.height * widget.maxSize!);
         }
-        width = double.infinity;
-        alignment = Alignment.topCenter;
+        width = .infinity;
+        alignment = .topCenter;
         break;
-      case SheetDirection.left:
+      case .left:
         width = screenSize.width * fraction;
         if (widget.maxSize != null) {
           width = width.clamp(0.0, screenSize.width * widget.maxSize!);
         }
-        height = double.infinity;
-        alignment = Alignment.centerLeft;
+        height = .infinity;
+        alignment = .centerLeft;
         break;
-      case SheetDirection.right:
+      case .right:
         width = screenSize.width * fraction;
         if (widget.maxSize != null) {
           width = width.clamp(0.0, screenSize.width * widget.maxSize!);
         }
-        height = double.infinity;
-        alignment = Alignment.centerRight;
+        height = .infinity;
+        alignment = .centerRight;
         break;
     }
 
     // Drag handle bar
-    final isVertical =
-        widget.direction == SheetDirection.bottom ||
-        widget.direction == SheetDirection.top;
+    final isVertical = widget.direction == .bottom || widget.direction == .top;
 
     Widget card = Container(
       width: width,
@@ -390,10 +390,10 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
       ),
       padding: padding,
       child: SafeArea(
-        top: widget.direction == SheetDirection.top,
-        bottom: widget.direction == SheetDirection.bottom,
-        left: widget.direction == SheetDirection.left,
-        right: widget.direction == SheetDirection.right,
+        top: widget.direction == .top,
+        bottom: widget.direction == .bottom,
+        left: widget.direction == .left,
+        right: widget.direction == .right,
         child: Column(
           mainAxisSize: .max,
           crossAxisAlignment: .stretch,
@@ -445,16 +445,16 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     } else {
       Offset beginOffset;
       switch (widget.direction) {
-        case SheetDirection.bottom:
+        case .bottom:
           beginOffset = const Offset(0, 1);
           break;
-        case SheetDirection.top:
+        case .top:
           beginOffset = const Offset(0, -1);
           break;
-        case SheetDirection.left:
+        case .left:
           beginOffset = const Offset(-1, 0);
           break;
-        case SheetDirection.right:
+        case .right:
           beginOffset = const Offset(1, 0);
           break;
       }

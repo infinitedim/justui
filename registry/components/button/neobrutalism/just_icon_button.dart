@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import '../shared/_shared_progress_spinner.dart';
@@ -86,7 +86,9 @@ class _JustIconButtonState extends State<JustIconButton> {
       }
     }
     final finalEnableHaptic =
-        widget.enableHaptic ?? buttonTheme?.enableHaptic ?? (true);
+        widget.enableHaptic ??
+        buttonTheme?.enableHaptic ??
+        customTheme.presetTokens.showsDefaultBorder;
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
     final radius = customTheme.radius;
@@ -154,7 +156,7 @@ class _JustIconButtonState extends State<JustIconButton> {
                     widget.onPressed?.call();
                   },
             builder: (context, isHovered, isPressed, isFocused, focusNode) {
-              final isNeobrutalism = true;
+              final presetTokens = customTheme.presetTokens;
               Color bg;
               Color text;
               Color border;
@@ -167,7 +169,7 @@ class _JustIconButtonState extends State<JustIconButton> {
                 case .primary:
                   bg = primaryBg;
                   text = primaryFg;
-                  border = isNeobrutalism
+                  border = presetTokens.showsDefaultBorder
                       ? colors.textPrimary
                       : const Color(0x00000000);
 
@@ -184,7 +186,7 @@ class _JustIconButtonState extends State<JustIconButton> {
                 case .secondary:
                   bg = const Color(0x00000000);
                   text = colors.textPrimary;
-                  border = isNeobrutalism
+                  border = presetTokens.showsDefaultBorder
                       ? colors.textPrimary
                       : colors.borderDefault;
 
@@ -193,11 +195,15 @@ class _JustIconButtonState extends State<JustIconButton> {
                     border = border.withValues(alpha: 0.4);
                   } else if (isPressed) {
                     bg = primaryBg.withValues(alpha: 0.15);
-                    border = isNeobrutalism ? colors.textPrimary : primaryBg;
+                    border = presetTokens.showsDefaultBorder
+                        ? colors.textPrimary
+                        : primaryBg;
                     text = primaryBg;
                   } else if (isHovered) {
                     bg = primaryBg.withValues(alpha: 0.08);
-                    border = isNeobrutalism ? colors.textPrimary : primaryBg;
+                    border = presetTokens.showsDefaultBorder
+                        ? colors.textPrimary
+                        : primaryBg;
                     text = primaryBg;
                   }
                   break;
@@ -205,7 +211,7 @@ class _JustIconButtonState extends State<JustIconButton> {
                 case .ghost:
                   bg = const Color(0x00000000);
                   text = colors.textPrimary;
-                  border = isNeobrutalism
+                  border = presetTokens.showsDefaultBorder
                       ? colors.textPrimary
                       : const Color(0x00000000);
 
@@ -221,7 +227,7 @@ class _JustIconButtonState extends State<JustIconButton> {
                 case .destructive:
                   bg = errorBg;
                   text = primaryFg;
-                  border = isNeobrutalism
+                  border = presetTokens.showsDefaultBorder
                       ? colors.textPrimary
                       : const Color(0x00000000);
 
@@ -281,7 +287,8 @@ class _JustIconButtonState extends State<JustIconButton> {
 
               // Shadows resolution (flat solid offset shadow for neobrutalism)
               List<BoxShadow> defaultShadows;
-              if (isNeobrutalism && widget.variant != JustButtonVariant.link) {
+              if (presetTokens.showsDefaultBorder &&
+                  widget.variant != JustButtonVariant.link) {
                 defaultShadows = widget.size == JustButtonSize.xs
                     ? customTheme.shadows.xs
                     : customTheme.shadows.sm;
@@ -308,15 +315,16 @@ class _JustIconButtonState extends State<JustIconButton> {
               );
 
               final double finalBorderWidth =
-                  isNeobrutalism && widget.variant != JustButtonVariant.link
-                  ? 2.5
+                  presetTokens.showsDefaultBorder &&
+                      widget.variant != JustButtonVariant.link
+                  ? presetTokens.borderWidth
                   : (finalBorder != const Color(0x00000000) ? 1.0 : 0.0);
 
               return customTheme.buildPressEffect(
                 isPressed: isPressed,
                 scaleFactor: scale,
                 child: AnimatedContainer(
-                  duration: isNeobrutalism
+                  duration: presetTokens.showsDefaultBorder
                       ? customTheme.animations.instant
                       : customTheme.animations.fast,
                   curve: animations.defaultCurve,
