@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
 import '../avatar/just_avatar.dart';
 import '../badge/just_badge.dart';
 import '../button/just_button.dart';
@@ -886,9 +886,9 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
     );
 
     final theme = JustThemeProvider.of(context).theme;
-    final isNeobrutalism = true;
+    final usePulsing = theme.presetTokens.usePulsingSkeleton;
 
-    if (isNeobrutalism) {
+    if (usePulsing) {
       final animations = JustThemeProvider.of(
         context,
         aspect: .animations,

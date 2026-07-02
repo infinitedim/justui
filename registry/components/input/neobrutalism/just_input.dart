@@ -1,8 +1,8 @@
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import '../../../shared/default/_shared_tokens.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+import '../../theme/theme_provider.dart';
 import 'just_input_style.dart';
 import 'just_input_variants.dart';
 
@@ -747,21 +747,21 @@ class _JustInputState extends State<JustInput> {
                       ],
                     );
 
-                    final isNeobrutalism = true;
-                    final double borderWidth = isNeobrutalism
-                        ? 2.5
+                    final presetTokens = theme.presetTokens;
+                    final double borderWidth = presetTokens.showsDefaultBorder
+                        ? presetTokens.borderWidth
                         : (isFocused ? 2.0 : 1.0);
-                    final Color finalBorderColor = isNeobrutalism
+                    final Color finalBorderColor =
+                        presetTokens.showsDefaultBorder
                         ? colors.textPrimary
                         : border;
-                    final List<BoxShadow>? resolvedShadows = isNeobrutalism
+                    final List<BoxShadow>? resolvedShadows =
+                        presetTokens.showsDefaultBorder
                         ? theme.shadows.sm
                         : null;
 
                     return AnimatedContainer(
-                      duration: isNeobrutalism
-                          ? theme.animations.instant
-                          : theme.animations.fast,
+                      duration: presetTokens.focusTransitionDuration,
                       curve: animations.defaultCurve,
                       alignment: .centerLeft,
                       padding: finalPadding,
@@ -856,7 +856,9 @@ class _JustInputState extends State<JustInput> {
       style: textStyle,
       cursorColor:
           widget.style?.focusedBorderColor ??
-          (true ? theme.colors.textPrimary : JustColorPalette.primary500),
+          (theme.presetTokens.showsDefaultBorder
+              ? theme.colors.textPrimary
+              : JustColorPalette.primary500),
       backgroundCursorColor: const Color(0xFF888888),
       onChanged: widget.onChanged,
       onSubmitted: widget.onSubmitted,

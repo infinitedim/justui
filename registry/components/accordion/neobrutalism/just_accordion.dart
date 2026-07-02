@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart' show Theme;
-import 'package:flutter/services.dart'
-    show HapticFeedback, LogicalKeyboardKey, KeyDownEvent, KeyEvent;
+import 'package:flutter/services.dart' show KeyDownEvent;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_data.dart';
+import '../../theme/theme_provider.dart';
+import '../../theme/preset_tokens.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_accordion_style.dart';
@@ -65,7 +66,7 @@ class JustAccordion extends StatefulWidget {
     this.allowMultiple = false,
     this.initialExpanded,
     this.onChanged,
-    this.variant = JustAccordionVariant.default_,
+    this.variant = .default_,
     this.style,
   });
 
@@ -121,12 +122,12 @@ class _JustAccordionState extends State<JustAccordion> {
       context,
       aspect: .typography,
     ).theme.typography;
-    final isNeobrutalism = true;
+    final presetTokens = customTheme.presetTokens;
 
     final resolvedGap = widget.style?.gap ?? themeStyle?.gap ?? 8.0;
-    final BorderRadius defaultBorderRadius = isNeobrutalism
-        ? BorderRadius.zero
-        : .all(radius.md);
+    final BorderRadius defaultBorderRadius = presetTokens.resolveBorderRadius(
+      radius,
+    );
     final finalRadius =
         widget.style?.borderRadius ??
         themeStyle?.borderRadius ??
@@ -135,27 +136,26 @@ class _JustAccordionState extends State<JustAccordion> {
     final borderColor =
         widget.style?.borderColor ??
         themeStyle?.borderColor ??
-        (isNeobrutalism ? colors.textPrimary : colors.borderDefault);
+        (presetTokens.showsDefaultBorder
+            ? colors.textPrimary
+            : colors.borderDefault);
 
-    if (widget.variant == JustAccordionVariant.contained) {
+    if (widget.variant == .contained) {
       // Contained Variant: single outer container
       return Container(
         decoration: BoxDecoration(
-          border: Border.all(
-            color: borderColor,
-            width: isNeobrutalism ? 2.5 : 1.0,
-          ),
+          border: .all(color: borderColor, width: presetTokens.borderWidth),
           borderRadius: finalRadius,
         ),
-        clipBehavior: Clip.antiAlias,
+        clipBehavior: .antiAlias,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: List.generate(widget.items.length, (index) {
             final item = widget.items[index];
             final isLast = index == widget.items.length - 1;
 
             return Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 _JustAccordionItemWidget(
                   item: item,
@@ -164,7 +164,7 @@ class _JustAccordionState extends State<JustAccordion> {
                   variant: widget.variant,
                   style: widget.style,
                   themeStyle: themeStyle,
-                  isNeobrutalism: isNeobrutalism,
+                  presetTokens: presetTokens,
                   colors: colors,
                   spacing: spacing,
                   radius: radius,
@@ -176,7 +176,7 @@ class _JustAccordionState extends State<JustAccordion> {
                 ),
                 if (!isLast)
                   Container(
-                    height: isNeobrutalism ? 2.5 : 1.0,
+                    height: presetTokens.borderWidth,
                     color: borderColor,
                   ),
               ],
@@ -188,19 +188,19 @@ class _JustAccordionState extends State<JustAccordion> {
 
     // Default or Flush variants
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: .min,
       children: List.generate(widget.items.length, (index) {
         final item = widget.items[index];
         final isLast = index == widget.items.length - 1;
 
-        Widget child = _JustAccordionItemWidget(
+        final Widget child = _JustAccordionItemWidget(
           item: item,
           isExpanded: _expandedIndices.contains(index),
           onToggle: () => _toggleItem(index),
           variant: widget.variant,
           style: widget.style,
           themeStyle: themeStyle,
-          isNeobrutalism: isNeobrutalism,
+          presetTokens: presetTokens,
           colors: colors,
           spacing: spacing,
           radius: radius,
@@ -211,23 +211,20 @@ class _JustAccordionState extends State<JustAccordion> {
           totalItems: widget.items.length,
         );
 
-        if (widget.variant == JustAccordionVariant.default_) {
+        if (widget.variant == .default_) {
           // Add gap between items
           return Padding(
-            padding: EdgeInsets.only(bottom: isLast ? 0.0 : resolvedGap),
+            padding: .only(bottom: isLast ? 0.0 : resolvedGap),
             child: child,
           );
         } else {
           // Flush variant: separator line between items, no gap
           return Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               child,
               if (!isLast)
-                Container(
-                  height: isNeobrutalism ? 2.5 : 1.0,
-                  color: borderColor,
-                ),
+                Container(height: presetTokens.borderWidth, color: borderColor),
             ],
           );
         }
@@ -243,7 +240,7 @@ class _JustAccordionItemWidget extends StatefulWidget {
   final JustAccordionVariant variant;
   final JustAccordionStyle? style;
   final JustAccordionStyle? themeStyle;
-  final bool isNeobrutalism;
+  final JustPresetTokens presetTokens;
   final JustColorScheme colors;
   final JustSpacingScheme spacing;
   final JustRadiusScheme radius;
@@ -260,7 +257,7 @@ class _JustAccordionItemWidget extends StatefulWidget {
     required this.variant,
     required this.style,
     required this.themeStyle,
-    required this.isNeobrutalism,
+    required this.presetTokens,
     required this.colors,
     required this.spacing,
     required this.radius,
@@ -340,11 +337,6 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
         widget.themeStyle?.titleColor ??
         widget.colors.textPrimary;
 
-    final subtitleColor =
-        widget.style?.subtitleColor ??
-        widget.themeStyle?.subtitleColor ??
-        widget.colors.textSecondary;
-
     final iconColor =
         widget.style?.iconColor ??
         widget.themeStyle?.iconColor ??
@@ -363,19 +355,18 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
     final borderColor =
         widget.style?.borderColor ??
         widget.themeStyle?.borderColor ??
-        (widget.isNeobrutalism
+        (widget.presetTokens.showsDefaultBorder
             ? widget.colors.textPrimary
             : widget.colors.borderDefault);
 
-    final BorderRadius defaultBorderRadius = widget.isNeobrutalism
-        ? BorderRadius.zero
-        : .all(widget.radius.md);
+    final BorderRadius defaultBorderRadius = widget.presetTokens
+        .resolveBorderRadius(widget.radius);
     final finalRadius =
         widget.style?.borderRadius ??
         widget.themeStyle?.borderRadius ??
         defaultBorderRadius;
 
-    Widget header = Row(
+    final Widget header = Row(
       children: [
         if (widget.item.leading != null) ...[
           widget.item.leading!,
@@ -384,7 +375,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
         Expanded(
           child: Column(
             crossAxisAlignment: .start,
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               Text(
                 widget.item.title,
@@ -416,7 +407,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       ],
     );
 
-    Widget headerButton = JustPressable(
+    final Widget headerButton = JustPressable(
       enabled: widget.item.enabled,
       onTap: widget.onToggle,
       builder: (context, isHovered, isPressed, isFocused, focusNode) {
@@ -433,7 +424,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
           child: header,
         );
 
-        if (widget.isNeobrutalism) {
+        if (widget.presetTokens.showsDefaultBorder) {
           innerHeader = widget.customTheme.buildPressEffect(
             isPressed: isPressed,
             child: innerHeader,
@@ -443,18 +434,17 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
         return Focus(
           focusNode: focusNode,
           onKeyEvent: (node, event) {
-            if (event is! KeyDownEvent) return KeyEventResult.ignored;
-            if (event.logicalKey == LogicalKeyboardKey.space ||
-                event.logicalKey == LogicalKeyboardKey.enter) {
+            if (event is! KeyDownEvent) return .ignored;
+            if (event.logicalKey == .space || event.logicalKey == .enter) {
               widget.onToggle();
-              return KeyEventResult.handled;
+              return .handled;
             }
-            return KeyEventResult.ignored;
+            return .ignored;
           },
           child: FocusIndicator(
             isFocused: isFocused,
             focusColor: widget.colors.borderFocus,
-            borderRadius: widget.variant == JustAccordionVariant.contained
+            borderRadius: widget.variant == .contained
                 ? (widget.index == 0
                       ? .only(
                           topLeft: finalRadius.topLeft,
@@ -465,7 +455,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
                                 bottomLeft: finalRadius.bottomLeft,
                                 bottomRight: finalRadius.bottomRight,
                               )
-                            : BorderRadius.zero))
+                            : .zero))
                 : finalRadius,
             child: innerHeader,
           ),
@@ -473,7 +463,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       },
     );
 
-    Widget contentArea = SizeTransition(
+    final Widget contentArea = SizeTransition(
       sizeFactor: _expandAnimation,
       child: Container(
         padding: contentPadding,
@@ -483,22 +473,22 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
     );
 
     final itemWidget = Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: .min,
       crossAxisAlignment: .stretch,
       children: [headerButton, contentArea],
     );
 
     // Styling for Default Variant (Card-based)
-    if (widget.variant == JustAccordionVariant.default_) {
+    if (widget.variant == .default_) {
       final itemDecoration = BoxDecoration(
         color: contentBg,
-        border: Border.all(
+        border: .all(
           color: borderColor,
-          width: widget.isNeobrutalism ? 2.5 : 1.0,
+          width: widget.presetTokens.borderWidth,
         ),
         borderRadius: finalRadius,
         boxShadow: widget.isExpanded
-            ? (widget.isNeobrutalism
+            ? (widget.presetTokens.showsDefaultBorder
                   ? [
                       BoxShadow(
                         color: widget.colors.textPrimary,
@@ -512,7 +502,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
 
       return Container(
         decoration: itemDecoration,
-        clipBehavior: Clip.antiAlias,
+        clipBehavior: .antiAlias,
         child: itemWidget,
       );
     }

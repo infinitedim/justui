@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart'
-    show HapticFeedback, LogicalKeyboardKey, TextInputAction, TextInputType;
+    show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_select_style.dart';
@@ -95,7 +94,7 @@ class JustSelect<T> extends StatefulWidget {
     this.errorText,
     this.enabled = true,
     this.searchable = false,
-    this.size = JustSelectSize.md,
+    this.size = .md,
     this.style,
     this.prefixIcon,
     this.maxDropdownHeight = 300,
@@ -186,43 +185,43 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    if (event is! KeyDownEvent) return .ignored;
 
     final filtered = _filteredOptions;
     if (!_overlayController.isShowing) {
-      if (event.logicalKey == LogicalKeyboardKey.enter ||
-          event.logicalKey == LogicalKeyboardKey.space ||
-          event.logicalKey == LogicalKeyboardKey.arrowDown ||
-          event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      if (event.logicalKey == .enter ||
+          event.logicalKey == .space ||
+          event.logicalKey == .arrowDown ||
+          event.logicalKey == .arrowUp) {
         _openDropdown();
-        return KeyEventResult.handled;
+        return .handled;
       }
-      return KeyEventResult.ignored;
+      return .ignored;
     }
 
-    if (event.logicalKey == LogicalKeyboardKey.escape) {
+    if (event.logicalKey == .escape) {
       _closeDropdown();
-      return KeyEventResult.handled;
+      return .handled;
     }
 
-    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+    if (event.logicalKey == .arrowDown) {
       _moveFocus(1);
-      return KeyEventResult.handled;
+      return .handled;
     }
 
-    if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+    if (event.logicalKey == .arrowUp) {
       _moveFocus(-1);
-      return KeyEventResult.handled;
+      return .handled;
     }
 
-    if (event.logicalKey == LogicalKeyboardKey.enter) {
+    if (event.logicalKey == .enter) {
       if (_focusedOptionIndex >= 0 && _focusedOptionIndex < filtered.length) {
         _selectOption(filtered[_focusedOptionIndex]);
       }
-      return KeyEventResult.handled;
+      return .handled;
     }
 
-    return KeyEventResult.ignored;
+    return .ignored;
   }
 
   void _moveFocus(int direction) {
@@ -267,7 +266,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       context,
       aspect: .typography,
     ).theme.typography;
-    final isNeobrutalism = true;
+    final presetTokens = customTheme.presetTokens;
 
     // Resolve Size Properties
     double height;
@@ -275,20 +274,20 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     final BorderRadius defaultRadius;
 
     switch (widget.size) {
-      case JustSelectSize.sm:
+      case .sm:
         height = 36.0;
         textStyle = typography.bodySm;
-        defaultRadius = .all(radius.sm);
+        defaultRadius = presetTokens.resolveBorderRadius(radius);
         break;
-      case JustSelectSize.md:
+      case .md:
         height = 44.0;
         textStyle = typography.bodyMd;
-        defaultRadius = .all(radius.md);
+        defaultRadius = presetTokens.resolveBorderRadius(radius);
         break;
-      case JustSelectSize.lg:
+      case .lg:
         height = 52.0;
         textStyle = typography.bodyLg;
-        defaultRadius = .all(radius.lg);
+        defaultRadius = presetTokens.resolveBorderRadius(radius);
         break;
     }
 
@@ -327,12 +326,12 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
             : (_overlayController.isShowing
                   ? colors.borderFocus
                   : finalBorderColor),
-        width: isNeobrutalism ? 2.5 : 1.0,
+        width: presetTokens.borderWidth,
       ),
-      borderRadius: isNeobrutalism ? BorderRadius.zero : finalRadius,
+      borderRadius: presetTokens.showsDefaultBorder ? .zero : finalRadius,
     );
 
-    Widget triggerChild = Focus(
+    final Widget triggerChild = Focus(
       focusNode: _triggerFocusNode,
       onKeyEvent: (node, event) => _handleKeyEvent(node, event),
       child: JustPressable(
@@ -380,11 +379,11 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                 // Chevron Icon
                 AnimatedRotation(
                   turns: _overlayController.isShowing ? 0.5 : 0.0,
-                  duration: customTheme.animations.fast,
-                  curve: customTheme.animations.defaultCurve,
+                  duration: presetTokens.dropdownOpenDuration,
+                  curve: presetTokens.dropdownOpenCurve,
                   child: Icon(
                     const IconData(0xe150, fontFamily: 'MaterialIcons'),
-                    size: widget.size == JustSelectSize.sm ? 16 : 20,
+                    size: widget.size == .sm ? 16 : 20,
                     color: hasError
                         ? colors.error
                         : (widget.enabled
@@ -396,7 +395,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
             ),
           );
 
-          if (isNeobrutalism) {
+          if (presetTokens.showsDefaultBorder) {
             inner = customTheme.buildPressEffect(
               isPressed: isPressed,
               child: Container(
@@ -405,7 +404,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                     shadows.md,
                     isPressed: isPressed,
                   ),
-                  borderRadius: BorderRadius.zero,
+                  borderRadius: .zero,
                 ),
                 child: inner,
               ),
@@ -415,7 +414,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
           return FocusIndicator(
             isFocused: isFocused,
             focusColor: colors.borderFocus,
-            borderRadius: isNeobrutalism ? BorderRadius.zero : finalRadius,
+            borderRadius: presetTokens.showsDefaultBorder ? .zero : finalRadius,
             child: inner,
           );
         },
@@ -430,7 +429,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       enabled: widget.enabled,
       child: Column(
         crossAxisAlignment: .start,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           if (widget.label != null) ...[
             Text(
@@ -480,13 +479,15 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
               final dropdownDecoration = BoxDecoration(
                 color: dropdownContainerBg,
                 border: Border.all(
-                  color: isNeobrutalism
+                  color: presetTokens.showsDefaultBorder
                       ? colors.textPrimary
                       : colors.borderDefault,
-                  width: isNeobrutalism ? 2.5 : 1.0,
+                  width: presetTokens.borderWidth,
                 ),
-                borderRadius: isNeobrutalism ? BorderRadius.zero : finalRadius,
-                boxShadow: isNeobrutalism
+                borderRadius: presetTokens.showsDefaultBorder
+                    ? .zero
+                    : finalRadius,
+                boxShadow: presetTokens.showsDefaultBorder
                     ? [
                         BoxShadow(
                           color: colors.textPrimary,
@@ -516,10 +517,12 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                               color: colors.background,
                               border: Border.all(
                                 color: colors.borderDefault,
-                                width: isNeobrutalism ? 2.0 : 1.0,
+                                width: presetTokens.showsDefaultBorder
+                                    ? 2.0
+                                    : 1.0,
                               ),
-                              borderRadius: isNeobrutalism
-                                  ? BorderRadius.zero
+                              borderRadius: presetTokens.showsDefaultBorder
+                                  ? .zero
                                   : .all(radius.sm),
                             ),
                             padding: .symmetric(horizontal: spacing.sm),
@@ -585,7 +588,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                     index == _focusedOptionIndex;
 
                                 final optionBg = isSelected
-                                    ? (isNeobrutalism
+                                    ? (presetTokens.showsDefaultBorder
                                           ? colors.textPrimary
                                           : (widget
                                                     .style
@@ -598,7 +601,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                     : const Color(0x00000000);
 
                                 final optionText = isSelected
-                                    ? (isNeobrutalism
+                                    ? (presetTokens.showsDefaultBorder
                                           ? colors.textInverse
                                           : (widget.style?.textColor ??
                                                 themeStyle?.textColor ??
@@ -613,7 +616,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                   enabled: option.enabled,
                                   onTap: () => _selectOption(option),
                                   builder:
-                                      (context, isHovered, isPressed, _, __) {
+                                      (context, isHovered, isPressed, _, _) {
                                         final showHover =
                                             isHovered || isKeyboardFocused;
                                         Color itemBg = optionBg;
@@ -634,7 +637,10 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: itemBg,
-                                            border: isNeobrutalism && showHover
+                                            border:
+                                                presetTokens
+                                                        .showsDefaultBorder &&
+                                                    showHover
                                                 ? Border(
                                                     left: BorderSide(
                                                       color: colors.textPrimary,
@@ -662,7 +668,8 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                                 ),
                                               ),
                                               if (isSelected &&
-                                                  !isNeobrutalism) ...[
+                                                  !presetTokens
+                                                      .showsDefaultBorder) ...[
                                                 SizedBox(width: spacing.sm),
                                                 Icon(
                                                   const IconData(
@@ -685,24 +692,21 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                 ),
               );
 
-              if (!isNeobrutalism) {
-                // Fade and Slide transition for non-neobrutalism
-                dropdownContent = TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  duration: customTheme.animations.fast,
-                  curve: customTheme.animations.defaultCurve,
-                  builder: (context, val, child) {
-                    return Opacity(
-                      opacity: val,
-                      child: Transform.translate(
-                        offset: Offset(0, (1 - val) * 10),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: dropdownContent,
-                );
-              }
+              dropdownContent = TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: presetTokens.dropdownOpenDuration,
+                curve: presetTokens.dropdownOpenCurve,
+                builder: (context, val, child) {
+                  return Opacity(
+                    opacity: val,
+                    child: Transform.translate(
+                      offset: Offset(0, (1 - val) * 10),
+                      child: child,
+                    ),
+                  );
+                },
+                child: dropdownContent,
+              );
 
               return Stack(
                 children: [

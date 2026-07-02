@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
 import 'just_radio.dart';
 
 /// Configuration option for [JustRadioGroup].

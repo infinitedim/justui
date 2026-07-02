@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../overlay/just_overlay_controller.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
 import 'just_dialog_style.dart';
 import 'just_dialog_theme.dart';
 import 'just_dialog_variants.dart';
@@ -41,7 +41,7 @@ class JustDialogController extends JustOverlayController {
   /// passed when the dialog is dismissed or confirmed.
   Future<T?> show<T>({
     required Widget content,
-    DialogPosition position = DialogPosition.center,
+    DialogPosition position = .center,
     bool barrierDismissable = true,
     Color? barrierColor,
     JustDialogStyle? style,
@@ -215,13 +215,13 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
 
     JustDialogStyle? positionThemeStyle;
     switch (widget.position) {
-      case DialogPosition.center:
+      case .center:
         positionThemeStyle = globalTheme?.centerStyle;
         break;
-      case DialogPosition.bottom:
+      case .bottom:
         positionThemeStyle = globalTheme?.bottomStyle;
         break;
-      case DialogPosition.top:
+      case .top:
         positionThemeStyle = globalTheme?.topStyle;
         break;
     }
@@ -238,26 +238,26 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
     final maxWidth =
         entryStyle?.maxWidth ??
         positionThemeStyle?.maxWidth ??
-        (widget.position == DialogPosition.center ? 480.0 : double.infinity);
+        (widget.position == .center ? 480.0 : .infinity);
     final maxHeight = entryStyle?.maxHeight ?? positionThemeStyle?.maxHeight;
     final dialogShadows =
         entryStyle?.shadows ?? positionThemeStyle?.shadows ?? shadows.lg;
 
     final BorderRadius resolvedRadius;
     switch (widget.position) {
-      case DialogPosition.center:
+      case .center:
         resolvedRadius =
             entryStyle?.borderRadius ??
             positionThemeStyle?.borderRadius ??
             .all(radius.lg);
         break;
-      case DialogPosition.bottom:
+      case .bottom:
         resolvedRadius =
             entryStyle?.borderRadius ??
             positionThemeStyle?.borderRadius ??
             .vertical(top: radius.lg);
         break;
-      case DialogPosition.top:
+      case .top:
         resolvedRadius =
             entryStyle?.borderRadius ??
             positionThemeStyle?.borderRadius ??
@@ -265,23 +265,25 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
         break;
     }
 
-    final isNeobrutalism = true;
+    final presetTokens = theme.presetTokens;
     final borderSide = BorderSide(
-      color: isNeobrutalism ? colors.textPrimary : colors.borderDefault,
-      width: isNeobrutalism ? 2.5 : 1.0,
+      color: presetTokens.showsDefaultBorder
+          ? colors.textPrimary
+          : colors.borderDefault,
+      width: presetTokens.borderWidth,
     );
 
     // Layout alignment on screen
     Alignment alignment;
     switch (widget.position) {
-      case DialogPosition.center:
-        alignment = Alignment.center;
+      case .center:
+        alignment = .center;
         break;
-      case DialogPosition.bottom:
-        alignment = Alignment.bottomCenter;
+      case .bottom:
+        alignment = .bottomCenter;
         break;
-      case DialogPosition.top:
-        alignment = Alignment.topCenter;
+      case .top:
+        alignment = .topCenter;
         break;
     }
 
@@ -289,7 +291,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
     final Widget card = Container(
       constraints: BoxConstraints(
         maxWidth: maxWidth,
-        maxHeight: maxHeight ?? double.infinity,
+        maxHeight: maxHeight ?? .infinity,
       ),
       decoration: BoxDecoration(
         color: bgColor,
@@ -299,13 +301,13 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
       ),
       padding: padding,
       child: SafeArea(
-        top: widget.position == DialogPosition.top,
-        bottom: widget.position == DialogPosition.bottom,
+        top: widget.position == .top,
+        bottom: widget.position == .bottom,
         child: Column(
           mainAxisSize: .min,
           crossAxisAlignment: .stretch,
           children: [
-            if (widget.position == DialogPosition.bottom) ...[
+            if (widget.position == .bottom) ...[
               Center(
                 child: Container(
                   width: 32.0,
@@ -340,7 +342,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
       );
     } else {
       switch (widget.position) {
-        case DialogPosition.center:
+        case .center:
           animatedChild = FadeTransition(
             opacity: curvedAnimation,
             child: ScaleTransition(
@@ -352,7 +354,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
             ),
           );
           break;
-        case DialogPosition.bottom:
+        case .bottom:
           animatedChild = SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(0, 1),
@@ -361,7 +363,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
             child: card,
           );
           break;
-        case DialogPosition.top:
+        case .top:
           animatedChild = SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(0, -1),
@@ -390,7 +392,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
               Align(
                 alignment: alignment,
                 child: Padding(
-                  padding: widget.position == DialogPosition.center
+                  padding: widget.position == .center
                       ? .all(spacing.lg)
                       : .zero,
                   child: Semantics(

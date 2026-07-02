@@ -657,8 +657,8 @@ void main() {
       });
 
       test('Slider haptic feedback default', () {
-        expect(defaultTokens.sliderHapticDefault, isFalse);
-        expect(neobrutalismTokens.sliderHapticDefault, isTrue);
+        expect(defaultTokens.sliderDefaultHaptic, isFalse);
+        expect(neobrutalismTokens.sliderDefaultHaptic, isTrue);
       });
 
       test('Progress stroke width resolution', () {
@@ -690,11 +690,8 @@ void main() {
       });
 
       test('Progress label font weight resolution', () {
-        expect(defaultTokens.progressLabelFontWeight, equals(FontWeight.w500));
-        expect(
-          neobrutalismTokens.progressLabelFontWeight,
-          equals(FontWeight.w700),
-        );
+        expect(defaultTokens.progressLabelWeight, equals(FontWeight.w500));
+        expect(neobrutalismTokens.progressLabelWeight, equals(FontWeight.w700));
       });
 
       test('Separator thickness resolution', () {
@@ -702,12 +699,20 @@ void main() {
         expect(defaultTokens.resolveSeparatorThickness(3.5), equals(3.5));
 
         expect(neobrutalismTokens.resolveSeparatorThickness(1.0), equals(2.0));
-        expect(neobrutalismTokens.resolveSeparatorThickness(3.5), equals(2.0));
+        expect(neobrutalismTokens.resolveSeparatorThickness(3.5), equals(3.5));
       });
 
       test('Tab indicator thickness resolution', () {
-        expect(defaultTokens.tabIndicatorThickness, equals(2.0));
-        expect(neobrutalismTokens.tabIndicatorThickness, equals(4.0));
+        expect(defaultTokens.resolveTabIndicatorThickness(null), equals(2.0));
+        expect(defaultTokens.resolveTabIndicatorThickness(3.0), equals(3.0));
+        expect(
+          neobrutalismTokens.resolveTabIndicatorThickness(null),
+          equals(4.0),
+        );
+        expect(
+          neobrutalismTokens.resolveTabIndicatorThickness(5.0),
+          equals(5.0),
+        );
       });
 
       test('Focus transition duration resolution', () {
@@ -719,6 +724,14 @@ void main() {
         expect(
           neobrutalismTokens.resolveFocusTransitionDuration(animations),
           equals(animations.instant),
+        );
+        expect(
+          defaultTokens.focusTransitionDuration,
+          equals(const Duration(milliseconds: 150)),
+        );
+        expect(
+          neobrutalismTokens.focusTransitionDuration,
+          equals(const Duration(milliseconds: 50)),
         );
       });
 
@@ -732,6 +745,16 @@ void main() {
           neobrutalismTokens.resolveDropdownDuration(animations),
           equals(animations.instant),
         );
+        expect(
+          defaultTokens.dropdownOpenDuration,
+          equals(const Duration(milliseconds: 200)),
+        );
+        expect(
+          neobrutalismTokens.dropdownOpenDuration,
+          equals(const Duration(milliseconds: 80)),
+        );
+        expect(defaultTokens.dropdownOpenCurve, equals(Curves.easeOut));
+        expect(neobrutalismTokens.dropdownOpenCurve, equals(Curves.linear));
       });
 
       test('Dropdown curve resolution', () {

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
+import '../../theme/preset_tokens.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_table_style.dart';
@@ -170,20 +171,22 @@ class _JustTableState<T> extends State<JustTable<T>> {
       context,
       aspect: .typography,
     ).theme.typography;
-    final isNeobrutalism = true;
+    final presetTokens = customTheme.presetTokens;
 
     // Resolve Styles
     final headerBg =
         widget.style?.headerBackgroundColor ??
         themeStyle?.headerBackgroundColor ??
-        (isNeobrutalism
+        (presetTokens.showsDefaultBorder
             ? colors.textPrimary
             : colors.borderDefault.withValues(alpha: 0.1));
 
     final headerText =
         widget.style?.headerTextColor ??
         themeStyle?.headerTextColor ??
-        (isNeobrutalism ? colors.textInverse : colors.textPrimary);
+        (presetTokens.showsDefaultBorder
+            ? colors.textInverse
+            : colors.textPrimary);
 
     final rowBg =
         widget.style?.rowBackgroundColor ??
@@ -198,7 +201,9 @@ class _JustTableState<T> extends State<JustTable<T>> {
     final borderColor =
         widget.style?.borderColor ??
         themeStyle?.borderColor ??
-        (isNeobrutalism ? colors.textPrimary : colors.borderDefault);
+        (presetTokens.showsDefaultBorder
+            ? colors.textPrimary
+            : colors.borderDefault);
 
     final hoverBg =
         widget.style?.hoverColor ??
@@ -225,19 +230,18 @@ class _JustTableState<T> extends State<JustTable<T>> {
         themeStyle?.cellTextStyle ??
         typography.bodySm.copyWith(color: colors.textPrimary);
 
-    final BorderRadius defaultBorderRadius = isNeobrutalism
-        ? BorderRadius.zero
-        : .all(radius.md);
+    final BorderRadius defaultBorderRadius = presetTokens.resolveBorderRadius(
+      radius,
+    );
     final finalRadius = defaultBorderRadius;
 
     // Outer Container Border
     final tableDecoration = BoxDecoration(
-      border: Border.all(color: borderColor, width: isNeobrutalism ? 2.5 : 1.0),
+      border: Border.all(color: borderColor, width: presetTokens.borderWidth),
       borderRadius: finalRadius,
     );
 
     // Build Column Widgets
-    final int columnCount = widget.columns.length + (widget.selectable ? 1 : 0);
 
     Widget buildCell(
       Widget content,
@@ -245,12 +249,12 @@ class _JustTableState<T> extends State<JustTable<T>> {
       MainAxisAlignment alignment, {
       bool isHeader = false,
     }) {
-      Widget cellChild = Container(
+      final Widget cellChild = Container(
         height: isHeader ? 44.0 : widget.rowHeight,
         padding: .symmetric(horizontal: cellPadding),
         alignment: alignment == .start
-            ? Alignment.centerLeft
-            : (alignment == .end ? Alignment.centerRight : Alignment.center),
+            ? .centerLeft
+            : (alignment == .end ? .centerRight : .center),
         child: content,
       );
 
@@ -274,7 +278,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
           _CustomCheckbox(
             value: isAllSelected,
             onChanged: (_) => _toggleSelectAll(),
-            isNeobrutalism: isNeobrutalism,
+            presetTokens: presetTokens,
             colors: colors,
           ),
           48.0,
@@ -289,7 +293,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
       final isSorted = widget.sortColumnIndex == i;
 
       Widget headerContent = Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Flexible(
             child: Text(
@@ -326,7 +330,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
       );
     }
 
-    Widget headerRow = Container(
+    final Widget headerRow = Container(
       color: headerBg,
       child: Row(children: headerCells),
     );
@@ -339,7 +343,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
           widget.emptyState ??
           Container(
             height: 150,
-            alignment: Alignment.center,
+            alignment: .center,
             child: Text(
               'No data available',
               style: typography.bodyMd.copyWith(color: colors.textSecondary),
@@ -367,7 +371,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
                 _CustomCheckbox(
                   value: isSelected,
                   onChanged: (_) => _toggleRow(rowIndex),
-                  isNeobrutalism: isNeobrutalism,
+                  presetTokens: presetTokens,
                   colors: colors,
                 ),
                 48.0,
@@ -391,13 +395,13 @@ class _JustTableState<T> extends State<JustTable<T>> {
             );
           }
 
-          Color currentBg = isSelected
+          final Color currentBg = isSelected
               ? selectedBg
               : (isAlternate ? alternateRowBg : rowBg);
 
-          Widget rowWidget = JustPressable(
+          final Widget rowWidget = JustPressable(
             onTap: widget.selectable ? () => _toggleRow(rowIndex) : () {},
-            builder: (context, isHovered, isPressed, _, __) {
+            builder: (context, isHovered, isPressed, _, _) {
               Color finalRowBg = currentBg;
               if (isHovered) {
                 finalRowBg = isSelected
@@ -411,9 +415,9 @@ class _JustTableState<T> extends State<JustTable<T>> {
                   border: Border(
                     bottom: BorderSide(
                       color: borderColor,
-                      width: isNeobrutalism ? 1.0 : 0.5,
+                      width: presetTokens.showsDefaultBorder ? 1.0 : 0.5,
                     ),
-                    left: isNeobrutalism && isSelected
+                    left: presetTokens.showsDefaultBorder && isSelected
                         ? BorderSide(color: colors.borderFocus, width: 3.0)
                         : BorderSide.none,
                   ),
@@ -432,22 +436,22 @@ class _JustTableState<T> extends State<JustTable<T>> {
 
     if (widget.stickyHeader) {
       tableContent = Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         crossAxisAlignment: .stretch,
         children: [
           headerRow,
-          Container(height: isNeobrutalism ? 2.5 : 1.0, color: borderColor),
+          Container(height: presetTokens.borderWidth, color: borderColor),
           Flexible(child: SingleChildScrollView(child: bodyContent)),
         ],
       );
     } else {
       tableContent = SingleChildScrollView(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           crossAxisAlignment: .stretch,
           children: [
             headerRow,
-            Container(height: isNeobrutalism ? 2.5 : 1.0, color: borderColor),
+            Container(height: presetTokens.borderWidth, color: borderColor),
             bodyContent,
           ],
         ),
@@ -461,9 +465,9 @@ class _JustTableState<T> extends State<JustTable<T>> {
           'Data table with ${widget.columns.length} columns and ${widget.rows.length} rows',
       child: Container(
         decoration: tableDecoration,
-        clipBehavior: Clip.antiAlias,
+        clipBehavior: .antiAlias,
         child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
+          scrollDirection: .horizontal,
           child: SizedBox(
             // Estimate total table width
             width: _estimateTableWidth(widget.columns, widget.selectable),
@@ -479,13 +483,11 @@ class _JustTableState<T> extends State<JustTable<T>> {
     bool selectable,
   ) {
     double totalWidth = selectable ? 48.0 : 0.0;
-    bool hasFlex = false;
 
     for (final col in columns) {
       if (col.width != null) {
         totalWidth += col.width!;
       } else {
-        hasFlex = true;
         totalWidth += 120.0; // Estimate minimum flex column width
       }
     }
@@ -498,13 +500,13 @@ class _JustTableState<T> extends State<JustTable<T>> {
 class _CustomCheckbox extends StatelessWidget {
   final bool value;
   final ValueChanged<bool?> onChanged;
-  final bool isNeobrutalism;
+  final JustPresetTokens presetTokens;
   final JustColorScheme colors;
 
   const _CustomCheckbox({
     required this.value,
     required this.onChanged,
-    required this.isNeobrutalism,
+    required this.presetTokens,
     required this.colors,
   });
 
@@ -513,26 +515,28 @@ class _CustomCheckbox extends StatelessWidget {
     return JustPressable(
       onTap: () => onChanged(!value),
       builder: (context, isHovered, isPressed, isFocused, _) {
-        final borderSize = isNeobrutalism ? 2.5 : 1.5;
+        final borderSize = presetTokens.borderWidth;
 
-        Widget box = Container(
+        final Widget box = Container(
           width: 18,
           height: 18,
           decoration: BoxDecoration(
             color: value
-                ? (isNeobrutalism ? colors.textPrimary : colors.borderFocus)
+                ? (presetTokens.showsDefaultBorder
+                      ? colors.textPrimary
+                      : colors.borderFocus)
                 : colors.background,
             border: Border.all(
-              color: isNeobrutalism
+              color: presetTokens.showsDefaultBorder
                   ? colors.textPrimary
                   : (value ? colors.borderFocus : colors.borderDefault),
               width: borderSize,
             ),
-            borderRadius: isNeobrutalism
-                ? BorderRadius.zero
-                : const BorderRadius.all(Radius.circular(4)),
+            borderRadius: presetTokens.showsDefaultBorder
+                ? .zero
+                : const .all(.circular(4)),
           ),
-          alignment: Alignment.center,
+          alignment: .center,
           child: value
               ? Icon(
                   const IconData(0xe156, fontFamily: 'MaterialIcons'),
@@ -545,9 +549,9 @@ class _CustomCheckbox extends StatelessWidget {
         return FocusIndicator(
           isFocused: isFocused,
           focusColor: colors.borderFocus,
-          borderRadius: isNeobrutalism
-              ? BorderRadius.zero
-              : const BorderRadius.all(Radius.circular(4)),
+          borderRadius: presetTokens.showsDefaultBorder
+              ? .zero
+              : const .all(.circular(4)),
           child: box,
         );
       },

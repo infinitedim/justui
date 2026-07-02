@@ -1,7 +1,10 @@
 import 'dart:math' as math;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_data.dart';
+import '../../theme/theme_data_material.dart';
+import '../../theme/theme_provider.dart';
+import '../../theme/preset_tokens.dart';
 import 'just_progress_style.dart';
 import 'just_progress_theme.dart';
 import 'just_progress_variants.dart';
@@ -43,12 +46,12 @@ class JustProgress extends StatefulWidget {
     this.value,
     this.min = 0.0,
     this.max = 1.0,
-    this.size = JustProgressSize.md,
+    this.size = .md,
     this.showLabel = false,
     this.label,
     this.style,
     this.animationDuration,
-  }) : variant = JustProgressVariant.linear;
+  }) : variant = .linear;
 
   /// Named constructor creating a circular progress indicator.
   const JustProgress.circular({
@@ -56,12 +59,12 @@ class JustProgress extends StatefulWidget {
     this.value,
     this.min = 0.0,
     this.max = 1.0,
-    this.size = JustProgressSize.md,
+    this.size = .md,
     this.showLabel = false,
     this.label,
     this.style,
     this.animationDuration,
-  }) : variant = JustProgressVariant.circular;
+  }) : variant = .circular;
 
   @override
   State<JustProgress> createState() => _JustProgressState();
@@ -85,12 +88,10 @@ class _JustProgressState extends State<JustProgress>
 
   void _updateAnimationController() {
     if (widget.value == null) {
-      if (_indeterminateController == null) {
-        _indeterminateController = AnimationController(
-          vsync: this,
-          duration: const Duration(milliseconds: 1500),
-        )..repeat();
-      }
+      _indeterminateController ??= AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 1500),
+      )..repeat();
     } else {
       _indeterminateController?.dispose();
       _indeterminateController = null;
@@ -119,6 +120,7 @@ class _JustProgressState extends State<JustProgress>
   @override
   Widget build(BuildContext context) {
     final customTheme = JustThemeProvider.of(context).theme;
+    final presetTokens = customTheme.presetTokens;
     final progressTheme = customTheme
         .toThemeData()
         .extension<JustProgressTheme>();
@@ -134,20 +136,21 @@ class _JustProgressState extends State<JustProgress>
       context,
       aspect: .typography,
     ).theme.typography;
-    final isNeobrutalism = true;
 
     // Resolve Style Properties
     final finalTrackColor =
         widget.style?.trackColor ??
         themeStyle?.trackColor ??
-        (isNeobrutalism
+        (presetTokens.showsDefaultBorder
             ? const Color(0x00000000)
             : colors.borderDefault.withValues(alpha: 0.3));
 
     final finalFillColor =
         widget.style?.fillColor ??
         themeStyle?.fillColor ??
-        (isNeobrutalism ? colors.textPrimary : colors.borderFocus);
+        (presetTokens.showsDefaultBorder
+            ? colors.textPrimary
+            : colors.borderFocus);
 
     final finalLabelColor =
         widget.style?.labelColor ??
@@ -159,14 +162,14 @@ class _JustProgressState extends State<JustProgress>
       container: true,
       label: 'Progress indicator',
       value: widget.value != null ? _resolvedLabel : 'Loading',
-      child: widget.variant == JustProgressVariant.linear
+      child: widget.variant == .linear
           ? _buildLinear(
               context,
               colors,
               spacing,
               radius,
               typography,
-              isNeobrutalism,
+              presetTokens,
               finalTrackColor,
               finalFillColor,
               finalLabelColor,
@@ -177,7 +180,7 @@ class _JustProgressState extends State<JustProgress>
               spacing,
               radius,
               typography,
-              isNeobrutalism,
+              presetTokens,
               finalTrackColor,
               finalFillColor,
               finalLabelColor,
@@ -191,7 +194,7 @@ class _JustProgressState extends State<JustProgress>
     JustSpacingScheme spacing,
     JustRadiusScheme radius,
     JustTypographyScheme typography,
-    bool isNeobrutalism,
+    JustPresetTokens presetTokens,
     Color trackBg,
     Color fillBg,
     Color labelColor,
@@ -199,18 +202,18 @@ class _JustProgressState extends State<JustProgress>
     // Resolve height based on size
     double height;
     switch (widget.size) {
-      case JustProgressSize.sm:
+      case .sm:
         height = 4.0;
         break;
-      case JustProgressSize.md:
+      case .md:
         height = 8.0;
         break;
-      case JustProgressSize.lg:
+      case .lg:
         height = 12.0;
         break;
     }
 
-    final defaultRadius = isNeobrutalism
+    final BorderRadius defaultRadius = presetTokens.showsDefaultBorder
         ? BorderRadius.zero
         : .all(radius.full);
     final finalRadius =
@@ -218,12 +221,15 @@ class _JustProgressState extends State<JustProgress>
         themeStyleBorderRadius(context) ??
         defaultRadius;
 
-    Widget bar = Container(
+    final Widget bar = Container(
       height: height,
       decoration: BoxDecoration(
         color: trackBg,
-        border: isNeobrutalism
-            ? Border.all(color: colors.textPrimary, width: 2.5)
+        border: presetTokens.showsDefaultBorder
+            ? Border.all(
+                color: colors.textPrimary,
+                width: presetTokens.borderWidth,
+              )
             : null,
         borderRadius: finalRadius,
       ),
@@ -277,7 +283,7 @@ class _JustProgressState extends State<JustProgress>
 
     if (widget.showLabel) {
       return Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         crossAxisAlignment: .start,
         children: [
           Row(
@@ -288,12 +294,12 @@ class _JustProgressState extends State<JustProgress>
               Text(
                 _resolvedLabel,
                 style:
-                    (widget.size == JustProgressSize.sm
+                    (widget.size == .sm
                             ? typography.caption
                             : typography.bodySm)
                         .copyWith(
                           color: labelColor,
-                          fontWeight: isNeobrutalism ? .w700 : .w500,
+                          fontWeight: presetTokens.progressLabelWeight,
                         ),
               ),
             ],
@@ -311,7 +317,7 @@ class _JustProgressState extends State<JustProgress>
     JustSpacingScheme spacing,
     JustRadiusScheme radius,
     JustTypographyScheme typography,
-    bool isNeobrutalism,
+    JustPresetTokens presetTokens,
     Color trackBg,
     Color fillBg,
     Color labelColor,
@@ -320,19 +326,17 @@ class _JustProgressState extends State<JustProgress>
     double diameter;
     double defaultStrokeWidth;
     switch (widget.size) {
-      case JustProgressSize.sm:
+      case .sm:
         diameter = 32.0;
-        defaultStrokeWidth = isNeobrutalism ? 3.0 : 2.0;
         break;
-      case JustProgressSize.md:
+      case .md:
         diameter = 48.0;
-        defaultStrokeWidth = isNeobrutalism ? 4.0 : 3.0;
         break;
-      case JustProgressSize.lg:
+      case .lg:
         diameter = 64.0;
-        defaultStrokeWidth = isNeobrutalism ? 5.0 : 4.0;
         break;
     }
+    defaultStrokeWidth = presetTokens.resolveProgressStrokeWidth(widget.size);
 
     final strokeWidth = widget.style?.strokeWidth ?? defaultStrokeWidth;
 
@@ -382,12 +386,10 @@ class _JustProgressState extends State<JustProgress>
             Text(
               _resolvedLabel,
               style:
-                  (widget.size == JustProgressSize.lg
-                          ? typography.bodySm
-                          : typography.caption)
+                  (widget.size == .lg ? typography.bodySm : typography.caption)
                       .copyWith(
                         color: labelColor,
-                        fontWeight: isNeobrutalism ? .w700 : .w500,
+                        fontWeight: presetTokens.progressLabelWeight,
                       ),
             ),
           ],
@@ -424,7 +426,7 @@ class _CircularProgressPainter extends CustomPainter {
     final radius = (size.width - strokeWidth) / 2;
 
     // Draw track
-    if (trackColor.alpha > 0) {
+    if (trackColor.a > 0.0) {
       final trackPaint = Paint()
         ..color = trackColor
         ..style = PaintingStyle.stroke

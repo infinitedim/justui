@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
-import '../../../shared/default/_shared_tokens.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+import '../../theme/theme_provider.dart';
 import 'just_separator_style.dart';
 import 'just_separator_theme.dart';
 
@@ -96,11 +96,12 @@ class JustSeparator extends StatelessWidget {
     // Preference hierarchy resolution
     final resolvedColor =
         style?.color ?? themeStyle?.color ?? color ?? colors.borderDefault;
-    final isNeobrutalism = true;
     final resolvedThickness =
         style?.thickness ??
         themeStyle?.thickness ??
-        (isNeobrutalism ? 2.0 : thickness);
+        JustThemeProvider.of(
+          context,
+        ).theme.presetTokens.resolveSeparatorThickness(thickness);
     final resolvedIndent = style?.indent ?? themeStyle?.indent ?? indent;
     final resolvedEndIndent =
         style?.endIndent ?? themeStyle?.endIndent ?? endIndent;
