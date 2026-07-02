@@ -7,6 +7,7 @@ import { usePreset } from '@/lib/preset-context';
 export function ShowcaseFrame() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [supported, setSupported] = useState(true);
+  const [isReady, setIsReady] = useState(false);
   const { resolvedTheme } = useTheme();
   const { preset } = usePreset();
 
@@ -16,20 +17,20 @@ export function ShowcaseFrame() {
     setSupported(hasWasm);
   }, []);
 
-  // Kirim theme + preset ke Flutter setiap kali salah satunya berubah
+  // Listen for ready signal from Flutter
   useEffect(() => {
-    iframeRef.current?.contentWindow?.postMessage(
-      {
-        type: 'justui-theme',
-        preset,
-        mode: resolvedTheme === 'dark' ? 'dark' : 'light',
-      },
-      '*',
-    );
-  }, [resolvedTheme, preset]);
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'justui-ready') {
+        setIsReady(true);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
-  const handleLoad = () => {
-    // Kirim juga saat iframe pertama kali load
+  // Kirim theme + preset ke Flutter setiap kali salah satunya berubah atau ketika Flutter ready
+  useEffect(() => {
+    if (!isReady) return;
     iframeRef.current?.contentWindow?.postMessage(
       {
         type: 'justui-theme',
@@ -38,11 +39,11 @@ export function ShowcaseFrame() {
       },
       '*',
     );
-  };
+  }, [resolvedTheme, preset, isReady]);
 
   if (!supported) {
     return (
-      <div className="flex h-[180px] w-full items-center justify-center border border-border bg-card">
+      <div className="flex h-45 w-full items-center justify-center border border-border bg-card">
         <img
           src="/showcase-fallback.png"
           alt="JustUI component showcase"
@@ -60,7 +61,6 @@ export function ShowcaseFrame() {
       className="w-full border-0"
       style={{ height: '180px' }}
       loading="lazy"
-      onLoad={handleLoad}
     />
   );
 }

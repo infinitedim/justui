@@ -62,6 +62,10 @@ class _ShowcaseAppState extends State<ShowcaseApp> {
   void initState() {
     super.initState();
     web.window.addEventListener('message', _handleParentMessage.toJS);
+    web.window.parent?.postMessage(
+      {'type': 'justui-ready'}.jsify()!,
+      '*'.toJS,
+    );
   }
 
   void _handleParentMessage(web.Event event) {

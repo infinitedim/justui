@@ -52,7 +52,7 @@ function ThemeSwitcher({ lang }: { lang: string }) {
 
   useEffect(() => setMounted(true), []);
 
-  if (!mounted) return <div className="h-7 w-7" />;
+  if (!mounted) return null;
 
   return (
     <button
@@ -77,7 +77,7 @@ function PresetSwitcher({ lang }: { lang: string }) {
 
   useEffect(() => setMounted(true), []);
 
-  if (!mounted) return <div className="h-7 w-7" />;
+  if (!mounted) return null;
 
   const isNeo = preset === 'neobrutalism';
 
@@ -113,8 +113,8 @@ export function Navbar({ starCount, lang }: NavbarProps) {
   const [shortcut, setShortcut] = useState('Ctrl K');
 
   useEffect(() => {
-    const platform = navigator.platform.toLowerCase();
-    setShortcut(platform.includes('mac') ? '⌘K' : 'Ctrl K');
+    const platform = navigator.userAgentData?.platform.toLowerCase();
+    setShortcut(platform?.includes('mac') ? '⌘K' : 'Ctrl K');
 
     function onKeyDown(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
