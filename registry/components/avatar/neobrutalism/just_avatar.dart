@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import '../../../shared/default/_shared_tokens.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+import '../../theme/theme_provider.dart';
 import 'just_avatar_style.dart';
 import 'just_avatar_variants.dart';
 
@@ -179,13 +179,17 @@ class JustAvatar extends StatelessWidget {
         backgroundColor ??
         (name != null ? _colorFromName(name!) : colors.borderDefault);
     final Color fg = style?.foregroundColor ?? colors.textInverse;
-    final isNeobrutalism = true;
+    final presetTokens = theme.presetTokens;
     final double borderWidth =
-        style?.borderWidth ?? border?.width ?? (isNeobrutalism ? 2.5 : 0.0);
+        style?.borderWidth ??
+        border?.width ??
+        (presetTokens.showsDefaultBorder ? presetTokens.borderWidth : 0.0);
     final Color borderColor =
         style?.borderColor ??
         border?.color ??
-        (isNeobrutalism ? colors.borderDefault : const Color(0x00000000));
+        (presetTokens.showsDefaultBorder
+            ? colors.borderDefault
+            : const Color(0x00000000));
 
     // Build core content: Network Image -> Initials -> Icon
     Widget content;

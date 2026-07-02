@@ -41,7 +41,7 @@
           {
             "name": "just_button.dart",
             "path": "components/button/neobrutalism/just_button.dart",
-            "checksum": "sha256:9f1015791db9da119340028b5144fbebe90db8bb0748acfe2a45f893d4b3c90d"
+            "checksum": "sha256:618e956bf38f94167a462d7a16b04d53c75ba1c13b932f7c38bba869e85699f4"
           },
           {
             "name": "just_button_style.dart",
@@ -91,7 +91,7 @@
           {
             "name": "just_icon_button.dart",
             "path": "components/button/neobrutalism/just_icon_button.dart",
-            "checksum": "sha256:8cadf65f77e63517970db6c23c096f6525bd99931abecabb1e44096124888986"
+            "checksum": "sha256:c570f33d4577494c642b1bcc0a097495cfd99e4cfe1677d3ff666606ce7c44cf"
           }
         ]
       },
@@ -115,7 +115,7 @@
           {
             "name": "just_input.dart",
             "path": "components/input/default/just_input.dart",
-            "checksum": "sha256:73cc629adc46b210997c30758db256172efd416f5a0012f506465a015d7e5ded"
+            "checksum": "sha256:657f8f9ea5d5ae99719535223fa322076a05f3fa59ec1586d3b6bf6a37fa89e1"
           },
           {
             "name": "just_input_style.dart",
@@ -137,7 +137,7 @@
           {
             "name": "just_input.dart",
             "path": "components/input/neobrutalism/just_input.dart",
-            "checksum": "sha256:22e858777a285c54c20ecd649bd43228f54fb9f48ade7e4675ed24d302d284b6"
+            "checksum": "sha256:657f8f9ea5d5ae99719535223fa322076a05f3fa59ec1586d3b6bf6a37fa89e1"
           },
           {
             "name": "just_input_style.dart",
@@ -193,7 +193,7 @@
           {
             "name": "just_badge.dart",
             "path": "components/badge/neobrutalism/just_badge.dart",
-            "checksum": "sha256:8e13228ea3aed604adf79fcab7762f61a4688f8290b7bef3c39a9301a05a0687"
+            "checksum": "sha256:c5e8aa19d34d1f0358bb9b964f3b3008b0d644758f5b6530745fe181b67a911f"
           },
           {
             "name": "just_badge_style.dart",
@@ -244,7 +244,7 @@
           {
             "name": "just_avatar.dart",
             "path": "components/avatar/neobrutalism/just_avatar.dart",
-            "checksum": "sha256:d043ac3f4418e8018741c9eac923ef7c699e1e849a3cec2f84b342eb4aa517b0"
+            "checksum": "sha256:9f89159ae91617f29e7aa8e55310ec39cd17c524146841c98ed5c2af9bbd81bc"
           },
           {
             "name": "just_avatar_style.dart",
@@ -286,7 +286,7 @@
           {
             "name": "just_avatar_group.dart",
             "path": "components/avatar/neobrutalism/just_avatar_group.dart",
-            "checksum": "sha256:420091723da8b8bf6d69faab4e359dd7356845f7a393639c970173d9b2376e97"
+            "checksum": "sha256:7b634984d3b342f25994aef466803af656db2ab233eb2f02f759756980092334"
           }
         ]
       },
@@ -329,7 +329,7 @@
           {
             "name": "just_checkbox.dart",
             "path": "components/checkbox/neobrutalism/just_checkbox.dart",
-            "checksum": "sha256:0436084a57adbc0ee23f5659c65357acb372de89f36b0dfef23a5de00ea5f27f"
+            "checksum": "sha256:d50faed3605088b5228a1132dda85d47e95db8b65cf1ea1ef543fe392e72bd1b"
           },
           {
             "name": "just_checkbox_style.dart",
@@ -382,7 +382,7 @@
           {
             "name": "just_radio.dart",
             "path": "components/radio/neobrutalism/just_radio.dart",
-            "checksum": "sha256:d1bae3a36be84e8c722677a86bf504f68765fd7d5eb3b87cfe3eba865204aecb"
+            "checksum": "sha256:45f11a3c38d17bceaaf3d43c759741b7332031255117cfd8ded9059509f1495a"
           },
           {
             "name": "just_radio_style.dart",
@@ -424,7 +424,7 @@
           {
             "name": "just_radio_group.dart",
             "path": "components/radio/neobrutalism/just_radio_group.dart",
-            "checksum": "sha256:58127c153c66ed951f8687bc4dbb7353088b4c27dacdc35ff1d4843920827f8c"
+            "checksum": "sha256:9869be2598b4daa9314450516ef6d8da0bb7e339ef67538303c73169d5421ad9"
           }
         ]
       },
@@ -467,7 +467,7 @@
           {
             "name": "just_switch.dart",
             "path": "components/switch/neobrutalism/just_switch.dart",
-            "checksum": "sha256:191d4aedc0a2c5e5eeed04ef3df57860990ac352d815b6d6d33ff06b59a86d98"
+            "checksum": "sha256:a14c2d9d2d2e0f42e8557df381d0e59356de2653d78067a502491bf010efd018"
           },
           {
             "name": "just_switch_style.dart",
@@ -520,7 +520,7 @@
           {
             "name": "just_card.dart",
             "path": "components/card/neobrutalism/just_card.dart",
-            "checksum": "sha256:c000c9f21040d9a4fcec5f1abfc6409a38223788b5c846030228fd8459d0920a"
+            "checksum": "sha256:6ac35b403a58595a2de85869b1eb2c3e5d78b2c8f3253944e1c144bf19867ccd"
           },
           {
             "name": "just_card_style.dart",
@@ -571,7 +571,7 @@
           {
             "name": "just_separator.dart",
             "path": "components/separator/neobrutalism/just_separator.dart",
-            "checksum": "sha256:eccb7d0e651c00ba5b71745732e2ecb1521ae32f9fbfeae1b9525dcd9d7c2489"
+            "checksum": "sha256:201d71c126001f0a092d22effd4a8b552858db3829a1231fd185869939a6bdbd"
           },
           {
             "name": "just_separator_style.dart",
@@ -624,7 +624,7 @@
           {
             "name": "just_scroll_area.dart",
             "path": "components/scroll/neobrutalism/just_scroll_area.dart",
-            "checksum": "sha256:0c8a570255536568e7098b3fd949a45702554ae452f25307734875e13a23a80b"
+            "checksum": "sha256:563557b91b7419a979fddcc04339f82e60523dd87b11853475dbac0504056ab1"
           },
           {
             "name": "just_scroll_area_style.dart",
@@ -725,7 +725,7 @@
           {
             "name": "just_skeleton.dart",
             "path": "components/skeleton/neobrutalism/just_skeleton.dart",
-            "checksum": "sha256:e7e121443b580e13626bddd97d18ef3871df69c2426910d4fb3cb5892de86f78"
+            "checksum": "sha256:8768d169766ea36968403c3ddecbc14c23de2b2eadc38041893daf11a5cd1fb9"
           },
           {
             "name": "just_skeleton_style.dart",
@@ -804,7 +804,7 @@
           {
             "name": "just_breadcrumb.dart",
             "path": "components/breadcrumb/neobrutalism/just_breadcrumb.dart",
-            "checksum": "sha256:39999379d40c35c7706790195bf7134ceec3ca19bd0e645b66d8bd28fcacd384"
+            "checksum": "sha256:7b98f502935d21b4b6a5aef78c4f2d1b033f9d55474bb17de27fd96c3407a4e0"
           },
           {
             "name": "just_breadcrumb_style.dart",
@@ -864,14 +864,14 @@
           {
             "name": "just_tab_indicator.dart",
             "path": "components/tabs/default/just_tab_indicator.dart",
-            "checksum": "sha256:550d04598705394bee0931bc20cd7b9c622067b01f7b5c19090d87e8ea53fd55"
+            "checksum": "sha256:69c7b60a78354a56a6fd9b1f7583bb0890540e56b831e4108fffba5d7101db1d"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_tabs.dart",
             "path": "components/tabs/neobrutalism/just_tabs.dart",
-            "checksum": "sha256:166938fc6ca58a0577f8e9d2145165ca0ce10e48e55c1c6c402c8500943f8176"
+            "checksum": "sha256:1073f4f9e9313026f5254be456439382bd6674a41459100936f7272296418890"
           },
           {
             "name": "just_tabs_style.dart",
@@ -891,7 +891,7 @@
           {
             "name": "just_tab_indicator.dart",
             "path": "components/tabs/neobrutalism/just_tab_indicator.dart",
-            "checksum": "sha256:39a98604d219e134263a5b56f346fceb7a66a2ae684043ee389b6b884981fda0"
+            "checksum": "sha256:69c7b60a78354a56a6fd9b1f7583bb0890540e56b831e4108fffba5d7101db1d"
           }
         ]
       },
@@ -938,7 +938,7 @@
           {
             "name": "just_bottom_nav.dart",
             "path": "components/bottom_nav/neobrutalism/just_bottom_nav.dart",
-            "checksum": "sha256:9df321333833aece8b4cc8ad4df234a26fd3251d4977b17372c4d912c806e2b3"
+            "checksum": "sha256:a084e78f2ff6845c0c6342f80631611f9618dbb7d8e9ab998799382dc6a16e52"
           },
           {
             "name": "just_bottom_nav_style.dart",
@@ -1025,7 +1025,7 @@
           {
             "name": "just_sidebar.dart",
             "path": "components/sidebar/neobrutalism/just_sidebar.dart",
-            "checksum": "sha256:1a3b2b9ebb57215c89f3119cd1a9354df121998f7ab8f0ded3d99ae52f8bf3f3"
+            "checksum": "sha256:a93be1ed9cef7bf37e911bc354680d78096fe4f3e7ccfa7b563915579a8a3627"
           },
           {
             "name": "just_sidebar_style.dart",
@@ -1086,7 +1086,7 @@
           {
             "name": "just_toast.dart",
             "path": "components/toast/neobrutalism/just_toast.dart",
-            "checksum": "sha256:7cde5a2b46e6b7754b92b55c70f0553b127f2a48673b35eca328f81dc76333cc"
+            "checksum": "sha256:e5a12ce60ecd751c0ede8aef352dc846ba4203b9cf7e57c2a6221fbe9a54bffa"
           },
           {
             "name": "just_toast_style.dart",
@@ -1147,7 +1147,7 @@
           {
             "name": "just_dialog.dart",
             "path": "components/dialog/neobrutalism/just_dialog.dart",
-            "checksum": "sha256:0783d42cf1743a106b587e16832798a7754ceaa7be15d9de6b5b8bfb266a063f"
+            "checksum": "sha256:d4cbed56ab414259b7d4c6e0df0e272b3426a968dd5d6c59c61b467b79044828"
           },
           {
             "name": "just_dialog_style.dart",
@@ -1208,7 +1208,7 @@
           {
             "name": "just_sheet.dart",
             "path": "components/sheet/neobrutalism/just_sheet.dart",
-            "checksum": "sha256:006e040f1214fdd85573b86b15f6e0e3ce548061c510b6d748cafc7a4ebd84ac"
+            "checksum": "sha256:e5f3cd5beb441199c1068061e0a90a2c6afbdab02346d3ee96e337d87118ee18"
           },
           {
             "name": "just_sheet_style.dart",
@@ -1269,7 +1269,7 @@
           {
             "name": "just_tooltip.dart",
             "path": "components/tooltip/neobrutalism/just_tooltip.dart",
-            "checksum": "sha256:bd5c6d7a857762428e45acd641475e3ba8f2b6e567abd97757e81eca5eb8dd33"
+            "checksum": "sha256:c8b382f31478119963bb01daaf2880c7af9bbfe5dff5ebd55ab5806bf4db68aa"
           },
           {
             "name": "just_tooltip_style.dart",
@@ -1310,7 +1310,7 @@
           {
             "name": "just_select.dart",
             "path": "components/select/default/just_select.dart",
-            "checksum": "sha256:e21ccd02891b31f6b5d2aea5ef5d907c27af7f8a09c3ad2e7d761a92da798aa2"
+            "checksum": "sha256:bde7172325038db42fa999e0ad0bfc1fabc544db37d6b8f795ccddd9b13cfebd"
           },
           {
             "name": "just_select_style.dart",
@@ -1332,7 +1332,7 @@
           {
             "name": "just_select.dart",
             "path": "components/select/neobrutalism/just_select.dart",
-            "checksum": "sha256:3885f01886e40163636e6ce2dae87206f4dcb684342ab424ee3735408c7e1f59"
+            "checksum": "sha256:bde7172325038db42fa999e0ad0bfc1fabc544db37d6b8f795ccddd9b13cfebd"
           },
           {
             "name": "just_select_style.dart",
@@ -1371,7 +1371,7 @@
           {
             "name": "just_progress.dart",
             "path": "components/progress/default/just_progress.dart",
-            "checksum": "sha256:131e216ae596b386db520ac47e0acd2137153e8e2d16403a7619d6ee5c11779d"
+            "checksum": "sha256:338883395ca99db4dd9e36406a5819ca1a1e6363bb33500cd662a1d0b47cb723"
           },
           {
             "name": "just_progress_style.dart",
@@ -1393,7 +1393,7 @@
           {
             "name": "just_progress.dart",
             "path": "components/progress/neobrutalism/just_progress.dart",
-            "checksum": "sha256:4837902c567643a7688e5b7ca015f6e77efb67de20237bcf3310368b75115bb3"
+            "checksum": "sha256:338883395ca99db4dd9e36406a5819ca1a1e6363bb33500cd662a1d0b47cb723"
           },
           {
             "name": "just_progress_style.dart",
@@ -1456,7 +1456,7 @@
           {
             "name": "just_accordion.dart",
             "path": "components/accordion/neobrutalism/just_accordion.dart",
-            "checksum": "sha256:1305e9206b7dd3104c74ad04484fd2181ec044a3c991c1c341011aee3a158bb5"
+            "checksum": "sha256:e63ba1c5c6fa99db8ddc5a7e1bbdeaf5768014b2455e608b59713ece5ee382a5"
           },
           {
             "name": "just_accordion_style.dart",
@@ -1524,7 +1524,7 @@
           {
             "name": "just_toggle.dart",
             "path": "components/toggle/neobrutalism/just_toggle.dart",
-            "checksum": "sha256:93c9a5a0ae2e83644a643de8e41c44d7757746ba56799c64c1d826a9d14ffea4"
+            "checksum": "sha256:63669284ff71dd81409f4f7f178c2a9cbcd0595b9b11feb8847345b5d30be77e"
           },
           {
             "name": "just_toggle_group.dart",
@@ -1592,7 +1592,7 @@
           {
             "name": "just_table.dart",
             "path": "components/table/neobrutalism/just_table.dart",
-            "checksum": "sha256:3a13b1b31f811ab64406eeeeed2e8955bd84c226cabb8a63dd4a24f2f0ca751f"
+            "checksum": "sha256:cf9ef4e79583b43db628daf11d1ef9d62387d9654e7c844b95c12af281cf326d"
           },
           {
             "name": "just_table_style.dart",

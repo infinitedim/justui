@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
 import 'just_badge_style.dart';
 import 'just_badge_variants.dart';
 
@@ -335,15 +335,15 @@ class JustBadge extends StatelessWidget {
       );
     }
 
-    final isNeobrutalism = true;
+    final presetTokens = theme.presetTokens;
 
-    final Border? resolvedBorder = isNeobrutalism
-        ? .all(color: colors.textPrimary, width: 2.5)
+    final Border? resolvedBorder = presetTokens.showsDefaultBorder
+        ? .all(color: colors.textPrimary, width: presetTokens.borderWidth)
         : (finalBorder != const Color(0x00000000)
               ? .all(color: finalBorder, width: 1.0)
               : null);
 
-    final List<BoxShadow>? resolvedShadows = isNeobrutalism
+    final List<BoxShadow>? resolvedShadows = presetTokens.showsDefaultBorder
         ? (size == .sm ? theme.shadows.xs : theme.shadows.sm)
         : null;
 

@@ -126,7 +126,7 @@ class _JustSliderState extends State<JustSlider> {
     final finalEnableHaptic =
         widget.enableHaptic ??
         globalTheme?.enableHaptic ??
-        presetTokens.sliderHapticDefault;
+        presetTokens.sliderDefaultHaptic;
 
     // Resolve size metrics
     final double trackHeight = presetTokens.resolveSliderTrackHeight(

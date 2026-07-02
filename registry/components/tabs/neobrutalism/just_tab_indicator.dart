@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import '../../../shared/default/_shared_tokens.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_data.dart';
 import 'just_tabs_style.dart';
 import 'just_tabs_variants.dart';
@@ -38,7 +38,7 @@ class JustTabIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isNeobrutalism = true;
+    final presetTokens = theme.presetTokens;
     // Resolve styling colors and shapes
     final activeColor =
         style?.indicatorColor ?? style?.activeColor ?? colors.borderFocus;
@@ -49,8 +49,9 @@ class JustTabIndicator extends StatelessWidget {
 
     switch (variant) {
       case .line:
-        final thickness =
-            style?.indicatorThickness ?? (isNeobrutalism ? 4.0 : 2.0);
+        final thickness = presetTokens.resolveTabIndicatorThickness(
+          style?.indicatorThickness,
+        );
         if (orientation == .horizontal) {
           return Align(
             alignment: .bottomCenter,
@@ -94,8 +95,10 @@ class JustTabIndicator extends StatelessWidget {
             color: style?.containerBackgroundColor ?? colors.card,
             borderRadius: indicatorRadius,
             border: .all(
-              color: isNeobrutalism ? colors.textPrimary : colors.borderDefault,
-              width: isNeobrutalism ? 2.5 : 1.0,
+              color: presetTokens.showsDefaultBorder
+                  ? colors.textPrimary
+                  : colors.borderDefault,
+              width: presetTokens.borderWidth,
             ),
           ),
         );
@@ -104,11 +107,11 @@ class JustTabIndicator extends StatelessWidget {
         // Pill solid background indicator
         return Container(
           decoration: BoxDecoration(
-            color: isNeobrutalism
+            color: presetTokens.showsDefaultBorder
                 ? colors.success.withValues(alpha: 0.2)
                 : activeColor.withValues(alpha: 0.1),
             borderRadius: indicatorRadius,
-            border: isNeobrutalism
+            border: presetTokens.showsDefaultBorder
                 ? .all(color: colors.textPrimary, width: 1.5)
                 : null,
           ),
@@ -116,8 +119,9 @@ class JustTabIndicator extends StatelessWidget {
 
       case .vertical:
         // Fallback for vertical: line by default, or similar to line
-        final thickness =
-            style?.indicatorThickness ?? (isNeobrutalism ? 4.0 : 2.0);
+        final thickness = presetTokens.resolveTabIndicatorThickness(
+          style?.indicatorThickness,
+        );
         final isRtl = Directionality.of(context) == .rtl;
         return Align(
           alignment: isRtl ? .centerRight : .centerLeft,

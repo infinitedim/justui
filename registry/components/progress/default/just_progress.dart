@@ -299,7 +299,7 @@ class _JustProgressState extends State<JustProgress>
                             : typography.bodySm)
                         .copyWith(
                           color: labelColor,
-                          fontWeight: presetTokens.progressLabelFontWeight,
+                          fontWeight: presetTokens.progressLabelWeight,
                         ),
               ),
             ],
@@ -389,7 +389,7 @@ class _JustProgressState extends State<JustProgress>
                   (widget.size == .lg ? typography.bodySm : typography.caption)
                       .copyWith(
                         color: labelColor,
-                        fontWeight: presetTokens.progressLabelFontWeight,
+                        fontWeight: presetTokens.progressLabelWeight,
                       ),
             ),
           ],

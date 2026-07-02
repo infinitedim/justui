@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/widgets.dart';
-import '../../../shared/default/_shared_tokens.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../overlay/just_overlay_controller.dart';
-import '../../theme/default/_shared_theme_provider.dart';
+import '../../theme/theme_provider.dart';
 import 'just_toast_style.dart';
 import 'just_toast_theme.dart';
 import 'just_toast_variants.dart';
@@ -83,9 +83,9 @@ class JustToastController extends JustOverlayController {
 
   /// Creates a [JustToastController].
   JustToastController({
-    this.behavior = ToastBehavior.stacked,
+    this.behavior = .stacked,
     this.limit = 3,
-    this.position = ToastPosition.bottomCenter,
+    this.position = .bottomCenter,
     this.enableDragDismiss = true,
   });
 
@@ -95,7 +95,7 @@ class JustToastController extends JustOverlayController {
   /// Shows a toast notification.
   void show({
     required String message,
-    ToastVariant variant = ToastVariant.info,
+    ToastVariant variant = .info,
     Duration duration = const Duration(seconds: 3),
     JustToastStyle? style,
     AnimationController? animationController,
@@ -125,7 +125,7 @@ class JustToastController extends JustOverlayController {
       animationBuilder: animationBuilder,
     );
 
-    if (behavior == ToastBehavior.queue) {
+    if (behavior == .queue) {
       if (_activeToasts.isNotEmpty) {
         _queue.add(pending);
       } else {
@@ -243,7 +243,7 @@ class JustToastController extends JustOverlayController {
 
       _updatePositions();
 
-      if (behavior == ToastBehavior.queue && _queue.isNotEmpty) {
+      if (behavior == .queue && _queue.isNotEmpty) {
         _showToast(_queue.removeAt(0));
       }
     });
@@ -300,18 +300,18 @@ class _ToastPositionedWrapper extends StatelessWidget {
     double? right;
 
     switch (position) {
-      case ToastPosition.topLeft:
-      case ToastPosition.bottomLeft:
+      case .topLeft:
+      case .bottomLeft:
         left = margin;
         right = null;
         break;
-      case ToastPosition.topRight:
-      case ToastPosition.bottomRight:
+      case .topRight:
+      case .bottomRight:
         left = null;
         right = margin;
         break;
-      case ToastPosition.topCenter:
-      case ToastPosition.bottomCenter:
+      case .topCenter:
+      case .bottomCenter:
         left = 0.0;
         right = 0.0;
         break;
@@ -320,9 +320,7 @@ class _ToastPositionedWrapper extends StatelessWidget {
     double? top;
     double? bottom;
     final isTop =
-        position == ToastPosition.topLeft ||
-        position == ToastPosition.topCenter ||
-        position == ToastPosition.topRight;
+        position == .topLeft || position == .topCenter || position == .topRight;
 
     if (isTop) {
       top = margin + offset;
@@ -333,8 +331,7 @@ class _ToastPositionedWrapper extends StatelessWidget {
     }
 
     Widget positionedChild = child;
-    if (position == ToastPosition.topCenter ||
-        position == ToastPosition.bottomCenter) {
+    if (position == .topCenter || position == .bottomCenter) {
       positionedChild = Center(child: child);
     }
 
@@ -463,16 +460,16 @@ class _JustToastWidgetState extends State<_JustToastWidget>
     // Resolve variant style from theme extension
     JustToastStyle? variantThemeStyle;
     switch (widget.entry.variant) {
-      case ToastVariant.info:
+      case .info:
         variantThemeStyle = globalTheme?.infoStyle;
         break;
-      case ToastVariant.success:
+      case .success:
         variantThemeStyle = globalTheme?.successStyle;
         break;
-      case ToastVariant.warning:
+      case .warning:
         variantThemeStyle = globalTheme?.warningStyle;
         break;
-      case ToastVariant.error:
+      case .error:
         variantThemeStyle = globalTheme?.errorStyle;
         break;
     }
@@ -510,38 +507,38 @@ class _JustToastWidgetState extends State<_JustToastWidget>
     // Default icons
     Widget defaultIcon;
     switch (widget.entry.variant) {
-      case ToastVariant.success:
+      case .success:
         defaultIcon = Icon(
           Icons.check_circle_outline,
           color: colors.success,
           size: 20.0,
         );
         break;
-      case ToastVariant.warning:
+      case .warning:
         defaultIcon = Icon(
           Icons.warning_amber_outlined,
           color: colors.warning,
           size: 20.0,
         );
         break;
-      case ToastVariant.error:
+      case .error:
         defaultIcon = Icon(
           Icons.error_outline,
           color: colors.error,
           size: 20.0,
         );
         break;
-      case ToastVariant.info:
+      case .info:
         defaultIcon = Icon(Icons.info_outline, color: colors.info, size: 20.0);
         break;
     }
 
     final resolvedIcon = widget.entry.icon ?? defaultIcon;
 
-    final isNeobrutalism = true;
+    final presetTokens = theme.presetTokens;
     final borderSide = BorderSide(
-      color: isNeobrutalism ? colors.textPrimary : borderColor,
-      width: isNeobrutalism ? 2.5 : 1.0,
+      color: presetTokens.showsDefaultBorder ? colors.textPrimary : borderColor,
+      width: presetTokens.borderWidth,
     );
 
     return Semantics(
