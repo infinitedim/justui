@@ -135,12 +135,15 @@ const nextConfig: NextConfig = {
           },
         ];
 
-    return [
+    const headersList = [
       {
         source: '/(.*)',
         headers: [...baselineHeaders, ...productionHeaders],
       },
-      {
+    ];
+
+    if (!isDev) {
+      headersList.push({
         // Long-lived cache for immutable static assets.
         source: '/:path*\\.(ico|png|jpg|jpeg|gif|webp|svg|css|js)',
         headers: [
@@ -149,8 +152,10 @@ const nextConfig: NextConfig = {
             value: 'public, max-age=31536000, immutable',
           },
         ],
-      },
-    ];
+      });
+    }
+
+    return headersList;
   },
 };
 

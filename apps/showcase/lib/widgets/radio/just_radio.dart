@@ -252,6 +252,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                               height: circleSize,
                               decoration: BoxDecoration(
                                 shape: .circle,
+                                color: colors.card,
                                 border: .all(
                                   color: currentBorder,
                                   width: isNeobrutalism ? 2.5 : 1.5,
