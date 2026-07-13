@@ -1,4 +1,4 @@
-// justui-meta: registry=53b431db7ce7987b2775d651bbcb3de2775121273e889343ce8197f20c68250c local=61dbae724394b64ea790b906927c857e80dc8f8580038b9adea53838208c994e
+// justui-meta: registry=45f11a3c38d17bceaaf3d43c759741b7332031255117cfd8ded9059509f1495a local=bc9c10f15301a03e3da882b0e330253ee7f9711ffe4d4a9aabdeeb9f2d61ed3f
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -130,7 +130,9 @@ class _JustRadioState<T> extends State<JustRadio<T>>
       final finalEnableHaptic =
           widget.enableHaptic ??
           radioTheme?.enableHaptic ??
-          (JustThemeProvider.read(context).theme.preset == .neobrutalism);
+          JustThemeProvider.read(
+            context,
+          ).theme.presetTokens.selectionHapticDefault;
 
       if (finalEnableHaptic) {
         HapticFeedback.selectionClick();
@@ -193,7 +195,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
         textStyle.copyWith(color: colors.textPrimary);
 
     final customTheme = JustThemeProvider.of(context).theme;
-    final isNeobrutalism = customTheme.preset == .neobrutalism;
+    final hasBorder = customTheme.presetTokens.showsDefaultBorder;
 
     return Semantics(
       checked: _isSelected,
@@ -229,7 +231,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                           builder: (context, child) {
                             final progress = _controller.value;
 
-                            final Color currentBorder = isNeobrutalism
+                            final Color currentBorder = hasBorder
                                 ? colors.textPrimary
                                 : (isHovered
                                       ? colors.textSecondary
@@ -239,23 +241,24 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                                           progress,
                                         )!);
 
-                            List<BoxShadow> currentShadows = isNeobrutalism
-                                ? customTheme.shadows.xs
+                            final List<BoxShadow> currentShadows = hasBorder
+                                ? customTheme.presetTokens.resolveShadow(
+                                    customTheme.shadows,
+                                    JustShadowLevel.xs,
+                                    isPressed: isPressed,
+                                  )
                                 : const [];
-                            currentShadows = customTheme.resolveShadows(
-                              currentShadows,
-                              isPressed: isPressed,
-                            );
 
                             final radioBox = Container(
                               width: circleSize,
                               height: circleSize,
                               decoration: BoxDecoration(
                                 shape: .circle,
-                                color: colors.card,
                                 border: .all(
                                   color: currentBorder,
-                                  width: isNeobrutalism ? 2.5 : 1.5,
+                                  width: hasBorder
+                                      ? customTheme.presetTokens.borderWidth
+                                      : 1.5,
                                 ),
                                 boxShadow: currentShadows.isNotEmpty
                                     ? currentShadows
@@ -269,8 +272,10 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                               ),
                             );
 
-                            return customTheme.buildPressEffect(
+                            return customTheme.presetTokens.buildPressEffect(
                               isPressed: isPressed,
+                              animations: customTheme.animations,
+                              customOffset: const Offset(1.0, 1.0),
                               child: radioBox,
                             );
                           },
