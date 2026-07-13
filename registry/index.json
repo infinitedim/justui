@@ -365,7 +365,7 @@
           {
             "name": "just_radio.dart",
             "path": "components/radio/default/just_radio.dart",
-            "checksum": "sha256:45f11a3c38d17bceaaf3d43c759741b7332031255117cfd8ded9059509f1495a"
+            "checksum": "sha256:995ae93b99deb2282e811591f082e75f55807710ccf258ab14c772527a6eb495"
           },
           {
             "name": "just_radio_style.dart",
