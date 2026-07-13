@@ -1,0 +1,178 @@
+---
+title: Select
+description: An accessible dropdown select input component built with OverlayPortal and support for custom search filtering and keyboard navigation.
+---
+
+# Select
+
+The Select component is a custom dropdown select input element built without relying on Flutter's default Material `DropdownButton`. Utilizing `OverlayPortal` internally, it ensures visual style consistency with the design system, features full keyboard navigation support, and provides optional prefix icons, divider lines, and text searching.
+
+---
+
+## Description
+
+- **`JustSelect<T>`**: The dropdown select container widget managing selection, labels, validation states, and search input options.
+- **`JustSelectOption<T>`**: A data model representing a single dropdown option item (supporting label text, prefix icon, disabled status, or acting as a divider separator).
+
+---
+
+## Usage
+
+### Installation
+
+Install the component via the CLI:
+
+```bash
+justui add select
+```
+
+### Basic Usage
+
+Use `JustSelect` to select a simple option from a list. Wrap parameter values using _Dart Dot Shorthand_ (e.g. `.md` for sizing) to stay consistent with the codebase:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class SelectBasicDemo extends StatefulWidget {
+  const SelectBasicDemo({super.key});
+
+  @override
+  State<SelectBasicDemo> createState() => _SelectBasicDemoState();
+}
+
+class _SelectBasicDemoState extends State<SelectBasicDemo> {
+  String? _selectedFruit;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSelect<String>(
+      label: 'Favorite Fruit',
+      placeholder: 'Select a fruit...',
+      value: _selectedFruit,
+      options: const [
+        JustSelectOption(value: 'apple', label: 'Apple'),
+        JustSelectOption(value: 'banana', label: 'Banana'),
+        JustSelectOption.divider(),
+        JustSelectOption(value: 'cherry', label: 'Cherry', enabled: false), // Disabled option
+        JustSelectOption(value: 'orange', label: 'Orange'),
+      ],
+      onChanged: (val) {
+        setState(() {
+          _selectedFruit = val;
+        });
+      },
+    );
+  }
+}
+```
+
+### Advanced Usage
+
+You can enable inline text searching (useful for long lists) and add custom prefix icons to the select input trigger:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class SelectAdvancedDemo extends StatefulWidget {
+  const SelectAdvancedDemo({super.key});
+
+  @override
+  State<SelectAdvancedDemo> createState() => _SelectAdvancedDemoState();
+}
+
+class _SelectAdvancedDemoState extends State<SelectAdvancedDemo> {
+  String? _selectedLanguage;
+
+  static const List<JustSelectOption<String>> _languages = [
+    JustSelectOption(value: 'en', label: 'English', icon: Icon(Icons.language)),
+    JustSelectOption(value: 'id', label: 'Indonesian', icon: Icon(Icons.language)),
+    JustSelectOption(value: 'jp', label: 'Japanese', icon: Icon(Icons.language)),
+    JustSelectOption(value: 'fr', label: 'French', icon: Icon(Icons.language)),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSelect<String>(
+      label: 'Preferred Language',
+      value: _selectedLanguage,
+      options: _languages,
+      searchable: true, // Enables searching text input
+      size: .md,
+      prefixIcon: const Icon(Icons.translate),
+      maxDropdownHeight: 250,
+      onChanged: (val) {
+        setState(() {
+          _selectedLanguage = val;
+        });
+      },
+    );
+  }
+}
+```
+
+---
+
+## API Reference (Props)
+
+### `JustSelectOption<T>`
+
+| Property    | Data Type | Default Value | Description                                                                            |
+| :---------- | :-------- | :------------ | :------------------------------------------------------------------------------------- |
+| `value`     | `T?`      | _Required_    | The associated model value returned in `onChanged`. Is `null` for divider items.       |
+| `label`     | `String`  | _Required_    | Text label displayed on the select list option.                                        |
+| `icon`      | `Widget?` | `null`        | Optional prefix icon or flag graphic prepended to the option label.                    |
+| `enabled`   | `bool`    | `true`        | If `false`, makes the option non-interactive (renders dimmed and is ignored by focus). |
+| `isDivider` | `bool`    | `false`       | If `true`, the option functions as a separating divider line.                          |
+
+- **Named Constructor**: `JustSelectOption.divider()` creates a divider line to categorize option lists.
+
+### `JustSelect<T>`
+
+| Property            | Data Type                   | Default Value | Description                                                                                                    |
+| :------------------ | :-------------------------- | :------------ | :------------------------------------------------------------------------------------------------------------- |
+| `options`           | `List<JustSelectOption<T>>` | _Required_    | List of selectable options and dividers inside the dropdown.                                                   |
+| `value`             | `T?`                        | _Required_    | Currently selected option value.                                                                               |
+| `onChanged`         | `ValueChanged<T>?`          | _Required_    | Callback fired immediately when an option is selected.                                                         |
+| `placeholder`       | `String?`                   | `null`        | Text displayed inside the trigger box when the value is empty/null.                                            |
+| `label`             | `String?`                   | `null`        | Optional floating label text rendered above the select trigger.                                                |
+| `errorText`         | `String?`                   | `null`        | Error validation message. If set, turns the select border red and triggers screen reader accessibility alerts. |
+| `enabled`           | `bool`                      | `true`        | If `false`, disables input triggers and dims the layout.                                                       |
+| `searchable`        | `bool`                      | `false`       | If `true`, reveals a text input field at the top of the dropdown list to filter options.                       |
+| `size`              | `JustSelectSize`            | `.md`         | Dimension size classification: `.sm` (36px), `.md` (44px), `.lg` (52px).                                       |
+| `style`             | `JustSelectStyle?`          | `null`        | Direct per-instance style overrides.                                                                           |
+| `prefixIcon`        | `Widget?`                   | `null`        | Optional graphic widget prepended to the select input trigger.                                                 |
+| `maxDropdownHeight` | `int`                       | `300`         | Sizing constraint capping the vertical height of the scrollable dropdown panel.                                |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+- **Default Preset**:
+  - The select input trigger has rounded corners matching `radius.md`.
+  - Border color highlights dynamically using `colors.borderFocus` when active/opened.
+  - Dropdown box floats over the viewport with soft shadows (`shadows.md`).
+
+- **Neobrutalism Preset**:
+  - Border thickness of the input trigger and dropdown box is set to `2.5` using a solid color (`colors.textPrimary`).
+  - Employs a flat offset shadow (`shadows.md`) behind the trigger and dropdown panels.
+  - Immediate curves (`animations.instant`) bypass transitions.
+
+### Keyboard Interaction
+
+JustSelect implements full keyboard compliance:
+
+- **Opening the Dropdown**: Pressing `Enter`, `Space`, `ArrowDown`, or `ArrowUp` while the input trigger has keyboard focus opens the dropdown panel.
+- **Closing the Dropdown**: Pressing `Escape` instantly dismisses the dropdown and restores keyboard focus to the input trigger.
+- **Navigating Options**: Pressing `ArrowDown` or `ArrowUp` shifts active focus to the next or previous option. Disabled options and divider separators are automatically skipped during navigation.
+- **Confirming Selection**: Pressing `Enter` selects the currently highlighted option, closes the dropdown, and returns focus to the trigger.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **A11y Error Announcements**:
+   If `errorText` is provided, a screen reader announcement is triggered via `SemanticsService` to alert users of input errors.
+2. **Overlay Trapping**:
+   Dropdown listings are positioned dynamically relative to screen space. If the select trigger is near the bottom of the screen, the dropdown floats above it (`topPosition` calculated dynamically) to avoid rendering outside the screen area.

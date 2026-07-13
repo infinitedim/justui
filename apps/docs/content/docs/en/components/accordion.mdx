@@ -1,0 +1,153 @@
+---
+title: Accordion
+description: Vertically stacked collapsible content panels controlled by headers, optimized for space-efficient information delivery.
+---
+
+# Accordion
+
+The Accordion component manages vertically stacked content panels that can be expanded or collapsed. It offers single-choice or multi-choice expansion settings, supports various layout styles (bordered, flush, or contained), and features full keyboard toggle support.
+
+---
+
+## Description
+
+- **`JustAccordion`**: The main grouping component wrapping a list of accordion items.
+- **`JustAccordionItem`**: A data model defining the header title, content body, leading icon, subtitle, and interactive state for a single collapsible section.
+
+---
+
+## Usage
+
+### Installation
+
+Install the component via the CLI:
+
+```bash
+justui add accordion
+```
+
+### Basic Usage
+
+Define a simple accordion with single-choice expansion limits (expanding one collapses the other):
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildBasicAccordion(BuildContext context) {
+  return JustAccordion(
+    items: const [
+      JustAccordionItem(
+        title: 'What is JustUI?',
+        content: Text('JustUI is a copy-paste component library for Flutter inspired by shadcn/ui.'),
+      ),
+      JustAccordionItem(
+        title: 'Does it require external dependencies?',
+        content: Text('No, JustUI is designed to have a zero-dependency footprint, relying only on Flutter SDK.'),
+      ),
+    ],
+  );
+}
+```
+
+### Advanced Usage
+
+Configure accordion layout variants (e.g. `flush` or `contained`), allow multiple concurrent expansions, and set initial expansion states:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class AccordionAdvancedDemo extends StatelessWidget {
+  const AccordionAdvancedDemo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return JustAccordion(
+      variant: JustAccordionVariant.contained, // Grouped within a single container
+      allowMultiple: true, // Expand multiple panels simultaneously
+      initialExpanded: const {0}, // First item expanded by default
+      items: const [
+        JustAccordionItem(
+          title: 'Account Settings',
+          subtitle: Text('Manage your profile and credentials'),
+          leading: Icon(Icons.person_outline),
+          content: Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Text('Edit your name, email address, or update password here.'),
+          ),
+        ),
+        JustAccordionItem(
+          title: 'Notification Preferences',
+          subtitle: Text('Configure email and push alerts'),
+          leading: Icon(Icons.notifications_outlined),
+          content: Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Text('Toggle alerts for security events, messages, and reports.'),
+          ),
+        ),
+      ],
+      onChanged: (expandedIndices) {
+        print('Active sections: $expandedIndices');
+      },
+    );
+  }
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustAccordionItem
+
+| Property   | Data Type | Default Value | Description                                                                        |
+| :--------- | :-------- | :------------ | :--------------------------------------------------------------------------------- |
+| `title`    | `String`  | _Required_    | Main heading text displayed on the header button.                                  |
+| `content`  | `Widget`  | _Required_    | The body content widget tree revealed when expanded.                               |
+| `subtitle` | `Widget?` | `null`        | Secondary description text or label rendered below the header title.               |
+| `leading`  | `Widget?` | `null`        | Optional graphic widget (typically an icon) prepended before the title.            |
+| `enabled`  | `bool`    | `true`        | If `false`, disables header interaction and prevents the panel from being toggled. |
+
+### JustAccordion
+
+| Property          | Data Type                 | Default Value                   | Description                                                                                                 |
+| :---------------- | :------------------------ | :------------------------------ | :---------------------------------------------------------------------------------------------------------- |
+| `items`           | `List<JustAccordionItem>` | _Required_                      | The list of collapsible accordion items.                                                                    |
+| `allowMultiple`   | `bool`                    | `false`                         | If `true`, multiple items can remain expanded simultaneously. If `false`, expanding one collapses others.   |
+| `initialExpanded` | `Set<int>?`               | `null`                          | Set of index keys designating which sections should be expanded on initial build.                           |
+| `onChanged`       | `ValueChanged<Set<int>>?` | `null`                          | Callback fired whenever items are expanded or collapsed, returning the set of active indices.               |
+| `variant`         | `JustAccordionVariant`    | `JustAccordionVariant.default_` | Layout variant: `.default_` (bordered cards), `.flush` (separator lines only), `.contained` (grouped card). |
+| `style`           | `JustAccordionStyle?`     | `null`                          | Direct per-instance style overrides.                                                                        |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets & Variants
+
+- **Variants**:
+  - **`default_`**: Each item is wrapped in an individual card border with a gap spacing (default `8.0`) between cards.
+  - **`flush`**: Items have no outer card boundaries and no horizontal padding. Separated by a thin divider.
+  - **`contained`**: The entire list is wrapped in a single card border, and items are divided internally.
+
+- **Neobrutalism Preset**:
+  - Item headers and panels feature a thick black border (`2.5`) under the `.default_` and `.contained` variants.
+  - Interactive header press effects utilize a physical position translation shift synchronizing with the flat shadow offset collapsing.
+  - Durations are set to `animations.instant` (50ms) to eliminate visual drift.
+
+### Keyboard Interaction
+
+Each accordion header functions as an accessible focus trigger:
+
+- **Toggling**: Pressing `Space` or `Enter` while an accordion header has keyboard focus toggles the expansion state of that section.
+- **Focus Order**: Header focus follows standard keyboard navigation sequences, and disabled items are automatically ignored from focus tabs.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **State Announcements**:
+   The header contains an internal `Semantics` block that registers the expansion state (e.g. announcing expanded/collapsed states to screen readers).
+2. **Smooth Size Transitions**:
+   Expanding uses a smooth `SizeTransition` to prevent layout jumps that could disorient users.
+3. **Contrast Compliance**:
+   Title and subtitle text elements maintain contrast ratios $\ge$ 4.5:1 relative to their panel background colors.

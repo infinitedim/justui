@@ -5,7 +5,7 @@ import { HtmlLang } from '@/components/html-lang';
 describe('HtmlLang Component', () => {
   it('updates document.documentElement.lang to the given language', () => {
     document.documentElement.lang = 'en';
-    
+
     render(<HtmlLang lang="id" />);
     expect(document.documentElement.lang).toBe('id');
 

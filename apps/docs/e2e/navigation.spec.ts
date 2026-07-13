@@ -10,7 +10,10 @@ test.describe('Navigation Flow', () => {
     await expect(page.getByText('flutter pub add just_ui_core')).toBeVisible();
 
     const docsButton = page.getByRole('link', { name: /Get started/i }); // CHECK_DOCS
-  await expect(docsButton).toHaveAttribute('href', /^(?:\/[a-z]{2})?\/docs\/introduction$/);
+    await expect(docsButton).toHaveAttribute(
+      'href',
+      /^(?:\/[a-z]{2})?\/docs\/introduction$/
+    );
   });
 
   test('can navigate from homepage to docs page', async ({ page }) => {

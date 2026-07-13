@@ -115,44 +115,44 @@ class _InputAdvancedScreenState extends State<InputAdvancedScreen> {
 
 ### JustInput
 
-| Property          | Data Type                   | Default Value | Description                                                                                              |
-| :---------------- | :-------------------------- | :------------ | :------------------------------------------------------------------------------------------------------- |
-| `label`           | `String?`                   | `null`        | Field label text that floats upward when the field is active or filled.                                  |
-| `hint`            | `String?`                   | `null`        | Placeholder text that appears faint when the field is empty.                                             |
-| `helper`          | `String?`                   | `null`        | Additional guidance or instruction text below the input field.                                           |
-| `errorText`       | `String?`                   | `null`        | Validation error message. If filled, the field turns red and vocal accessibility is activated.           |
-| `successText`     | `String?`                   | `null`        | Success confirmation message. If filled, the field receives a green visual.                              |
-| `controller`      | `TextEditingController?`    | `null`        | Text controller for reading, writing, and controlling input.                                             |
-| `focusNode`       | `FocusNode?`                | `null`        | Focus node for tracking active keyboard status.                                                          |
-| `onChanged`       | `ValueChanged<String>?`     | `null`        | Callback triggered every time the text inside the field changes.                                         |
-| `onSubmitted`     | `ValueChanged<String>?`     | `null`        | Callback when the user presses the done/enter button on the keyboard.                                    |
-| `onTap`           | `VoidCallback?`             | `null`        | Callback when the input field is tapped.                                                                 |
-| `prefix`          | `Widget?`                   | `null`        | Custom widget on the left side of the input (such as a currency symbol).                                 |
-| `prefixIcon`      | `IconData?`                 | `null`        | Quick built-in icon to be placed on the left side of the input.                                          |
-| `suffix`          | `Widget?`                   | `null`        | Custom widget on the right side of the input (such as a password visibility toggle button).              |
-| `suffixIcon`      | `IconData?`                 | `null`        | Quick built-in icon to be placed on the right side of the input.                                         |
-| `maxLength`       | `int?`                      | `null`        | Maximum character length limit that can be entered.                                                      |
-| `maxLines`        | `int?`                      | `1`           | Maximum number of text lines. Set `null` for dynamic multi-line input.                                   |
-| `minLines`        | `int?`                      | `null`        | Minimum initial number of input field lines.                                                             |
-| `obscureText`     | `bool`                      | `false`       | Masks input characters (useful for password input).                                                      |
-| `enabled`         | `bool`                      | `true`        | If `false`, disables interaction and dims the input field.                                               |
-| `readOnly`        | `bool`                      | `false`       | If `true`, text cannot be changed but the user can still focus on or copy the text.                      |
-| `autofocus`       | `bool`                      | `false`       | Automatically focuses the field when the screen opens if set to `true`.                                  |
-| `keyboardType`    | `TextInputType?`            | `null`        | Type of keyboard to display (such as number, email, text).                                               |
-| `textInputAction` | `TextInputAction?`          | `null`        | Type of action button on the keyboard (such as Next, Done, Search).                                      |
-| `inputFormatters` | `List<TextInputFormatter>?` | `null`        | Custom text formatters (such as limiting to numbers only or automatic capitalization).                   |
-| `size`            | `JustInputSize`             | `.md`         | Input field size options: `.sm`, `.md`, `.lg`.                                                           |
-| `style`           | `JustInputStyle?`           | `null`        | Override input field design style specifically.                                                          |
+| Property          | Data Type                   | Default Value | Description                                                                                                  |
+| :---------------- | :-------------------------- | :------------ | :----------------------------------------------------------------------------------------------------------- |
+| `label`           | `String?`                   | `null`        | Field label text that floats upward when the field is active or filled.                                      |
+| `hint`            | `String?`                   | `null`        | Placeholder text that appears faint when the field is empty.                                                 |
+| `helper`          | `String?`                   | `null`        | Additional guidance or instruction text below the input field.                                               |
+| `errorText`       | `String?`                   | `null`        | Validation error message. If filled, the field turns red and vocal accessibility is activated.               |
+| `successText`     | `String?`                   | `null`        | Success confirmation message. If filled, the field receives a green visual.                                  |
+| `controller`      | `TextEditingController?`    | `null`        | Text controller for reading, writing, and controlling input.                                                 |
+| `focusNode`       | `FocusNode?`                | `null`        | Focus node for tracking active keyboard status.                                                              |
+| `onChanged`       | `ValueChanged<String>?`     | `null`        | Callback triggered every time the text inside the field changes.                                             |
+| `onSubmitted`     | `ValueChanged<String>?`     | `null`        | Callback when the user presses the done/enter button on the keyboard.                                        |
+| `onTap`           | `VoidCallback?`             | `null`        | Callback when the input field is tapped.                                                                     |
+| `prefix`          | `Widget?`                   | `null`        | Custom widget on the left side of the input (such as a currency symbol).                                     |
+| `prefixIcon`      | `IconData?`                 | `null`        | Quick built-in icon to be placed on the left side of the input.                                              |
+| `suffix`          | `Widget?`                   | `null`        | Custom widget on the right side of the input (such as a password visibility toggle button).                  |
+| `suffixIcon`      | `IconData?`                 | `null`        | Quick built-in icon to be placed on the right side of the input.                                             |
+| `maxLength`       | `int?`                      | `null`        | Maximum character length limit that can be entered.                                                          |
+| `maxLines`        | `int?`                      | `1`           | Maximum number of text lines. Set `null` for dynamic multi-line input.                                       |
+| `minLines`        | `int?`                      | `null`        | Minimum initial number of input field lines.                                                                 |
+| `obscureText`     | `bool`                      | `false`       | Masks input characters (useful for password input).                                                          |
+| `enabled`         | `bool`                      | `true`        | If `false`, disables interaction and dims the input field.                                                   |
+| `readOnly`        | `bool`                      | `false`       | If `true`, text cannot be changed but the user can still focus on or copy the text.                          |
+| `autofocus`       | `bool`                      | `false`       | Automatically focuses the field when the screen opens if set to `true`.                                      |
+| `keyboardType`    | `TextInputType?`            | `null`        | Type of keyboard to display (such as number, email, text).                                                   |
+| `textInputAction` | `TextInputAction?`          | `null`        | Type of action button on the keyboard (such as Next, Done, Search).                                          |
+| `inputFormatters` | `List<TextInputFormatter>?` | `null`        | Custom text formatters (such as limiting to numbers only or automatic capitalization).                       |
+| `size`            | `JustInputSize`             | `.md`         | Input field size options: `.sm`, `.md`, `.lg`.                                                               |
+| `style`           | `JustInputStyle?`           | `null`        | Override input field design style specifically.                                                              |
 | `showClearButton` | `bool`                      | `false`       | Displays a cross button on the right side of the input to instantly clear all text when the field is filled. |
 
 ### JustInput.otp
 
-| Property     | Data Type               | Default Value      | Description                                                                             |
-| :----------- | :---------------------- | :----------------- | :-------------------------------------------------------------------------------------- |
-| `length`     | `int`                   | _Required_         | Number of OTP boxes to render (typically 4 or 6).                                     |
-| `onChanged`  | `ValueChanged<String>?` | `null`             | Callback that sends the entire combined OTP code every time a digit changes.          |
-| `style`      | `JustInputStyle?`       | `null`             | Visual style customization for each OTP box.                                          |
-| `isDisabled` | `bool`                  | `false`            | Disables all OTP boxes when set to `true`.                                            |
+| Property     | Data Type               | Default Value | Description                                                                  |
+| :----------- | :---------------------- | :------------ | :--------------------------------------------------------------------------- |
+| `length`     | `int`                   | _Required_    | Number of OTP boxes to render (typically 4 or 6).                            |
+| `onChanged`  | `ValueChanged<String>?` | `null`        | Callback that sends the entire combined OTP code every time a digit changes. |
+| `style`      | `JustInputStyle?`       | `null`        | Visual style customization for each OTP box.                                 |
+| `isDisabled` | `bool`                  | `false`       | Disables all OTP boxes when set to `true`.                                   |
 
 ---
 

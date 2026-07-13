@@ -1,0 +1,153 @@
+---
+title: Toast
+description: Temporary, non-disruptive floating notifications displayed imperatively to inform users of system events or feedback.
+---
+
+# Toast
+
+The Toast component provides brief feedback about an operation through temporary floating notifications at the edges of the viewport. It operates via an imperative controller and overlay system, offering smooth animations, drag-to-dismiss capabilities, and support for multiple stacking options.
+
+---
+
+## Description
+
+Toasts are triggered imperatively rather than declared directly in the widget tree. The system consists of:
+
+- **`JustToastScope`**: A wrapper widget placed near the root of your application (or page) to capture the ticker provider context and manage overlay overlays.
+- **`JustToastController`**: An imperative manager that schedules, limits, and triggers notifications.
+- **`context.justToast`**: A `BuildContext` extension to easily invoke toast alerts from anywhere in the widget tree under a scope.
+
+---
+
+## Usage
+
+### Installation
+
+Install the component via the CLI:
+
+```bash
+justui add toast
+```
+
+### Basic Usage
+
+First, ensure your application root or page is wrapped in a `JustToastScope`:
+
+```dart
+import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget build(BuildContext context) {
+  return JustToastScope(
+    controller: JustToastController(
+      position: ToastPosition.bottomCenter,
+      limit: 3,
+    ),
+    child: const MyAppHome(),
+  );
+}
+```
+
+Then, trigger a simple informational toast alert:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildButton(BuildContext context) {
+  return JustButton(
+    label: 'Show Toast',
+    onPressed: () {
+      context.justToast.show(
+        message: 'Changes saved successfully!',
+        variant: ToastVariant.success,
+      );
+    },
+  );
+}
+```
+
+### Advanced Usage
+
+You can customize the toast with a custom duration, prefix icons, and call-to-action buttons, or manually change stack limit behaviors:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+void triggerAdvancedToast(BuildContext context) {
+  context.justToast.show(
+    message: 'Unable to connect to the server.',
+    variant: ToastVariant.error,
+    duration: const Duration(seconds: 5),
+    icon: const Icon(Icons.cloud_off),
+    action: JustButton(
+      label: 'Retry',
+      size: JustButtonSize.sm,
+      variant: JustButtonVariant.ghost,
+      onPressed: () {
+        print('Retrying connection...');
+        // Dismiss the active toasts programmatically if needed
+        context.justToast.dismiss();
+      },
+    ),
+    onDismissed: () => print('Toast was dismissed'),
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustToastController
+
+| Property            | Data Type       | Default Value                | Description                                                                                                      |
+| :------------------ | :-------------- | :--------------------------- | :--------------------------------------------------------------------------------------------------------------- |
+| `behavior`          | `ToastBehavior` | `ToastBehavior.stacked`      | Determines how multiple concurrent toasts are displayed: `.stacked` or `.queue`.                                 |
+| `limit`             | `int?`          | `3`                          | Maximum number of concurrent toasts displayed on the screen. Excess toasts are queued.                           |
+| `position`          | `ToastPosition` | `ToastPosition.bottomCenter` | Viewport anchor location: `.topLeft`, `.topCenter`, `.topRight`, `.bottomLeft`, `.bottomCenter`, `.bottomRight`. |
+| `enableDragDismiss` | `bool`          | `true`                       | Allows users to swipe the toast horizontally to dismiss it.                                                      |
+
+### show() Method
+
+`context.justToast.show(...)` accepts the following parameters:
+
+| Parameter             | Data Type                      | Default Value          | Description                                                                                        |
+| :-------------------- | :----------------------------- | :--------------------- | :------------------------------------------------------------------------------------------------- |
+| `message`             | `String`                       | _Required_             | The descriptive text message displayed in the notification.                                        |
+| `variant`             | `ToastVariant`                 | `ToastVariant.info`    | Color and status variant: `.info` (blue), `.success` (green), `.warning` (orange), `.error` (red). |
+| `duration`            | `Duration`                     | `Duration(seconds: 3)` | Time duration before the toast automatically fades out.                                            |
+| `style`               | `JustToastStyle?`              | `null`                 | Direct per-instance style overrides (padding, border, colors, shadow).                             |
+| `icon`                | `Widget?`                      | `null`                 | Prepend widget (typically a status icon) placed before the message text.                           |
+| `action`              | `Widget?`                      | `null`                 | Custom control widget (typically a text button) placed at the trailing end.                        |
+| `onDismissed`         | `VoidCallback?`                | `null`                 | Callback fired immediately after the toast has completed its exit transition.                      |
+| `animationController` | `AnimationController?`         | `null`                 | Overrides the default entry and exit transition timeline.                                          |
+| `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                 | Custom layout animation transitions.                                                               |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+The visual appearance of toasts automatically adjusts to the active theme preset:
+
+- **Default Preset**:
+  - Displays smooth corners based on `radius.md`.
+  - Animates entry with a sliding fade transition from the nearest screen edge.
+  - Features soft shadows (`shadows.md`) to float above standard elements.
+
+- **Neobrutalism Preset**:
+  - Rendered with a solid black border (`colors.textPrimary`) of thickness `2.5`.
+  - Drop shadow is rendered as a flat offset shadow (`shadows.sm`).
+  - Utilizes immediate transitions (`animations.instant`) to eliminate visual lag.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Vocal Announcements**:
+   Upon rendering, each toast automatically triggers a screen reader announcement via Flutter's semantics service to inform visually impaired users of the message content.
+2. **Touch Targets**:
+   Interactive controls (such as action buttons) maintain a minimum target dimension of **48x48px**.
+3. **Swipe-to-Dismiss**:
+   Dragging/swiping the toast card horizontally provides an accessible gesture path to discard the alert before its automatic timeout.

@@ -37,7 +37,7 @@ function LanguageSwitcher({ lang }: { lang: string }) {
   return (
     <Link
       href={otherPath as Route}
-      className="inline-flex h-7 items-center rounded-full border border-border px-2.5 font-mono text-[11px] text-muted transition-colors hover:text-foreground"
+      className="border-border text-muted hover:text-foreground inline-flex h-7 items-center rounded-full border px-2.5 font-mono text-[11px] transition-colors"
       aria-label={t.changeLanguage}
     >
       {otherLabel}
@@ -58,7 +58,7 @@ function ThemeSwitcher({ lang }: { lang: string }) {
     <button
       type="button"
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted transition-colors hover:text-foreground"
+      className="border-border text-muted hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors"
       aria-label={t.toggleTheme}
     >
       {resolvedTheme === 'dark' ? (
@@ -85,9 +85,11 @@ function PresetSwitcher({ lang }: { lang: string }) {
     <button
       type="button"
       onClick={() => setPreset(isNeo ? 'default' : 'neobrutalism')}
-      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted transition-colors hover:text-foreground"
+      className="border-border text-muted hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors"
       aria-label={t.togglePreset}
-      title={isNeo ? 'Switch to Default preset' : 'Switch to Neobrutalism preset'}
+      title={
+        isNeo ? 'Switch to Default preset' : 'Switch to Neobrutalism preset'
+      }
     >
       <span className="font-mono text-[10px] font-bold">
         {isNeo ? 'N' : 'D'}
@@ -136,14 +138,14 @@ export function Navbar({ starCount, lang }: NavbarProps) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 h-14 border-b border-border bg-background/80 backdrop-blur-sm">
+      <header className="border-border bg-background/80 sticky top-0 z-40 h-14 border-b backdrop-blur-sm">
         <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href={`/${lang}` as Route}
             aria-label="JustUI home"
             className="shrink-0"
           >
-            <span className="font-mono text-sm font-medium text-foreground">
+            <span className="text-foreground font-mono text-sm font-medium">
               just
             </span>
             <span className="text-accent font-mono text-sm font-medium">
@@ -158,8 +160,8 @@ export function Navbar({ starCount, lang }: NavbarProps) {
                 href={link.href as Route}
                 className={
                   activeHref === link.activeHref
-                    ? 'text-sm text-foreground transition-colors'
-                    : 'text-sm text-muted transition-colors hover:text-foreground'
+                    ? 'text-foreground text-sm transition-colors'
+                    : 'text-muted hover:text-foreground text-sm transition-colors'
                 }
               >
                 {link.label}
@@ -173,12 +175,12 @@ export function Navbar({ starCount, lang }: NavbarProps) {
             <ThemeSwitcher lang={lang} />
             <button
               type="button"
-              className="hidden items-center gap-3 rounded-full border border-border bg-transparent px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:text-foreground sm:flex"
+              className="border-border text-muted hover:text-foreground hidden items-center gap-3 rounded-full border bg-transparent px-3 py-1.5 font-mono text-xs transition-colors sm:flex"
               onClick={() => setOpen(true)}
               aria-label={lang === 'en' ? 'Open search' : 'Buka pencarian'}
             >
               <span>{t.searchPlaceholder}</span>
-              <kbd className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted">
+              <kbd className="border-border text-muted rounded border px-1.5 py-0.5 font-mono text-[10px]">
                 {shortcut}
               </kbd>
             </button>
@@ -186,7 +188,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
               href={githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-transparent px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:text-foreground"
+              className="border-border text-muted hover:text-foreground inline-flex items-center gap-2 rounded-full border bg-transparent px-3 py-1.5 font-mono text-xs transition-colors"
             >
               <FaGithub size={14} aria-hidden="true" />
               <span>{formatStars(starCount)}</span>
@@ -198,4 +200,3 @@ export function Navbar({ starCount, lang }: NavbarProps) {
     </>
   );
 }
-

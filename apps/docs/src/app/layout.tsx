@@ -43,9 +43,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           enableSystem
           disableTransitionOnChange
         >
-          <PresetProvider>
-            {children}
-          </PresetProvider>
+          <PresetProvider>{children}</PresetProvider>
         </ThemeProvider>
       </body>
     </html>

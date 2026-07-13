@@ -96,33 +96,33 @@ Widget buildAdvancedButtons(BuildContext context) {
 
 ### JustButton
 
-| Property       | Data Type           | Default Value      | Description                                                                                                                                |
-| :------------- | :------------------ | :----------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
-| `label`        | `String`            | _Required_         | Text displayed inside the button.                                                                                                          |
-| `onPressed`    | `VoidCallback?`     | _Required_         | Callback when the button is pressed. If `null`, the button is automatically disabled visually and interactively.                           |
-| `variant`      | `JustButtonVariant` | `.primary`         | Button visual style options: `.primary`, `.secondary`, `.ghost`, `.destructive`, `.link`.                                                  |
-| `size`         | `JustButtonSize`    | `.md`              | Button geometry size: `.xs`, `.sm`, `.md`, `.lg`, `.xl`.                                                                                   |
-| `leading`      | `Widget?`           | `null`             | Widget (usually an icon) placed before the label text.                                                                                     |
-| `trailing`     | `Widget?`           | `null`             | Widget (usually an icon) placed after the label text.                                                                                      |
-| `isLoading`    | `bool`              | `false`            | Determines whether the button is in a loading process. If `true`, text/icon is hidden and `JustProgressSpinner` is displayed.              |
-| `isDisabled`   | `bool`              | `false`            | Disables button interaction and provides a dimmed visual when set to `true`.                                                               |
-| `isFullWidth`  | `bool`              | `false`            | Stretches the button horizontally to fill the container when set to `true`.                                                                |
-| `style`        | `JustButtonStyle?`  | `null`             | Overrides the button design style specifically per instance.                                                                               |
-| `enableHaptic` | `bool?`             | `null`             | Enables light haptic feedback when the button is pressed. Defaults to active when using the `neobrutalism` preset.                         |
+| Property       | Data Type           | Default Value | Description                                                                                                                   |
+| :------------- | :------------------ | :------------ | :---------------------------------------------------------------------------------------------------------------------------- |
+| `label`        | `String`            | _Required_    | Text displayed inside the button.                                                                                             |
+| `onPressed`    | `VoidCallback?`     | _Required_    | Callback when the button is pressed. If `null`, the button is automatically disabled visually and interactively.              |
+| `variant`      | `JustButtonVariant` | `.primary`    | Button visual style options: `.primary`, `.secondary`, `.ghost`, `.destructive`, `.link`.                                     |
+| `size`         | `JustButtonSize`    | `.md`         | Button geometry size: `.xs`, `.sm`, `.md`, `.lg`, `.xl`.                                                                      |
+| `leading`      | `Widget?`           | `null`        | Widget (usually an icon) placed before the label text.                                                                        |
+| `trailing`     | `Widget?`           | `null`        | Widget (usually an icon) placed after the label text.                                                                         |
+| `isLoading`    | `bool`              | `false`       | Determines whether the button is in a loading process. If `true`, text/icon is hidden and `JustProgressSpinner` is displayed. |
+| `isDisabled`   | `bool`              | `false`       | Disables button interaction and provides a dimmed visual when set to `true`.                                                  |
+| `isFullWidth`  | `bool`              | `false`       | Stretches the button horizontally to fill the container when set to `true`.                                                   |
+| `style`        | `JustButtonStyle?`  | `null`        | Overrides the button design style specifically per instance.                                                                  |
+| `enableHaptic` | `bool?`             | `null`        | Enables light haptic feedback when the button is pressed. Defaults to active when using the `neobrutalism` preset.            |
 
 ### JustIconButton
 
-| Property       | Data Type           | Default Value      | Description                                                                                    |
-| :------------- | :------------------ | :----------------- | :--------------------------------------------------------------------------------------------- |
-| `icon`         | `Widget`            | _Required_         | Icon widget to be displayed in the center of the button.                                       |
-| `onPressed`    | `VoidCallback?`     | _Required_         | Callback when the button is pressed. If `null`, the button is automatically disabled.          |
-| `variant`      | `JustButtonVariant` | `.ghost`           | Button visual style options: `.primary`, `.secondary`, `.ghost`, `.destructive`, `.link`.      |
-| `size`         | `JustButtonSize`    | `.md`              | Button geometry size: `.xs`, `.sm`, `.md`, `.lg`, `.xl`.                                       |
-| `tooltip`      | `String?`           | _Required_         | Semantic button description for screen readers (accessibility) and hover tooltip balloon.      |
-| `isLoading`    | `bool`              | `false`            | If `true`, hides the icon and displays a loading indicator.                                    |
-| `isDisabled`   | `bool`              | `false`            | Disables interaction and dims the display when set to `true`.                                  |
-| `style`        | `JustButtonStyle?`  | `null`             | Overrides the icon button design style specifically.                                           |
-| `enableHaptic` | `bool?`             | `null`             | Enables light haptic feedback when the button is pressed.                                    |
+| Property       | Data Type           | Default Value | Description                                                                               |
+| :------------- | :------------------ | :------------ | :---------------------------------------------------------------------------------------- |
+| `icon`         | `Widget`            | _Required_    | Icon widget to be displayed in the center of the button.                                  |
+| `onPressed`    | `VoidCallback?`     | _Required_    | Callback when the button is pressed. If `null`, the button is automatically disabled.     |
+| `variant`      | `JustButtonVariant` | `.ghost`      | Button visual style options: `.primary`, `.secondary`, `.ghost`, `.destructive`, `.link`. |
+| `size`         | `JustButtonSize`    | `.md`         | Button geometry size: `.xs`, `.sm`, `.md`, `.lg`, `.xl`.                                  |
+| `tooltip`      | `String?`           | _Required_    | Semantic button description for screen readers (accessibility) and hover tooltip balloon. |
+| `isLoading`    | `bool`              | `false`       | If `true`, hides the icon and displays a loading indicator.                               |
+| `isDisabled`   | `bool`              | `false`       | Disables interaction and dims the display when set to `true`.                             |
+| `style`        | `JustButtonStyle?`  | `null`        | Overrides the icon button design style specifically.                                      |
+| `enableHaptic` | `bool?`             | `null`        | Enables light haptic feedback when the button is pressed.                                 |
 
 ---
 

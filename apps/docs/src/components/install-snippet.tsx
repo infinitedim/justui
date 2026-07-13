@@ -20,16 +20,19 @@ export function InstallSnippet({ lang = 'en' }: { lang?: string }) {
     <button
       type="button"
       onClick={copyCommand}
-      className="inline-flex max-w-full items-center gap-4 rounded-md border border-border bg-transparent px-4 py-3 font-mono text-sm text-secondary transition-colors hover:border-accent-dark hover:text-foreground"
+      className="border-border text-secondary hover:border-accent-dark hover:text-foreground inline-flex max-w-full items-center gap-4 rounded-md border bg-transparent px-4 py-3 font-mono text-sm transition-colors"
       aria-label={t.copyCommand}
     >
       <code className="overflow-x-auto">{command}</code>
       {copied ? (
-        <Check size={16} className="shrink-0 text-accent" aria-hidden="true" />
+        <Check size={16} className="text-accent shrink-0" aria-hidden="true" />
       ) : (
-        <Copy size={16} className="shrink-0 cursor-pointer" aria-hidden="true" />
+        <Copy
+          size={16}
+          className="shrink-0 cursor-pointer"
+          aria-hidden="true"
+        />
       )}
     </button>
   );
 }
-

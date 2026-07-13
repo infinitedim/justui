@@ -118,17 +118,17 @@ class _AdvancedScrollAreaExampleState extends State<AdvancedScrollAreaExample> {
 
 ### JustScrollArea
 
-| Property               | Type                 | Default                      | Description                                                                                                          |
-| ---------------------- | -------------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `child`                | `Widget`             | _Required_                   | Child widget containing the scrollable content list.                                                                 |
-| `direction`            | `Axis`               | `Axis.vertical`              | Main scroll direction of the container (vertical or horizontal).                                                     |
-| `showScrollbar`        | `bool`               | `true`                       | Determines whether the custom JustUI scrollbar is visually displayed.                                                |
-| `fadeEdges`            | `bool`               | `false`                      | If true, applies a transparent gradient effect at the scroll boundary edges (indicating additional content).         |
-| `fadeMode`             | `JustScrollFadeMode` | `JustScrollFadeMode.overlay` | Edge fade technique: `.overlay` or `.shaderMask`.                                                                    |
-| `scrollToTopButton`    | `bool`               | `false`                      | Displays a back-to-top button automatically when scrolled far.                                                       |
-| `scrollToTopThreshold` | `double`             | `400.0`                      | Minimum scroll distance threshold (in pixels) to trigger the back-to-top button.                                     |
-| `onReachBottom`        | `VoidCallback?`      | `null`                       | Callback triggered when scrolling approaches the bottom boundary of the container (useful for infinite scroll).      |
-| `keyboardScrollStep`   | `double`             | `50.0`                       | Scroll jump distance (in pixels) per arrow key press on the keyboard.                                                |
+| Property               | Type                 | Default                      | Description                                                                                                     |
+| ---------------------- | -------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `child`                | `Widget`             | _Required_                   | Child widget containing the scrollable content list.                                                            |
+| `direction`            | `Axis`               | `Axis.vertical`              | Main scroll direction of the container (vertical or horizontal).                                                |
+| `showScrollbar`        | `bool`               | `true`                       | Determines whether the custom JustUI scrollbar is visually displayed.                                           |
+| `fadeEdges`            | `bool`               | `false`                      | If true, applies a transparent gradient effect at the scroll boundary edges (indicating additional content).    |
+| `fadeMode`             | `JustScrollFadeMode` | `JustScrollFadeMode.overlay` | Edge fade technique: `.overlay` or `.shaderMask`.                                                               |
+| `scrollToTopButton`    | `bool`               | `false`                      | Displays a back-to-top button automatically when scrolled far.                                                  |
+| `scrollToTopThreshold` | `double`             | `400.0`                      | Minimum scroll distance threshold (in pixels) to trigger the back-to-top button.                                |
+| `onReachBottom`        | `VoidCallback?`      | `null`                       | Callback triggered when scrolling approaches the bottom boundary of the container (useful for infinite scroll). |
+| `keyboardScrollStep`   | `double`             | `50.0`                       | Scroll jump distance (in pixels) per arrow key press on the keyboard.                                           |
 
 ## Theming & Accessibility
 

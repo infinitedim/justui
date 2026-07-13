@@ -12,8 +12,8 @@ description: Komponen input geser kustom yang mendukung mode nilai tunggal (sing
 ## Deskripsi
 
 - **`JustSlider`**: Komponen slider standar untuk memilih satu nilai tunggal.
-- **`JustSlider.range`**: Konstruktor bernama (*named constructor*) untuk memilih rentang nilai antara titik mulai (*start*) dan akhir (*end*) menggunakan dua penunjuk (*thumb*).
-- **`JustRangeValues`**: Kelas data (*data class*) imutabel untuk menampung nilai awal (`start`) dan akhir (`end`) pada mode rentang. Constructor: `JustRangeValues(double start, double end)` dengan asersi `start <= end`.
+- **`JustSlider.range`**: Konstruktor bernama (_named constructor_) untuk memilih rentang nilai antara titik mulai (_start_) dan akhir (_end_) menggunakan dua penunjuk (_thumb_).
+- **`JustRangeValues`**: Kelas data (_data class_) imutabel untuk menampung nilai awal (`start`) dan akhir (`end`) pada mode rentang. Constructor: `JustRangeValues(double start, double end)` dengan asersi `start <= end`.
 
 ---
 
@@ -55,7 +55,7 @@ class _SliderBasicExampleState extends State<SliderBasicExample> {
 
 ### Range Usage
 
-Contoh penggunaan `JustSlider.range` untuk memilih rentang nilai menggunakan dua *thumb*.
+Contoh penggunaan `JustSlider.range` untuk memilih rentang nilai menggunakan dua _thumb_.
 
 ```dart
 import 'package:flutter/widgets.dart';
@@ -144,44 +144,44 @@ class _SliderAdvancedExampleState extends State<SliderAdvancedExample> {
 
 ### JustSlider
 
-| Properti | Tipe Data | Nilai Bawaan (Default) | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `value` | `double?` | _Wajib (Required)_ | Nilai slider saat ini. |
-| `onChanged` | `ValueChanged<double>?` | _Wajib (Required)_ | Callback ketika nilai slider berubah. |
-| `min` | `double` | `0.0` | Nilai minimum slider. |
-| `max` | `double` | `1.0` | Nilai maksimum slider. |
-| `divisions` | `int?` | `null` | Jumlah pembagi diskrit. Jika diatur, gerakan slider akan mengunci (*snap*) pada langkah-langkah pembagian ini. |
-| `showTooltip` | `bool` | `false` | Menentukan apakah tooltip melayang yang menampilkan nilai saat ini akan muncul di atas *thumb* saat sedang digeser. |
-| `enableHaptic` | `bool?` | `null` | Mengaktifkan atau menonaktifkan feedback haptik secara instan. Jika `null`, akan merujuk ke `JustSliderTheme.enableHaptic`. |
-| `size` | `JustSliderSize` | `JustSliderSize.md` | Ukuran dimensi fisik slider. Opsinya adalah `.sm`, `.md`, atau `.lg`. |
-| `style` | `JustSliderStyle?` | `null` | Pengaturan gaya kustomisasi visual per-instance. |
+| Properti       | Tipe Data               | Nilai Bawaan (Default) | Deskripsi                                                                                                                   |
+| :------------- | :---------------------- | :--------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `value`        | `double?`               | _Wajib (Required)_     | Nilai slider saat ini.                                                                                                      |
+| `onChanged`    | `ValueChanged<double>?` | _Wajib (Required)_     | Callback ketika nilai slider berubah.                                                                                       |
+| `min`          | `double`                | `0.0`                  | Nilai minimum slider.                                                                                                       |
+| `max`          | `double`                | `1.0`                  | Nilai maksimum slider.                                                                                                      |
+| `divisions`    | `int?`                  | `null`                 | Jumlah pembagi diskrit. Jika diatur, gerakan slider akan mengunci (_snap_) pada langkah-langkah pembagian ini.              |
+| `showTooltip`  | `bool`                  | `false`                | Menentukan apakah tooltip melayang yang menampilkan nilai saat ini akan muncul di atas _thumb_ saat sedang digeser.         |
+| `enableHaptic` | `bool?`                 | `null`                 | Mengaktifkan atau menonaktifkan feedback haptik secara instan. Jika `null`, akan merujuk ke `JustSliderTheme.enableHaptic`. |
+| `size`         | `JustSliderSize`        | `JustSliderSize.md`    | Ukuran dimensi fisik slider. Opsinya adalah `.sm`, `.md`, atau `.lg`.                                                       |
+| `style`        | `JustSliderStyle?`      | `null`                 | Pengaturan gaya kustomisasi visual per-instance.                                                                            |
 
 ### JustSlider.range
 
-| Properti | Tipe Data | Nilai Bawaan (Default) | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `rangeValues` | `JustRangeValues?` | _Wajib (Required)_ | Nilai rentang (*start* dan *end*) slider saat ini. |
-| `onRangeChanged` | `ValueChanged<JustRangeValues>?` | _Wajib (Required)_ | Callback ketika nilai rentang slider berubah. |
-| `min` | `double` | `0.0` | Nilai minimum slider. |
-| `max` | `double` | `1.0` | Nilai maksimum slider. |
-| `divisions` | `int?` | `null` | Jumlah pembagi diskrit untuk membagi track menjadi bagian-bagian yang sama besar. |
-| `showTooltip` | `bool` | `false` | Menampilkan tooltip nilai di atas *thumb* yang sedang aktif digeser. |
-| `enableHaptic` | `bool?` | `null` | Mengaktifkan atau menonaktifkan feedback haptik untuk interaksi geser. |
-| `size` | `JustSliderSize` | `JustSliderSize.md` | Ukuran dimensi fisik slider (`.sm`, `.md`, atau `.lg`). |
-| `style` | `JustSliderStyle?` | `null` | Pengaturan gaya kustomisasi visual per-instance. |
+| Properti         | Tipe Data                        | Nilai Bawaan (Default) | Deskripsi                                                                         |
+| :--------------- | :------------------------------- | :--------------------- | :-------------------------------------------------------------------------------- |
+| `rangeValues`    | `JustRangeValues?`               | _Wajib (Required)_     | Nilai rentang (_start_ dan _end_) slider saat ini.                                |
+| `onRangeChanged` | `ValueChanged<JustRangeValues>?` | _Wajib (Required)_     | Callback ketika nilai rentang slider berubah.                                     |
+| `min`            | `double`                         | `0.0`                  | Nilai minimum slider.                                                             |
+| `max`            | `double`                         | `1.0`                  | Nilai maksimum slider.                                                            |
+| `divisions`      | `int?`                           | `null`                 | Jumlah pembagi diskrit untuk membagi track menjadi bagian-bagian yang sama besar. |
+| `showTooltip`    | `bool`                           | `false`                | Menampilkan tooltip nilai di atas _thumb_ yang sedang aktif digeser.              |
+| `enableHaptic`   | `bool?`                          | `null`                 | Mengaktifkan atau menonaktifkan feedback haptik untuk interaksi geser.            |
+| `size`           | `JustSliderSize`                 | `JustSliderSize.md`    | Ukuran dimensi fisik slider (`.sm`, `.md`, atau `.lg`).                           |
+| `style`          | `JustSliderStyle?`               | `null`                 | Pengaturan gaya kustomisasi visual per-instance.                                  |
 
 ### JustSliderStyle
 
-| Properti | Tipe Data | Deskripsi |
-| :--- | :--- | :--- |
-| `activeTrackColor` | `Color?` | Warna bagian track yang terisi (aktif). |
-| `inactiveTrackColor` | `Color?` | Warna bagian track yang kosong (inaktif). |
-| `thumbColor` | `Color?` | Warna isi dari *thumb* penunjuk. |
-| `thumbBorderColor` | `Color?` | Warna garis tepi (border) *thumb* penunjuk. |
-| `tickMarkColor` | `Color?` | Warna titik penunjuk pembagi ketika properti `divisions` aktif. |
-| `trackHeight` | `double?` | Kustomisasi ketebalan track slider. |
-| `thumbSize` | `double?` | Kustomisasi ukuran diameter atau panjang sisi *thumb*. |
-| `borderRadius` | `BorderRadius?` | Kustomisasi bentuk kelengkungan sudut track. |
+| Properti             | Tipe Data       | Deskripsi                                                       |
+| :------------------- | :-------------- | :-------------------------------------------------------------- |
+| `activeTrackColor`   | `Color?`        | Warna bagian track yang terisi (aktif).                         |
+| `inactiveTrackColor` | `Color?`        | Warna bagian track yang kosong (inaktif).                       |
+| `thumbColor`         | `Color?`        | Warna isi dari _thumb_ penunjuk.                                |
+| `thumbBorderColor`   | `Color?`        | Warna garis tepi (border) _thumb_ penunjuk.                     |
+| `tickMarkColor`      | `Color?`        | Warna titik penunjuk pembagi ketika properti `divisions` aktif. |
+| `trackHeight`        | `double?`       | Kustomisasi ketebalan track slider.                             |
+| `thumbSize`          | `double?`       | Kustomisasi ukuran diameter atau panjang sisi _thumb_.          |
+| `borderRadius`       | `BorderRadius?` | Kustomisasi bentuk kelengkungan sudut track.                    |
 
 ---
 
@@ -193,12 +193,12 @@ class _SliderAdvancedExampleState extends State<SliderAdvancedExample> {
 
 - **Default Preset**:
   - Track memiliki sudut membulat penuh (`radius.full`).
-  - *Thumb* berbentuk lingkaran dengan efek bayangan halus (*soft shadow*).
-  - Menggunakan animasi pembesaran skala (*scale-up*) yang mulus saat *thumb* ditekan atau digeser.
+  - _Thumb_ berbentuk lingkaran dengan efek bayangan halus (_soft shadow_).
+  - Menggunakan animasi pembesaran skala (_scale-up_) yang mulus saat _thumb_ ditekan atau digeser.
 - **Neobrutalism Preset**:
   - Track berbentuk persegi dengan sudut sedikit melengkung (`radius.xs`) dan dikelilingi garis tepi hitam pekat setebal `2.5px`.
-  - *Thumb* berbentuk kotak persegi tebal dengan garis tepi hitam pekat setebal `2.5px` dan bayangan solid tanpa blur bergeser `(2.5, 2.5)`.
-  - Ketika ditekan, bayangan solid akan runtuh (*collapse*) menjadi nol dan *thumb* mengalami translasi pergeseran sejauh `(2.5, 2.5)` secara visual.
+  - _Thumb_ berbentuk kotak persegi tebal dengan garis tepi hitam pekat setebal `2.5px` dan bayangan solid tanpa blur bergeser `(2.5, 2.5)`.
+  - Ketika ditekan, bayangan solid akan runtuh (_collapse_) menjadi nol dan _thumb_ mengalami translasi pergeseran sejauh `(2.5, 2.5)` secara visual.
 
 ### Haptic Feedback
 
@@ -206,12 +206,13 @@ Sistem feedback haptik diatur secara bertingkat berdasarkan prioritas berikut:
 `widget.enableHaptic` (prioritas tertinggi) → `JustSliderTheme.enableHaptic` → `isNeobrutalism` (default bernilai `true` pada tema neobrutalism).
 
 Feedback haptik dipicu pada kondisi berikut:
-1. Ketika pengguna pertama kali menekan atau mulai menggeser *thumb* (`onPanStart`).
-2. Ketika penunjuk mengunci (*snap*) ke titik pembagi baru (jika properti `divisions` aktif).
+
+1. Ketika pengguna pertama kali menekan atau mulai menggeser _thumb_ (`onPanStart`).
+2. Ketika penunjuk mengunci (_snap_) ke titik pembagi baru (jika properti `divisions` aktif).
 3. Ketika geseran mencapai batas maksimum (`max`) atau minimum (`min`) pada mode kontinu.
 
 ### Accessibility (WCAG AA Compliance)
 
 1. **Touch Target Size**: Tinggi area widget selalu diatur sebesar `48.0px` untuk memenuhi standar ukuran target sentuh minimum (WCAG AA), memastikan kemudahan interaksi di perangkat layar sentuh.
 2. **Visual Value Assistance**: Tooltip nilai yang opsional memberikan bantuan visual langsung mengenai nilai numerik saat ini ketika pengguna melakukan drag.
-3. **Proximity-Based Selection**: Pada mode rentang, jika pengguna mengetuk area di dekat kedua *thumb* yang saling berhimpit, sistem secara otomatis memilih *thumb* yang paling dekat dengan titik sentuh untuk menghindari konflik interaksi.
+3. **Proximity-Based Selection**: Pada mode rentang, jika pengguna mengetuk area di dekat kedua _thumb_ yang saling berhimpit, sistem secara otomatis memilih _thumb_ yang paling dekat dengan titik sentuh untuk menghindari konflik interaksi.
