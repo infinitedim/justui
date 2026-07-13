@@ -12,7 +12,9 @@ const mockSetTheme = vi.fn((theme) => {
 let mockResolvedTheme = 'dark';
 Object.defineProperty(globalThis, 'mockResolvedTheme', {
   get: () => mockResolvedTheme,
-  set: (val) => { mockResolvedTheme = val; },
+  set: (val) => {
+    mockResolvedTheme = val;
+  },
   configurable: true,
 });
 
@@ -27,7 +29,9 @@ vi.mock('next-themes', () => ({
 let mockPathname = '/id';
 Object.defineProperty(globalThis, 'mockPathname', {
   get: () => mockPathname,
-  set: (val) => { mockPathname = val; },
+  set: (val) => {
+    mockPathname = val;
+  },
   configurable: true,
 });
 
@@ -62,7 +66,9 @@ describe('Navbar & SearchModal Components', () => {
 
   it('renders LanguageSwitcher correctly', () => {
     const { rerender } = render(<Navbar starCount={100} lang="id" />);
-    const linkId = screen.getByRole('link', { name: /ganti ke Bahasa Inggris/i });
+    const linkId = screen.getByRole('link', {
+      name: /ganti ke Bahasa Inggris/i,
+    });
     expect(linkId).toHaveAttribute('href', '/en');
 
     mockPathname = '/en';
@@ -75,7 +81,7 @@ describe('Navbar & SearchModal Components', () => {
     mockResolvedTheme = 'dark';
     const { rerender } = render(<Navbar starCount={100} lang="id" />);
     const themeBtn = screen.getByRole('button', { name: /ubah tema/i });
-    
+
     fireEvent.click(themeBtn);
     expect(mockSetTheme).toHaveBeenCalledWith('light');
 
@@ -87,16 +93,20 @@ describe('Navbar & SearchModal Components', () => {
 
   it('opens and closes search modal via button clicks, input search and navigation links', () => {
     render(<Navbar starCount={100} lang="en" />);
-    
+
     // Search modal should be closed initially
-    expect(screen.queryByPlaceholderText(/Search components, docs\.\.\./i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
+    ).not.toBeInTheDocument();
 
     // Click search button to open
     const searchBtn = screen.getByRole('button', { name: /open search/i });
     fireEvent.click(searchBtn);
 
     // Search modal should be open
-    const input = screen.getByPlaceholderText(/Search components, docs\.\.\./i) as HTMLInputElement;
+    const input = screen.getByPlaceholderText(
+      /Search components, docs\.\.\./i
+    ) as HTMLInputElement;
     expect(input).toBeInTheDocument();
 
     // Type query to filter results
@@ -106,38 +116,54 @@ describe('Navbar & SearchModal Components', () => {
     // Click result link to close
     const resultLink = screen.getByRole('link', { name: /button/i });
     fireEvent.click(resultLink);
-    expect(screen.queryByPlaceholderText(/Search components, docs\.\.\./i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
+    ).not.toBeInTheDocument();
   });
 
   it('opens search modal via Ctrl+K shortcut, and closes via Escape key / overlay click', () => {
     render(<Navbar starCount={100} lang="id" />);
-    
+
     // Press Ctrl+K
     fireEvent.keyDown(document, { ctrlKey: true, key: 'k' });
-    expect(screen.getByPlaceholderText(/Search components, docs\.\.\./i)).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/Search components, docs\.\.\./i)
+    ).toBeInTheDocument();
 
     // Press Escape
     fireEvent.keyDown(document, { key: 'Escape' });
-    expect(screen.queryByPlaceholderText(/Search components, docs\.\.\./i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
+    ).not.toBeInTheDocument();
 
     // Press Cmd+K (metaKey)
     fireEvent.keyDown(document, { metaKey: true, key: 'k' });
-    expect(screen.getByPlaceholderText(/Search components, docs\.\.\./i)).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/Search components, docs\.\.\./i)
+    ).toBeInTheDocument();
 
     // Click overlay background to close
-    const overlay = screen.getByRole('button', { name: /close search overlay/i });
+    const overlay = screen.getByRole('button', {
+      name: /close search overlay/i,
+    });
     fireEvent.click(overlay);
-    expect(screen.queryByPlaceholderText(/Search components, docs\.\.\./i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
+    ).not.toBeInTheDocument();
   });
 
   it('closes search modal via Space/Enter keys on overlay role target', () => {
     render(<Navbar starCount={100} lang="en" />);
     fireEvent.keyDown(document, { ctrlKey: true, key: 'k' });
-    
-    const overlay = screen.getByRole('button', { name: /close search overlay/i });
-    
+
+    const overlay = screen.getByRole('button', {
+      name: /close search overlay/i,
+    });
+
     // Test Space key on non-overlay click target (ignored)
     fireEvent.keyDown(overlay, { key: ' ' });
-    expect(screen.queryByPlaceholderText(/Search components, docs\.\.\./i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
+    ).not.toBeInTheDocument();
   });
 });

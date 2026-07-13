@@ -94,20 +94,20 @@ class AdvancedBreadcrumbExample extends StatelessWidget {
 
 ### JustBreadcrumb
 
-| Property    | Data Type                  | Default Value | Description                                                                                                                            |
-| ----------- | -------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `items`     | `List<JustBreadcrumbItem>` | _Required_    | Set of hierarchical page navigation links.                                                                                           |
-| `separator` | `Widget?`                  | `Text('/')`   | Divider widget placed between breadcrumb items.                                                                                      |
-| `maxItems`  | `int?`                     | `null`        | Maximum number of items rendered directly before middle items are automatically compressed into an ellipsis (`...`) button.         |
-| `collapsed` | `Widget?`                  | `null`        | Customization of the visual button indicator for collapsed items.                                                                    |
+| Property    | Data Type                  | Default Value | Description                                                                                                                 |
+| ----------- | -------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `items`     | `List<JustBreadcrumbItem>` | _Required_    | Set of hierarchical page navigation links.                                                                                  |
+| `separator` | `Widget?`                  | `Text('/')`   | Divider widget placed between breadcrumb items.                                                                             |
+| `maxItems`  | `int?`                     | `null`        | Maximum number of items rendered directly before middle items are automatically compressed into an ellipsis (`...`) button. |
+| `collapsed` | `Widget?`                  | `null`        | Customization of the visual button indicator for collapsed items.                                                           |
 
 ### JustBreadcrumbItem
 
-| Property | Data Type       | Default Value | Description                                                                                                                        |
-| -------- | --------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `label`  | `String`        | _Required_    | Page name/link navigation text.                                                                                                    |
-| `onTap`  | `VoidCallback?` | `null`        | Navigation action when the item is tapped. If `null`, the item acts as the current active page (bold text and non-interactive).    |
-| `icon`   | `Widget?`       | `null`        | Visual icon in front of the breadcrumb label text.                                                                                 |
+| Property | Data Type       | Default Value | Description                                                                                                                     |
+| -------- | --------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `label`  | `String`        | _Required_    | Page name/link navigation text.                                                                                                 |
+| `onTap`  | `VoidCallback?` | `null`        | Navigation action when the item is tapped. If `null`, the item acts as the current active page (bold text and non-interactive). |
+| `icon`   | `Widget?`       | `null`        | Visual icon in front of the breadcrumb label text.                                                                              |
 
 ## Theming & Accessibility
 

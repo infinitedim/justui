@@ -144,44 +144,44 @@ class _SliderAdvancedExampleState extends State<SliderAdvancedExample> {
 
 ### JustSlider
 
-| Property | Data Type | Default Value | Description |
-| :--- | :--- | :--- | :--- |
-| `value` | `double?` | _Required_ | The current value of the slider. |
-| `onChanged` | `ValueChanged<double>?` | _Required_ | Callback invoked when the slider value changes. |
-| `min` | `double` | `0.0` | The minimum value of the slider. |
-| `max` | `double` | `1.0` | The maximum value of the slider. |
-| `divisions` | `int?` | `null` | The number of discrete divisions. If specified, the slider snaps to these steps. |
-| `showTooltip` | `bool` | `false` | Whether to display a floating value tooltip above the active thumb while dragging. |
-| `enableHaptic` | `bool?` | `null` | Explicitly enables or disables haptic feedback. If `null`, falls back to `JustSliderTheme.enableHaptic`. |
-| `size` | `JustSliderSize` | `JustSliderSize.md` | The physical size classification of the slider: `.sm`, `.md`, or `.lg`. |
-| `style` | `JustSliderStyle?` | `null` | Custom style overrides for this specific instance. |
+| Property       | Data Type               | Default Value       | Description                                                                                              |
+| :------------- | :---------------------- | :------------------ | :------------------------------------------------------------------------------------------------------- |
+| `value`        | `double?`               | _Required_          | The current value of the slider.                                                                         |
+| `onChanged`    | `ValueChanged<double>?` | _Required_          | Callback invoked when the slider value changes.                                                          |
+| `min`          | `double`                | `0.0`               | The minimum value of the slider.                                                                         |
+| `max`          | `double`                | `1.0`               | The maximum value of the slider.                                                                         |
+| `divisions`    | `int?`                  | `null`              | The number of discrete divisions. If specified, the slider snaps to these steps.                         |
+| `showTooltip`  | `bool`                  | `false`             | Whether to display a floating value tooltip above the active thumb while dragging.                       |
+| `enableHaptic` | `bool?`                 | `null`              | Explicitly enables or disables haptic feedback. If `null`, falls back to `JustSliderTheme.enableHaptic`. |
+| `size`         | `JustSliderSize`        | `JustSliderSize.md` | The physical size classification of the slider: `.sm`, `.md`, or `.lg`.                                  |
+| `style`        | `JustSliderStyle?`      | `null`              | Custom style overrides for this specific instance.                                                       |
 
 ### JustSlider.range
 
-| Property | Data Type | Default Value | Description |
-| :--- | :--- | :--- | :--- |
-| `rangeValues` | `JustRangeValues?` | _Required_ | The current start and end range values of the slider. |
-| `onRangeChanged` | `ValueChanged<JustRangeValues>?` | _Required_ | Callback invoked when the range values change. |
-| `min` | `double` | `0.0` | The minimum value of the slider. |
-| `max` | `double` | `1.0` | The maximum value of the slider. |
-| `divisions` | `int?` | `null` | The number of discrete divisions to split the track. |
-| `showTooltip` | `bool` | `false` | Whether to display a floating value tooltip above the active thumb while dragging. |
-| `enableHaptic` | `bool?` | `null` | Explicitly enables or disables haptic feedback. |
-| `size` | `JustSliderSize` | `JustSliderSize.md` | The physical size classification of the slider (`.sm`, `.md`, or `.lg`). |
-| `style` | `JustSliderStyle?` | `null` | Custom style overrides for this specific instance. |
+| Property         | Data Type                        | Default Value       | Description                                                                        |
+| :--------------- | :------------------------------- | :------------------ | :--------------------------------------------------------------------------------- |
+| `rangeValues`    | `JustRangeValues?`               | _Required_          | The current start and end range values of the slider.                              |
+| `onRangeChanged` | `ValueChanged<JustRangeValues>?` | _Required_          | Callback invoked when the range values change.                                     |
+| `min`            | `double`                         | `0.0`               | The minimum value of the slider.                                                   |
+| `max`            | `double`                         | `1.0`               | The maximum value of the slider.                                                   |
+| `divisions`      | `int?`                           | `null`              | The number of discrete divisions to split the track.                               |
+| `showTooltip`    | `bool`                           | `false`             | Whether to display a floating value tooltip above the active thumb while dragging. |
+| `enableHaptic`   | `bool?`                          | `null`              | Explicitly enables or disables haptic feedback.                                    |
+| `size`           | `JustSliderSize`                 | `JustSliderSize.md` | The physical size classification of the slider (`.sm`, `.md`, or `.lg`).           |
+| `style`          | `JustSliderStyle?`               | `null`              | Custom style overrides for this specific instance.                                 |
 
 ### JustSliderStyle
 
-| Property | Data Type | Description |
-| :--- | :--- | :--- |
-| `activeTrackColor` | `Color?` | Color of the active (filled) portion of the track. |
-| `inactiveTrackColor` | `Color?` | Color of the inactive (empty) portion of the track. |
-| `thumbColor` | `Color?` | Color of the interactive thumb. |
-| `thumbBorderColor` | `Color?` | Border color of the thumb. |
-| `tickMarkColor` | `Color?` | Color of the tick marks when `divisions` are active. |
-| `trackHeight` | `double?` | Custom thickness of the slider track. |
-| `thumbSize` | `double?` | Custom diameter or side length of the thumb. |
-| `borderRadius` | `BorderRadius?` | Custom border radius of the slider track. |
+| Property             | Data Type       | Description                                          |
+| :------------------- | :-------------- | :--------------------------------------------------- |
+| `activeTrackColor`   | `Color?`        | Color of the active (filled) portion of the track.   |
+| `inactiveTrackColor` | `Color?`        | Color of the inactive (empty) portion of the track.  |
+| `thumbColor`         | `Color?`        | Color of the interactive thumb.                      |
+| `thumbBorderColor`   | `Color?`        | Border color of the thumb.                           |
+| `tickMarkColor`      | `Color?`        | Color of the tick marks when `divisions` are active. |
+| `trackHeight`        | `double?`       | Custom thickness of the slider track.                |
+| `thumbSize`          | `double?`       | Custom diameter or side length of the thumb.         |
+| `borderRadius`       | `BorderRadius?` | Custom border radius of the slider track.            |
 
 ---
 
@@ -206,6 +206,7 @@ Haptic feedback is resolved through a priority chain:
 `widget.enableHaptic` (highest priority) → `JustSliderTheme.enableHaptic` → `isNeobrutalism` (defaults to `true` under Neobrutalism).
 
 Haptics are triggered on the following events:
+
 1. When the user first presses or starts dragging a thumb (`onPanStart`).
 2. When the thumb snaps to a new division step (if `divisions` are active).
 3. When the thumb reaches the minimum (`min`) or maximum (`max`) boundary in continuous mode.

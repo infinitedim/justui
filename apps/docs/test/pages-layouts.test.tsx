@@ -30,7 +30,9 @@ vi.mock('next/navigation', () => ({
 
 // Mock next/link
 vi.mock('next/link', () => ({
-  default: ({ children, href }: {children: ReactNode, href: string}) => <a href={href}>{children}</a>,
+  default: ({ children, href }: { children: ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  ),
 }));
 
 // Mock fumadocs-ui
@@ -63,7 +65,9 @@ vi.mock('@/lib/github', () => ({
 
 // Mock source loader
 const mockGetPage = vi.fn();
-const mockGenerateParams = vi.fn().mockReturnValue([{ lang: 'en', slug: ['intro'] }]);
+const mockGenerateParams = vi
+  .fn()
+  .mockReturnValue([{ lang: 'en', slug: ['intro'] }]);
 (globalThis as any).mockGetPage = mockGetPage;
 (globalThis as any).mockGenerateParams = mockGenerateParams;
 vi.mock('@/lib/source', () => ({
@@ -80,9 +84,13 @@ vi.mock('@/lib/source', () => ({
 // Imports of pages and layouts
 import RootLayout from '@/app/layout';
 import LangLayout from '@/app/[lang]/layout';
-import ComponentsPage, { generateStaticParams as componentsStaticParams } from '@/app/[lang]/components/page';
+import ComponentsPage, {
+  generateStaticParams as componentsStaticParams,
+} from '@/app/[lang]/components/page';
 import Layout from '@/app/[lang]/docs/layout';
-import Page, { generateStaticParams as docsStaticParams } from '@/app/[lang]/docs/[[...slug]]/page';
+import Page, {
+  generateStaticParams as docsStaticParams,
+} from '@/app/[lang]/docs/[[...slug]]/page';
 
 describe('App Router Pages and Layouts', () => {
   describe('RootLayout', () => {
@@ -125,7 +133,9 @@ describe('App Router Pages and Layouts', () => {
         params: Promise.resolve({ lang: 'en' }),
       });
       render(page);
-      expect(screen.getByRole('heading', { level: 1, name: 'Components' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { level: 1, name: 'Components' })
+      ).toBeInTheDocument();
       expect(screen.getByText('JustButton')).toBeInTheDocument();
     });
 
@@ -165,7 +175,9 @@ describe('App Router Pages and Layouts', () => {
       });
       render(page);
 
-      expect(screen.getByRole('heading', { level: 1, name: 'Introduction' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { level: 1, name: 'Introduction' })
+      ).toBeInTheDocument();
       expect(screen.getByText('Getting started guide')).toBeInTheDocument();
       expect(screen.getByTestId('mdx-content')).toBeInTheDocument();
     });

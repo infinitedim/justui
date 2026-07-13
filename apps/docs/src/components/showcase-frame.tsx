@@ -37,13 +37,13 @@ export function ShowcaseFrame() {
         preset,
         mode: resolvedTheme === 'dark' ? 'dark' : 'light',
       },
-      '*',
+      '*'
     );
   }, [resolvedTheme, preset, isReady]);
 
   if (!supported) {
     return (
-      <div className="flex h-45 w-full items-center justify-center border border-border bg-card">
+      <div className="border-border bg-card flex h-45 w-full items-center justify-center border">
         <img
           src="/showcase-fallback.png"
           alt="JustUI component showcase"

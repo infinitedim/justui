@@ -118,16 +118,16 @@ class _SwitchAdvancedDemoState extends State<SwitchAdvancedDemo> {
 
 ### JustSwitch
 
-| Property      | Type                            | Default              | Description                                                                                                            |
-| :------------ | :------------------------------ | :------------------- | :--------------------------------------------------------------------------------------------------------------------- |
-| `value`       | `bool`                          | _Required_           | Active switch status: `true` (ON) or `false` (OFF).                                                                    |
-| `onChanged`   | `ValueChanged<bool>?`           | _Required_           | Callback triggered every time the switch status changes or is dragged. If `null`, the switch is automatically disabled.|
-| `label`       | `Widget?`                       | `null`               | Label widget (usually text) placed beside the switch.                                                                  |
-| `size`        | `JustSwitchSize`                | `.md`                | Switch geometry size: `.sm`, `.md`, `.lg`.                                                                             |
-| `thumbIcon`   | `Widget? Function(bool value)?` | `null`               | Builder function to render a custom widget/icon inside the thumb circle based on active status.                        |
-| `activeColor` | `Color?`                        | `null`               | Custom color for the track when the switch is active (ON).                                                             |
-| `isDisabled`  | `bool`                          | `false`              | Disables interaction and dims the visual appearance when set to `true`.                                                |
-| `style`       | `JustSwitchStyle?`              | `null`               | Customization of the switch design style.                                                                              |
+| Property      | Type                            | Default    | Description                                                                                                             |
+| :------------ | :------------------------------ | :--------- | :---------------------------------------------------------------------------------------------------------------------- |
+| `value`       | `bool`                          | _Required_ | Active switch status: `true` (ON) or `false` (OFF).                                                                     |
+| `onChanged`   | `ValueChanged<bool>?`           | _Required_ | Callback triggered every time the switch status changes or is dragged. If `null`, the switch is automatically disabled. |
+| `label`       | `Widget?`                       | `null`     | Label widget (usually text) placed beside the switch.                                                                   |
+| `size`        | `JustSwitchSize`                | `.md`      | Switch geometry size: `.sm`, `.md`, `.lg`.                                                                              |
+| `thumbIcon`   | `Widget? Function(bool value)?` | `null`     | Builder function to render a custom widget/icon inside the thumb circle based on active status.                         |
+| `activeColor` | `Color?`                        | `null`     | Custom color for the track when the switch is active (ON).                                                              |
+| `isDisabled`  | `bool`                          | `false`    | Disables interaction and dims the visual appearance when set to `true`.                                                 |
+| `style`       | `JustSwitchStyle?`              | `null`     | Customization of the switch design style.                                                                               |
 
 ---
 

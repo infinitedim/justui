@@ -111,22 +111,22 @@ class _AdvancedTabsExampleState extends State<AdvancedTabsExample> {
 
 ### JustTabs
 
-| Property       | Type                 | Default               | Description                                                                                                                |
-| -------------- | -------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `tabs`         | `List<JustTab>`      | _Required_            | Array of tab objects containing label, icon, content, and status for each panel.                                           |
-| `variant`      | `JustTabVariant`     | `JustTabVariant.line` | Visual tab style: `.line`, `.enclosed`, `.pill`, or `.vertical`.                                                           |
-| `controller`   | `JustTabController?` | `null`                | External controller to manage active index synchronization programmatically.                                               |
-| `isScrollable` | `bool`               | `false`               | Determines whether the tab title bar can be scrolled horizontally if the title text is very long.                          |
+| Property       | Type                 | Default               | Description                                                                                       |
+| -------------- | -------------------- | --------------------- | ------------------------------------------------------------------------------------------------- |
+| `tabs`         | `List<JustTab>`      | _Required_            | Array of tab objects containing label, icon, content, and status for each panel.                  |
+| `variant`      | `JustTabVariant`     | `JustTabVariant.line` | Visual tab style: `.line`, `.enclosed`, `.pill`, or `.vertical`.                                  |
+| `controller`   | `JustTabController?` | `null`                | External controller to manage active index synchronization programmatically.                      |
+| `isScrollable` | `bool`               | `false`               | Determines whether the tab title bar can be scrolled horizontally if the title text is very long. |
 
 ### JustTab
 
-| Property  | Type      | Default      | Description                                                                      |
-| --------- | --------- | ------------ | -------------------------------------------------------------------------------- |
-| `label`   | `String`  | _Required_   | Title text displayed on the tab button bar.                                      |
-| `content` | `Widget`  | _Required_   | Page content widget displayed when the tab is active.                            |
-| `icon`    | `Widget?` | `null`       | Optional icon widget beside the label text.                                      |
-| `badge`   | `Widget?` | `null`       | Optional badge widget (such as `JustBadge.dot`) for tab notification status.     |
-| `enabled` | `bool`    | `true`       | Determines whether the tab can be clicked and activated.                         |
+| Property  | Type      | Default    | Description                                                                  |
+| --------- | --------- | ---------- | ---------------------------------------------------------------------------- |
+| `label`   | `String`  | _Required_ | Title text displayed on the tab button bar.                                  |
+| `content` | `Widget`  | _Required_ | Page content widget displayed when the tab is active.                        |
+| `icon`    | `Widget?` | `null`     | Optional icon widget beside the label text.                                  |
+| `badge`   | `Widget?` | `null`     | Optional badge widget (such as `JustBadge.dot`) for tab notification status. |
+| `enabled` | `bool`    | `true`     | Determines whether the tab can be clicked and activated.                     |
 
 ## Theming & Accessibility
 

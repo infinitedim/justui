@@ -8,7 +8,10 @@ export default defineConfig({
     tsconfigPaths: true,
     alias: {
       '@': path.resolve(__dirname, './src'),
-      'collections/server': path.resolve(__dirname, './test/mocks/collections-server.ts'),
+      'collections/server': path.resolve(
+        __dirname,
+        './test/mocks/collections-server.ts'
+      ),
     },
   },
   test: {

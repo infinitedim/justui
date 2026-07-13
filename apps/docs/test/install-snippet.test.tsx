@@ -5,12 +5,14 @@ import { InstallSnippet } from '@/components/install-snippet';
 describe('InstallSnippet Component', () => {
   it('renders the installation command', () => {
     render(<InstallSnippet />);
-    expect(screen.getByText('flutter pub add just_ui_core')).toBeInTheDocument();
+    expect(
+      screen.getByText('flutter pub add just_ui_core')
+    ).toBeInTheDocument();
   });
 
   it('copies command to clipboard and toggles status icons', async () => {
     vi.useFakeTimers();
-    
+
     // Mock navigator.clipboard
     const mockWriteText = vi.fn().mockResolvedValue(undefined);
     Object.assign(navigator, {
@@ -20,7 +22,9 @@ describe('InstallSnippet Component', () => {
     });
 
     render(<InstallSnippet />);
-    const button = screen.getByRole('button', { name: /copy install command/i });
+    const button = screen.getByRole('button', {
+      name: /copy install command/i,
+    });
     expect(button).toBeInTheDocument();
 
     // Copy icon should be visible initially (lucide-react attributes or aria-hidden check)

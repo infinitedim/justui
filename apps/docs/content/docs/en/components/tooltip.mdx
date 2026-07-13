@@ -1,0 +1,114 @@
+---
+title: Tooltip
+description: A declarative hover/gesture popup widget that displays a brief description or helper label when triggered.
+---
+
+# Tooltip
+
+The Tooltip component is a declarative overlay widget used to provide brief contextual hints when a user hovers over or long-presses an interactive element. Unlike other overlay components (such as Toast, Dialog, or Sheet), `JustTooltip` is defined directly in the widget tree wrapping its target, rather than triggered programmatically via an imperative controller.
+
+---
+
+## Description
+
+- **`JustTooltip`**: A container widget that wraps any interactive target element (`child`). It manages hover events (mouse entry/exit) and gesture recognizers (long-press) automatically, opening a floating balloon on the overlay layer.
+- **No Controller Overhead**: There is no imperative controller class needed. It handles its own lifecycle and schedules timers automatically.
+
+---
+
+## Usage
+
+### Installation
+
+Install the component via the CLI:
+
+```bash
+justui add tooltip
+```
+
+### Basic Usage
+
+Wrap any widget (such as a standard button or text label) with `JustTooltip` and provide a message string:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildTooltipExample(BuildContext context) {
+  return JustTooltip(
+    message: 'Add item to shopping list',
+    position: TooltipPosition.top,
+    child: JustIconButton(
+      icon: const Icon(Icons.add),
+      tooltip: 'Add item', // Mandatory for icon button accessibility
+      onPressed: () {},
+    ),
+  );
+}
+```
+
+### Advanced Usage
+
+You can customize the tooltip trigger delays, positions, and styling:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildAdvancedTooltip(BuildContext context) {
+  return JustTooltip(
+    message: 'Settings and configuration panels.',
+    position: TooltipPosition.right,
+    showDelay: const Duration(milliseconds: 300), // Delayed appearance
+    hideDelay: const Duration(milliseconds: 200), // Delayed fadeout
+    triggerOnHover: true,
+    triggerOnLongPress: true,
+    child: const Text('Hover or long-press this text'),
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustTooltip
+
+| Property              | Data Type                                                   | Default Value                 | Description                                                                             |
+| :-------------------- | :---------------------------------------------------------- | :---------------------------- | :-------------------------------------------------------------------------------------- |
+| `message`             | `String`                                                    | _Required_                    | The text string content displayed inside the floating balloon.                          |
+| `child`               | `Widget`                                                    | _Required_                    | The target widget which triggers the tooltip overlay when hovered or pressed.           |
+| `position`            | `TooltipPosition`                                           | `TooltipPosition.auto`        | Alignment position relative to target: `.top`, `.bottom`, `.left`, `.right`, `.auto`.   |
+| `triggerOnHover`      | `bool`                                                      | `true`                        | If `true`, mouse hover events trigger the tooltip display.                              |
+| `triggerOnLongPress`  | `bool`                                                      | `true`                        | If `true`, touch screen long press gestures trigger the tooltip display.                |
+| `showDelay`           | `Duration`                                                  | `Duration.zero`               | Duration to wait before revealing the tooltip balloon when a trigger event is detected. |
+| `hideDelay`           | `Duration`                                                  | `Duration(milliseconds: 150)` | Duration to wait before dismissing the tooltip balloon after trigger events end.        |
+| `style`               | `JustTooltipStyle?`                                         | `null`                        | Direct per-instance style overrides (padding, border, colors, max width, etc.).         |
+| `animationController` | `AnimationController?`                                      | `null`                        | Custom animation controller override.                                                   |
+| `animationBuilder`    | `Widget Function(BuildContext, Animation<double>, Widget)?` | `null`                        | Custom widget builder to define entrance and exit transition animations.                |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+The floating tooltip balloon matches the active theme preset:
+
+- **Default Preset**:
+  - The tooltip container uses a dark, high-contrast background with smooth rounded corners (`radius.sm`).
+  - Animates entry with a scale/fade transition.
+  - Automatically positions itself based on screen boundaries when set to `TooltipPosition.auto` to avoid cropping.
+
+- **Neobrutalism Preset**:
+  - The balloon container is styled with a solid white background (or high-contrast accent) and a thick black border (`2.5`).
+  - Utilizes immediate transitions (`animations.instant`) to eliminate visual lag.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Auto Positioning**:
+   When set to `TooltipPosition.auto`, the tooltip dynamically evaluates the available viewport boundaries (using `RenderBox.localToGlobal`) to determine the side with the most space, preventing the tooltip content from being cut off.
+2. **Keyboard Focus Accessibility**:
+   The tooltip triggers when focus moves to the target child widget (e.g. during tab index keyboard navigation).
+3. **Screen Reader Announcements**:
+   The message is properly linked to the wrapped child's semantic structure as descriptive text.

@@ -7,8 +7,19 @@ export function HeroGraphic() {
       className="h-auto w-full"
     >
       <defs>
-        <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
-          <circle cx="1" cy="1" r="1" fill="var(--color-border)" opacity="0.4" />
+        <pattern
+          id="dot-grid"
+          width="24"
+          height="24"
+          patternUnits="userSpaceOnUse"
+        >
+          <circle
+            cx="1"
+            cy="1"
+            r="1"
+            fill="var(--color-border)"
+            opacity="0.4"
+          />
         </pattern>
       </defs>
 
@@ -109,9 +120,15 @@ export function HeroGraphic() {
       />
 
       <circle cx="366" cy="94" r="10" fill="var(--color-accent)" />
-      <rect x="330" y="318" width="18" height="18" rx="4" fill="var(--color-accent)" />
+      <rect
+        x="330"
+        y="318"
+        width="18"
+        height="18"
+        rx="4"
+        fill="var(--color-accent)"
+      />
       <circle cx="78" cy="248" r="6" fill="var(--color-accent)" />
     </svg>
   );
 }
-

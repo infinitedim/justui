@@ -115,24 +115,24 @@ class _BadgeAdvancedDemoState extends State<BadgeAdvancedDemo> {
 
 ### JustBadge
 
-| Property    | Data Type          | Default Value | Description                                                                                                                                                                                                 |
-| :---------- | :----------------- | :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `label`     | `String?`          | `null`        | Text displayed inside the badge. If set to `null`, the badge automatically renders as an empty notification dot.                                                                                            |
-| `color`     | `JustBadgeColor`   | `.primary`    | Status color scheme options: `.primary`, `.secondary`, `.success`, `.warning`, `.error`, `.info`, `.neutral`.                                                                                               |
-| `variant`   | `JustBadgeVariant` | `.solid`      | Badge visual type options: `.solid` (opaque background), `.soft` (dim transparent background), `.outline` (no background, with border), `.dot` (only displays a dot indicator).                              |
-| `size`      | `JustBadgeSize`    | `.md`         | Badge dimension size: `.sm`, `.md`, `.lg`.                                                                                                                                                                  |
-| `leading`   | `Widget?`          | `null`        | Widget (such as a mini icon) placed before the label text.                                                                                                                                                  |
-| `onDismiss` | `VoidCallback?`    | `null`        | Callback for the dismiss action. If provided, a small cross icon will be rendered at the right end of the badge.                                                                                            |
-| `maxWidth`  | `double?`          | `null`        | Maximum badge width. Text exceeding this limit will be automatically truncated with an ellipsis (`...`).                                                                                                    |
-| `pulse`     | `bool`             | `false`       | Only applies to the `.dot` variant. If `true`, enables a pulsing circle animation outside the dot.                                                                                                          |
+| Property    | Data Type          | Default Value | Description                                                                                                                                                                     |
+| :---------- | :----------------- | :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `label`     | `String?`          | `null`        | Text displayed inside the badge. If set to `null`, the badge automatically renders as an empty notification dot.                                                                |
+| `color`     | `JustBadgeColor`   | `.primary`    | Status color scheme options: `.primary`, `.secondary`, `.success`, `.warning`, `.error`, `.info`, `.neutral`.                                                                   |
+| `variant`   | `JustBadgeVariant` | `.solid`      | Badge visual type options: `.solid` (opaque background), `.soft` (dim transparent background), `.outline` (no background, with border), `.dot` (only displays a dot indicator). |
+| `size`      | `JustBadgeSize`    | `.md`         | Badge dimension size: `.sm`, `.md`, `.lg`.                                                                                                                                      |
+| `leading`   | `Widget?`          | `null`        | Widget (such as a mini icon) placed before the label text.                                                                                                                      |
+| `onDismiss` | `VoidCallback?`    | `null`        | Callback for the dismiss action. If provided, a small cross icon will be rendered at the right end of the badge.                                                                |
+| `maxWidth`  | `double?`          | `null`        | Maximum badge width. Text exceeding this limit will be automatically truncated with an ellipsis (`...`).                                                                        |
+| `pulse`     | `bool`             | `false`       | Only applies to the `.dot` variant. If `true`, enables a pulsing circle animation outside the dot.                                                                              |
 
 ### JustBadge.overlay (Constructor)
 
-| Property    | Data Type           | Default Value        | Description                                                                     |
-| :---------- | :------------------ | :------------------- | :------------------------------------------------------------------------------ |
-| `child`     | `Widget`            | _Required_           | Main widget to be overlapped by the badge (e.g., an icon or avatar).            |
-| `badge`     | `Widget`            | _Required_           | Badge (`JustBadge`) to be placed at the corner of the main widget.              |
-| `alignment` | `AlignmentGeometry` | `Alignment.topRight` | Stacking position of the badge on top of the main widget.                       |
+| Property    | Data Type           | Default Value        | Description                                                          |
+| :---------- | :------------------ | :------------------- | :------------------------------------------------------------------- |
+| `child`     | `Widget`            | _Required_           | Main widget to be overlapped by the badge (e.g., an icon or avatar). |
+| `badge`     | `Widget`            | _Required_           | Badge (`JustBadge`) to be placed at the corner of the main widget.   |
+| `alignment` | `AlignmentGeometry` | `Alignment.topRight` | Stacking position of the badge on top of the main widget.            |
 
 ---
 

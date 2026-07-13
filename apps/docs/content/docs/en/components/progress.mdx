@@ -1,0 +1,135 @@
+---
+title: Progress
+description: An indicator that displays progress status in linear or circular format, supporting both determinate values and indeterminate loading loops.
+---
+
+# Progress
+
+The Progress component displays the status of an ongoing task or operation. It supports linear bar formats and circular spinner formats, with options to show status label text, configure sizing scales, and switch between determinate percentages and looping indeterminate loading states.
+
+---
+
+## Description
+
+- **`JustProgress`**: By default, renders a horizontal linear progress bar (`JustProgressVariant.linear`).
+- **`JustProgress.circular`**: A named constructor that renders a circular progress spinner (`JustProgressVariant.circular`).
+- **Indeterminate State**: If the `value` property is left `null`, the component automatically runs in an infinite loop animation to indicate that a process is running but progress cannot be determined.
+
+---
+
+## Usage
+
+### Installation
+
+Install the component via the CLI:
+
+```bash
+justui add progress
+```
+
+### Basic Usage
+
+Create a standard linear progress bar with a determinate progress value (between `0.0` and `1.0` by default):
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildBasicProgress(BuildContext context) {
+  return Column(
+    spacing: context.justSpacing.md,
+    children: const [
+      // Linear Progress Bar (50% complete)
+      JustProgress(
+        value: 0.5,
+        showLabel: true, // Displays '50%'
+      ),
+
+      // Indeterminate Linear Loader (Loops continuously)
+      JustProgress(
+        value: null,
+      ),
+    ],
+  );
+}
+```
+
+### Named Constructor (Circular)
+
+Use `JustProgress.circular` to create a circular progress spinner:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildCircularProgress(BuildContext context) {
+  return Row(
+    spacing: context.justSpacing.lg,
+    children: const [
+      // Determinate Circular Progress
+      JustProgress.circular(
+        value: 0.75,
+        size: JustProgressSize.lg,
+      ),
+
+      // Indeterminate Circular Spinner
+      JustProgress.circular(
+        value: null,
+        size: JustProgressSize.md,
+      ),
+    ],
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustProgress & JustProgress.circular
+
+| Property            | Data Type            | Default Value | Description                                                                          |
+| :------------------ | :------------------- | :------------ | :----------------------------------------------------------------------------------- |
+| `value`             | `double?`            | `null`        | Current progress value. If `null`, runs in an indeterminate loop.                    |
+| `min`               | `double`             | `0.0`         | Sizing boundary representing 0% progress.                                            |
+| `max`               | `double`             | `1.0`         | Sizing boundary representing 100% progress.                                          |
+| `size`              | `JustProgressSize`   | `.md`         | Progress size: `.sm`, `.md`, `.lg` (defines bar height or spinner diameter).         |
+| `showLabel`         | `bool`               | `false`       | If `true`, displays a textual percentage status representation (determinate only).   |
+| `label`             | `String?`            | `null`        | Custom description text override displayed instead of the default percentage string. |
+| `style`             | `JustProgressStyle?` | `null`        | Direct per-instance style overrides (track color, fill color, stroke width, etc.).   |
+| `animationDuration` | `Duration?`          | `null`        | Custom transition duration when the determinate progress value changes.              |
+
+---
+
+## Size Dimensions & Custom Styling
+
+### Dimensions by Sizing Scale
+
+| Sizing Scale | Linear Progress Height | Circular Spinner Diameter |
+| :----------- | :--------------------- | :------------------------ |
+| `.sm`        | `4px`                  | `32px`                    |
+| `.md`        | `8px`                  | `48px`                    |
+| `.lg`        | `12px`                 | `64px`                    |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+- **Default Preset**:
+  - The linear progress bar track uses a soft transparent background with rounded ends (`radius.full`).
+  - Active fill transitions smoothly using default animations.
+  - Circular painter renders curves smoothly based on canvas drawing.
+
+- **Neobrutalism Preset**:
+  - The progress container is wrapped in a thick black border (`2.5`).
+  - Circular spinner uses a bold stroke width (default `5.0` or custom style override) with flat colors.
+  - Bypasses slide-in animations.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Semantic Value Annotation**:
+   `JustProgress` widgets are wrapped internally with standard screen reader semantic nodes. This guarantees that accessibility systems (like TalkBack or VoiceOver) announce the value as a percentage (e.g. "Progress indicator, 50%").
+2. **Indeterminate State Accessibility**:
+   When `value` is `null`, it announces a status of "Busy" or "Loading" to indicate a running background process.
