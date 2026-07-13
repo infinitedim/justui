@@ -136,26 +136,26 @@ class _RadioAdvancedDemoState extends State<RadioAdvancedDemo> {
 
 ### JustRadio
 
-| Property     | Type               | Default              | Description                                                                                            |
-| :----------- | :----------------- | :------------------- | :----------------------------------------------------------------------------------------------------- |
-| `value`      | `T`                | _Required_           | Unique value for this radio option.                                                                    |
-| `groupValue` | `T?`               | _Required_           | Currently selected active radio group value. If `value == groupValue`, the radio is in selected state. |
-| `onChanged`  | `ValueChanged<T>?` | _Required_           | Callback triggered when this radio option is selected.                                                 |
-| `label`      | `Widget?`          | `null`               | Label widget (usually text) displayed to the right of the radio circle.                                |
-| `isDisabled` | `bool`             | `false`              | Disables the option when set to `true`.                                                                |
-| `style`      | `JustRadioStyle?`  | `null`               | Customization of the radio design style.                                                               |
-| `focusNode`  | `FocusNode?`       | `null`               | Focus node for tracking keyboard navigation.                                                           |
+| Property     | Type               | Default    | Description                                                                                            |
+| :----------- | :----------------- | :--------- | :----------------------------------------------------------------------------------------------------- |
+| `value`      | `T`                | _Required_ | Unique value for this radio option.                                                                    |
+| `groupValue` | `T?`               | _Required_ | Currently selected active radio group value. If `value == groupValue`, the radio is in selected state. |
+| `onChanged`  | `ValueChanged<T>?` | _Required_ | Callback triggered when this radio option is selected.                                                 |
+| `label`      | `Widget?`          | `null`     | Label widget (usually text) displayed to the right of the radio circle.                                |
+| `isDisabled` | `bool`             | `false`    | Disables the option when set to `true`.                                                                |
+| `style`      | `JustRadioStyle?`  | `null`     | Customization of the radio design style.                                                               |
+| `focusNode`  | `FocusNode?`       | `null`     | Focus node for tracking keyboard navigation.                                                           |
 
 ### JustRadioGroup
 
-| Property    | Type                       | Default              | Description                                                          |
-| :---------- | :------------------------- | :------------------- | :------------------------------------------------------------------- |
-| `options`   | `List<JustRadioOption<T>>` | _Required_           | List of available radio options within the group.                    |
-| `value`     | `T?`                       | `null`               | Value of the currently selected radio option within the group.       |
-| `onChanged` | `ValueChanged<T>?`         | _Required_           | Global group callback when one of the options is selected.           |
-| `direction` | `Axis`                     | `.vertical`          | Direction of option alignment within the group.                      |
-| `spacing`   | `double?`                  | `null`               | Spacing distance between radio options within the group.             |
-| `style`     | `JustRadioStyle?`          | `null`               | Default design style for all radio options within the group.         |
+| Property    | Type                       | Default     | Description                                                    |
+| :---------- | :------------------------- | :---------- | :------------------------------------------------------------- |
+| `options`   | `List<JustRadioOption<T>>` | _Required_  | List of available radio options within the group.              |
+| `value`     | `T?`                       | `null`      | Value of the currently selected radio option within the group. |
+| `onChanged` | `ValueChanged<T>?`         | _Required_  | Global group callback when one of the options is selected.     |
+| `direction` | `Axis`                     | `.vertical` | Direction of option alignment within the group.                |
+| `spacing`   | `double?`                  | `null`      | Spacing distance between radio options within the group.       |
+| `style`     | `JustRadioStyle?`          | `null`      | Default design style for all radio options within the group.   |
 
 ---
 

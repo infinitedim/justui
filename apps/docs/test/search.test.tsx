@@ -86,7 +86,9 @@ describe('CustomSearchDialog Component', () => {
   it('renders search list with items when query data is not empty', () => {
     mockQueryData.data = [{ title: 'Button Component' }];
     render(<CustomSearchDialog open={true} onOpenChange={() => {}} />);
-    expect(screen.getByTestId('search-list')).toHaveTextContent('Button Component');
+    expect(screen.getByTestId('search-list')).toHaveTextContent(
+      'Button Component'
+    );
     // Restore default
     mockQueryData.data = 'empty';
   });

@@ -19,7 +19,9 @@ export type HomepageDictionary = {
   componentsPageCount: string; // We can use string replacement or simple interpolation
 };
 
-export const homepageTranslations: Record<string, HomepageDictionary> = {
+export const homepageTranslations: Readonly<
+  Record<string, HomepageDictionary>
+> = {
   en: {
     tagline: 'Copy-paste Flutter components',
     heroTitle: 'Copy. Paste. Ship.',
@@ -64,7 +66,7 @@ export const homepageTranslations: Record<string, HomepageDictionary> = {
       'Semua komponen siap pakai. Copy, paste, dan sesuaikan langsung di project Flutter kamu.',
     componentsPageCount: 'komponen tersedia',
   },
-};
+} as const;
 
 export function getHomepageDictionary(lang: string): HomepageDictionary {
   return homepageTranslations[lang] ?? homepageTranslations.en;

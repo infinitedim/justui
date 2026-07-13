@@ -177,26 +177,26 @@ class _AdvancedSidebarExampleState extends State<AdvancedSidebarExample> {
 
 ### JustSidebar
 
-| Property         | Type                    | Default                       | Description                                                                                                                          |
-| ---------------- | ----------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `items`          | `List<JustSidebarItem>` | _Required_                    | Navigation menu item array that can branch recursively (nested).                                                                       |
-| `selectedIndex`  | `int`                   | `0`                           | Index of the currently active sidebar item.                                                                                          |
-| `onItemSelected` | `ValueChanged<int>?`    | `null`                        | Callback triggered when a navigation item is tapped.                                                                                 |
-| `header`         | `Widget?`               | `null`                        | Top area widget (e.g., company logo or user profile summary).                                                                        |
-| `footer`         | `Widget?`               | `null`                        | Bottom area widget (e.g., logout button or collapse toggle).                                                                         |
-| `width`          | `double`                | `260.0`                       | Panel width when in fully open state.                                                                                                |
-| `collapsedWidth` | `double`                | `68.0`                        | Minimum panel width when in collapsed state.                                                                                         |
-| `isCollapsed`    | `bool`                  | `false`                       | Active collapse status of the panel.                                                                                                 |
-| `variant`        | `JustSidebarVariant`    | `JustSidebarVariant.default_` | Layout style: `.default_` (edge-attached), `.floating` (free-floating with shadow), or `.inset` (isolated within page frame).         |
+| Property         | Type                    | Default                       | Description                                                                                                                   |
+| ---------------- | ----------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `items`          | `List<JustSidebarItem>` | _Required_                    | Navigation menu item array that can branch recursively (nested).                                                              |
+| `selectedIndex`  | `int`                   | `0`                           | Index of the currently active sidebar item.                                                                                   |
+| `onItemSelected` | `ValueChanged<int>?`    | `null`                        | Callback triggered when a navigation item is tapped.                                                                          |
+| `header`         | `Widget?`               | `null`                        | Top area widget (e.g., company logo or user profile summary).                                                                 |
+| `footer`         | `Widget?`               | `null`                        | Bottom area widget (e.g., logout button or collapse toggle).                                                                  |
+| `width`          | `double`                | `260.0`                       | Panel width when in fully open state.                                                                                         |
+| `collapsedWidth` | `double`                | `68.0`                        | Minimum panel width when in collapsed state.                                                                                  |
+| `isCollapsed`    | `bool`                  | `false`                       | Active collapse status of the panel.                                                                                          |
+| `variant`        | `JustSidebarVariant`    | `JustSidebarVariant.default_` | Layout style: `.default_` (edge-attached), `.floating` (free-floating with shadow), or `.inset` (isolated within page frame). |
 
 ### JustSidebarItem
 
-| Property   | Type                     | Default      | Description                                                                                    |
-| ---------- | ------------------------ | ------------ | ---------------------------------------------------------------------------------------------- |
-| `label`    | `String`                 | _Required_   | Navigation menu item text label.                                                               |
-| `icon`     | `Widget?`                | `null`       | Visual icon accompanying the menu text.                                                        |
-| `onTap`    | `VoidCallback?`          | `null`       | Optional action callback when item is tapped.                                                  |
-| `children` | `List<JustSidebarItem>?` | `null`       | Child submenu list for nested foldable menu items.                                             |
+| Property   | Type                     | Default    | Description                                        |
+| ---------- | ------------------------ | ---------- | -------------------------------------------------- |
+| `label`    | `String`                 | _Required_ | Navigation menu item text label.                   |
+| `icon`     | `Widget?`                | `null`     | Visual icon accompanying the menu text.            |
+| `onTap`    | `VoidCallback?`          | `null`     | Optional action callback when item is tapped.      |
+| `children` | `List<JustSidebarItem>?` | `null`     | Child submenu list for nested foldable menu items. |
 
 ## Theming & Accessibility
 

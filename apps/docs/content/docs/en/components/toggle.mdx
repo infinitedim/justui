@@ -1,0 +1,201 @@
+---
+title: Toggle
+description: Interactive two-state choice buttons or grouped choices supporting single, multiple, and nullable selections.
+---
+
+# Toggle
+
+The Toggle and ToggleGroup components allow users to switch between binary states or make selections from a group of items. Built without Material dependencies, they support custom size scales, single/multiple selections, and nullable configurations.
+
+---
+
+## Description
+
+- **`JustToggle`**: A standalone toggle button widget representing a simple selected/unselected state.
+- **`JustToggleGroup`**: A container that aligns multiple toggle buttons (`JustToggleGroupItem`) either horizontally or vertically. It manages selection indices, handles multi-select, and controls nullable behaviors.
+
+---
+
+## Usage
+
+### Installation
+
+Install the component via the CLI:
+
+```bash
+justui add toggle
+```
+
+### Basic Standalone Toggle
+
+A simple standalone button with an icon representing an on/off state:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class ToggleBasicDemo extends StatefulWidget {
+  const ToggleBasicDemo({super.key});
+
+  @override
+  State<ToggleBasicDemo> createState() => _ToggleBasicDemoState();
+}
+
+class _ToggleBasicDemoState extends State<ToggleBasicDemo> {
+  bool _isBookmarked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustToggle(
+      selected: _isBookmarked,
+      onPressed: () {
+        setState(() {
+          _isBookmarked = !_isBookmarked;
+        });
+      },
+      child: const Icon(Icons.bookmark),
+    );
+  }
+}
+```
+
+### Toggle Group (Single and Multiple Selection)
+
+Manage a group of toggle options. Wrap parameter values using _Dart Dot Shorthand_ (e.g. `.md` for sizing) to stay consistent with the codebase:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class ToggleGroupDemo extends StatefulWidget {
+  const ToggleGroupDemo({super.key});
+
+  @override
+  State<ToggleGroupDemo> createState() => _ToggleGroupDemoState();
+}
+
+class _ToggleGroupDemoState extends State<ToggleGroupDemo> {
+  // 1. Single selection index
+  Set<int> _selectedFormat = {0};
+
+  // 2. Multiple selection indices
+  Set<int> _activeStyles = {};
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: context.justSpacing.md,
+      children: [
+        // Single Selection (allowMultiple = false, nullable = false)
+        const Text('Format Selection:'),
+        JustToggleGroup(
+          allowMultiple: false,
+          nullable: false,
+          selectedIndices: _selectedFormat,
+          items: const [
+            JustToggleGroupItem(child: Text('Left')),
+            JustToggleGroupItem(child: Text('Center')),
+            JustToggleGroupItem(child: Text('Right')),
+          ],
+          onChanged: (indices) {
+            setState(() {
+              _selectedFormat = indices;
+            });
+          },
+        ),
+
+        const Divider(),
+
+        // Multiple Selection (allowMultiple = true)
+        const Text('Styles Selection:'),
+        JustToggleGroup(
+          allowMultiple: true,
+          selectedIndices: _activeStyles,
+          size: JustToggleSize.sm,
+          items: const [
+            JustToggleGroupItem(child: Icon(Icons.format_bold)),
+            JustToggleGroupItem(child: Icon(Icons.format_italic)),
+            JustToggleGroupItem(child: Icon(Icons.format_underline)),
+          ],
+          onChanged: (indices) {
+            setState(() {
+              _activeStyles = indices;
+            });
+          },
+        ),
+      ],
+    );
+  }
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustToggle
+
+| Property    | Data Type          | Default Value | Description                                                                                         |
+| :---------- | :----------------- | :------------ | :-------------------------------------------------------------------------------------------------- |
+| `selected`  | `bool`             | _Required_    | Active state of the toggle button. If `true`, the button is rendered in the active/selected status. |
+| `onPressed` | `VoidCallback?`    | _Required_    | Callback fired when the button is pressed. If `null`, visual interaction is disabled.               |
+| `child`     | `Widget`           | _Required_    | Child content widget (such as text or icons) centered inside the toggle button.                     |
+| `enabled`   | `bool`             | `true`        | If `false`, visually dims the component and prevents user interaction events.                       |
+| `size`      | `JustToggleSize`   | `.md`         | Dimension size classification: `.sm` (32px), `.md` (40px), `.lg` (48px).                            |
+| `style`     | `JustToggleStyle?` | `null`        | Direct per-instance style overrides.                                                                |
+
+### JustToggleGroupItem
+
+| Property  | Data Type | Default Value | Description                                                                |
+| :-------- | :-------- | :------------ | :------------------------------------------------------------------------- |
+| `child`   | `Widget`  | _Required_    | Content widget centered inside the group toggle button.                    |
+| `enabled` | `bool`    | `true`        | If `false`, disables press interaction and dims this specific button item. |
+
+### JustToggleGroup
+
+| Property          | Data Type                   | Default Value       | Description                                                                                  |
+| :---------------- | :-------------------------- | :------------------ | :------------------------------------------------------------------------------------------- |
+| `items`           | `List<JustToggleGroupItem>` | _Required_          | List of toggle items displayed in the group.                                                 |
+| `selectedIndices` | `Set<int>`                  | _Required_          | Set containing the indices of currently active/selected items.                               |
+| `onChanged`       | `ValueChanged<Set<int>>?`   | _Required_          | Callback fired when a toggle item is pressed, returning the updated set of selected indices. |
+| `allowMultiple`   | `bool`                      | `false`             | If `true`, allows multiple toggle items to be selected at the same time.                     |
+| `nullable`        | `bool`                      | `true`              | If `true`, allows the active selection to be cleared (selected set can become empty).        |
+| `size`            | `JustToggleSize`            | `JustToggleSize.md` | Dimension size classification applied to all items: `.sm`, `.md`, `.lg`.                     |
+| `style`           | `JustToggleStyle?`          | `null`              | Direct per-instance style overrides applied to all items in the group.                       |
+| `direction`       | `Axis`                      | `Axis.horizontal`   | Direction layout in which to arrange the toggle items: `Axis.horizontal` or `Axis.vertical`. |
+
+---
+
+## Theming & Accessibility
+
+### Sizing Specifications
+
+| Size Scale | Height | Horizontal Padding |
+| :--------- | :----- | :----------------- |
+| `.sm`      | `32px` | `12px`             |
+| `.md`      | `40px` | `16px`             |
+| `.lg`      | `48px` | `20px`             |
+
+---
+
+### Visual Presets
+
+- **Default Preset**:
+  - Independent toggles use rounded borders based on `radius.md`.
+  - When grouped (`JustToggleGroup`), adjacent borders merge together, applying rounded corners only to the start and end edges (e.g. rounding the left side of the first item and the right side of the last item in a horizontal group).
+  - Selected states highlight smoothly using transition animations.
+
+- **Neobrutalism Preset**:
+  - Renders a thick black border (`2.5`) around the button elements.
+  - Active selection states utilize immediate transition speed (`animations.instant`) to eliminate visual jitter.
+  - Pressed states simulate a physical down-click by shifting position relative to the solid flat shadow offset.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Touch Targets**:
+   All sizes guarantee a minimum touch interaction area of **48x48px** to remain accessible on mobile devices.
+2. **Keyboard Focus Indicator**:
+   When navigated using a keyboard, a high-contrast focus ring outlines the active button using `FocusIndicator`.
+3. **Screen Reader Semantics**:
+   Individual toggle buttons are wrapped internally with selected state labels (`Semantics(selected: true/false)`) to let screen readers announce button status.

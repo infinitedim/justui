@@ -128,21 +128,21 @@ class _AdvancedBottomNavExampleState extends State<AdvancedBottomNavExample> {
 
 ### JustBottomNav
 
-| Property         | Data Type                 | Default Value                | Description                                                                                                                                                                                                        |
-| ---------------- | ------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `items`          | `List<JustBottomNavItem>` | _Required_                   | Set of bottom navigation destination menus (must contain between 3 and 5 items).                                                                   |
-| `selectedIndex`  | `int`                     | `0`                          | The currently active selected navigation item index.                                                                                               |
-| `onItemSelected` | `ValueChanged<int>?`      | `null`                       | Callback triggered when the user taps one of the menu items.                                                                                       |
+| Property         | Data Type                 | Default Value                | Description                                                                                                                                                                                                 |
+| ---------------- | ------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `items`          | `List<JustBottomNavItem>` | _Required_                   | Set of bottom navigation destination menus (must contain between 3 and 5 items).                                                                                                                            |
+| `selectedIndex`  | `int`                     | `0`                          | The currently active selected navigation item index.                                                                                                                                                        |
+| `onItemSelected` | `ValueChanged<int>?`      | `null`                       | Callback triggered when the user taps one of the menu items.                                                                                                                                                |
 | `variant`        | `JustBottomNavVariant`    | `JustBottomNavVariant.fixed` | Bottom navigation visual style: `.fixed` (fixed width), `.shifting` (expanding transition effect when selected, hides inactive text), or `.floating` (freely floating with a soft shadow above the screen). |
-| `showLabels`     | `bool`                    | `true`                       | Determines whether the label text below icons is visually displayed.                                                                               |
+| `showLabels`     | `bool`                    | `true`                       | Determines whether the label text below icons is visually displayed.                                                                                                                                        |
 
 ### JustBottomNavItem
 
-| Property     | Data Type | Default Value | Description                                                                |
-| ------------ | --------- | ------------- | -------------------------------------------------------------------------- |
-| `label`      | `String`  | _Required_    | Navigation menu title text.                                                |
-| `icon`       | `Widget`  | _Required_    | Icon displayed when the menu is inactive.                                  |
-| `activeIcon` | `Widget?` | `null`        | Alternative icon displayed when the menu is actively selected.             |
+| Property     | Data Type | Default Value | Description                                                    |
+| ------------ | --------- | ------------- | -------------------------------------------------------------- |
+| `label`      | `String`  | _Required_    | Navigation menu title text.                                    |
+| `icon`       | `Widget`  | _Required_    | Icon displayed when the menu is inactive.                      |
+| `activeIcon` | `Widget?` | `null`        | Alternative icon displayed when the menu is actively selected. |
 
 ## Theming & Accessibility
 

@@ -1,0 +1,172 @@
+---
+title: Sheet
+description: Collapsible slide-over panels entering from the edges of the screen, shown imperatively via JustSheetController.
+---
+
+# Sheet
+
+The Sheet component (often referred to as a bottom sheet or drawer) is an overlay container that slides onto the screen from any of the four edges (bottom, top, left, or right). It operates via an imperative controller and overlay system, supporting interactive drag-to-dismiss gestures and responsive sizing options.
+
+---
+
+## Description
+
+Sheets are shown imperatively. The sheet system consists of:
+
+- **`JustSheetScope`**: A wrapper widget that hooks the necessary animation ticker provider and overlay state bindings.
+- **`JustSheetController`**: The imperative overlay controller that pushes or dismisses sheet instances.
+- **`context.justSheet`**: A BuildContext extension to easily show sheets.
+
+---
+
+## Usage
+
+### Installation
+
+Install the component via the CLI:
+
+```bash
+justui add sheet
+```
+
+### Basic Usage
+
+First, ensure your application root or page is wrapped in a `JustSheetScope`:
+
+```dart
+import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget build(BuildContext context) {
+  return JustSheetScope(
+    controller: JustSheetController(),
+    child: const MyAppHome(),
+  );
+}
+```
+
+Then, trigger a standard bottom sheet drawer:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildTrigger(BuildContext context) {
+  return JustButton(
+    label: 'Open Bottom Drawer',
+    onPressed: () {
+      context.justSheet.show(
+        direction: SheetDirection.bottom,
+        content: Padding(
+          padding: .all(context.justSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: context.justSpacing.md,
+            children: [
+              Text('Drawer Options', style: context.justTypo.headingMd),
+              ListTile(
+                leading: const Icon(Icons.share),
+                title: const Text('Share Item'),
+                onTap: () => Navigator.of(context).pop('share'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.link),
+                title: const Text('Copy Link'),
+                onTap: () => Navigator.of(context).pop('copy'),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+```
+
+### Advanced Usage
+
+You can customize sheets to enter from the left or right (often used for sidebar navigations on mobile) and enable drag-to-dismiss features:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+void showLeftSidebarSheet(BuildContext context) {
+  context.justSheet.show(
+    direction: SheetDirection.left,
+    draggable: true,
+    size: 0.75, // Occupies 75% of the viewport width
+    content: SafeArea(
+      child: Padding(
+        padding: .all(context.justSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: context.justSpacing.md,
+          children: [
+            Text('Navigation Menu', style: context.justTypo.headingMd),
+            const Divider(),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Home'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Profile'),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustSheetController.show() Method
+
+`context.justSheet.show<T>(...)` accepts the following parameters:
+
+| Parameter             | Data Type                      | Default Value           | Description                                                                                    |
+| :-------------------- | :----------------------------- | :---------------------- | :--------------------------------------------------------------------------------------------- |
+| `content`             | `Widget`                       | _Required_              | The sheet body content widget tree.                                                            |
+| `direction`           | `SheetDirection`               | `SheetDirection.bottom` | The edge from which the sheet enters the viewport: `.bottom`, `.top`, `.left`, `.right`.       |
+| `barrierDismissable`  | `bool`                         | `true`                  | If `true`, clicking the semi-transparent background barrier automatically dismisses the sheet. |
+| `barrierColor`        | `Color?`                       | `null`                  | Overrides the default semi-transparent background overlay color.                               |
+| `size`                | `double?`                      | `null`                  | Fraction of screen width/height the sheet should occupy (e.g. `0.5` for half of the screen).   |
+| `maxSize`             | `double?`                      | `null`                  | Maximum fraction of screen size the sheet can expand to.                                       |
+| `draggable`           | `bool`                         | `false`                 | If `true`, enables vertical or horizontal drag gestures to dismiss the sheet.                  |
+| `style`               | `JustSheetStyle?`              | `null`                  | Direct per-instance style overrides (padding, border, colors, shadow, etc.).                   |
+| `animationController` | `AnimationController?`         | `null`                  | Overrides the default entry and exit transition timeline.                                      |
+| `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                  | Custom layout animation transitions.                                                           |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+The visual presentation of the sheet container automatically adjusts to the active preset:
+
+- **Default Preset**:
+  - Rounded corners are dynamically configured based on the entry edge (e.g. rounding only the top corners on `.bottom` sheets using `radius.lg`).
+  - Slide-in movements use custom animation curves (`animations.normal`) and durations.
+  - Drop shadow is rendered dynamically using `shadows.lg` to float above other layers.
+
+- **Neobrutalism Preset**:
+  - The sheet container has a thick black border (`colors.textPrimary`) of thickness `2.5` on the exposed edges.
+  - Features a flat offset shadow (`shadows.lg`).
+  - Utilizes immediate transitions (`animations.instant`) to eliminate visual lag.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Focus Trap**:
+   `JustSheet` automatically traps keyboard focus within its container using an internal `FocusScope` widget. This prevents keyboard tab focus from leaking back to background widgets while the sheet is active.
+2. **Focus Restore**:
+   When a sheet is dismissed, it automatically restores keyboard focus back to the previously active focus node (e.g. the trigger button) to preserve a continuous keyboard navigation flow.
+3. **Keyboard Dismiss**:
+   Pressing the `Escape` key on a keyboard automatically dismisses the sheet (if `barrierDismissable` is set to `true`).
+4. **Drag Gestures**:
+   When `draggable` is enabled, dragging the sheet is mapped to smooth physical physics. Drag velocity thresholds automatically complete or revert the dismiss action.

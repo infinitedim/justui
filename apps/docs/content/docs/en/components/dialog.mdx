@@ -1,0 +1,178 @@
+---
+title: Dialog
+description: Modal overlay panels to grab user attention or confirm actions, shown imperatively via JustDialogController.
+---
+
+# Dialog
+
+The Dialog component is a modal screen overlay used to present critical information, request confirmation, or display form content. It operates via an imperative controller and overlay system, offering focus trapping, high accessibility compliance, and multiple screen positions.
+
+---
+
+## Description
+
+Dialogs are shown imperatively rather than declared as static widgets. The dialog system consists of:
+
+- **`JustDialogScope`**: A wrapper widget that hooks the necessary animation ticker provider and overlay state bindings.
+- **`JustDialogController`**: The imperative overlay controller that pushes or dismisses dialog instances.
+- **`context.justDialog`**: A BuildContext extension to easily show dialogs.
+
+---
+
+## Usage
+
+### Installation
+
+Install the component via the CLI:
+
+```bash
+justui add dialog
+```
+
+### Basic Usage
+
+First, ensure your application root or page is wrapped in a `JustDialogScope`:
+
+```dart
+import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget build(BuildContext context) {
+  return JustDialogScope(
+    controller: JustDialogController(),
+    child: const MyAppHome(),
+  );
+}
+```
+
+Then, trigger a confirmation dialog from a button:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildTrigger(BuildContext context) {
+  return JustButton(
+    label: 'Log Out',
+    onPressed: () async {
+      final confirmed = await context.justDialog.show<bool>(
+        content: Padding(
+          padding: .all(context.justSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: context.justSpacing.md,
+            children: [
+              Text('Confirm Sign Out', style: context.justTypo.headingMd),
+              Text('Are you sure you want to sign out of your account?'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                spacing: context.justSpacing.sm,
+                children: [
+                  JustButton(
+                    label: 'Cancel',
+                    variant: JustButtonVariant.ghost,
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                  JustButton(
+                    label: 'Sign Out',
+                    variant: JustButtonVariant.destructive,
+                    onPressed: () => Navigator.of(context).pop(true),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+
+      if (confirmed == true) {
+        // Handle logout logic
+        print('User logged out');
+      }
+    },
+  );
+}
+```
+
+> **Note**: Within the dialog content widget, you can use standard navigation mechanisms (such as `Navigator.of(context).pop(result)`) to dismiss the dialog and return a value to the caller.
+
+### Advanced Usage
+
+You can customize dialog positioning (e.g. anchoring at the bottom like a sheet) and adjust styling:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+void showTopNotificationDialog(BuildContext context) {
+  context.justDialog.show(
+    position: DialogPosition.top,
+    barrierDismissable: true,
+    barrierColor: Colors.black26,
+    content: Container(
+      padding: .all(context.justSpacing.md),
+      child: Row(
+        spacing: context.justSpacing.sm,
+        children: [
+          const Icon(Icons.info_outline, color: Colors.blue),
+          const Expanded(
+            child: Text('New updates are available for your application.'),
+          ),
+          JustButton(
+            label: 'Refresh',
+            size: JustButtonSize.sm,
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustDialogController.show() Method
+
+`context.justDialog.show<T>(...)` accepts the following parameters:
+
+| Parameter             | Data Type                      | Default Value           | Description                                                                                     |
+| :-------------------- | :----------------------------- | :---------------------- | :---------------------------------------------------------------------------------------------- |
+| `content`             | `Widget`                       | _Required_              | The dialog body content widget tree.                                                            |
+| `position`            | `DialogPosition`               | `DialogPosition.center` | Placement of the dialog on the screen: `.center`, `.bottom`, `.top`.                            |
+| `barrierDismissable`  | `bool`                         | `true`                  | If `true`, clicking the semi-transparent background barrier automatically dismisses the dialog. |
+| `barrierColor`        | `Color?`                       | `null`                  | Overrides the default semi-transparent background overlay color.                                |
+| `style`               | `JustDialogStyle?`             | `null`                  | Direct per-instance style overrides (max height, width, padding, border, shadow, etc.).         |
+| `animationController` | `AnimationController?`         | `null`                  | Overrides the default entry and exit transition timeline.                                       |
+| `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                  | Custom layout animation transitions.                                                            |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+The visual presentation of the dialog adjusts to the active preset:
+
+- **Default Preset**:
+  - Dialog container uses `radius.lg` rounded corners.
+  - Position `.center` fades and scales up from `0.9` size. Position `.bottom` and `.top` slide smoothly in and out.
+  - The drop shadow is rendered dynamically using `shadows.lg` to float above other layers.
+
+- **Neobrutalism Preset**:
+  - The dialog container features a thick black border (`colors.textPrimary`) of thickness `2.5`.
+  - Drop shadow is rendered as a flat offset shadow (`shadows.lg`).
+  - Utilizes immediate transitions (`animations.instant`) to eliminate visual lag.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Focus Trap**:
+   `JustDialog` automatically traps keyboard focus within its container using an internal `FocusScope` widget. This prevents keyboard tab focus from leaking back to background widgets while the modal is active.
+2. **Focus Restore**:
+   When a dialog is dismissed, it automatically restores keyboard focus back to the previously active focus node (e.g. the trigger button) to preserve a continuous keyboard navigation flow.
+3. **Keyboard Dismiss**:
+   Pressing the `Escape` key on a keyboard automatically dismisses the dialog (if `barrierDismissable` is set to `true`).
+4. **Vocal Announcements**:
+   The dialog context is annotated with semantic labels to allow screen readers to announce the modal container as an active window.

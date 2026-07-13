@@ -96,24 +96,24 @@ Widget buildAdvancedAvatars(BuildContext context) {
 
 ### JustAvatar
 
-| Property    | Data Type           | Default Value | Description                                                                                                                  |
-| :---------- | :------------------ | :------------ | :--------------------------------------------------------------------------------------------------------------------------- |
-| `imageUrl`  | `String?`           | `null`        | User profile image URL. If it fails to load, the system will switch to the next fallback.                                    |
-| `name`      | `String?`           | `null`        | User name. Used to generate automatic text initials and calculate the background color.                                      |
-| `icon`      | `IconData?`         | `null`        | Alternative icon if the image fails to load and the user name is empty.                                                      |
-| `size`      | `JustAvatarSize`    | `.md`         | Avatar dimension size: `.xs` (24px), `.sm` (32px), `.md` (40px), `.lg` (48px), `.xl` (64px), `.xxl` (96px).                 |
-| `shape`     | `JustAvatarShape`   | `.circle`     | Avatar geometry shape: `.circle` (perfectly round) or `.square` (rounded rectangle with `radius.xl`).                      |
-| `statusDot` | `JustAvatarStatus?` | `null`        | User activity indicator dot at the bottom corner: `online` (green), `offline` (gray), `away` (yellow), `busy` (red).         |
-| `onTap`     | `VoidCallback?`     | `null`        | Interactive callback when the avatar is tapped.                                                                              |
+| Property    | Data Type           | Default Value | Description                                                                                                          |
+| :---------- | :------------------ | :------------ | :------------------------------------------------------------------------------------------------------------------- |
+| `imageUrl`  | `String?`           | `null`        | User profile image URL. If it fails to load, the system will switch to the next fallback.                            |
+| `name`      | `String?`           | `null`        | User name. Used to generate automatic text initials and calculate the background color.                              |
+| `icon`      | `IconData?`         | `null`        | Alternative icon if the image fails to load and the user name is empty.                                              |
+| `size`      | `JustAvatarSize`    | `.md`         | Avatar dimension size: `.xs` (24px), `.sm` (32px), `.md` (40px), `.lg` (48px), `.xl` (64px), `.xxl` (96px).          |
+| `shape`     | `JustAvatarShape`   | `.circle`     | Avatar geometry shape: `.circle` (perfectly round) or `.square` (rounded rectangle with `radius.xl`).                |
+| `statusDot` | `JustAvatarStatus?` | `null`        | User activity indicator dot at the bottom corner: `online` (green), `offline` (gray), `away` (yellow), `busy` (red). |
+| `onTap`     | `VoidCallback?`     | `null`        | Interactive callback when the avatar is tapped.                                                                      |
 
 ### JustAvatarGroup
 
-| Property     | Data Type          | Default Value      | Description                                                                                                           |
-| :----------- | :----------------- | :----------------- | :-------------------------------------------------------------------------------------------------------------------- |
-| `avatars`    | `List<JustAvatar>` | _Required_         | List of user avatars to be stacked together.                                                                          |
-| `maxDisplay` | `int`              | `3`                | Maximum number of avatars to display in full before the remainder is replaced by a `+X` count badge.                  |
-| `overlap`    | `double`           | `8.0`              | Horizontal overlap distance between avatars in pixels.                                                                |
-| `size`       | `JustAvatarSize`   | `.md`              | Dimension size for all avatars within the group.                                                                      |
+| Property     | Data Type          | Default Value | Description                                                                                          |
+| :----------- | :----------------- | :------------ | :--------------------------------------------------------------------------------------------------- |
+| `avatars`    | `List<JustAvatar>` | _Required_    | List of user avatars to be stacked together.                                                         |
+| `maxDisplay` | `int`              | `3`           | Maximum number of avatars to display in full before the remainder is replaced by a `+X` count badge. |
+| `overlap`    | `double`           | `8.0`         | Horizontal overlap distance between avatars in pixels.                                               |
+| `size`       | `JustAvatarSize`   | `.md`         | Dimension size for all avatars within the group.                                                     |
 
 ---
 

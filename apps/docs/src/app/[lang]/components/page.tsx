@@ -15,19 +15,19 @@ export default async function ComponentsPage({
   const t = getHomepageDictionary(lang);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="bg-background text-foreground min-h-screen">
       <Navbar starCount={starCount} lang={lang} />
 
       <main className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
         {/* Header section */}
         <div className="mb-12">
-          <p className="mb-3 font-mono text-sm text-accent">
+          <p className="text-accent mb-3 font-mono text-sm">
             {components.length} {t.componentsPageCount}
           </p>
-          <h1 className="text-4xl font-medium tracking-tight text-foreground sm:text-5xl">
+          <h1 className="text-foreground text-4xl font-medium tracking-tight sm:text-5xl">
             {t.componentsPageTitle}
           </h1>
-          <p className="mt-4 max-w-xl text-base text-secondary">
+          <p className="text-secondary mt-4 max-w-xl text-base">
             {t.componentsPageDescription}
           </p>
         </div>
@@ -38,12 +38,12 @@ export default async function ComponentsPage({
             <Link
               key={component.slug}
               href={`/${lang}/docs/components/${component.slug}` as Route}
-              className="group rounded-lg border border-border p-4 transition-colors hover:border-accent-dark hover:bg-accent-muted"
+              className="group border-border hover:border-accent-dark hover:bg-accent-muted rounded-lg border p-4 transition-colors"
             >
-              <h2 className="text-sm font-medium text-foreground">
+              <h2 className="text-foreground text-sm font-medium">
                 {component.name}
               </h2>
-              <p className="mt-2 text-xs leading-5 text-muted">
+              <p className="text-muted mt-2 text-xs leading-5">
                 {component.description}
               </p>
             </Link>
@@ -57,4 +57,3 @@ export default async function ComponentsPage({
 export async function generateStaticParams() {
   return [{ lang: 'id' }, { lang: 'en' }];
 }
-

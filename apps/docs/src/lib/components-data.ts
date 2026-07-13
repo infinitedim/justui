@@ -4,7 +4,7 @@ export interface ComponentMeta {
   description: string;
 }
 
-export const components: ComponentMeta[] = [
+export const components: Array<ComponentMeta> = [
   {
     name: 'JustButton',
     slug: 'button',
@@ -80,4 +80,49 @@ export const components: ComponentMeta[] = [
     slug: 'scroll-area',
     description: 'Custom scrollbar container',
   },
-];
+  {
+    name: 'JustToast',
+    slug: 'toast',
+    description: 'Imperative toast notification overlay',
+  },
+  {
+    name: 'JustDialog',
+    slug: 'dialog',
+    description: 'Modal overlay with focus trapping',
+  },
+  {
+    name: 'JustSheet',
+    slug: 'sheet',
+    description: 'Slide-over side drawer overlay',
+  },
+  {
+    name: 'JustTooltip',
+    slug: 'tooltip',
+    description: 'Declarative hover contextual tooltip',
+  },
+  {
+    name: 'JustSelect',
+    slug: 'select',
+    description: 'Accessible select dropdown overlay',
+  },
+  {
+    name: 'JustProgress',
+    slug: 'progress',
+    description: 'Determinate or indeterminate progress bar',
+  },
+  {
+    name: 'JustAccordion',
+    slug: 'accordion',
+    description: 'Stacked collapsible content panels',
+  },
+  {
+    name: 'JustToggle',
+    slug: 'toggle',
+    description: 'State toggle buttons and groups',
+  },
+  {
+    name: 'JustTable',
+    slug: 'table',
+    description: 'Interactive data grid table',
+  },
+] as const;

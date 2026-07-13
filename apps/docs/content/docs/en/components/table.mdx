@@ -1,0 +1,212 @@
+---
+title: Table
+description: An interactive data grid table supporting custom column alignments, row selection, header sorting, and sticky headers.
+---
+
+# Table
+
+The Table component is an interactive data grid layout used to present structured data. Built without external dependencies, it supports customizable column widths, alignment settings, row selection states, sticky headers for long tables, sorting indicators, and custom empty states.
+
+---
+
+## Description
+
+- **`JustTable<T>`**: The main grid table widget parameterized by the row data model type `T`.
+- **`JustTableColumn<T>`**: Configuration object defining individual columns, custom cell render builders, sorting options, alignments, and widths.
+
+---
+
+## Usage
+
+### Installation
+
+Install the component via the CLI:
+
+```bash
+justui add table
+```
+
+### Basic Usage
+
+Define a simple read-only data grid with basic column cells:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class User {
+  final String name;
+  final String email;
+  final String role;
+
+  const User({required this.name, required this.email, required this.role});
+}
+
+Widget buildBasicTable(BuildContext context) {
+  final users = [
+    const User(name: 'Alice Smith', email: 'alice@example.com', role: 'Admin'),
+    const User(name: 'Bob Johnson', email: 'bob@example.com', role: 'Editor'),
+  ];
+
+  return JustTable<User>(
+    rows: users,
+    columns: [
+      JustTableColumn(
+        header: 'Name',
+        cell: (user) => Text(user.name, style: context.justTypo.bodyMdBold),
+      ),
+      JustTableColumn(
+        header: 'Email',
+        cell: (user) => Text(user.email),
+      ),
+      JustTableColumn(
+        header: 'Role',
+        cell: (user) => Text(user.role),
+      ),
+    ],
+  );
+}
+```
+
+### Advanced Usage
+
+Enable column sorting, row selection, custom empty states, and layout variants. Wrap parameter values using _Dart Dot Shorthand_ (e.g. `.striped` for variants) to stay consistent with the codebase:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class Product {
+  final String sku;
+  final String name;
+  final double price;
+
+  const Product({required this.sku, required this.name, required this.price});
+}
+
+class ProductTableDemo extends StatefulWidget {
+  const ProductTableDemo({super.key});
+
+  @override
+  State<ProductTableDemo> createState() => _ProductTableDemoState();
+}
+
+class _ProductTableDemoState extends State<ProductTableDemo> {
+  final List<Product> _products = [
+    const Product(sku: 'A001', name: 'Premium Mechanical Keyboard', price: 149.99),
+    const Product(sku: 'B002', name: 'Ergonomic Wireless Mouse', price: 79.99),
+    const Product(sku: 'C003', name: '4K Ultra-Wide Monitor', price: 449.99),
+  ];
+
+  Set<int> _selectedRows = {};
+  int? _sortColumn;
+  bool _sortAscending = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustTable<Product>(
+      rows: _products,
+      variant: JustTableVariant.striped, // Alternating row background colors
+      selectable: true,
+      selectedRows: _selectedRows,
+      sortColumnIndex: _sortColumn,
+      sortAscending: _sortAscending,
+      stickyHeader: true,
+      rowHeight: 60.0,
+      emptyState: const Center(child: Text('No products available')),
+      columns: [
+        JustTableColumn(
+          header: 'SKU',
+          cell: (prod) => Text(prod.sku),
+          width: 80.0,
+        ),
+        JustTableColumn(
+          header: 'Product Name',
+          cell: (prod) => Text(prod.name, style: context.justTypo.bodyMdBold),
+          sortable: true,
+        ),
+        JustTableColumn(
+          header: 'Price',
+          alignment: MainAxisAlignment.end,
+          cell: (prod) => Text('\$${prod.price.toStringAsFixed(2)}'),
+          width: 100.0,
+          sortable: true,
+        ),
+      ],
+      onSelectionChanged: (selected) {
+        setState(() {
+          _selectedRows = selected;
+        });
+      },
+      onSort: (columnIndex) {
+        setState(() {
+          if (_sortColumn == columnIndex) {
+            _sortAscending = !_sortAscending;
+          } else {
+            _sortColumn = columnIndex;
+            _sortAscending = true;
+          }
+          // Perform actual sorting logic in your dataset
+        });
+      },
+    );
+  }
+}
+```
+
+---
+
+## API Reference (Props)
+
+### `JustTableColumn<T>`
+
+| Property    | Data Type                | Default Value | Description                                                                                           |
+| :---------- | :----------------------- | :------------ | :---------------------------------------------------------------------------------------------------- |
+| `header`    | `String`                 | _Required_    | Column header label text.                                                                             |
+| `cell`      | `Widget Function(T row)` | _Required_    | Widget builder mapping row data model `T` into cell contents.                                         |
+| `width`     | `double?`                | `null`        | Optional fixed width limit of this column in pixels. If `null`, column occupies remaining grid space. |
+| `sortable`  | `bool`                   | `false`       | If `true`, enables interactive header sorting toggles.                                                |
+| `alignment` | `MainAxisAlignment`      | `.start`      | Horizontal alignment of header and cell contents within the column area: `.start`, `.end`, `.center`. |
+
+### `JustTable<T>`
+
+| Property             | Data Type                  | Default Value               | Description                                                                                                |
+| :------------------- | :------------------------- | :-------------------------- | :--------------------------------------------------------------------------------------------------------- |
+| `columns`            | `List<JustTableColumn<T>>` | _Required_                  | The list of column configurations.                                                                         |
+| `rows`               | `List<T>`                  | _Required_                  | The list of row data models.                                                                               |
+| `selectable`         | `bool`                     | `false`                     | If `true`, adds a checkbox column at the start of rows to enable multiple selections.                      |
+| `selectedRows`       | `Set<int>?`                | `null`                      | Set of row indices representing currently selected items.                                                  |
+| `onSelectionChanged` | `ValueChanged<Set<int>>?`  | `null`                      | Callback fired when row selections are changed.                                                            |
+| `sortColumnIndex`    | `int?`                     | `null`                      | The active sorting column index. Displays a directional arrow next to the header label if set.             |
+| `sortAscending`      | `bool`                     | `true`                      | Direction of the active sort: `true` (ascending), `false` (descending).                                    |
+| `onSort`             | `ValueChanged<int>?`       | `null`                      | Callback fired when a sortable column header is clicked.                                                   |
+| `stickyHeader`       | `bool`                     | `true`                      | If `true`, locks the header row at the top while the body contents scroll vertically.                      |
+| `rowHeight`          | `double`                   | `52.0`                      | The static vertical height of each table row in pixels.                                                    |
+| `variant`            | `JustTableVariant`         | `JustTableVariant.default_` | visual variant: `.default_` (bordered cells), `.striped` (alternating rows), `.minimal` (separators only). |
+| `style`              | `JustTableStyle?`          | `null`                      | Direct per-instance style overrides.                                                                       |
+| `emptyState`         | `Widget?`                  | `null`                      | Placeholder widget rendered when the `rows` list is empty.                                                 |
+
+---
+
+## Theming & Accessibility
+
+### Visual Presets
+
+- **Default Preset**:
+  - The table header and rows are rendered with clean borders (`radius.md`).
+  - Alternating rows under `.striped` use a soft transparent overlay.
+  - Selected rows highlight using brand tint colors.
+
+- **Neobrutalism Preset**:
+  - Table grid borders are set to thick lines (`1.5` for internal dividers, `2.5` for outer frames) using `colors.textPrimary`.
+  - **Selected Row Highlight**: A thick focus border indicator (`width: 3.0`) is drawn on the left side of the selected row.
+  - Bypasses hover slide transitions.
+
+### Accessibility (WCAG AA Compliance)
+
+1. **Row Checkbox Accessible Targets**:
+   The select checkbox is designed with a minimum touch target area of **48x48px**.
+2. **Keyboard Navigation Support**:
+   Each cell, sortable header, and select checkbox is focusable during keyboard tab indices.
+3. **Contrast Enforcement**:
+   Active sort arrows and column headers maintain a contrast ratio $\ge$ 4.5:1 against the header background color.
