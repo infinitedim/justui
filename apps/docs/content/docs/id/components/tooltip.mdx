@@ -1,0 +1,114 @@
+---
+title: Tooltip
+description: Widget popup hover/gestur deklaratif yang menampilkan deskripsi singkat atau label bantuan saat dipicu.
+---
+
+# Tooltip
+
+Komponen Tooltip adalah widget overlay deklaratif yang digunakan untuk menyediakan petunjuk konteks singkat saat pengguna mengarahkan kursor (hover) ke atas atau menekan lama elemen interaktif. Berbeda dengan komponen overlay lainnya (seperti Toast, Dialog, atau Sheet), `JustTooltip` didefinisikan secara langsung di tatanan widget yang membungkus targetnya, bukan dipicu secara terprogram melalui pengontrol imperatif.
+
+---
+
+## Deskripsi
+
+- **`JustTooltip`**: Widget kontainer yang membungkus elemen target interaktif apa pun (`child`). Komponen ini mengelola peristiwa hover (masuk/keluar kursor) dan pengenal gestur (tekan lama) secara otomatis, membuka balon melayang di lapisan overlay.
+- **Tanpa Overhead Pengontrol**: Tidak memerlukan kelas pengontrol imperatif. Komponen mengelola siklus hidupnya sendiri dan menjadwalkan timer secara otomatis.
+
+---
+
+## Penggunaan
+
+### Instalasi
+
+Pasang komponen melalui CLI:
+
+```bash
+justui add tooltip
+```
+
+### Penggunaan Dasar
+
+Bungkus widget apa pun (seperti tombol standar atau label teks) dengan `JustTooltip` dan sediakan string pesan:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildTooltipExample(BuildContext context) {
+  return JustTooltip(
+    message: 'Tambahkan item ke daftar belanja',
+    position: TooltipPosition.top,
+    child: JustIconButton(
+      icon: const Icon(Icons.add),
+      tooltip: 'Tambah item', // Wajib untuk aksesibilitas tombol ikon
+      onPressed: () {},
+    ),
+  );
+}
+```
+
+### Penggunaan Lanjutan
+
+Anda dapat menyesuaikan penundaan pemicu tooltip, posisi, dan gayanya:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildAdvancedTooltip(BuildContext context) {
+  return JustTooltip(
+    message: 'Panel pengaturan dan konfigurasi.',
+    position: TooltipPosition.right,
+    showDelay: const Duration(milliseconds: 300), // Penundaan kemunculan
+    hideDelay: const Duration(milliseconds: 200), // Penundaan penutupan
+    triggerOnHover: true,
+    triggerOnLongPress: true,
+    child: const Text('Arahkan kursor atau tekan lama teks ini'),
+  );
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### JustTooltip
+
+| Properti              | Tipe Data                                                   | Nilai Default                 | Deskripsi                                                                                    |
+| :-------------------- | :---------------------------------------------------------- | :---------------------------- | :------------------------------------------------------------------------------------------- |
+| `message`             | `String`                                                    | _Wajib_                       | Konten string teks yang ditampilkan di dalam balon melayang.                                 |
+| `child`               | `Widget`                                                    | _Wajib_                       | Widget target yang memicu overlay tooltip saat di-hover atau ditekan.                        |
+| `position`            | `TooltipPosition`                                           | `TooltipPosition.auto`        | Posisi penyejajaran relatif terhadap target: `.top`, `.bottom`, `.left`, `.right`, `.auto`.  |
+| `triggerOnHover`      | `bool`                                                      | `true`                        | Jika `true`, peristiwa hover kursor tetikus akan memicu penampakan tooltip.                  |
+| `triggerOnLongPress`  | `bool`                                                      | `true`                        | Jika `true`, gestur tekan lama di layar sentuh akan memicu penampakan tooltip.               |
+| `showDelay`           | `Duration`                                                  | `Duration.zero`               | Durasi penundaan sebelum menampilkan balon tooltip saat peristiwa pemicu terdeteksi.       |
+| `hideDelay`           | `Duration`                                                  | `Duration(milliseconds: 150)` | Durasi penundaan sebelum menutup balon tooltip setelah peristiwa pemicu berakhir.            |
+| `style`               | `JustTooltipStyle?`                                         | `null`                        | Penyesuaian gaya langsung per-instans (padding, garis batas, warna, lebar maks, dll.).       |
+| `animationController` | `AnimationController?`                                      | `null`                        | Pengontrol animasi kustom.                                                                   |
+| `animationBuilder`    | `Widget Function(BuildContext, Animation<double>, Widget)?` | `null`                        | Builder widget kustom untuk mendefinisikan animasi transisi masuk dan keluar.                |
+
+---
+
+## Tema & Aksesibilitas
+
+### Preset Visual
+
+Balon tooltip melayang menyesuaikan dengan preset tema aktif:
+
+- **Preset Default**:
+  - Kontainer tooltip menggunakan latar belakang gelap ber-kontras tinggi dengan sudut melengkung halus (`radius.sm`).
+  - Menganimasikan masuk dengan transisi pembesaran/fade.
+  - Secara otomatis menempatkan diri berdasarkan batas layar saat diatur ke `TooltipPosition.auto` untuk menghindari terpotong.
+
+- **Preset Neobrutalism**:
+  - Kontainer balon didesain dengan latar belakang putih pekat (atau aksen kontras tinggi) dan garis batas hitam tebal (`2.5`).
+  - Menggunakan transisi instan (`animations.instant`) untuk menghilangkan kelambatan visual.
+
+### Aksesibilitas (Standar WCAG AA)
+
+1. **Posisi Otomatis**:
+   Saat diatur ke `TooltipPosition.auto`, tooltip mengevaluasi batas viewport yang tersedia secara dinamis (menggunakan `RenderBox.localToGlobal`) untuk menentukan sisi dengan ruang terbanyak, mencegah konten tooltip terpotong.
+2. **Aksesibilitas Fokus Kibor**:
+   Tooltip terpicu saat fokus beralih ke widget anak target (misalnya selama navigasi kibor indeks tab).
+3. **Pengumuman Pembaca Layar**:
+   Pesan dihubungkan secara benar ke struktur semantik anak yang dibungkus sebagai teks deskriptif.

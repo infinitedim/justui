@@ -1,0 +1,172 @@
+---
+title: Sheet
+description: Panel meluncur yang masuk dari tepi layar, ditampilkan secara imperatif via JustSheetController.
+---
+
+# Sheet
+
+Komponen Sheet (sering disebut sebagai bottom sheet atau drawer) adalah kontainer overlay yang meluncur ke layar dari salah satu dari empat tepi (bawah, atas, kiri, atau kanan). Komponen ini beroperasi via pengontrol imperatif dan sistem overlay, mendukung gestur seret interaktif untuk menutup, serta opsi ukuran responsif.
+
+---
+
+## Deskripsi
+
+Sheet ditampilkan secara imperatif. Sistem sheet terdiri dari:
+
+- **`JustSheetScope`**: Widget pembungkus yang menyediakan animasi ticker provider dan pengikatan status overlay yang diperlukan.
+- **`JustSheetController`**: Pengontrol imperatif overlay yang menampilkan atau menutup instans sheet.
+- **`context.justSheet`**: Ekstensi BuildContext untuk menampilkan sheet secara mudah.
+
+---
+
+## Penggunaan
+
+### Instalasi
+
+Pasang komponen melalui CLI:
+
+```bash
+justui add sheet
+```
+
+### Penggunaan Dasar
+
+Pertama, pastikan akar aplikasi atau halaman Anda dibungkus dengan `JustSheetScope`:
+
+```dart
+import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget build(BuildContext context) {
+  return JustSheetScope(
+    controller: JustSheetController(),
+    child: const MyAppHome(),
+  );
+}
+```
+
+Kemudian, pemicu drawer bottom sheet standar:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildTrigger(BuildContext context) {
+  return JustButton(
+    label: 'Buka Bottom Drawer',
+    onPressed: () {
+      context.justSheet.show(
+        direction: SheetDirection.bottom,
+        content: Padding(
+          padding: .all(context.justSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: context.justSpacing.md,
+            children: [
+              Text('Opsi Drawer', style: context.justTypo.headingMd),
+              ListTile(
+                leading: const Icon(Icons.share),
+                title: const Text('Bagikan Item'),
+                onTap: () => Navigator.of(context).pop('share'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.link),
+                title: const Text('Salin Tautan'),
+                onTap: () => Navigator.of(context).pop('copy'),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+```
+
+### Penggunaan Lanjutan
+
+Anda dapat menyesuaikan sheet untuk masuk dari sebelah kiri atau kanan (sering digunakan untuk navigasi sidebar seluler) dan mengaktifkan fitur seret untuk menutup:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+void showLeftSidebarSheet(BuildContext context) {
+  context.justSheet.show(
+    direction: SheetDirection.left,
+    draggable: true,
+    size: 0.75, // Mengambil 75% dari lebar viewport
+    content: SafeArea(
+      child: Padding(
+        padding: .all(context.justSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: context.justSpacing.md,
+          children: [
+            Text('Menu Navigasi', style: context.justTypo.headingMd),
+            const Divider(),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Beranda'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Profil'),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### Metode JustSheetController.show()
+
+`context.justSheet.show<T>(...)` menerima parameter berikut:
+
+| Parameter             | Tipe Data                      | Nilai Default           | Deskripsi                                                                                     |
+| :-------------------- | :----------------------------- | :---------------------- | :-------------------------------------------------------------------------------------------- |
+| `content`             | `Widget`                       | _Wajib_                 | Tatanan widget isi konten sheet.                                                              |
+| `direction`           | `SheetDirection`               | `SheetDirection.bottom` | Tepi asal tempat sheet masuk ke layar: `.bottom`, `.top`, `.left`, `.right`.                  |
+| `barrierDismissable`  | `bool`                         | `true`                  | Jika `true`, mengklik latar belakang transparan akan otomatis menutup sheet.                  |
+| `barrierColor`        | `Color?`                       | `null`                  | Mengubah warna latar belakang transparan (overlay).                                           |
+| `size`                | `double?`                      | `null`                  | Fraksi lebar/tinggi layar yang diambil oleh sheet (misalnya `0.5` untuk separuh layar).       |
+| `maxSize`             | `double?`                      | `null`                  | Fraksi maksimum ukuran layar yang dapat dicapai oleh sheet.                                   |
+| `draggable`           | `bool`                         | `false`                 | Jika `true`, mengaktifkan gestur seret vertikal atau horizontal untuk menutup sheet.          |
+| `style`               | `JustSheetStyle?`              | `null`                  | Penyesuaian gaya langsung (padding, garis batas, warna, bayangan, dll.).                      |
+| `animationController` | `AnimationController?`         | `null`                  | Mengubah pengontrol garis waktu transisi masuk dan keluar.                                    |
+| `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                  | Transisi animasi tata letak kustom.                                                           |
+
+---
+
+## Tema & Aksesibilitas
+
+### Preset Visual
+
+Tampilan visual kontainer sheet secara otomatis menyesuaikan dengan preset aktif:
+
+- **Preset Default**:
+  - Sudut melengkung dikonfigurasikan secara dinamis berdasarkan tepi masuk (misalnya hanya melengkungkan sudut atas pada sheet `.bottom` menggunakan `radius.lg`).
+  - Gerakan meluncur masuk menggunakan kurva animasi kustom (`animations.normal`) dan durasi standar.
+  - Bayangan dirender secara dinamis menggunakan `shadows.lg` untuk melayang di atas lapisan lain.
+
+- **Preset Neobrutalism**:
+  - Kontainer sheet memiliki garis batas hitam tebal (`colors.textPrimary`) dengan ketebalan `2.5` pada tepi yang terbuka.
+  - Memiliki bayangan offset datar (`shadows.lg`).
+  - Menggunakan transisi instan (`animations.instant`) untuk menghilangkan kelambatan visual.
+
+### Aksesibilitas (Standar WCAG AA)
+
+1. **Pembatasan Fokus (Focus Trap)**:
+   `JustSheet` secara otomatis membatasi fokus kibor di dalam kontainernya menggunakan widget `FocusScope` internal. Ini mencegah fokus tab kibor bocor ke widget latar belakang saat sheet aktif.
+2. **Pemulihan Fokus (Focus Restore)**:
+   Saat sheet ditutup, fokus kibor secara otomatis dikembalikan ke tombol atau node yang aktif sebelumnya.
+3. **Penutupan via Kibor**:
+   Menekan tombol `Escape` pada kibor akan menutup sheet secara otomatis (jika `barrierDismissable` bernilai `true`).
+4. **Gestur Seret**:
+   Saat `draggable` diaktifkan, gestur seret sheet dipetakan ke fisika yang mulus. Ambang batas kecepatan seret secara otomatis menyelesaikan atau mengembalikan tindakan penutupan.

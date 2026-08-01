@@ -2,6 +2,7 @@ library;
 
 import 'package:flutter/widgets.dart' show BuildContext;
 import 'package:just_ui_tokens/just_ui_tokens.dart';
+import 'src/theme/preset_tokens.dart';
 import 'src/theme/theme_data.dart';
 import 'src/theme/theme_provider.dart';
 
@@ -59,6 +60,11 @@ extension JustThemeContext on BuildContext {
   /// Automatically returns [JustMotionProfile.reduced] if the system requests
   /// reduced motion via accessibility settings.
   JustMotionProfile get justMotion => justAnimations.resolve(this);
+
+  /// Retrieves the active [JustPresetTokens] configuration and subscribes the context
+  /// to rebuild *only* when the preset aspect changes.
+  JustPresetTokens get justPresetTokens =>
+      JustThemeProvider.of(this, aspect: .preset).theme.presetTokens;
 
   /// Reads the active theme configuration without registering a rebuild dependency.
   ///
