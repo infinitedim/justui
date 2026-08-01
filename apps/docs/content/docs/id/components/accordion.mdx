@@ -1,0 +1,153 @@
+---
+title: Accordion
+description: Panel konten vertikal yang dapat disembunyikan atau ditampilkan, dioptimalkan untuk efisiensi ruang informasi.
+---
+
+# Accordion
+
+Komponen Accordion mengelola panel konten yang ditumpuk secara vertikal yang dapat diperluas (expand) atau diciutkan (collapse). Komponen ini mendukung mode ekspansi tunggal maupun ganda, berbagai gaya tata letak (bordered, flush, atau contained), serta mendukung navigasi kibor secara penuh.
+
+---
+
+## Deskripsi
+
+- **`JustAccordion`**: Komponen pembungkus utama yang menampung daftar item accordion.
+- **`JustAccordionItem`**: Model data yang mendefinisikan judul header, isi konten, ikon utama, subjudul, dan status interaktif untuk setiap bagian.
+
+---
+
+## Penggunaan
+
+### Instalasi
+
+Pasang komponen melalui CLI:
+
+```bash
+justui add accordion
+```
+
+### Penggunaan Dasar
+
+Buat accordion sederhana dengan batasan ekspansi tunggal (membuka satu bagian akan menciutkan bagian lainnya):
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildBasicAccordion(BuildContext context) {
+  return JustAccordion(
+    items: const [
+      JustAccordionItem(
+        title: 'Apa itu JustUI?',
+        content: Text('JustUI adalah library komponen copy-paste untuk Flutter yang terinspirasi oleh shadcn/ui.'),
+      ),
+      JustAccordionItem(
+        title: 'Apakah memerlukan dependensi eksternal?',
+        content: Text('Tidak, JustUI dirancang dengan zero-dependency footprint yang hanya mengandalkan Flutter SDK.'),
+      ),
+    ],
+  );
+}
+```
+
+### Penggunaan Lanjutan
+
+Konfigurasikan varian tata letak (misalnya `flush` atau `contained`), izinkan ekspansi ganda bersamaan, dan atur status awal ekspansi:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class AccordionAdvancedDemo extends StatelessWidget {
+  const AccordionAdvancedDemo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return JustAccordion(
+      variant: JustAccordionVariant.contained, // Dikelompokkan dalam satu kontainer
+      allowMultiple: true, // Membuka beberapa panel secara bersamaan
+      initialExpanded: const {0}, // Item pertama terbuka secara default
+      items: const [
+        JustAccordionItem(
+          title: 'Pengaturan Akun',
+          subtitle: Text('Kelola profil dan kredensial Anda'),
+          leading: Icon(Icons.person_outline),
+          content: Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Text('Ubah nama, alamat email, atau perbarui kata sandi Anda di sini.'),
+          ),
+        ),
+        JustAccordionItem(
+          title: 'Preferensi Notifikasi',
+          subtitle: Text('Atur peringatan email dan notifikasi push'),
+          leading: Icon(Icons.notifications_outlined),
+          content: Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Text('Aktifkan atau nonaktifkan peringatan untuk peristiwa keamanan, pesan, dan laporan.'),
+          ),
+        ),
+      ],
+      onChanged: (expandedIndices) {
+        print('Bagian aktif: $expandedIndices');
+      },
+    );
+  }
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### JustAccordionItem
+
+| Properti   | Tipe Data | Nilai Default | Deskripsi                                                                          |
+| :--------- | :-------- | :------------ | :--------------------------------------------------------------------------------- |
+| `title`    | `String`  | _Wajib_       | Teks judul utama yang ditampilkan pada tombol header.                              |
+| `content`  | `Widget`  | _Wajib_       | Tatanan widget isi konten yang ditampilkan saat panel dibuka.                      |
+| `subtitle` | `Widget?` | `null`        | Teks deskripsi sekunder atau label di bawah judul header.                          |
+| `leading`  | `Widget?` | `null`        | Widget grafis opsional (biasanya ikon) di sebelah kiri judul.                      |
+| `enabled`  | `bool`    | `true`        | Jika `false`, menonaktifkan interaksi header dan mencegah panel dibuka/ditutup.    |
+
+### JustAccordion
+
+| Properti          | Tipe Data                 | Nilai Default                   | Deskripsi                                                                                                            |
+| :---------------- | :------------------------ | :------------------------------ | :------------------------------------------------------------------------------------------------------------------- |
+| `items`           | `List<JustAccordionItem>` | _Wajib_                         | Daftar item accordion yang dapat dibuka/ditutup.                                                                     |
+| `allowMultiple`   | `bool`                    | `false`                         | Jika `true`, beberapa item dapat terbuka bersamaan. Jika `false`, membuka satu item akan menutup yang lain.        |
+| `initialExpanded` | `Set<int>?`               | `null`                          | Kumpulan indeks item yang langsung terbuka saat komponen pertama kali dirender.                                      |
+| `onChanged`       | `ValueChanged<Set<int>>?` | `null`                          | Callback yang dipanggil setiap kali panel dibuka atau ditutup, mengembalikan daftar indeks aktif.                   |
+| `variant`         | `JustAccordionVariant`    | `JustAccordionVariant.default_` | Varian tata letak: `.default_` (kartu ber-border), `.flush` (hanya garis pemisah), `.contained` (kartu kelompok).  |
+| `style`           | `JustAccordionStyle?`     | `null`                          | Penyesuaian gaya langsung per-instans.                                                                               |
+
+---
+
+## Tema & Aksesibilitas
+
+### Preset Visual & Varian
+
+- **Varian**:
+  - **`default_`**: Setiap item dibungkus dalam batas kartu terpisah dengan jarak antar kartu (default `8.0`).
+  - **`flush`**: Item tidak memiliki batas kartu luar dan tanpa padding horizontal, hanya dipisahkan oleh garis tipis.
+  - **`contained`**: Seluruh daftar dibungkus dalam satu batas kartu tunggal dengan pemisah internal.
+
+- **Preset Neobrutalism**:
+  - Header dan panel memiliki garis batas hitam tebal (`2.5`) pada varian `.default_` dan `.contained`.
+  - Efek tekan header menggunakan translasi posisi fisik yang tersinkronisasi dengan efek shadow offset.
+  - Durasi diatur ke `animations.instant` (50ms) untuk mencegah jitter visual.
+
+### Interaksi Kibor
+
+Setiap header accordion berfungsi sebagai titik fokus aksesibel:
+
+- **Buka/Tutup**: Menekan `Space` atau `Enter` saat header fokus akan mengubah status buka/tutup panel.
+- **Urutan Fokus**: Fokus header mengikuti urutan navigasi kibor standar, dan item yang dinonaktifkan akan dilewati secara otomatis.
+
+### Aksesibilitas (Standar WCAG AA)
+
+1. **Pengumuman Status Semantik**:
+   Header menggunakan `Semantics` internal untuk mengumumkan status (terbuka/tertutup) ke pembaca layar (screen reader).
+2. **Transisi Ukuran Mulus**:
+   Proses membuka menggunakan `SizeTransition` yang mulus untuk mencegah pergeseran tata letak mendadak.
+3. **Kepatuhan Kontras**:
+   Teks judul dan subjudul memenuhi rasio kontras $\ge$ 4.5:1 terhadap warna latar belakangnya.

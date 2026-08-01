@@ -1,0 +1,178 @@
+---
+title: Select
+description: Komponen input pilih dropdown yang dibangun dengan OverlayPortal, mendukung pencarian kustom dan navigasi kibor penuh.
+---
+
+# Select
+
+Komponen Select adalah elemen input pilih dropdown kustom yang dibangun tanpa mengandalkan `DropdownButton` Material bawaan Flutter. Menggunakan `OverlayPortal` secara internal, komponen ini menjamin konsistensi gaya visual dengan sistem desain, mendukung navigasi kibor penuh, serta menyediakan ikon awalan opsional, garis pemisah, dan pencarian teks.
+
+---
+
+## Deskripsi
+
+- **`JustSelect<T>`**: Widget kontainer pilih dropdown yang mengelola pilihan, label, status validasi, dan opsi pencarian.
+- **`JustSelectOption<T>`**: Model data yang mewakili satu item opsi dropdown (mendukung teks label, ikon awalan, status terlarang, atau berfungsi sebagai pembatas divider).
+
+---
+
+## Penggunaan
+
+### Instalasi
+
+Pasang komponen melalui CLI:
+
+```bash
+justui add select
+```
+
+### Penggunaan Dasar
+
+Gunakan `JustSelect` untuk memilih opsi dari daftar. Bungkus nilai parameter menggunakan sintaksis *Dart Dot Shorthand* (seperti `.md` untuk ukuran):
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class SelectBasicDemo extends StatefulWidget {
+  const SelectBasicDemo({super.key});
+
+  @override
+  State<SelectBasicDemo> createState() => _SelectBasicDemoState();
+}
+
+class _SelectBasicDemoState extends State<SelectBasicDemo> {
+  String? _selectedFruit;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSelect<String>(
+      label: 'Buah Favorit',
+      placeholder: 'Pilih buah...',
+      value: _selectedFruit,
+      options: const [
+        JustSelectOption(value: 'apple', label: 'Apel'),
+        JustSelectOption(value: 'banana', label: 'Pisang'),
+        JustSelectOption.divider(),
+        JustSelectOption(value: 'cherry', label: 'Ceri', enabled: false), // Opsi nonaktif
+        JustSelectOption(value: 'orange', label: 'Jeruk'),
+      ],
+      onChanged: (val) {
+        setState(() {
+          _selectedFruit = val;
+        });
+      },
+    );
+  }
+}
+```
+
+### Penggunaan Lanjutan
+
+Anda dapat mengaktifkan pencarian teks (sangat berguna untuk daftar panjang) dan menambahkan ikon awalan ke pemicu input select:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class SelectAdvancedDemo extends StatefulWidget {
+  const SelectAdvancedDemo({super.key});
+
+  @override
+  State<SelectAdvancedDemo> createState() => _SelectAdvancedDemoState();
+}
+
+class _SelectAdvancedDemoState extends State<SelectAdvancedDemo> {
+  String? _selectedLanguage;
+
+  static const List<JustSelectOption<String>> _languages = [
+    JustSelectOption(value: 'en', label: 'Bahasa Inggris', icon: Icon(Icons.language)),
+    JustSelectOption(value: 'id', label: 'Bahasa Indonesia', icon: Icon(Icons.language)),
+    JustSelectOption(value: 'jp', label: 'Bahasa Jepang', icon: Icon(Icons.language)),
+    JustSelectOption(value: 'fr', label: 'Bahasa Prancis', icon: Icon(Icons.language)),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSelect<String>(
+      label: 'Bahasa Preferensi',
+      value: _selectedLanguage,
+      options: _languages,
+      searchable: true, // Mengaktifkan bidang input pencarian
+      size: .md,
+      prefixIcon: const Icon(Icons.translate),
+      maxDropdownHeight: 250,
+      onChanged: (val) {
+        setState(() {
+          _selectedLanguage = val;
+        });
+      },
+    );
+  }
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### `JustSelectOption<T>`
+
+| Properti    | Tipe Data | Nilai Default | Deskripsi                                                                               |
+| :---------- | :-------- | :------------ | :-------------------------------------------------------------------------------------- |
+| `value`     | `T?`      | _Wajib_       | Nilai model yang dikembalikan pada `onChanged`. Nilainya `null` untuk item pemisah.     |
+| `label`     | `String`  | _Wajib_       | Teks label yang ditampilkan pada opsi select.                                           |
+| `icon`      | `Widget?` | `null`        | Ikon awalan opsional atau grafis di sebelah kiri label opsi.                            |
+| `enabled`   | `bool`    | `true`        | Jika `false`, opsi menjadi tidak interaktif (rendup dan dilewati fokus).                |
+| `isDivider` | `bool`    | `false`       | Jika `true`, opsi berfungsi sebagai garis pemisah.                                      |
+
+- **Konstruktor Bernama**: `JustSelectOption.divider()` membuat garis pemisah untuk mengelompokkan daftar opsi.
+
+### `JustSelect<T>`
+
+| Properti            | Tipe Data                   | Nilai Default | Deskripsi                                                                                                            |
+| :------------------ | :-------------------------- | :------------ | :------------------------------------------------------------------------------------------------------------------- |
+| `options`           | `List<JustSelectOption<T>>` | _Wajib_       | Daftar opsi yang dapat dipilih dan pemisah di dalam dropdown.                                                        |
+| `value`             | `T?`                        | _Wajib_       | Nilai opsi yang dipilih saat ini.                                                                                    |
+| `onChanged`         | `ValueChanged<T>?`          | _Wajib_       | Callback yang dipanggil sesaat setelah opsi dipilih.                                                                |
+| `placeholder`       | `String?`                   | `null`        | Teks yang ditampilkan di kotak pemicu saat nilai kosong/null.                                                       |
+| `label`             | `String?`                   | `null`        | Teks label melayang opsional yang dirender di atas pemicu select.                                                    |
+| `errorText`         | `String?`                   | `null`        | Pesan validasi error. Jika diisi, warna garis batas menjadi merah dan memicu peringatan aksesibilitas.               |
+| `enabled`           | `bool`                      | `true`        | Jika `false`, menonaktifkan pemicu input dan meredupkan tampilan.                                                    |
+| `searchable`        | `bool`                      | `false`       | Jika `true`, menampilkan kolom input teks di bagian atas daftar dropdown untuk memfilter opsi.                       |
+| `size`              | `JustSelectSize`            | `.md`         | Skala dimensi ukuran: `.sm` (36px), `.md` (44px), `.lg` (52px).                                                       |
+| `style`             | `JustSelectStyle?`          | `null`        | Penyesuaian gaya langsung per-instans.                                                                               |
+| `prefixIcon`        | `Widget?`                   | `null`        | Widget grafis opsional di sebelah kiri pemicu input select.                                                          |
+| `maxDropdownHeight` | `int`                       | `300`         | Batasan tinggi maksimum untuk panel dropdown yang dapat digulir.                                                     |
+
+---
+
+## Tema & Aksesibilitas
+
+### Preset Visual
+
+- **Preset Default**:
+  - Pemicu input select memiliki sudut melengkung `radius.md`.
+  - Warna garis batas disorot secara dinamis menggunakan `colors.borderFocus` saat aktif/terbuka.
+  - Kotak dropdown melayang di atas viewport dengan bayangan lembut (`shadows.md`).
+
+- **Preset Neobrutalism**:
+  - Ketebalan garis batas pemicu input dan kotak dropdown diatur ke `2.5` menggunakan warna pekat (`colors.textPrimary`).
+  - Menggunakan bayangan offset datar (`shadows.md`) di belakang pemicu dan panel dropdown.
+  - Kurva instan (`animations.instant`) memotong transisi animasi.
+
+### Interaksi Kibor
+
+JustSelect mengimplementasikan kepatuhan kibor secara penuh:
+
+- **Membuka Dropdown**: Menekan `Enter`, `Space`, `ArrowDown`, atau `ArrowUp` saat pemicu input memiliki fokus kibor akan membuka panel dropdown.
+- **Menutup Dropdown**: Menekan `Escape` akan langsung menutup dropdown dan mengembalikan fokus kibor ke pemicu input.
+- **Navigasi Opsi**: Menekan `ArrowDown` atau `ArrowUp` menggeser fokus aktif ke opsi berikutnya atau sebelumnya. Opsi nonaktif dan pemisah dilewati secara otomatis.
+- **Mengonfirmasi Pilihan**: Menekan `Enter` memilih opsi yang sedang disorot, menutup dropdown, dan mengembalikan fokus ke pemicu.
+
+### Aksesibilitas (Standar WCAG AA)
+
+1. **Pengumuman Error A11y**:
+   Jika `errorText` diisi, pengumuman pembaca layar dipicu via `SemanticsService` untuk memperingatkan pengguna tentang kesalahan input.
+2. **Posisi Overlay Dinamis**:
+   Daftar dropdown diposisikan secara dinamis relatif terhadap ruang layar. Jika pemicu select berada di dekat bagian bawah layar, dropdown akan melayang ke atas (`topPosition` dihitung dinamis) untuk mencegah bagian bawah terpotong.

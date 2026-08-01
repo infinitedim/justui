@@ -203,7 +203,7 @@ class _GroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = JustThemeProvider.of(context).theme;
-    final isNeobrutalism = theme.preset == .neobrutalism;
+    final isNeobrutalism = theme.presetTokens.showsDefaultBorder;
 
     final Border border = isNeobrutalism
         ? .all(color: theme.colors.textPrimary, width: 2.5)
@@ -264,7 +264,7 @@ class _Separator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = JustThemeProvider.of(context).theme;
-    final isNeobrutalism = theme.preset == .neobrutalism;
+    final isNeobrutalism = theme.presetTokens.showsDefaultBorder;
     final width = isNeobrutalism ? 2.5 : 1.0;
     final color = isNeobrutalism
         ? theme.colors.textPrimary

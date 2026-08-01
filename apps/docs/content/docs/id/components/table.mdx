@@ -1,0 +1,212 @@
+---
+title: Table
+description: Tabel kisi data interaktif yang mendukung penyelarasan kolom kustom, pemiliham baris, pengurutan header, dan header tertempel (sticky header).
+---
+
+# Table
+
+Komponen Table adalah tata letak kisi data interaktif yang digunakan untuk menyajikan data terstruktur. Dibuat tanpa dependensi eksternal, komponen ini mendukung lebar kolom kustom, pengaturan penyelarasan (alignment), status pemilihan baris, header tertempel (sticky header) untuk tabel panjang, indikator pengurutan (sorting), dan tampilan kosong kustom.
+
+---
+
+## Deskripsi
+
+- **`JustTable<T>`**: Widget tabel kisi utama yang diparameterkan oleh tipe model data baris `T`.
+- **`JustTableColumn<T>`**: Objek konfigurasi yang mendefinisikan kolom individu, builder pembuat sel kustom, opsi pengurutan, penyelarasan, dan lebar kolom.
+
+---
+
+## Penggunaan
+
+### Instalasi
+
+Pasang komponen melalui CLI:
+
+```bash
+justui add table
+```
+
+### Penggunaan Dasar
+
+Buat tabel kisi data sederhana khusus baca dengan sel kolom dasar:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class User {
+  final String name;
+  final String email;
+  final String role;
+
+  const User({required this.name, required this.email, required this.role});
+}
+
+Widget buildBasicTable(BuildContext context) {
+  final users = [
+    const User(name: 'Alice Smith', email: 'alice@example.com', role: 'Admin'),
+    const User(name: 'Bob Johnson', email: 'bob@example.com', role: 'Editor'),
+  ];
+
+  return JustTable<User>(
+    rows: users,
+    columns: [
+      JustTableColumn(
+        header: 'Nama',
+        cell: (user) => Text(user.name, style: context.justTypo.bodyMdBold),
+      ),
+      JustTableColumn(
+        header: 'Email',
+        cell: (user) => Text(user.email),
+      ),
+      JustTableColumn(
+        header: 'Peran',
+        cell: (user) => Text(user.role),
+      ),
+    ],
+  );
+}
+```
+
+### Penggunaan Lanjutan
+
+Aktifkan pengurutan kolom, pemilihan baris, tampilan kosong kustom, dan varian tata letak. Bungkus nilai parameter menggunakan *Dart Dot Shorthand* (seperti `.striped` untuk varian):
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class Product {
+  final String sku;
+  final String name;
+  final double price;
+
+  const Product({required this.sku, required this.name, required this.price});
+}
+
+class ProductTableDemo extends StatefulWidget {
+  const ProductTableDemo({super.key});
+
+  @override
+  State<ProductTableDemo> createState() => _ProductTableDemoState();
+}
+
+class _ProductTableDemoState extends State<ProductTableDemo> {
+  final List<Product> _products = [
+    const Product(sku: 'A001', name: 'Keyboard Mekanikal Premium', price: 149.99),
+    const Product(sku: 'B002', name: 'Mouse Nirkabel Ergonomis', price: 79.99),
+    const Product(sku: 'C003', name: 'Monitor Ultra-Wide 4K', price: 449.99),
+  ];
+
+  Set<int> _selectedRows = {};
+  int? _sortColumn;
+  bool _sortAscending = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustTable<Product>(
+      rows: _products,
+      variant: JustTableVariant.striped, // Warna latar belakang baris berselang-seling
+      selectable: true,
+      selectedRows: _selectedRows,
+      sortColumnIndex: _sortColumn,
+      sortAscending: _sortAscending,
+      stickyHeader: true,
+      rowHeight: 60.0,
+      emptyState: const Center(child: Text('Tidak ada produk tersedia')),
+      columns: [
+        JustTableColumn(
+          header: 'SKU',
+          cell: (prod) => Text(prod.sku),
+          width: 80.0,
+        ),
+        JustTableColumn(
+          header: 'Nama Produk',
+          cell: (prod) => Text(prod.name, style: context.justTypo.bodyMdBold),
+          sortable: true,
+        ),
+        JustTableColumn(
+          header: 'Harga',
+          alignment: MainAxisAlignment.end,
+          cell: (prod) => Text('\$${prod.price.toStringAsFixed(2)}'),
+          width: 100.0,
+          sortable: true,
+        ),
+      ],
+      onSelectionChanged: (selected) {
+        setState(() {
+          _selectedRows = selected;
+        });
+      },
+      onSort: (columnIndex) {
+        setState(() {
+          if (_sortColumn == columnIndex) {
+            _sortAscending = !_sortAscending;
+          } else {
+            _sortColumn = columnIndex;
+            _sortAscending = true;
+          }
+          // Lakukan logika pengurutan pada dataset Anda
+        });
+      },
+    );
+  }
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### `JustTableColumn<T>`
+
+| Properti    | Tipe Data                | Nilai Default | Deskripsi                                                                                                          |
+| :---------- | :----------------------- | :------------ | :----------------------------------------------------------------------------------------------------------------- |
+| `header`    | `String`                 | _Wajib_       | Teks label header kolom.                                                                                           |
+| `cell`      | `Widget Function(T row)` | _Wajib_       | Pembuat widget yang memetakan data baris `T` ke konten sel.                                                        |
+| `width`     | `double?`                | `null`        | Lebar tetap opsional untuk kolom ini dalam piksel. Jika `null`, kolom mengisi sisa ruang kisi.                     |
+| `sortable`  | `bool`                   | `false`       | Jika `true`, mengaktifkan pemicu pengurutan header interaktif.                                                     |
+| `alignment` | `MainAxisAlignment`      | `.start`      | Penyelarasan horizontal konten header dan sel di dalam area kolom: `.start`, `.end`, `.center`.                    |
+
+### `JustTable<T>`
+
+| Properti             | Tipe Data                  | Nilai Default               | Deskripsi                                                                                                  |
+| :------------------- | :------------------------- | :-------------------------- | :--------------------------------------------------------------------------------------------------------- |
+| `columns`            | `List<JustTableColumn<T>>` | _Wajib_                     | Daftar konfigurasi kolom.                                                                                  |
+| `rows`               | `List<T>`                  | _Wajib_                     | Daftar model data baris.                                                                                   |
+| `selectable`         | `bool`                     | `false`                     | Jika `true`, menambahkan kolom checkbox di awal baris untuk memilih beberapa baris.                        |
+| `selectedRows`       | `Set<int>?`                | `null`                      | Kumpulan indeks baris yang mewakili baris yang sedang dipilih saat ini.                                    |
+| `onSelectionChanged` | `ValueChanged<Set<int>>?`  | `null`                      | Callback yang dipanggil saat pilihan baris berubah.                                                        |
+| `sortColumnIndex`    | `int?`                     | `null`                      | Indeks kolom pengurutan yang aktif. Menampilkan panah petunjuk di sebelah label header jika diatur.        |
+| `sortAscending`      | `bool`                     | `true`                      | Arah pengurutan aktif: `true` (naik/ascending), `false` (turun/descending).                                |
+| `onSort`             | `ValueChanged<int>?`       | `null`                      | Callback yang dipanggil saat header kolom yang dapat diurutkan diklik.                                     |
+| `stickyHeader`       | `bool`                     | `true`                      | Jika `true`, mengunci baris header di bagian atas saat konten baris digulirkan secara vertikal.            |
+| `rowHeight`          | `double`                   | `52.0`                      | Tinggi vertikal statis untuk setiap baris tabel dalam piksel.                                              |
+| `variant`            | `JustTableVariant`         | `JustTableVariant.default_` | Varian visual: `.default_` (sel ber-border), `.striped` (baris berselang-seling), `.minimal` (hanya pemisah). |
+| `style`              | `JustTableStyle?`          | `null`                      | Penyesuaian gaya langsung per-instans.                                                                     |
+| `emptyState`         | `Widget?`                  | `null`                      | Widget yang ditampilkan saat daftar `rows` kosong.                                                         |
+
+---
+
+## Tema & Aksesibilitas
+
+### Preset Visual
+
+- **Preset Default**:
+  - Header tabel dan baris dirender dengan garis batas bersih (`radius.md`).
+  - Baris berselang-seling pada varian `.striped` menggunakan penutup transparan yang lembut.
+  - Baris yang dipilih disorot menggunakan warna aksen merek.
+
+- **Preset Neobrutalism**:
+  - Garis batas kisi tabel diatur dengan garis tebal (`1.5` untuk pemisah internal, `2.5` untuk bingkai luar) menggunakan `colors.textPrimary`.
+  - **Sorotan Baris Terpilih**: Indikator garis batas tebal (`width: 3.0`) digambar di sisi kiri baris yang dipilih.
+  - Memotong animasi slide hover.
+
+### Aksesibilitas (Standar WCAG AA)
+
+1. **Target Sentuh Checkbox Baris**:
+   Checkbox pemilihan dirancang dengan luas target sentuh minimum **48x48px**.
+2. **Dukungan Navigasi Kibor**:
+   Setiap sel, header yang dapat diurutkan, dan checkbox dapat difokuskan saat navigasi tab kibor.
+3. **Kepatuhan Kontras**:
+   Panah pengurutan aktif dan header kolom mempertahankan rasio kontras $\ge$ 4.5:1 terhadap warna latar belakang header.

@@ -1,0 +1,153 @@
+---
+title: Toast
+description: Notifikasi melayang sementara yang tidak mengganggu, ditampilkan secara imperatif untuk memberi tahu pengguna tentang peristiwa sistem atau umpan balik.
+---
+
+# Toast
+
+Komponen Toast menyediakan umpan balik singkat tentang suatu operasi melalui notifikasi melayang sementara di tepi viewport. Komponen ini beroperasi via pengontrol imperatif dan sistem overlay, menawarkan animasi yang mulus, kemampuan seret untuk menutup, serta dukungan untuk berbagai opsi penumpukan (stacking).
+
+---
+
+## Deskripsi
+
+Toast dipicu secara imperatif dan bukan dideklarasikan secara langsung di tatanan widget. Sistem ini terdiri dari:
+
+- **`JustToastScope`**: Widget pembungkus yang diletakkan di dekat akar aplikasi (atau halaman) Anda untuk menangkap konteks ticker provider dan mengelola overlay.
+- **`JustToastController`**: Pengelola imperatif yang menjadwalkan, membatasi, dan memicu notifikasi.
+- **`context.justToast`**: Ekstensi `BuildContext` untuk memanggil peringatan toast secara mudah dari mana saja di dalam tatanan widget di bawah scope.
+
+---
+
+## Penggunaan
+
+### Instalasi
+
+Pasang komponen melalui CLI:
+
+```bash
+justui add toast
+```
+
+### Penggunaan Dasar
+
+Pertama, pastikan akar aplikasi atau halaman Anda dibungkus dengan `JustToastScope`:
+
+```dart
+import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget build(BuildContext context) {
+  return JustToastScope(
+    controller: JustToastController(
+      position: ToastPosition.bottomCenter,
+      limit: 3,
+    ),
+    child: const MyAppHome(),
+  );
+}
+```
+
+Kemudian, pemicu peringatan toast informasi sederhana:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildButton(BuildContext context) {
+  return JustButton(
+    label: 'Tampilkan Toast',
+    onPressed: () {
+      context.justToast.show(
+        message: 'Perubahan berhasil disimpan!',
+        variant: ToastVariant.success,
+      );
+    },
+  );
+}
+```
+
+### Penggunaan Lanjutan
+
+Anda dapat menyesuaikan toast dengan durasi kustom, ikon awalan, dan tombol tindakan, atau mengubah perilaku batas tumpukan secara manual:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+void triggerAdvancedToast(BuildContext context) {
+  context.justToast.show(
+    message: 'Gagal terhubung ke server.',
+    variant: ToastVariant.error,
+    duration: const Duration(seconds: 5),
+    icon: const Icon(Icons.cloud_off),
+    action: JustButton(
+      label: 'Coba Lagi',
+      size: JustButtonSize.sm,
+      variant: JustButtonVariant.ghost,
+      onPressed: () {
+        print('Mencoba lagi koneksi...');
+        // Tutup toast aktif secara terprogram jika diperlukan
+        context.justToast.dismiss();
+      },
+    ),
+    onDismissed: () => print('Toast telah ditutup'),
+  );
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### JustToastController
+
+| Properti            | Tipe Data       | Nilai Default                | Deskripsi                                                                                                           |
+| :------------------ | :-------------- | :--------------------------- | :------------------------------------------------------------------------------------------------------------------ |
+| `behavior`          | `ToastBehavior` | `ToastBehavior.stacked`      | Menentukan bagaimana beberapa toast bersamaan ditampilkan: `.stacked` (ditumpuk) atau `.queue` (antrean).         |
+| `limit`             | `int?`          | `3`                          | Jumlah maksimum toast bersamaan yang ditampilkan di layar. Toast yang berlebih akan dimasukkan ke dalam antrean.    |
+| `position`          | `ToastPosition` | `ToastPosition.bottomCenter` | Lokasi penjangkaran di viewport: `.topLeft`, `.topCenter`, `.topRight`, `.bottomLeft`, `.bottomCenter`, `.bottomRight`. |
+| `enableDragDismiss` | `bool`          | `true`                       | Mengizinkan pengguna menggeser toast secara horizontal untuk menutupnya.                                            |
+
+### Metode show()
+
+`context.justToast.show(...)` menerima parameter berikut:
+
+| Parameter             | Tipe Data                      | Nilai Default          | Deskripsi                                                                                         |
+| :-------------------- | :----------------------------- | :--------------------- | :------------------------------------------------------------------------------------------------ |
+| `message`             | `String`                       | _Wajib_                | Teks pesan deskriptif yang ditampilkan dalam notifikasi.                                          |
+| `variant`             | `ToastVariant`                 | `ToastVariant.info`    | Varian warna dan status: `.info` (biru), `.success` (hijau), `.warning` (oranye), `.error` (merah). |
+| `duration`            | `Duration`                     | `Duration(seconds: 3)` | Durasi waktu sebelum toast menghilang secara otomatis.                                            |
+| `style`               | `JustToastStyle?`              | `null`                 | Penyesuaian gaya langsung per-instans (padding, garis batas, warna, bayangan).                    |
+| `icon`                | `Widget?`                      | `null`                 | Widget awalan (biasanya ikon status) di sebelah kiri teks pesan.                                  |
+| `action`              | `Widget?`                      | `null`                 | Widget kontrol kustom (biasanya tombol teks) di bagian paling kanan.                              |
+| `onDismissed`         | `VoidCallback?`                | `null`                 | Callback yang dipanggil sesaat setelah toast menyelesaikan transisi keluar.                        |
+| `animationController` | `AnimationController?`         | `null`                 | Mengubah pengontrol garis waktu transisi masuk dan keluar.                                        |
+| `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                 | Transisi animasi tata letak kustom.                                                               |
+
+---
+
+## Tema & Aksesibilitas
+
+### Preset Visual
+
+Tampilan visual toast secara otomatis menyesuaikan dengan preset tema aktif:
+
+- **Preset Default**:
+  - Menampilkan sudut melengkung halus berdasarkan `radius.md`.
+  - Menganimasikan masuk dengan transisi meluncur halus dari tepi layar terdekat.
+  - Memiliki bayangan lembut (`shadows.md`) untuk melayang di atas elemen standar.
+
+- **Preset Neobrutalism**:
+  - Dirender dengan garis batas hitam pekat (`colors.textPrimary`) dengan ketebalan `2.5`.
+  - Bayangan dirender sebagai bayangan offset datar (`shadows.sm`).
+  - Menggunakan transisi instan (`animations.instant`) untuk menghilangkan kelambatan visual.
+
+### Aksesibilitas (Standar WCAG AA)
+
+1. **Pengumuman Vokal**:
+   Saat dirender, setiap toast secara otomatis memicu pengumuman pembaca layar via layanan semantik Flutter untuk memberi tahu pengguna dengan keterbatasan penglihatan tentang isi pesan.
+2. **Target Sentuh**:
+   Kontrol interaktif (seperti tombol tindakan) mempertahankan dimensi target minimum **48x48px**.
+3. **Geser untuk Menutup**:
+   Menggeser kartu toast secara horizontal menyediakan gestur aksesibel untuk membuang peringatan sebelum waktu habis secara otomatis.

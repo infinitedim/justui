@@ -1,0 +1,178 @@
+---
+title: Dialog
+description: Panel overlay modal untuk menarik perhatian pengguna atau mengonfirmasi tindakan, ditampilkan secara imperatif via JustDialogController.
+---
+
+# Dialog
+
+Komponen Dialog adalah overlay layar modal yang digunakan untuk menyajikan informasi penting, meminta konfirmasi, atau menampilkan konten formulir. Komponen ini beroperasi via pengontrol imperatif dan sistem overlay, menawarkan pembatasan fokus (focus trapping), kepatuhan aksesibilitas tinggi, dan berbagai posisi tampilan di layar.
+
+---
+
+## Deskripsi
+
+Dialog ditampilkan secara imperatif dan bukan dideklarasikan sebagai widget statis. Sistem dialog terdiri dari:
+
+- **`JustDialogScope`**: Widget pembungkus yang menyediakan animasi ticker provider dan pengikatan status overlay yang diperlukan.
+- **`JustDialogController`**: Pengontrol imperatif overlay yang menampilkan atau menutup instans dialog.
+- **`context.justDialog`**: Ekstensi BuildContext untuk menampilkan dialog secara mudah.
+
+---
+
+## Penggunaan
+
+### Instalasi
+
+Pasang komponen melalui CLI:
+
+```bash
+justui add dialog
+```
+
+### Penggunaan Dasar
+
+Pertama, pastikan akar aplikasi atau halaman Anda dibungkus dengan `JustDialogScope`:
+
+```dart
+import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget build(BuildContext context) {
+  return JustDialogScope(
+    controller: JustDialogController(),
+    child: const MyAppHome(),
+  );
+}
+```
+
+Kemudian, pemicu dialog konfirmasi dari tombol:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildTrigger(BuildContext context) {
+  return JustButton(
+    label: 'Keluar',
+    onPressed: () async {
+      final confirmed = await context.justDialog.show<bool>(
+        content: Padding(
+          padding: .all(context.justSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: context.justSpacing.md,
+            children: [
+              Text('Konfirmasi Keluar', style: context.justTypo.headingMd),
+              Text('Apakah Anda yakin ingin keluar dari akun Anda?'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                spacing: context.justSpacing.sm,
+                children: [
+                  JustButton(
+                    label: 'Batal',
+                    variant: JustButtonVariant.ghost,
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                  JustButton(
+                    label: 'Keluar',
+                    variant: JustButtonVariant.destructive,
+                    onPressed: () => Navigator.of(context).pop(true),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+
+      if (confirmed == true) {
+        // Logika logout
+        print('Pengguna berhasil keluar');
+      }
+    },
+  );
+}
+```
+
+> **Catatan**: Di dalam widget konten dialog, Anda dapat menggunakan mekanisme navigasi standar (seperti `Navigator.of(context).pop(result)`) untuk menutup dialog dan mengembalikan nilai ke pemanggil.
+
+### Penggunaan Lanjutan
+
+Anda dapat memodifikasi posisi dialog (misalnya menempel di bagian atas seperti pemberitahuan) dan menyesuaikan gayanya:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+void showTopNotificationDialog(BuildContext context) {
+  context.justDialog.show(
+    position: DialogPosition.top,
+    barrierDismissable: true,
+    barrierColor: Colors.black26,
+    content: Container(
+      padding: .all(context.justSpacing.md),
+      child: Row(
+        spacing: context.justSpacing.sm,
+        children: [
+          const Icon(Icons.info_outline, color: Colors.blue),
+          const Expanded(
+            child: Text('Pembaruan baru tersedia untuk aplikasi Anda.'),
+          ),
+          JustButton(
+            label: 'Segarkan',
+            size: JustButtonSize.sm,
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### Metode JustDialogController.show()
+
+`context.justDialog.show<T>(...)` menerima parameter berikut:
+
+| Parameter             | Tipe Data                      | Nilai Default           | Deskripsi                                                                                         |
+| :-------------------- | :----------------------------- | :---------------------- | :------------------------------------------------------------------------------------------------ |
+| `content`             | `Widget`                       | _Wajib_                 | Tatanan widget isi konten dialog.                                                                 |
+| `position`            | `DialogPosition`               | `DialogPosition.center` | Penempatan dialog pada layar: `.center`, `.bottom`, `.top`.                                       |
+| `barrierDismissable`  | `bool`                         | `true`                  | Jika `true`, mengklik latar belakang transparan akan otomatis menutup dialog.                     |
+| `barrierColor`        | `Color?`                       | `null`                  | Mengubah warna latar belakang transparan (overlay).                                               |
+| `style`               | `JustDialogStyle?`             | `null`                  | Penyesuaian gaya langsung (tinggi maksimum, lebar, padding, garis batas, bayangan, dll.).        |
+| `animationController` | `AnimationController?`         | `null`                  | Mengubah pengontrol garis waktu transisi masuk dan keluar.                                        |
+| `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                  | Transisi animasi tata letak kustom.                                                               |
+
+---
+
+## Tema & Aksesibilitas
+
+### Preset Visual
+
+Tampilan visual dialog menyesuaikan dengan preset aktif:
+
+- **Preset Default**:
+  - Kontainer dialog menggunakan sudut melengkung `radius.lg`.
+  - Posisi `.center` menggunakan efek murni fade dan pembesaran dari ukuran `0.9`. Posisi `.bottom` dan `.top` meluncur mulus.
+  - Bayangan dirender secara dinamis menggunakan `shadows.lg` untuk melayang di atas lapisan lain.
+
+- **Preset Neobrutalism**:
+  - Kontainer dialog memiliki garis batas hitam tebal (`colors.textPrimary`) dengan ketebalan `2.5`.
+  - Bayangan dirender sebagai bayangan offset datar (`shadows.lg`).
+  - Menggunakan transisi cepat (`animations.instant`) untuk menghilangkan kelambatan visual.
+
+### Aksesibilitas (Standar WCAG AA)
+
+1. **Pembatasan Fokus (Focus Trap)**:
+   `JustDialog` secara otomatis membatasi fokus kibor di dalam kontainernya menggunakan widget `FocusScope` internal. Ini mencegah fokus tab kibor bocor ke widget latar belakang saat modal aktif.
+2. **Pemulihan Fokus (Focus Restore)**:
+   Saat dialog ditutup, fokus kibor secara otomatis dikembalikan ke tombol atau node yang aktif sebelumnya.
+3. **Penutupan via Kibor**:
+   Menekan tombol `Escape` pada kibor akan menutup dialog secara otomatis (jika `barrierDismissable` bernilai `true`).
+4. **Pengumuman Vokal**:
+   Konteks dialog diberi label semantik yang memungkinkan pembaca layar mengumumkan kontainer modal sebagai jendela aktif.
