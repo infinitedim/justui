@@ -1,0 +1,135 @@
+---
+title: Progress
+description: Indikator yang menampilkan status kemajuan dalam format linier atau melingkar, mendukung nilai pasti (determinate) maupun putaran memuat tidak pasti (indeterminate).
+---
+
+# Progress
+
+Komponen Progress menampilkan status kemajuan dari tugas atau operasi yang sedang berjalan. Komponen ini mendukung format batang linier dan format spinner melingkar, dengan opsi untuk menampilkan teks label status, mengatur skala ukuran, serta beralih antara persentase pasti dan status pemuatan berulang.
+
+---
+
+## Deskripsi
+
+- **`JustProgress`**: Secara default merender batang kemajuan linier horizontal (`JustProgressVariant.linear`).
+- **`JustProgress.circular`**: Konstruktor bernama yang merender spinner kemajuan melingkar (`JustProgressVariant.circular`).
+- **Status Indeterminate**: Jika properti `value` dibiarkan `null`, komponen secara otomatis menjalankan animasi putaran tak terbatas untuk menandakan proses sedang berjalan meskipun persentase pasti belum diketahui.
+
+---
+
+## Penggunaan
+
+### Instalasi
+
+Pasang komponen melalui CLI:
+
+```bash
+justui add progress
+```
+
+### Penggunaan Dasar
+
+Buat batang kemajuan linier standar dengan nilai kemajuan pasti (antara `0.0` dan `1.0` secara default):
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildBasicProgress(BuildContext context) {
+  return Column(
+    spacing: context.justSpacing.md,
+    children: const [
+      // Progress Bar Linier (Selesai 50%)
+      JustProgress(
+        value: 0.5,
+        showLabel: true, // Menampilkan '50%'
+      ),
+
+      // Progress Bar Linier Indeterminate (Berputar secara kontinu)
+      JustProgress(
+        value: null,
+      ),
+    ],
+  );
+}
+```
+
+### Konstruktor Bernama (Melingkar)
+
+Gunakan `JustProgress.circular` untuk membuat spinner kemajuan melingkar:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+Widget buildCircularProgress(BuildContext context) {
+  return Row(
+    spacing: context.justSpacing.lg,
+    children: const [
+      // Progress Melingkar Determinate
+      JustProgress.circular(
+        value: 0.75,
+        size: JustProgressSize.lg,
+      ),
+
+      // Spinner Melingkar Indeterminate
+      JustProgress.circular(
+        value: null,
+        size: JustProgressSize.md,
+      ),
+    ],
+  );
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### JustProgress & JustProgress.circular
+
+| Properti            | Tipe Data            | Nilai Default | Deskripsi                                                                               |
+| :------------------ | :------------------- | :------------ | :-------------------------------------------------------------------------------------- |
+| `value`             | `double?`            | `null`        | Nilai kemajuan saat ini. Jika `null`, berjalan dalam putaran indeterminate.             |
+| `min`               | `double`             | `0.0`         | Batas skala yang mewakili kemajuan 0%.                                                  |
+| `max`               | `double`             | `1.0`         | Batas skala yang mewakili kemajuan 100%.                                                |
+| `size`              | `JustProgressSize`   | `.md`         | Skala ukuran: `.sm`, `.md`, `.lg` (menentukan tinggi batang atau diameter spinner).      |
+| `showLabel`         | `bool`               | `false`       | Jika `true`, menampilkan representasi teks status persentase (khusus determinate).       |
+| `label`             | `String?`            | `null`        | Teks deskripsi kustom yang ditampilkan menggantikan string persentase default.          |
+| `style`             | `JustProgressStyle?` | `null`        | Penyesuaian gaya langsung per-instans (warna trek, warna isian, tebal garis, dll.).     |
+| `animationDuration` | `Duration?`          | `null`        | Durasi transisi kustom saat nilai kemajuan determinate berubah.                         |
+
+---
+
+## Dimensi Ukuran & Gaya Kustom
+
+### Dimensi Berdasarkan Skala Ukuran
+
+| Skala Ukuran | Tinggi Progress Linier | Diameter Spinner Melingkar |
+| :----------- | :--------------------- | :------------------------- |
+| `.sm`        | `4px`                  | `32px`                     |
+| `.md`        | `8px`                  | `48px`                     |
+| `.lg`        | `12px`                 | `64px`                     |
+
+---
+
+## Tema & Aksesibilitas
+
+### Preset Visual
+
+- **Preset Default**:
+  - Trek batang linier menggunakan latar belakang transparan lembut dengan ujung melengkung (`radius.full`).
+  - Isian aktif bertransisi secara mulus menggunakan animasi default.
+  - Penanda melingkar merender kurva secara mulus berdasarkan kanvas lukis.
+
+- **Preset Neobrutalism**:
+  - Kontainer progress dibungkus dalam garis batas hitam tebal (`2.5`).
+  - Spinner melingkar menggunakan garis tebal (default `5.0` atau override gaya kustom) dengan warna datar.
+  - Memotong animasi slide-in.
+
+### Aksesibilitas (Standar WCAG AA)
+
+1. **Pengumuman Nilai Semantik**:
+   Widget `JustProgress` dibungkus secara internal dengan node semantik standar pembaca layar. Ini menjamin sistem aksesibilitas mengumumkan nilai sebagai persentase (misalnya "Indikator kemajuan, 50%").
+2. **Aksesibilitas Status Indeterminate**:
+   Saat `value` bernilai `null`, komponen mengumumkan status "Sibuk" atau "Memuat" untuk menandakan proses latar belakang yang sedang berjalan.

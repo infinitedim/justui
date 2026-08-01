@@ -1,0 +1,201 @@
+---
+title: Toggle
+description: Tombol pilihan dua status yang interaktif atau kelompok pilihan yang mendukung seleksi tunggal, ganda, dan nullable.
+---
+
+# Toggle
+
+Komponen Toggle dan ToggleGroup memungkinkan pengguna beralih antara status biner atau memilih dari kelompok item. Dibuat tanpa dependensi Material, komponen ini mendukung skala ukuran kustom, seleksi tunggal/ganda, dan konfigurasi nullable.
+
+---
+
+## Deskripsi
+
+- **`JustToggle`**: Widget tombol toggle mandiri yang mewakili status dipilih/tidak dipilih secara sederhana.
+- **`JustToggleGroup`**: Kontainer yang menyelaraskan beberapa tombol toggle (`JustToggleGroupItem`) secara horizontal atau vertikal. Komponen ini mengelola indeks pilihan, menangani multiseleksi, dan mengontrol perilaku nullable.
+
+---
+
+## Penggunaan
+
+### Instalasi
+
+Pasang komponen melalui CLI:
+
+```bash
+justui add toggle
+```
+
+### Toggle Mandiri Dasar
+
+Tombol mandiri sederhana dengan ikon yang mewakili status aktif/nonaktif:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class ToggleBasicDemo extends StatefulWidget {
+  const ToggleBasicDemo({super.key});
+
+  @override
+  State<ToggleBasicDemo> createState() => _ToggleBasicDemoState();
+}
+
+class _ToggleBasicDemoState extends State<ToggleBasicDemo> {
+  bool _isBookmarked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustToggle(
+      selected: _isBookmarked,
+      onPressed: () {
+        setState(() {
+          _isBookmarked = !_isBookmarked;
+        });
+      },
+      child: const Icon(Icons.bookmark),
+    );
+  }
+}
+```
+
+### Kelompok Toggle (Seleksi Tunggal dan Ganda)
+
+Kelola sekelompok opsi toggle. Bungkus nilai parameter menggunakan *Dart Dot Shorthand* (seperti `.md` untuk ukuran):
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+
+class ToggleGroupDemo extends StatefulWidget {
+  const ToggleGroupDemo({super.key});
+
+  @override
+  State<ToggleGroupDemo> createState() => _ToggleGroupDemoState();
+}
+
+class _ToggleGroupDemoState extends State<ToggleGroupDemo> {
+  // 1. Indeks seleksi tunggal
+  Set<int> _selectedFormat = {0};
+
+  // 2. Indeks seleksi ganda
+  Set<int> _activeStyles = {};
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: context.justSpacing.md,
+      children: [
+        // Seleksi Tunggal (allowMultiple = false, nullable = false)
+        const Text('Pilihan Format:'),
+        JustToggleGroup(
+          allowMultiple: false,
+          nullable: false,
+          selectedIndices: _selectedFormat,
+          items: const [
+            JustToggleGroupItem(child: Text('Kiri')),
+            JustToggleGroupItem(child: Text('Tengah')),
+            JustToggleGroupItem(child: Text('Kanan')),
+          ],
+          onChanged: (indices) {
+            setState(() {
+              _selectedFormat = indices;
+            });
+          },
+        ),
+
+        const Divider(),
+
+        // Seleksi Ganda (allowMultiple = true)
+        const Text('Pilihan Gaya:'),
+        JustToggleGroup(
+          allowMultiple: true,
+          selectedIndices: _activeStyles,
+          size: JustToggleSize.sm,
+          items: const [
+            JustToggleGroupItem(child: Icon(Icons.format_bold)),
+            JustToggleGroupItem(child: Icon(Icons.format_italic)),
+            JustToggleGroupItem(child: Icon(Icons.format_underline)),
+          ],
+          onChanged: (indices) {
+            setState(() {
+              _activeStyles = indices;
+            });
+          },
+        ),
+      ],
+    );
+  }
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### JustToggle
+
+| Properti    | Tipe Data          | Nilai Default | Deskripsi                                                                                         |
+| :---------- | :----------------- | :------------ | :------------------------------------------------------------------------------------------------ |
+| `selected`  | `bool`             | _Wajib_       | Status aktif tombol toggle. Jika `true`, tombol dirender dalam status dipilih.                    |
+| `onPressed` | `VoidCallback?`    | _Wajib_       | Callback yang dipanggil saat tombol ditekan. Jika `null`, interaksi visual dinonaktifkan.         |
+| `child`     | `Widget`           | _Wajib_       | Widget konten anak (seperti teks atau ikon) di tengah tombol toggle.                              |
+| `enabled`   | `bool`             | `true`        | Jika `false`, meredupkan komponen secara visual dan mencegah peristiwa interaksi pengguna.        |
+| `size`      | `JustToggleSize`   | `.md`         | Skala dimensi ukuran: `.sm` (32px), `.md` (40px), `.lg` (48px).                                   |
+| `style`     | `JustToggleStyle?` | `null`        | Penyesuaian gaya langsung per-instans.                                                            |
+
+### JustToggleGroupItem
+
+| Properti  | Tipe Data | Nilai Default | Deskripsi                                                                               |
+| :-------- | :-------- | :------------ | :-------------------------------------------------------------------------------------- |
+| `child`   | `Widget`  | _Wajib_       | Widget konten di tengah tombol toggle kelompok.                                          |
+| `enabled` | `bool`    | `true`        | Jika `false`, menonaktifkan interaksi tekan dan meredupkan item tombol spesifik ini.    |
+
+### JustToggleGroup
+
+| Properti          | Tipe Data                   | Nilai Default       | Deskripsi                                                                                                            |
+| :---------------- | :-------------------------- | :------------------ | :------------------------------------------------------------------------------------------------------------------- |
+| `items`           | `List<JustToggleGroupItem>` | _Wajib_             | Daftar item toggle yang ditampilkan dalam kelompok.                                                                  |
+| `selectedIndices` | `Set<int>`                  | _Wajib_             | Kumpulan yang berisi indeks item yang sedang aktif/dipilih.                                                          |
+| `onChanged`       | `ValueChanged<Set<int>>?`   | _Wajib_             | Callback yang dipanggil saat item toggle ditekan, mengembalikan kumpulan indeks terpilih yang diperbarui.          |
+| `allowMultiple`   | `bool`                      | `false`             | Jika `true`, mengizinkan beberapa item toggle dipilih secara bersamaan.                                              |
+| `nullable`        | `bool`                      | `true`              | Jika `true`, mengizinkan pilihan aktif dibatalkan (kumpulan terpilih bisa menjadi kosong).                           |
+| `size`            | `JustToggleSize`            | `JustToggleSize.md` | Skala dimensi ukuran yang diterapkan pada semua item: `.sm`, `.md`, `.lg`.                                           |
+| `style`           | `JustToggleStyle?`          | `null`              | Penyesuaian gaya langsung per-instans yang diterapkan pada semua item dalam kelompok.                                |
+| `direction`       | `Axis`                      | `Axis.horizontal`   | Arah tata letak susunan item toggle: `Axis.horizontal` atau `Axis.vertical`.                                         |
+
+---
+
+## Tema & Aksesibilitas
+
+### Spesifikasi Ukuran
+
+| Skala Ukuran | Tinggi | Padding Horizontal |
+| :----------- | :----- | :----------------- |
+| `.sm`        | `32px` | `12px`             |
+| `.md`        | `40px` | `16px`             |
+| `.lg`        | `48px` | `20px`             |
+
+---
+
+### Preset Visual
+
+- **Preset Default**:
+  - Toggle mandiri menggunakan garis batas melengkung berdasarkan `radius.md`.
+  - Saat dikelompokkan (`JustToggleGroup`), garis batas yang berdekatan menyatu, menerapkan sudut melengkung hanya pada tepi awal dan akhir (misalnya melengkungkan sisi kiri item pertama dan sisi kanan item terakhir dalam kelompok horizontal).
+  - Status terpilih disorot secara mulus menggunakan animasi transisi.
+
+- **Preset Neobrutalism**:
+  - Merender garis batas hitam tebal (`2.5`) di sekitar elemen tombol.
+  - Status pilihan aktif menggunakan kecepatan transisi instan (`animations.instant`) untuk menghilangkan jitter visual.
+  - Status ditekan meniru klik fisik dengan menggeser posisi relatif terhadap bayangan offset datar.
+
+### Aksesibilitas (Standar WCAG AA)
+
+1. **Target Sentuh**:
+   Semua ukuran menjamin luas area interaksi sentuh minimum **48x48px** agar tetap aksesibel di perangkat seluler.
+2. **Indikator Fokus Kibor**:
+   Saat dinavigasi menggunakan kibor, cincin fokus dengan kontras tinggi menggarisi tombol aktif menggunakan `FocusIndicator`.
+3. **Semantik Pembaca Layar**:
+   Setiap tombol toggle dibungkus secara internal dengan label status terpilih (`Semantics(selected: true/false)`) agar pembaca layar dapat mengumumkan status tombol.

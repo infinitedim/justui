@@ -745,6 +745,58 @@
       ]
     },
     {
+      "name": "slider",
+      "version": "0.1.0",
+      "description": "Accessible and performant slider component for single value and range selection.",
+      "category": "forms",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_focus_indicator",
+        "_shared_theme_provider"
+      ],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_slider.dart",
+            "path": "components/slider/default/just_slider.dart",
+            "checksum": "sha256:ee16b54ab27353beecb09b809208118003a5d1bdd66a27afef5b1ee92f7ebc19"
+          },
+          {
+            "name": "just_slider_style.dart",
+            "path": "components/slider/default/just_slider_style.dart",
+            "checksum": "sha256:f085b80b61cd6e9cf934d7f046f8a322da87860c2cea02791c8cc1d4a90ad441"
+          },
+          {
+            "name": "just_slider_theme.dart",
+            "path": "components/slider/default/just_slider_theme.dart",
+            "checksum": "sha256:4a406e33e48a883782d2550982adfe5bfa7edd8f4a4a1c6127ddb013954e7774"
+          }
+        ],
+        "neobrutalism": [
+          {
+            "name": "just_slider.dart",
+            "path": "components/slider/neobrutalism/just_slider.dart",
+            "checksum": "sha256:ee16b54ab27353beecb09b809208118003a5d1bdd66a27afef5b1ee92f7ebc19"
+          },
+          {
+            "name": "just_slider_style.dart",
+            "path": "components/slider/neobrutalism/just_slider_style.dart",
+            "checksum": "sha256:f085b80b61cd6e9cf934d7f046f8a322da87860c2cea02791c8cc1d4a90ad441"
+          },
+          {
+            "name": "just_slider_theme.dart",
+            "path": "components/slider/neobrutalism/just_slider_theme.dart",
+            "checksum": "sha256:4a406e33e48a883782d2550982adfe5bfa7edd8f4a4a1c6127ddb013954e7774"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
+    },
+    {
       "name": "_shared_progress_spinner",
       "version": "0.1.0",
       "description": "Internal shared rotatory loading progress spinner.",
