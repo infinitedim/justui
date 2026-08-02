@@ -1,5 +1,6 @@
-// justui-meta: registry=31d7f7ca35b803583c82d750a0512a054bbdc4aa3279e52deb42355ee2b69cb0 local=e2465c7b9700b443dda902bf4d5f122928290ca4368ea57611eecc5ee00dd9d8
+// justui-meta: registry=9f89159ae91617f29e7aa8e55310ec39cd17c524146841c98ed5c2af9bbd81bc local=ba48d346634fec0c8ebf5a4e0c3b66f2ea44a948b4b2cbb72d991f28bab28853
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'just_avatar_style.dart';
 import 'just_avatar_variants.dart';
@@ -179,13 +180,17 @@ class JustAvatar extends StatelessWidget {
         backgroundColor ??
         (name != null ? _colorFromName(name!) : colors.borderDefault);
     final Color fg = style?.foregroundColor ?? colors.textInverse;
-    final isNeobrutalism = theme.preset == .neobrutalism;
+    final presetTokens = theme.presetTokens;
     final double borderWidth =
-        style?.borderWidth ?? border?.width ?? (isNeobrutalism ? 2.5 : 0.0);
+        style?.borderWidth ??
+        border?.width ??
+        (presetTokens.showsDefaultBorder ? presetTokens.borderWidth : 0.0);
     final Color borderColor =
         style?.borderColor ??
         border?.color ??
-        (isNeobrutalism ? colors.borderDefault : const Color(0x00000000));
+        (presetTokens.showsDefaultBorder
+            ? colors.borderDefault
+            : const Color(0x00000000));
 
     // Build core content: Network Image -> Initials -> Icon
     Widget content;
