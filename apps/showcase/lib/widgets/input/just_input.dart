@@ -1,7 +1,8 @@
-// justui-meta: registry=da0db7b7adc3624b0f3b35cbae945787136bc6057fc6f07160d3876fa93e9bc6 local=e8af8eb14c0a2309971ccdacfbf0054f45871b8220efbf6ddddf2a6295d4eeb4
+// justui-meta: registry=657f8f9ea5d5ae99719535223fa322076a05f3fa59ec1586d3b6bf6a37fa89e1 local=99346403204361c315f2a70b1406b67941091f0e3e5bdaab8ea8640851f4f458
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'just_input_style.dart';
 import 'just_input_variants.dart';
@@ -748,21 +749,20 @@ class _JustInputState extends State<JustInput> {
                     );
 
                     final presetTokens = theme.presetTokens;
-                    final isNeobrutalism = presetTokens.showsDefaultBorder;
-                    final double borderWidth = isNeobrutalism
-                        ? 2.5
+                    final double borderWidth = presetTokens.showsDefaultBorder
+                        ? presetTokens.borderWidth
                         : (isFocused ? 2.0 : 1.0);
-                    final Color finalBorderColor = isNeobrutalism
+                    final Color finalBorderColor =
+                        presetTokens.showsDefaultBorder
                         ? colors.textPrimary
                         : border;
-                    final List<BoxShadow>? resolvedShadows = isNeobrutalism
+                    final List<BoxShadow>? resolvedShadows =
+                        presetTokens.showsDefaultBorder
                         ? theme.shadows.sm
                         : null;
 
                     return AnimatedContainer(
-                      duration: isNeobrutalism
-                          ? theme.animations.instant
-                          : theme.animations.fast,
+                      duration: presetTokens.focusTransitionDuration,
                       curve: animations.defaultCurve,
                       alignment: .centerLeft,
                       padding: finalPadding,

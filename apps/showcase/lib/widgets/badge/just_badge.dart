@@ -1,4 +1,4 @@
-// justui-meta: registry=e2212d3ee32dd8cbbdb94eb933bb3f520ae972b562a03d9b7b3f63c11d44c0a9 local=364d7672d44518e6194386919b533da2fdbfb7de0d7fb442fa7b09c0490acf0f
+// justui-meta: registry=c5e8aa19d34d1f0358bb9b964f3b3008b0d644758f5b6530745fe181b67a911f local=105df9d5cf075d940f53383094b3ce220d252b9e450fde85e3893c4e7e55bf1b
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'just_badge_style.dart';
@@ -339,7 +339,7 @@ class JustBadge extends StatelessWidget {
     final presetTokens = theme.presetTokens;
 
     final Border? resolvedBorder = presetTokens.showsDefaultBorder
-        ? .all(color: colors.textPrimary, width: 2.5)
+        ? .all(color: colors.textPrimary, width: presetTokens.borderWidth)
         : (finalBorder != const Color(0x00000000)
               ? .all(color: finalBorder, width: 1.0)
               : null);

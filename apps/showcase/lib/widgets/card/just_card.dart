@@ -1,6 +1,7 @@
-// justui-meta: registry=b20db50be6156804fbe497802c722cbd1edad3691b2f620918387b3ef3f5f05c local=e0f48bc02ff024f938f955d6757119c942c9aa18e5ac3c3c0ec7abfc1437cc35
+// justui-meta: registry=6ac35b403a58595a2de85869b1eb2c3e5d78b2c8f3253944e1c144bf19867ccd local=af809c242c580cf8c07f3dccadeec66c981e5d284d450d87e9c76597c080f0a5
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import '../../../shared/just_pressable.dart';
 import '../../../shared/just_focus_indicator.dart';
@@ -114,9 +115,9 @@ class JustCard extends StatelessWidget {
     final spacing = theme.spacing;
     final radius = theme.radius;
     final shadows = theme.shadows;
+    final presetTokens = theme.presetTokens;
 
     final isInteractive = onTap != null;
-    final isNeobrutalism = theme.preset == .neobrutalism;
 
     // Resolve base colors and shadows depending on the card variant
     Color defaultBg;
@@ -129,26 +130,30 @@ class JustCard extends StatelessWidget {
     switch (variant) {
       case .elevated:
         defaultBg = colors.card;
-        defaultBorderColor = isNeobrutalism
+        defaultBorderColor = presetTokens.showsDefaultBorder
             ? colors.borderDefault
             : const Color(0x00000000);
-        defaultBorderWidth = isNeobrutalism ? 2.5 : 0.0;
+        defaultBorderWidth = presetTokens.showsDefaultBorder
+            ? presetTokens.borderWidth
+            : 0.0;
         defaultShadows = shadows.sm;
         break;
       case .outlined:
         defaultBg = colors.card;
         defaultBorderColor = colors.borderDefault;
-        defaultBorderWidth = isNeobrutalism ? 2.5 : 1.0;
+        defaultBorderWidth = presetTokens.borderWidth;
         defaultShadows = const [];
         break;
       case .filled:
         defaultBg = isDark
             ? const Color(0xFF1E293B)
             : const Color(0xFFF1F5F9); // Slate-800 / Slate-100
-        defaultBorderColor = isNeobrutalism
+        defaultBorderColor = presetTokens.showsDefaultBorder
             ? colors.borderDefault
             : const Color(0x00000000);
-        defaultBorderWidth = isNeobrutalism ? 2.5 : 0.0;
+        defaultBorderWidth = presetTokens.showsDefaultBorder
+            ? presetTokens.borderWidth
+            : 0.0;
         defaultShadows = const [];
         break;
     }
@@ -161,7 +166,9 @@ class JustCard extends StatelessWidget {
     final resolvedBorderWidth =
         style?.borderWidth ?? themeStyle?.borderWidth ?? defaultBorderWidth;
     final resolvedBorderRadius =
-        style?.borderRadius ?? themeStyle?.borderRadius ?? .all(radius.lg);
+        style?.borderRadius ??
+        themeStyle?.borderRadius ??
+        presetTokens.resolveBorderRadius(radius);
     final resolvedPadding =
         style?.padding ?? themeStyle?.padding ?? .all(spacing.lg);
     final resolvedMargin = style?.margin ?? themeStyle?.margin ?? .zero;
@@ -202,11 +209,36 @@ class JustCard extends StatelessWidget {
         }
       }
 
-      // Resolve shadows for press state (collapses in neobrutalism)
-      currentShadows = theme.resolveShadows(
-        currentShadows,
-        isPressed: isPressed,
-      );
+      // Resolve shadows for press state
+      List<BoxShadow> resolvedShadows;
+      if (style?.shadows != null || themeStyle?.shadows != null) {
+        if (isPressed) {
+          if (presetTokens.showsDefaultBorder) {
+            resolvedShadows = const [];
+          } else {
+            resolvedShadows = currentShadows
+                .map(
+                  (s) => s.copyWith(
+                    blurRadius: s.blurRadius * 0.6,
+                    offset: s.offset * 0.5,
+                  ),
+                )
+                .toList();
+          }
+        } else {
+          resolvedShadows = currentShadows;
+        }
+      } else {
+        if (variant == .elevated) {
+          resolvedShadows = presetTokens.resolveShadow(
+            shadows,
+            (isHovered || isFocused) ? .md : .sm,
+            isPressed: isPressed,
+          );
+        } else {
+          resolvedShadows = const [];
+        }
+      }
 
       final BorderSide borderSide = currentBorderWidth > 0.0
           ? BorderSide(color: currentBorderColor, width: currentBorderWidth)
@@ -220,7 +252,7 @@ class JustCard extends StatelessWidget {
           color: resolvedBgColor,
           borderRadius: resolvedBorderRadius,
           border: .fromBorderSide(borderSide),
-          boxShadow: currentShadows,
+          boxShadow: resolvedShadows,
         ),
         child: Column(
           mainAxisSize: .min,
@@ -242,10 +274,11 @@ class JustCard extends StatelessWidget {
       if (isInteractive) {
         final scaleFactor =
             style?.scaleOnPress ?? themeStyle?.scaleOnPress ?? 0.99;
-        return theme.buildPressEffect(
+        return presetTokens.buildPressEffect(
           child: cardLayout,
           isPressed: isPressed,
-          scaleFactor: scaleFactor,
+          animations: theme.animations,
+          customScale: scaleFactor,
         );
       }
 

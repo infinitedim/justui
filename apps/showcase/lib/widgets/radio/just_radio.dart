@@ -1,4 +1,4 @@
-// justui-meta: registry=45f11a3c38d17bceaaf3d43c759741b7332031255117cfd8ded9059509f1495a local=bc9c10f15301a03e3da882b0e330253ee7f9711ffe4d4a9aabdeeb9f2d61ed3f
+// justui-meta: registry=995ae93b99deb2282e811591f082e75f55807710ccf258ab14c772527a6eb495 local=ecbff07da2dfdd80d15c1c55284789c4688e4583d53e8610d210c0d53f29538d
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -254,6 +254,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                               height: circleSize,
                               decoration: BoxDecoration(
                                 shape: .circle,
+                                color: colors.card,
                                 border: .all(
                                   color: currentBorder,
                                   width: hasBorder
