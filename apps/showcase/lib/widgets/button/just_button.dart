@@ -1,11 +1,11 @@
-// justui-meta: registry=25a23a56b232acbd60fbe6f39c4ada97044b62eaaf9aad5952b8e1e1bc68d997 local=2f8e325e71e348b491958b68d1afb63b138c795e0abe639e6c16359d171a995e
+// justui-meta: registry=618e956bf38f94167a462d7a16b04d53c75ba1c13b932f7c38bba869e85699f4 local=be2afd2c25241430302413091d38c64412a03cebb775263c0faece7e6fdc1b18
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
-import 'package:showcase/shared/just_focus_indicator.dart';
-import 'package:showcase/shared/just_pressable.dart';
-import 'package:showcase/shared/just_progress_spinner.dart';
+import '../../../shared/just_focus_indicator.dart';
+import '../../../shared/just_pressable.dart';
+import '../../../shared/just_progress_spinner.dart';
 import 'just_button_style.dart';
 import 'just_button_variants.dart';
 import 'just_button_theme.dart';
@@ -181,6 +181,8 @@ class _JustButtonState extends State<JustButton> {
     // Using context.justTheme which resolves InheritedModel aspects properly
     final customTheme = JustThemeProvider.of(context).theme;
     final buttonTheme = Theme.of(context).extension<JustButtonTheme>();
+    final presetTokens = customTheme.presetTokens;
+
     JustButtonStyle? themeStyle;
     if (buttonTheme != null) {
       switch (widget.variant) {
@@ -204,7 +206,7 @@ class _JustButtonState extends State<JustButton> {
     final finalEnableHaptic =
         widget.enableHaptic ??
         buttonTheme?.enableHaptic ??
-        (customTheme.preset == .neobrutalism);
+        presetTokens.showsDefaultBorder;
 
     // We register dependency to colors aspect
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
@@ -235,35 +237,35 @@ class _JustButtonState extends State<JustButton> {
         paddingH = spacing.sm; // 8px
         textStyle = typography.caption.copyWith(fontWeight: .w500);
         iconSize = 14.0;
-        defaultRadius = .all(radius.sm);
+        defaultRadius = presetTokens.resolveBorderRadius(radius);
         break;
       case .sm:
         height = 32.0;
         paddingH = spacing.md; // 12px
         textStyle = typography.bodySm.copyWith(fontWeight: .w500);
         iconSize = 16.0;
-        defaultRadius = .all(radius.md);
+        defaultRadius = presetTokens.resolveBorderRadius(radius);
         break;
       case .md:
         height = 40.0;
         paddingH = spacing.lg; // 16px
         textStyle = typography.bodyMd.copyWith(fontWeight: .w500);
         iconSize = 18.0;
-        defaultRadius = .all(radius.md);
+        defaultRadius = presetTokens.resolveBorderRadius(radius);
         break;
       case .lg:
         height = 48.0;
         paddingH = spacing.xl; // 20px
         textStyle = typography.bodyLg.copyWith(fontWeight: .w500);
         iconSize = 20.0;
-        defaultRadius = .all(radius.md);
+        defaultRadius = presetTokens.resolveBorderRadius(radius);
         break;
       case .xl:
         height = 56.0;
         paddingH = spacing.xxl; // 24px
         textStyle = typography.headingSm.copyWith(fontWeight: .w500);
         iconSize = 22.0;
-        defaultRadius = .all(radius.lg);
+        defaultRadius = presetTokens.resolveBorderRadius(radius);
         break;
     }
 
@@ -335,8 +337,6 @@ class _JustButtonState extends State<JustButton> {
                     widget.onPressed?.call();
                   },
             builder: (context, isHovered, isPressed, isFocused, focusNode) {
-              final isNeobrutalism = customTheme.preset == .neobrutalism;
-
               // Resolve states colors
               Color bg;
               Color text;
@@ -351,7 +351,7 @@ class _JustButtonState extends State<JustButton> {
                 case .primary:
                   bg = primaryBg;
                   text = primaryFg;
-                  border = isNeobrutalism
+                  border = presetTokens.showsDefaultBorder
                       ? colors.textPrimary
                       : const Color(0x00000000);
 
@@ -368,7 +368,7 @@ class _JustButtonState extends State<JustButton> {
                 case .secondary:
                   bg = const Color(0x00000000);
                   text = colors.textPrimary;
-                  border = isNeobrutalism
+                  border = presetTokens.showsDefaultBorder
                       ? colors.textPrimary
                       : colors.borderDefault;
 
@@ -377,11 +377,15 @@ class _JustButtonState extends State<JustButton> {
                     border = border.withValues(alpha: 0.4);
                   } else if (isPressed) {
                     bg = primaryBg.withValues(alpha: 0.15);
-                    border = isNeobrutalism ? colors.textPrimary : primaryBg;
+                    border = presetTokens.showsDefaultBorder
+                        ? colors.textPrimary
+                        : primaryBg;
                     text = primaryBg;
                   } else if (isHovered) {
                     bg = primaryBg.withValues(alpha: 0.08);
-                    border = isNeobrutalism ? colors.textPrimary : primaryBg;
+                    border = presetTokens.showsDefaultBorder
+                        ? colors.textPrimary
+                        : primaryBg;
                     text = primaryBg;
                   }
                   break;
@@ -389,7 +393,7 @@ class _JustButtonState extends State<JustButton> {
                 case .ghost:
                   bg = const Color(0x00000000);
                   text = colors.textPrimary;
-                  border = isNeobrutalism
+                  border = presetTokens.showsDefaultBorder
                       ? colors.textPrimary
                       : const Color(0x00000000);
 
@@ -405,7 +409,7 @@ class _JustButtonState extends State<JustButton> {
                 case .destructive:
                   bg = errorBg;
                   text = primaryFg;
-                  border = isNeobrutalism
+                  border = presetTokens.showsDefaultBorder
                       ? colors.textPrimary
                       : const Color(0x00000000);
 
@@ -511,47 +515,45 @@ class _JustButtonState extends State<JustButton> {
                 }
               }
 
-              // Scale animation on tap/press
-              final double scale = isPressed ? 0.97 : 1.0;
-
-              // Shadows resolution (flat solid offset shadow for neobrutalism)
-              List<BoxShadow> defaultShadows;
-              if (isNeobrutalism && widget.variant != JustButtonVariant.link) {
-                defaultShadows = widget.size == JustButtonSize.xs
-                    ? customTheme.shadows.xs
-                    : customTheme.shadows.sm;
-              } else {
-                defaultShadows = const [];
-              }
-
-              final double? styleElevation =
-                  widget.style?.elevation ?? themeStyle?.elevation;
+              // Shadows resolution
               List<BoxShadow> resolvedShadows;
-              if (styleElevation != null) {
-                resolvedShadows = styleElevation > 0.0
-                    ? (styleElevation <= 1.5
-                          ? customTheme.shadows.xs
-                          : customTheme.shadows.sm)
-                    : const [];
+              if (widget.variant == .link) {
+                resolvedShadows = const [];
               } else {
-                resolvedShadows = defaultShadows;
-              }
+                final double? styleElevation =
+                    widget.style?.elevation ?? themeStyle?.elevation;
 
-              resolvedShadows = customTheme.resolveShadows(
-                resolvedShadows,
-                isPressed: isPressed,
-              );
+                final hasShadow = styleElevation != null
+                    ? styleElevation > 0.0
+                    : presetTokens.showsDefaultBorder;
+
+                if (hasShadow) {
+                  final JustShadowLevel level;
+                  if (styleElevation != null) {
+                    level = styleElevation <= 1.5 ? .xs : .sm;
+                  } else {
+                    level = widget.size == .xs ? .xs : .sm;
+                  }
+                  resolvedShadows = presetTokens.resolveShadow(
+                    customTheme.shadows,
+                    level,
+                    isPressed: isPressed,
+                  );
+                } else {
+                  resolvedShadows = const [];
+                }
+              }
 
               final double finalBorderWidth =
-                  isNeobrutalism && widget.variant != JustButtonVariant.link
-                  ? 2.5
+                  presetTokens.showsDefaultBorder && widget.variant != .link
+                  ? presetTokens.borderWidth
                   : (finalBorder != const Color(0x00000000) ? 1.0 : 0.0);
 
-              return customTheme.buildPressEffect(
+              return presetTokens.buildPressEffect(
                 isPressed: isPressed,
-                scaleFactor: scale,
+                animations: customTheme.animations,
                 child: AnimatedContainer(
-                  duration: isNeobrutalism
+                  duration: presetTokens.showsDefaultBorder
                       ? customTheme.animations.instant
                       : customTheme.animations.fast,
                   curve: animations.defaultCurve,
