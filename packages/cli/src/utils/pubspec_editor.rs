@@ -61,3 +61,22 @@ pub fn add_dependency(
 
     Ok(())
 }
+
+/// Reads the package `name:` property from target `pubspec.yaml`.
+pub fn get_package_name(pubspec_path: &Path) -> Result<String> {
+    let content = std::fs::read_to_string(pubspec_path).with_context(|| {
+        format!(
+            "Target project pubspec.yaml not found at: {}",
+            pubspec_path.display()
+        )
+    })?;
+
+    if let Ok(doc) = serde_yaml::from_str::<serde_yaml::Value>(&content) {
+        if let Some(name) = doc.get("name").and_then(|v| v.as_str()) {
+            return Ok(name.to_string());
+        }
+    }
+
+    anyhow::bail!("Could not parse 'name:' from pubspec.yaml")
+}
+

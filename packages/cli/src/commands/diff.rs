@@ -4,7 +4,7 @@ use std::collections::HashSet;
 use crate::commands::add::{add_component, sha256_hex};
 use crate::config::JustUIConfig;
 use crate::registry::RegistryClient;
-use crate::utils::{diff_formatter, import_rewriter, logger, prompt};
+use crate::utils::{diff_formatter, import_rewriter, logger, prompt, pubspec_editor};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum DiffStatusType {
@@ -228,6 +228,9 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
         return Ok(());
     }
 
+    let pkg_name = pubspec_editor::get_package_name(std::path::Path::new("pubspec.yaml"))
+        .unwrap_or_else(|_| "flutter_app".to_string());
+
     if verbose {
         for &idx in &changed_files {
             let fs = &files_status[idx];
@@ -244,6 +247,7 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
                 &config.tokens_dir,
                 &config.shared_dir,
                 &config.preset,
+                &pkg_name,
             );
             print_line_diff(&fs.file.name, &fs.local_content, &remote_rewritten);
         }
@@ -268,6 +272,7 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
             &config.tokens_dir,
             &config.shared_dir,
             &config.preset,
+            &pkg_name,
         );
         remote_rewritten_map.insert(idx, rr);
     }

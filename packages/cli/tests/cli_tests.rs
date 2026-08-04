@@ -161,6 +161,7 @@ fn rewrite_skips_package_and_dart_imports() {
         "lib/tokens",
         "lib/widgets/shared",
         "default",
+        "my_app",
     );
     assert_eq!(result, content);
 }
@@ -182,8 +183,9 @@ fn rewrite_converts_theme_import_to_package() {
         "lib/tokens",
         "lib/widgets/shared",
         "default",
+        "my_app",
     );
-    assert!(result.contains("import 'package:just_ui_core/just_ui_core.dart';"));
+    assert!(result.contains("import 'package:my_app/core/just_ui_core.dart';"));
 }
 
 #[test]
@@ -239,6 +241,7 @@ fn rewrite_computes_relative_path_for_component_import() {
         "lib/tokens",
         "lib/widgets/shared",
         "default",
+        "my_app",
     );
     // current file: lib/widgets/button/just_button.dart
     // target file: lib/tokens/spacing.dart
@@ -248,6 +251,29 @@ fn rewrite_computes_relative_path_for_component_import() {
         "got: {}",
         result
     );
+}
+
+#[test]
+fn test_zero_dep_package_import_rewriting() {
+    let index = RegistryIndex {
+        version: "1".to_string(),
+        presets: vec!["default".to_string()],
+        components: vec![],
+    };
+    let content = "import 'package:just_ui_tokens/just_ui_tokens.dart';\nimport 'package:just_ui_core/just_ui_core.dart';\n";
+    let result = import_rewriter::rewrite(
+        content,
+        "components/button/just_button.dart",
+        "button",
+        &index,
+        "lib/widgets",
+        "lib/tokens",
+        "lib/widgets/shared",
+        "default",
+        "my_cool_app",
+    );
+    assert!(result.contains("import 'package:my_cool_app/tokens/just_ui_tokens.dart';"));
+    assert!(result.contains("import 'package:my_cool_app/core/just_ui_core.dart';"));
 }
 
 // ─── DiffFormatter Tests ──────────────────────────────────────────────────────
@@ -795,5 +821,3 @@ fn preset_apply_command_works() {
     assert!(content_after.contains(neobrutalism_content));
 }
 }
-
-
