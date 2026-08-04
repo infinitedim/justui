@@ -433,6 +433,9 @@ pub fn add_component(
             ));
         }
 
+        let pkg_name = pubspec_editor::get_package_name(std::path::Path::new("pubspec.yaml"))
+            .unwrap_or_else(|_| "flutter_app".to_string());
+
         // Apply import rewriting
         let rewritten_content = import_rewriter::rewrite(
             &content,
@@ -443,6 +446,7 @@ pub fn add_component(
             tokens_dir,
             shared_dir,
             preset,
+            &pkg_name,
         );
 
         let local_rewritten_hash = sha256_hex(rewritten_content.as_bytes());
