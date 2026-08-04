@@ -2,7 +2,7 @@ use anyhow::Result;
 use regex::Regex;
 
 use crate::config::JustUIConfig;
-use crate::utils::{logger, prompt};
+use crate::utils::{embedded_templates, logger, prompt, pubspec_editor};
 
 /// Normalizes preset aliases to their canonical names.
 fn normalize_preset(input: &str) -> String {
@@ -183,6 +183,15 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         JustUIConfig::CONFIG_FILE_NAME
     ));
 
+    // ── Extract Embedded Design Tokens & Core Engine ──────────────────────────
+    let pkg_name = pubspec_editor::get_package_name(std::path::Path::new("pubspec.yaml"))
+        .unwrap_or_else(|_| "flutter_app".to_string());
+
+    embedded_templates::extract_tokens(std::path::Path::new(&tokens_dir), &pkg_name)?;
+    embedded_templates::extract_core(std::path::Path::new("lib/core"), &pkg_name)?;
+
+    logger::success("Design tokens & Core engine scaffolded locally.");
+
     // ── Scaffold lib/theme/just_theme.dart ────────────────────────────────────
     std::fs::create_dir_all("lib/theme")
         .map_err(|e| anyhow::anyhow!("Failed to create lib/theme: {}", e))?;
@@ -195,7 +204,7 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
 
     let theme_content = format!(
         "import 'package:flutter/widgets.dart';\n\
-         import 'package:just_ui_core/just_ui_core.dart';\n\
+         import 'package:{}/core/just_ui_core.dart';\n\
          \n\
          /// Dynamically generated light theme from brand seed color.\n\
          final JustThemeData justThemeLight = JustThemeData.fromSeed(\n\
@@ -208,7 +217,7 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
            const Color({}),\n\
            isDark: true,{}\n\
          );\n",
-        hex_code, preset_param, hex_code, preset_param
+        pkg_name, hex_code, preset_param, hex_code, preset_param
     );
 
     std::fs::write("lib/theme/just_theme.dart", theme_content)

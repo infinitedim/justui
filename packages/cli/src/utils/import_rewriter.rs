@@ -134,6 +134,7 @@ pub fn rewrite(
     tokens_dir: &str,
     shared_dir: &str,
     preset: &str,
+    package_name: &str,
 ) -> String {
     let clean_content = strip_metadata(content);
 
@@ -185,7 +186,17 @@ pub fn rewrite(
         .replace_all(&clean_content, |caps: &regex::Captures| {
             let import_path = &caps[1];
 
-            // Skip absolute imports (dart: and package:)
+            // Rewrite just_ui_tokens and just_ui_core package imports to local package imports
+            if import_path.starts_with("package:just_ui_tokens/") {
+                let subpath = &import_path["package:just_ui_tokens/".len()..];
+                return format!("import 'package:{}/tokens/{}';", package_name, subpath);
+            }
+            if import_path.starts_with("package:just_ui_core/") {
+                let subpath = &import_path["package:just_ui_core/".len()..];
+                return format!("import 'package:{}/core/{}';", package_name, subpath);
+            }
+
+            // Skip other absolute imports (dart: and package:)
             if import_path.starts_with("package:") || import_path.starts_with("dart:") {
                 return caps[0].to_string();
             }
@@ -204,7 +215,7 @@ pub fn rewrite(
                     .any(|suffix| resolved_flat_path.ends_with(suffix));
 
             if is_theme_import {
-                return "import 'package:just_ui_core/just_ui_core.dart';".to_string();
+                return format!("import 'package:{}/core/just_ui_core.dart';", package_name);
             }
 
             // Find which registry component owns this file
