@@ -9,19 +9,26 @@ mod utils;
 #[derive(Parser)]
 #[command(
     name = "justui",
-    about = "JustUI CLI - Scaffolding and copy-paste component tool for Flutter."
+    about = "JustUI CLI - Scaffolding and copy-paste component tool for Flutter.",
+    disable_version_flag = true
 )]
 struct Cli {
     /// Skip all confirmation prompts and use default values automatically.
     #[arg(short = 'y', long = "yes", global = true)]
     auto_yes: bool,
 
+    /// Print version information and check for GitHub release updates.
+    #[arg(short = 'V', long = "version")]
+    version_flag: bool,
+
     #[command(subcommand)]
-    command: Commands,
+    command: Option<Commands>,
 }
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Display CLI version and check for GitHub release updates.
+    Version,
     /// Initialize JustUI configuration and themes in the project root.
     Init {
         /// Theme preset style to initialize. Aliases: neo=neobrutalism, d=default.
@@ -91,13 +98,41 @@ enum Commands {
         #[arg(long = "info")]
         info: Option<String>,
     },
+    /// Check for CLI updates on GitHub Releases and upgrade the binary executable.
+    Upgrade {
+        /// Only check for available updates without downloading or installing.
+        #[arg(long = "check")]
+        check_only: bool,
+        /// Force re-download and reinstall even if already up to date.
+        #[arg(long = "force")]
+        force: bool,
+    },
 }
 
 fn main() {
     let cli = Cli::parse();
     let auto_yes = cli.auto_yes;
 
-    let result = match cli.command {
+    if cli.version_flag {
+        if let Err(e) = commands::upgrade::run(true, false) {
+            utils::logger::error(&e.to_string());
+            process::exit(1);
+        }
+        return;
+    }
+
+    let command = match cli.command {
+        Some(cmd) => cmd,
+        None => {
+            use clap::CommandFactory;
+            Cli::command().print_help().ok();
+            println!();
+            return;
+        }
+    };
+
+    let result = match command {
+        Commands::Version => commands::upgrade::run(true, false),
         Commands::Init { preset } => commands::init::run(preset, auto_yes),
         Commands::Add {
             components,
@@ -107,6 +142,7 @@ fn main() {
         Commands::List => commands::list::run(),
         Commands::Diff { component, verbose } => commands::diff::run(component, verbose, auto_yes),
         Commands::Update => commands::update::run(auto_yes),
+        Commands::Upgrade { check_only, force } => commands::upgrade::run(check_only, force),
         Commands::Create { component_name } => commands::create::run(component_name, auto_yes),
         Commands::View { component, file } => commands::view::run(component, file, auto_yes),
         Commands::Search { query, category } => commands::search::run(query, category),
