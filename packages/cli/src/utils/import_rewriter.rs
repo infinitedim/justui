@@ -187,12 +187,10 @@ pub fn rewrite(
             let import_path = &caps[1];
 
             // Rewrite just_ui_tokens and just_ui_core package imports to local package imports
-            if import_path.starts_with("package:just_ui_tokens/") {
-                let subpath = &import_path["package:just_ui_tokens/".len()..];
+            if let Some(subpath) = import_path.strip_prefix("package:just_ui_tokens/") {
                 return format!("import 'package:{}/tokens/{}';", package_name, subpath);
             }
-            if import_path.starts_with("package:just_ui_core/") {
-                let subpath = &import_path["package:just_ui_core/".len()..];
+            if let Some(subpath) = import_path.strip_prefix("package:just_ui_core/") {
                 return format!("import 'package:{}/core/{}';", package_name, subpath);
             }
 
