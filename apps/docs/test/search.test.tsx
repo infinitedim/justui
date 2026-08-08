@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import CustomSearchDialog from '../src/components/search';
@@ -43,7 +43,7 @@ vi.mock('fumadocs-ui/components/dialog/search', () => ({
       onChange={(e) => mockSetSearch(e.target.value)}
     />
   ),
-  SearchDialogList: ({ items }: { items?: { title: string }[] | null }) => (
+  SearchDialogList: ({ items }: { items?: Array<{ title: string }> | null }) => (
     <div data-testid="search-list">
       {items
         ? items.map((item, idx) => <div key={idx}>{item.title}</div>)

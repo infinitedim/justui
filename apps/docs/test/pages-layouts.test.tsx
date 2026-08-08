@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
@@ -76,7 +76,7 @@ vi.mock('@/lib/source', () => ({
       id: {},
       en: {},
     },
-    getPage: (slug: string[], lang: string) => mockGetPage(slug, lang),
+    getPage: (slug: Array<string>, lang: string) => mockGetPage(slug, lang),
     generateParams: () => mockGenerateParams(),
   },
 }));
