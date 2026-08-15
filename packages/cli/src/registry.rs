@@ -11,10 +11,12 @@ pub struct RegistryFile {
     pub checksum: String,
 }
 
+#[allow(dead_code)]
 fn default_category() -> String {
     "general".to_string()
 }
 
+#[allow(dead_code)]
 fn default_version() -> String {
     "1".to_string()
 }
