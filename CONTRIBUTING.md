@@ -67,7 +67,7 @@ justui/
 
 ```bash
 # Clone the repo
-git clone https://github.com/username/justui.git
+git clone https://github.com/infinitedim/justui.git
 cd justui
 
 # Bootstrap all Dart/Flutter packages
