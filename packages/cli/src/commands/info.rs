@@ -5,14 +5,11 @@ use crate::config::JustUIConfig;
 use crate::registry::RegistryClient;
 use crate::utils::logger;
 
-/// Runs the `justui info` command.
 pub fn run() -> Result<()> {
-    // Part 1 — CLI version
     let version = env!("CARGO_PKG_VERSION");
     logger::stdout(&format!("JustUI CLI v{}", version));
     logger::stdout("");
 
-    // Part 2 — Config info
     let config_file = JustUIConfig::CONFIG_FILE_NAME;
     let config_path = std::path::Path::new(config_file);
 
@@ -36,10 +33,12 @@ pub fn run() -> Result<()> {
     ));
     logger::stdout(&format!("  {:<14}: {}", "Tokens", config.tokens_dir));
     logger::stdout(&format!("  {:<14}: {}", "Shared", config.shared_dir));
-    logger::stdout(&format!("  {:<14}: {}", "Registry URL", config.registry_url));
+    logger::stdout(&format!(
+        "  {:<14}: {}",
+        "Registry URL", config.registry_url
+    ));
     logger::stdout("");
 
-    // Part 3 — Project info
     let pubspec_path = std::path::Path::new("pubspec.yaml");
     let (pubspec_status, project_name) = if pubspec_path.exists() {
         let content = std::fs::read_to_string(pubspec_path).unwrap_or_default();
@@ -55,14 +54,10 @@ pub fn run() -> Result<()> {
     };
 
     logger::stdout("Project");
-    logger::stdout(&format!(
-        "  {:<14}: {}",
-        "pubspec.yaml", pubspec_status
-    ));
+    logger::stdout(&format!("  {:<14}: {}", "pubspec.yaml", pubspec_status));
     logger::stdout(&format!("  {:<14}: {}", "Project name", project_name));
     logger::stdout("");
 
-    // Part 4 — Registry info
     let client = RegistryClient::new(config.registry_url.clone());
     logger::stdout("Registry");
     match client.fetch_index() {

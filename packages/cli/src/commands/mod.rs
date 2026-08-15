@@ -7,4 +7,5 @@ pub mod list;
 pub mod preset;
 pub mod search;
 pub mod update;
+pub mod upgrade;
 pub mod view;

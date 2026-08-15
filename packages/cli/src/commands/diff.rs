@@ -25,9 +25,7 @@ struct DiffFileStatus {
     remote_content: Option<String>,
 }
 
-/// Runs the `justui diff <component> [--verbose]` command.
 pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> {
-    // 1. Verify initialization config exists
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
         logger::error(
@@ -36,7 +34,6 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
         return Ok(());
     }
 
-    // 2. Parse configuration
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
@@ -129,7 +126,6 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
             let current_local_hash = sha256_hex(local_clean.as_bytes());
 
             if current_local_hash == meta.local_hash {
-                // Unmodified locally
                 if meta.registry_hash == expected_hash {
                     DiffFileStatus {
                         file: file.clone(),
@@ -150,7 +146,6 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
                     }
                 }
             } else {
-                // Locally modified
                 if meta.registry_hash == expected_hash {
                     DiffFileStatus {
                         file: file.clone(),
@@ -172,7 +167,6 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
                 }
             }
         } else {
-            // No metadata: compare raw hash against expected
             let local_hash = sha256_hex(local_content.as_bytes());
             if local_hash == expected_hash {
                 DiffFileStatus {
@@ -197,7 +191,6 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
         files_status.push(status);
     }
 
-    // Print status overview
     for fs in &files_status {
         match fs.status_type {
             DiffStatusType::UpToDate => logger::success(&format!("{}: Up to date.", fs.file.name)),
@@ -254,7 +247,6 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
         return Ok(());
     }
 
-    // Pre-fetch and rewrite remote content for changed files
     let mut remote_rewritten_map: std::collections::HashMap<usize, String> =
         std::collections::HashMap::new();
     for &idx in &changed_files {
@@ -277,14 +269,12 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
         remote_rewritten_map.insert(idx, rr);
     }
 
-    // Show initial diffs
     show_all_diffs(&files_status, &changed_files, &remote_rewritten_map, 3);
 
-    // If auto_yes, apply all changes without prompting
     if auto_yes {
         logger::stdout("[auto] Applying all changes");
         let mut visited: HashSet<String> = HashSet::new();
-        // Use add_component to apply changes
+
         add_component(
             &component_name,
             &index,
@@ -303,7 +293,6 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
         return Ok(());
     }
 
-    // Prompt loop
     loop {
         logger::stdout("\nOptions:");
         logger::stdout("  [a] Apply all changes");
