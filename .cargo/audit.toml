@@ -1,0 +1,21 @@
+# cargo-audit configuration. See:
+# https://docs.rs/cargo-audit/latest/cargo_audit/config/index.html
+#
+# Use `ignore` sparingly — every entry should be paired with a code-level
+# justification of why we are not affected (or cannot be fixed today). Revisit
+# on every dependency bump and remove entries the moment a patched version
+# becomes available upstream.
+
+[advisories]
+ignore = [
+    # RUSTSEC-2025-0141 — `bincode` is unmaintained upstream.
+    # Status upstream: "No fixed upgrade is available!" for v1.x series.
+    #
+    # Why we are not affected / justification:
+    #   * Pulled in transitively by CLI dependencies.
+    #   * Used strictly for static template/asset serialization in CLI context,
+    #     not processing untrusted network payloads.
+    #
+    # Re-evaluate when `bincode` v2 is adopted or dependencies migrate.
+    "RUSTSEC-2025-0141",
+]
