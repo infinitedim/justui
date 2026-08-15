@@ -6,9 +6,7 @@ use crate::config::JustUIConfig;
 use crate::registry::RegistryClient;
 use crate::utils::{import_rewriter, logger, prompt};
 
-/// Runs the `justui update` command.
 pub fn run(auto_yes: bool) -> Result<()> {
-    // 1. Verify initialization config exists
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
         logger::error(
@@ -17,7 +15,6 @@ pub fn run(auto_yes: bool) -> Result<()> {
         return Ok(());
     }
 
-    // 2. Parse configuration
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
@@ -47,7 +44,6 @@ pub fn run(auto_yes: bool) -> Result<()> {
         }
     };
 
-    // Scan local components directory for subdirectories
     let components_dir = std::path::Path::new(&config.components_dir);
     if !components_dir.exists() {
         logger::warning(&format!(
@@ -124,7 +120,6 @@ pub fn run(auto_yes: bool) -> Result<()> {
                     break;
                 }
             } else {
-                // Fall back to direct hash check
                 let local_hash = sha256_hex(local_content.as_bytes());
                 if local_hash != expected_hash {
                     needs_update = true;

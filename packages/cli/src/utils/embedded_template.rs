@@ -12,6 +12,7 @@ pub struct TokensAssets;
 #[folder = "../core/lib/"]
 pub struct CoreAssets;
 
+
 pub fn extract_tokens(target_tokens_dir: &Path, package_name: &str) -> Result<()> {
     logger::info(&format!(
         "Extracting design tokens to {}...",
@@ -40,6 +41,8 @@ pub fn extract_tokens(target_tokens_dir: &Path, package_name: &str) -> Result<()
     Ok(())
 }
 
+
+
 pub fn extract_core(target_core_dir: &Path, package_name: &str) -> Result<()> {
     logger::info(&format!(
         "Extracting core theming engine to {}...",
@@ -49,6 +52,7 @@ pub fn extract_core(target_core_dir: &Path, package_name: &str) -> Result<()> {
     for file_path in CoreAssets::iter() {
         let path_str = file_path.as_ref();
 
+        
         if path_str.starts_with("src/components/") {
             continue;
         }
