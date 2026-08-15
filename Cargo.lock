@@ -1207,6 +1207,7 @@ dependencies = [
  "colored",
  "crossterm",
  "dialoguer",
+ "flate2",
  "hex",
  "indicatif",
  "inquire",
