@@ -4,9 +4,7 @@ use regex::Regex;
 use crate::config::JustUIConfig;
 use crate::utils::{logger, prompt};
 
-/// Runs the `justui create [component_name]` command.
 pub fn run(component_name_arg: Option<String>, auto_yes: bool) -> Result<()> {
-    // 1. Verify initialization config exists
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
         logger::error(
@@ -15,7 +13,6 @@ pub fn run(component_name_arg: Option<String>, auto_yes: bool) -> Result<()> {
         return Ok(());
     }
 
-    // 2. Parse configuration
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
@@ -28,7 +25,6 @@ pub fn run(component_name_arg: Option<String>, auto_yes: bool) -> Result<()> {
         }
     };
 
-    // 3. Resolve component name
     let component_name = match component_name_arg {
         Some(n) => n,
         None => {
@@ -60,7 +56,6 @@ pub fn run(component_name_arg: Option<String>, auto_yes: bool) -> Result<()> {
         class_name, target_dir
     ));
 
-    // 4. Generate the 4-file templates
     let files_to_write = vec![
         (
             format!("{}_style.dart", snake_name),
@@ -117,8 +112,6 @@ pub fn run(component_name_arg: Option<String>, auto_yes: bool) -> Result<()> {
     Ok(())
 }
 
-/// Converts input to snake_case.
-/// Matches Dart `_toSnakeCase` exactly.
 fn to_snake_case(input: &str) -> String {
     let re = Regex::new(r"([a-z])([A-Z])").unwrap();
     re.replace_all(input, "${1}_${2}")
@@ -126,8 +119,6 @@ fn to_snake_case(input: &str) -> String {
         .to_lowercase()
 }
 
-/// Converts input to PascalCase.
-/// Matches Dart `_toPascalCase` exactly.
 fn to_pascal_case(input: &str) -> String {
     let re = Regex::new(r"([a-z])([A-Z])").unwrap();
     let snake = re.replace_all(input, "${1}_${2}").replace('-', "_");
@@ -146,8 +137,6 @@ fn to_pascal_case(input: &str) -> String {
         })
         .collect()
 }
-
-// ─── Template generators (verbatim from Dart create_command.dart) ─────────────
 
 fn generate_style_template(class_name: &str) -> String {
     format!(

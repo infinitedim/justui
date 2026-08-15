@@ -10,16 +10,16 @@ A fast, interactive Rust CLI for the [JustUI](https://docs.justui.dev) Flutter c
 
 ```bash
 # macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/username/justui/main/packages/cli/install/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/infinitedim/justui/main/packages/cli/install/install.sh | sh
 
 # Windows (PowerShell)
-irm https://raw.githubusercontent.com/username/justui/main/packages/cli/install/install.ps1 | iex
+irm https://raw.githubusercontent.com/infinitedim/justui/main/packages/cli/install/install.ps1 | iex
 ```
 
 **From source:**
 
 ```bash
-git clone https://github.com/username/justui.git
+git clone https://github.com/infinitedim/justui.git
 cd justui/packages/cli
 cargo install --path .
 ```
@@ -52,7 +52,7 @@ Prompts for components directory, tokens directory, and brand color. Generates `
 components_dir: lib/ui
 tokens_dir: lib/tokens
 shared_dir: lib/ui/shared
-registry_url: https://raw.githubusercontent.com/username/justui/main/registry
+registry_url: https://raw.githubusercontent.com/infinitedim/justui/main/registry
 ```
 
 ---
@@ -221,7 +221,7 @@ shared_dir: lib/ui/shared
 tokens_dir: lib/tokens
 
 # Registry URL (change to self-host your own registry)
-registry_url: https://raw.githubusercontent.com/username/justui/main/registry
+registry_url: https://raw.githubusercontent.com/infinitedim/justui/main/registry
 ```
 
 ---

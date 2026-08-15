@@ -3,7 +3,6 @@ use std::cmp::max;
 
 use crate::utils::logger;
 
-/// Kind of a diff line.
 #[allow(dead_code)]
 pub enum DiffKind {
     Unchanged,
@@ -11,18 +10,16 @@ pub enum DiffKind {
     Removed,
 }
 
-/// A single line in a calculated diff.
 #[allow(dead_code)]
 pub struct DiffLine {
     pub kind: DiffKind,
     pub text: String,
-    /// 1-indexed line number in the local file, 0 if not present in local.
+
     pub local_line_num: usize,
-    /// 1-indexed line number in the remote file, 0 if not present in remote.
+
     pub remote_line_num: usize,
 }
 
-/// Computes the diff between `local` and `remote` using the `similar` crate (LCS algorithm).
 #[allow(dead_code)]
 pub fn calculate_diff(local: &str, remote: &str) -> Vec<DiffLine> {
     let local_norm = local.replace("\r\n", "\n");
@@ -59,27 +56,21 @@ pub fn calculate_diff(local: &str, remote: &str) -> Vec<DiffLine> {
     result
 }
 
-/// Formats and prints a unified diff inside a bordered panel.
-/// Output format matches the Dart `DiffFormatter.printUnifiedDiff` exactly.
 pub fn print_unified_diff(file_name: &str, local: &str, remote: &str, context_count: usize) {
     let local_norm = local.replace("\r\n", "\n");
     let remote_norm = remote.replace("\r\n", "\n");
 
     let diff = TextDiff::from_lines(&local_norm, &remote_norm);
 
-    // Check for any changes
     let has_changes = diff.iter_all_changes().any(|c| c.tag() != ChangeTag::Equal);
     if !has_changes {
         logger::success(&format!("  {}: No changes detected.", file_name));
         return;
     }
 
-    // Pre-highlight the full files to maintain correct multiline parser state
     let local_highlighted = super::syntax_highlighter::highlight_code(&local_norm, "dart");
     let remote_highlighted = super::syntax_highlighter::highlight_code(&remote_norm, "dart");
 
-    // Print header border: "┌─ {filename} ──────..."
-    // border_length = max(40, filename_char_count + 8)
     let fn_chars = file_name.chars().count();
     let border_length = max(40, fn_chars + 8);
     let dash_count = border_length.saturating_sub(fn_chars + 4);
@@ -87,7 +78,6 @@ pub fn print_unified_diff(file_name: &str, local: &str, remote: &str, context_co
     logger::stdout(&format!("┌─ {} {}", file_name, header_dashes));
 
     for group in diff.grouped_ops(context_count) {
-        // Compute hunk header values: localStart, localCount, remoteStart, remoteCount
         let mut local_start = 0usize;
         let mut local_count = 0usize;
         let mut remote_start = 0usize;
@@ -126,31 +116,38 @@ pub fn print_unified_diff(file_name: &str, local: &str, remote: &str, context_co
             }
         }
 
-        // Hunk header — cyan
         let hunk_header = format!(
             "│ @@ -{},{} +{},{} @@",
             local_start, local_count, remote_start, remote_count
         );
         logger::stdout(&format!("\x1B[36m{}\x1B[0m", hunk_header));
 
-        // Hunk lines
         for op in &group {
             for change in diff.iter_changes(op) {
                 let text = change.value().trim_end_matches('\n');
                 match change.tag() {
                     ChangeTag::Insert => {
                         let idx = change.new_index().unwrap();
-                        let highlighted = remote_highlighted.get(idx).map(|s| s.as_str()).unwrap_or(text);
+                        let highlighted = remote_highlighted
+                            .get(idx)
+                            .map(|s| s.as_str())
+                            .unwrap_or(text);
                         logger::stdout(&format!("\x1B[32m│ +  {}\x1B[0m", highlighted));
                     }
                     ChangeTag::Delete => {
                         let idx = change.old_index().unwrap();
-                        let highlighted = local_highlighted.get(idx).map(|s| s.as_str()).unwrap_or(text);
+                        let highlighted = local_highlighted
+                            .get(idx)
+                            .map(|s| s.as_str())
+                            .unwrap_or(text);
                         logger::stdout(&format!("\x1B[31m│ -  {}\x1B[0m", highlighted));
                     }
                     ChangeTag::Equal => {
                         let idx = change.new_index().unwrap();
-                        let highlighted = remote_highlighted.get(idx).map(|s| s.as_str()).unwrap_or(text);
+                        let highlighted = remote_highlighted
+                            .get(idx)
+                            .map(|s| s.as_str())
+                            .unwrap_or(text);
                         logger::stdout(&format!("│    {}", highlighted));
                     }
                 }
@@ -158,7 +155,6 @@ pub fn print_unified_diff(file_name: &str, local: &str, remote: &str, context_co
         }
     }
 
-    // Footer border: "└────────..."
     let footer = format!("└{}", "─".repeat(border_length));
     logger::stdout(&footer);
 }

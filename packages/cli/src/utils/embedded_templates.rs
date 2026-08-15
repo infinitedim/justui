@@ -12,7 +12,6 @@ pub struct TokensAssets;
 #[folder = "../core/lib/"]
 pub struct CoreAssets;
 
-/// Extracts all embedded Tokens assets into the target tokens directory (e.g. `lib/tokens`).
 pub fn extract_tokens(target_tokens_dir: &Path, package_name: &str) -> Result<()> {
     logger::info(&format!(
         "Extracting design tokens to {}...",
@@ -41,8 +40,6 @@ pub fn extract_tokens(target_tokens_dir: &Path, package_name: &str) -> Result<()
     Ok(())
 }
 
-/// Extracts all embedded Core assets into the target core directory (e.g. `lib/core`),
-/// excluding `src/components/` (which are individual UI components served via registry).
 pub fn extract_core(target_core_dir: &Path, package_name: &str) -> Result<()> {
     logger::info(&format!(
         "Extracting core theming engine to {}...",
@@ -52,7 +49,6 @@ pub fn extract_core(target_core_dir: &Path, package_name: &str) -> Result<()> {
     for file_path in CoreAssets::iter() {
         let path_str = file_path.as_ref();
 
-        // Skip component source files inside core
         if path_str.starts_with("src/components/") {
             continue;
         }

@@ -5,7 +5,6 @@ REPO="infinitedim/justui"
 BINARY_NAME="justui"
 INSTALL_DIR="${JUSTUI_INSTALL_DIR:-$HOME/.local/bin}"
 
-# Detect OS and architecture
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m)
 
@@ -21,7 +20,6 @@ case "$OS" in
   *) echo "Unsupported OS: $OS. Use install.ps1 on Windows."; exit 1 ;;
 esac
 
-# Resolve latest release tag
 VERSION="${JUSTUI_VERSION:-latest}"
 if [ "$VERSION" = "latest" ]; then
   VERSION=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" \
@@ -45,7 +43,6 @@ chmod +x "$INSTALL_DIR/$BINARY_NAME"
 
 echo "✓ Installed to $INSTALL_DIR/$BINARY_NAME"
 
-# PATH hint
 case ":$PATH:" in
   *":$INSTALL_DIR:"*) ;;
   *) echo "  Add to PATH: export PATH=\"\$PATH:$INSTALL_DIR\"" ;;
