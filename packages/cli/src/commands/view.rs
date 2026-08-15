@@ -5,18 +5,18 @@ use crate::config::JustUIConfig;
 use crate::registry::RegistryClient;
 use crate::utils::logger;
 
-/// Runs the `justui view <component> [--file <nama_file>]` command.
 pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Result<()> {
-    // Step 1 — Read config (or use default)
-    let (registry_url, preset) = if let Ok(content) = std::fs::read_to_string(JustUIConfig::CONFIG_FILE_NAME)
-    {
-        let config = JustUIConfig::from_yaml(&content);
-        (config.registry_url, config.preset)
-    } else {
-        (JustUIConfig::DEFAULT_REGISTRY_URL.to_string(), "default".to_string())
-    };
+    let (registry_url, preset) =
+        if let Ok(content) = std::fs::read_to_string(JustUIConfig::CONFIG_FILE_NAME) {
+            let config = JustUIConfig::from_yaml(&content);
+            (config.registry_url, config.preset)
+        } else {
+            (
+                JustUIConfig::DEFAULT_REGISTRY_URL.to_string(),
+                "default".to_string(),
+            )
+        };
 
-    // Step 2 — Fetch registry
     let client = RegistryClient::new(registry_url);
     let index = match client.fetch_index() {
         Ok(idx) => idx,
@@ -26,7 +26,6 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
         }
     };
 
-    // Step 3 — Find component (exact match)
     let comp = match index.components.iter().find(|c| c.name == component) {
         Some(c) => c,
         None => {
@@ -35,7 +34,6 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
                 component
             ));
 
-            // Fuzzy suggestion (case-insensitive substring)
             let query_lc = component.to_lowercase();
             let suggestions: Vec<&str> = index
                 .components
@@ -55,7 +53,6 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
         }
     };
 
-    // Step 4 — Print header box
     let name_ver = format!("  {} (v{})  ", comp.name, comp.version);
     let desc_line = format!("  {}  ", comp.description);
     let inner_width = name_ver.len().max(desc_line.len()).max(44);
@@ -71,7 +68,6 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
     logger::stdout(&desc_padded);
     logger::stdout(&bot_border);
 
-    // Metadata lines
     let reg_deps = if comp.registry_dependencies.is_empty() {
         "(none)".to_string()
     } else {
@@ -91,12 +87,17 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
     logger::stdout(&format!("Category      : {}", comp.category));
     logger::stdout(&format!("Dependencies  : {}", reg_deps));
     logger::stdout(&format!("Pub deps      : {}", pub_deps_str));
-    logger::stdout(&format!("File count    : {} file(s)", comp.files_for_preset(&preset).len()));
+    logger::stdout(&format!(
+        "File count    : {} file(s)",
+        comp.files_for_preset(&preset).len()
+    ));
     logger::stdout("");
 
-    // Step 5 — Display file contents
     let files_to_show: Vec<_> = if let Some(ref name_filter) = file_filter {
-        let found = comp.files_for_preset(&preset).iter().find(|f| &f.name == name_filter);
+        let found = comp
+            .files_for_preset(&preset)
+            .iter()
+            .find(|f| &f.name == name_filter);
         match found {
             Some(f) => vec![f],
             None => {
@@ -113,7 +114,6 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
 
     let total_files = files_to_show.len();
     for (file_idx, file) in files_to_show.iter().enumerate() {
-        // Fetch content
         let content = match client.fetch_file_content(&file.path) {
             Ok(c) => c,
             Err(e) => {
@@ -122,7 +122,6 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
             }
         };
 
-        // Print file header line
         let header_prefix = format!("── {} ", file.name);
         let dash_fill = if header_prefix.len() < 48 {
             "─".repeat(48 - header_prefix.len())
@@ -131,7 +130,6 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
         };
         logger::stdout(&format!("{}{}", header_prefix, dash_fill));
 
-        // Print numbered lines
         let lines: Vec<&str> = content.lines().collect();
         let total_lines = lines.len();
         let line_num_width = if total_lines >= 100 {
@@ -151,10 +149,8 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
             ));
         }
 
-        // Footer line
         logger::stdout(&"─".repeat(48));
 
-        // Pause between files (except last) if not auto_yes
         if file_idx < total_files - 1 && !auto_yes {
             print!("Show next file? [Y/n]: ");
             io::stdout().flush().unwrap_or(());

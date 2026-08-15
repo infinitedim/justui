@@ -237,39 +237,39 @@ class JustThemeData {
     this.radius = const _DefaultRadiusScheme(),
     this.shadows = const _DefaultShadowScheme(),
     this.animations = JustMotionProfile.standard,
-    this.preset = JustThemePreset.default_,
+    this.preset = .default_,
   });
 
   static final JustThemeData light = JustThemeData(
     colors: JustColors.lightScheme,
-    preset: JustThemePreset.default_,
+    preset: .default_,
   );
 
   static final JustThemeData dark = JustThemeData(
     colors: JustColors.darkScheme,
-    preset: JustThemePreset.default_,
+    preset: .default_,
   );
 
   static final JustThemeData neobrutalismLight = JustThemeData(
     colors: JustColors.neobrutalismLightScheme,
     shadows: const NeobrutalismShadowScheme(),
-    preset: JustThemePreset.neobrutalism,
+    preset: .neobrutalism,
   );
 
   static final JustThemeData neobrutalismDark = JustThemeData(
     colors: JustColors.neobrutalismDarkScheme,
     shadows: const NeobrutalismShadowScheme(shadowColor: Color(0xFFFFFFFF)),
-    preset: JustThemePreset.neobrutalism,
+    preset: .neobrutalism,
   );
 
   Offset get shadowOffset =>
-      preset == JustThemePreset.neobrutalism ? const Offset(3.0, 3.0) : .zero;
+      preset == .neobrutalism ? const Offset(3.0, 3.0) : .zero;
 
   List<BoxShadow> resolveShadows(
     List<BoxShadow> baseShadows, {
     required bool isPressed,
   }) {
-    if (preset == JustThemePreset.neobrutalism && isPressed) {
+    if (preset == .neobrutalism && isPressed) {
       return baseShadows.map((s) => s.copyWith(offset: .zero)).toList();
     }
     return baseShadows;
@@ -281,7 +281,7 @@ class JustThemeData {
     double scaleFactor = 0.97,
     Offset? translationOffset,
   }) {
-    if (preset == JustThemePreset.neobrutalism) {
+    if (preset == .neobrutalism) {
       final offset = translationOffset ?? shadowOffset;
       return AnimatedContainer(
         duration: animations.instant,

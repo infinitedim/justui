@@ -25,9 +25,7 @@ enum InputMode {
     Searching,
 }
 
-/// Runs the interactive `justui list` TUI command.
 pub fn run() -> Result<()> {
-    // 1. Resolve registry URL from configuration or use default
     let config = if let Ok(content) = std::fs::read_to_string(JustUIConfig::CONFIG_FILE_NAME) {
         JustUIConfig::from_yaml(&content)
     } else {
@@ -56,24 +54,20 @@ pub fn run() -> Result<()> {
         return Ok(());
     }
 
-    // 2. Setup terminal for TUI
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
-    // 3. TUI State
     let mut list_state = ListState::default();
     list_state.select(Some(0));
 
     let mut search_query = String::new();
     let mut input_mode = InputMode::Normal;
 
-    // 4. Main Event Loop
     let loop_result = (|| -> Result<()> {
         loop {
-            // Get filtered components
             let query_lc = search_query.to_lowercase();
             let filtered_components: Vec<&RegistryComponent> = index
                 .components
@@ -84,7 +78,6 @@ pub fn run() -> Result<()> {
                 })
                 .collect();
 
-            // Clamp selection
             if let Some(selected) = list_state.selected() {
                 if filtered_components.is_empty() {
                     list_state.select(None);
@@ -95,11 +88,9 @@ pub fn run() -> Result<()> {
                 list_state.select(Some(0));
             }
 
-            // Render
             terminal.draw(|f| {
                 let size = f.area();
 
-                // Vertical Layout: Header (3), Main Body (Min 0), Footer (3)
                 let chunks = Layout::default()
                     .direction(Direction::Vertical)
                     .constraints([
@@ -109,7 +100,6 @@ pub fn run() -> Result<()> {
                     ])
                     .split(size);
 
-                // ─── Header ───
                 let header = Paragraph::new(" JustUI Component Explorer ")
                     .alignment(ratatui::layout::Alignment::Center)
                     .block(
@@ -120,13 +110,11 @@ pub fn run() -> Result<()> {
                     );
                 f.render_widget(header, chunks[0]);
 
-                // ─── Main Body (Columns: List & Details) ───
                 let main_chunks = Layout::default()
                     .direction(Direction::Horizontal)
                     .constraints([Constraint::Percentage(35), Constraint::Percentage(65)])
                     .split(chunks[1]);
 
-                // Left Pane: Component List
                 let list_title = if input_mode == InputMode::Searching {
                     format!(" Components (Filter: {}) ", search_query)
                 } else {
@@ -165,14 +153,13 @@ pub fn run() -> Result<()> {
                     .block(list_block)
                     .highlight_style(
                         Style::default()
-                            .bg(Color::Rgb(59, 130, 246)) // Brand Blue
+                            .bg(Color::Rgb(59, 130, 246))
                             .fg(Color::White)
                             .add_modifier(Modifier::BOLD),
                     )
                     .highlight_symbol("▶ ");
                 f.render_stateful_widget(list_widget, main_chunks[0], &mut list_state);
 
-                // Right Pane: Details
                 let details_block = Block::default()
                     .borders(Borders::ALL)
                     .title(" Component Details ")
@@ -199,7 +186,6 @@ pub fn run() -> Result<()> {
                             ]),
                         ];
 
-                        // Presets
                         let presets_str = if comp.supported_presets.is_empty() {
                             "default".to_string()
                         } else {
@@ -213,7 +199,6 @@ pub fn run() -> Result<()> {
                             ratatui::text::Span::raw(presets_str),
                         ]));
 
-                        // Registry Dependencies
                         let reg_deps = if comp.registry_dependencies.is_empty() {
                             "none".to_string()
                         } else {
@@ -227,7 +212,6 @@ pub fn run() -> Result<()> {
                             ratatui::text::Span::raw(reg_deps),
                         ]));
 
-                        // Pub Dependencies
                         let pub_deps = if comp.pub_dependencies.is_empty() {
                             "none".to_string()
                         } else {
@@ -288,7 +272,6 @@ pub fn run() -> Result<()> {
                     f.render_widget(no_selection, main_chunks[1]);
                 }
 
-                // ─── Footer ───
                 let footer_text = match input_mode {
                     InputMode::Normal => {
                         vec![
@@ -320,7 +303,6 @@ pub fn run() -> Result<()> {
                 f.render_widget(footer, chunks[2]);
             })?;
 
-            // Handle Input Events
             if event::poll(std::time::Duration::from_millis(100))? {
                 if let Event::Key(key) = event::read()? {
                     match input_mode {
@@ -350,12 +332,10 @@ pub fn run() -> Result<()> {
                                     if let Some(comp) = filtered_components.get(selected_idx) {
                                         let comp_name = comp.name.clone();
 
-                                        // 1. Suspend TUI
                                         disable_raw_mode()?;
                                         execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
                                         println!("\nInstalling component \"{}\"...", comp_name);
 
-                                        // 2. Run installation logic
                                         let mut visited = HashSet::new();
                                         let pb_files = indicatif::ProgressBar::new_spinner();
                                         pb_files.set_message("Installing files...");
@@ -371,9 +351,9 @@ pub fn run() -> Result<()> {
                                             &config.tokens_dir,
                                             &config.shared_dir,
                                             &mut visited,
-                                            false, // dry_run
-                                            false, // show_diff
-                                            true,  // auto_yes
+                                            false,
+                                            false,
+                                            true,
                                             &Some(pb_files.clone()),
                                             &config.preset,
                                         ) {
@@ -383,7 +363,7 @@ pub fn run() -> Result<()> {
                                                     "Component \"{}\" added successfully.",
                                                     comp_name
                                                 ));
-                                                // Print summary box
+
                                                 let mut summary_items = Vec::new();
                                                 for detail in details {
                                                     summary_items.push(logger::SummaryItem {
@@ -407,7 +387,6 @@ pub fn run() -> Result<()> {
                                         let mut buffer = String::new();
                                         io::stdin().read_line(&mut buffer)?;
 
-                                        // 3. Resume TUI
                                         enable_raw_mode()?;
                                         execute!(terminal.backend_mut(), EnterAlternateScreen)?;
                                         terminal.clear()?;
@@ -435,7 +414,6 @@ pub fn run() -> Result<()> {
         Ok(())
     })();
 
-    // 5. Shutdown terminal and restore raw mode
     disable_raw_mode()?;
     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
 

@@ -15,14 +15,11 @@ fn meta_regex() -> &'static Regex {
     })
 }
 
-/// Metadata parsed from the header line of a JustUI-managed file.
 pub struct JustUIMetadata {
     pub registry_hash: String,
     pub local_hash: String,
 }
 
-/// Strips `_shared_` prefix from a filename when copying to user's project.
-/// e.g. `"_shared_pressable.dart"` → `"just_pressable.dart"`
 pub fn normalize_shared_file_name(file_name: &str) -> String {
     if let Some(rest) = file_name.strip_prefix("_shared_") {
         format!("just_{}", rest)
@@ -31,7 +28,6 @@ pub fn normalize_shared_file_name(file_name: &str) -> String {
     }
 }
 
-/// Parses the `JustUIMetadata` from the top of the file content, if present.
 pub fn parse_metadata(content: &str) -> Option<JustUIMetadata> {
     let caps = meta_regex().captures(content)?;
     Some(JustUIMetadata {
@@ -40,7 +36,6 @@ pub fn parse_metadata(content: &str) -> Option<JustUIMetadata> {
     })
 }
 
-/// Strips the `// justui-meta` header line from the file content if it exists.
 pub fn strip_metadata(content: &str) -> String {
     if meta_regex().is_match(content) {
         meta_regex().replace(content, "").into_owned()
@@ -49,7 +44,6 @@ pub fn strip_metadata(content: &str) -> String {
     }
 }
 
-/// Prepends the metadata header line containing registry and local hashes to the content.
 pub fn inject_metadata(content: &str, registry_hash: &str, local_hash: &str) -> String {
     let clean = strip_metadata(content);
     format!(
@@ -57,8 +51,6 @@ pub fn inject_metadata(content: &str, registry_hash: &str, local_hash: &str) -> 
         registry_hash, local_hash, clean
     )
 }
-
-// ─── Unix-style path helpers (registry paths are always '/' separated) ────────
 
 fn unix_dirname(path: &str) -> &str {
     match path.rfind('/') {
@@ -95,19 +87,16 @@ fn normalize_unix_path(path: &str) -> String {
     }
 }
 
-/// Compute the relative path from `from_dir` to `target` (both Unix-style).
 fn path_relative_unix(target: &str, from_dir: &str) -> String {
     let target_parts: Vec<&str> = target.split('/').filter(|s| !s.is_empty()).collect();
     let from_parts: Vec<&str> = from_dir.split('/').filter(|s| !s.is_empty()).collect();
 
-    // Find common prefix length
     let common_len = target_parts
         .iter()
         .zip(from_parts.iter())
         .take_while(|(a, b)| a == b)
         .count();
 
-    // Build relative path
     let up_count = from_parts.len() - common_len;
     let rel: Vec<String> = std::iter::repeat_n("..".to_string(), up_count)
         .chain(target_parts[common_len..].iter().map(|s| s.to_string()))
@@ -120,10 +109,6 @@ fn path_relative_unix(target: &str, from_dir: &str) -> String {
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-/// Rewrites relative imports inside `content` to align with the local directory setup.
-/// Matches the Dart `ImportRewriter.rewrite` behavior exactly.
 #[allow(clippy::too_many_arguments)]
 pub fn rewrite(
     content: &str,
@@ -138,7 +123,6 @@ pub fn rewrite(
 ) -> String {
     let clean_content = strip_metadata(content);
 
-    // Determine the current component's local target directory
     let current_component = registry_index
         .components
         .iter()
@@ -163,7 +147,10 @@ pub fn rewrite(
         .split('/')
         .next_back()
         .unwrap_or(source_registry_path);
-    let local_filename = if current_component.map(|c| c.name == "_shared_theme_provider").unwrap_or(false) {
+    let local_filename = if current_component
+        .map(|c| c.name == "_shared_theme_provider")
+        .unwrap_or(false)
+    {
         filename.to_string()
     } else if current_component.map(|c| c.internal).unwrap_or(false) {
         normalize_shared_file_name(filename)
@@ -172,7 +159,6 @@ pub fn rewrite(
     };
     let current_file_path = format!("{}/{}", current_dir, local_filename);
 
-    // Theme file suffixes (matches Dart heuristic exactly)
     const THEME_SUFFIXES: &[&str] = &[
         "theme_provider.dart",
         "theme_data.dart",
@@ -186,7 +172,6 @@ pub fn rewrite(
         .replace_all(&clean_content, |caps: &regex::Captures| {
             let import_path = &caps[1];
 
-            // Rewrite just_ui_tokens and just_ui_core package imports to local package imports
             if import_path.starts_with("package:just_ui_tokens/") {
                 let subpath = &import_path["package:just_ui_tokens/".len()..];
                 return format!("import 'package:{}/tokens/{}';", package_name, subpath);
@@ -196,19 +181,16 @@ pub fn rewrite(
                 return format!("import 'package:{}/core/{}';", package_name, subpath);
             }
 
-            // Skip other absolute imports (dart: and package:)
             if import_path.starts_with("package:") || import_path.starts_with("dart:") {
                 return caps[0].to_string();
             }
 
-            // Resolve registry-relative path (flat-mode equivalent)
             let preset_segment = format!("/{}/", preset);
             let flat_source_path = source_registry_path.replace(&preset_segment, "/");
             let flat_source_dir = unix_dirname(&flat_source_path);
             let joined = unix_join(flat_source_dir, import_path);
             let resolved_flat_path = normalize_unix_path(&joined);
 
-            // Theme import heuristic
             let is_theme_import = resolved_flat_path.starts_with("components/theme/")
                 || THEME_SUFFIXES
                     .iter()
@@ -218,7 +200,6 @@ pub fn rewrite(
                 return format!("import 'package:{}/core/just_ui_core.dart';", package_name);
             }
 
-            // Find which registry component owns this file
             let mut found_comp = None;
             let mut found_file = None;
 
@@ -257,7 +238,6 @@ pub fn rewrite(
                 return format!("import '{}';", relative_import);
             }
 
-            // Fallback: unresolved import — emit warning and leave unchanged
             logger::warning(&format!(
                 "Relative import \"{}\" in component \"{}\" \
                  (source file: \"{}\") could not be resolved in the \
@@ -268,8 +248,6 @@ pub fn rewrite(
         })
         .into_owned()
 }
-
-// ─── Unit-testable helpers exposed for tests ──────────────────────────────────
 
 #[cfg(test)]
 #[allow(dead_code)]
