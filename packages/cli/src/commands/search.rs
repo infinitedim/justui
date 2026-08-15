@@ -5,9 +5,7 @@ use crate::config::JustUIConfig;
 use crate::registry::{RegistryClient, RegistryComponent};
 use crate::utils::logger;
 
-/// Runs the `justui search <query> [--category <kategori>]` command.
 pub fn run(query: String, category: Option<String>) -> Result<()> {
-    // Step 1 — Read config & fetch registry
     let registry_url = if let Ok(content) = std::fs::read_to_string(JustUIConfig::CONFIG_FILE_NAME)
     {
         JustUIConfig::from_yaml(&content).registry_url
@@ -24,7 +22,6 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
         }
     };
 
-    // Step 2 — Filter components
     let query_lc = query.to_lowercase();
     let category_lc = category.as_deref().map(|c| c.to_lowercase());
 
@@ -36,7 +33,6 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
         let desc_lc = comp.description.to_lowercase();
         let cat_lc = comp.category.to_lowercase();
 
-        // Category filter (if provided)
         if let Some(ref cf) = category_lc {
             if &cat_lc != cf {
                 continue;
@@ -54,24 +50,15 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
         }
     }
 
-    // Step 3 — Combine: name matches first
-    let results: Vec<&RegistryComponent> = name_matches
-        .into_iter()
-        .chain(other_matches)
-        .collect();
+    let results: Vec<&RegistryComponent> = name_matches.into_iter().chain(other_matches).collect();
 
-    // Step 4 — Display results
     if results.is_empty() {
-        logger::stdout(&format!(
-            "No components found matching \"{}\".",
-            query
-        ));
+        logger::stdout(&format!("No components found matching \"{}\".", query));
         return Ok(());
     }
 
     logger::stdout(&format!("Search results for \"{}\":\n", query));
 
-    // Group by category (preserving insertion order)
     let mut grouped: HashMap<String, Vec<&&RegistryComponent>> = HashMap::new();
     let mut category_order: Vec<String> = Vec::new();
     for comp in &results {
@@ -84,7 +71,6 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
     for cat in &category_order {
         let comps = &grouped[cat];
 
-        // Capitalize first letter of category
         let capitalized = {
             let mut chars = cat.chars();
             match chars.next() {
@@ -95,11 +81,10 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
         logger::stdout(&format!("  {}:", capitalized));
 
         for comp in comps {
-            // Green bullet (same as list.rs)
             let dot = "\x1B[32m●\x1B[0m";
-            // Highlight query in name with yellow
+
             let highlighted_name = highlight_query(&comp.name, &query_lc);
-            // Pad highlighted name to 16 visible chars
+
             let visible_name_len = comp.name.len();
             let name_padding = if visible_name_len < 16 {
                 " ".repeat(16 - visible_name_len)
@@ -121,8 +106,6 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
     Ok(())
 }
 
-/// Highlights occurrences of `query` in `text` with yellow ANSI color.
-/// Comparison is case-insensitive, but original casing is preserved in output.
 fn highlight_query(text: &str, query: &str) -> String {
     if query.is_empty() {
         return text.to_string();

@@ -4,7 +4,6 @@ use regex::Regex;
 use crate::config::JustUIConfig;
 use crate::utils::{embedded_templates, logger, prompt, pubspec_editor};
 
-/// Normalizes preset aliases to their canonical names.
 fn normalize_preset(input: &str) -> String {
     match input.to_lowercase().as_str() {
         "neo" => "neobrutalism".to_string(),
@@ -13,8 +12,6 @@ fn normalize_preset(input: &str) -> String {
     }
 }
 
-/// Converts a subfolder name to a lib-rooted path.
-/// Strips any accidental leading 'lib/' prefix before prepending 'lib/'.
 fn to_lib_path(input: &str) -> String {
     let trimmed = input.trim();
     if trimmed.starts_with("lib/") {
@@ -24,15 +21,6 @@ fn to_lib_path(input: &str) -> String {
     }
 }
 
-/// Resolves the shared components directory from raw user input.
-///
-/// Behavior:
-/// - Empty input → use the full default (e.g. "lib/widgets/shared")
-/// - Input that already looks like a full path (contains '/' or starts with 'lib/')
-///   → treat as an explicit override, normalize via `to_lib_path`
-/// - Plain folder name (no slashes, e.g. "shared", "common") → nest it under
-///   `components_dir` automatically (e.g. "lib/widgets/shared"), matching what
-///   the prompt's example showed the user.
 fn resolve_shared_dir(raw_input: &str, components_dir: &str, default_full_path: &str) -> String {
     let trimmed = raw_input.trim();
 
@@ -41,17 +29,13 @@ fn resolve_shared_dir(raw_input: &str, components_dir: &str, default_full_path: 
     }
 
     if trimmed.contains('/') || trimmed.starts_with("lib") {
-        // User explicitly typed a path-like value — respect it as an override.
         return to_lib_path(trimmed);
     }
 
-    // Plain folder name — nest under components_dir as originally intended.
     format!("{}/{}", components_dir, trimmed)
 }
 
-/// Runs the `justui init` command.
 pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
-    // 1. Verify we are in a valid project root containing pubspec.yaml
     if !std::path::Path::new("pubspec.yaml").exists() {
         logger::error(
             "No pubspec.yaml found in the current directory.\n\
@@ -60,7 +44,6 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         return Ok(());
     }
 
-    // 2. Check if configuration file already exists
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if config_path.exists() {
         logger::warning(&format!(
@@ -72,7 +55,6 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
 
     logger::stdout("=== JustUI Initialization Wizard ===");
 
-    // ── Preset selection ──────────────────────────────────────────────────────
     let preset = if let Some(p) = preset_arg {
         normalize_preset(&p)
     } else if auto_yes {
@@ -93,7 +75,6 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         }
     };
 
-    // ── Components directory selection ────────────────────────────────────────
     let components_dir = if auto_yes {
         let dir = "lib/widgets".to_string();
         logger::stdout(&format!("[auto] Using components dir: {}", dir));
@@ -112,7 +93,6 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         }
     };
 
-    // ── Tokens directory ──────────────────────────────────────────────────────
     let tokens_dir = if auto_yes {
         let dir = "lib/tokens".to_string();
         logger::stdout(&format!("[auto] Using tokens dir: {}", dir));
@@ -123,13 +103,9 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         to_lib_path(&tokens_input)
     };
 
-    // ── Shared components directory ───────────────────────────────────────────
     let shared_dir_default = format!("{}/shared", components_dir);
     let shared_dir = if auto_yes {
-        logger::stdout(&format!(
-            "[auto] Using shared dir: {}",
-            shared_dir_default
-        ));
+        logger::stdout(&format!("[auto] Using shared dir: {}", shared_dir_default));
         shared_dir_default
     } else {
         logger::stdout(&format!(
@@ -143,7 +119,6 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         resolve_shared_dir(&raw_shared_dir, &components_dir, &shared_dir_default)
     };
 
-    // ── Brand seed color ──────────────────────────────────────────────────────
     let hex_regex = Regex::new(r"^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$").unwrap();
     let brand_color = if auto_yes {
         let color = "#3b82f6".to_string();
@@ -159,14 +134,12 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         }
     };
 
-    // Standardize hex → 0xFFRRGGBB
     let mut clean_hex = brand_color.replace('#', "").to_uppercase();
     if clean_hex.len() == 3 {
         clean_hex = clean_hex.chars().flat_map(|c| [c, c]).collect();
     }
     let hex_code = format!("0xFF{}", clean_hex);
 
-    // ── Write justui.config.yaml ──────────────────────────────────────────────
     let config = JustUIConfig {
         components_dir: components_dir.clone(),
         tokens_dir: tokens_dir.clone(),
@@ -183,7 +156,6 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         JustUIConfig::CONFIG_FILE_NAME
     ));
 
-    // ── Extract Embedded Design Tokens & Core Engine ──────────────────────────
     let pkg_name = pubspec_editor::get_package_name(std::path::Path::new("pubspec.yaml"))
         .unwrap_or_else(|_| "flutter_app".to_string());
 
@@ -192,7 +164,6 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
 
     logger::success("Design tokens & Core engine scaffolded locally.");
 
-    // ── Scaffold lib/theme/just_theme.dart ────────────────────────────────────
     std::fs::create_dir_all("lib/theme")
         .map_err(|e| anyhow::anyhow!("Failed to create lib/theme: {}", e))?;
 

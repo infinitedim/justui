@@ -6,8 +6,7 @@ use std::fs;
 
 use crate::utils::logger;
 
-const GITHUB_RELEASES_API: &str =
-    "https://api.github.com/repos/infinitedim/justui/releases/latest";
+const GITHUB_RELEASES_API: &str = "https://api.github.com/repos/infinitedim/justui/releases/latest";
 
 #[derive(Deserialize, Debug)]
 struct GitHubAsset {
@@ -29,7 +28,10 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
     let current_version = Version::parse(current_version_str)
         .with_context(|| format!("Failed to parse local version '{}'", current_version_str))?;
 
-    logger::stdout(&format!("Current JustUI CLI version: v{}", current_version_str));
+    logger::stdout(&format!(
+        "Current JustUI CLI version: v{}",
+        current_version_str
+    ));
 
     let pb = indicatif::ProgressBar::new_spinner();
     pb.set_message("Checking GitHub for latest release...");
