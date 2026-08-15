@@ -6,7 +6,6 @@ use crate::config::JustUIConfig;
 use crate::registry::RegistryClient;
 use crate::utils::{logger, prompt};
 
-/// Runs the `justui preset` command.
 pub fn run(
     name: Option<String>,
     apply: bool,
@@ -29,11 +28,10 @@ pub fn run(
         if apply {
             return run_apply(&preset_name, auto_yes);
         }
-        // Jika nama diberikan tapi tidak ada --apply, tampilkan info
+
         return run_info(&preset_name);
     }
 
-    // Tidak ada argumen sama sekali — tampilkan list
     run_list()
 }
 
@@ -131,7 +129,11 @@ fn run_info(preset_name: &str) -> Result<()> {
         .collect();
 
     let is_active = preset_name == config.preset;
-    logger::panel(&format!("Preset: {}{}", preset_name, if is_active { " (active)" } else { "" }));
+    logger::panel(&format!(
+        "Preset: {}{}",
+        preset_name,
+        if is_active { " (active)" } else { "" }
+    ));
 
     logger::stdout(&format!("\n  Supported components ({}):", supported.len()));
     for name in &supported {
@@ -149,7 +151,6 @@ fn run_info(preset_name: &str) -> Result<()> {
 }
 
 fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
-    // 1. Baca config
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
         logger::error("Project not initialized. Run \"justui init\" first.");
@@ -164,7 +165,6 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
         }
     };
 
-    // 2. Fetch registry
     let client = RegistryClient::new(config.registry_url.clone());
     let index = match client.fetch_index() {
         Ok(idx) => idx,
@@ -174,7 +174,6 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
         }
     };
 
-    // 3. Validasi preset ada di registry
     if !index.presets.contains(&preset_name.to_string()) {
         logger::error(&format!(
             "Preset \"{}\" not found in registry. Run \"justui preset list\" to see available presets.",
@@ -183,13 +182,11 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
         return Ok(());
     }
 
-    // 4. Cek apakah preset sudah aktif
     if config.preset == preset_name {
         logger::info(&format!("Preset \"{}\" is already active.", preset_name));
         return Ok(());
     }
 
-    // 5. Cari semua komponen yang sudah ter-install (termasuk internal/shared)
     let installed_components: Vec<String> = index
         .components
         .iter()
@@ -209,7 +206,6 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
         return Ok(());
     }
 
-    // 6. Cek komponen mana yang tidak support preset ini
     let unsupported: Vec<&str> = installed_components
         .iter()
         .filter(|name| {
@@ -232,7 +228,6 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
         logger::warning("These components will be skipped and keep their current preset.");
     }
 
-    // 7. Filter hanya yang support preset ini
     let to_apply: Vec<String> = installed_components
         .into_iter()
         .filter(|name| {
@@ -253,7 +248,6 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
         return Ok(());
     }
 
-    // 8. Konfirmasi dengan user
     if !auto_yes {
         logger::stdout(&format!(
             "\nApply preset \"{}\" to {} component(s)?",
@@ -275,13 +269,11 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
         }
     }
 
-    // 9. Buat config baru dengan preset yang diupdate
     let new_config = JustUIConfig {
         preset: preset_name.to_string(),
         ..config.clone()
     };
 
-    // 10. Apply — jalankan add_component untuk setiap komponen dengan preset baru
     let mut visited: HashSet<String> = HashSet::new();
 
     logger::panel(&format!("Applying preset \"{}\"", preset_name));
@@ -307,10 +299,10 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
             &new_config.tokens_dir,
             &new_config.shared_dir,
             &mut visited,
-            false,  // tidak dry-run
-            false,  // tidak show-diff
-            true,   // auto_yes: langsung overwrite tanpa prompt
-            &None,  // tidak ada progress bar nested
+            false,
+            false,
+            true,
+            &None,
             &new_config.preset,
         ) {
             Ok(_) => success_count += 1,
@@ -324,14 +316,16 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
 
     pb.finish_and_clear();
 
-    // 11. Update justui.config.yaml dengan preset baru
     let new_yaml = new_config.to_yaml_string();
     if let Err(e) = std::fs::write(config_path, new_yaml) {
-        logger::error(&format!("Failed to update {}: {}", JustUIConfig::CONFIG_FILE_NAME, e));
+        logger::error(&format!(
+            "Failed to update {}: {}",
+            JustUIConfig::CONFIG_FILE_NAME,
+            e
+        ));
         return Ok(());
     }
 
-    // 12. Summary
     logger::summary(
         &format!("Preset \"{}\" applied successfully", preset_name),
         &[

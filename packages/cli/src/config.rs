@@ -1,15 +1,13 @@
-/// Represents the configuration options for JustUI parsed from `justui.config.yaml`.
 #[derive(Debug, Clone)]
 pub struct JustUIConfig {
-    /// Directory where components should be copied (e.g., 'lib/widgets').
     pub components_dir: String,
-    /// Directory where design system tokens should be copied (e.g., 'lib/tokens').
+
     pub tokens_dir: String,
-    /// Directory where shared (multi-dependent) components are placed.
+
     pub shared_dir: String,
-    /// Base URL of the remote component registry.
+
     pub registry_url: String,
-    /// Active style preset to use (e.g., 'default', 'neobrutalism').
+
     pub preset: String,
 }
 
@@ -18,7 +16,6 @@ impl JustUIConfig {
     pub const DEFAULT_REGISTRY_URL: &'static str =
         "https://raw.githubusercontent.com/infinitedim/justui/main/registry";
 
-    /// Parses config from a YAML string. Falls back to defaults on any error.
     pub fn from_yaml(content: &str) -> Self {
         let parsed: serde_yaml::Value = match serde_yaml::from_str(content) {
             Ok(v) => v,
@@ -31,15 +28,12 @@ impl JustUIConfig {
         };
 
         let get_str = |key: &str| -> Option<String> {
-            map.get(key)
-                .and_then(|v| v.as_str())
-                .map(|s| s.to_string())
+            map.get(key).and_then(|v| v.as_str()).map(|s| s.to_string())
         };
 
-        let components_dir =
-            get_str("components_dir").unwrap_or_else(|| "lib/widgets".to_string());
-        let shared_dir = get_str("shared_dir")
-            .unwrap_or_else(|| format!("{}/shared", components_dir));
+        let components_dir = get_str("components_dir").unwrap_or_else(|| "lib/widgets".to_string());
+        let shared_dir =
+            get_str("shared_dir").unwrap_or_else(|| format!("{}/shared", components_dir));
         let preset = get_str("preset").unwrap_or_else(|| "default".to_string());
 
         Self {
@@ -52,8 +46,6 @@ impl JustUIConfig {
         }
     }
 
-    /// Converts the configuration back into a formatted YAML string.
-    /// The comment block is preserved identical to the Dart version.
     pub fn to_yaml_string(&self) -> String {
         format!(
             "# JustUI Scaffolding Configuration\n\

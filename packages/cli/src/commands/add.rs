@@ -4,10 +4,9 @@ use std::collections::HashSet;
 
 use crate::config::JustUIConfig;
 use crate::registry::{RegistryClient, RegistryIndex};
-use crate::utils::{diff_formatter, import_rewriter, logger, prompt, pubspec_editor};
 use crate::utils::logger::SummaryItem;
+use crate::utils::{diff_formatter, import_rewriter, logger, prompt, pubspec_editor};
 
-/// Accumulates counters during a dry-run for the final summary.
 #[derive(Default)]
 pub struct DryRunStats {
     pub will_write: usize,
@@ -44,17 +43,9 @@ pub struct OperationDetail {
     pub path: String,
 }
 
-/// Runs the `justui add [component...]` command.
-pub fn run(
-    components: Vec<String>,
-    dry_run: bool,
-    show_diff: bool,
-    auto_yes: bool,
-) -> Result<()> {
-    // If --diff is set, dry_run is implicitly enabled
+pub fn run(components: Vec<String>, dry_run: bool, show_diff: bool, auto_yes: bool) -> Result<()> {
     let effective_dry_run = dry_run || show_diff;
 
-    // 1. Verify initialization config exists
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
         logger::error(
@@ -63,7 +54,6 @@ pub fn run(
         return Ok(());
     }
 
-    // 2. Parse configuration
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
@@ -76,17 +66,17 @@ pub fn run(
         }
     };
 
-    // Warn if shared_dir is not nested under components_dir — likely misconfiguration
     if !config.shared_dir.starts_with(&config.components_dir) {
         logger::warning(&format!(
             "shared_dir ('{}') is not nested under components_dir ('{}').\n\
              This is unusual and may cause shared component imports to resolve incorrectly.\n\
              If this is unintentional, fix it in {} and re-run.",
-            config.shared_dir, config.components_dir, JustUIConfig::CONFIG_FILE_NAME
+            config.shared_dir,
+            config.components_dir,
+            JustUIConfig::CONFIG_FILE_NAME
         ));
     }
 
-    // Show a spinner while fetching registry index
     let pb_index = indicatif::ProgressBar::new_spinner();
     pb_index.set_message("Fetching registry index...");
     pb_index.enable_steady_tick(std::time::Duration::from_millis(100));
@@ -105,7 +95,6 @@ pub fn run(
     };
 
     let components_to_add: Vec<String> = if components.is_empty() {
-        // Interactive selection — bypass if auto_yes
         let component_names: Vec<String> = index
             .components
             .iter()
@@ -118,7 +107,6 @@ pub fn run(
         }
 
         if auto_yes {
-            // Select all components
             let names: Vec<String> = index.components.iter().map(|c| c.name.clone()).collect();
             let names_str = names.join(", ");
             logger::stdout(&format!("[auto] Selecting all components: {}", names_str));
@@ -142,11 +130,15 @@ pub fn run(
         components
     };
 
-    // Calculate total files for progress bar
     let mut resolved_components = Vec::new();
     let mut dep_visited = HashSet::new();
     for comp_name in &components_to_add {
-        if let Err(e) = resolve_dependencies_recursive(comp_name, &index, &mut dep_visited, &mut resolved_components) {
+        if let Err(e) = resolve_dependencies_recursive(
+            comp_name,
+            &index,
+            &mut dep_visited,
+            &mut resolved_components,
+        ) {
             logger::error(&format!("Dependency resolution error: {}", e));
             return Ok(());
         }
@@ -170,9 +162,11 @@ pub fn run(
         let bar = indicatif::ProgressBar::new(total_files as u64);
         bar.set_style(
             indicatif::ProgressStyle::default_bar()
-                .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} {msg}")
+                .template(
+                    "{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} {msg}",
+                )
                 .unwrap()
-                .progress_chars("#>-")
+                .progress_chars("#>-"),
         );
         bar.set_message("Copying component files...");
         Some(bar)
@@ -217,14 +211,12 @@ pub fn run(
         logger::error(&format!("Failed to add components: {}", e));
     }
 
-    // Print dry-run summary
     if effective_dry_run {
         logger::stdout(&format!(
             "\nDry-run summary: {} files to write, {} skipped, {} conflicts",
             total_stats.will_write, total_stats.skipped, total_stats.conflicts
         ));
     } else {
-        // Modern, minimalist summary output
         let mut copied_count = 0;
         let mut skipped_count = 0;
         let mut success_details = Vec::new();
@@ -234,51 +226,73 @@ pub fn run(
             match detail.status {
                 OperationStatus::Copied => {
                     copied_count += 1;
-                    success_details.push(format!("  \x1B[32m✔\x1B[0m {} (New) -> {}", detail.file_name, detail.path));
+                    success_details.push(format!(
+                        "  \x1B[32m✔\x1B[0m {} (New) -> {}",
+                        detail.file_name, detail.path
+                    ));
                 }
                 OperationStatus::Overwritten => {
                     copied_count += 1;
-                    success_details.push(format!("  \x1B[32m✔\x1B[0m {} (Updated) -> {}", detail.file_name, detail.path));
+                    success_details.push(format!(
+                        "  \x1B[32m✔\x1B[0m {} (Updated) -> {}",
+                        detail.file_name, detail.path
+                    ));
                 }
                 OperationStatus::ConflictResolvedOverwrite => {
                     copied_count += 1;
-                    success_details.push(format!("  \x1B[32m✔\x1B[0m {} (Conflict overwritten) -> {}", detail.file_name, detail.path));
+                    success_details.push(format!(
+                        "  \x1B[32m✔\x1B[0m {} (Conflict overwritten) -> {}",
+                        detail.file_name, detail.path
+                    ));
                 }
                 OperationStatus::UpToDate => {
                     skipped_count += 1;
-                    skip_details.push(format!("  \x1B[33m⚠\x1B[0m {} (Up-to-date) -> {}", detail.file_name, detail.path));
+                    skip_details.push(format!(
+                        "  \x1B[33m⚠\x1B[0m {} (Up-to-date) -> {}",
+                        detail.file_name, detail.path
+                    ));
                 }
                 OperationStatus::SkippedLocalCustomization => {
                     skipped_count += 1;
-                    skip_details.push(format!("  \x1B[33m⚠\x1B[0m {} (Skipped, local customization) -> {}", detail.file_name, detail.path));
+                    skip_details.push(format!(
+                        "  \x1B[33m⚠\x1B[0m {} (Skipped, local customization) -> {}",
+                        detail.file_name, detail.path
+                    ));
                 }
                 OperationStatus::ConflictResolvedSkip => {
                     skipped_count += 1;
-                    skip_details.push(format!("  \x1B[33m⚠\x1B[0m {} (Conflict skipped) -> {}", detail.file_name, detail.path));
+                    skip_details.push(format!(
+                        "  \x1B[33m⚠\x1B[0m {} (Conflict skipped) -> {}",
+                        detail.file_name, detail.path
+                    ));
                 }
             }
         }
 
         logger::stdout("");
         if copied_count > 0 {
-            logger::stdout(&format!("\x1B[32m✔\x1B[0m {} file(s) added/updated:", copied_count));
+            logger::stdout(&format!(
+                "\x1B[32m✔\x1B[0m {} file(s) added/updated:",
+                copied_count
+            ));
             for line in success_details {
                 logger::stdout(&line);
             }
         }
         if skipped_count > 0 {
-            logger::stdout(&format!("\x1B[33m⚠\x1B[0m {} file(s) skipped:", skipped_count));
+            logger::stdout(&format!(
+                "\x1B[33m⚠\x1B[0m {} file(s) skipped:",
+                skipped_count
+            ));
             for line in skip_details {
                 logger::stdout(&line);
             }
         }
     }
 
-    // Kumpulkan hasil untuk summary
     let mut summary_items: Vec<SummaryItem> = Vec::new();
 
     for name in &components_to_add {
-        // Cari komponen di index untuk dapat versi dan target path
         if let Some(component) = index.components.iter().find(|c| c.name == *name) {
             let target_dir = if component.category == "tokens" || component.category == "core" {
                 config.tokens_dir.clone()
@@ -317,13 +331,13 @@ fn resolve_dependencies_recursive(
         return Ok(());
     }
     visited.insert(name.to_string());
-    
+
     let component = index
         .components
         .iter()
         .find(|c| c.name == name)
         .ok_or_else(|| anyhow::anyhow!("Component \"{}\" not found in registry", name))?;
-        
+
     for dep in &component.registry_dependencies {
         resolve_dependencies_recursive(dep, index, visited, resolved)?;
     }
@@ -331,8 +345,6 @@ fn resolve_dependencies_recursive(
     Ok(())
 }
 
-/// Adds a single component (and its dependencies recursively) to the project.
-/// Shared between `add` and `update` commands.
 #[allow(clippy::too_many_arguments)]
 pub fn add_component(
     name: &str,
@@ -348,7 +360,6 @@ pub fn add_component(
     pb: &Option<indicatif::ProgressBar>,
     preset: &str,
 ) -> Result<(DryRunStats, Vec<OperationDetail>)> {
-    // Circular dependency check and double-copy guard
     if visited.contains(name) {
         return Ok((DryRunStats::new(), Vec::new()));
     }
@@ -360,7 +371,6 @@ pub fn add_component(
         .find(|c| c.name == name)
         .ok_or_else(|| anyhow::anyhow!("Component \"{}\" not found in registry", name))?;
 
-    // 1. Recursively resolve registry dependencies first
     let deps: Vec<String> = component.registry_dependencies.clone();
     let mut stats = DryRunStats::new();
     let mut details = Vec::new();
@@ -388,7 +398,6 @@ pub fn add_component(
         component.name, component.version
     ));
 
-    // 2. Map target directory based on category and shared status
     let target_dir = if component.category == "tokens" || component.category == "core" {
         tokens_dir.to_string()
     } else if component.name == "_shared_theme_provider" {
@@ -399,7 +408,6 @@ pub fn add_component(
         format!("{}/{}", components_dir, component.name)
     };
 
-    // 3. Download, validate, rewrite, and write each file
     let files: Vec<_> = component.files_for_preset(preset).clone();
     let comp_name = component.name.clone();
     let pub_deps: Vec<(String, String)> = component
@@ -418,7 +426,6 @@ pub fn add_component(
             .fetch_file_content(&file.path)
             .map_err(|e| anyhow::anyhow!("Failed to fetch \"{}\": {}", file.name, e))?;
 
-        // Verify SHA-256 checksum integrity
         let downloaded_hash = sha256_hex(content.as_bytes());
         let expected_hash = file.checksum.replace("sha256:", "").trim().to_string();
 
@@ -436,7 +443,6 @@ pub fn add_component(
         let pkg_name = pubspec_editor::get_package_name(std::path::Path::new("pubspec.yaml"))
             .unwrap_or_else(|_| "flutter_app".to_string());
 
-        // Apply import rewriting
         let rewritten_content = import_rewriter::rewrite(
             &content,
             &file.path,
@@ -465,15 +471,12 @@ pub fn add_component(
         };
         let target_path = std::path::Path::new(&target_dir).join(&local_file_name);
 
-        // --- Determine should_write (with dry-run / auto-yes overrides) ---
         let file_exists = target_path.exists();
 
-        // Track the local "clean" content for diff display (populated if file exists)
         let mut local_clean_for_diff = String::new();
 
         let (should_write, conflict_detected, status) = if file_exists {
             if dry_run {
-                // In dry-run mode we read to compute status but never prompt
                 let (sw, conflict, local_clean, st) = resolve_conflict_dry(
                     &target_path,
                     &local_file_name,
@@ -498,10 +501,8 @@ pub fn add_component(
             (true, false, OperationStatus::Copied)
         };
 
-        // --- Show diff block (before writing) ---
         if show_diff {
             if file_exists {
-                // Show unified diff between local and new registry content
                 diff_formatter::print_unified_diff(
                     &local_file_name,
                     &local_clean_for_diff,
@@ -509,7 +510,6 @@ pub fn add_component(
                     3,
                 );
             } else {
-                // Show entire new file with "+" prefix
                 logger::stdout(&format!("[registry] {} (file baru)", local_file_name));
                 for line in rewritten_content.lines() {
                     logger::stdout(&format!("+ {}", line));
@@ -517,7 +517,6 @@ pub fn add_component(
             }
         }
 
-        // --- Track stats & write ---
         if dry_run {
             if conflict_detected {
                 stats.conflicts += 1;
@@ -533,10 +532,8 @@ pub fn add_component(
                 ));
             } else {
                 stats.skipped += 1;
-                // Message was already printed by resolve_conflict_dry
             }
         } else if should_write {
-            // Normal write
             if let Some(parent) = target_path.parent() {
                 std::fs::create_dir_all(parent)?;
             }
@@ -554,7 +551,6 @@ pub fn add_component(
         });
     }
 
-    // 4. Inject pub dependencies into pubspec.yaml (skip in dry-run mode)
     if !pub_deps.is_empty() && !dry_run {
         let pubspec_path = std::path::Path::new("pubspec.yaml");
         for (dep, version) in &pub_deps {
@@ -578,8 +574,6 @@ pub fn add_component(
     Ok((stats, details))
 }
 
-/// Resolves a conflict when a local file already exists (normal mode, may show prompt).
-/// Returns true if the file should be overwritten.
 #[allow(clippy::needless_return)]
 fn resolve_conflict(
     target_path: &std::path::Path,
@@ -597,7 +591,6 @@ fn resolve_conflict(
         let current_local_hash = sha256_hex(local_clean.as_bytes());
 
         if current_local_hash == meta.local_hash {
-            // Unmodified locally
             if meta.registry_hash == expected_hash {
                 logger::stdout(&format!("  - {} is already up-to-date.", local_file_name));
                 return Ok((false, OperationStatus::UpToDate));
@@ -616,7 +609,6 @@ fn resolve_conflict(
                 return Ok((true, OperationStatus::Overwritten));
             }
         } else {
-            // Locally modified
             if meta.registry_hash == expected_hash {
                 if auto_yes {
                     logger::stdout(&format!(
@@ -631,7 +623,6 @@ fn resolve_conflict(
                 ));
                 return Ok((false, OperationStatus::SkippedLocalCustomization));
             } else {
-                // True conflict: prompt
                 if auto_yes {
                     logger::stdout(&format!(
                         "[auto] Skipping {} (modified locally)",
@@ -652,7 +643,6 @@ fn resolve_conflict(
             }
         }
     } else {
-        // No metadata header: compare raw hash against expected
         let local_hash = sha256_hex(local_content.as_bytes());
         if local_hash == expected_hash {
             logger::stdout(&format!(
@@ -682,8 +672,6 @@ fn resolve_conflict(
     }
 }
 
-/// Resolves conflict in dry-run mode — never prompts, never writes.
-/// Returns (should_write_preview, is_conflict, local_clean_content, status).
 fn resolve_conflict_dry(
     target_path: &std::path::Path,
     local_file_name: &str,
@@ -699,7 +687,6 @@ fn resolve_conflict_dry(
         let current_local_hash = sha256_hex(local_clean.as_bytes());
 
         if current_local_hash == meta.local_hash {
-            // Unmodified locally
             if meta.registry_hash == expected_hash {
                 logger::stdout(&format!(
                     "  [dry-run] Already up-to-date: {}",
@@ -707,24 +694,30 @@ fn resolve_conflict_dry(
                 ));
                 Ok((false, false, local_clean, OperationStatus::UpToDate))
             } else {
-                // Update available — treat as will_write
                 Ok((true, false, local_clean, OperationStatus::Overwritten))
             }
         } else {
-            // Locally modified
             if meta.registry_hash == expected_hash {
                 logger::stdout(&format!(
                     "  [dry-run] Skipped (modified locally): {}",
                     local_file_name
                 ));
-                Ok((false, false, local_clean, OperationStatus::SkippedLocalCustomization))
+                Ok((
+                    false,
+                    false,
+                    local_clean,
+                    OperationStatus::SkippedLocalCustomization,
+                ))
             } else {
-                // Conflict: show as will_write for preview purposes
-                Ok((true, true, local_clean, OperationStatus::ConflictResolvedOverwrite))
+                Ok((
+                    true,
+                    true,
+                    local_clean,
+                    OperationStatus::ConflictResolvedOverwrite,
+                ))
             }
         }
     } else {
-        // No metadata
         let local_hash = sha256_hex(local_content.as_bytes());
         if local_hash == expected_hash {
             logger::stdout(&format!(
@@ -737,13 +730,16 @@ fn resolve_conflict_dry(
                 "  [dry-run] Skipped (modified locally): {}",
                 local_file_name
             ));
-            Ok((false, false, local_content, OperationStatus::SkippedLocalCustomization))
+            Ok((
+                false,
+                false,
+                local_content,
+                OperationStatus::SkippedLocalCustomization,
+            ))
         }
     }
 }
 
-/// Interactive conflict resolution prompt loop.
-/// Returns true if the file should be overwritten.
 fn conflict_prompt(
     local_file_name: &str,
     local_content: &str,
