@@ -115,7 +115,7 @@
           {
             "name": "just_input.dart",
             "path": "components/input/default/just_input.dart",
-            "checksum": "sha256:657f8f9ea5d5ae99719535223fa322076a05f3fa59ec1586d3b6bf6a37fa89e1"
+            "checksum": "sha256:b406f6e19564970b2de20eb3a31c9fbdc10cb85c48b2af277d216ecfe88ebd41"
           },
           {
             "name": "just_input_style.dart",
@@ -227,7 +227,7 @@
           {
             "name": "just_avatar.dart",
             "path": "components/avatar/default/just_avatar.dart",
-            "checksum": "sha256:9f89159ae91617f29e7aa8e55310ec39cd17c524146841c98ed5c2af9bbd81bc"
+            "checksum": "sha256:c000d696ea6f1e98655b5cd8bbb28ee38bde65abe9ed3054411f8f67da02bb03"
           },
           {
             "name": "just_avatar_style.dart",
@@ -450,7 +450,7 @@
           {
             "name": "just_switch.dart",
             "path": "components/switch/default/just_switch.dart",
-            "checksum": "sha256:a14c2d9d2d2e0f42e8557df381d0e59356de2653d78067a502491bf010efd018"
+            "checksum": "sha256:6f3e9b959a4836a5e898cabf57994fd66a235ee6736d0f133f179f51c8dd6020"
           },
           {
             "name": "just_switch_style.dart",
@@ -760,7 +760,7 @@
           {
             "name": "just_slider.dart",
             "path": "components/slider/default/just_slider.dart",
-            "checksum": "sha256:ee16b54ab27353beecb09b809208118003a5d1bdd66a27afef5b1ee92f7ebc19"
+            "checksum": "sha256:621a616dec27080b517d79fed7fb81463af749cd23cbcc495a642fb72b6668ec"
           },
           {
             "name": "just_slider_style.dart",
@@ -896,7 +896,7 @@
           {
             "name": "just_tabs.dart",
             "path": "components/tabs/default/just_tabs.dart",
-            "checksum": "sha256:1073f4f9e9313026f5254be456439382bd6674a41459100936f7272296418890"
+            "checksum": "sha256:622cae4258b25d441f697f714b828adec0534a59214cc7beee8dd7ce4972f1ba"
           },
           {
             "name": "just_tabs_style.dart",
@@ -1116,7 +1116,7 @@
           {
             "name": "just_toast.dart",
             "path": "components/toast/default/just_toast.dart",
-            "checksum": "sha256:e5a12ce60ecd751c0ede8aef352dc846ba4203b9cf7e57c2a6221fbe9a54bffa"
+            "checksum": "sha256:57e853285c1240b34b362e3cae585ef72bbe24bbbf6c20ef4347c795a73231f1"
           },
           {
             "name": "just_toast_style.dart",
@@ -1177,7 +1177,7 @@
           {
             "name": "just_dialog.dart",
             "path": "components/dialog/default/just_dialog.dart",
-            "checksum": "sha256:d4cbed56ab414259b7d4c6e0df0e272b3426a968dd5d6c59c61b467b79044828"
+            "checksum": "sha256:31753a00a0ab9adfa3c50fd33907b9f9fc2045e1da3ecfcf8911eed207294c0c"
           },
           {
             "name": "just_dialog_style.dart",
@@ -1199,7 +1199,7 @@
           {
             "name": "just_dialog.dart",
             "path": "components/dialog/neobrutalism/just_dialog.dart",
-            "checksum": "sha256:d4cbed56ab414259b7d4c6e0df0e272b3426a968dd5d6c59c61b467b79044828"
+            "checksum": "sha256:eb5dd5eecc7f629fce6448f4cd0582916d800a42b5a3ef6382281d2e82473075"
           },
           {
             "name": "just_dialog_style.dart",
@@ -1238,7 +1238,7 @@
           {
             "name": "just_sheet.dart",
             "path": "components/sheet/default/just_sheet.dart",
-            "checksum": "sha256:e5f3cd5beb441199c1068061e0a90a2c6afbdab02346d3ee96e337d87118ee18"
+            "checksum": "sha256:e4a260519706474ef4f7ebc51a2d6f77cf0d7699168505001373a7591018f636"
           },
           {
             "name": "just_sheet_style.dart",
@@ -1299,7 +1299,7 @@
           {
             "name": "just_tooltip.dart",
             "path": "components/tooltip/default/just_tooltip.dart",
-            "checksum": "sha256:c8b382f31478119963bb01daaf2880c7af9bbfe5dff5ebd55ab5806bf4db68aa"
+            "checksum": "sha256:c6a811aefd44ae034a360024acf3c7707a9d653eba46b24bf4f83dd969ddccb5"
           },
           {
             "name": "just_tooltip_style.dart",
@@ -1362,7 +1362,7 @@
           {
             "name": "just_select.dart",
             "path": "components/select/default/just_select.dart",
-            "checksum": "sha256:bde7172325038db42fa999e0ad0bfc1fabc544db37d6b8f795ccddd9b13cfebd"
+            "checksum": "sha256:8e6830bff98f6df2cdc26f61e2fc4ad80d330232b82d5393e88f7b3ef09197fd"
           },
           {
             "name": "just_select_style.dart",
@@ -1486,7 +1486,7 @@
           {
             "name": "just_accordion.dart",
             "path": "components/accordion/default/just_accordion.dart",
-            "checksum": "sha256:e63ba1c5c6fa99db8ddc5a7e1bbdeaf5768014b2455e608b59713ece5ee382a5"
+            "checksum": "sha256:d3a8fa0df7d9ddb335e2048262da610c3a57900d2382c0c2e477feac47007216"
           },
           {
             "name": "just_accordion_style.dart",
@@ -1622,7 +1622,7 @@
           {
             "name": "just_table.dart",
             "path": "components/table/default/just_table.dart",
-            "checksum": "sha256:cf9ef4e79583b43db628daf11d1ef9d62387d9654e7c844b95c12af281cf326d"
+            "checksum": "sha256:6ec81162bc98a8e4a1b3343f93be42d259e6bc0e06a65c934df336d56cc807b6"
           },
           {
             "name": "just_table_style.dart",

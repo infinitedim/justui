@@ -654,6 +654,7 @@ class JustThemeData {
   static final JustThemeData neobrutalismLight = JustThemeData(
     colors: JustColors.neobrutalismLight(),
     shadows: const NeobrutalismShadowScheme(),
+    animations: JustMotionProfile.neobrutalism,
     preset: .neobrutalism,
   );
 
@@ -661,6 +662,7 @@ class JustThemeData {
   static final JustThemeData neobrutalismDark = JustThemeData(
     colors: JustColors.neobrutalismDark(),
     shadows: const NeobrutalismShadowScheme(shadowColor: Color(0xFFFFFFFF)),
+    animations: JustMotionProfile.neobrutalism,
     preset: .neobrutalism,
   );
 
@@ -872,7 +874,9 @@ class JustThemeData {
       spacing: spacing,
       radius: radius,
       shadows: resolvedShadows,
-      animations: animations,
+      animations: (animations == .standard && preset == .neobrutalism)
+          ? JustMotionProfile.neobrutalism
+          : animations,
       preset: preset,
     );
   }

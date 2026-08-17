@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_provider.dart';
@@ -281,22 +280,11 @@ class JustAvatar extends StatelessWidget {
           enabled: true,
           onTap: onTap,
           builder: (context, isHovered, isPressed, isFocused, focusNode) {
-            return Focus(
-              focusNode: focusNode,
-              onKeyEvent: (node, event) {
-                if (event is! KeyDownEvent) return .ignored;
-                if (event.logicalKey == .space || event.logicalKey == .enter) {
-                  onTap!();
-                  return .handled;
-                }
-                return .ignored;
-              },
-              child: FocusIndicator(
-                isFocused: isFocused,
-                focusColor: colors.borderFocus,
-                borderRadius: borderRadius,
-                child: avatarBody,
-              ),
+            return FocusIndicator(
+              isFocused: isFocused,
+              focusColor: colors.borderFocus,
+              borderRadius: borderRadius,
+              child: avatarBody,
             );
           },
         ),

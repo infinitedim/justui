@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart' show KeyDownEvent;
 import 'package:flutter/widgets.dart';
 
 /// A builder function that provides the active interactive states of a pressable element.
@@ -24,6 +25,9 @@ class JustPressable extends StatefulWidget {
   /// Optional external [FocusNode] to control or monitor focus.
   final FocusNode? focusNode;
 
+  /// Optional custom key event handler for keyboard navigation.
+  final FocusOnKeyEventCallback? onKeyEvent;
+
   /// Builder that returns the styled widget tree based on the interactive states.
   final JustPressableBuilder builder;
 
@@ -33,6 +37,7 @@ class JustPressable extends StatefulWidget {
     this.enabled = true,
     this.onTap,
     this.focusNode,
+    this.onKeyEvent,
     required this.builder,
   });
 
@@ -121,6 +126,19 @@ class _JustPressableState extends State<JustPressable> {
     return Focus(
       focusNode: _focusNode,
       canRequestFocus: widget.enabled,
+      onKeyEvent: widget.onKeyEvent ??
+          (node, event) {
+            if (!widget.enabled ||
+                widget.onTap == null ||
+                event is! KeyDownEvent) {
+              return .ignored;
+            }
+            if (event.logicalKey == .space || event.logicalKey == .enter) {
+              widget.onTap!();
+              return .handled;
+            }
+            return .ignored;
+          },
       child: MouseRegion(
         onEnter: _handleMouseEnter,
         onExit: _handleMouseExit,

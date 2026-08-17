@@ -42,18 +42,45 @@ abstract final class JustDuration {
 
 /// Curve tokens for JustUI animations.
 ///
-/// Exposes paired easing curves for entrance, exit, and elastic animations.
+/// Exposes functional easing curves for entrance, exit, standard movement, and physics.
 /// All values are compile-time constants.
 abstract final class JustCurves {
-  /// Default easing curve (easeInOut) for general state transitions
-  static const Curve default_ = Curves.easeInOut;
+  // --- Material 3 / Modern Emphasized Set ---
 
-  /// Entrance easing curve (easeOut) for sliding or scaling into view
-  static const Curve enter = Curves.easeOut;
+  /// Emphasized curve for elements moving within screen bounds.
+  static const Curve emphasized = Cubic(0.2, 0.0, 0.0, 1.0);
 
-  /// Exit easing curve (easeIn) for elements disappearing from view
-  static const Curve exit = Curves.easeIn;
+  /// Emphasized decelerate curve for elements entering the viewport.
+  static const Curve emphasizedDecelerate = Cubic(0.05, 0.7, 0.1, 1.0);
 
-  /// Springy easing curve (elasticOut) for organic bounce animations
-  static const Curve spring = Curves.elasticOut;
+  /// Emphasized accelerate curve for elements exiting the viewport.
+  static const Curve emphasizedAccelerate = Cubic(0.3, 0.0, 0.8, 0.15);
+
+  // --- Productive & Utility Set ---
+
+  /// Standard ease-in-out for subtle micro-interactions.
+  static const Curve standard = Cubic(0.2, 0.0, 0.0, 1.0);
+
+  /// Standard decelerate for productive enter transitions.
+  static const Curve standardDecelerate = Cubic(0.0, 0.0, 0.2, 1.0);
+
+  /// Sharp exit curve for quick dismissals.
+  static const Curve sharp = Cubic(0.4, 0.0, 0.6, 1.0);
+
+  /// Controlled, enterprise-friendly low-overshoot spring curve.
+  static const Curve spring = Cubic(0.34, 1.56, 0.64, 1.0);
+
+  /// Mechanical / Snappy linear curve for Neobrutalism transitions.
+  static const Curve mechanical = Curves.linear;
+
+  // --- Backward Compatibility Aliases ---
+
+  /// Default easing curve for general state transitions.
+  static const Curve default_ = emphasized;
+
+  /// Entrance easing curve for sliding or scaling into view.
+  static const Curve enter = emphasizedDecelerate;
+
+  /// Exit easing curve for elements disappearing from view.
+  static const Curve exit = emphasizedAccelerate;
 }
