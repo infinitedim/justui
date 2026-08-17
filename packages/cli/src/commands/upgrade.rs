@@ -149,7 +149,8 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
         if !target_triple.is_empty() && name.contains(target_triple) {
             return true;
         }
-        let os_match = name.contains(target_os) || (target_os == "macos" && name.contains("darwin"));
+        let os_match =
+            name.contains(target_os) || (target_os == "macos" && name.contains("darwin"));
         let arch_match = name.contains(target_arch)
             || (target_arch == "x86_64" && (name.contains("amd64") || name.contains("x64")));
         os_match && arch_match
@@ -205,7 +206,10 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
         let binary_bytes = match unpack_binary_bytes(&downloaded_bytes, binary_name) {
             Ok(b) => b,
             Err(e) => {
-                logger::error(&format!("Failed to extract binary from downloaded asset: {}", e));
+                logger::error(&format!(
+                    "Failed to extract binary from downloaded asset: {}",
+                    e
+                ));
                 print_fallback_instructions();
                 return Ok(());
             }
@@ -297,7 +301,7 @@ fn extract_binary_from_tar_gz(gz_bytes: &[u8], binary_name: &str) -> Result<Vec<
             }
         }
 
-        let blocks = (size + 511) / 512;
+        let blocks = size.div_ceil(512);
         cursor += blocks * 512;
     }
 
@@ -393,7 +397,10 @@ mod tests {
     #[test]
     fn test_target_triple_not_empty() {
         let triple = get_target_triple();
-        assert!(!triple.is_empty(), "Target triple should be known for this platform");
+        assert!(
+            !triple.is_empty(),
+            "Target triple should be known for this platform"
+        );
     }
 
     #[test]
