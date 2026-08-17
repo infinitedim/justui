@@ -116,6 +116,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   /// [EditableText] has a focus target to render a cursor against, and must
   /// be created once (not per-build) so it can be disposed.
   final FocusNode _searchEditableFocusNode = FocusNode();
+  final ScrollController _optionScrollController = ScrollController();
 
   String _searchQuery = '';
   int _focusedOptionIndex =
@@ -134,6 +135,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     _triggerFocusNode.dispose();
     _searchFocusNode.dispose();
     _searchEditableFocusNode.dispose();
+    _optionScrollController.dispose();
     super.dispose();
   }
 
@@ -172,7 +174,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     _overlayController.show();
     if (widget.searchable) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _searchFocusNode.requestFocus();
+        _searchEditableFocusNode.requestFocus();
       });
     } else {
       _triggerFocusNode.requestFocus();
@@ -254,6 +256,22 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       setState(() {
         _focusedOptionIndex = newIndex;
       });
+      _scrollToFocusedOption();
+    }
+  }
+
+  void _scrollToFocusedOption() {
+    if (!_optionScrollController.hasClients || _focusedOptionIndex < 0) return;
+    const double itemHeight = 36.0;
+    final targetOffset = _focusedOptionIndex * itemHeight;
+    final double viewportHeight =
+        _optionScrollController.position.viewportDimension;
+    final double currentScroll = _optionScrollController.offset;
+
+    if (targetOffset < currentScroll) {
+      _optionScrollController.jumpTo(targetOffset);
+    } else if (targetOffset + itemHeight > currentScroll + viewportHeight) {
+      _optionScrollController.jumpTo(targetOffset + itemHeight - viewportHeight);
     }
   }
 
@@ -578,6 +596,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                               ),
                             )
                           : ListView.builder(
+                              controller: _optionScrollController,
                               padding: .zero,
                               itemCount: filtered.length,
                               itemBuilder: (context, index) {
