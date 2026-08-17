@@ -1,6 +1,9 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_provider.dart';
+import '../shared/_shared_focus_indicator.dart';
+import '../shared/_shared_pressable.dart';
 import 'just_avatar_style.dart';
 import 'just_avatar_variants.dart';
 
@@ -269,9 +272,34 @@ class JustAvatar extends StatelessWidget {
 
     // Wrap tap trigger
     if (onTap != null) {
-      avatarBody = GestureDetector(
-        onTap: onTap,
-        child: MouseRegion(cursor: SystemMouseCursors.click, child: avatarBody),
+      return Semantics(
+        button: true,
+        enabled: true,
+        label: semanticLabel ?? name ?? 'Avatar',
+        image: imageUrl != null,
+        child: JustPressable(
+          enabled: true,
+          onTap: onTap,
+          builder: (context, isHovered, isPressed, isFocused, focusNode) {
+            return Focus(
+              focusNode: focusNode,
+              onKeyEvent: (node, event) {
+                if (event is! KeyDownEvent) return .ignored;
+                if (event.logicalKey == .space || event.logicalKey == .enter) {
+                  onTap!();
+                  return .handled;
+                }
+                return .ignored;
+              },
+              child: FocusIndicator(
+                isFocused: isFocused,
+                focusColor: colors.borderFocus,
+                borderRadius: borderRadius,
+                child: avatarBody,
+              ),
+            );
+          },
+        ),
       );
     }
 

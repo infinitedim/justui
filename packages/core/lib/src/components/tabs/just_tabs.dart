@@ -48,9 +48,9 @@ class JustTabController extends ChangeNotifier {
 
   /// Creates a [JustTabController].
   JustTabController({required this.length, int initialIndex = 0})
-    : _index = initialIndex,
-      _animationValue = initialIndex.toDouble() {
-    assert(initialIndex >= 0 && initialIndex < length);
+    : _index = length == 0 ? 0 : initialIndex.clamp(0, length > 0 ? length - 1 : 0),
+      _animationValue = (length == 0 ? 0 : initialIndex.clamp(0, length > 0 ? length - 1 : 0)).toDouble() {
+    assert(length == 0 || (initialIndex >= 0 && initialIndex < length));
   }
 
   /// The active index.
@@ -58,7 +58,8 @@ class JustTabController extends ChangeNotifier {
 
   set index(int value) {
     if (value == _index) return;
-    assert(value >= 0 && value < length);
+    assert(length == 0 || (value >= 0 && value < length));
+    if (length == 0) return;
     _index = value;
     _animationValue = value.toDouble();
     notifyListeners();
@@ -71,7 +72,7 @@ class JustTabController extends ChangeNotifier {
   void updateAnimationValue(double value) {
     if (value == _animationValue) return;
     _animationValue = value;
-    final newIndex = value.round().clamp(0, length - 1);
+    final newIndex = length == 0 ? 0 : value.round().clamp(0, length - 1);
     if (newIndex != _index) {
       _index = newIndex;
     }
@@ -96,6 +97,7 @@ class JustTabController extends ChangeNotifier {
 
   /// Animates the controller to the target index.
   void animateTo(int targetIndex, {Duration? duration, Curve? curve}) {
+    if (length == 0) return;
     assert(targetIndex >= 0 && targetIndex < length);
     if (targetIndex == _index) return;
 
@@ -454,6 +456,10 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.tabs.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) => _measureTabs());
 
     final customTheme = JustThemeProvider.of(context).theme;
