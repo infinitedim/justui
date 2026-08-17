@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart' show Theme;
-import 'package:flutter/services.dart' show KeyDownEvent;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_data.dart';
@@ -407,41 +406,35 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       ],
     );
 
-    final Widget headerButton = JustPressable(
+    final Widget headerButton = Semantics(
+      button: true,
+      expanded: widget.isExpanded,
       enabled: widget.item.enabled,
-      onTap: widget.onToggle,
-      builder: (context, isHovered, isPressed, isFocused, focusNode) {
-        Color resolvedHeaderBg = headerBg;
-        if (isHovered && widget.item.enabled) {
-          resolvedHeaderBg = widget.colors.borderDefault.withValues(
-            alpha: 0.08,
+      child: JustPressable(
+        enabled: widget.item.enabled,
+        onTap: widget.onToggle,
+        builder: (context, isHovered, isPressed, isFocused, focusNode) {
+          Color resolvedHeaderBg = headerBg;
+          if (isHovered && widget.item.enabled) {
+            resolvedHeaderBg = widget.colors.borderDefault.withValues(
+              alpha: 0.08,
+            );
+          }
+
+          Widget innerHeader = Container(
+            padding: headerPadding,
+            color: resolvedHeaderBg,
+            child: header,
           );
-        }
 
-        Widget innerHeader = Container(
-          padding: headerPadding,
-          color: resolvedHeaderBg,
-          child: header,
-        );
+          if (widget.presetTokens.showsDefaultBorder) {
+            innerHeader = widget.customTheme.buildPressEffect(
+              isPressed: isPressed,
+              child: innerHeader,
+            );
+          }
 
-        if (widget.presetTokens.showsDefaultBorder) {
-          innerHeader = widget.customTheme.buildPressEffect(
-            isPressed: isPressed,
-            child: innerHeader,
-          );
-        }
-
-        return Focus(
-          focusNode: focusNode,
-          onKeyEvent: (node, event) {
-            if (event is! KeyDownEvent) return .ignored;
-            if (event.logicalKey == .space || event.logicalKey == .enter) {
-              widget.onToggle();
-              return .handled;
-            }
-            return .ignored;
-          },
-          child: FocusIndicator(
+          return FocusIndicator(
             isFocused: isFocused,
             focusColor: widget.colors.borderFocus,
             borderRadius: widget.variant == .contained
@@ -458,9 +451,9 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
                             : .zero))
                 : finalRadius,
             child: innerHeader,
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
 
     final Widget contentArea = SizeTransition(
@@ -476,6 +469,14 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       mainAxisSize: .min,
       crossAxisAlignment: .stretch,
       children: [headerButton, contentArea],
+    );
+
+    final semanticItemWidget = Semantics(
+      container: true,
+      label: 'Accordion Panel: ${widget.item.title}',
+      value: widget.isExpanded ? 'Expanded' : 'Collapsed',
+      enabled: widget.item.enabled,
+      child: itemWidget,
     );
 
     // Styling for Default Variant (Card-based)
@@ -503,17 +504,12 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       return Container(
         decoration: itemDecoration,
         clipBehavior: .antiAlias,
-        child: itemWidget,
+        child: semanticItemWidget,
       );
     }
 
     // Flush or Contained Variants (no individual card borders)
-    return Semantics(
-      container: true,
-      label: 'Accordion Panel: ${widget.item.title}',
-      value: widget.isExpanded ? 'Expanded' : 'Collapsed',
-      enabled: widget.item.enabled,
-      child: itemWidget,
-    );
+    return semanticItemWidget;
   }
 }
+

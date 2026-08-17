@@ -899,11 +899,20 @@ class _OtpInputRowState extends State<_OtpInputRow> {
   late final List<TextEditingController> _controllers;
   late final List<FocusNode> _focusNodes;
 
+  /// Intermediate focus nodes used solely to intercept backspace key events
+  /// ahead of each segment's [JustInput]. Created once per segment (not
+  /// per-build) so they can be properly disposed alongside [_focusNodes].
+  late final List<FocusNode> _keyInterceptFocusNodes;
+
   @override
   void initState() {
     super.initState();
     _controllers = List.generate(widget.length, (_) => TextEditingController());
     _focusNodes = List.generate(widget.length, (_) => FocusNode());
+    _keyInterceptFocusNodes = List.generate(
+      widget.length,
+      (_) => FocusNode(skipTraversal: true),
+    );
 
     // Initialize values from controller if pre-populated
     final initial = widget.controller.text;
@@ -920,6 +929,9 @@ class _OtpInputRowState extends State<_OtpInputRow> {
       c.dispose();
     }
     for (var f in _focusNodes) {
+      f.dispose();
+    }
+    for (var f in _keyInterceptFocusNodes) {
       f.dispose();
     }
     super.dispose();
@@ -963,9 +975,8 @@ class _OtpInputRowState extends State<_OtpInputRow> {
               if (i > 0) SizedBox(width: spacing.sm),
               Expanded(
                 child: KeyboardListener(
-                  focusNode: FocusNode(
-                    skipTraversal: true,
-                  ), // Intermediate node to intercept backspace keys
+                  focusNode:
+                      _keyInterceptFocusNodes[i], // Intermediate node to intercept backspace keys
                   onKeyEvent: (event) {
                     if (event is KeyDownEvent &&
                         event.logicalKey == LogicalKeyboardKey.backspace) {

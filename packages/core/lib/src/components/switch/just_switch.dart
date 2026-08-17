@@ -283,6 +283,7 @@ class _JustSwitchState extends State<JustSwitch>
                         focusColor: colors.borderFocus,
                         borderRadius: .all(.circular(trackHeight / 2)),
                         child: GestureDetector(
+                          onTap: _handleToggle,
                           onHorizontalDragStart: _handleDragStart,
                           onHorizontalDragUpdate: (details) =>
                               _handleDragUpdate(details, maxTravel),

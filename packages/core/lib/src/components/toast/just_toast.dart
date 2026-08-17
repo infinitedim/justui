@@ -255,8 +255,14 @@ class JustToastController extends JustOverlayController {
     entry.timer.cancel();
     if (!_activeToasts.remove(entry)) return;
 
-    entry.overlayEntry.remove();
-    entry.overlayEntry.dispose();
+    try {
+      if (entry.overlayEntry.mounted) {
+        entry.overlayEntry.remove();
+      }
+    } catch (_) {}
+    try {
+      entry.overlayEntry.dispose();
+    } catch (_) {}
 
     // Only dispose if it was created locally
     final wasLocal =
@@ -271,7 +277,9 @@ class JustToastController extends JustOverlayController {
             )
             .isEmpty;
     if (wasLocal) {
-      entry.animationController.dispose();
+      try {
+        entry.animationController.dispose();
+      } catch (_) {}
     }
 
     if (entry.onDismissed != null) {
@@ -674,20 +682,23 @@ class _JustToastScopeState extends State<JustToastScope>
   void didUpdateWidget(covariant JustToastScope oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
-      // The old controller is being detached from this scope, so it must
-      // release any toasts it still has visible the same way dispose() does.
       oldWidget.controller.forceDismissAll();
       oldWidget.controller._vsync = null;
       oldWidget.controller._overlayState = null;
-      widget.controller._vsync = this;
-      widget.controller._overlayState = Overlay.of(context);
     }
+    widget.controller._vsync = this;
+    widget.controller._overlayState = Overlay.maybeOf(context);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    widget.controller._overlayState = Overlay.of(context);
+    final newOverlay = Overlay.maybeOf(context);
+    if (widget.controller._overlayState != null &&
+        widget.controller._overlayState != newOverlay) {
+      widget.controller.forceDismissAll();
+    }
+    widget.controller._overlayState = newOverlay;
   }
 
   @override

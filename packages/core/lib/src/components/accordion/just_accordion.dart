@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart' show Theme;
-import 'package:flutter/services.dart' show KeyDownEvent;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 import '../../theme/theme_data.dart';
@@ -435,34 +434,23 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
             );
           }
 
-          return Focus(
-            focusNode: focusNode,
-            onKeyEvent: (node, event) {
-              if (event is! KeyDownEvent) return .ignored;
-              if (event.logicalKey == .space || event.logicalKey == .enter) {
-                widget.onToggle();
-                return .handled;
-              }
-              return .ignored;
-            },
-            child: FocusIndicator(
-              isFocused: isFocused,
-              focusColor: widget.colors.borderFocus,
-              borderRadius: widget.variant == .contained
-                  ? (widget.index == 0
-                        ? .only(
-                            topLeft: finalRadius.topLeft,
-                            topRight: finalRadius.topRight,
-                          )
-                        : (widget.index == widget.totalItems - 1
-                              ? .only(
-                                  bottomLeft: finalRadius.bottomLeft,
-                                  bottomRight: finalRadius.bottomRight,
-                                )
-                              : .zero))
-                  : finalRadius,
-              child: innerHeader,
-            ),
+          return FocusIndicator(
+            isFocused: isFocused,
+            focusColor: widget.colors.borderFocus,
+            borderRadius: widget.variant == .contained
+                ? (widget.index == 0
+                      ? .only(
+                          topLeft: finalRadius.topLeft,
+                          topRight: finalRadius.topRight,
+                        )
+                      : (widget.index == widget.totalItems - 1
+                            ? .only(
+                                bottomLeft: finalRadius.bottomLeft,
+                                bottomRight: finalRadius.bottomRight,
+                              )
+                            : .zero))
+                : finalRadius,
+            child: innerHeader,
           );
         },
       ),

@@ -6,8 +6,6 @@ import 'package:just_ui_core/src/components/toast/just_toast.dart';
 import 'package:just_ui_core/src/components/toast/just_toast_variants.dart';
 import 'package:just_ui_core/src/components/button/just_button.dart';
 
-final JustToastController _toastController = JustToastController();
-
 @widgetbook.UseCase(name: 'Toast Notification Trigger', type: JustToastScope)
 Widget buildJustToastDefaultUseCase(BuildContext context) {
   final variant = context.knobs.object.dropdown<ToastVariant>(
@@ -20,19 +18,59 @@ Widget buildJustToastDefaultUseCase(BuildContext context) {
     initialValue: 'Changes saved successfully!',
   );
 
-  return JustToastScope(
-    controller: _toastController,
-    child: Builder(
-      builder: (scopeContext) {
-        return Center(
-          child: JustButton.primary(
-            label: 'Trigger ${variant.name} Toast',
-            onPressed: () {
-              scopeContext.justToast.show(message: message, variant: variant);
-            },
-          ),
-        );
-      },
-    ),
+  return _ToastDemoView(
+    variant: variant,
+    message: message,
   );
+}
+
+class _ToastDemoView extends StatefulWidget {
+  final ToastVariant variant;
+  final String message;
+
+  const _ToastDemoView({
+    required this.variant,
+    required this.message,
+  });
+
+  @override
+  State<_ToastDemoView> createState() => _ToastDemoViewState();
+}
+
+class _ToastDemoViewState extends State<_ToastDemoView> {
+  late final JustToastController _toastController;
+
+  @override
+  void initState() {
+    super.initState();
+    _toastController = JustToastController();
+  }
+
+  @override
+  void dispose() {
+    _toastController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return JustToastScope(
+      controller: _toastController,
+      child: Builder(
+        builder: (scopeContext) {
+          return Center(
+            child: JustButton.primary(
+              label: 'Trigger ${widget.variant.name} Toast',
+              onPressed: () {
+                scopeContext.justToast.show(
+                  message: widget.message,
+                  variant: widget.variant,
+                );
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
