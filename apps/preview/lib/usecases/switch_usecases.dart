@@ -7,7 +7,6 @@ import 'package:just_ui_core/src/components/switch/just_switch_style.dart';
 
 @widgetbook.UseCase(name: 'Default Switch', type: JustSwitch)
 Widget buildJustSwitchDefaultUseCase(BuildContext context) {
-  final value = context.knobs.boolean(label: 'Value', initialValue: true);
   final isDisabled = context.knobs.boolean(
     label: 'Is Disabled',
     initialValue: false,
@@ -22,11 +21,50 @@ Widget buildJustSwitchDefaultUseCase(BuildContext context) {
     initialValue: true,
   );
 
-  return JustSwitch(
-    value: value,
-    onChanged: isDisabled ? null : (val) {},
-    isDisabled: isDisabled,
-    size: size,
-    label: hasLabel ? const Text('Enable Notifications') : null,
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: _InteractiveSwitchDemo(
+        isDisabled: isDisabled,
+        size: size,
+        hasLabel: hasLabel,
+      ),
+    ),
   );
+}
+
+class _InteractiveSwitchDemo extends StatefulWidget {
+  final bool isDisabled;
+  final JustSwitchSize size;
+  final bool hasLabel;
+
+  const _InteractiveSwitchDemo({
+    required this.isDisabled,
+    required this.size,
+    required this.hasLabel,
+  });
+
+  @override
+  State<_InteractiveSwitchDemo> createState() => _InteractiveSwitchDemoState();
+}
+
+class _InteractiveSwitchDemoState extends State<_InteractiveSwitchDemo> {
+  bool _value = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSwitch(
+      value: _value,
+      onChanged: widget.isDisabled
+          ? null
+          : (val) {
+              setState(() {
+                _value = val;
+              });
+            },
+      isDisabled: widget.isDisabled,
+      size: widget.size,
+      label: widget.hasLabel ? const Text('Enable Notifications') : null,
+    );
+  }
 }

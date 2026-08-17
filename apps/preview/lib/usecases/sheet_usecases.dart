@@ -28,6 +28,7 @@ Widget buildJustSheetDefaultUseCase(BuildContext context) {
                 direction: direction,
                 draggable: true,
                 content: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
@@ -41,7 +42,7 @@ Widget buildJustSheetDefaultUseCase(BuildContext context) {
                     const Text(
                       'This is a slide-in sheet overlay supporting drag to dismiss, keyboard navigation, and theme presets.',
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 24.0),
                     JustButton.primary(
                       label: 'Close Sheet',
                       isFullWidth: true,

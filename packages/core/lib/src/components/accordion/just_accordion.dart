@@ -477,7 +477,15 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
           Container(
             padding: contentPadding,
             color: contentBg,
-            child: widget.item.content,
+            child: DefaultTextStyle(
+              style: widget.typography.bodyMd.copyWith(
+                color: widget.colors.textPrimary,
+              ),
+              child: IconTheme.merge(
+                data: IconThemeData(color: widget.colors.textPrimary),
+                child: widget.item.content,
+              ),
+            ),
           ),
         ],
       ),

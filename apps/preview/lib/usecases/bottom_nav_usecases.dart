@@ -16,8 +16,8 @@ Widget buildJustBottomNavDefaultUseCase(BuildContext context) {
       .slider(label: 'Selected Index', initialValue: 0, min: 0, max: 2)
       .toInt();
 
-  return SizedBox(
-    width: 380.0,
+  return Align(
+    alignment: Alignment.bottomCenter,
     child: JustBottomNav(
       variant: variant,
       selectedIndex: selectedIndex,

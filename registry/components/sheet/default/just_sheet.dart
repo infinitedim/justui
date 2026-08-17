@@ -301,6 +301,7 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     final radius = theme.radius;
     final shadows = theme.shadows;
     final motion = theme.animations.resolve(context);
+    final typography = theme.typography;
 
     final globalTheme = Theme.of(context).extension<JustSheetTheme>();
 
@@ -451,7 +452,15 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
                 ),
               ),
             ],
-            Expanded(child: widget.content),
+            Expanded(
+              child: DefaultTextStyle(
+                style: typography.bodyMd.copyWith(color: colors.textPrimary),
+                child: IconTheme.merge(
+                  data: IconThemeData(color: colors.textPrimary),
+                  child: widget.content,
+                ),
+              ),
+            ),
           ],
         ),
       ),

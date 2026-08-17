@@ -19,7 +19,7 @@
           {
             "name": "just_button.dart",
             "path": "components/button/default/just_button.dart",
-            "checksum": "sha256:d103d136ab3d5537a5324d1d1c0ad218caf4c5eae715f6b36e1ce3de2c334321"
+            "checksum": "sha256:1ee341f0702dc1b56fa6cf104f3dd11d7681034501779d5a0888969e4525ff5a"
           },
           {
             "name": "just_button_style.dart",
@@ -84,7 +84,7 @@
           {
             "name": "just_icon_button.dart",
             "path": "components/button/default/just_icon_button.dart",
-            "checksum": "sha256:ecfb27565c90e6fa2083d147efecdcb2a949416fe6b25dc4b4cd6f9b19235913"
+            "checksum": "sha256:a2082286c8ec98c737b4a504c8ba12e013921d07c1dac9d59695ae46e7439b92"
           }
         ],
         "neobrutalism": [
@@ -115,7 +115,7 @@
           {
             "name": "just_input.dart",
             "path": "components/input/default/just_input.dart",
-            "checksum": "sha256:67cd978e334b97c9f9c7b713dc83d38ddec9c9c611c4d3f0983c99440ba446be"
+            "checksum": "sha256:33c934b4e2916409c8c0b81f49cb7cb8964e046968a8de485b18c12807434a76"
           },
           {
             "name": "just_input_style.dart",
@@ -450,7 +450,7 @@
           {
             "name": "just_switch.dart",
             "path": "components/switch/default/just_switch.dart",
-            "checksum": "sha256:4b3c38993bf8101de9d8561e90118b0b9ef7c6bee8c5385b7c335402640e9dbc"
+            "checksum": "sha256:78eddca0926efe1ae06e91ba4d5d0a4c530ea37be267f023415da1c5fa64900d"
           },
           {
             "name": "just_switch_style.dart",
@@ -503,7 +503,7 @@
           {
             "name": "just_card.dart",
             "path": "components/card/default/just_card.dart",
-            "checksum": "sha256:d6ca01756d25d5623b8d1b7cc20072feb7e5baf265cfbec734b518aae4bba03b"
+            "checksum": "sha256:d9d198c51401b9ae7a782bcfb7fab7b80df67afe6eb2487f54531d09e4c75b72"
           },
           {
             "name": "just_card_style.dart",
@@ -896,7 +896,7 @@
           {
             "name": "just_tabs.dart",
             "path": "components/tabs/default/just_tabs.dart",
-            "checksum": "sha256:57cf855a90a6a31ccde00d6ae9f3fcb3e1e1a1c289737ab9a965a31afa230075"
+            "checksum": "sha256:db4e287b11a4f73e6f09efae5b1b90c237d014801a4568043e4fc24866ddaceb"
           },
           {
             "name": "just_tabs_style.dart",
@@ -1116,7 +1116,7 @@
           {
             "name": "just_toast.dart",
             "path": "components/toast/default/just_toast.dart",
-            "checksum": "sha256:37e9aeb9730838afccbcb99933294a00662fb6f6b2de5b7f1a7a56966dac2564"
+            "checksum": "sha256:067315159d6e3faaa0a0371ab29a4416dad231478e6535afffbe4ad63a505572"
           },
           {
             "name": "just_toast_style.dart",
@@ -1177,7 +1177,7 @@
           {
             "name": "just_dialog.dart",
             "path": "components/dialog/default/just_dialog.dart",
-            "checksum": "sha256:c0b5eb0a976b87f1c921788ae4494b63d544a8ecec6305cdc2029d0be5658d94"
+            "checksum": "sha256:7c36b57b91ff0692d99ccb70945385df31fb360bfaaea102d25939625b5dbe3f"
           },
           {
             "name": "just_dialog_style.dart",
@@ -1238,7 +1238,7 @@
           {
             "name": "just_sheet.dart",
             "path": "components/sheet/default/just_sheet.dart",
-            "checksum": "sha256:aba77e3733d1e1d73052ab985982c6549ad85cd5cce7842ea083c9311b088cd4"
+            "checksum": "sha256:d1d5a9aa00f6715d5e1285e01e7d9e53f01e2967767923905261f0a883b5f31e"
           },
           {
             "name": "just_sheet_style.dart",
@@ -1486,7 +1486,7 @@
           {
             "name": "just_accordion.dart",
             "path": "components/accordion/default/just_accordion.dart",
-            "checksum": "sha256:9766fb06afaba24676c15b4ac5aa6ff6252edbd5f9bc5b1ff6f036d9e7939b25"
+            "checksum": "sha256:129f620cd1ee2617ec059161ccaf531e123e292aa0c985d90172e338bdfdb8e1"
           },
           {
             "name": "just_accordion_style.dart",

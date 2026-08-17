@@ -168,7 +168,7 @@ class _JustIconButtonState extends State<JustIconButton> {
                   ? colors.warning
                   : colors.borderFocus;
               final primaryFg = presetTokens.showsDefaultBorder
-                  ? colors.textPrimary
+                  ? const Color(0xFF000000)
                   : colors.textInverse;
               final errorBg = colors.error;
 
@@ -191,7 +191,9 @@ class _JustIconButtonState extends State<JustIconButton> {
                   break;
 
                 case .secondary:
-                  bg = const Color(0x00000000);
+                  bg = presetTokens.showsDefaultBorder
+                      ? colors.card
+                      : const Color(0x00000000);
                   text = colors.textPrimary;
                   border = presetTokens.showsDefaultBorder
                       ? colors.textPrimary
@@ -201,26 +203,32 @@ class _JustIconButtonState extends State<JustIconButton> {
                     text = text.withValues(alpha: 0.4);
                     border = border.withValues(alpha: 0.4);
                   } else if (isPressed) {
-                    bg = primaryBg.withValues(alpha: 0.15);
+                    bg = presetTokens.showsDefaultBorder
+                        ? colors.card
+                        : primaryBg.withValues(alpha: 0.15);
                     border = presetTokens.showsDefaultBorder
                         ? colors.textPrimary
                         : primaryBg;
-                    text = primaryBg;
+                    text = presetTokens.showsDefaultBorder
+                        ? colors.textPrimary
+                        : primaryBg;
                   } else if (isHovered) {
-                    bg = primaryBg.withValues(alpha: 0.08);
+                    bg = presetTokens.showsDefaultBorder
+                        ? colors.card
+                        : primaryBg.withValues(alpha: 0.08);
                     border = presetTokens.showsDefaultBorder
                         ? colors.textPrimary
                         : primaryBg;
-                    text = primaryBg;
+                    text = presetTokens.showsDefaultBorder
+                        ? colors.textPrimary
+                        : primaryBg;
                   }
                   break;
 
                 case .ghost:
                   bg = const Color(0x00000000);
                   text = colors.textPrimary;
-                  border = presetTokens.showsDefaultBorder
-                      ? colors.textPrimary
-                      : const Color(0x00000000);
+                  border = const Color(0x00000000);
 
                   if (!isInteractive) {
                     text = text.withValues(alpha: 0.4);
@@ -233,7 +241,9 @@ class _JustIconButtonState extends State<JustIconButton> {
 
                 case .destructive:
                   bg = errorBg;
-                  text = primaryFg;
+                  text = presetTokens.showsDefaultBorder
+                      ? const Color(0xFF000000)
+                      : colors.textInverse;
                   border = presetTokens.showsDefaultBorder
                       ? colors.textPrimary
                       : const Color(0x00000000);
@@ -250,15 +260,19 @@ class _JustIconButtonState extends State<JustIconButton> {
 
                 case .link:
                   bg = const Color(0x00000000);
-                  text = primaryBg;
+                  text = presetTokens.showsDefaultBorder
+                      ? ((colors.background.computeLuminance() < 0.5)
+                            ? colors.textPrimary
+                            : colors.info)
+                      : primaryBg;
                   border = const Color(0x00000000);
 
                   if (!isInteractive) {
                     text = text.withValues(alpha: 0.4);
                   } else if (isPressed) {
-                    text = primaryBg.withValues(alpha: 0.7);
+                    text = text.withValues(alpha: 0.7);
                   } else if (isHovered) {
-                    text = primaryBg.withValues(alpha: 0.8);
+                    text = text.withValues(alpha: 0.8);
                   }
                   break;
               }
@@ -299,7 +313,8 @@ class _JustIconButtonState extends State<JustIconButton> {
               // Shadows resolution (flat solid offset shadow for neobrutalism)
               List<BoxShadow> defaultShadows;
               if (presetTokens.showsDefaultBorder &&
-                  widget.variant != JustButtonVariant.link) {
+                  widget.variant != JustButtonVariant.link &&
+                  widget.variant != JustButtonVariant.ghost) {
                 defaultShadows = widget.size == JustButtonSize.xs
                     ? customTheme.shadows.xs
                     : customTheme.shadows.sm;

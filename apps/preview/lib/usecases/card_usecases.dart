@@ -18,33 +18,38 @@ Widget buildJustCardDefaultUseCase(BuildContext context) {
     initialValue: true,
   );
 
-  return JustCard(
-    variant: variant,
-    width: 340.0,
-    onTap: isInteractive ? () {} : null,
-    header: const JustCardHeader(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          JustCardTitle(child: Text('Card Title')),
-          JustCardDescription(
-            child: Text('This is a description of the card.'),
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: JustCard(
+        variant: variant,
+        width: 340.0,
+        onTap: isInteractive ? () {} : null,
+        header: const JustCardHeader(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              JustCardTitle(child: Text('Card Title')),
+              JustCardDescription(
+                child: Text('This is a description of the card.'),
+              ),
+            ],
           ),
-        ],
+        ),
+        footer: JustCardFooter(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              JustButton.ghost(label: 'Cancel', onPressed: () {}),
+              const SizedBox(width: 8.0),
+              JustButton.primary(label: 'Confirm', onPressed: () {}),
+            ],
+          ),
+        ),
+        child: const Text(
+          'Card body content goes here. It supports any custom child widget layout.',
+        ),
       ),
-    ),
-    footer: JustCardFooter(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          JustButton.ghost(label: 'Cancel', onPressed: () {}),
-          const SizedBox(width: 8.0),
-          JustButton.primary(label: 'Confirm', onPressed: () {}),
-        ],
-      ),
-    ),
-    child: const Text(
-      'Card body content goes here. It supports any custom child widget layout.',
     ),
   );
 }

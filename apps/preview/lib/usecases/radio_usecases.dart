@@ -22,34 +22,39 @@ Widget buildJustRadioDefaultUseCase(BuildContext context) {
     initialOption: JustRadioSize.md,
   );
 
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      JustRadio<String>(
-        value: 'Option 1',
-        groupValue: selectedOption,
-        onChanged: isDisabled ? null : (val) {},
-        isDisabled: isDisabled,
-        size: size,
-        label: const Text('Option 1'),
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          JustRadio<String>(
+            value: 'Option 1',
+            groupValue: selectedOption,
+            onChanged: isDisabled ? null : (val) {},
+            isDisabled: isDisabled,
+            size: size,
+            label: const Text('Option 1'),
+          ),
+          JustRadio<String>(
+            value: 'Option 2',
+            groupValue: selectedOption,
+            onChanged: isDisabled ? null : (val) {},
+            isDisabled: isDisabled,
+            size: size,
+            label: const Text('Option 2'),
+          ),
+          JustRadio<String>(
+            value: 'Option 3',
+            groupValue: selectedOption,
+            onChanged: isDisabled ? null : (val) {},
+            isDisabled: isDisabled,
+            size: size,
+            label: const Text('Option 3'),
+          ),
+        ],
       ),
-      JustRadio<String>(
-        value: 'Option 2',
-        groupValue: selectedOption,
-        onChanged: isDisabled ? null : (val) {},
-        isDisabled: isDisabled,
-        size: size,
-        label: const Text('Option 2'),
-      ),
-      JustRadio<String>(
-        value: 'Option 3',
-        groupValue: selectedOption,
-        onChanged: isDisabled ? null : (val) {},
-        isDisabled: isDisabled,
-        size: size,
-        label: const Text('Option 3'),
-      ),
-    ],
+    ),
   );
 }
