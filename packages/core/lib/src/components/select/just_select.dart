@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart'
     show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
+
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
@@ -271,7 +272,9 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     if (targetOffset < currentScroll) {
       _optionScrollController.jumpTo(targetOffset);
     } else if (targetOffset + itemHeight > currentScroll + viewportHeight) {
-      _optionScrollController.jumpTo(targetOffset + itemHeight - viewportHeight);
+      _optionScrollController.jumpTo(
+        targetOffset + itemHeight - viewportHeight,
+      );
     }
   }
 
@@ -363,7 +366,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       child: JustPressable(
         enabled: widget.enabled,
         onTap: _toggleDropdown,
-        builder: (context, isHovered, isPressed, isFocused, _) {
+        builder: (BuildContext context, JustInteractionState state) {
           Widget inner = Container(
             height: height,
             padding: .symmetric(horizontal: spacing.md),
@@ -423,12 +426,12 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
 
           if (presetTokens.showsDefaultBorder) {
             inner = customTheme.buildPressEffect(
-              isPressed: isPressed,
+              isPressed: state.isPressed,
               child: Container(
                 decoration: BoxDecoration(
                   boxShadow: customTheme.resolveShadows(
                     shadows.md,
-                    isPressed: isPressed,
+                    isPressed: state.isPressed,
                   ),
                   borderRadius: .zero,
                 ),
@@ -438,8 +441,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
           }
 
           return FocusIndicator(
-            isFocused: isFocused,
-            focusColor: colors.borderFocus,
+            isFocused: state.isFocusVisible,
             borderRadius: presetTokens.showsDefaultBorder ? .zero : finalRadius,
             child: inner,
           );
@@ -566,8 +568,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                 Expanded(
                                   child: EditableText(
                                     controller: _searchController,
-                                    focusNode:
-                                        _searchEditableFocusNode, // internal dummy focus
+                                    focusNode: _searchEditableFocusNode, // internal dummy focus
                                     style: textStyle.copyWith(
                                       color: colors.textPrimary,
                                     ),
@@ -643,7 +644,11 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                   enabled: option.enabled,
                                   onTap: () => _selectOption(option),
                                   builder:
-                                      (context, isHovered, isPressed, _, _) {
+                                      (
+                                        BuildContext context,
+                                        JustInteractionState state,
+                                      ) {
+                                        final isHovered = state.isHovered;
                                         final showHover =
                                             isHovered || isKeyboardFocused;
                                         Color itemBg = optionBg;

@@ -1,10 +1,13 @@
 import 'dart:math' as math;
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import '../shared/_shared_focus_indicator.dart';
@@ -191,7 +194,6 @@ class _JustScrollAreaState extends State<JustScrollArea>
     return widget.style?.wheelMultiplier ?? widget.wheelMultiplier;
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -255,7 +257,8 @@ class _JustScrollAreaState extends State<JustScrollArea>
 
     // Calculate frame-rate independent delta time (seconds)
     final double dt = _lastTickTime == Duration.zero
-        ? 1.0 / 60.0 // Assume 60fps for the very first frame
+        ? 1.0 /
+              60.0 // Assume 60fps for the very first frame
         : (elapsed - _lastTickTime).inMicroseconds / 1000000.0;
     _lastTickTime = elapsed;
 
@@ -412,8 +415,9 @@ class _JustScrollAreaState extends State<JustScrollArea>
 
     // Use target offset as baseline when smooth is active (to stack keyboard
     // inputs on top of an in-flight smooth scroll), otherwise use actual offset.
-    final double baseOffset =
-        _isSmoothEnabled ? _targetOffset : _resolvedController.offset;
+    final double baseOffset = _isSmoothEnabled
+        ? _targetOffset
+        : _resolvedController.offset;
 
     double targetOffset = baseOffset;
     final isVertical = widget.direction == .vertical;
@@ -430,15 +434,9 @@ class _JustScrollAreaState extends State<JustScrollArea>
           maxScroll,
         );
       } else if (event.logicalKey == .pageDown) {
-        targetOffset = (baseOffset + viewportDimension).clamp(
-          0.0,
-          maxScroll,
-        );
+        targetOffset = (baseOffset + viewportDimension).clamp(0.0, maxScroll);
       } else if (event.logicalKey == .pageUp) {
-        targetOffset = (baseOffset - viewportDimension).clamp(
-          0.0,
-          maxScroll,
-        );
+        targetOffset = (baseOffset - viewportDimension).clamp(0.0, maxScroll);
       } else {
         return .ignored;
       }
@@ -455,15 +453,9 @@ class _JustScrollAreaState extends State<JustScrollArea>
           maxScroll,
         );
       } else if (event.logicalKey == .pageDown) {
-        targetOffset = (baseOffset + viewportDimension).clamp(
-          0.0,
-          maxScroll,
-        );
+        targetOffset = (baseOffset + viewportDimension).clamp(0.0, maxScroll);
       } else if (event.logicalKey == .pageUp) {
-        targetOffset = (baseOffset - viewportDimension).clamp(
-          0.0,
-          maxScroll,
-        );
+        targetOffset = (baseOffset - viewportDimension).clamp(0.0, maxScroll);
       } else {
         return .ignored;
       }
@@ -784,31 +776,27 @@ class _JustScrollAreaState extends State<JustScrollArea>
                               },
                               builder:
                                   (
-                                    context,
-                                    isHovered,
-                                    isPressed,
-                                    isFocused,
-                                    focusNode,
+                                    BuildContext context,
+                                    JustInteractionState state,
                                   ) {
                                     return FocusIndicator(
-                                      isFocused: isFocused,
-                                      focusColor: colors.borderFocus,
+                                      isFocused: state.isFocusVisible,
                                       borderRadius: const .all(.circular(20.0)),
                                       child: Container(
                                         width: 40.0,
                                         height: 40.0,
                                         decoration: BoxDecoration(
-                                          color: isPressed
+                                          color: state.isPressed
                                               ? colors.borderDefault
-                                              : (isHovered
+                                              : (state.isHovered
                                                     ? colors.background
                                                     : colors.card),
                                           shape: .circle,
                                           border: .all(
-                                            color: isFocused
+                                            color: state.isFocused
                                                 ? colors.borderFocus
                                                 : colors.borderDefault,
-                                            width: isFocused ? 2.0 : 1.0,
+                                            width: state.isFocused ? 2.0 : 1.0,
                                           ),
                                           boxShadow: shadows.md,
                                         ),

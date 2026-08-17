@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+
 import 'just_toggle.dart';
 import 'just_toggle_style.dart';
 import 'just_toggle_variants.dart';

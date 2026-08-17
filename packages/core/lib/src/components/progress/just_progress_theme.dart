@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_progress_style.dart';
 
 /// Global theme configuration for progress indicators, extending Flutter's [ThemeExtension].

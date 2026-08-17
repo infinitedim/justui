@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+
 import 'duration.dart';
 
 /// Spring Physics Tokens for Gesture & Reactive Animations.

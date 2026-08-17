@@ -1,4 +1,5 @@
 import 'package:flutter/painting.dart';
+
 import 'color_palette.dart';
 
 /// Semantic colors for JustUI in Light Mode.

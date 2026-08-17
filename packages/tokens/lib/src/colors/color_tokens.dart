@@ -1,4 +1,5 @@
 import 'package:flutter/painting.dart';
+
 import 'color_palette.dart';
 import 'color_semantic.dart';
 
@@ -191,7 +192,7 @@ final class _JustColorSchemeNeobrutalismLight extends JustColorScheme {
   const _JustColorSchemeNeobrutalismLight();
 
   @override
-  Color get background => const Color(0xFFFFFDF5); // Warm cream
+  Color get background => const Color(0xFFFFF8E7); // Warm cream
   @override
   Color get card => const Color(0xFFFFFFFF);
   @override
@@ -216,24 +217,24 @@ final class _JustColorSchemeNeobrutalismLight extends JustColorScheme {
   Color get borderError => const Color(0xFF000000);
 
   @override
-  Color get success => const Color(0xFF3CD070); // Vibrant success
+  Color get success => const Color(0xFF38E54D); // Vibrant electric lime
   @override
-  Color get warning => const Color(0xFFFFC000); // Vibrant warning
+  Color get warning => const Color(0xFFFFD93D); // Vibrant electric yellow
   @override
-  Color get error => const Color(0xFFFF3B30); // Vibrant error
+  Color get error => const Color(0xFFFF4B4B); // Vibrant bold red
   @override
-  Color get info => const Color(0xFF007AFF); // Vibrant info
+  Color get info => const Color(0xFF4D96FF); // Vibrant electric blue
 }
 
 final class _JustColorSchemeNeobrutalismDark extends JustColorScheme {
   const _JustColorSchemeNeobrutalismDark();
 
   @override
-  Color get background => const Color(0xFF121212);
+  Color get background => const Color(0xFF1A1A1A); // Deep charcoal (keeps black shadows visible)
   @override
-  Color get card => const Color(0xFF1E1E1E);
+  Color get card => const Color(0xFF262626);
   @override
-  Color get elevated => const Color(0xFF2D2D2D);
+  Color get elevated => const Color(0xFF333333);
   @override
   Color get overlay => const Color(0xCC000000);
 
@@ -247,18 +248,18 @@ final class _JustColorSchemeNeobrutalismDark extends JustColorScheme {
   Color get textInverse => const Color(0xFF000000);
 
   @override
-  Color get borderDefault => const Color(0xFFFFFFFF);
+  Color get borderDefault => const Color(0xFF000000);
   @override
-  Color get borderFocus => const Color(0xFFFFFFFF);
+  Color get borderFocus => const Color(0xFF000000);
   @override
-  Color get borderError => const Color(0xFFFFFFFF);
+  Color get borderError => const Color(0xFF000000);
 
   @override
   Color get success => const Color(0xFF4ADE80);
   @override
-  Color get warning => const Color(0xFFFBBF24);
+  Color get warning => const Color(0xFFFFE033);
   @override
-  Color get error => const Color(0xFFF87171);
+  Color get error => const Color(0xFFFF5353);
   @override
   Color get info => const Color(0xFF60A5FA);
 }

@@ -16,14 +16,14 @@ Widget buildJustSeparatorHorizontalUseCase(BuildContext context) {
 
 @widgetbook.UseCase(name: 'Vertical Separator', type: JustSeparator)
 Widget buildJustSeparatorVerticalUseCase(BuildContext context) {
-  return SizedBox(
+  return const SizedBox(
     height: 100.0,
     child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: const [
+      mainAxisSize: .min,
+      children: [
         Text('Left Item'),
         SizedBox(width: 12.0),
-        JustSeparator(direction: Axis.vertical),
+        JustSeparator(direction: .vertical),
         SizedBox(width: 12.0),
         Text('Right Item'),
       ],

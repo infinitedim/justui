@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_tooltip_style.dart';
 
 /// Global theme configuration for tooltips, extending Flutter's [ThemeExtension].

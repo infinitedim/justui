@@ -1,4 +1,5 @@
 import 'dart:ui' show Tristate;
+
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -104,61 +105,62 @@ void main() {
       expect(value, isTrue);
     });
 
-    testWidgets('Gesture conflict check inside horizontal scrollable (PageView)', (
-      WidgetTester tester,
-    ) async {
-      int pageIndex = 0;
-      final pageController = PageController();
-      bool switchValue = false;
+    testWidgets(
+      'Gesture conflict check inside horizontal scrollable (PageView)',
+      (WidgetTester tester) async {
+        int pageIndex = 0;
+        final pageController = PageController();
+        bool switchValue = false;
 
-      await tester.pumpWidget(
-        buildTestableWidget(
-          PageView(
-            controller: pageController,
-            onPageChanged: (index) => pageIndex = index,
-            children: [
-              Container(
-                color: const Color(0xFF111111),
-                alignment: Alignment.center,
-                child: JustSwitch(
-                  value: switchValue,
-                  onChanged: (val) => switchValue = val,
+        await tester.pumpWidget(
+          buildTestableWidget(
+            PageView(
+              controller: pageController,
+              onPageChanged: (index) => pageIndex = index,
+              children: [
+                Container(
+                  color: const Color(0xFF111111),
+                  alignment: Alignment.center,
+                  child: JustSwitch(
+                    value: switchValue,
+                    onChanged: (val) => switchValue = val,
+                  ),
                 ),
-              ),
-              const Center(child: Text('Page 2')),
-            ],
+                const Center(child: Text('Page 2')),
+              ],
+            ),
           ),
-        ),
-      );
+        );
 
-      // Verify PageView is initially showing first page
-      expect(pageIndex, equals(0));
-      expect(find.text('Page 2'), findsNothing);
+        // Verify PageView is initially showing first page
+        expect(pageIndex, equals(0));
+        expect(find.text('Page 2'), findsNothing);
 
-      // 1. Drag on the switch: should trigger onChanged and NOT scroll the PageView
-      final switchFinder = find.byType(JustSwitch);
-      final switchCenter = tester.getCenter(switchFinder);
+        // 1. Drag on the switch: should trigger onChanged and NOT scroll the PageView
+        final switchFinder = find.byType(JustSwitch);
+        final switchCenter = tester.getCenter(switchFinder);
 
-      final gesture = await tester.startGesture(switchCenter);
-      // Drag horizontally far enough to trigger snap but PageView should not intercept
-      await gesture.moveBy(const Offset(60.0, 0.0));
-      await gesture.up();
-      await tester.pumpAndSettle();
+        final gesture = await tester.startGesture(switchCenter);
+        // Drag horizontally far enough to trigger snap but PageView should not intercept
+        await gesture.moveBy(const Offset(60.0, 0.0));
+        await gesture.up();
+        await tester.pumpAndSettle();
 
-      expect(switchValue, isTrue);
-      expect(pageIndex, equals(0));
-      expect(find.text('Page 2'), findsNothing);
+        expect(switchValue, isTrue);
+        expect(pageIndex, equals(0));
+        expect(find.text('Page 2'), findsNothing);
 
-      // 2. Drag outside the switch: should scroll the PageView to Page 2
-      await tester.dragFrom(
-        const Offset(20.0, 200.0),
-        const Offset(-350.0, 0.0),
-      );
-      await tester.pumpAndSettle();
+        // 2. Drag outside the switch: should scroll the PageView to Page 2
+        await tester.dragFrom(
+          const Offset(20.0, 200.0),
+          const Offset(-350.0, 0.0),
+        );
+        await tester.pumpAndSettle();
 
-      expect(pageIndex, equals(1));
-      expect(find.text('Page 2'), findsOneWidget);
-    });
+        expect(pageIndex, equals(1));
+        expect(find.text('Page 2'), findsOneWidget);
+      },
+    );
 
     testWidgets('Renders correctly under neobrutalism preset', (
       WidgetTester tester,

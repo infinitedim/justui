@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' show Theme;
 
 import 'package:flutter/services.dart' show HapticFeedback;
+
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_bottom_nav_style.dart';
@@ -211,7 +212,7 @@ class _JustBottomNavState extends State<JustBottomNav> {
 
       final Widget itemWidget = JustPressable(
         onTap: () => _handleItemTap(i),
-        builder: (context, isHovered, isPressed, isFocused, focusNode) {
+        builder: (BuildContext context, JustInteractionState state) {
           Widget content;
           if (widget.variant == .shifting) {
             content = Column(
@@ -253,7 +254,7 @@ class _JustBottomNavState extends State<JustBottomNav> {
             selected: isSelected,
             button: true,
             child: customTheme.buildPressEffect(
-              isPressed: isPressed,
+              isPressed: state.isPressed,
               child: Container(
                 color: const Color(
                   0x00000000,

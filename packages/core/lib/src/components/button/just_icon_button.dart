@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
+
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
@@ -155,14 +156,20 @@ class _JustIconButtonState extends State<JustIconButton> {
                     }
                     widget.onPressed?.call();
                   },
-            builder: (context, isHovered, isPressed, isFocused, focusNode) {
+            builder: (BuildContext context, JustInteractionState state) {
+              final isHovered = state.isHovered;
+              final isPressed = state.isPressed;
               final presetTokens = customTheme.presetTokens;
               Color bg;
               Color text;
               Color border;
 
-              final primaryBg = colors.borderFocus;
-              final primaryFg = colors.textInverse;
+              final primaryBg = presetTokens.showsDefaultBorder
+                  ? colors.warning
+                  : colors.borderFocus;
+              final primaryFg = presetTokens.showsDefaultBorder
+                  ? colors.textPrimary
+                  : colors.textInverse;
               final errorBg = colors.error;
 
               switch (widget.variant) {
@@ -275,7 +282,11 @@ class _JustIconButtonState extends State<JustIconButton> {
 
               Widget content;
               if (widget.isLoading) {
-                content = JustProgressSpinner(size: iconSize, color: finalFg);
+                content = JustProgressSpinner(
+                  size: iconSize,
+                  color: finalFg,
+                  excludeSemantics: true,
+                );
               } else {
                 content = IconTheme.merge(
                   data: IconThemeData(size: iconSize, color: finalFg),
@@ -343,8 +354,7 @@ class _JustIconButtonState extends State<JustIconButton> {
                         : null,
                   ),
                   child: FocusIndicator(
-                    isFocused: isFocused,
-                    focusColor: primaryBg,
+                    isFocused: state.isFocusVisible,
                     borderRadius: resolvedRadius,
                     child: Center(child: content),
                   ),

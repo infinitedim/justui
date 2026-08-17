@@ -261,6 +261,16 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'JustProgressSpinner',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Variable Arc Sweep Spinner',
+                builder: _preview_usecases_progress_usecases
+                    .buildJustProgressSpinnerUseCase,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(

@@ -1,4 +1,5 @@
 import 'package:flutter/painting.dart';
+
 import 'colors_accessibility.dart';
 
 /// A dynamic 11-step color scale generated from a single seed color.

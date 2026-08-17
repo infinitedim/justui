@@ -1,5 +1,6 @@
 // justui-meta: registry=afecb0ad46b9fd3c0bfecbbb04978d58d899621018a09d7ef7c6497a9681bf64 local=afecb0ad46b9fd3c0bfecbbb04978d58d899621018a09d7ef7c6497a9681bf64
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_card_style.dart';
 
 /// Global theme configuration for cards, extending Flutter's [ThemeExtension].

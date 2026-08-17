@@ -2,6 +2,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
+
 import '../../theme/theme_provider.dart';
 import 'just_input_style.dart';
 import 'just_input_variants.dart';
@@ -757,7 +758,7 @@ class _JustInputState extends State<JustInput> {
                         : border;
                     final List<BoxShadow>? resolvedShadows =
                         presetTokens.showsDefaultBorder
-                        ? theme.shadows.sm
+                        ? (isFocused ? theme.shadows.sm : theme.shadows.xs)
                         : null;
 
                     return AnimatedContainer(
@@ -975,8 +976,7 @@ class _OtpInputRowState extends State<_OtpInputRow> {
               if (i > 0) SizedBox(width: spacing.sm),
               Expanded(
                 child: KeyboardListener(
-                  focusNode:
-                      _keyInterceptFocusNodes[i], // Intermediate node to intercept backspace keys
+                  focusNode: _keyInterceptFocusNodes[i], // Intermediate node to intercept backspace keys
                   onKeyEvent: (event) {
                     if (event is KeyDownEvent &&
                         event.logicalKey == LogicalKeyboardKey.backspace) {

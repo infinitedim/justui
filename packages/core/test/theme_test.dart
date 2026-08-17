@@ -18,17 +18,14 @@ void main() {
       expect(darkMaterial.brightness, equals(Brightness.dark));
     });
 
-    test(
-      'ThemeData is lazy-cached and returns identical instance on multiple calls',
-      () {
-        final theme = JustThemeData.light;
-        final first = theme.toThemeData();
-        final second = theme.toThemeData();
+    test('ThemeData is lazy-cached and returns identical instance on multiple calls', () {
+      final theme = JustThemeData.light;
+      final first = theme.toThemeData();
+      final second = theme.toThemeData();
 
-        // Identity check: should be the exact same instance in memory
-        expect(identical(first, second), isTrue);
-      },
-    );
+      // Identity check: should be the exact same instance in memory
+      expect(identical(first, second), isTrue);
+    });
 
     test(
       'ThemeData cache is cleared/rebuilt when copied with modifications',
@@ -317,9 +314,8 @@ void main() {
                     context.readTheme();
                     return ElevatedButton(
                       onPressed: () {
-                        JustThemeProvider.read(
-                          context,
-                        ).setThemeMode(ThemeMode.dark);
+                        JustThemeProvider.read(context)
+                            .setThemeMode(ThemeMode.dark);
                       },
                       child: const Text('Change Theme'),
                     );
@@ -516,54 +512,55 @@ void main() {
         expect(defaultTheme1.hashCode == neobrutalismTheme.hashCode, isFalse);
       });
 
-      testWidgets('Interactive press effects build correctly under each preset', (
-        WidgetTester tester,
-      ) async {
-        final key = GlobalKey();
+      testWidgets(
+        'Interactive press effects build correctly under each preset',
+        (WidgetTester tester) async {
+          final key = GlobalKey();
 
-        // Test default preset (should use AnimatedScale)
-        await tester.pumpWidget(
-          JustThemeProvider(
-            initialThemeMode: ThemeMode.light,
-            child: Builder(
-              builder: (context) {
-                final theme = JustThemeProvider.of(context).theme;
-                return theme.buildPressEffect(
-                  isPressed: true,
-                  child: SizedBox(key: key, width: 100, height: 100),
-                );
-              },
+          // Test default preset (should use AnimatedScale)
+          await tester.pumpWidget(
+            JustThemeProvider(
+              initialThemeMode: ThemeMode.light,
+              child: Builder(
+                builder: (context) {
+                  final theme = JustThemeProvider.of(context).theme;
+                  return theme.buildPressEffect(
+                    isPressed: true,
+                    child: SizedBox(key: key, width: 100, height: 100),
+                  );
+                },
+              ),
             ),
-          ),
-        );
+          );
 
-        // Verify that AnimatedScale is present
-        expect(find.byType(AnimatedScale), findsOneWidget);
-        // Verify that AnimatedContainer (translation) is NOT present
-        expect(find.byType(AnimatedContainer), findsNothing);
+          // Verify that AnimatedScale is present
+          expect(find.byType(AnimatedScale), findsOneWidget);
+          // Verify that AnimatedContainer (translation) is NOT present
+          expect(find.byType(AnimatedContainer), findsNothing);
 
-        // Test neobrutalism preset (should use AnimatedContainer for translation)
-        await tester.pumpWidget(
-          JustThemeProvider(
-            initialThemeMode: ThemeMode.light,
-            lightTheme: JustThemeData.neobrutalismLight,
-            child: Builder(
-              builder: (context) {
-                final theme = JustThemeProvider.of(context).theme;
-                return theme.buildPressEffect(
-                  isPressed: true,
-                  child: SizedBox(key: key, width: 100, height: 100),
-                );
-              },
+          // Test neobrutalism preset (should use AnimatedContainer for translation)
+          await tester.pumpWidget(
+            JustThemeProvider(
+              initialThemeMode: ThemeMode.light,
+              lightTheme: JustThemeData.neobrutalismLight,
+              child: Builder(
+                builder: (context) {
+                  final theme = JustThemeProvider.of(context).theme;
+                  return theme.buildPressEffect(
+                    isPressed: true,
+                    child: SizedBox(key: key, width: 100, height: 100),
+                  );
+                },
+              ),
             ),
-          ),
-        );
+          );
 
-        // Verify that AnimatedContainer is present
-        expect(find.byType(AnimatedContainer), findsOneWidget);
-        // Verify that AnimatedScale is NOT present
-        expect(find.byType(AnimatedScale), findsNothing);
-      });
+          // Verify that AnimatedContainer is present
+          expect(find.byType(AnimatedContainer), findsOneWidget);
+          // Verify that AnimatedScale is NOT present
+          expect(find.byType(AnimatedScale), findsNothing);
+        },
+      );
 
       testWidgets('Changing presets dynamically triggers correct rebuilds', (
         WidgetTester tester,

@@ -1,26 +1,21 @@
+import 'dart:math' as math;
+
 import 'package:flutter/widgets.dart';
 
 /// A lightweight loading spinner built using CustomPaint and Animation primitives.
 ///
-/// Ensures zero-Material-dependency by avoiding CircularProgressIndicator.
-class JustProgressSpinner extends StatefulWidget {
-  /// The diameter of the spinner.
-  final double size;
-
-  /// The color of the spinner stroke.
-  final Color color;
-
-  /// The thickness of the spinner line.
-  final double strokeWidth;
-
-  /// Creates a [JustProgressSpinner] indicator.
-  const JustProgressSpinner({
-    super.key,
-    required this.size,
-    required this.color,
-    this.strokeWidth = 2.0,
-  });
-
+/// Implements Material 3 variable arc sweep animation while maintaining
+/// zero-Material-dependency.
+class const JustProgressSpinner({
+  required final double size,
+  required final Color color,
+  super.key,
+  final double strokeWidth = 2.0,
+  final StrokeCap strokeCap = .round,
+  final Color? trackColor,
+  final String? semanticLabel = 'Loading',
+  final bool excludeSemantics = false,
+}) extends StatefulWidget {
   @override
   State<JustProgressSpinner> createState() => _JustProgressSpinnerState();
 }
@@ -34,7 +29,7 @@ class _JustProgressSpinnerState extends State<JustProgressSpinner>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1333),
     )..repeat();
   }
 
@@ -46,45 +41,109 @@ class _JustProgressSpinnerState extends State<JustProgressSpinner>
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: RotationTransition(
-        turns: _controller,
-        child: SizedBox(
-          width: widget.size,
-          height: widget.size,
-          child: CustomPaint(
-            painter: _SpinnerPainter(
-              color: widget.color,
-              strokeWidth: widget.strokeWidth,
+    final disableAnimations = MediaQuery.of(context).disableAnimations;
+
+    Widget spinner = RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          final double value = disableAnimations ? 0.5 : _controller.value;
+          // Variable arc sweep oscillation (M3 style: expands & contracts)
+          final double headValue = CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.0, 0.75, curve: Curves.fastOutSlowIn),
+          ).value;
+          final double tailValue = CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.25, 1.0, curve: Curves.fastOutSlowIn),
+          ).value;
+
+          final double rotationAngle = disableAnimations
+              ? 0.0
+              : value * 2.0 * math.pi;
+          final double sweepAngle = disableAnimations
+              ? math.pi * 1.5
+              : (headValue - tailValue).abs() * 1.75 * math.pi +
+                    (math.pi * 0.1);
+          final double startAngle = disableAnimations
+              ? 0.0
+              : rotationAngle + (tailValue * 1.75 * math.pi);
+
+          return SizedBox(
+            width: widget.size,
+            height: widget.size,
+            child: CustomPaint(
+              painter: _SpinnerPainter(
+                color: widget.color,
+                strokeWidth: widget.strokeWidth,
+                strokeCap: widget.strokeCap,
+                trackColor: widget.trackColor,
+                startAngle: startAngle,
+                sweepAngle: sweepAngle,
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
+
+    if (!widget.excludeSemantics && widget.semanticLabel != null) {
+      spinner = Semantics(
+        label: widget.semanticLabel,
+        container: true,
+        child: spinner,
+      );
+    }
+
+    return spinner;
   }
 }
 
 class _SpinnerPainter extends CustomPainter {
   final Color color;
   final double strokeWidth;
+  final StrokeCap strokeCap;
+  final Color? trackColor;
+  final double startAngle;
+  final double sweepAngle;
 
-  const _SpinnerPainter({required this.color, required this.strokeWidth});
+  const _SpinnerPainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.strokeCap,
+    this.trackColor,
+    required this.startAngle,
+    required this.sweepAngle,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
+    final Rect rect = .fromLTWH(0.0, 0.0, size.width, size.height);
+
+    if (trackColor != null) {
+      final trackPaint = Paint()
+        ..color = trackColor!
+        ..style = .stroke
+        ..strokeWidth = strokeWidth;
+      canvas.drawArc(rect, 0.0, math.pi * 2.0, false, trackPaint);
+    }
+
     final paint = Paint()
       ..color = color
       ..style = .stroke
       ..strokeWidth = strokeWidth
-      ..strokeCap = .round;
+      ..strokeCap = strokeCap;
 
-    final Rect rect = .fromLTWH(0.0, 0.0, size.width, size.height);
-    // Draw a 270 degree (3/4 of a circle) arc
-    canvas.drawArc(rect, 0.0, 4.712, false, paint);
+    canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
   }
 
   @override
   bool shouldRepaint(covariant _SpinnerPainter oldDelegate) {
-    return oldDelegate.color != color || oldDelegate.strokeWidth != strokeWidth;
+    return oldDelegate.color != color ||
+        oldDelegate.strokeWidth != strokeWidth ||
+        oldDelegate.strokeCap != strokeCap ||
+        oldDelegate.trackColor != trackColor ||
+        oldDelegate.startAngle != startAngle ||
+        oldDelegate.sweepAngle != sweepAngle;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_separator_style.dart';
 
 /// Global theme configuration for separators, extending Flutter's [ThemeExtension].

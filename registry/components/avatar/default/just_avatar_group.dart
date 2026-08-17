@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+
 import '../../theme/theme_provider.dart';
 import 'just_avatar.dart';
 import 'just_avatar_variants.dart';

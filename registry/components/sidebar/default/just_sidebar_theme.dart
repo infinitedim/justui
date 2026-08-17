@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_sidebar_style.dart';
 
 /// Global theme configuration for sidebars, extending Flutter's [ThemeExtension].

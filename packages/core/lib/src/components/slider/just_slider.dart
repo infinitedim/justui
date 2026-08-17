@@ -277,8 +277,10 @@ class _JustSliderState extends State<JustSlider> {
               return .ignored;
             },
             child: FocusIndicator(
-              isFocused: _isFocused,
-              focusColor: colors.borderFocus,
+              isFocused:
+                  _isFocused &&
+                  FocusManager.instance.highlightMode ==
+                      FocusHighlightMode.traditional,
               borderRadius: trackBorderRadius,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
@@ -341,9 +343,7 @@ class _JustSliderState extends State<JustSlider> {
                           height: trackHeight,
                           decoration: BoxDecoration(
                             color: activeTrackColor,
-                            borderRadius: _isRange
-                                ? null
-                                : trackBorderRadius, // Rounded left edge for single mode
+                            borderRadius: _isRange ? null : trackBorderRadius, // Rounded left edge for single mode
                             border: theme.theme.presetTokens.showsDefaultBorder
                                 ? .symmetric(
                                     horizontal: BorderSide(

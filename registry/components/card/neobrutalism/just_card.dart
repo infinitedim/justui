@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
+
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import '../shared/_shared_focus_indicator.dart';
@@ -357,9 +358,8 @@ class JustCardTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final defaultStyle = JustFluidTypo.headingMd(
-      context,
-    ).copyWith(color: colors.textPrimary, fontWeight: .w600);
+    final defaultStyle = JustFluidTypo.headingMd(context)
+        .copyWith(color: colors.textPrimary, fontWeight: .w600);
 
     return DefaultTextStyle(style: defaultStyle.merge(style), child: child);
   }
@@ -379,9 +379,8 @@ class JustCardDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final defaultStyle = JustFluidTypo.bodySm(
-      context,
-    ).copyWith(color: colors.textSecondary);
+    final defaultStyle = JustFluidTypo.bodySm(context)
+        .copyWith(color: colors.textSecondary);
 
     return DefaultTextStyle(style: defaultStyle.merge(style), child: child);
   }

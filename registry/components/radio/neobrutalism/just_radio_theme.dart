@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_radio_style.dart';
 
 /// Global theme configuration for radio buttons, extending Flutter's [ThemeExtension].

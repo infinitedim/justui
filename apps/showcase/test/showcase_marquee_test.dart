@@ -15,8 +15,8 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
 
       await tester.pumpWidget(
-        JustThemeProvider(
-          child: const Directionality(
+        const JustThemeProvider(
+          child: Directionality(
             textDirection: TextDirection.ltr,
             child: ShowcaseMarquee(),
           ),

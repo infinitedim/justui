@@ -179,9 +179,9 @@ class _ShowcaseMarqueeState extends State<ShowcaseMarquee>
         SizedBox(width: spacing.md),
         const _Separator(),
         SizedBox(width: spacing.md),
-        _GroupCard(
+        const _GroupCard(
           title: 'Input',
-          child: const SizedBox(
+          child: SizedBox(
             width: 200.0,
             child: JustInput(label: 'Username', hint: 'enter username'),
           ),
