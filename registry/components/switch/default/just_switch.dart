@@ -265,7 +265,7 @@ class _JustSwitchState extends State<JustSwitch>
         enabled: isInteractive,
         onTap: _handleToggle,
         focusNode: _focusNode,
-        builder: (context, isHovered, isPressed, isFocused, focusNode) {
+        builder: (BuildContext context, JustInteractionState state) {
           return Opacity(
             opacity: widget.isDisabled ? 0.5 : 1.0,
             child: Row(
@@ -281,8 +281,7 @@ class _JustSwitchState extends State<JustSwitch>
                   child: Center(
                     child: RepaintBoundary(
                       child: FocusIndicator(
-                        isFocused: isFocused,
-                        focusColor: colors.borderFocus,
+                        isFocused: state.isFocusVisible,
                         borderRadius: .all(.circular(trackHeight / 2)),
                         child: GestureDetector(
                           onTap: _handleToggle,

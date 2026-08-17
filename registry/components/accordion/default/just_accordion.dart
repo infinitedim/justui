@@ -124,7 +124,6 @@ class _JustAccordionState extends State<JustAccordion> {
     ).theme.typography;
     final presetTokens = customTheme.presetTokens;
 
-    final resolvedGap = widget.style?.gap ?? themeStyle?.gap ?? 8.0;
     final BorderRadius defaultBorderRadius = presetTokens.resolveBorderRadius(
       radius,
     );
@@ -142,10 +141,19 @@ class _JustAccordionState extends State<JustAccordion> {
 
     if (widget.variant == .contained) {
       // Contained Variant: single outer container
+      final double borderWidth = presetTokens.borderWidth > 0.0
+          ? presetTokens.borderWidth
+          : 1.0;
+      final List<BoxShadow> containerShadows = presetTokens.showsDefaultBorder
+          ? shadows.md
+          : const [];
+
       return Container(
         decoration: BoxDecoration(
-          border: .all(color: borderColor, width: presetTokens.borderWidth),
+          color: colors.card,
+          border: .all(color: borderColor, width: borderWidth),
           borderRadius: finalRadius,
+          boxShadow: containerShadows,
         ),
         clipBehavior: .antiAlias,
         child: Column(
@@ -186,7 +194,11 @@ class _JustAccordionState extends State<JustAccordion> {
       );
     }
 
-    // Default or Flush variants
+    // Default (Flush) variant: items separated by divider lines
+    final double dividerThickness = presetTokens.borderWidth > 0.0
+        ? presetTokens.borderWidth
+        : 1.0;
+
     return Column(
       mainAxisSize: .min,
       children: List.generate(widget.items.length, (index) {
@@ -211,23 +223,14 @@ class _JustAccordionState extends State<JustAccordion> {
           totalItems: widget.items.length,
         );
 
-        if (widget.variant == .default_) {
-          // Add gap between items
-          return Padding(
-            padding: .only(bottom: isLast ? 0.0 : resolvedGap),
-            child: child,
-          );
-        } else {
-          // Flush variant: separator line between items, no gap
-          return Column(
-            mainAxisSize: .min,
-            children: [
-              child,
-              if (!isLast)
-                Container(height: presetTokens.borderWidth, color: borderColor),
-            ],
-          );
-        }
+        return Column(
+          mainAxisSize: .min,
+          children: [
+            child,
+            if (!isLast)
+              Container(height: dividerThickness, color: borderColor),
+          ],
+        );
       }),
     );
   }
@@ -325,12 +328,12 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
     final headerBg =
         widget.style?.headerBackgroundColor ??
         widget.themeStyle?.headerBackgroundColor ??
-        const Color(0x00000000);
+        widget.colors.card;
 
     final contentBg =
         widget.style?.contentBackgroundColor ??
         widget.themeStyle?.contentBackgroundColor ??
-        const Color(0x00000000);
+        widget.colors.card;
 
     final titleColor =
         widget.style?.titleColor ??
@@ -414,7 +417,10 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       child: JustPressable(
         enabled: widget.item.enabled,
         onTap: widget.onToggle,
-        builder: (context, isHovered, isPressed, isFocused, focusNode) {
+        builder: (BuildContext context, JustInteractionState state) {
+          final isHovered = state.isHovered;
+          final isPressed = state.isPressed;
+
           Color resolvedHeaderBg = headerBg;
           if (isHovered && widget.item.enabled) {
             resolvedHeaderBg = widget.colors.borderDefault.withValues(
@@ -436,8 +442,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
           }
 
           return FocusIndicator(
-            isFocused: isFocused,
-            focusColor: widget.colors.borderFocus,
+            isFocused: state.isFocusVisible,
             borderRadius: widget.variant == .contained
                 ? (widget.index == 0
                       ? .only(
@@ -459,10 +464,22 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
 
     final Widget contentArea = SizeTransition(
       sizeFactor: _expandAnimation,
-      child: Container(
-        padding: contentPadding,
-        color: contentBg,
-        child: widget.item.content,
+      child: Column(
+        mainAxisSize: .min,
+        crossAxisAlignment: .stretch,
+        children: [
+          Container(
+            height: widget.presetTokens.borderWidth > 0.0
+                ? widget.presetTokens.borderWidth
+                : 1.0,
+            color: borderColor,
+          ),
+          Container(
+            padding: contentPadding,
+            color: contentBg,
+            child: widget.item.content,
+          ),
+        ],
       ),
     );
 
@@ -480,36 +497,6 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       child: itemWidget,
     );
 
-    // Styling for Default Variant (Card-based)
-    if (widget.variant == .default_) {
-      final itemDecoration = BoxDecoration(
-        color: contentBg,
-        border: .all(
-          color: borderColor,
-          width: widget.presetTokens.borderWidth,
-        ),
-        borderRadius: finalRadius,
-        boxShadow: widget.isExpanded
-            ? (widget.presetTokens.showsDefaultBorder
-                  ? [
-                      BoxShadow(
-                        color: widget.colors.textPrimary,
-                        offset: const Offset(4, 4),
-                        blurRadius: 0,
-                      ),
-                    ]
-                  : widget.shadows.sm)
-            : null,
-      );
-
-      return Container(
-        decoration: itemDecoration,
-        clipBehavior: .antiAlias,
-        child: semanticItemWidget,
-      );
-    }
-
-    // Flush or Contained Variants (no individual card borders)
     return semanticItemWidget;
   }
 }

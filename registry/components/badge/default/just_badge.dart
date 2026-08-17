@@ -164,8 +164,12 @@ class JustBadge extends StatelessWidget {
     Color fg;
     Color border = const Color(0x00000000);
 
-    final primaryBg = colors.borderFocus;
-    final primaryFg = colors.textInverse;
+    final primaryBg = theme.presetTokens.showsDefaultBorder
+        ? colors.warning
+        : colors.borderFocus;
+    final primaryFg = theme.presetTokens.showsDefaultBorder
+        ? colors.textPrimary
+        : colors.textInverse;
     final textPrimary = colors.textPrimary;
     final textSecondary = colors.textSecondary;
     final borderDefault = colors.borderDefault;

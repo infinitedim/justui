@@ -758,7 +758,7 @@ class _JustInputState extends State<JustInput> {
                         : border;
                     final List<BoxShadow>? resolvedShadows =
                         presetTokens.showsDefaultBorder
-                        ? theme.shadows.sm
+                        ? (isFocused ? theme.shadows.sm : theme.shadows.xs)
                         : null;
 
                     return AnimatedContainer(
