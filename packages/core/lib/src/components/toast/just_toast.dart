@@ -23,6 +23,13 @@ class _ToastEntry {
   final AnimationController animationController;
   late final Timer timer;
 
+  /// Set as soon as a dismissal has been requested for this entry, so a
+  /// second dismiss request for the same entry (e.g. the auto-dismiss timer
+  /// firing while the user is also swiping it away, or a rapid double-tap on
+  /// the close affordance) is a no-op instead of starting a second reverse
+  /// animation.
+  bool _dismissRequested = false;
+
   _ToastEntry({
     required this.id,
     required this.message,
@@ -67,7 +74,8 @@ class JustToastController extends JustOverlayController {
   /// The behavior mode (stacked or queue) for multiple toasts.
   final ToastBehavior behavior;
 
-  /// The maximum number of visible toasts in stacked mode.
+  /// The maximum number of visible toasts in stacked mode, or maximum queued
+  /// pending toasts in queue mode.
   final int? limit;
 
   /// The screen position where toasts are anchored.
@@ -127,7 +135,15 @@ class JustToastController extends JustOverlayController {
 
     if (behavior == .queue) {
       if (_activeToasts.isNotEmpty) {
-        _queue.add(pending);
+        if (limit != null && _queue.length >= limit!) {
+          if (_queue.isNotEmpty) {
+            // Drops oldest queued toast when the queue cap is reached
+            _queue.removeAt(0);
+          }
+        }
+        if (limit == null || limit! > 0) {
+          _queue.add(pending);
+        }
       } else {
         _showToast(pending);
       }
@@ -213,40 +229,56 @@ class JustToastController extends JustOverlayController {
   }
 
   void _dismissToast(_ToastEntry entry) {
-    if (!_activeToasts.contains(entry)) return;
+    if (!_activeToasts.contains(entry) || entry._dismissRequested) return;
+    entry._dismissRequested = true;
 
     entry.timer.cancel();
     entry.animationController.reverse().then((_) {
-      entry.overlayEntry.remove();
-      entry.overlayEntry.dispose();
-
-      // Only dispose if it was created locally
-      final wasLocal =
-          !_queue.any(
-            (q) => q.animationController == entry.animationController,
-          ) &&
-          _activeToasts
-              .where(
-                (t) =>
-                    t != entry &&
-                    t.animationController == entry.animationController,
-              )
-              .isEmpty;
-      if (wasLocal) {
-        entry.animationController.dispose();
-      }
-
-      _activeToasts.remove(entry);
-      if (entry.onDismissed != null) {
-        entry.onDismissed!();
-      }
-
-      _updatePositions();
+      _cleanupToastEntry(entry);
 
       if (behavior == .queue && _queue.isNotEmpty) {
         _showToast(_queue.removeAt(0));
       }
     });
+  }
+
+  /// Synchronously removes and disposes [entry]'s overlay entry and (unless
+  /// its animation controller is shared with another queued/active entry)
+  /// disposes the controller too, then fires [entry.onDismissed] and
+  /// repositions the remaining toasts.
+  ///
+  /// Guarded by [List.remove] returning `false` for an entry no longer in
+  /// [_activeToasts], so this is safe to call more than once for the same
+  /// [entry] — only the first call has any effect. This makes it safe to
+  /// race against the animated cleanup scheduled by [_dismissToast].
+  void _cleanupToastEntry(_ToastEntry entry) {
+    entry.timer.cancel();
+    if (!_activeToasts.remove(entry)) return;
+
+    entry.overlayEntry.remove();
+    entry.overlayEntry.dispose();
+
+    // Only dispose if it was created locally
+    final wasLocal =
+        !_queue.any(
+          (q) => q.animationController == entry.animationController,
+        ) &&
+        _activeToasts
+            .where(
+              (t) =>
+                  t != entry &&
+                  t.animationController == entry.animationController,
+            )
+            .isEmpty;
+    if (wasLocal) {
+      entry.animationController.dispose();
+    }
+
+    if (entry.onDismissed != null) {
+      entry.onDismissed!();
+    }
+
+    _updatePositions();
   }
 
   void _updatePositions() {
@@ -260,6 +292,26 @@ class JustToastController extends JustOverlayController {
     final targets = List<_ToastEntry>.from(_activeToasts);
     for (final toast in targets) {
       _dismissToast(toast);
+    }
+  }
+
+  /// Immediately tears down every active toast without waiting for the exit
+  /// animation to finish.
+  ///
+  /// Called when the hosting [JustToastScope] is being disposed — its
+  /// [TickerProvider]/[OverlayState] are about to become unavailable, so any
+  /// toast still visible must have its [OverlayEntry] and (if not shared)
+  /// [AnimationController] released synchronously. Without this, entries
+  /// inserted into an ancestor [Overlay] that outlives the scope (e.g. the
+  /// app/root [Navigator]'s overlay) would stay inserted indefinitely,
+  /// continuing to render stale content after the scope is gone. Pending
+  /// queued toasts (not yet shown) are left untouched, since they hold no
+  /// overlay/animation resources yet and can still be shown later if this
+  /// controller is re-attached to a new scope.
+  void forceDismissAll() {
+    final targets = List<_ToastEntry>.from(_activeToasts);
+    for (final entry in targets) {
+      _cleanupToastEntry(entry);
     }
   }
 
@@ -622,6 +674,9 @@ class _JustToastScopeState extends State<JustToastScope>
   void didUpdateWidget(covariant JustToastScope oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
+      // The old controller is being detached from this scope, so it must
+      // release any toasts it still has visible the same way dispose() does.
+      oldWidget.controller.forceDismissAll();
       oldWidget.controller._vsync = null;
       oldWidget.controller._overlayState = null;
       widget.controller._vsync = this;
@@ -637,6 +692,11 @@ class _JustToastScopeState extends State<JustToastScope>
 
   @override
   void dispose() {
+    // Force-clear any toasts still visible before this scope's
+    // TickerProvider and OverlayState become unavailable below, otherwise
+    // their OverlayEntry(s) would be orphaned in the ancestor Overlay
+    // indefinitely.
+    widget.controller.forceDismissAll();
     widget.controller._vsync = null;
     widget.controller._overlayState = null;
     super.dispose();
