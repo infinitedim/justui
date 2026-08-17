@@ -125,8 +125,6 @@ class JustCard extends StatelessWidget {
     double defaultBorderWidth;
     List<BoxShadow> defaultShadows;
 
-    final isDark = colors.background.computeLuminance() < 0.5;
-
     switch (variant) {
       case .elevated:
         defaultBg = colors.card;
@@ -145,9 +143,7 @@ class JustCard extends StatelessWidget {
         defaultShadows = const [];
         break;
       case .filled:
-        defaultBg = isDark
-            ? const Color(0xFF1E293B)
-            : const Color(0xFFF1F5F9); // Slate-800 / Slate-100
+        defaultBg = colors.muted;
         defaultBorderColor = presetTokens.showsDefaultBorder
             ? colors.borderDefault
             : const Color(0x00000000);

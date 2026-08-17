@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
 
-import '../../theme/theme_provider.dart';
 import 'just_badge_style.dart';
 import 'just_badge_variants.dart';
 
@@ -394,7 +394,7 @@ class _JustPulsingDotState extends State<_JustPulsingDot>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1600),
+      duration: JustDuration.slower,
     )..repeat();
   }
 
@@ -413,13 +413,15 @@ class _JustPulsingDotState extends State<_JustPulsingDot>
           pulseScale: widget.pulseScale,
         ),
         children: [
-          // Pulse halo
-          Container(
-            width: widget.size,
-            height: widget.size,
-            decoration: BoxDecoration(
-              color: widget.color.withValues(alpha: 0.4),
-              shape: .circle,
+          // Pulse halo (decorative)
+          ExcludeSemantics(
+            child: Container(
+              width: widget.size,
+              height: widget.size,
+              decoration: BoxDecoration(
+                color: widget.color.withValues(alpha: 0.4),
+                shape: .circle,
+              ),
             ),
           ),
           // Inner dot

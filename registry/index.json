@@ -176,7 +176,7 @@
           {
             "name": "just_badge.dart",
             "path": "components/badge/default/just_badge.dart",
-            "checksum": "sha256:9fbaab53d306588f0572558de5f6dd6859fb59106922dacf86d8e7deb7f3f164"
+            "checksum": "sha256:ff8d0c9cec655e6b5d7af5201ad57c1d259c2064588ded7eb1770a57060d7ff9"
           },
           {
             "name": "just_badge_style.dart",
@@ -450,7 +450,7 @@
           {
             "name": "just_switch.dart",
             "path": "components/switch/default/just_switch.dart",
-            "checksum": "sha256:78eddca0926efe1ae06e91ba4d5d0a4c530ea37be267f023415da1c5fa64900d"
+            "checksum": "sha256:2c1482247517c71c603ba0d45775f7d0741e4da40b030fb780c455d2dc8ed1b5"
           },
           {
             "name": "just_switch_style.dart",
@@ -503,7 +503,7 @@
           {
             "name": "just_card.dart",
             "path": "components/card/default/just_card.dart",
-            "checksum": "sha256:d9d198c51401b9ae7a782bcfb7fab7b80df67afe6eb2487f54531d09e4c75b72"
+            "checksum": "sha256:3c077076c634c73325c14feaa85e0db90fb608305db484c34f75a473502803af"
           },
           {
             "name": "just_card_style.dart",
@@ -708,7 +708,7 @@
           {
             "name": "just_skeleton.dart",
             "path": "components/skeleton/default/just_skeleton.dart",
-            "checksum": "sha256:5a9a83f53abbf7ae427cac3fe25cd7690334ac097323c859d910dd13ed66aab9"
+            "checksum": "sha256:420cc26fc4caeece43c2f68167abd50eb92abb2fe0cb512cae53472de825f9d5"
           },
           {
             "name": "just_skeleton_style.dart",
@@ -896,7 +896,7 @@
           {
             "name": "just_tabs.dart",
             "path": "components/tabs/default/just_tabs.dart",
-            "checksum": "sha256:db4e287b11a4f73e6f09efae5b1b90c237d014801a4568043e4fc24866ddaceb"
+            "checksum": "sha256:6de1127cd631a99ad8b020fb2194de986ca5f6b20087b09d90d0ddfd834666fd"
           },
           {
             "name": "just_tabs_style.dart",
@@ -1116,7 +1116,7 @@
           {
             "name": "just_toast.dart",
             "path": "components/toast/default/just_toast.dart",
-            "checksum": "sha256:067315159d6e3faaa0a0371ab29a4416dad231478e6535afffbe4ad63a505572"
+            "checksum": "sha256:f310826f04b6688a3aae0e84d1a54b9cad3494dcee5e910483de4bed76eb91fe"
           },
           {
             "name": "just_toast_style.dart",
@@ -1177,7 +1177,7 @@
           {
             "name": "just_dialog.dart",
             "path": "components/dialog/default/just_dialog.dart",
-            "checksum": "sha256:7c36b57b91ff0692d99ccb70945385df31fb360bfaaea102d25939625b5dbe3f"
+            "checksum": "sha256:de7587201a50788c13c8c280b8f1f4c8804b315771b91e8552364246fe94a72d"
           },
           {
             "name": "just_dialog_style.dart",
@@ -1423,7 +1423,7 @@
           {
             "name": "just_progress.dart",
             "path": "components/progress/default/just_progress.dart",
-            "checksum": "sha256:bb7f55c246d7c6bee87263c301cab909fa4792ffe58da4245751058ed3d05b98"
+            "checksum": "sha256:16b35d455b01c0577e1d00d306d33f2a230441e9e831eb744c7f6caf2fca878c"
           },
           {
             "name": "just_progress_style.dart",

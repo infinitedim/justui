@@ -21,6 +21,9 @@ abstract final class JustColorScheme {
   /// Elevated overlay/dialog surface color.
   Color get elevated;
 
+  /// Muted surface color for containers, filled cards, and secondary states.
+  Color get muted;
+
   /// Modal overlay backdrop color.
   Color get overlay;
 
@@ -67,6 +70,7 @@ abstract final class JustColorScheme {
         other.background == background &&
         other.card == card &&
         other.elevated == elevated &&
+        other.muted == muted &&
         other.overlay == overlay &&
         other.textPrimary == textPrimary &&
         other.textSecondary == textSecondary &&
@@ -87,6 +91,7 @@ abstract final class JustColorScheme {
       background,
       card,
       elevated,
+      muted,
       overlay,
       textPrimary,
       textSecondary,
@@ -112,6 +117,8 @@ final class _JustColorSchemeLight extends JustColorScheme {
   Color get card => JustColorSemanticLight.card;
   @override
   Color get elevated => JustColorSemanticLight.elevated;
+  @override
+  Color get muted => JustColorSemanticLight.muted;
   @override
   Color get overlay => JustColorSemanticLight.overlay;
 
@@ -150,6 +157,8 @@ final class _JustColorSchemeDark extends JustColorScheme {
   Color get card => JustColorSemanticDark.card;
   @override
   Color get elevated => JustColorSemanticDark.elevated;
+  @override
+  Color get muted => JustColorSemanticDark.muted;
   @override
   Color get overlay => JustColorSemanticDark.overlay;
 
@@ -198,6 +207,8 @@ final class _JustColorSchemeNeobrutalismLight extends JustColorScheme {
   @override
   Color get elevated => const Color(0xFFFFFFFF);
   @override
+  Color get muted => const Color(0xFFF1F5F9);
+  @override
   Color get overlay => const Color(0x99000000);
 
   @override
@@ -236,6 +247,8 @@ final class _JustColorSchemeNeobrutalismDark extends JustColorScheme {
   @override
   Color get elevated => const Color(0xFF333333);
   @override
+  Color get muted => const Color(0xFF333333);
+  @override
   Color get overlay => const Color(0xCC000000);
 
   @override
@@ -248,11 +261,11 @@ final class _JustColorSchemeNeobrutalismDark extends JustColorScheme {
   Color get textInverse => const Color(0xFF000000);
 
   @override
-  Color get borderDefault => const Color(0xFF000000);
+  Color get borderDefault => const Color(0xFFFFFFFF);
   @override
-  Color get borderFocus => const Color(0xFF000000);
+  Color get borderFocus => const Color(0xFFFFFFFF);
   @override
-  Color get borderError => const Color(0xFF000000);
+  Color get borderError => const Color(0xFFFF5353);
 
   @override
   Color get success => const Color(0xFF4ADE80);
@@ -517,6 +530,8 @@ final class CustomColorScheme extends JustColorScheme {
   @override
   final Color elevated;
   @override
+  final Color muted;
+  @override
   final Color overlay;
   @override
   final Color textPrimary;
@@ -546,6 +561,7 @@ final class CustomColorScheme extends JustColorScheme {
     required this.background,
     required this.card,
     required this.elevated,
+    required this.muted,
     required this.overlay,
     required this.textPrimary,
     required this.textSecondary,
