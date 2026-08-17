@@ -10,13 +10,18 @@ Widget buildJustBreadcrumbDefaultUseCase(BuildContext context) {
       .slider(label: 'Max Items (0 = All)', initialValue: 0, min: 0, max: 5)
       .toInt();
 
-  return JustBreadcrumb(
-    maxItems: maxItems > 0 ? maxItems : null,
-    items: [
-      JustBreadcrumbItem(label: 'Home', onTap: () {}),
-      JustBreadcrumbItem(label: 'Components', onTap: () {}),
-      JustBreadcrumbItem(label: 'Navigation', onTap: () {}),
-      const JustBreadcrumbItem(label: 'Breadcrumb'),
-    ],
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: JustBreadcrumb(
+        maxItems: maxItems > 0 ? maxItems : null,
+        items: [
+          JustBreadcrumbItem(label: 'Home', onTap: () {}),
+          JustBreadcrumbItem(label: 'Components', onTap: () {}),
+          JustBreadcrumbItem(label: 'Navigation', onTap: () {}),
+          const JustBreadcrumbItem(label: 'Breadcrumb'),
+        ],
+      ),
+    ),
   );
 }

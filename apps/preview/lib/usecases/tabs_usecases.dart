@@ -13,25 +13,29 @@ Widget buildJustTabsDefaultUseCase(BuildContext context) {
     initialOption: JustTabVariant.line,
   );
 
-  return SizedBox(
-    height: 300.0,
-    width: 400.0,
-    child: JustTabs(
-      variant: variant,
-      tabs: const [
-        JustTab(
-          label: 'Account',
-          content: Center(child: Text('Account Settings Content')),
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 500.0, maxHeight: 360.0),
+        child: JustTabs(
+          variant: variant,
+          tabs: const [
+            JustTab(
+              label: 'Account',
+              content: Center(child: Text('Account Settings Content')),
+            ),
+            JustTab(
+              label: 'Password',
+              content: Center(child: Text('Password Security Content')),
+            ),
+            JustTab(
+              label: 'Notifications',
+              content: Center(child: Text('Notification Preferences Content')),
+            ),
+          ],
         ),
-        JustTab(
-          label: 'Password',
-          content: Center(child: Text('Password Security Content')),
-        ),
-        JustTab(
-          label: 'Notifications',
-          content: Center(child: Text('Notification Preferences Content')),
-        ),
-      ],
+      ),
     ),
   );
 }

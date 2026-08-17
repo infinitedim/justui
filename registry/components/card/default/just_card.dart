@@ -191,6 +191,10 @@ class JustCard extends StatelessWidget {
         colors.borderDefault;
 
     Widget buildCardContent(bool isHovered, bool isPressed, bool isFocused) {
+      final typography = JustThemeProvider.of(
+        context,
+        aspect: .typography,
+      ).theme.typography;
       // Interactive overrides
       List<BoxShadow> currentShadows =
           style?.shadows ?? themeStyle?.shadows ?? defaultShadows;
@@ -258,26 +262,38 @@ class JustCard extends StatelessWidget {
           border: .fromBorderSide(borderSide),
           boxShadow: resolvedShadows,
         ),
-        child: Column(
-          mainAxisSize: .min,
-          crossAxisAlignment: .stretch,
-          children: [
-            if (header != null) ...[
-              JustCardHeader(padding: resolvedHeaderPadding, child: header!),
-              Container(
-                height: dividerHeight,
-                color: resolvedHeaderDividerColor,
-              ),
-            ],
-            Padding(padding: resolvedPadding, child: child),
-            if (footer != null) ...[
-              Container(
-                height: dividerHeight,
-                color: resolvedFooterDividerColor,
-              ),
-              JustCardFooter(padding: resolvedFooterPadding, child: footer!),
-            ],
-          ],
+        child: DefaultTextStyle(
+          style: typography.bodyMd.copyWith(color: colors.textPrimary),
+          child: IconTheme.merge(
+            data: IconThemeData(color: colors.textPrimary),
+            child: Column(
+              mainAxisSize: .min,
+              crossAxisAlignment: .stretch,
+              children: [
+                if (header != null) ...[
+                  JustCardHeader(
+                    padding: resolvedHeaderPadding,
+                    child: header!,
+                  ),
+                  Container(
+                    height: dividerHeight,
+                    color: resolvedHeaderDividerColor,
+                  ),
+                ],
+                Padding(padding: resolvedPadding, child: child),
+                if (footer != null) ...[
+                  Container(
+                    height: dividerHeight,
+                    color: resolvedFooterDividerColor,
+                  ),
+                  JustCardFooter(
+                    padding: resolvedFooterPadding,
+                    child: footer!,
+                  ),
+                ],
+              ],
+            ),
+          ),
         ),
       );
 

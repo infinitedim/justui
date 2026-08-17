@@ -351,7 +351,7 @@ class _JustButtonState extends State<JustButton> {
                   ? colors.warning
                   : colors.borderFocus;
               final primaryFg = presetTokens.showsDefaultBorder
-                  ? colors.textPrimary
+                  ? const Color(0xFF000000)
                   : colors.textInverse;
               final errorBg = colors.error;
 
@@ -374,7 +374,9 @@ class _JustButtonState extends State<JustButton> {
                   break;
 
                 case .secondary:
-                  bg = const Color(0x00000000);
+                  bg = presetTokens.showsDefaultBorder
+                      ? colors.card
+                      : const Color(0x00000000);
                   text = colors.textPrimary;
                   border = presetTokens.showsDefaultBorder
                       ? colors.textPrimary
@@ -384,26 +386,32 @@ class _JustButtonState extends State<JustButton> {
                     text = text.withValues(alpha: 0.4);
                     border = border.withValues(alpha: 0.4);
                   } else if (isPressed) {
-                    bg = primaryBg.withValues(alpha: 0.15);
+                    bg = presetTokens.showsDefaultBorder
+                        ? colors.card
+                        : primaryBg.withValues(alpha: 0.15);
                     border = presetTokens.showsDefaultBorder
                         ? colors.textPrimary
                         : primaryBg;
-                    text = primaryBg;
+                    text = presetTokens.showsDefaultBorder
+                        ? colors.textPrimary
+                        : primaryBg;
                   } else if (isHovered) {
-                    bg = primaryBg.withValues(alpha: 0.08);
+                    bg = presetTokens.showsDefaultBorder
+                        ? colors.card
+                        : primaryBg.withValues(alpha: 0.08);
                     border = presetTokens.showsDefaultBorder
                         ? colors.textPrimary
                         : primaryBg;
-                    text = primaryBg;
+                    text = presetTokens.showsDefaultBorder
+                        ? colors.textPrimary
+                        : primaryBg;
                   }
                   break;
 
                 case .ghost:
                   bg = const Color(0x00000000);
                   text = colors.textPrimary;
-                  border = presetTokens.showsDefaultBorder
-                      ? colors.textPrimary
-                      : const Color(0x00000000);
+                  border = const Color(0x00000000);
 
                   if (!isInteractive) {
                     text = text.withValues(alpha: 0.4);
@@ -416,7 +424,9 @@ class _JustButtonState extends State<JustButton> {
 
                 case .destructive:
                   bg = errorBg;
-                  text = primaryFg;
+                  text = presetTokens.showsDefaultBorder
+                      ? const Color(0xFF000000)
+                      : colors.textInverse;
                   border = presetTokens.showsDefaultBorder
                       ? colors.textPrimary
                       : const Color(0x00000000);
@@ -433,15 +443,19 @@ class _JustButtonState extends State<JustButton> {
 
                 case .link:
                   bg = const Color(0x00000000);
-                  text = primaryBg;
+                  text = presetTokens.showsDefaultBorder
+                      ? ((colors.background.computeLuminance() < 0.5)
+                            ? colors.textPrimary
+                            : colors.info)
+                      : primaryBg;
                   border = const Color(0x00000000);
 
                   if (!isInteractive) {
                     text = text.withValues(alpha: 0.4);
                   } else if (isPressed) {
-                    text = primaryBg.withValues(alpha: 0.7);
+                    text = text.withValues(alpha: 0.7);
                   } else if (isHovered) {
-                    text = primaryBg.withValues(alpha: 0.8);
+                    text = text.withValues(alpha: 0.8);
                   }
                   break;
               }
@@ -529,7 +543,7 @@ class _JustButtonState extends State<JustButton> {
 
               // Shadows resolution
               List<BoxShadow> resolvedShadows;
-              if (widget.variant == .link) {
+              if (widget.variant == .link || widget.variant == .ghost) {
                 resolvedShadows = const [];
               } else {
                 final double? styleElevation =

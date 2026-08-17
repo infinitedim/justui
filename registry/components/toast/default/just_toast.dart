@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart' show Icons, Theme;
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
@@ -291,8 +292,19 @@ class JustToastController extends JustOverlayController {
   }
 
   void _updatePositions() {
+    if (_activeToasts.isEmpty) return;
+    if (SchedulerBinding.instance.schedulerPhase != SchedulerPhase.idle) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _updatePositions();
+      });
+      return;
+    }
     for (final toast in _activeToasts) {
-      toast.overlayEntry.markNeedsBuild();
+      try {
+        if (toast.overlayEntry.mounted) {
+          toast.overlayEntry.markNeedsBuild();
+        }
+      } catch (_) {}
     }
   }
 
@@ -319,8 +331,39 @@ class JustToastController extends JustOverlayController {
   /// controller is re-attached to a new scope.
   void forceDismissAll() {
     final targets = List<_ToastEntry>.from(_activeToasts);
+    _activeToasts.clear();
     for (final entry in targets) {
-      _cleanupToastEntry(entry);
+      try {
+        if (entry.overlayEntry.mounted) {
+          entry.overlayEntry.remove();
+        }
+      } catch (_) {}
+      try {
+        entry.overlayEntry.dispose();
+      } catch (_) {}
+
+      final wasLocal =
+          !_queue.any(
+            (q) => q.animationController == entry.animationController,
+          ) &&
+          _activeToasts
+              .where(
+                (t) =>
+                    t != entry &&
+                    t.animationController == entry.animationController,
+              )
+              .isEmpty;
+      if (wasLocal) {
+        try {
+          entry.animationController.dispose();
+        } catch (_) {}
+      }
+
+      if (entry.onDismissed != null) {
+        try {
+          entry.onDismissed!();
+        } catch (_) {}
+      }
     }
   }
 

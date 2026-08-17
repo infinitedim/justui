@@ -27,5 +27,15 @@ Widget buildJustAvatarDefaultUseCase(BuildContext context) {
     initialOption: JustAvatarStatus.online,
   );
 
-  return JustAvatar(name: name, size: size, shape: shape, statusDot: statusDot);
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: JustAvatar(
+        name: name,
+        size: size,
+        shape: shape,
+        statusDot: statusDot,
+      ),
+    ),
+  );
 }

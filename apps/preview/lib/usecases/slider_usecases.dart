@@ -23,13 +23,18 @@ Widget buildJustSliderDefaultUseCase(BuildContext context) {
     initialOption: JustSliderSize.md,
   );
 
-  return SizedBox(
-    width: 300.0,
-    child: JustSlider(
-      value: value,
-      onChanged: (val) {},
-      showTooltip: showTooltip,
-      size: size,
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 360.0),
+        child: JustSlider(
+          value: value,
+          onChanged: (val) {},
+          showTooltip: showTooltip,
+          size: size,
+        ),
+      ),
     ),
   );
 }
@@ -49,15 +54,20 @@ Widget buildJustSliderRangeUseCase(BuildContext context) {
     max: 1.0,
   );
 
-  return SizedBox(
-    width: 300.0,
-    child: JustSlider.range(
-      rangeValues: JustRangeValues(
-        start < end ? start : end,
-        end > start ? end : start,
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 360.0),
+        child: JustSlider.range(
+          rangeValues: JustRangeValues(
+            start < end ? start : end,
+            end > start ? end : start,
+          ),
+          onRangeChanged: (val) {},
+          showTooltip: true,
+        ),
       ),
-      onRangeChanged: (val) {},
-      showTooltip: true,
     ),
   );
 }

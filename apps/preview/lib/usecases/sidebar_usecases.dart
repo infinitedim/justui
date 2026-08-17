@@ -17,32 +17,35 @@ Widget buildJustSidebarDefaultUseCase(BuildContext context) {
     initialOption: JustSidebarVariant.default_,
   );
 
-  return SizedBox(
-    height: 500.0,
-    child: JustSidebar(
-      isCollapsed: isCollapsed,
-      variant: variant,
-      header: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.0),
-        child: Text(
-          'JustUI Admin',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+  return Align(
+    alignment: Alignment.centerLeft,
+    child: SizedBox(
+      height: double.infinity,
+      child: JustSidebar(
+        isCollapsed: isCollapsed,
+        variant: variant,
+        header: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            'JustUI Admin',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+          ),
         ),
+        items: const [
+          JustSidebarItem(
+            label: 'Dashboard',
+            icon: Icon(IconData(0xe1b0, fontFamily: 'MaterialIcons')),
+          ),
+          JustSidebarItem(
+            label: 'Analytics',
+            icon: Icon(IconData(0xe0b9, fontFamily: 'MaterialIcons')),
+          ),
+          JustSidebarItem(
+            label: 'Settings',
+            icon: Icon(IconData(0xe57f, fontFamily: 'MaterialIcons')),
+          ),
+        ],
       ),
-      items: const [
-        JustSidebarItem(
-          label: 'Dashboard',
-          icon: Icon(IconData(0xe1b0, fontFamily: 'MaterialIcons')),
-        ),
-        JustSidebarItem(
-          label: 'Analytics',
-          icon: Icon(IconData(0xe0b9, fontFamily: 'MaterialIcons')),
-        ),
-        JustSidebarItem(
-          label: 'Settings',
-          icon: Icon(IconData(0xe57f, fontFamily: 'MaterialIcons')),
-        ),
-      ],
     ),
   );
 }

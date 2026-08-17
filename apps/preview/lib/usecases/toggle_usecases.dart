@@ -14,10 +14,15 @@ Widget buildJustToggleDefaultUseCase(BuildContext context) {
     initialOption: JustToggleSize.md,
   );
 
-  return JustToggle(
-    selected: selected,
-    onPressed: () {},
-    size: size,
-    child: const Text('Bold'),
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: JustToggle(
+        selected: selected,
+        onPressed: () {},
+        size: size,
+        child: const Text('Bold'),
+      ),
+    ),
   );
 }
