@@ -67,6 +67,7 @@ class _JustTooltipState extends State<JustTooltip>
       widget.animationController ?? _localAnimController;
 
   final LayerLink _layerLink = LayerLink();
+  final FocusNode _focusNode = FocusNode();
   OverlayEntry? _overlayEntry;
   Timer? _showTimer;
   Timer? _hideTimer;
@@ -79,15 +80,26 @@ class _JustTooltipState extends State<JustTooltip>
       vsync: this,
       duration: const Duration(milliseconds: 150),
     );
+    _focusNode.addListener(_onFocusChanged);
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChanged);
+    _focusNode.dispose();
     _showTimer?.cancel();
     _hideTimer?.cancel();
     _removeOverlayImmediate();
     _localAnimController.dispose();
     super.dispose();
+  }
+
+  void _onFocusChanged() {
+    if (_focusNode.hasFocus) {
+      _showTooltip();
+    } else {
+      _hideTooltip();
+    }
   }
 
   void _showTooltip() {
@@ -194,7 +206,7 @@ class _JustTooltipState extends State<JustTooltip>
             color: bgColor,
             borderRadius: borderRadius,
             border: presetTokens.showsDefaultBorder
-                ? .fromBorderSide(borderSide)
+                ? .all(color: borderSide.color, width: borderSide.width)
                 : null,
             boxShadow: presetTokens.showsDefaultBorder
                 ? theme.resolveShadows(const [], isPressed: false)
@@ -310,6 +322,8 @@ class _JustTooltipState extends State<JustTooltip>
       child: widget.child,
     );
 
+    result = Focus(focusNode: _focusNode, child: result);
+
     if (widget.triggerOnHover) {
       result = MouseRegion(
         onEnter: (_) => _showTooltip(),
@@ -327,6 +341,6 @@ class _JustTooltipState extends State<JustTooltip>
       );
     }
 
-    return result;
+    return Semantics(tooltip: widget.message, child: result);
   }
 }
