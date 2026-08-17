@@ -16,7 +16,7 @@ Widget buildJustBreadcrumbDefaultUseCase(BuildContext context) {
       JustBreadcrumbItem(label: 'Home', onTap: () {}),
       JustBreadcrumbItem(label: 'Components', onTap: () {}),
       JustBreadcrumbItem(label: 'Navigation', onTap: () {}),
-      JustBreadcrumbItem(label: 'Breadcrumb'),
+      const JustBreadcrumbItem(label: 'Breadcrumb'),
     ],
   );
 }

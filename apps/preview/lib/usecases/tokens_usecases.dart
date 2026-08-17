@@ -193,10 +193,10 @@ Widget _buildMiniSwatch(String label, Color color) {
 Widget buildTypographyTokensUseCase(BuildContext context) {
   return Container(
     padding: const EdgeInsets.all(24.0),
-    child: SingleChildScrollView(
+    child: const SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Text('Display Large (48px)', style: JustTypo.displayLg),
           SizedBox(height: 12),
           Text('Display Medium (36px)', style: JustTypo.displayMd),

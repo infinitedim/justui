@@ -1,8 +1,8 @@
 // justui-meta: registry=6ac35b403a58595a2de85869b1eb2c3e5d78b2c8f3253944e1c144bf19867ccd local=af809c242c580cf8c07f3dccadeec66c981e5d284d450d87e9c76597c080f0a5
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
 import 'package:just_ui_core/just_ui_core.dart';
+
 import '../../../shared/just_pressable.dart';
 import '../../../shared/just_focus_indicator.dart';
 import 'just_card_style.dart';
@@ -358,9 +358,8 @@ class JustCardTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final defaultStyle = JustFluidTypo.headingMd(
-      context,
-    ).copyWith(color: colors.textPrimary, fontWeight: .w600);
+    final defaultStyle = JustFluidTypo.headingMd(context)
+        .copyWith(color: colors.textPrimary, fontWeight: .w600);
 
     return DefaultTextStyle(style: defaultStyle.merge(style), child: child);
   }
@@ -380,9 +379,8 @@ class JustCardDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final defaultStyle = JustFluidTypo.bodySm(
-      context,
-    ).copyWith(color: colors.textSecondary);
+    final defaultStyle = JustFluidTypo.bodySm(context)
+        .copyWith(color: colors.textSecondary);
 
     return DefaultTextStyle(style: defaultStyle.merge(style), child: child);
   }

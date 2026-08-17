@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+
 import '../../theme/theme_provider.dart';
 import 'just_badge_style.dart';
 import 'just_badge_variants.dart';

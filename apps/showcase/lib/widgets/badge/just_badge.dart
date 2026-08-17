@@ -1,6 +1,7 @@
 // justui-meta: registry=c5e8aa19d34d1f0358bb9b964f3b3008b0d644758f5b6530745fe181b67a911f local=105df9d5cf075d940f53383094b3ce220d252b9e450fde85e3893c4e7e55bf1b
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
+
 import 'just_badge_style.dart';
 import 'just_badge_variants.dart';
 

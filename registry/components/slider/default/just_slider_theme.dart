@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_slider_style.dart';
 
 /// Global theme configuration for sliders, extending Flutter's [ThemeExtension].

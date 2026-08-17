@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
+
 import '../../theme/theme_provider.dart';
 import '../../theme/preset_tokens.dart';
 import '../shared/_shared_focus_indicator.dart';
@@ -194,7 +195,9 @@ class JustToggle extends StatelessWidget {
       child: JustPressable(
         enabled: isInteractive,
         onTap: onPressed,
-        builder: (context, isHovered, isPressed, isFocused, _) {
+        builder: (BuildContext context, JustInteractionState state) {
+          final isHovered = state.isHovered;
+          final isPressed = state.isPressed;
           Color bg = selected ? finalSelectedBg : finalUnselectedBg;
           Color text = selected ? finalSelectedText : finalUnselectedText;
           Color border = selected ? finalSelectedBorder : finalUnselectedBorder;
@@ -295,8 +298,7 @@ class JustToggle extends StatelessWidget {
           }
 
           return FocusIndicator(
-            isFocused: isFocused,
-            focusColor: colors.borderFocus,
+            isFocused: state.isFocusVisible,
             borderRadius: hasBorder ? .zero : resolvedRadius,
             child: buttonContent,
           );

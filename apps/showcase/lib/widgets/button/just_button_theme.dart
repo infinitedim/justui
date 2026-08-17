@@ -1,5 +1,6 @@
 // justui-meta: registry=f4d0f2c52f56f910dbe00f92a4e1549994c3ced627b383987d2a620c109dc7bc local=f4d0f2c52f56f910dbe00f92a4e1549994c3ced627b383987d2a620c109dc7bc
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_button_style.dart';
 
 /// Global theme configuration for buttons, extending Flutter's [ThemeExtension].

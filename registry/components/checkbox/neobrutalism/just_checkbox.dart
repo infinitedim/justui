@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
+
 import '../../theme/theme_provider.dart';
 import '../../theme/preset_tokens.dart';
 import '../shared/_shared_focus_indicator.dart';
@@ -128,9 +129,10 @@ class _JustCheckboxState extends State<JustCheckbox>
     final finalEnableHaptic =
         widget.enableHaptic ??
         checkboxTheme?.enableHaptic ??
-        JustThemeProvider.read(
-          context,
-        ).theme.presetTokens.selectionHapticDefault;
+        JustThemeProvider.read(context)
+            .theme
+            .presetTokens
+            .selectionHapticDefault;
 
     if (finalEnableHaptic) {
       HapticFeedback.selectionClick();

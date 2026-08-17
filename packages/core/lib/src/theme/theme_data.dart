@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
+
 import 'preset_tokens.dart';
 
 // ==========================================
@@ -539,7 +540,7 @@ final class NeobrutalismShadowScheme extends JustShadowScheme {
   List<BoxShadow> get xs => [
     BoxShadow(
       color: shadowColor,
-      offset: const Offset(1.0, 1.0),
+      offset: const Offset(2.0, 2.0),
       blurRadius: 0.0,
     ),
   ];
@@ -547,7 +548,7 @@ final class NeobrutalismShadowScheme extends JustShadowScheme {
   List<BoxShadow> get sm => [
     BoxShadow(
       color: shadowColor,
-      offset: const Offset(2.0, 2.0),
+      offset: const Offset(4.0, 4.0),
       blurRadius: 0.0,
     ),
   ];
@@ -555,7 +556,7 @@ final class NeobrutalismShadowScheme extends JustShadowScheme {
   List<BoxShadow> get md => [
     BoxShadow(
       color: shadowColor,
-      offset: const Offset(3.0, 3.0),
+      offset: const Offset(6.0, 6.0),
       blurRadius: 0.0,
     ),
   ];
@@ -563,7 +564,7 @@ final class NeobrutalismShadowScheme extends JustShadowScheme {
   List<BoxShadow> get lg => [
     BoxShadow(
       color: shadowColor,
-      offset: const Offset(4.0, 4.0),
+      offset: const Offset(8.0, 8.0),
       blurRadius: 0.0,
     ),
   ];
@@ -571,7 +572,7 @@ final class NeobrutalismShadowScheme extends JustShadowScheme {
   List<BoxShadow> get xl => [
     BoxShadow(
       color: shadowColor,
-      offset: const Offset(6.0, 6.0),
+      offset: const Offset(10.0, 10.0),
       blurRadius: 0.0,
     ),
   ];
@@ -579,7 +580,7 @@ final class NeobrutalismShadowScheme extends JustShadowScheme {
   List<BoxShadow> get xxl => [
     BoxShadow(
       color: shadowColor,
-      offset: const Offset(8.0, 8.0),
+      offset: const Offset(12.0, 12.0),
       blurRadius: 0.0,
     ),
   ];
@@ -668,7 +669,7 @@ class JustThemeData {
 
   /// Resolves the shadow offset based on the preset.
   Offset get shadowOffset =>
-      preset == .neobrutalism ? const Offset(3.0, 3.0) : .zero;
+      preset == .neobrutalism ? const Offset(4.0, 4.0) : .zero;
 
   /// Resolves the shadow list for the current preset and press state.
   ///

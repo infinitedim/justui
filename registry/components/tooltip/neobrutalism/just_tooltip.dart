@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
@@ -130,8 +131,7 @@ class _JustTooltipState extends State<JustTooltip>
         final bgColor =
             entryStyle?.backgroundColor ??
             themeStyle?.backgroundColor ??
-            colors
-                .textPrimary; // Dark background by default for high contrast tooltips
+            colors.textPrimary; // Dark background by default for high contrast tooltips
         final fgColor =
             entryStyle?.foregroundColor ??
             themeStyle?.foregroundColor ??
@@ -203,9 +203,8 @@ class _JustTooltipState extends State<JustTooltip>
           padding: padding,
           child: Text(
             widget.message,
-            style: JustFluidTypo.bodySm(
-              context,
-            ).copyWith(color: fgColor, fontSize: 12.0),
+            style: JustFluidTypo.bodySm(context)
+                .copyWith(color: fgColor, fontSize: 12.0),
           ),
         );
 

@@ -22,10 +22,10 @@ Widget buildJustCardDefaultUseCase(BuildContext context) {
     variant: variant,
     width: 340.0,
     onTap: isInteractive ? () {} : null,
-    header: JustCardHeader(
+    header: const JustCardHeader(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           JustCardTitle(child: Text('Card Title')),
           JustCardDescription(
             child: Text('This is a description of the card.'),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_accordion_style.dart';
 
 /// Global theme configuration for accordions, extending Flutter's [ThemeExtension].

@@ -255,9 +255,7 @@ class _JustSliderState extends State<JustSlider> {
                     height: trackHeight,
                     decoration: BoxDecoration(
                       color: activeTrackColor,
-                      borderRadius: _isRange
-                          ? null
-                          : trackBorderRadius, // Rounded left edge for single mode
+                      borderRadius: _isRange ? null : trackBorderRadius, // Rounded left edge for single mode
                       border: theme.theme.presetTokens.showsDefaultBorder
                           ? .symmetric(
                               horizontal: BorderSide(

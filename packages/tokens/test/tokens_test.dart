@@ -486,55 +486,58 @@ void main() {
   });
 
   group('Adaptive Motion Engine Validation', () {
-    test('JustDuration.scaleForDistance scales and clamps durations correctly', () {
-      // Test zero and negative distance returns min duration
-      expect(
-        JustDuration.scaleForDistance(
-          0,
-          min: JustDuration.fast,
-          max: JustDuration.slow,
-        ),
-        equals(JustDuration.fast),
-      );
-      expect(
-        JustDuration.scaleForDistance(
-          -50.0,
-          min: JustDuration.fast,
-          max: JustDuration.slow,
-        ),
-        equals(JustDuration.fast),
-      );
+    test(
+      'JustDuration.scaleForDistance scales and clamps durations correctly',
+      () {
+        // Test zero and negative distance returns min duration
+        expect(
+          JustDuration.scaleForDistance(
+            0,
+            min: JustDuration.fast,
+            max: JustDuration.slow,
+          ),
+          equals(JustDuration.fast),
+        );
+        expect(
+          JustDuration.scaleForDistance(
+            -50.0,
+            min: JustDuration.fast,
+            max: JustDuration.slow,
+          ),
+          equals(JustDuration.fast),
+        );
 
-      // Test mid-range distance: 150px / 1.5 pixels/ms = 100ms. If fast is 150ms, it should clamp to 150ms.
-      expect(
-        JustDuration.scaleForDistance(
-          150.0,
-          min: JustDuration.fast,
-          max: JustDuration.slow,
-        ),
-        equals(JustDuration.fast),
-      );
+        // Test mid-range distance: 150px / 1.5 pixels/ms = 100ms. If fast is 150ms, it should clamp to 150ms.
+        expect(
+          JustDuration.scaleForDistance(
+            150.0,
+            min: JustDuration.fast,
+            max: JustDuration.slow,
+          ),
+          equals(JustDuration.fast),
+        );
 
-      // Test longer distance: 600px / 1.5 pixels/ms = 400ms. If slow is 400ms, it should return 400ms.
-      expect(
-        JustDuration.scaleForDistance(
-          600.0,
-          min: JustDuration.fast,
-          max: JustDuration.slow,
-        ),
-        equals(JustDuration.slow),
-      );
+        // Test longer distance: 600px / 1.5 pixels/ms = 400ms. If slow is 400ms, it should return 400ms.
+        expect(
+          JustDuration.scaleForDistance(
+            600.0,
+            min: JustDuration.fast,
+            max: JustDuration.slow,
+          ),
+          equals(JustDuration.slow),
+        );
 
-      // Test extremely long distance: 1500px / 1.5 pixels/ms = 1000ms. Clamps to max (slow - 400ms).
-      expect(
-        JustDuration.scaleForDistance(
-          1500.0,
-          min: JustDuration.fast,
-          max: JustDuration.slow,
-        ),
-        equals(JustDuration.slow),
-      );
-    });
+        // Test extremely long distance: 1500px / 1.5 pixels/ms = 1000ms. Clamps to max (slow - 400ms).
+        expect(
+          JustDuration.scaleForDistance(
+            1500.0,
+            min: JustDuration.fast,
+            max: JustDuration.slow,
+          ),
+          equals(JustDuration.slow),
+        );
+      },
+    );
 
     testWidgets(
       'JustMotionProfile.resolve respects system disableAnimations setting',
@@ -573,32 +576,29 @@ void main() {
   });
 
   group('Advanced Primitives Validation', () {
-    test(
-      'JustDynamicSurfaces.generateDarkSurface maintains seed hue and clamps saturation/lightness',
-      () {
-        const seed = Color(0xFF3B82F6); // Blue seed
-        final darkBg = JustDynamicSurfaces.generateDarkSurface(
-          seed,
-          lightness: 0.03,
-        );
-        final darkCard = JustDynamicSurfaces.generateDarkSurface(
-          seed,
-          lightness: 0.07,
-        );
+    test('JustDynamicSurfaces.generateDarkSurface maintains seed hue and clamps saturation/lightness', () {
+      const seed = Color(0xFF3B82F6); // Blue seed
+      final darkBg = JustDynamicSurfaces.generateDarkSurface(
+        seed,
+        lightness: 0.03,
+      );
+      final darkCard = JustDynamicSurfaces.generateDarkSurface(
+        seed,
+        lightness: 0.07,
+      );
 
-        final HSLColor hslSeed = HSLColor.fromColor(seed);
-        final HSLColor hslBg = HSLColor.fromColor(darkBg);
-        final HSLColor hslCard = HSLColor.fromColor(darkCard);
+      final HSLColor hslSeed = HSLColor.fromColor(seed);
+      final HSLColor hslBg = HSLColor.fromColor(darkBg);
+      final HSLColor hslCard = HSLColor.fromColor(darkCard);
 
-        expect(hslBg.hue, closeTo(hslSeed.hue, 0.01));
-        expect(hslBg.lightness, equals(0.03));
-        expect(hslBg.saturation, lessThanOrEqualTo(0.08));
+      expect(hslBg.hue, closeTo(hslSeed.hue, 0.01));
+      expect(hslBg.lightness, equals(0.03));
+      expect(hslBg.saturation, lessThanOrEqualTo(0.08));
 
-        expect(hslCard.hue, closeTo(hslSeed.hue, 0.01));
-        expect(hslCard.lightness, equals(0.07));
-        expect(hslCard.saturation, lessThanOrEqualTo(0.12));
-      },
-    );
+      expect(hslCard.hue, closeTo(hslSeed.hue, 0.01));
+      expect(hslCard.lightness, equals(0.07));
+      expect(hslCard.saturation, lessThanOrEqualTo(0.12));
+    });
 
     test('JustShadows.generate produces valid dual-layer tinted shadows', () {
       const seed = Color(0xFF3B82F6);

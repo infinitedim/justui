@@ -2,6 +2,7 @@ import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
+
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_tab_indicator.dart';
@@ -48,8 +49,12 @@ class JustTabController extends ChangeNotifier {
 
   /// Creates a [JustTabController].
   JustTabController({required this.length, int initialIndex = 0})
-    : _index = length == 0 ? 0 : initialIndex.clamp(0, length > 0 ? length - 1 : 0),
-      _animationValue = (length == 0 ? 0 : initialIndex.clamp(0, length > 0 ? length - 1 : 0)).toDouble() {
+    : _index = length == 0
+          ? 0
+          : initialIndex.clamp(0, length > 0 ? length - 1 : 0),
+      _animationValue =
+          (length == 0 ? 0 : initialIndex.clamp(0, length > 0 ? length - 1 : 0))
+              .toDouble() {
     assert(length == 0 || (initialIndex >= 0 && initialIndex < length));
   }
 
@@ -533,7 +538,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
           key: _tabKeys[i],
           enabled: isEnabled,
           onTap: () => _handleTabTap(i),
-          builder: (context, isHovered, isPressed, isFocused, focusNode) {
+          builder: (BuildContext context, JustInteractionState state) {
             final double distance = (activeVal - i).abs();
             final double textInterpolation = (1.0 - distance).clamp(0.0, 1.0);
             final textColor =

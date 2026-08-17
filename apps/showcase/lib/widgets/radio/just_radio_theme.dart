@@ -1,5 +1,6 @@
 // justui-meta: registry=1c5a9700ba0a6c05818a69838bbd06b2b52ddc3ac052b9a547de8d50e302b001 local=1c5a9700ba0a6c05818a69838bbd06b2b52ddc3ac052b9a547de8d50e302b001
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_radio_style.dart';
 
 /// Global theme configuration for radio buttons, extending Flutter's [ThemeExtension].

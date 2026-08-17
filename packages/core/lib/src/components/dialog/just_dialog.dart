@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -439,6 +440,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
                   child: Semantics(
                     scopesRoute: true,
                     namesRoute: true,
+                    explicitChildNodes: true,
                     label: 'Dialog',
                     child: animatedChild,
                   ),

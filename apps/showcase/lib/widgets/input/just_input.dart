@@ -2,8 +2,8 @@
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
 import 'package:just_ui_core/just_ui_core.dart';
+
 import 'just_input_style.dart';
 import 'just_input_variants.dart';
 

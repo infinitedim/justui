@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
+
 import '../../theme/theme_provider.dart';
 import 'just_separator_style.dart';
 import 'just_separator_theme.dart';
@@ -77,9 +78,8 @@ class JustSeparator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Resolve theme extension configurations
-    final globalSeparatorTheme = Theme.of(
-      context,
-    ).extension<JustSeparatorTheme>();
+    final globalSeparatorTheme = Theme.of(context)
+        .extension<JustSeparatorTheme>();
     final themeStyle = globalSeparatorTheme?.style;
 
     // Aspect-based subscriptions
@@ -99,9 +99,8 @@ class JustSeparator extends StatelessWidget {
     final resolvedThickness =
         style?.thickness ??
         themeStyle?.thickness ??
-        JustThemeProvider.of(
-          context,
-        ).theme.presetTokens.resolveSeparatorThickness(thickness);
+        JustThemeProvider.of(context).theme.presetTokens
+            .resolveSeparatorThickness(thickness);
     final resolvedIndent = style?.indent ?? themeStyle?.indent ?? indent;
     final resolvedEndIndent =
         style?.endIndent ?? themeStyle?.endIndent ?? endIndent;

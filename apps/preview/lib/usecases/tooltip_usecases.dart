@@ -13,15 +13,30 @@ Widget buildJustTooltipDefaultUseCase(BuildContext context) {
     initialValue: 'Save changes to cloud',
   );
   final position = context.knobs.object.dropdown<TooltipPosition>(
-    label: 'Position',
+    label: 'Preferred Position',
     options: TooltipPosition.values,
     initialOption: TooltipPosition.top,
+  );
+  final showArrow = context.knobs.boolean(
+    label: 'Show Arrow',
+    initialValue: false,
+  );
+  final triggerOnHover = context.knobs.boolean(
+    label: 'Trigger on Hover',
+    initialValue: true,
+  );
+  final triggerOnLongPress = context.knobs.boolean(
+    label: 'Trigger on Long Press',
+    initialValue: true,
   );
 
   return Center(
     child: JustTooltip(
       message: message,
-      position: position,
+      preferredPosition: position,
+      showArrow: showArrow,
+      triggerOnHover: triggerOnHover,
+      triggerOnLongPress: triggerOnLongPress,
       child: JustButton.primary(
         label: 'Hover or Long Press Me',
         onPressed: () {},

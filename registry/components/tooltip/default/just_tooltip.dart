@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 
@@ -152,10 +153,9 @@ class _JustTooltipState extends State<JustTooltip>
                 ? colors.background
                 : colors.elevated);
 
-        final resolvedBorderColor =
-            theme.presetTokens.showsDefaultBorder
-                ? colors.textPrimary
-                : colors.borderDefault;
+        final resolvedBorderColor = theme.presetTokens.showsDefaultBorder
+            ? colors.textPrimary
+            : colors.borderDefault;
 
         final resolvedTextColor =
             entryStyle?.foregroundColor ??
@@ -212,10 +212,7 @@ class _JustTooltipState extends State<JustTooltip>
           builder: (context, child) {
             return Transform.scale(
               scale: 0.95 + 0.05 * _animController.value,
-              child: Opacity(
-                opacity: _animController.value,
-                child: child,
-              ),
+              child: Opacity(opacity: _animController.value, child: child),
             );
           },
           child: Container(

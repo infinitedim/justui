@@ -1,46 +1,36 @@
-import 'package:flutter/services.dart' show KeyDownEvent;
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
+import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
 import 'package:flutter/widgets.dart';
 
+/// Holds the active interaction states of a pressable element.
+class const JustInteractionState(
+  final bool isHovered,
+  final bool isPressed,
+  final bool isFocused,
+  final bool isFocusVisible,
+  final FocusNode focusNode,
+);
+
 /// A builder function that provides the active interactive states of a pressable element.
-typedef JustPressableBuilder =
-    Widget Function(
-      BuildContext context,
-      bool isHovered,
-      bool isPressed,
-      bool isFocused,
-      FocusNode focusNode,
-    );
+typedef JustPressableBuilder = Widget Function(
+  BuildContext context,
+  JustInteractionState state,
+);
 
 /// A utility component that manages hover, press, and focus state machines.
 ///
 /// Encapsulates primitive widgets (`Focus`, `MouseRegion`, `GestureDetector`) and
 /// exposes their states via [JustPressableBuilder] using [ValueNotifier] to isolate rebuilds.
-class JustPressable extends StatefulWidget {
-  /// Whether this element is interactive.
-  final bool enabled;
-
-  /// Callback when the element is tapped.
-  final VoidCallback? onTap;
-
-  /// Optional external [FocusNode] to control or monitor focus.
-  final FocusNode? focusNode;
-
-  /// Optional custom key event handler for keyboard navigation.
-  final FocusOnKeyEventCallback? onKeyEvent;
-
-  /// Builder that returns the styled widget tree based on the interactive states.
-  final JustPressableBuilder builder;
-
-  /// Creates a [JustPressable] component.
-  const JustPressable({
-    super.key,
-    this.enabled = true,
-    this.onTap,
-    this.focusNode,
-    this.onKeyEvent,
-    required this.builder,
-  });
-
+class const JustPressable({
+  required final JustPressableBuilder builder,
+  super.key,
+  final bool enabled = true,
+  final VoidCallback? onTap,
+  final FocusNode? focusNode,
+  final FocusOnKeyEventCallback? onKeyEvent,
+  final bool? enableHapticFeedback,
+  final String? semanticLabel,
+}) extends StatefulWidget {
   @override
   State<JustPressable> createState() => _JustPressableState();
 }
@@ -50,6 +40,7 @@ class _JustPressableState extends State<JustPressable> {
   final ValueNotifier<bool> _isHovered = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _isPressed = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _isFocused = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _isFocusVisible = ValueNotifier<bool>(false);
   late final Listenable _statesListenable;
 
   @override
@@ -57,7 +48,13 @@ class _JustPressableState extends State<JustPressable> {
     super.initState();
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_onFocusChanged);
-    _statesListenable = Listenable.merge([_isHovered, _isPressed, _isFocused]);
+    FocusManager.instance.addHighlightModeListener(_onHighlightModeChanged);
+    _statesListenable = .merge([
+      _isHovered,
+      _isPressed,
+      _isFocused,
+      _isFocusVisible,
+    ]);
   }
 
   @override
@@ -76,6 +73,7 @@ class _JustPressableState extends State<JustPressable> {
 
   @override
   void dispose() {
+    FocusManager.instance.removeHighlightModeListener(_onHighlightModeChanged);
     _focusNode.removeListener(_onFocusChanged);
     if (widget.focusNode == null) {
       _focusNode.dispose();
@@ -83,16 +81,34 @@ class _JustPressableState extends State<JustPressable> {
     _isHovered.dispose();
     _isPressed.dispose();
     _isFocused.dispose();
+    _isFocusVisible.dispose();
     super.dispose();
   }
 
   void _onFocusChanged() {
     _isFocused.value = _focusNode.hasFocus;
+    _updateFocusVisible();
+  }
+
+  void _onHighlightModeChanged(FocusHighlightMode mode) {
+    _updateFocusVisible();
+  }
+
+  void _updateFocusVisible() {
+    _isFocusVisible.value =
+        _focusNode.hasFocus &&
+        FocusManager.instance.highlightMode == .traditional;
   }
 
   void _handleTapDown(TapDownDetails details) {
     if (widget.enabled) {
       _isPressed.value = true;
+      final shouldHaptic =
+          widget.enableHapticFeedback ??
+          (defaultTargetPlatform == .iOS || defaultTargetPlatform == .android);
+      if (shouldHaptic) {
+        HapticFeedback.lightImpact();
+      }
     }
   }
 
@@ -123,10 +139,11 @@ class _JustPressableState extends State<JustPressable> {
 
   @override
   Widget build(BuildContext context) {
-    return Focus(
+    Widget content = Focus(
       focusNode: _focusNode,
       canRequestFocus: widget.enabled,
-      onKeyEvent: widget.onKeyEvent ??
+      onKeyEvent:
+          widget.onKeyEvent ??
           (node, event) {
             if (!widget.enabled ||
                 widget.onTap == null ||
@@ -155,15 +172,29 @@ class _JustPressableState extends State<JustPressable> {
             builder: (context, _) {
               return widget.builder(
                 context,
-                widget.enabled && _isHovered.value,
-                widget.enabled && _isPressed.value,
-                widget.enabled && _isFocused.value,
-                _focusNode,
+                JustInteractionState(
+                  widget.enabled && _isHovered.value,
+                  widget.enabled && _isPressed.value,
+                  widget.enabled && _isFocused.value,
+                  widget.enabled && _isFocusVisible.value,
+                  _focusNode,
+                ),
               );
             },
           ),
         ),
       ),
     );
+
+    if (widget.semanticLabel != null) {
+      content = Semantics(
+        button: true,
+        label: widget.semanticLabel,
+        enabled: widget.enabled,
+        child: content,
+      );
+    }
+
+    return content;
   }
 }

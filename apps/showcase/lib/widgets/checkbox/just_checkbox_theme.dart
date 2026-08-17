@@ -1,5 +1,6 @@
 // justui-meta: registry=4c19a9d2fcd13ccc7889e596cb9fe745ca1efcd3c226f935add0d737c8f3659a local=4c19a9d2fcd13ccc7889e596cb9fe745ca1efcd3c226f935add0d737c8f3659a
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_checkbox_style.dart';
 
 /// Global theme configuration for checkboxes, extending Flutter's [ThemeExtension].

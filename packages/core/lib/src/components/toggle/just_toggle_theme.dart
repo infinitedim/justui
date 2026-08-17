@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_toggle_style.dart';
 
 /// Global theme configuration for toggle buttons, extending Flutter's [ThemeExtension].

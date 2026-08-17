@@ -56,26 +56,27 @@ void main() {
       expect(separatorSize.height, equals(16.0));
     });
 
-    testWidgets('Renders vertical separator with label text and defaults size', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(
-        buildTestableWidget(
-          const Row(
-            children: [
-              Text('Left'),
-              JustSeparator(direction: .vertical, label: 'AND'),
-              Text('Right'),
-            ],
+    testWidgets(
+      'Renders vertical separator with label text and defaults size',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestableWidget(
+            const Row(
+              children: [
+                Text('Left'),
+                JustSeparator(direction: .vertical, label: 'AND'),
+                Text('Right'),
+              ],
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('AND'), findsOneWidget);
-      final separatorSize = tester.getSize(find.byType(JustSeparator));
-      // Default vertical length fallback with label should be spacing.xl * 2 (48.0)
-      expect(separatorSize.height, equals(48.0));
-    });
+        expect(find.text('AND'), findsOneWidget);
+        final separatorSize = tester.getSize(find.byType(JustSeparator));
+        // Default vertical length fallback with label should be spacing.xl * 2 (48.0)
+        expect(separatorSize.height, equals(48.0));
+      },
+    );
 
     testWidgets(
       'Responsive constructor resolves direction adaptively based on width and breakpoint',
