@@ -31,6 +31,28 @@ class JustScrollAreaStyle {
   /// Corner radius of the scrollbar thumb.
   final Radius? scrollbarRadius;
 
+  /// Override to enable or disable Lenis-style smooth scroll.
+  ///
+  /// When `null`, defaults to `true` on desktop/web and `false` on mobile.
+  final bool? smoothScroll;
+
+  /// Override for the lerp interpolation factor (0.01–1.0).
+  ///
+  /// Lower values produce smoother, more cinematic scrolling.
+  /// Higher values produce snappier, more responsive scrolling.
+  /// Defaults to 0.10 (Lenis signature).
+  final double? lerpFactor;
+
+  /// Override for the mouse wheel scroll distance multiplier.
+  ///
+  /// Defaults to 1.0.
+  final double? wheelMultiplier;
+
+  /// Override for the touch/trackpad scroll distance multiplier.
+  ///
+  /// Defaults to 1.0.
+  final double? touchMultiplier;
+
   /// Creates a [JustScrollAreaStyle] override.
   const JustScrollAreaStyle({
     this.fadeColor,
@@ -39,5 +61,9 @@ class JustScrollAreaStyle {
     this.scrollbarTrackColor,
     this.scrollbarThickness,
     this.scrollbarRadius,
+    this.smoothScroll,
+    this.lerpFactor,
+    this.wheelMultiplier,
+    this.touchMultiplier,
   });
 }
