@@ -7,12 +7,6 @@ import 'package:just_ui_core/src/components/slider/just_slider_style.dart';
 
 @widgetbook.UseCase(name: 'Default Slider', type: JustSlider)
 Widget buildJustSliderDefaultUseCase(BuildContext context) {
-  final value = context.knobs.double.slider(
-    label: 'Value',
-    initialValue: 0.5,
-    min: 0.0,
-    max: 1.0,
-  );
   final showTooltip = context.knobs.boolean(
     label: 'Show Tooltip',
     initialValue: true,
@@ -28,9 +22,7 @@ Widget buildJustSliderDefaultUseCase(BuildContext context) {
       padding: const EdgeInsets.all(24.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 360.0),
-        child: JustSlider(
-          value: value,
-          onChanged: (val) {},
+        child: _InteractiveSliderDemo(
           showTooltip: showTooltip,
           size: size,
         ),
@@ -39,19 +31,47 @@ Widget buildJustSliderDefaultUseCase(BuildContext context) {
   );
 }
 
+class _InteractiveSliderDemo extends StatefulWidget {
+  final bool showTooltip;
+  final JustSliderSize size;
+
+  const _InteractiveSliderDemo({
+    required this.showTooltip,
+    required this.size,
+  });
+
+  @override
+  State<_InteractiveSliderDemo> createState() => _InteractiveSliderDemoState();
+}
+
+class _InteractiveSliderDemoState extends State<_InteractiveSliderDemo> {
+  double _value = 0.5;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSlider(
+      value: _value,
+      onChanged: (val) {
+        setState(() {
+          _value = val;
+        });
+      },
+      showTooltip: widget.showTooltip,
+      size: widget.size,
+    );
+  }
+}
+
 @widgetbook.UseCase(name: 'Range Slider', type: JustSlider)
 Widget buildJustSliderRangeUseCase(BuildContext context) {
-  final start = context.knobs.double.slider(
-    label: 'Range Start',
-    initialValue: 0.2,
-    min: 0.0,
-    max: 1.0,
+  final showTooltip = context.knobs.boolean(
+    label: 'Show Tooltip',
+    initialValue: true,
   );
-  final end = context.knobs.double.slider(
-    label: 'Range End',
-    initialValue: 0.8,
-    min: 0.0,
-    max: 1.0,
+  final size = context.knobs.object.dropdown<JustSliderSize>(
+    label: 'Size',
+    options: JustSliderSize.values,
+    initialOption: JustSliderSize.md,
   );
 
   return Center(
@@ -59,15 +79,44 @@ Widget buildJustSliderRangeUseCase(BuildContext context) {
       padding: const EdgeInsets.all(24.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 360.0),
-        child: JustSlider.range(
-          rangeValues: JustRangeValues(
-            start < end ? start : end,
-            end > start ? end : start,
-          ),
-          onRangeChanged: (val) {},
-          showTooltip: true,
+        child: _InteractiveRangeSliderDemo(
+          showTooltip: showTooltip,
+          size: size,
         ),
       ),
     ),
   );
+}
+
+class _InteractiveRangeSliderDemo extends StatefulWidget {
+  final bool showTooltip;
+  final JustSliderSize size;
+
+  const _InteractiveRangeSliderDemo({
+    required this.showTooltip,
+    required this.size,
+  });
+
+  @override
+  State<_InteractiveRangeSliderDemo> createState() =>
+      _InteractiveRangeSliderDemoState();
+}
+
+class _InteractiveRangeSliderDemoState
+    extends State<_InteractiveRangeSliderDemo> {
+  JustRangeValues _values = const JustRangeValues(0.2, 0.8);
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSlider.range(
+      rangeValues: _values,
+      onRangeChanged: (val) {
+        setState(() {
+          _values = val;
+        });
+      },
+      showTooltip: widget.showTooltip,
+      size: widget.size,
+    );
+  }
 }

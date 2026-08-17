@@ -7,11 +7,6 @@ import 'package:just_ui_core/src/components/radio/just_radio_style.dart';
 
 @widgetbook.UseCase(name: 'Default Radio', type: JustRadio)
 Widget buildJustRadioDefaultUseCase(BuildContext context) {
-  final selectedOption = context.knobs.object.dropdown<String>(
-    label: 'Selected Option',
-    options: ['Option 1', 'Option 2', 'Option 3'],
-    initialOption: 'Option 1',
-  );
   final isDisabled = context.knobs.boolean(
     label: 'Disabled',
     initialValue: false,
@@ -25,36 +20,83 @@ Widget buildJustRadioDefaultUseCase(BuildContext context) {
   return Center(
     child: Padding(
       padding: const EdgeInsets.all(24.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          JustRadio<String>(
-            value: 'Option 1',
-            groupValue: selectedOption,
-            onChanged: isDisabled ? null : (val) {},
-            isDisabled: isDisabled,
-            size: size,
-            label: const Text('Option 1'),
-          ),
-          JustRadio<String>(
-            value: 'Option 2',
-            groupValue: selectedOption,
-            onChanged: isDisabled ? null : (val) {},
-            isDisabled: isDisabled,
-            size: size,
-            label: const Text('Option 2'),
-          ),
-          JustRadio<String>(
-            value: 'Option 3',
-            groupValue: selectedOption,
-            onChanged: isDisabled ? null : (val) {},
-            isDisabled: isDisabled,
-            size: size,
-            label: const Text('Option 3'),
-          ),
-        ],
+      child: _InteractiveRadioGroupDemo(
+        isDisabled: isDisabled,
+        size: size,
       ),
     ),
   );
+}
+
+class _InteractiveRadioGroupDemo extends StatefulWidget {
+  final bool isDisabled;
+  final JustRadioSize size;
+
+  const _InteractiveRadioGroupDemo({
+    required this.isDisabled,
+    required this.size,
+  });
+
+  @override
+  State<_InteractiveRadioGroupDemo> createState() =>
+      _InteractiveRadioGroupDemoState();
+}
+
+class _InteractiveRadioGroupDemoState
+    extends State<_InteractiveRadioGroupDemo> {
+  String _selectedOption = 'Option 1';
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        JustRadio<String>(
+          value: 'Option 1',
+          groupValue: _selectedOption,
+          onChanged: widget.isDisabled
+              ? null
+              : (val) {
+                  setState(() {
+                    _selectedOption = val;
+                  });
+                },
+          isDisabled: widget.isDisabled,
+          size: widget.size,
+          label: const Text('Option 1'),
+        ),
+        const SizedBox(height: 8.0),
+        JustRadio<String>(
+          value: 'Option 2',
+          groupValue: _selectedOption,
+          onChanged: widget.isDisabled
+              ? null
+              : (val) {
+                  setState(() {
+                    _selectedOption = val;
+                  });
+                },
+          isDisabled: widget.isDisabled,
+          size: widget.size,
+          label: const Text('Option 2'),
+        ),
+        const SizedBox(height: 8.0),
+        JustRadio<String>(
+          value: 'Option 3',
+          groupValue: _selectedOption,
+          onChanged: widget.isDisabled
+              ? null
+              : (val) {
+                  setState(() {
+                    _selectedOption = val;
+                  });
+                },
+          isDisabled: widget.isDisabled,
+          size: widget.size,
+          label: const Text('Option 3'),
+        ),
+      ],
+    );
+  }
 }

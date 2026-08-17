@@ -12,16 +12,37 @@ Widget buildJustBottomNavDefaultUseCase(BuildContext context) {
     options: JustBottomNavVariant.values,
     initialOption: JustBottomNavVariant.fixed,
   );
-  final selectedIndex = context.knobs.double
-      .slider(label: 'Selected Index', initialValue: 0, min: 0, max: 2)
-      .toInt();
 
   return Align(
     alignment: Alignment.bottomCenter,
-    child: JustBottomNav(
-      variant: variant,
-      selectedIndex: selectedIndex,
-      onItemSelected: (val) {},
+    child: _InteractiveBottomNavDemo(variant: variant),
+  );
+}
+
+class _InteractiveBottomNavDemo extends StatefulWidget {
+  final JustBottomNavVariant variant;
+
+  const _InteractiveBottomNavDemo({required this.variant});
+
+  @override
+  State<_InteractiveBottomNavDemo> createState() =>
+      _InteractiveBottomNavDemoState();
+}
+
+class _InteractiveBottomNavDemoState
+    extends State<_InteractiveBottomNavDemo> {
+  int _selectedIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustBottomNav(
+      variant: widget.variant,
+      selectedIndex: _selectedIndex,
+      onItemSelected: (index) {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
       items: const [
         JustBottomNavItem(
           label: 'Home',
@@ -36,6 +57,6 @@ Widget buildJustBottomNavDefaultUseCase(BuildContext context) {
           icon: Icon(IconData(0xe57f, fontFamily: 'MaterialIcons')),
         ),
       ],
-    ),
-  );
+    );
+  }
 }
