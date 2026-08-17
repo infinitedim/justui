@@ -607,12 +607,12 @@
           {
             "name": "just_scroll_area.dart",
             "path": "components/scroll/default/just_scroll_area.dart",
-            "checksum": "sha256:563557b91b7419a979fddcc04339f82e60523dd87b11853475dbac0504056ab1"
+            "checksum": "sha256:52135af6739d9ee1d74f8c3caf29ff60e73ba047b63cb203b6c35c4ef9799f4d"
           },
           {
             "name": "just_scroll_area_style.dart",
             "path": "components/scroll/default/just_scroll_area_style.dart",
-            "checksum": "sha256:bf64b9b20c32b128b834311e5c81c1c5dceb8a6785811b3385c48cc3af01d198"
+            "checksum": "sha256:e4a6da9401e3b3ed128c4469edcdecbecca823751372bd2336d04d9afb5cab48"
           },
           {
             "name": "just_scroll_area_theme.dart",
@@ -1116,7 +1116,7 @@
           {
             "name": "just_toast.dart",
             "path": "components/toast/default/just_toast.dart",
-            "checksum": "sha256:57e853285c1240b34b362e3cae585ef72bbe24bbbf6c20ef4347c795a73231f1"
+            "checksum": "sha256:18761c1d29f46268d5042b2335fc0624431b8451e4b326be2ff9c7d537938453"
           },
           {
             "name": "just_toast_style.dart",
