@@ -209,7 +209,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
         enabled: isInteractive,
         onTap: _handleSelect,
         focusNode: _focusNode,
-        builder: (context, isHovered, isPressed, isFocused, focusNode) {
+        builder: (BuildContext context, JustInteractionState state) {
           return Opacity(
             opacity: widget.isDisabled ? 0.5 : 1.0,
             child: Row(
@@ -226,8 +226,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                     // RepaintBoundary placed directly inside JustRadio visual indicator
                     child: RepaintBoundary(
                       child: FocusIndicator(
-                        isFocused: isFocused,
-                        focusColor: colors.borderFocus,
+                        isFocused: state.isFocusVisible,
                         borderRadius: .all(.circular(circleSize / 2)),
                         child: AnimatedBuilder(
                           animation: _controller,
@@ -236,7 +235,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
 
                             final Color currentBorder = hasBorder
                                 ? colors.textPrimary
-                                : (isHovered
+                                : (state.isHovered
                                       ? colors.textSecondary
                                       : .lerp(
                                           resolvedBorderColor,
@@ -248,7 +247,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                                 ? customTheme.presetTokens.resolveShadow(
                                     customTheme.shadows,
                                     JustShadowLevel.xs,
-                                    isPressed: isPressed,
+                                    isPressed: state.isPressed,
                                   )
                                 : const [];
 
@@ -277,7 +276,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                             );
 
                             return customTheme.presetTokens.buildPressEffect(
-                              isPressed: isPressed,
+                              isPressed: state.isPressed,
                               animations: customTheme.animations,
                               customOffset: const Offset(1.0, 1.0),
                               child: radioBox,

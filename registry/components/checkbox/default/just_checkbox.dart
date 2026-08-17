@@ -189,14 +189,15 @@ class _JustCheckboxState extends State<JustCheckbox>
 
     // Resolve theme styles
     final themeStyle = checkboxTheme?.style;
+    final hasBorderPreset = customTheme.presetTokens.showsDefaultBorder;
     final resolvedActiveColor =
         widget.style?.activeColor ??
         themeStyle?.activeColor ??
-        colors.borderFocus;
+        (hasBorderPreset ? colors.warning : colors.borderFocus);
     final resolvedCheckColor =
         widget.style?.checkColor ??
         themeStyle?.checkColor ??
-        colors.textInverse;
+        (hasBorderPreset ? colors.textPrimary : colors.textInverse);
     final resolvedBorderColor =
         widget.style?.borderColor ??
         themeStyle?.borderColor ??
@@ -204,7 +205,7 @@ class _JustCheckboxState extends State<JustCheckbox>
     final resolvedRadius =
         widget.style?.borderRadius ??
         themeStyle?.borderRadius ??
-        (customTheme.presetTokens.showsDefaultBorder ? .zero : .all(radius.xs));
+        (hasBorderPreset ? .zero : .all(radius.xs));
     final resolvedTextStyle =
         widget.style?.textStyle ??
         themeStyle?.textStyle ??
@@ -219,7 +220,7 @@ class _JustCheckboxState extends State<JustCheckbox>
         enabled: isInteractive,
         onTap: _handleToggle,
         focusNode: _focusNode,
-        builder: (context, isHovered, isPressed, isFocused, focusNode) {
+        builder: (BuildContext context, JustInteractionState state) {
           return Opacity(
             opacity: widget.isDisabled ? 0.5 : 1.0,
             child: Row(
@@ -235,8 +236,7 @@ class _JustCheckboxState extends State<JustCheckbox>
                   child: Center(
                     child: RepaintBoundary(
                       child: FocusIndicator(
-                        isFocused: isFocused,
-                        focusColor: colors.borderFocus,
+                        isFocused: state.isFocusVisible,
                         borderRadius: resolvedRadius,
                         child: AnimatedBuilder(
                           animation: _controller,
@@ -255,7 +255,7 @@ class _JustCheckboxState extends State<JustCheckbox>
 
                             final Color currentBorder = hasBorder
                                 ? colors.textPrimary
-                                : (isHovered
+                                : (state.isHovered
                                       ? colors.textSecondary
                                       : .lerp(
                                           resolvedBorderColor,
@@ -266,8 +266,8 @@ class _JustCheckboxState extends State<JustCheckbox>
                             final List<BoxShadow> currentShadows = hasBorder
                                 ? customTheme.presetTokens.resolveShadow(
                                     customTheme.shadows,
-                                    JustShadowLevel.xs,
-                                    isPressed: isPressed,
+                                    JustShadowLevel.sm,
+                                    isPressed: state.isPressed,
                                   )
                                 : const [];
 
@@ -305,7 +305,7 @@ class _JustCheckboxState extends State<JustCheckbox>
                             );
 
                             return customTheme.presetTokens.buildPressEffect(
-                              isPressed: isPressed,
+                              isPressed: state.isPressed,
                               animations: customTheme.animations,
                               customOffset: const Offset(1.0, 1.0),
                               child: checkboxBox,

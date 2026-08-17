@@ -280,10 +280,9 @@ class JustAvatar extends StatelessWidget {
         child: JustPressable(
           enabled: true,
           onTap: onTap,
-          builder: (context, isHovered, isPressed, isFocused, focusNode) {
+          builder: (BuildContext context, JustInteractionState state) {
             return FocusIndicator(
-              isFocused: isFocused,
-              focusColor: colors.borderFocus,
+              isFocused: state.isFocusVisible,
               borderRadius: borderRadius,
               child: avatarBody,
             );

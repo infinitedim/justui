@@ -277,8 +277,10 @@ class _JustSliderState extends State<JustSlider> {
               return .ignored;
             },
             child: FocusIndicator(
-              isFocused: _isFocused,
-              focusColor: colors.borderFocus,
+              isFocused:
+                  _isFocused &&
+                  FocusManager.instance.highlightMode ==
+                      FocusHighlightMode.traditional,
               borderRadius: trackBorderRadius,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,

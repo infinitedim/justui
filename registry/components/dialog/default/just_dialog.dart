@@ -440,6 +440,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
                   child: Semantics(
                     scopesRoute: true,
                     namesRoute: true,
+                    explicitChildNodes: true,
                     label: 'Dialog',
                     child: animatedChild,
                   ),

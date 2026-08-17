@@ -538,7 +538,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
           key: _tabKeys[i],
           enabled: isEnabled,
           onTap: () => _handleTabTap(i),
-          builder: (context, isHovered, isPressed, isFocused, focusNode) {
+          builder: (BuildContext context, JustInteractionState state) {
             final double distance = (activeVal - i).abs();
             final double textInterpolation = (1.0 - distance).clamp(0.0, 1.0);
             final textColor =
