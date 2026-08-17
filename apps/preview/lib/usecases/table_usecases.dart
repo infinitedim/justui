@@ -31,30 +31,65 @@ Widget buildJustTableDefaultUseCase(BuildContext context) {
       padding: const EdgeInsets.all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 580.0, maxHeight: 360.0),
-        child: JustTable<_SampleRow>(
+        child: _InteractiveTableDemo(
           selectable: selectable,
           variant: variant,
-          columns: [
-            JustTableColumn(
-              header: 'ID',
-              width: 80.0,
-              cell: (row) => Text(row.id),
-            ),
-            JustTableColumn(header: 'Name', cell: (row) => Text(row.name)),
-            JustTableColumn(header: 'Role', cell: (row) => Text(row.role)),
-            JustTableColumn(
-              header: 'Status',
-              width: 100.0,
-              cell: (row) => Text(row.status),
-            ),
-          ],
-          rows: const [
-            _SampleRow('101', 'Alice Vance', 'Lead Architect', 'Active'),
-            _SampleRow('102', 'Bob Smith', 'Senior Developer', 'Active'),
-            _SampleRow('103', 'Charlie Brown', 'UI Designer', 'Offline'),
-          ],
         ),
       ),
     ),
   );
+}
+
+class _InteractiveTableDemo extends StatefulWidget {
+  final bool selectable;
+  final JustTableVariant variant;
+
+  const _InteractiveTableDemo({
+    required this.selectable,
+    required this.variant,
+  });
+
+  @override
+  State<_InteractiveTableDemo> createState() => _InteractiveTableDemoState();
+}
+
+class _InteractiveTableDemoState extends State<_InteractiveTableDemo> {
+  final Set<int> _selectedRows = {};
+
+  final List<_SampleRow> _rows = const [
+    _SampleRow('101', 'Alice Vance', 'Lead Architect', 'Active'),
+    _SampleRow('102', 'Bob Smith', 'Senior Developer', 'Active'),
+    _SampleRow('103', 'Charlie Brown', 'UI Designer', 'Offline'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return JustTable<_SampleRow>(
+      selectable: widget.selectable,
+      variant: widget.variant,
+      selectedRows: _selectedRows,
+      onSelectionChanged: (selected) {
+        setState(() {
+          _selectedRows
+            ..clear()
+            ..addAll(selected);
+        });
+      },
+      columns: [
+        JustTableColumn(
+          header: 'ID',
+          width: 80.0,
+          cell: (row) => Text(row.id),
+        ),
+        JustTableColumn(header: 'Name', cell: (row) => Text(row.name)),
+        JustTableColumn(header: 'Role', cell: (row) => Text(row.role)),
+        JustTableColumn(
+          header: 'Status',
+          width: 100.0,
+          cell: (row) => Text(row.status),
+        ),
+      ],
+      rows: _rows,
+    );
+  }
 }

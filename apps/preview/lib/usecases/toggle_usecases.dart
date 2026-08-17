@@ -7,7 +7,6 @@ import 'package:just_ui_core/src/components/toggle/just_toggle_variants.dart';
 
 @widgetbook.UseCase(name: 'Default Toggle', type: JustToggle)
 Widget buildJustToggleDefaultUseCase(BuildContext context) {
-  final selected = context.knobs.boolean(label: 'Selected', initialValue: true);
   final size = context.knobs.object.dropdown<JustToggleSize>(
     label: 'Size',
     options: JustToggleSize.values,
@@ -17,12 +16,34 @@ Widget buildJustToggleDefaultUseCase(BuildContext context) {
   return Center(
     child: Padding(
       padding: const EdgeInsets.all(24.0),
-      child: JustToggle(
-        selected: selected,
-        onPressed: () {},
-        size: size,
-        child: const Text('Bold'),
-      ),
+      child: _InteractiveToggleDemo(size: size),
     ),
   );
+}
+
+class _InteractiveToggleDemo extends StatefulWidget {
+  final JustToggleSize size;
+
+  const _InteractiveToggleDemo({required this.size});
+
+  @override
+  State<_InteractiveToggleDemo> createState() => _InteractiveToggleDemoState();
+}
+
+class _InteractiveToggleDemoState extends State<_InteractiveToggleDemo> {
+  bool _selected = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return JustToggle(
+      selected: _selected,
+      onPressed: () {
+        setState(() {
+          _selected = !_selected;
+        });
+      },
+      size: widget.size,
+      child: Text(_selected ? 'Bold (On)' : 'Bold (Off)'),
+    );
+  }
 }
