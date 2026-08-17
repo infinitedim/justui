@@ -25,9 +25,14 @@ Widget buildJustProgressLinearUseCase(BuildContext context) {
     initialOption: JustProgressSize.md,
   );
 
-  return SizedBox(
-    width: 300.0,
-    child: JustProgress(value: value, showLabel: showLabel, size: size),
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 360.0),
+        child: JustProgress(value: value, showLabel: showLabel, size: size),
+      ),
+    ),
   );
 }
 
@@ -45,7 +50,12 @@ Widget buildJustProgressCircularUseCase(BuildContext context) {
     initialOption: JustProgressSize.md,
   );
 
-  return JustProgress.circular(value: value, showLabel: true, size: size);
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: JustProgress.circular(value: value, showLabel: true, size: size),
+    ),
+  );
 }
 
 @widgetbook.UseCase(

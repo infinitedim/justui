@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -435,6 +436,7 @@ class _JustInputState extends State<JustInput> {
     double fieldHeight;
     double fontSize;
     double paddingV;
+    double iconSize;
     final double paddingH = spacing.md; // 12px
     final BorderRadius defaultRadius = .all(theme.radius.md);
 
@@ -444,6 +446,7 @@ class _JustInputState extends State<JustInput> {
             ? 80.0
             : 36.0;
         fontSize = 13.0;
+        iconSize = 16.0;
         paddingV = spacing.xs; // 4px
         break;
       case .md:
@@ -451,6 +454,7 @@ class _JustInputState extends State<JustInput> {
             ? 110.0
             : 44.0;
         fontSize = 14.0;
+        iconSize = 18.0;
         paddingV = spacing.sm; // 8px
         break;
       case .lg:
@@ -458,6 +462,7 @@ class _JustInputState extends State<JustInput> {
             ? 140.0
             : 52.0;
         fontSize = 16.0;
+        iconSize = 20.0;
         paddingV = spacing.md; // 12px
         break;
     }
@@ -512,18 +517,33 @@ class _JustInputState extends State<JustInput> {
       hint: widget.hint,
       readOnly: widget.readOnly,
       enabled: widget.enabled,
-      child: Column(
-        crossAxisAlignment: .start,
-        mainAxisSize: .min,
-        children: [
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: needsMinTargetSize ? 48.0 : fieldHeight,
-            ),
-            child: ValueListenableBuilder<bool>(
-              valueListenable: _isFocused,
-              builder: (context, isFocused, _) {
-                return ValueListenableBuilder<bool>(
+      child: ValueListenableBuilder<bool>(
+        valueListenable: _isFocused,
+        builder: (context, isFocused, _) {
+          return Column(
+            crossAxisAlignment: .start,
+            mainAxisSize: .min,
+            children: [
+              if (widget.label != null) ...[
+                Padding(
+                  padding: .only(bottom: spacing.xs),
+                  child: Text(
+                    widget.label!,
+                    style: finalLabelStyle.copyWith(
+                      fontSize: fontSize - 1,
+                      fontWeight: FontWeight.w500,
+                      color: widget.errorText != null
+                          ? errorBorder
+                          : (isFocused ? focusedBorder : colors.textPrimary),
+                    ),
+                  ),
+                ),
+              ],
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: needsMinTargetSize ? 48.0 : fieldHeight,
+                ),
+                child: ValueListenableBuilder<bool>(
                   valueListenable: _isFilled,
                   builder: (context, isFilled, _) {
                     Color border = widget.style?.borderColor ?? defaultBorder;
@@ -543,7 +563,7 @@ class _JustInputState extends State<JustInput> {
                         padding: .only(right: spacing.sm),
                         child: Icon(
                           widget.prefixIcon,
-                          size: fontSize + 4,
+                          size: iconSize,
                           color: colors.textSecondary,
                         ),
                       );
@@ -551,6 +571,15 @@ class _JustInputState extends State<JustInput> {
                       leadingWidget = Padding(
                         padding: .only(right: spacing.sm),
                         child: widget.prefix,
+                      );
+                    } else if (widget.variant == .search) {
+                      leadingWidget = Padding(
+                        padding: .only(right: spacing.sm),
+                        child: Icon(
+                          Icons.search_rounded,
+                          size: iconSize,
+                          color: colors.textSecondary,
+                        ),
                       );
                     }
 
@@ -570,11 +599,9 @@ class _JustInputState extends State<JustInput> {
                               padding: .only(left: spacing.sm),
                               child: Icon(
                                 obscured
-                                    ? const IconData(
-                                        0xe900,
-                                      ) /* eye placeholder / person fallback */
-                                    : const IconData(0xe901),
-                                size: fontSize + 4,
+                                    ? Icons.visibility_off_rounded
+                                    : Icons.visibility_rounded,
+                                size: iconSize,
                                 color: colors.textSecondary,
                               ),
                             ),
@@ -590,8 +617,8 @@ class _JustInputState extends State<JustInput> {
                             child: Padding(
                               padding: .symmetric(horizontal: spacing.xxs),
                               child: Icon(
-                                const IconData(0xe903) /* minus fallback */,
-                                size: fontSize + 2,
+                                Icons.remove_rounded,
+                                size: iconSize,
                                 color: colors.textSecondary,
                               ),
                             ),
@@ -601,8 +628,8 @@ class _JustInputState extends State<JustInput> {
                             child: Padding(
                               padding: .symmetric(horizontal: spacing.xxs),
                               child: Icon(
-                                const IconData(0xe904) /* plus fallback */,
-                                size: fontSize + 2,
+                                Icons.add_rounded,
+                                size: iconSize,
                                 color: colors.textSecondary,
                               ),
                             ),
@@ -619,7 +646,7 @@ class _JustInputState extends State<JustInput> {
                                 padding: .only(left: spacing.sm),
                                 child: Icon(
                                   widget.suffixIcon,
-                                  size: fontSize + 4,
+                                  size: iconSize,
                                   color: colors.textSecondary,
                                 ),
                               );
@@ -641,8 +668,8 @@ class _JustInputState extends State<JustInput> {
                             child: Padding(
                               padding: .only(left: spacing.sm),
                               child: Icon(
-                                const IconData(0xe902) /* close fallback */,
-                                size: fontSize + 2,
+                                Icons.close_rounded,
+                                size: iconSize,
                                 color: colors.textSecondary,
                               ),
                             ),
@@ -654,7 +681,7 @@ class _JustInputState extends State<JustInput> {
                         padding: .only(left: spacing.sm),
                         child: Icon(
                           widget.suffixIcon,
-                          size: fontSize + 4,
+                          size: iconSize,
                           color: colors.textSecondary,
                         ),
                       );
@@ -664,21 +691,6 @@ class _JustInputState extends State<JustInput> {
                         child: widget.suffix,
                       );
                     }
-
-                    // Floating label calculations
-                    final bool showLabel = widget.label != null;
-                    final bool isFloating = isFocused || isFilled;
-
-                    final labelStyle = isFloating
-                        ? finalLabelStyle.copyWith(
-                            fontSize: fontSize - 2,
-                            color: widget.errorText != null
-                                ? errorBorder
-                                : (isFocused
-                                      ? focusedBorder
-                                      : colors.textSecondary),
-                          )
-                        : finalLabelStyle.copyWith(fontSize: fontSize);
 
                     // Compute text area / normal text field constraints
                     Widget textInput;
@@ -701,7 +713,6 @@ class _JustInputState extends State<JustInput> {
                       );
                     }
 
-                    // Label animation wrapper
                     final fieldContent = Row(
                       crossAxisAlignment:
                           widget.maxLines != null && widget.maxLines! > 1
@@ -709,41 +720,7 @@ class _JustInputState extends State<JustInput> {
                           : .center,
                       children: [
                         ?leadingWidget,
-                        Expanded(
-                          child: Stack(
-                            clipBehavior: .none,
-                            alignment: .centerLeft,
-                            children: [
-                              // Floating / Idle Label
-                              if (showLabel)
-                                AnimatedPositioned(
-                                  duration: animations.fast,
-                                  curve: animations.defaultCurve,
-                                  top: isFloating
-                                      ? -paddingV - (fontSize / 2) - 4
-                                      : 0.0,
-                                  left: 0.0,
-                                  child: IgnorePointer(
-                                    child: AnimatedDefaultTextStyle(
-                                      style: labelStyle,
-                                      duration: animations.fast,
-                                      curve: animations.defaultCurve,
-                                      child: Text(widget.label!),
-                                    ),
-                                  ),
-                                ),
-                              // The actual Native TextField
-                              Padding(
-                                padding: .only(
-                                  top: showLabel && isFloating
-                                      ? spacing.xs
-                                      : 0.0,
-                                ),
-                                child: textInput,
-                              ),
-                            ],
-                          ),
-                        ),
+                        Expanded(child: textInput),
                         ?trailingWidget,
                       ],
                     );
@@ -778,61 +755,63 @@ class _JustInputState extends State<JustInput> {
                       child: fieldContent,
                     );
                   },
-                );
-              },
-            ),
-          ),
-          // Sub-elements (Error, Success, Helper texts & Character Counter)
-          if (hasSubElements || hasCounter) ...[
-            SizedBox(height: spacing.xs),
-            Row(
-              mainAxisAlignment: .spaceBetween,
-              crossAxisAlignment: .start,
-              children: [
-                if (hasSubElements)
-                  Expanded(
-                    child: Builder(
-                      builder: (context) {
-                        String text;
-                        Color textColor;
-                        if (widget.errorText != null) {
-                          text = widget.errorText!;
-                          textColor = errorBorder;
-                        } else if (widget.successText != null) {
-                          text = widget.successText!;
-                          textColor = successBorder;
-                        } else {
-                          text = widget.helper!;
-                          textColor = colors.textSecondary;
-                        }
-                        return Text(
-                          text,
-                          style: finalHelperStyle.copyWith(color: textColor),
-                        );
-                      },
-                    ),
-                  )
-                else
-                  const Spacer(),
-                if (hasCounter)
-                  Padding(
-                    padding: .only(left: spacing.sm),
-                    child: ValueListenableBuilder<TextEditingValue>(
-                      valueListenable: _controller,
-                      builder: (context, value, _) {
-                        return Text(
-                          '${value.text.length} / ${widget.maxLength}',
-                          style: finalHelperStyle.copyWith(
-                            color: colors.textSecondary,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                ),
+              ),
+              // Sub-elements (Error, Success, Helper texts & Character Counter)
+              if (hasSubElements || hasCounter) ...[
+                SizedBox(height: spacing.xs),
+                Row(
+                  mainAxisAlignment: .spaceBetween,
+                  crossAxisAlignment: .start,
+                  children: [
+                    if (hasSubElements)
+                      Expanded(
+                        child: Builder(
+                          builder: (context) {
+                            String text;
+                            Color textColor;
+                            if (widget.errorText != null) {
+                              text = widget.errorText!;
+                              textColor = errorBorder;
+                            } else if (widget.successText != null) {
+                              text = widget.successText!;
+                              textColor = successBorder;
+                            } else {
+                              text = widget.helper!;
+                              textColor = colors.textSecondary;
+                            }
+                            return Text(
+                              text,
+                              style: finalHelperStyle.copyWith(
+                                color: textColor,
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      const Spacer(),
+                    if (hasCounter)
+                      Padding(
+                        padding: .only(left: spacing.sm),
+                        child: ValueListenableBuilder<TextEditingValue>(
+                          valueListenable: _controller,
+                          builder: (context, value, _) {
+                            return Text(
+                              '${value.text.length} / ${widget.maxLength}',
+                              style: finalHelperStyle.copyWith(
+                                color: colors.textSecondary,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                  ],
+                ),
               ],
-            ),
-          ],
-        ],
+            ],
+          );
+        },
       ),
     );
   }

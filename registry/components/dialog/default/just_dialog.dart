@@ -252,6 +252,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
     final radius = theme.radius;
     final shadows = theme.shadows;
     final motion = theme.animations.resolve(context);
+    final typography = theme.typography;
 
     final globalTheme = Theme.of(context).extension<JustDialogTheme>();
 
@@ -362,7 +363,13 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
                 ),
               ),
             ],
-            widget.content,
+            DefaultTextStyle(
+              style: typography.bodyMd.copyWith(color: colors.textPrimary),
+              child: IconTheme.merge(
+                data: IconThemeData(color: colors.textPrimary),
+                child: widget.content,
+              ),
+            ),
           ],
         ),
       ),

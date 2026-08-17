@@ -17,31 +17,36 @@ Widget buildJustAccordionDefaultUseCase(BuildContext context) {
     initialOption: JustAccordionVariant.default_,
   );
 
-  return SizedBox(
-    width: 360.0,
-    child: JustAccordion(
-      allowMultiple: allowMultiple,
-      variant: variant,
-      items: const [
-        JustAccordionItem(
-          title: 'Is JustAccordion accessible?',
-          content: Text(
-            'Yes, it adheres to WCAG AA guidelines with keyboard navigation and semantics.',
-          ),
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 460.0),
+        child: JustAccordion(
+          allowMultiple: allowMultiple,
+          variant: variant,
+          items: const [
+            JustAccordionItem(
+              title: 'Is JustAccordion accessible?',
+              content: Text(
+                'Yes, it adheres to WCAG AA guidelines with keyboard navigation and semantics.',
+              ),
+            ),
+            JustAccordionItem(
+              title: 'How do theme presets work?',
+              content: Text(
+                'Theme presets like Neobrutalism update borders, shadows, and interaction dynamics seamlessly.',
+              ),
+            ),
+            JustAccordionItem(
+              title: 'Can it be customized?',
+              content: Text(
+                'You can override styles per instance or globally via JustAccordionTheme.',
+              ),
+            ),
+          ],
         ),
-        JustAccordionItem(
-          title: 'How do theme presets work?',
-          content: Text(
-            'Theme presets like Neobrutalism update borders, shadows, and interaction dynamics seamlessly.',
-          ),
-        ),
-        JustAccordionItem(
-          title: 'Can it be customized?',
-          content: Text(
-            'You can override styles per instance or globally via JustAccordionTheme.',
-          ),
-        ),
-      ],
+      ),
     ),
   );
 }

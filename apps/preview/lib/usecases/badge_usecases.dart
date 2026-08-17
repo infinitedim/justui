@@ -24,7 +24,17 @@ Widget buildJustBadgeDefaultUseCase(BuildContext context) {
     initialOption: JustBadgeSize.md,
   );
 
-  return JustBadge(label: label, color: color, variant: variant, size: size);
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: JustBadge(
+        label: label,
+        color: color,
+        variant: variant,
+        size: size,
+      ),
+    ),
+  );
 }
 
 @widgetbook.UseCase(name: 'Dot Badge', type: JustBadge)
@@ -36,5 +46,10 @@ Widget buildJustBadgeDotUseCase(BuildContext context) {
     initialOption: JustBadgeColor.error,
   );
 
-  return JustBadge.dot(pulse: pulse, color: color);
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: JustBadge.dot(pulse: pulse, color: color),
+    ),
+  );
 }

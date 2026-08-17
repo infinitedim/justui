@@ -17,24 +17,29 @@ Widget buildJustSelectDefaultUseCase(BuildContext context) {
     initialOption: JustSelectSize.md,
   );
 
-  return SizedBox(
-    width: 280.0,
-    child: JustSelect<String>(
-      value: 'flutter',
-      onChanged: (val) {},
-      searchable: searchable,
-      size: size,
-      label: 'Framework',
-      options: const [
-        JustSelectOption(value: 'flutter', label: 'Flutter'),
-        JustSelectOption(value: 'react_native', label: 'React Native'),
-        JustSelectOption.divider(),
-        JustSelectOption(
-          value: 'kotlin_multiplatform',
-          label: 'Kotlin Multiplatform',
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 340.0),
+        child: JustSelect<String>(
+          value: 'flutter',
+          onChanged: (val) {},
+          searchable: searchable,
+          size: size,
+          label: 'Framework',
+          options: const [
+            JustSelectOption(value: 'flutter', label: 'Flutter'),
+            JustSelectOption(value: 'react_native', label: 'React Native'),
+            JustSelectOption.divider(),
+            JustSelectOption(
+              value: 'kotlin_multiplatform',
+              label: 'Kotlin Multiplatform',
+            ),
+            JustSelectOption(value: 'swiftui', label: 'SwiftUI'),
+          ],
         ),
-        JustSelectOption(value: 'swiftui', label: 'SwiftUI'),
-      ],
+      ),
     ),
   );
 }
