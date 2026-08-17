@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
 
-import '../../overlay/just_overlay_controller.dart';
-import '../../theme/theme_provider.dart';
 import 'just_dialog_style.dart';
 import 'just_dialog_theme.dart';
 import 'just_dialog_variants.dart';
@@ -70,10 +69,7 @@ class JustDialogController extends JustOverlayController {
     final isLocalController = animationController == null;
     final animController =
         animationController ??
-        AnimationController(
-          vsync: _vsync!,
-          duration: const Duration(milliseconds: 300),
-        );
+        AnimationController(vsync: _vsync!, duration: JustDuration.normal);
 
     late final _DialogInstance<T> instance;
 

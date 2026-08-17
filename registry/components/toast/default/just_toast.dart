@@ -163,7 +163,7 @@ class JustToastController extends JustOverlayController {
         pending.animationController ??
         AnimationController(
           vsync: _vsync!,
-          duration: const Duration(milliseconds: 300),
+          duration: JustDuration.normal,
         );
 
     late final _ToastEntry entry;
@@ -494,7 +494,7 @@ class _JustToastWidgetState extends State<_JustToastWidget>
     super.initState();
     _swipeBackController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200),
+      duration: JustDuration.fast,
     );
     _swipeBackAnimation = Tween<double>(
       begin: 0.0,
@@ -521,7 +521,7 @@ class _JustToastWidgetState extends State<_JustToastWidget>
       widget.onDismiss();
     } else {
       _swipeBackAnimation = Tween<double>(begin: _dragX, end: 0.0).animate(
-        CurvedAnimation(parent: _swipeBackController, curve: Curves.easeOut),
+        CurvedAnimation(parent: _swipeBackController, curve: JustCurves.default_),
       );
       _swipeBackController.forward(from: 0.0);
     }
@@ -581,10 +581,17 @@ class _JustToastWidgetState extends State<_JustToastWidget>
     final entryStyle = widget.entry.style;
 
     // Resolve visual styles
+    final defaultVariantBg = switch (widget.entry.variant) {
+      .success => colors.success.withValues(alpha: 0.1),
+      .error => colors.error.withValues(alpha: 0.1),
+      .warning => colors.warning.withValues(alpha: 0.1),
+      .info => colors.info.withValues(alpha: 0.08),
+    };
+    final defaultBg = Color.alphaBlend(defaultVariantBg, colors.card);
     final bgColor =
         entryStyle?.backgroundColor ??
         variantThemeStyle?.backgroundColor ??
-        colors.card;
+        defaultBg;
     final borderColor =
         entryStyle?.borderColor ??
         variantThemeStyle?.borderColor ??

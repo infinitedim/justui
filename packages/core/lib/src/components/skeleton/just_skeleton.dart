@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
 
-import '../../theme/theme_provider.dart';
 import '../avatar/just_avatar.dart';
 import '../badge/just_badge.dart';
 import '../button/just_button.dart';
@@ -102,10 +102,7 @@ class _JustSkeletonState extends State<JustSkeleton>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    );
+    _controller = AnimationController(vsync: this, duration: JustDuration.slow);
     if (widget.loading) {
       _controller.repeat();
     }

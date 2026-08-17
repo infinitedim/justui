@@ -731,6 +731,7 @@ class JustThemeData {
     final Color bg;
     final Color card;
     final Color elevated;
+    final Color muted;
     final Color overlay;
 
     if (isDark) {
@@ -743,6 +744,10 @@ class JustThemeData {
         seedColor,
         lightness: 0.12,
       );
+      muted = JustDynamicSurfaces.generateDarkSurface(
+        seedColor,
+        lightness: 0.10,
+      );
       overlay = JustDynamicSurfaces.generateDarkSurface(
         seedColor,
         lightness: 0.02,
@@ -753,6 +758,7 @@ class JustThemeData {
           : JustColorSemanticLight.background;
       card = JustColorSemanticLight.card;
       elevated = JustColorSemanticLight.elevated;
+      muted = JustColorSemanticLight.muted;
       overlay = JustColorSemanticLight.overlay;
     }
 
@@ -843,6 +849,7 @@ class JustThemeData {
       background: bg,
       card: card,
       elevated: elevated,
+      muted: muted,
       overlay: overlay,
       textPrimary: textPrimaryResolved,
       textSecondary: textSecondaryResolved,
