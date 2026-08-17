@@ -18,6 +18,12 @@ class _DialogInstance<T> {
   final AnimationController animationController;
   final bool isLocalController;
 
+  /// Set as soon as a dismissal has been requested for this instance, so a
+  /// second dismiss request for the same instance (e.g. a held-down Escape
+  /// key delivering repeated key events, or a barrier tap racing the Escape
+  /// handler) is a no-op instead of starting a second reverse animation.
+  bool _dismissRequested = false;
+
   _DialogInstance({
     required this.id,
     required this.completer,
@@ -132,23 +138,41 @@ class JustDialogController extends JustOverlayController {
   }
 
   void _dismissDialog(_DialogInstance<dynamic> instance, dynamic result) {
-    if (!_activeDialogs.contains(instance)) return;
+    if (!_activeDialogs.contains(instance) || instance._dismissRequested) {
+      return;
+    }
+    instance._dismissRequested = true;
 
     instance.animationController.reverse().then((_) {
-      instance.barrierEntry.remove();
-      instance.barrierEntry.dispose();
-      instance.contentEntry.remove();
-      instance.contentEntry.dispose();
-
-      if (instance.isLocalController) {
-        instance.animationController.dispose();
-      }
-
-      _activeDialogs.remove(instance);
-      if (!instance.completer.isCompleted) {
-        instance.completer.complete(result);
-      }
+      _cleanupDialogInstance(instance, result);
     });
+  }
+
+  /// Synchronously removes and disposes [instance]'s overlay entries and
+  /// (if locally-owned) its animation controller, then completes its result.
+  ///
+  /// Guarded by [List.remove] returning `false` for an instance no longer in
+  /// [_activeDialogs], so this is safe to call more than once for the same
+  /// [instance] — only the first call has any effect. This makes it safe to
+  /// race against the animated cleanup scheduled by [_dismissDialog].
+  void _cleanupDialogInstance(
+    _DialogInstance<dynamic> instance,
+    dynamic result,
+  ) {
+    if (!_activeDialogs.remove(instance)) return;
+
+    instance.barrierEntry.remove();
+    instance.barrierEntry.dispose();
+    instance.contentEntry.remove();
+    instance.contentEntry.dispose();
+
+    if (instance.isLocalController) {
+      instance.animationController.dispose();
+    }
+
+    if (!instance.completer.isCompleted) {
+      instance.completer.complete(result);
+    }
   }
 
   @override
@@ -156,6 +180,23 @@ class JustDialogController extends JustOverlayController {
     final targets = List<_DialogInstance<dynamic>>.from(_activeDialogs);
     for (final dialog in targets) {
       _dismissDialog(dialog, null);
+    }
+  }
+
+  /// Immediately tears down every active dialog without waiting for the exit
+  /// animation to finish.
+  ///
+  /// Called when the hosting [JustDialogScope] is being disposed — its
+  /// [TickerProvider]/[OverlayState] are about to become unavailable, so any
+  /// dialog still open must have its [OverlayEntry]s and locally-owned
+  /// [AnimationController] released synchronously. Without this, entries
+  /// inserted into an ancestor [Overlay] that outlives the scope (e.g. the
+  /// app/root [Navigator]'s overlay) would stay inserted indefinitely,
+  /// continuing to render stale content after the scope is gone.
+  void forceDismissAll() {
+    final targets = List<_DialogInstance<dynamic>>.from(_activeDialogs);
+    for (final instance in targets) {
+      _cleanupDialogInstance(instance, null);
     }
   }
 
@@ -450,6 +491,9 @@ class _JustDialogScopeState extends State<JustDialogScope>
   void didUpdateWidget(covariant JustDialogScope oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
+      // The old controller is being detached from this scope, so it must
+      // release any dialogs it still has open the same way dispose() does.
+      oldWidget.controller.forceDismissAll();
       oldWidget.controller._vsync = null;
       oldWidget.controller._overlayState = null;
       widget.controller._vsync = this;
@@ -465,6 +509,10 @@ class _JustDialogScopeState extends State<JustDialogScope>
 
   @override
   void dispose() {
+    // Force-clear any dialogs still open before this scope's TickerProvider
+    // and OverlayState become unavailable below, otherwise their
+    // OverlayEntry(s) would be orphaned in the ancestor Overlay indefinitely.
+    widget.controller.forceDismissAll();
     widget.controller._vsync = null;
     widget.controller._overlayState = null;
     super.dispose();

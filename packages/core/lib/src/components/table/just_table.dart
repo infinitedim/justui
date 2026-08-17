@@ -63,9 +63,21 @@ class JustTable<T> extends StatefulWidget {
   final ValueChanged<int>? onSort;
 
   /// Whether the header row remains fixed at the top while scrolling vertically.
+  ///
+  /// When set to `false`, the header and body scroll together inside an unbounded
+  /// `SingleChildScrollView`. Because the scroll view is unbounded, true viewport
+  /// virtualization is disabled; `itemExtent: rowHeight` helps calculate total
+  /// extent without eager measurement, but setting `stickyHeader: false` should
+  /// only be used with small, bounded datasets. For large datasets requiring full
+  /// viewport virtualization, use `stickyHeader: true` (the default).
   final bool stickyHeader;
 
   /// The height of each row. Defaults to 52px.
+  ///
+  /// This is also supplied as the row list's `itemExtent`, which lets Flutter
+  /// compute the list's total scroll extent arithmetically instead of eagerly
+  /// building every row to measure it. This keeps row building lazy — even
+  /// for large [rows] datasets — regardless of [stickyHeader].
   final double rowHeight;
 
   /// The visual variant.
@@ -352,6 +364,14 @@ class _JustTableState<T> extends State<JustTable<T>> {
     } else {
       bodyContent = ListView.builder(
         shrinkWrap: true,
+        // Every row is built at a fixed widget.rowHeight (see buildCell
+        // above), so itemExtent lets the sliver layout compute the list's
+        // total scroll extent as `itemCount * rowHeight` without needing to
+        // build every row first. Without this, a shrink-wrapped list nested
+        // in an unbounded ancestor (the stickyHeader: false path below) has
+        // no other way to size itself and must eagerly build every row,
+        // which can freeze the UI thread for large datasets.
+        itemExtent: widget.rowHeight,
         physics: widget.stickyHeader
             ? const ClampingScrollPhysics()
             : const NeverScrollableScrollPhysics(),
