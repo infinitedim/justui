@@ -1,9 +1,33 @@
 import 'package:flutter/widgets.dart';
 import 'duration.dart';
 
-/// A motion profile defining animation durations and curves.
+/// Spring Physics Tokens for Gesture & Reactive Animations.
+abstract final class JustSpring {
+  /// Snappy spring for controls, toggles, and micro-gestures.
+  static const SpringDescription snappy = SpringDescription(
+    mass: 1.0,
+    stiffness: 400.0,
+    damping: 30.0,
+  );
+
+  /// Smooth spring for modals, cards, and bottom sheet drags.
+  static const SpringDescription smooth = SpringDescription(
+    mass: 1.0,
+    stiffness: 220.0,
+    damping: 25.0,
+  );
+
+  /// Expressive spring for organic bounce animations.
+  static const SpringDescription expressive = SpringDescription(
+    mass: 1.0,
+    stiffness: 180.0,
+    damping: 14.0,
+  );
+}
+
+/// A motion profile defining animation durations, curves, and physics.
 ///
-/// Predefines profiles to drive different visual personalities (standard, snappy, expressive, or reduced).
+/// Predefines profiles to drive different visual personalities (standard, snappy, neobrutalism, expressive, or reduced).
 class JustMotionProfile {
   /// Instant feedback duration (e.g. active/pressed states).
   final Duration instant;
@@ -32,6 +56,12 @@ class JustMotionProfile {
   /// Springy easing curve for organic bounce animations.
   final Curve spring;
 
+  /// Sharp exit curve for quick dismissals.
+  final Curve sharp;
+
+  /// Spring physics description for gesture-driven interactions.
+  final SpringDescription springPhysics;
+
   /// Creates a [JustMotionProfile].
   const JustMotionProfile({
     required this.instant,
@@ -43,6 +73,8 @@ class JustMotionProfile {
     required this.enter,
     required this.exit,
     required this.spring,
+    this.sharp = JustCurves.sharp,
+    this.springPhysics = JustSpring.snappy,
   });
 
   /// Resolves the motion profile contextually.
@@ -67,6 +99,8 @@ class JustMotionProfile {
     enter: JustCurves.enter,
     exit: JustCurves.exit,
     spring: JustCurves.spring,
+    sharp: JustCurves.sharp,
+    springPhysics: JustSpring.snappy,
   );
 
   /// Expressive, springy, highly organic motion profile.
@@ -79,7 +113,9 @@ class JustMotionProfile {
     defaultCurve: Curves.easeInOutBack,
     enter: Curves.easeOutBack,
     exit: Curves.easeInBack,
-    spring: Curves.elasticOut,
+    spring: JustCurves.spring,
+    sharp: JustCurves.sharp,
+    springPhysics: JustSpring.expressive,
   );
 
   /// Compact, ultra-fast and snappy motion profile for dense layouts/dashboards.
@@ -93,6 +129,23 @@ class JustMotionProfile {
     enter: Curves.easeOutCubic,
     exit: Curves.easeInCubic,
     spring: Curves.easeOutBack,
+    sharp: JustCurves.sharp,
+    springPhysics: JustSpring.snappy,
+  );
+
+  /// Snappy, mechanical motion profile specifically tailored for Neobrutalism UI.
+  static const JustMotionProfile neobrutalism = JustMotionProfile(
+    instant: Duration(milliseconds: 40),
+    fast: Duration(milliseconds: 100),
+    normal: Duration(milliseconds: 150),
+    slow: Duration(milliseconds: 250),
+    slower: Duration(milliseconds: 400),
+    defaultCurve: Curves.linear,
+    enter: Curves.easeOutQuad,
+    exit: Curves.easeInQuad,
+    spring: Curves.easeOutBack,
+    sharp: Curves.linear,
+    springPhysics: SpringDescription(mass: 0.5, stiffness: 600, damping: 40),
   );
 
   /// Reduced motion profile for accessibility.
@@ -108,6 +161,8 @@ class JustMotionProfile {
     enter: Curves.linear,
     exit: Curves.linear,
     spring: Curves.linear,
+    sharp: Curves.linear,
+    springPhysics: SpringDescription(mass: 1.0, stiffness: 1000, damping: 100),
   );
 
   @override
@@ -123,7 +178,9 @@ class JustMotionProfile {
           defaultCurve == other.defaultCurve &&
           enter == other.enter &&
           exit == other.exit &&
-          spring == other.spring;
+          spring == other.spring &&
+          sharp == other.sharp &&
+          springPhysics == other.springPhysics;
 
   @override
   int get hashCode => Object.hash(
@@ -136,5 +193,7 @@ class JustMotionProfile {
     enter,
     exit,
     spring,
+    sharp,
+    springPhysics,
   );
 }

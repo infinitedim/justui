@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../theme/theme_provider.dart';
 import 'just_tooltip_style.dart';
@@ -67,10 +66,15 @@ class _JustTooltipState extends State<JustTooltip>
       widget.animationController ?? _localAnimController;
 
   final LayerLink _layerLink = LayerLink();
+  final FocusNode _focusNode = FocusNode();
   OverlayEntry? _overlayEntry;
   Timer? _showTimer;
   Timer? _hideTimer;
   bool _isVisible = false;
+
+  bool _isHovered = false;
+  bool _isFocused = false;
+  bool _isLongPressed = false;
 
   @override
   void initState() {
@@ -79,10 +83,13 @@ class _JustTooltipState extends State<JustTooltip>
       vsync: this,
       duration: const Duration(milliseconds: 150),
     );
+    _focusNode.addListener(_onFocusChanged);
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChanged);
+    _focusNode.dispose();
     _showTimer?.cancel();
     _hideTimer?.cancel();
     _removeOverlayImmediate();
@@ -90,9 +97,22 @@ class _JustTooltipState extends State<JustTooltip>
     super.dispose();
   }
 
+  void _onFocusChanged() {
+    _isFocused = _focusNode.hasFocus;
+    _updateTooltipVisibility();
+  }
+
+  void _updateTooltipVisibility() {
+    if (_isHovered || _isFocused || _isLongPressed) {
+      _showTooltip();
+    } else {
+      _hideTooltip();
+    }
+  }
+
   void _showTooltip() {
     _hideTimer?.cancel();
-    if (_isVisible) return;
+    if (_isVisible || _showTimer?.isActive == true) return;
 
     _showTimer = Timer(widget.showDelay, () {
       _createAndInsertOverlay();
@@ -120,120 +140,100 @@ class _JustTooltipState extends State<JustTooltip>
         final colors = theme.colors;
         final spacing = theme.spacing;
         final radius = theme.radius;
-        final motion = theme.animations.resolve(context);
 
         final globalTheme = Theme.of(context).extension<JustTooltipTheme>();
         final themeStyle = globalTheme?.style;
         final entryStyle = widget.style;
 
-        // Resolve styles
-        final bgColor =
+        final resolvedBg =
             entryStyle?.backgroundColor ??
             themeStyle?.backgroundColor ??
-            colors
-                .textPrimary; // Dark background by default for high contrast tooltips
-        final fgColor =
+            (theme.presetTokens.showsDefaultBorder
+                ? colors.background
+                : colors.elevated);
+
+        final resolvedBorderColor =
+            theme.presetTokens.showsDefaultBorder
+                ? colors.textPrimary
+                : colors.borderDefault;
+
+        final resolvedTextColor =
             entryStyle?.foregroundColor ??
             themeStyle?.foregroundColor ??
-            colors.background; // Light text by default
-        final borderRadius =
-            entryStyle?.borderRadius ??
-            themeStyle?.borderRadius ??
-            .all(radius.xs);
-        final padding =
+            colors.textPrimary;
+
+        final resolvedPadding =
             entryStyle?.padding ??
             themeStyle?.padding ??
             .symmetric(horizontal: spacing.sm, vertical: spacing.xs);
-        final maxWidth = entryStyle?.maxWidth ?? themeStyle?.maxWidth ?? 240.0;
 
-        final presetTokens = theme.presetTokens;
-        final borderSide = BorderSide(
-          color: presetTokens.showsDefaultBorder
-              ? colors.textPrimary
-              : colors.borderDefault,
-          width: presetTokens.borderWidth,
-        );
+        final resolvedRadius =
+            entryStyle?.borderRadius ??
+            themeStyle?.borderRadius ??
+            .all(radius.sm);
 
-        // Map TooltipPosition to CompositedTransformFollower anchors
+        final showBorder = theme.presetTokens.showsDefaultBorder;
+        final borderWidth = showBorder ? theme.presetTokens.borderWidth : 0.0;
+
         Alignment targetAnchor;
         Alignment followerAnchor;
         Offset offset;
-        final double gap = spacing.xs;
 
         switch (resolvedPosition) {
           case .top:
             targetAnchor = .topCenter;
             followerAnchor = .bottomCenter;
-            offset = Offset(0.0, -gap);
+            offset = const Offset(0, -6.0);
             break;
           case .bottom:
             targetAnchor = .bottomCenter;
             followerAnchor = .topCenter;
-            offset = Offset(0.0, gap);
+            offset = const Offset(0, 6.0);
             break;
           case .left:
             targetAnchor = .centerLeft;
             followerAnchor = .centerRight;
-            offset = Offset(-gap, 0.0);
+            offset = const Offset(-6.0, 0);
             break;
           case .right:
             targetAnchor = .centerRight;
             followerAnchor = .centerLeft;
-            offset = Offset(gap, 0.0);
+            offset = const Offset(6.0, 0);
             break;
           case .auto:
             targetAnchor = .topCenter;
             followerAnchor = .bottomCenter;
-            offset = Offset(0.0, -gap);
+            offset = const Offset(0, -6.0);
             break;
         }
 
-        final Widget tooltipBubble = Container(
-          constraints: BoxConstraints(maxWidth: maxWidth),
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: borderRadius,
-            border: presetTokens.showsDefaultBorder
-                ? .fromBorderSide(borderSide)
-                : null,
-            boxShadow: presetTokens.showsDefaultBorder
-                ? theme.resolveShadows(const [], isPressed: false)
-                : null,
-          ),
-          padding: padding,
-          child: Text(
-            widget.message,
-            style: JustFluidTypo.bodySm(
-              context,
-            ).copyWith(color: fgColor, fontSize: 12.0),
-          ),
-        );
-
-        final curvedAnimation = CurvedAnimation(
-          parent: _animController,
-          curve: motion.enter,
-          reverseCurve: motion.exit,
-        );
-
-        Widget animatedBubble;
-        if (widget.animationBuilder != null) {
-          animatedBubble = widget.animationBuilder!(
-            context,
-            _animController,
-            tooltipBubble,
-          );
-        } else {
-          animatedBubble = FadeTransition(
-            opacity: curvedAnimation,
-            child: ScaleTransition(
-              scale: Tween<double>(
-                begin: 0.95,
-                end: 1.0,
-              ).animate(curvedAnimation),
-              child: tooltipBubble,
+        final animatedBubble = AnimatedBuilder(
+          animation: _animController,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: 0.95 + 0.05 * _animController.value,
+              child: Opacity(
+                opacity: _animController.value,
+                child: child,
+              ),
+            );
+          },
+          child: Container(
+            padding: resolvedPadding,
+            decoration: BoxDecoration(
+              color: resolvedBg,
+              borderRadius: resolvedRadius,
+              border: showBorder
+                  ? .all(color: resolvedBorderColor, width: borderWidth)
+                  : null,
+              boxShadow: theme.shadows.md,
             ),
-          );
-        }
+            child: Text(
+              widget.message,
+              style: theme.typography.bodySm.copyWith(color: resolvedTextColor),
+            ),
+          ),
+        );
 
         return RepaintBoundary(
           child: CompositedTransformFollower(
@@ -251,9 +251,14 @@ class _JustTooltipState extends State<JustTooltip>
       },
     );
 
-    Overlay.of(context).insert(_overlayEntry!);
-    _isVisible = true;
-    _animController.forward();
+    final overlayState = Overlay.maybeOf(context);
+    if (overlayState != null && overlayState.mounted) {
+      overlayState.insert(_overlayEntry!);
+      _isVisible = true;
+      _animController.forward();
+    } else {
+      _overlayEntry = null;
+    }
   }
 
   void _performHide() {
@@ -264,9 +269,17 @@ class _JustTooltipState extends State<JustTooltip>
   }
 
   void _removeOverlayImmediate() {
-    _overlayEntry?.remove();
-    _overlayEntry?.dispose();
-    _overlayEntry = null;
+    if (_overlayEntry != null) {
+      try {
+        if (_overlayEntry!.mounted) {
+          _overlayEntry!.remove();
+        }
+      } catch (_) {}
+      try {
+        _overlayEntry!.dispose();
+      } catch (_) {}
+      _overlayEntry = null;
+    }
     _isVisible = false;
   }
 
@@ -310,10 +323,18 @@ class _JustTooltipState extends State<JustTooltip>
       child: widget.child,
     );
 
+    result = Focus(focusNode: _focusNode, child: result);
+
     if (widget.triggerOnHover) {
       result = MouseRegion(
-        onEnter: (_) => _showTooltip(),
-        onExit: (_) => _hideTooltip(),
+        onEnter: (_) {
+          _isHovered = true;
+          _updateTooltipVisibility();
+        },
+        onExit: (_) {
+          _isHovered = false;
+          _updateTooltipVisibility();
+        },
         child: result,
       );
     }
@@ -321,12 +342,18 @@ class _JustTooltipState extends State<JustTooltip>
     if (widget.triggerOnLongPress) {
       result = GestureDetector(
         behavior: HitTestBehavior.translucent,
-        onLongPressStart: (_) => _showTooltip(),
-        onLongPressEnd: (_) => _hideTooltip(),
+        onLongPressStart: (_) {
+          _isLongPressed = true;
+          _updateTooltipVisibility();
+        },
+        onLongPressEnd: (_) {
+          _isLongPressed = false;
+          _updateTooltipVisibility();
+        },
         child: result,
       );
     }
 
-    return result;
+    return Semantics(tooltip: widget.message, child: result);
   }
 }
