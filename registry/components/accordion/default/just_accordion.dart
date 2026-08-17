@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
+
 import '../../theme/theme_data.dart';
 import '../../theme/theme_provider.dart';
 import '../../theme/preset_tokens.dart';
@@ -512,4 +513,3 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
     return semanticItemWidget;
   }
 }
-

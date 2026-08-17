@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_sheet_style.dart';
 
 /// Global theme configuration for sheets, extending Flutter's [ThemeExtension].

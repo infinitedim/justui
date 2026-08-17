@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_scroll_area_style.dart';
 
 /// Global theme configuration for scroll areas, extending Flutter's [ThemeExtension].

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_table_style.dart';
 
 /// Global theme configuration for tables, extending Flutter's [ThemeExtension].

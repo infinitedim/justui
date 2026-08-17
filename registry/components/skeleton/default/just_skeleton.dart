@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
+
 import '../../theme/theme_provider.dart';
 import '../avatar/just_avatar.dart';
 import '../badge/just_badge.dart';

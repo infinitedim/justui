@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart'
     show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
+
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
@@ -271,7 +272,9 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     if (targetOffset < currentScroll) {
       _optionScrollController.jumpTo(targetOffset);
     } else if (targetOffset + itemHeight > currentScroll + viewportHeight) {
-      _optionScrollController.jumpTo(targetOffset + itemHeight - viewportHeight);
+      _optionScrollController.jumpTo(
+        targetOffset + itemHeight - viewportHeight,
+      );
     }
   }
 
@@ -566,8 +569,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                 Expanded(
                                   child: EditableText(
                                     controller: _searchController,
-                                    focusNode:
-                                        _searchEditableFocusNode, // internal dummy focus
+                                    focusNode: _searchEditableFocusNode, // internal dummy focus
                                     style: textStyle.copyWith(
                                       color: colors.textPrimary,
                                     ),

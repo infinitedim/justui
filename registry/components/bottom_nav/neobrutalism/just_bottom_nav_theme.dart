@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_bottom_nav_style.dart';
 
 /// Global theme configuration for bottom navigation bars, extending Flutter's [ThemeExtension].

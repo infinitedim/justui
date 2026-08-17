@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_select_style.dart';
 
 /// Global theme configuration for select dropdowns, extending Flutter's [ThemeExtension].

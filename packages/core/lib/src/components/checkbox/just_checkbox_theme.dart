@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_checkbox_style.dart';
 
 /// Global theme configuration for checkboxes, extending Flutter's [ThemeExtension].

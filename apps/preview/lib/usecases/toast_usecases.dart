@@ -18,20 +18,14 @@ Widget buildJustToastDefaultUseCase(BuildContext context) {
     initialValue: 'Changes saved successfully!',
   );
 
-  return _ToastDemoView(
-    variant: variant,
-    message: message,
-  );
+  return _ToastDemoView(variant: variant, message: message);
 }
 
 class _ToastDemoView extends StatefulWidget {
   final ToastVariant variant;
   final String message;
 
-  const _ToastDemoView({
-    required this.variant,
-    required this.message,
-  });
+  const _ToastDemoView({required this.variant, required this.message});
 
   @override
   State<_ToastDemoView> createState() => _ToastDemoViewState();

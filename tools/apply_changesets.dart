@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:io';
+
 import 'package:path/path.dart' as p;
 
 /// Mapping: changeset package name → path ke pubspec.yaml
@@ -58,9 +59,8 @@ void main(List<String> args) async {
       if (!inFrontmatter) continue;
 
       // Parse: "package_name": bump_type
-      final match = RegExp(
-        r'"([^"]+)":\s*(patch|minor|major)',
-      ).firstMatch(line);
+      final match = RegExp(r'"([^"]+)":\s*(patch|minor|major)')
+          .firstMatch(line);
       if (match != null) {
         final pkgName = match.group(1)!;
         final bumpType = match.group(2)!;

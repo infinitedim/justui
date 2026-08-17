@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
+
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import '../shared/_shared_focus_indicator.dart';
@@ -228,10 +229,10 @@ class JustCard extends StatelessWidget {
           resolvedShadows = currentShadows;
         }
       } else {
-        if (variant == .elevated) {
+        if (variant == .elevated || presetTokens.showsDefaultBorder) {
           resolvedShadows = presetTokens.resolveShadow(
             shadows,
-            (isHovered || isFocused) ? .md : .sm,
+            (isHovered || isFocused) ? .lg : .md,
             isPressed: isPressed,
           );
         } else {
@@ -242,6 +243,10 @@ class JustCard extends StatelessWidget {
       final BorderSide borderSide = currentBorderWidth > 0.0
           ? BorderSide(color: currentBorderColor, width: currentBorderWidth)
           : .none;
+
+      final dividerHeight = presetTokens.borderWidth > 0.0
+          ? presetTokens.borderWidth
+          : 1.0;
 
       final cardLayout = Container(
         width: width,
@@ -259,11 +264,17 @@ class JustCard extends StatelessWidget {
           children: [
             if (header != null) ...[
               JustCardHeader(padding: resolvedHeaderPadding, child: header!),
-              Container(height: 1.0, color: resolvedHeaderDividerColor),
+              Container(
+                height: dividerHeight,
+                color: resolvedHeaderDividerColor,
+              ),
             ],
             Padding(padding: resolvedPadding, child: child),
             if (footer != null) ...[
-              Container(height: 1.0, color: resolvedFooterDividerColor),
+              Container(
+                height: dividerHeight,
+                color: resolvedFooterDividerColor,
+              ),
               JustCardFooter(padding: resolvedFooterPadding, child: footer!),
             ],
           ],
@@ -291,12 +302,15 @@ class JustCard extends StatelessWidget {
         child: JustPressable(
           enabled: true,
           onTap: onTap,
-          builder: (context, isHovered, isPressed, isFocused, focusNode) {
+          builder: (BuildContext context, JustInteractionState state) {
             return FocusIndicator(
-              isFocused: isFocused,
-              focusColor: colors.borderFocus,
+              isFocused: state.isFocusVisible,
               borderRadius: resolvedBorderRadius,
-              child: buildCardContent(isHovered, isPressed, isFocused),
+              child: buildCardContent(
+                state.isHovered,
+                state.isPressed,
+                state.isFocused,
+              ),
             );
           },
         ),
@@ -357,9 +371,8 @@ class JustCardTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final defaultStyle = JustFluidTypo.headingMd(
-      context,
-    ).copyWith(color: colors.textPrimary, fontWeight: .w600);
+    final defaultStyle = JustFluidTypo.headingMd(context)
+        .copyWith(color: colors.textPrimary, fontWeight: .w600);
 
     return DefaultTextStyle(style: defaultStyle.merge(style), child: child);
   }
@@ -379,9 +392,8 @@ class JustCardDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final defaultStyle = JustFluidTypo.bodySm(
-      context,
-    ).copyWith(color: colors.textSecondary);
+    final defaultStyle = JustFluidTypo.bodySm(context)
+        .copyWith(color: colors.textSecondary);
 
     return DefaultTextStyle(style: defaultStyle.merge(style), child: child);
   }

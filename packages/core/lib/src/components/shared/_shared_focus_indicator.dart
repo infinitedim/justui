@@ -1,36 +1,46 @@
 import 'package:flutter/widgets.dart';
 
-/// A decorator widget that draws a 2px focus ring around its child.
-class FocusIndicator extends StatelessWidget {
-  /// Whether the focused state is active.
-  final bool isFocused;
+import '../../theme/theme_provider.dart';
 
-  /// The color of the focus ring.
-  final Color focusColor;
-
-  /// The radius boundary of the element.
-  final BorderRadius borderRadius;
-
-  /// The child layout.
-  final Widget child;
-
-  /// Creates a [FocusIndicator].
-  const FocusIndicator({
-    super.key,
-    required this.isFocused,
-    required this.focusColor,
-    required this.borderRadius,
-    required this.child,
-  });
-
+/// A decorator widget that draws a focus ring around its child with smooth animation.
+class const FocusIndicator({
+  required final bool isFocused,
+  required final BorderRadius borderRadius,
+  required final Widget child,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    if (!isFocused) return child;
-    return CustomPaint(
-      foregroundPainter: _FocusRingPainter(
-        color: focusColor,
-        borderRadius: borderRadius,
-      ),
+    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
+    final animations = JustThemeProvider.of(
+      context,
+      aspect: .animations,
+    ).theme.animations;
+    final presetTokens = JustThemeProvider.of(context).theme.presetTokens;
+    final disableAnimations = MediaQuery.of(context).disableAnimations;
+
+    final focusColor = presetTokens.showsDefaultBorder
+        ? colors.textPrimary
+        : colors.borderFocus;
+    final strokeWidth = presetTokens.showsDefaultBorder
+        ? presetTokens.borderWidth
+        : 2.0;
+
+    return TweenAnimationBuilder<double>(
+      duration: disableAnimations ? Duration.zero : animations.fast,
+      tween: Tween<double>(begin: 0.0, end: isFocused ? 1.0 : 0.0),
+      builder: (context, value, child) {
+        return CustomPaint(
+          foregroundPainter: value > 0.001
+              ? _FocusRingPainter(
+                  color: focusColor.withValues(alpha: value),
+                  borderRadius: borderRadius,
+                  strokeWidth: strokeWidth,
+                )
+              : null,
+          child: child,
+        );
+      },
       child: child,
     );
   }
@@ -39,29 +49,35 @@ class FocusIndicator extends StatelessWidget {
 class _FocusRingPainter extends CustomPainter {
   final Color color;
   final BorderRadius borderRadius;
+  final double strokeWidth;
 
-  const _FocusRingPainter({required this.color, required this.borderRadius});
+  const _FocusRingPainter({
+    required this.color,
+    required this.borderRadius,
+    this.strokeWidth = 2.0,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
       ..style = .stroke
-      ..strokeWidth = 2.0;
+      ..strokeWidth = strokeWidth;
 
-    // Expand rect by 3px offset to draw the ring outside the element bounds
+    // Expand rect by offset to draw the ring outside the element bounds
+    final double offset = strokeWidth + 1.0;
     final Rect rect = .fromLTWH(
-      -3.0,
-      -3.0,
-      size.width + 6.0,
-      size.height + 6.0,
+      -offset,
+      -offset,
+      size.width + (offset * 2),
+      size.height + (offset * 2),
     );
     final RRect rrect = .fromRectAndCorners(
       rect,
-      topLeft: borderRadius.topLeft + const .circular(3.0),
-      topRight: borderRadius.topRight + const .circular(3.0),
-      bottomLeft: borderRadius.bottomLeft + const .circular(3.0),
-      bottomRight: borderRadius.bottomRight + const .circular(3.0),
+      topLeft: borderRadius.topLeft + .circular(offset),
+      topRight: borderRadius.topRight + .circular(offset),
+      bottomLeft: borderRadius.bottomLeft + .circular(offset),
+      bottomRight: borderRadius.bottomRight + .circular(offset),
     );
 
     canvas.drawRRect(rrect, paint);
@@ -70,6 +86,7 @@ class _FocusRingPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _FocusRingPainter oldDelegate) {
     return oldDelegate.color != color ||
-        oldDelegate.borderRadius != borderRadius;
+        oldDelegate.borderRadius != borderRadius ||
+        oldDelegate.strokeWidth != strokeWidth;
   }
 }

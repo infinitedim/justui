@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
+
 import '../../../shared/just_focus_indicator.dart';
 import '../../../shared/just_pressable.dart';
 import 'just_radio_style.dart';
@@ -130,9 +131,10 @@ class _JustRadioState<T> extends State<JustRadio<T>>
       final finalEnableHaptic =
           widget.enableHaptic ??
           radioTheme?.enableHaptic ??
-          JustThemeProvider.read(
-            context,
-          ).theme.presetTokens.selectionHapticDefault;
+          JustThemeProvider.read(context)
+              .theme
+              .presetTokens
+              .selectionHapticDefault;
 
       if (finalEnableHaptic) {
         HapticFeedback.selectionClick();

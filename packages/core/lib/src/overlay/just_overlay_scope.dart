@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+
 import 'just_overlay_controller.dart';
 
 /// A generic [InheritedWidget] base class that exposes an overlay controller

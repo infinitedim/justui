@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_dialog_style.dart';
 
 /// Global theme configuration for dialogs, extending Flutter's [ThemeExtension].

@@ -19,18 +19,15 @@ Widget buildJustSkeletonDefaultUseCase(BuildContext context) {
     child: JustSkeleton(
       loading: loading,
       child: JustCard(
-        header: JustCardHeader(
+        header: const JustCardHeader(
           child: Row(
-            children: const [
+            children: [
               JustAvatar(name: 'Jane Doe'),
               SizedBox(width: 12.0),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
-                  Text(
-                    'Jane Doe',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  Text('Jane Doe', style: TextStyle(fontWeight: .bold)),
                   Text('Software Engineer'),
                 ],
               ),
@@ -39,7 +36,7 @@ Widget buildJustSkeletonDefaultUseCase(BuildContext context) {
         ),
         footer: JustCardFooter(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: .end,
             children: [
               JustButton.primary(label: 'View Profile', onPressed: () {}),
             ],
@@ -55,10 +52,10 @@ Widget buildJustSkeletonDefaultUseCase(BuildContext context) {
 
 @widgetbook.UseCase(name: 'Manual Shapes', type: JustSkeleton)
 Widget buildJustSkeletonManualUseCase(BuildContext context) {
-  return Column(
+  return const Column(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
-    children: const [
+    children: [
       JustSkeleton.circle(size: 48.0),
       SizedBox(height: 12.0),
       JustSkeleton.text(width: 200.0, height: 16.0),

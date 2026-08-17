@@ -2,14 +2,13 @@
 import 'package:flutter/widgets.dart';
 
 /// A builder function that provides the active interactive states of a pressable element.
-typedef JustPressableBuilder =
-    Widget Function(
-      BuildContext context,
-      bool isHovered,
-      bool isPressed,
-      bool isFocused,
-      FocusNode focusNode,
-    );
+typedef JustPressableBuilder = Widget Function(
+  BuildContext context,
+  bool isHovered,
+  bool isPressed,
+  bool isFocused,
+  FocusNode focusNode,
+);
 
 /// A utility component that manages hover, press, and focus state machines.
 ///

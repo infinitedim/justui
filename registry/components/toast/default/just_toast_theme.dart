@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeExtension;
+
 import 'just_toast_style.dart';
 
 /// Global theme configuration for toasts, extending Flutter's [ThemeExtension].
