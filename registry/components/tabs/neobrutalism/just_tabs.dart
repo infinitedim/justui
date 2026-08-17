@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
-import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/material.dart' show Colors, Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
@@ -44,14 +44,16 @@ class JustTabController extends ChangeNotifier {
 
   int _index;
   double _animationValue;
-  AnimationController? _animationController;
-  bool _isDisposed = false;
 
   /// Creates a [JustTabController].
   JustTabController({required this.length, int initialIndex = 0})
-    : _index = initialIndex,
-      _animationValue = initialIndex.toDouble() {
-    assert(initialIndex >= 0 && initialIndex < length);
+    : _index = length == 0
+          ? 0
+          : initialIndex.clamp(0, length > 0 ? length - 1 : 0),
+      _animationValue =
+          (length == 0 ? 0 : initialIndex.clamp(0, length > 0 ? length - 1 : 0))
+              .toDouble() {
+    assert(length == 0 || (initialIndex >= 0 && initialIndex < length));
   }
 
   /// The active index.
@@ -59,7 +61,8 @@ class JustTabController extends ChangeNotifier {
 
   set index(int value) {
     if (value == _index) return;
-    assert(value >= 0 && value < length);
+    assert(length == 0 || (value >= 0 && value < length));
+    if (length == 0) return;
     _index = value;
     _animationValue = value.toDouble();
     notifyListeners();
@@ -72,77 +75,25 @@ class JustTabController extends ChangeNotifier {
   void updateAnimationValue(double value) {
     if (value == _animationValue) return;
     _animationValue = value;
-    final newIndex = value.round().clamp(0, length - 1);
+    final newIndex = length == 0 ? 0 : value.round().clamp(0, length - 1);
     if (newIndex != _index) {
       _index = newIndex;
     }
     notifyListeners();
   }
 
-  void _bindVsync(TickerProvider vsync, {Duration? defaultDuration}) {
-    _animationController?.dispose();
-    _animationController = AnimationController(
-      vsync: vsync,
-      duration: defaultDuration ?? const Duration(milliseconds: 250),
-    );
-  }
+  void _bindVsync(TickerProvider vsync, {Duration? defaultDuration}) {}
 
   /// Updates the default duration of the tab transition animation.
-  void updateDuration(Duration duration) {
-    if (_animationController != null &&
-        _animationController!.duration != duration) {
-      _animationController!.duration = duration;
-    }
-  }
+  void updateDuration(Duration duration) {}
 
   /// Animates the controller to the target index.
   void animateTo(int targetIndex, {Duration? duration, Curve? curve}) {
+    if (length == 0) return;
     assert(targetIndex >= 0 && targetIndex < length);
-    if (targetIndex == _index) return;
-
-    if (_animationController == null) {
-      index = targetIndex;
-      return;
-    }
-
-    _animationController!.stop();
-    _animationController!.duration =
-        duration ??
-        _animationController!.duration ??
-        const Duration(milliseconds: 250);
-
-    final Animation<double> animation =
-        Tween<double>(
-          begin: _animationValue,
-          end: targetIndex.toDouble(),
-        ).animate(
-          CurvedAnimation(
-            parent: _animationController!,
-            curve: curve ?? Curves.easeInOut,
-          ),
-        );
-
-    void updateTween() {
-      updateAnimationValue(animation.value);
-    }
-
-    _animationController!.addListener(updateTween);
-
-    _animationController!.forward(from: 0.0).whenComplete(() {
-      if (_isDisposed) return;
-      _animationController?.removeListener(updateTween);
-      _index = targetIndex;
-      _animationValue = targetIndex.toDouble();
-      notifyListeners();
-    });
-  }
-
-  @override
-  void dispose() {
-    _isDisposed = true;
-    _animationController?.dispose();
-    _animationController = null;
-    super.dispose();
+    _index = targetIndex;
+    _animationValue = targetIndex.toDouble();
+    notifyListeners();
   }
 }
 
@@ -241,7 +192,6 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
 
   List<double> _tabWidths = [];
   List<double> _tabOffsets = [];
-  bool _isAnimatingToPage = false;
   bool _isLocalController = false;
 
   @override
@@ -320,28 +270,23 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     final int index = _tabController.index;
     _visitedIndices.add(index);
     if (_pageController.hasClients && _pageController.page?.round() != index) {
-      _isAnimatingToPage = true;
       final animations = JustThemeProvider.read(context).theme.animations;
       final duration = _durationForTransition(
         _tabController.index,
         index,
         animations,
       );
-      _pageController
-          .animateToPage(
-            index,
-            duration: duration,
-            curve: animations.defaultCurve,
-          )
-          .then((_) {
-            _isAnimatingToPage = false;
-          });
+      _pageController.animateToPage(
+        index,
+        duration: duration,
+        curve: animations.defaultCurve,
+      );
     }
   }
 
   void _onPageScroll() {
     if (!mounted) return;
-    if (_pageController.hasClients && !_isAnimatingToPage) {
+    if (_pageController.hasClients) {
       final double? page = _pageController.page;
       if (page != null) {
         _tabController.updateAnimationValue(page);
@@ -455,6 +400,10 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.tabs.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) => _measureTabs());
 
     final customTheme = JustThemeProvider.of(context).theme;
@@ -528,7 +477,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
           key: _tabKeys[i],
           enabled: isEnabled,
           onTap: () => _handleTabTap(i),
-          builder: (context, isHovered, isPressed, isFocused, focusNode) {
+          builder: (BuildContext context, JustInteractionState state) {
             final double distance = (activeVal - i).abs();
             final double textInterpolation = (1.0 - distance).clamp(0.0, 1.0);
             final textColor =
@@ -554,10 +503,33 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
                   ),
                   SizedBox(width: spacing.sm),
                 ],
-                Text(
-                  tab.label,
-                  style: resolvedTextStyle.copyWith(
-                    color: isEnabled ? textColor : colors.textDisabled,
+                Flexible(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Invisible bold placeholder reserves max width so switching tabs has 0 layout jitter
+                      Opacity(
+                        opacity: 0.0,
+                        child: Text(
+                          tab.label,
+                          maxLines: 1,
+                          style:
+                              (widget.style?.activeTextStyle ??
+                                      typography.bodyMd.copyWith(
+                                        fontWeight: .w600,
+                                      ))
+                                  .copyWith(color: Colors.transparent),
+                        ),
+                      ),
+                      Text(
+                        tab.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: resolvedTextStyle.copyWith(
+                          color: isEnabled ? textColor : colors.textDisabled,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 if (tab.badge != null) ...[
@@ -735,6 +707,13 @@ class _JustTabKeepAliveState extends State<_JustTabKeepAlive>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return widget.child;
+    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
+    return DefaultTextStyle(
+      style: JustFluidTypo.bodyMd(context).copyWith(color: colors.textPrimary),
+      child: IconTheme.merge(
+        data: IconThemeData(color: colors.textPrimary),
+        child: widget.child,
+      ),
+    );
   }
 }

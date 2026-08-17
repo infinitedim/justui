@@ -201,33 +201,30 @@ class _JustSwitchState extends State<JustSwitch>
     // Resolve sizing values
     double trackWidth;
     double trackHeight;
-    double thumbSize;
     TextStyle textStyle;
 
     switch (widget.size) {
       case .sm:
         trackWidth = 32.0;
         trackHeight = 18.0;
-        thumbSize = 14.0;
         textStyle = typography.bodySm;
         break;
       case .md:
         trackWidth = 40.0;
         trackHeight = 22.0;
-        thumbSize = 18.0;
         textStyle = typography.bodyMd;
         break;
       case .lg:
         trackWidth = 48.0;
         trackHeight = 26.0;
-        thumbSize = 22.0;
         textStyle = typography.bodyLg;
         break;
     }
 
-    final resolvedThumbSize = hasBorder
-        ? thumbSize - 2 * borderWidth
-        : thumbSize;
+    const double trackInnerPadding = 2.0;
+    final double resolvedThumbSize = hasBorder
+        ? trackHeight - (2 * borderWidth) - (2 * trackInnerPadding)
+        : trackHeight - (2 * trackInnerPadding);
 
     // Resolve theme styles
     final themeStyle = switchTheme?.style;
@@ -253,9 +250,11 @@ class _JustSwitchState extends State<JustSwitch>
         themeStyle?.textStyle ??
         textStyle.copyWith(color: colors.textPrimary);
 
-    const double padding = 2.0;
     final double maxTravel =
-        trackWidth - padding * 2 - resolvedThumbSize - borderWidth * 2;
+        trackWidth -
+        trackInnerPadding * 2 -
+        resolvedThumbSize -
+        borderWidth * 2;
 
     return Semantics(
       toggled: widget.value,
@@ -265,123 +264,108 @@ class _JustSwitchState extends State<JustSwitch>
         enabled: isInteractive,
         onTap: _handleToggle,
         focusNode: _focusNode,
-        builder: (context, isHovered, isPressed, isFocused, focusNode) {
+        builder: (BuildContext context, JustInteractionState state) {
           return Opacity(
             opacity: widget.isDisabled ? 0.5 : 1.0,
-            child: Row(
-              mainAxisSize: .min,
-              crossAxisAlignment: .center,
-              children: [
-                // Accessibility touch target constraint (minimum 48x48)
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minWidth: 48.0,
-                    minHeight: 48.0,
-                  ),
-                  child: Center(
-                    child: RepaintBoundary(
-                      child: FocusIndicator(
-                        isFocused: isFocused,
-                        focusColor: colors.borderFocus,
-                        borderRadius: .all(.circular(trackHeight / 2)),
-                        child: GestureDetector(
-                          onHorizontalDragStart: _handleDragStart,
-                          onHorizontalDragUpdate: (details) =>
-                              _handleDragUpdate(details, maxTravel),
-                          onHorizontalDragEnd: _handleDragEnd,
-                          child: AnimatedBuilder(
-                            animation: _controller,
-                            builder: (context, child) {
-                              final progress = _controller.value;
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48.0),
+              child: Row(
+                mainAxisSize: .min,
+                crossAxisAlignment: .center,
+                children: [
+                  RepaintBoundary(
+                    child: FocusIndicator(
+                      isFocused: state.isFocusVisible,
+                      borderRadius: .all(.circular(trackHeight / 2)),
+                      child: GestureDetector(
+                        onTap: _handleToggle,
+                        onHorizontalDragStart: _handleDragStart,
+                        onHorizontalDragUpdate: (details) =>
+                            _handleDragUpdate(details, maxTravel),
+                        onHorizontalDragEnd: _handleDragEnd,
+                        child: AnimatedBuilder(
+                          animation: _controller,
+                          builder: (context, child) {
+                            final rawProgress = _controller.value;
+                            final curvedCurve = hasBorder
+                                ? Curves.linear
+                                : JustCurves.default_;
+                            final progress = curvedCurve.transform(rawProgress);
 
-                              // LERP track and thumb colors
-                              final Color currentTrackColor = .lerp(
-                                resolvedInactiveTrackColor,
-                                resolvedActiveTrackColor,
-                                progress,
-                              )!;
+                            // LERP track and thumb colors
+                            final Color currentTrackColor = .lerp(
+                              resolvedInactiveTrackColor,
+                              resolvedActiveTrackColor,
+                              rawProgress,
+                            )!;
 
-                              final Color currentThumbColor = .lerp(
-                                resolvedInactiveThumbColor,
-                                resolvedActiveThumbColor,
-                                progress,
-                              )!;
+                            final Color currentThumbColor = .lerp(
+                              resolvedInactiveThumbColor,
+                              resolvedActiveThumbColor,
+                              rawProgress,
+                            )!;
 
-                              return Container(
-                                width: trackWidth,
-                                height: trackHeight,
-                                decoration: BoxDecoration(
-                                  color: currentTrackColor,
-                                  borderRadius: .all(
-                                    .circular(trackHeight / 2),
+                            return Container(
+                              width: trackWidth,
+                              height: trackHeight,
+                              padding: const .all(trackInnerPadding),
+                              decoration: BoxDecoration(
+                                color: currentTrackColor,
+                                borderRadius: .all(.circular(trackHeight / 2)),
+                                border: hasBorder
+                                    ? .all(
+                                        color: colors.textPrimary,
+                                        width: borderWidth,
+                                      )
+                                    : null,
+                              ),
+                              child: Align(
+                                alignment: Alignment(2.0 * progress - 1.0, 0.0),
+                                child: Container(
+                                  width: resolvedThumbSize,
+                                  height: resolvedThumbSize,
+                                  decoration: BoxDecoration(
+                                    color: currentThumbColor,
+                                    shape: .circle,
+                                    border: hasBorder
+                                        ? .all(
+                                            color: colors.textPrimary,
+                                            width: 1.5,
+                                          )
+                                        : null,
+                                    boxShadow: hasBorder
+                                        ? null
+                                        : customTheme.presetTokens
+                                              .resolveShadow(
+                                                customTheme.shadows,
+                                                JustShadowLevel.xs,
+                                                isPressed: false,
+                                              ),
                                   ),
-                                  border: hasBorder
-                                      ? .all(
-                                          color: colors.textPrimary,
-                                          width: borderWidth,
+                                  child: widget.thumbIcon != null
+                                      ? Center(
+                                          child: widget.thumbIcon!(
+                                            widget.value,
+                                          ),
                                         )
                                       : null,
                                 ),
-                                child: Stack(
-                                  clipBehavior: .none,
-                                  children: [
-                                    Positioned(
-                                      left: padding + borderWidth,
-                                      top: padding + borderWidth,
-                                      child: Transform.translate(
-                                        offset: Offset(
-                                          progress * maxTravel,
-                                          0.0,
-                                        ),
-                                        child: Container(
-                                          width: resolvedThumbSize,
-                                          height: resolvedThumbSize,
-                                          decoration: BoxDecoration(
-                                            color: currentThumbColor,
-                                            shape: .circle,
-                                            border: hasBorder
-                                                ? .all(
-                                                    color: colors.textPrimary,
-                                                    width: 1.5,
-                                                  )
-                                                : null,
-                                            boxShadow: hasBorder
-                                                ? null
-                                                : customTheme.presetTokens
-                                                      .resolveShadow(
-                                                        customTheme.shadows,
-                                                        JustShadowLevel.xs,
-                                                        isPressed: false,
-                                                      ),
-                                          ),
-                                          child: widget.thumbIcon != null
-                                              ? Center(
-                                                  child: widget.thumbIcon!(
-                                                    widget.value,
-                                                  ),
-                                                )
-                                              : null,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
                   ),
-                ),
-                if (widget.label != null) ...[
-                  SizedBox(width: spacing.sm),
-                  DefaultTextStyle(
-                    style: resolvedTextStyle,
-                    child: widget.label!,
-                  ),
+                  if (widget.label != null) ...[
+                    SizedBox(width: spacing.sm),
+                    DefaultTextStyle(
+                      style: resolvedTextStyle,
+                      child: widget.label!,
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           );
         },
