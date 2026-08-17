@@ -16,6 +16,9 @@ abstract final class JustColorSemanticLight {
   /// Elevated overlay/dialog surface color
   static const Color elevated = JustColorPalette.white;
 
+  /// Muted background color for filled cards, badges, and secondary containers
+  static const Color muted = JustColorPalette.neutral100;
+
   /// Full screen modal backdrop / overlay color
   static const Color overlay = JustColorPalette.black;
 
@@ -69,6 +72,9 @@ abstract final class JustColorSemanticDark {
 
   /// Elevated overlay/dialog surface color in dark mode
   static const Color elevated = JustColorPalette.neutral800;
+
+  /// Muted background color for filled cards, badges, and secondary containers in dark mode
+  static const Color muted = JustColorPalette.neutral800;
 
   /// Full screen modal backdrop / overlay color in dark mode
   static const Color overlay = JustColorPalette.neutral950;

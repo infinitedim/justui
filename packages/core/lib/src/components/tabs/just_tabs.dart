@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
-import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/material.dart' show Colors, Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
@@ -504,13 +504,32 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
                   SizedBox(width: spacing.sm),
                 ],
                 Flexible(
-                  child: Text(
-                    tab.label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: resolvedTextStyle.copyWith(
-                      color: isEnabled ? textColor : colors.textDisabled,
-                    ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Invisible bold placeholder reserves max width so switching tabs has 0 layout jitter
+                      Opacity(
+                        opacity: 0.0,
+                        child: Text(
+                          tab.label,
+                          maxLines: 1,
+                          style:
+                              (widget.style?.activeTextStyle ??
+                                      typography.bodyMd.copyWith(
+                                        fontWeight: .w600,
+                                      ))
+                                  .copyWith(color: Colors.transparent),
+                        ),
+                      ),
+                      Text(
+                        tab.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: resolvedTextStyle.copyWith(
+                          color: isEnabled ? textColor : colors.textDisabled,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 if (tab.badge != null) ...[

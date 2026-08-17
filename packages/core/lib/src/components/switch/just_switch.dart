@@ -286,19 +286,23 @@ class _JustSwitchState extends State<JustSwitch>
                         child: AnimatedBuilder(
                           animation: _controller,
                           builder: (context, child) {
-                            final progress = _controller.value;
+                            final rawProgress = _controller.value;
+                            final curvedCurve = hasBorder
+                                ? Curves.linear
+                                : JustCurves.default_;
+                            final progress = curvedCurve.transform(rawProgress);
 
                             // LERP track and thumb colors
                             final Color currentTrackColor = .lerp(
                               resolvedInactiveTrackColor,
                               resolvedActiveTrackColor,
-                              progress,
+                              rawProgress,
                             )!;
 
                             final Color currentThumbColor = .lerp(
                               resolvedInactiveThumbColor,
                               resolvedActiveThumbColor,
-                              progress,
+                              rawProgress,
                             )!;
 
                             return Container(
