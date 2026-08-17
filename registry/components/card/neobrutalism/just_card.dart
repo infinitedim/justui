@@ -125,8 +125,6 @@ class JustCard extends StatelessWidget {
     double defaultBorderWidth;
     List<BoxShadow> defaultShadows;
 
-    final isDark = colors.background.computeLuminance() < 0.5;
-
     switch (variant) {
       case .elevated:
         defaultBg = colors.card;
@@ -145,9 +143,7 @@ class JustCard extends StatelessWidget {
         defaultShadows = const [];
         break;
       case .filled:
-        defaultBg = isDark
-            ? const Color(0xFF1E293B)
-            : const Color(0xFFF1F5F9); // Slate-800 / Slate-100
+        defaultBg = colors.muted;
         defaultBorderColor = presetTokens.showsDefaultBorder
             ? colors.borderDefault
             : const Color(0x00000000);
@@ -191,6 +187,10 @@ class JustCard extends StatelessWidget {
         colors.borderDefault;
 
     Widget buildCardContent(bool isHovered, bool isPressed, bool isFocused) {
+      final typography = JustThemeProvider.of(
+        context,
+        aspect: .typography,
+      ).theme.typography;
       // Interactive overrides
       List<BoxShadow> currentShadows =
           style?.shadows ?? themeStyle?.shadows ?? defaultShadows;
@@ -229,10 +229,10 @@ class JustCard extends StatelessWidget {
           resolvedShadows = currentShadows;
         }
       } else {
-        if (variant == .elevated) {
+        if (variant == .elevated || presetTokens.showsDefaultBorder) {
           resolvedShadows = presetTokens.resolveShadow(
             shadows,
-            (isHovered || isFocused) ? .md : .sm,
+            (isHovered || isFocused) ? .lg : .md,
             isPressed: isPressed,
           );
         } else {
@@ -244,6 +244,10 @@ class JustCard extends StatelessWidget {
           ? BorderSide(color: currentBorderColor, width: currentBorderWidth)
           : .none;
 
+      final dividerHeight = presetTokens.borderWidth > 0.0
+          ? presetTokens.borderWidth
+          : 1.0;
+
       final cardLayout = Container(
         width: width,
         height: height,
@@ -254,20 +258,38 @@ class JustCard extends StatelessWidget {
           border: .fromBorderSide(borderSide),
           boxShadow: resolvedShadows,
         ),
-        child: Column(
-          mainAxisSize: .min,
-          crossAxisAlignment: .stretch,
-          children: [
-            if (header != null) ...[
-              JustCardHeader(padding: resolvedHeaderPadding, child: header!),
-              Container(height: 1.0, color: resolvedHeaderDividerColor),
-            ],
-            Padding(padding: resolvedPadding, child: child),
-            if (footer != null) ...[
-              Container(height: 1.0, color: resolvedFooterDividerColor),
-              JustCardFooter(padding: resolvedFooterPadding, child: footer!),
-            ],
-          ],
+        child: DefaultTextStyle(
+          style: typography.bodyMd.copyWith(color: colors.textPrimary),
+          child: IconTheme.merge(
+            data: IconThemeData(color: colors.textPrimary),
+            child: Column(
+              mainAxisSize: .min,
+              crossAxisAlignment: .stretch,
+              children: [
+                if (header != null) ...[
+                  JustCardHeader(
+                    padding: resolvedHeaderPadding,
+                    child: header!,
+                  ),
+                  Container(
+                    height: dividerHeight,
+                    color: resolvedHeaderDividerColor,
+                  ),
+                ],
+                Padding(padding: resolvedPadding, child: child),
+                if (footer != null) ...[
+                  Container(
+                    height: dividerHeight,
+                    color: resolvedFooterDividerColor,
+                  ),
+                  JustCardFooter(
+                    padding: resolvedFooterPadding,
+                    child: footer!,
+                  ),
+                ],
+              ],
+            ),
+          ),
         ),
       );
 
@@ -292,12 +314,15 @@ class JustCard extends StatelessWidget {
         child: JustPressable(
           enabled: true,
           onTap: onTap,
-          builder: (context, isHovered, isPressed, isFocused, focusNode) {
+          builder: (BuildContext context, JustInteractionState state) {
             return FocusIndicator(
-              isFocused: isFocused,
-              focusColor: colors.borderFocus,
+              isFocused: state.isFocusVisible,
               borderRadius: resolvedBorderRadius,
-              child: buildCardContent(isHovered, isPressed, isFocused),
+              child: buildCardContent(
+                state.isHovered,
+                state.isPressed,
+                state.isFocused,
+              ),
             );
           },
         ),

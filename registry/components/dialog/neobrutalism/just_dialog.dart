@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
 
-import '../../overlay/just_overlay_controller.dart';
-import '../../theme/theme_provider.dart';
 import 'just_dialog_style.dart';
 import 'just_dialog_theme.dart';
 import 'just_dialog_variants.dart';
@@ -21,8 +20,8 @@ class _DialogInstance<T> {
 
   /// Set as soon as a dismissal has been requested for this instance, so a
   /// second dismiss request for the same instance (e.g. a held-down Escape
-  /// key delivering repeated key events, or a barrier tap racing the Escape
-  /// handler) is a no-op instead of starting a second reverse animation.
+  /// key delivering repeated key events) is a no-op instead of starting a
+  /// second reverse animation.
   bool _dismissRequested = false;
 
   _DialogInstance({
@@ -70,10 +69,7 @@ class JustDialogController extends JustOverlayController {
     final isLocalController = animationController == null;
     final animController =
         animationController ??
-        AnimationController(
-          vsync: _vsync!,
-          duration: const Duration(milliseconds: 300),
-        );
+        AnimationController(vsync: _vsync!, duration: JustDuration.normal);
 
     late final _DialogInstance<T> instance;
 
@@ -252,6 +248,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
     final radius = theme.radius;
     final shadows = theme.shadows;
     final motion = theme.animations.resolve(context);
+    final typography = theme.typography;
 
     final globalTheme = Theme.of(context).extension<JustDialogTheme>();
 
@@ -362,7 +359,13 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
                 ),
               ),
             ],
-            widget.content,
+            DefaultTextStyle(
+              style: typography.bodyMd.copyWith(color: colors.textPrimary),
+              child: IconTheme.merge(
+                data: IconThemeData(color: colors.textPrimary),
+                child: widget.content,
+              ),
+            ),
           ],
         ),
       ),
@@ -440,6 +443,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
                   child: Semantics(
                     scopesRoute: true,
                     namesRoute: true,
+                    explicitChildNodes: true,
                     label: 'Dialog',
                     child: animatedChild,
                   ),
@@ -492,8 +496,6 @@ class _JustDialogScopeState extends State<JustDialogScope>
   void didUpdateWidget(covariant JustDialogScope oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
-      // The old controller is being detached from this scope, so it must
-      // release any dialogs it still has open the same way dispose() does.
       oldWidget.controller.forceDismissAll();
       oldWidget.controller._vsync = null;
       oldWidget.controller._overlayState = null;
@@ -510,9 +512,6 @@ class _JustDialogScopeState extends State<JustDialogScope>
 
   @override
   void dispose() {
-    // Force-clear any dialogs still open before this scope's TickerProvider
-    // and OverlayState become unavailable below, otherwise their
-    // OverlayEntry(s) would be orphaned in the ancestor Overlay indefinitely.
     widget.controller.forceDismissAll();
     widget.controller._vsync = null;
     widget.controller._overlayState = null;

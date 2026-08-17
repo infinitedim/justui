@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart' show Icons, Theme;
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
@@ -23,6 +24,13 @@ class _ToastEntry {
   final OverlayEntry overlayEntry;
   final AnimationController animationController;
   late final Timer timer;
+
+  /// Set as soon as a dismissal has been requested for this entry, so a
+  /// second dismiss request for the same entry (e.g. the auto-dismiss timer
+  /// firing while the user is also swiping it away, or a rapid double-tap on
+  /// the close affordance) is a no-op instead of starting a second reverse
+  /// animation.
+  bool _dismissRequested = false;
 
   _ToastEntry({
     required this.id,
@@ -68,7 +76,8 @@ class JustToastController extends JustOverlayController {
   /// The behavior mode (stacked or queue) for multiple toasts.
   final ToastBehavior behavior;
 
-  /// The maximum number of visible toasts in stacked mode.
+  /// The maximum number of visible toasts in stacked mode, or maximum queued
+  /// pending toasts in queue mode.
   final int? limit;
 
   /// The screen position where toasts are anchored.
@@ -104,6 +113,7 @@ class JustToastController extends JustOverlayController {
     Widget? icon,
     Widget? action,
     VoidCallback? onDismissed,
+    int? limit,
   }) {
     assert(
       _overlayState != null,
@@ -126,16 +136,41 @@ class JustToastController extends JustOverlayController {
       animationBuilder: animationBuilder,
     );
 
+    final effectiveLimit = limit ?? this.limit;
+
     if (behavior == .queue) {
       if (_activeToasts.isNotEmpty) {
-        _queue.add(pending);
+        if (effectiveLimit != null && _queue.length >= effectiveLimit) {
+          if (_queue.isNotEmpty) {
+            // Drops oldest queued toast when the queue cap is reached
+            _queue.removeAt(0);
+          }
+        }
+        if (effectiveLimit == null || effectiveLimit > 0) {
+          _queue.add(pending);
+        }
       } else {
         _showToast(pending);
       }
     } else {
-      if (limit != null && _activeToasts.length >= limit!) {
-        // Dismiss the oldest toast
-        _dismissToast(_activeToasts.first);
+      if (effectiveLimit != null) {
+        // 1. Get non-dismissing active toasts
+        final activeVisible =
+            _activeToasts.where((t) => !t._dismissRequested).toList();
+
+        // 2. If active visible toasts reach limit, dismiss the oldest active one
+        if (activeVisible.length >= effectiveLimit) {
+          _dismissToast(activeVisible.first);
+        }
+
+        // 3. Immediately clean up any toasts that are already reversing/dismissing
+        // if total entries exceed effectiveLimit to prevent overlay accumulation during rapid click spam
+        while (_activeToasts.length >= effectiveLimit &&
+            _activeToasts.any((t) => t._dismissRequested)) {
+          final oldestDismissing =
+              _activeToasts.firstWhere((t) => t._dismissRequested);
+          _cleanupToastEntry(oldestDismissing);
+        }
       }
       _showToast(pending);
     }
@@ -146,7 +181,7 @@ class JustToastController extends JustOverlayController {
         pending.animationController ??
         AnimationController(
           vsync: _vsync!,
-          duration: const Duration(milliseconds: 300),
+          duration: JustDuration.normal,
         );
 
     late final _ToastEntry entry;
@@ -164,10 +199,12 @@ class JustToastController extends JustOverlayController {
         final offset =
             (_activeToasts.length - 1 - index) * (toastHeight + toastSpacing);
 
-        Widget toastCard = _JustToastWidget(
-          entry: entry,
-          enableDrag: enableDragDismiss,
-          onDismiss: () => _dismissToast(entry),
+        Widget toastCard = RepaintBoundary(
+          child: _JustToastWidget(
+            entry: entry,
+            enableDrag: enableDragDismiss,
+            onDismiss: () => _dismissToast(entry),
+          ),
         );
 
         if (pending.animationBuilder != null) {
@@ -178,13 +215,11 @@ class JustToastController extends JustOverlayController {
           );
         }
 
-        return RepaintBoundary(
-          child: _ToastPositionedWrapper(
-            position: position,
-            offset: offset,
-            animation: animController,
-            child: toastCard,
-          ),
+        return _ToastPositionedWrapper(
+          position: position,
+          offset: offset,
+          animation: animController,
+          child: toastCard,
         );
       },
     );
@@ -214,14 +249,117 @@ class JustToastController extends JustOverlayController {
   }
 
   void _dismissToast(_ToastEntry entry) {
-    if (!_activeToasts.contains(entry)) return;
+    if (!_activeToasts.contains(entry) || entry._dismissRequested) return;
+    entry._dismissRequested = true;
 
     entry.timer.cancel();
     entry.animationController.reverse().then((_) {
-      entry.overlayEntry.remove();
-      entry.overlayEntry.dispose();
+      _cleanupToastEntry(entry);
 
-      // Only dispose if it was created locally
+      if (behavior == .queue && _queue.isNotEmpty) {
+        _showToast(_queue.removeAt(0));
+      }
+    });
+  }
+
+  /// Synchronously removes and disposes [entry]'s overlay entry and (unless
+  /// its animation controller is shared with another queued/active entry)
+  /// disposes the controller too, then fires [entry.onDismissed] and
+  /// repositions the remaining toasts.
+  ///
+  /// Guarded by [List.remove] returning `false` for an entry no longer in
+  /// [_activeToasts], so this is safe to call more than once for the same
+  /// [entry] — only the first call has any effect. This makes it safe to
+  /// race against the animated cleanup scheduled by [_dismissToast].
+  void _cleanupToastEntry(_ToastEntry entry) {
+    entry.timer.cancel();
+    if (!_activeToasts.remove(entry)) return;
+
+    try {
+      if (entry.overlayEntry.mounted) {
+        entry.overlayEntry.remove();
+      }
+    } catch (_) {}
+    try {
+      entry.overlayEntry.dispose();
+    } catch (_) {}
+
+    // Only dispose if it was created locally
+    final wasLocal =
+        !_queue.any(
+          (q) => q.animationController == entry.animationController,
+        ) &&
+        _activeToasts
+            .where(
+              (t) =>
+                  t != entry &&
+                  t.animationController == entry.animationController,
+            )
+            .isEmpty;
+    if (wasLocal) {
+      try {
+        entry.animationController.dispose();
+      } catch (_) {}
+    }
+
+    if (entry.onDismissed != null) {
+      entry.onDismissed!();
+    }
+
+    _updatePositions();
+  }
+
+  void _updatePositions() {
+    if (_activeToasts.isEmpty) return;
+    if (SchedulerBinding.instance.schedulerPhase != SchedulerPhase.idle) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _updatePositions();
+      });
+      return;
+    }
+    for (final toast in _activeToasts) {
+      try {
+        if (toast.overlayEntry.mounted) {
+          toast.overlayEntry.markNeedsBuild();
+        }
+      } catch (_) {}
+    }
+  }
+
+  @override
+  void dismiss() {
+    final targets = List<_ToastEntry>.from(_activeToasts);
+    for (final toast in targets) {
+      _dismissToast(toast);
+    }
+  }
+
+  /// Immediately tears down every active toast without waiting for the exit
+  /// animation to finish.
+  ///
+  /// Called when the hosting [JustToastScope] is being disposed — its
+  /// [TickerProvider]/[OverlayState] are about to become unavailable, so any
+  /// toast still visible must have its [OverlayEntry] and (if not shared)
+  /// [AnimationController] released synchronously. Without this, entries
+  /// inserted into an ancestor [Overlay] that outlives the scope (e.g. the
+  /// app/root [Navigator]'s overlay) would stay inserted indefinitely,
+  /// continuing to render stale content after the scope is gone. Pending
+  /// queued toasts (not yet shown) are left untouched, since they hold no
+  /// overlay/animation resources yet and can still be shown later if this
+  /// controller is re-attached to a new scope.
+  void forceDismissAll() {
+    final targets = List<_ToastEntry>.from(_activeToasts);
+    _activeToasts.clear();
+    for (final entry in targets) {
+      try {
+        if (entry.overlayEntry.mounted) {
+          entry.overlayEntry.remove();
+        }
+      } catch (_) {}
+      try {
+        entry.overlayEntry.dispose();
+      } catch (_) {}
+
       final wasLocal =
           !_queue.any(
             (q) => q.animationController == entry.animationController,
@@ -234,33 +372,16 @@ class JustToastController extends JustOverlayController {
               )
               .isEmpty;
       if (wasLocal) {
-        entry.animationController.dispose();
+        try {
+          entry.animationController.dispose();
+        } catch (_) {}
       }
 
-      _activeToasts.remove(entry);
       if (entry.onDismissed != null) {
-        entry.onDismissed!();
+        try {
+          entry.onDismissed!();
+        } catch (_) {}
       }
-
-      _updatePositions();
-
-      if (behavior == .queue && _queue.isNotEmpty) {
-        _showToast(_queue.removeAt(0));
-      }
-    });
-  }
-
-  void _updatePositions() {
-    for (final toast in _activeToasts) {
-      toast.overlayEntry.markNeedsBuild();
-    }
-  }
-
-  @override
-  void dismiss() {
-    final targets = List<_ToastEntry>.from(_activeToasts);
-    for (final toast in targets) {
-      _dismissToast(toast);
     }
   }
 
@@ -391,7 +512,7 @@ class _JustToastWidgetState extends State<_JustToastWidget>
     super.initState();
     _swipeBackController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200),
+      duration: JustDuration.fast,
     );
     _swipeBackAnimation = Tween<double>(
       begin: 0.0,
@@ -418,7 +539,7 @@ class _JustToastWidgetState extends State<_JustToastWidget>
       widget.onDismiss();
     } else {
       _swipeBackAnimation = Tween<double>(begin: _dragX, end: 0.0).animate(
-        CurvedAnimation(parent: _swipeBackController, curve: Curves.easeOut),
+        CurvedAnimation(parent: _swipeBackController, curve: JustCurves.default_),
       );
       _swipeBackController.forward(from: 0.0);
     }
@@ -478,10 +599,17 @@ class _JustToastWidgetState extends State<_JustToastWidget>
     final entryStyle = widget.entry.style;
 
     // Resolve visual styles
+    final defaultVariantBg = switch (widget.entry.variant) {
+      .success => colors.success.withValues(alpha: 0.1),
+      .error => colors.error.withValues(alpha: 0.1),
+      .warning => colors.warning.withValues(alpha: 0.1),
+      .info => colors.info.withValues(alpha: 0.08),
+    };
+    final defaultBg = Color.alphaBlend(defaultVariantBg, colors.card);
     final bgColor =
         entryStyle?.backgroundColor ??
         variantThemeStyle?.backgroundColor ??
-        colors.card;
+        defaultBg;
     final borderColor =
         entryStyle?.borderColor ??
         variantThemeStyle?.borderColor ??
@@ -587,7 +715,20 @@ class _JustToastWidgetState extends State<_JustToastWidget>
 /// Scope widget that binds a [JustToastController] and handles the Flutter context/ticker binding.
 class JustToastScope extends StatefulWidget {
   /// The controller that manages the toast notifications.
-  final JustToastController controller;
+  /// If omitted, a default controller using [limit], [position], [behavior], and [enableDragDismiss] is automatically created.
+  final JustToastController? controller;
+
+  /// The maximum number of active/queued toasts. Defaults to 3.
+  final int? limit;
+
+  /// The screen position where toasts are anchored. Defaults to [ToastPosition.bottomCenter].
+  final ToastPosition position;
+
+  /// The behavior mode (stacked or queue) for multiple toasts. Defaults to [ToastBehavior.stacked].
+  final ToastBehavior behavior;
+
+  /// Whether to enable horizontal swipe-to-dismiss gesture. Defaults to true.
+  final bool enableDragDismiss;
 
   /// The child subtree.
   final Widget child;
@@ -595,7 +736,11 @@ class JustToastScope extends StatefulWidget {
   /// Creates a [JustToastScope].
   const JustToastScope({
     super.key,
-    required this.controller,
+    this.controller,
+    this.limit = 3,
+    this.position = .bottomCenter,
+    this.behavior = .stacked,
+    this.enableDragDismiss = true,
     required this.child,
   });
 
@@ -613,40 +758,70 @@ class JustToastScope extends StatefulWidget {
 
 class _JustToastScopeState extends State<JustToastScope>
     with TickerProviderStateMixin {
+  JustToastController? _internalController;
+
+  JustToastController get _effectiveController =>
+      widget.controller ?? _internalController!;
+
   @override
   void initState() {
     super.initState();
-    widget.controller._vsync = this;
+    _initController();
+  }
+
+  void _initController() {
+    if (widget.controller == null) {
+      _internalController = JustToastController(
+        limit: widget.limit,
+        position: widget.position,
+        behavior: widget.behavior,
+        enableDragDismiss: widget.enableDragDismiss,
+      );
+    } else {
+      _internalController = null;
+    }
+    _effectiveController._vsync = this;
   }
 
   @override
   void didUpdateWidget(covariant JustToastScope oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
-      oldWidget.controller._vsync = null;
-      oldWidget.controller._overlayState = null;
-      widget.controller._vsync = this;
-      widget.controller._overlayState = Overlay.of(context);
+      final oldCtrl = oldWidget.controller ?? _internalController;
+      oldCtrl?.forceDismissAll();
+      oldCtrl?._vsync = null;
+      oldCtrl?._overlayState = null;
+
+      _initController();
     }
+    _effectiveController._vsync = this;
+    _effectiveController._overlayState = Overlay.maybeOf(context);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    widget.controller._overlayState = Overlay.of(context);
+    final newOverlay = Overlay.maybeOf(context);
+    if (_effectiveController._overlayState != null &&
+        _effectiveController._overlayState != newOverlay) {
+      _effectiveController.forceDismissAll();
+    }
+    _effectiveController._overlayState = newOverlay;
   }
 
   @override
   void dispose() {
-    widget.controller._vsync = null;
-    widget.controller._overlayState = null;
+    _effectiveController.forceDismissAll();
+    _effectiveController._vsync = null;
+    _effectiveController._overlayState = null;
+    _internalController = null;
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return _JustToastScopeInherited(
-      controller: widget.controller,
+      controller: _effectiveController,
       child: widget.child,
     );
   }

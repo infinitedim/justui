@@ -8,11 +8,11 @@ import 'package:path/path.dart' as p;
 
 /// Where a registry file's bytes originate from.
 ///
-/// - [coreMirrored]: default preset, non-internal component. Source of
-///   truth lives in packages/core/lib/src/, registry copy is mirrored
-///   from it on every run.
-/// - [registryNative]: neobrutalism preset OR internal component. The
-///   registry file itself is the source of truth — nothing to mirror.
+/// - [coreMirrored]: non-internal component preset (default, neobrutalism).
+///   Source of truth lives in packages/core/lib/src/, registry copy is
+///   mirrored from it on every run.
+/// - [registryNative]: internal component. The registry file itself is the
+///   source of truth — nothing to mirror.
 enum FileOrigin { coreMirrored, registryNative }
 
 /// Resolved src/dest pair + origin classification for a single file entry.
@@ -211,14 +211,17 @@ ResolvedPaths _resolvePaths({
   required bool isInternal,
   required String projectRoot,
 }) {
-  final bool sourcedFromCore = preset == 'default' && !isInternal;
+  final bool sourcedFromCore = !isInternal;
   final origin = sourcedFromCore
       ? FileOrigin.coreMirrored
       : FileOrigin.registryNative;
 
   final File srcFile;
   if (sourcedFromCore) {
-    final String srcRelPath = relPath.replaceFirst('/default/', '/');
+    final String srcRelPath = relPath.replaceFirst(
+      RegExp(r'/(default|neobrutalism)/'),
+      '/',
+    );
     srcFile = File(
       p.join(projectRoot, 'packages', 'core', 'lib', 'src', srcRelPath),
     );

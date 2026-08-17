@@ -113,6 +113,7 @@ class JustToastController extends JustOverlayController {
     Widget? icon,
     Widget? action,
     VoidCallback? onDismissed,
+    int? limit,
   }) {
     assert(
       _overlayState != null,
@@ -135,24 +136,41 @@ class JustToastController extends JustOverlayController {
       animationBuilder: animationBuilder,
     );
 
+    final effectiveLimit = limit ?? this.limit;
+
     if (behavior == .queue) {
       if (_activeToasts.isNotEmpty) {
-        if (limit != null && _queue.length >= limit!) {
+        if (effectiveLimit != null && _queue.length >= effectiveLimit) {
           if (_queue.isNotEmpty) {
             // Drops oldest queued toast when the queue cap is reached
             _queue.removeAt(0);
           }
         }
-        if (limit == null || limit! > 0) {
+        if (effectiveLimit == null || effectiveLimit > 0) {
           _queue.add(pending);
         }
       } else {
         _showToast(pending);
       }
     } else {
-      if (limit != null && _activeToasts.length >= limit!) {
-        // Dismiss the oldest toast
-        _dismissToast(_activeToasts.first);
+      if (effectiveLimit != null) {
+        // 1. Get non-dismissing active toasts
+        final activeVisible =
+            _activeToasts.where((t) => !t._dismissRequested).toList();
+
+        // 2. If active visible toasts reach limit, dismiss the oldest active one
+        if (activeVisible.length >= effectiveLimit) {
+          _dismissToast(activeVisible.first);
+        }
+
+        // 3. Immediately clean up any toasts that are already reversing/dismissing
+        // if total entries exceed effectiveLimit to prevent overlay accumulation during rapid click spam
+        while (_activeToasts.length >= effectiveLimit &&
+            _activeToasts.any((t) => t._dismissRequested)) {
+          final oldestDismissing =
+              _activeToasts.firstWhere((t) => t._dismissRequested);
+          _cleanupToastEntry(oldestDismissing);
+        }
       }
       _showToast(pending);
     }
@@ -697,7 +715,20 @@ class _JustToastWidgetState extends State<_JustToastWidget>
 /// Scope widget that binds a [JustToastController] and handles the Flutter context/ticker binding.
 class JustToastScope extends StatefulWidget {
   /// The controller that manages the toast notifications.
-  final JustToastController controller;
+  /// If omitted, a default controller using [limit], [position], [behavior], and [enableDragDismiss] is automatically created.
+  final JustToastController? controller;
+
+  /// The maximum number of active/queued toasts. Defaults to 3.
+  final int? limit;
+
+  /// The screen position where toasts are anchored. Defaults to [ToastPosition.bottomCenter].
+  final ToastPosition position;
+
+  /// The behavior mode (stacked or queue) for multiple toasts. Defaults to [ToastBehavior.stacked].
+  final ToastBehavior behavior;
+
+  /// Whether to enable horizontal swipe-to-dismiss gesture. Defaults to true.
+  final bool enableDragDismiss;
 
   /// The child subtree.
   final Widget child;
@@ -705,7 +736,11 @@ class JustToastScope extends StatefulWidget {
   /// Creates a [JustToastScope].
   const JustToastScope({
     super.key,
-    required this.controller,
+    this.controller,
+    this.limit = 3,
+    this.position = .bottomCenter,
+    this.behavior = .stacked,
+    this.enableDragDismiss = true,
     required this.child,
   });
 
@@ -723,51 +758,70 @@ class JustToastScope extends StatefulWidget {
 
 class _JustToastScopeState extends State<JustToastScope>
     with TickerProviderStateMixin {
+  JustToastController? _internalController;
+
+  JustToastController get _effectiveController =>
+      widget.controller ?? _internalController!;
+
   @override
   void initState() {
     super.initState();
-    widget.controller._vsync = this;
+    _initController();
+  }
+
+  void _initController() {
+    if (widget.controller == null) {
+      _internalController = JustToastController(
+        limit: widget.limit,
+        position: widget.position,
+        behavior: widget.behavior,
+        enableDragDismiss: widget.enableDragDismiss,
+      );
+    } else {
+      _internalController = null;
+    }
+    _effectiveController._vsync = this;
   }
 
   @override
   void didUpdateWidget(covariant JustToastScope oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
-      oldWidget.controller.forceDismissAll();
-      oldWidget.controller._vsync = null;
-      oldWidget.controller._overlayState = null;
+      final oldCtrl = oldWidget.controller ?? _internalController;
+      oldCtrl?.forceDismissAll();
+      oldCtrl?._vsync = null;
+      oldCtrl?._overlayState = null;
+
+      _initController();
     }
-    widget.controller._vsync = this;
-    widget.controller._overlayState = Overlay.maybeOf(context);
+    _effectiveController._vsync = this;
+    _effectiveController._overlayState = Overlay.maybeOf(context);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final newOverlay = Overlay.maybeOf(context);
-    if (widget.controller._overlayState != null &&
-        widget.controller._overlayState != newOverlay) {
-      widget.controller.forceDismissAll();
+    if (_effectiveController._overlayState != null &&
+        _effectiveController._overlayState != newOverlay) {
+      _effectiveController.forceDismissAll();
     }
-    widget.controller._overlayState = newOverlay;
+    _effectiveController._overlayState = newOverlay;
   }
 
   @override
   void dispose() {
-    // Force-clear any toasts still visible before this scope's
-    // TickerProvider and OverlayState become unavailable below, otherwise
-    // their OverlayEntry(s) would be orphaned in the ancestor Overlay
-    // indefinitely.
-    widget.controller.forceDismissAll();
-    widget.controller._vsync = null;
-    widget.controller._overlayState = null;
+    _effectiveController.forceDismissAll();
+    _effectiveController._vsync = null;
+    _effectiveController._overlayState = null;
+    _internalController = null;
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return _JustToastScopeInherited(
-      controller: widget.controller,
+      controller: _effectiveController,
       child: widget.child,
     );
   }
