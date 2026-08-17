@@ -1,4 +1,8 @@
+import 'dart:math' as math;
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../theme/theme_provider.dart';
@@ -8,7 +12,9 @@ import 'just_scroll_area_style.dart';
 import 'just_scroll_area_theme.dart';
 
 /// A performance-optimized scroll area with custom scrollbars, fade edges,
-/// scroll-to-top floating button, and infinite scroll triggers.
+/// scroll-to-top floating button, infinite scroll triggers, and an optional
+/// Lenis-style smooth scroll engine for ultra-fluid mouse wheel & keyboard
+/// scrolling on desktop/web platforms.
 ///
 /// Adheres to zero-Material visual policy and maps styles using JustUI design system.
 class JustScrollArea extends StatefulWidget {
@@ -52,6 +58,9 @@ class JustScrollArea extends StatefulWidget {
   final VoidCallback? onScrollEnd;
 
   /// The physics configuration of the scroll view.
+  ///
+  /// When [smoothScroll] is enabled, this is overridden with
+  /// [NeverScrollableScrollPhysics] to prevent conflicts with the lerp engine.
   final ScrollPhysics? physics;
 
   /// External [ScrollController] to monitor or programmatically drive scrolling.
@@ -68,6 +77,38 @@ class JustScrollArea extends StatefulWidget {
 
   /// Per-instance style overrides.
   final JustScrollAreaStyle? style;
+
+  /// Enables the Lenis-style smooth scroll engine.
+  ///
+  /// When `null` (default), auto-detects platform:
+  /// - **Desktop** (macOS, Windows, Linux): enabled
+  /// - **Mobile** (iOS, Android): disabled (native touch physics preserved)
+  ///
+  /// Set explicitly to `true` or `false` to override auto-detection.
+  final bool? smoothScroll;
+
+  /// The lerp interpolation factor controlling scroll smoothness (0.01–1.0).
+  ///
+  /// Lower values produce smoother, more cinematic scrolling with longer deceleration.
+  /// Higher values produce snappier, more responsive scrolling.
+  ///
+  /// - `0.05`: Very cinematic and elegant
+  /// - `0.10`: Lenis signature default (ideal balance)
+  /// - `0.20+`: Very responsive and snappy
+  ///
+  /// Defaults to `0.10`.
+  final double lerpFactor;
+
+  /// Multiplier applied to mouse wheel scroll distance per notch.
+  ///
+  /// Increase to make wheel scrolling cover more distance per notch.
+  /// Defaults to `1.0`.
+  final double wheelMultiplier;
+
+  /// Multiplier applied to touch/trackpad scroll distance.
+  ///
+  /// Defaults to `1.0`.
+  final double touchMultiplier;
 
   /// Creates a [JustScrollArea].
   const JustScrollArea({
@@ -91,13 +132,18 @@ class JustScrollArea extends StatefulWidget {
     this.maxHeight,
     this.keyboardScrollStep = 50.0,
     this.style,
+    this.smoothScroll,
+    this.lerpFactor = 0.10,
+    this.wheelMultiplier = 1.0,
+    this.touchMultiplier = 1.0,
   });
 
   @override
   State<JustScrollArea> createState() => _JustScrollAreaState();
 }
 
-class _JustScrollAreaState extends State<JustScrollArea> {
+class _JustScrollAreaState extends State<JustScrollArea>
+    with SingleTickerProviderStateMixin {
   late final ScrollController _internalController;
   late final FocusNode _focusNode;
   final ValueNotifier<double> _topFadeOpacity = ValueNotifier<double>(0.0);
@@ -105,23 +151,64 @@ class _JustScrollAreaState extends State<JustScrollArea> {
   final ValueNotifier<bool> _showScrollToTop = ValueNotifier<bool>(false);
   bool _reachedBottomFlag = false;
 
+  // --- Lenis Smooth Scroll Engine State ---
+  late final Ticker _smoothTicker;
+  double _targetOffset = 0.0;
+  double _currentOffset = 0.0;
+  bool _isSmoothing = false;
+  Duration _lastTickTime = Duration.zero;
+  bool _isDragging = false;
+
   ScrollController get _resolvedController =>
       widget.controller ?? _internalController;
+
+  /// Resolves whether smooth scroll is enabled, checking (in priority order):
+  /// 1. Explicit widget parameter
+  /// 2. Per-instance style override
+  /// 3. Global theme style override
+  /// 4. Platform auto-detection (desktop/web = true, mobile = false)
+  bool get _isSmoothEnabled {
+    if (widget.smoothScroll != null) return widget.smoothScroll!;
+
+    final globalTheme = Theme.of(context).extension<JustScrollAreaTheme>();
+    final themeSetting =
+        widget.style?.smoothScroll ?? globalTheme?.style?.smoothScroll;
+    if (themeSetting != null) return themeSetting;
+
+    final platform = defaultTargetPlatform;
+    return platform == TargetPlatform.macOS ||
+        platform == TargetPlatform.windows ||
+        platform == TargetPlatform.linux;
+  }
+
+  /// Resolves the effective lerp factor from widget, style, or theme.
+  double get _resolvedLerpFactor {
+    return widget.style?.lerpFactor ?? widget.lerpFactor;
+  }
+
+  /// Resolves the effective wheel multiplier.
+  double get _resolvedWheelMultiplier {
+    return widget.style?.wheelMultiplier ?? widget.wheelMultiplier;
+  }
+
 
   @override
   void initState() {
     super.initState();
     _internalController = ScrollController();
     _focusNode = FocusNode();
+    _smoothTicker = createTicker(_onSmoothTick);
 
-    // Trigger initial metrics calculation after the first frame layout
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateScrollMetrics();
+      _syncOffsets();
     });
   }
 
   @override
   void dispose() {
+    _stopSmoothing();
+    _smoothTicker.dispose();
     _internalController.dispose();
     _focusNode.dispose();
     _topFadeOpacity.dispose();
@@ -129,6 +216,100 @@ class _JustScrollAreaState extends State<JustScrollArea> {
     _showScrollToTop.dispose();
     super.dispose();
   }
+
+  /// Synchronizes the internal lerp offsets with the actual scroll controller position.
+  void _syncOffsets() {
+    if (!_resolvedController.hasClients) return;
+    _currentOffset = _resolvedController.offset;
+    _targetOffset = _currentOffset;
+  }
+
+  // ==========================================
+  // --- Lenis Smooth Scroll Engine ---
+  // ==========================================
+
+  void _startSmoothing() {
+    if (_isSmoothing) return;
+    _isSmoothing = true;
+    _lastTickTime = Duration.zero;
+    _smoothTicker.start();
+  }
+
+  void _stopSmoothing() {
+    if (!_isSmoothing) return;
+    _isSmoothing = false;
+    _smoothTicker.stop();
+    _lastTickTime = Duration.zero;
+  }
+
+  /// Per-frame tick callback for the smooth scroll engine.
+  ///
+  /// Implements frame-rate independent exponential interpolation:
+  /// α(Δt) = 1 − (1 − lerp)^(60·Δt)
+  /// current += (target − current) × α
+  void _onSmoothTick(Duration elapsed) {
+    if (!_resolvedController.hasClients) {
+      _stopSmoothing();
+      return;
+    }
+
+    // Calculate frame-rate independent delta time (seconds)
+    final double dt = _lastTickTime == Duration.zero
+        ? 1.0 / 60.0 // Assume 60fps for the very first frame
+        : (elapsed - _lastTickTime).inMicroseconds / 1000000.0;
+    _lastTickTime = elapsed;
+
+    // Clamp dt to prevent huge position jumps after tab switch/app resume
+    final double clampedDt = dt.clamp(0.0, 0.1);
+
+    // Frame-rate independent exponential interpolation factor
+    final double lerp = _resolvedLerpFactor.clamp(0.01, 1.0);
+    final double alpha = 1.0 - math.pow(1.0 - lerp, 60.0 * clampedDt);
+
+    // Interpolate current position toward target
+    final double diff = _targetOffset - _currentOffset;
+    _currentOffset += diff * alpha;
+
+    // Epsilon threshold: snap when close enough (< 0.1px) and stop the ticker
+    if (diff.abs() < 0.1) {
+      _currentOffset = _targetOffset;
+      _resolvedController.jumpTo(_currentOffset);
+      _stopSmoothing();
+      return;
+    }
+
+    // Apply interpolated position via jumpTo (zero animation overhead)
+    _resolvedController.jumpTo(_currentOffset);
+  }
+
+  /// Handles mouse wheel and trackpad pointer signal events.
+  ///
+  /// Accumulates the scroll delta into [_targetOffset] and starts the
+  /// smooth ticker if not already running.
+  void _handlePointerSignal(PointerSignalEvent event) {
+    if (event is! PointerScrollEvent) return;
+    if (!_resolvedController.hasClients) return;
+
+    final maxScroll = _resolvedController.position.maxScrollExtent;
+
+    // Determine raw delta based on scroll axis
+    final double rawDelta = widget.direction == .vertical
+        ? event.scrollDelta.dy
+        : event.scrollDelta.dx;
+
+    // Apply wheel multiplier
+    final double delta = rawDelta * _resolvedWheelMultiplier;
+
+    // Accumulate target offset, clamped to valid scroll range
+    _targetOffset = (_targetOffset + delta).clamp(0.0, maxScroll);
+
+    // Start the ticker engine if not already running
+    _startSmoothing();
+  }
+
+  // ==========================================
+  // --- Scroll Metrics & Callbacks ---
+  // ==========================================
 
   void _updateScrollMetrics() {
     if (!_resolvedController.hasClients) return;
@@ -194,46 +375,67 @@ class _JustScrollAreaState extends State<JustScrollArea> {
       _updateScrollMetrics();
       _checkReachBottom(notification);
 
-      // Trigger standard callbacks
       if (notification is ScrollStartNotification) {
+        // If scroll started by user drag (not by our jumpTo), immediately
+        // stop the smooth engine and sync target to actual position.
+        if (notification.dragDetails != null) {
+          _isDragging = true;
+          if (_isSmoothing) {
+            _stopSmoothing();
+          }
+          _syncOffsets();
+        }
         widget.onScrollStart?.call();
       } else if (notification is ScrollEndNotification) {
+        if (_isDragging) {
+          _isDragging = false;
+          // Sync offsets after manual drag finishes
+          _syncOffsets();
+        }
         widget.onScrollEnd?.call();
       }
     }
     return false;
   }
 
+  // ==========================================
+  // --- Keyboard Handling ---
+  // ==========================================
+
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent) return .ignored;
     if (!_resolvedController.hasClients) return .ignored;
 
-    final double currentOffset = _resolvedController.offset;
     final double maxScroll = _resolvedController.position.maxScrollExtent;
     final double viewportDimension =
         _resolvedController.position.viewportDimension;
 
-    double targetOffset = currentOffset;
+    // Use target offset as baseline when smooth is active (to stack keyboard
+    // inputs on top of an in-flight smooth scroll), otherwise use actual offset.
+    final double baseOffset =
+        _isSmoothEnabled ? _targetOffset : _resolvedController.offset;
+
+    double targetOffset = baseOffset;
     final isVertical = widget.direction == .vertical;
 
     if (isVertical) {
       if (event.logicalKey == .arrowDown) {
-        targetOffset = (currentOffset + widget.keyboardScrollStep).clamp(
+        targetOffset = (baseOffset + widget.keyboardScrollStep).clamp(
           0.0,
           maxScroll,
         );
       } else if (event.logicalKey == .arrowUp) {
-        targetOffset = (currentOffset - widget.keyboardScrollStep).clamp(
+        targetOffset = (baseOffset - widget.keyboardScrollStep).clamp(
           0.0,
           maxScroll,
         );
       } else if (event.logicalKey == .pageDown) {
-        targetOffset = (currentOffset + viewportDimension).clamp(
+        targetOffset = (baseOffset + viewportDimension).clamp(
           0.0,
           maxScroll,
         );
       } else if (event.logicalKey == .pageUp) {
-        targetOffset = (currentOffset - viewportDimension).clamp(
+        targetOffset = (baseOffset - viewportDimension).clamp(
           0.0,
           maxScroll,
         );
@@ -243,22 +445,22 @@ class _JustScrollAreaState extends State<JustScrollArea> {
     } else {
       // Horizontal scrolling keys
       if (event.logicalKey == .arrowRight) {
-        targetOffset = (currentOffset + widget.keyboardScrollStep).clamp(
+        targetOffset = (baseOffset + widget.keyboardScrollStep).clamp(
           0.0,
           maxScroll,
         );
       } else if (event.logicalKey == .arrowLeft) {
-        targetOffset = (currentOffset - widget.keyboardScrollStep).clamp(
+        targetOffset = (baseOffset - widget.keyboardScrollStep).clamp(
           0.0,
           maxScroll,
         );
       } else if (event.logicalKey == .pageDown) {
-        targetOffset = (currentOffset + viewportDimension).clamp(
+        targetOffset = (baseOffset + viewportDimension).clamp(
           0.0,
           maxScroll,
         );
       } else if (event.logicalKey == .pageUp) {
-        targetOffset = (currentOffset - viewportDimension).clamp(
+        targetOffset = (baseOffset - viewportDimension).clamp(
           0.0,
           maxScroll,
         );
@@ -267,18 +469,28 @@ class _JustScrollAreaState extends State<JustScrollArea> {
       }
     }
 
-    final animations = JustThemeProvider.of(
-      context,
-      aspect: .animations,
-    ).theme.animations;
-    _resolvedController.animateTo(
-      targetOffset,
-      duration: animations.fast,
-      curve: animations.defaultCurve,
-    );
+    if (_isSmoothEnabled) {
+      // Route through the smooth lerp engine
+      _targetOffset = targetOffset;
+      _startSmoothing();
+    } else {
+      final animations = JustThemeProvider.of(
+        context,
+        aspect: .animations,
+      ).theme.animations;
+      _resolvedController.animateTo(
+        targetOffset,
+        duration: animations.fast,
+        curve: animations.defaultCurve,
+      );
+    }
 
     return .handled;
   }
+
+  // ==========================================
+  // --- Build ---
+  // ==========================================
 
   @override
   Widget build(BuildContext context) {
@@ -324,14 +536,28 @@ class _JustScrollAreaState extends State<JustScrollArea> {
               themeStyle?.scrollbarRadius ??
               const .circular(3.0));
 
-    // Create the viewport layout
+    final bool smoothEnabled = _isSmoothEnabled;
+
+    // Create the viewport layout.
+    // When smooth scroll is active, use NeverScrollableScrollPhysics to prevent
+    // Flutter's built-in scroll physics from fighting with our lerp engine.
     Widget scrollView = SingleChildScrollView(
       controller: _resolvedController,
       scrollDirection: widget.direction,
-      physics: widget.physics,
+      physics: smoothEnabled
+          ? const NeverScrollableScrollPhysics()
+          : widget.physics,
       padding: widget.padding,
       child: widget.child,
     );
+
+    // Wrap with Listener to intercept pointer signal events (mouse wheel/trackpad)
+    if (smoothEnabled) {
+      scrollView = Listener(
+        onPointerSignal: _handlePointerSignal,
+        child: scrollView,
+      );
+    }
 
     // Apply custom scrollbar wrapper
     if (widget.showScrollbar) {
@@ -544,11 +770,17 @@ class _JustScrollAreaState extends State<JustScrollArea> {
                             child: JustPressable(
                               enabled: visible,
                               onTap: () {
-                                _resolvedController.animateTo(
-                                  0.0,
-                                  duration: animations.normal,
-                                  curve: animations.defaultCurve,
-                                );
+                                if (_isSmoothEnabled) {
+                                  // Route through smooth engine for consistent feel
+                                  _targetOffset = 0.0;
+                                  _startSmoothing();
+                                } else {
+                                  _resolvedController.animateTo(
+                                    0.0,
+                                    duration: animations.normal,
+                                    curve: animations.defaultCurve,
+                                  );
+                                }
                               },
                               builder:
                                   (

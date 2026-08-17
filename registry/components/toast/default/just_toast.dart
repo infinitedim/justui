@@ -179,10 +179,12 @@ class JustToastController extends JustOverlayController {
         final offset =
             (_activeToasts.length - 1 - index) * (toastHeight + toastSpacing);
 
-        Widget toastCard = _JustToastWidget(
-          entry: entry,
-          enableDrag: enableDragDismiss,
-          onDismiss: () => _dismissToast(entry),
+        Widget toastCard = RepaintBoundary(
+          child: _JustToastWidget(
+            entry: entry,
+            enableDrag: enableDragDismiss,
+            onDismiss: () => _dismissToast(entry),
+          ),
         );
 
         if (pending.animationBuilder != null) {
@@ -193,13 +195,11 @@ class JustToastController extends JustOverlayController {
           );
         }
 
-        return RepaintBoundary(
-          child: _ToastPositionedWrapper(
-            position: position,
-            offset: offset,
-            animation: animController,
-            child: toastCard,
-          ),
+        return _ToastPositionedWrapper(
+          position: position,
+          offset: offset,
+          animation: animController,
+          child: toastCard,
         );
       },
     );
