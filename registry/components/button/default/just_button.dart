@@ -337,15 +337,22 @@ class _JustButtonState extends State<JustButton> {
                     }
                     widget.onPressed?.call();
                   },
-            builder: (context, isHovered, isPressed, isFocused, focusNode) {
+            builder: (BuildContext context, JustInteractionState state) {
+              final isHovered = state.isHovered;
+              final isPressed = state.isPressed;
+
               // Resolve states colors
               Color bg;
               Color text;
               Color border;
 
               // Fallback colors matching semantic rules
-              final primaryBg = colors.borderFocus;
-              final primaryFg = colors.textInverse;
+              final primaryBg = presetTokens.showsDefaultBorder
+                  ? colors.warning
+                  : colors.borderFocus;
+              final primaryFg = presetTokens.showsDefaultBorder
+                  ? colors.textPrimary
+                  : colors.textInverse;
               final errorBg = colors.error;
 
               switch (widget.variant) {
@@ -482,7 +489,11 @@ class _JustButtonState extends State<JustButton> {
                   mainAxisSize: .min,
                   mainAxisAlignment: .center,
                   children: [
-                    JustProgressSpinner(size: iconSize, color: finalFg),
+                    JustProgressSpinner(
+                      size: iconSize,
+                      color: finalFg,
+                      excludeSemantics: true,
+                    ),
                   ],
                 );
               } else {
@@ -573,8 +584,7 @@ class _JustButtonState extends State<JustButton> {
                         : null,
                   ),
                   child: FocusIndicator(
-                    isFocused: isFocused,
-                    focusColor: primaryBg,
+                    isFocused: state.isFocusVisible,
                     borderRadius: resolvedRadius,
                     child: Center(child: content),
                   ),

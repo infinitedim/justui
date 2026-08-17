@@ -526,6 +526,7 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
                 child: Semantics(
                   scopesRoute: true,
                   namesRoute: true,
+                  explicitChildNodes: true,
                   label: 'Sheet',
                   child: animatedChild,
                 ),

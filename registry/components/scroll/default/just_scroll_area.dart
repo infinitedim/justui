@@ -776,31 +776,27 @@ class _JustScrollAreaState extends State<JustScrollArea>
                               },
                               builder:
                                   (
-                                    context,
-                                    isHovered,
-                                    isPressed,
-                                    isFocused,
-                                    focusNode,
+                                    BuildContext context,
+                                    JustInteractionState state,
                                   ) {
                                     return FocusIndicator(
-                                      isFocused: isFocused,
-                                      focusColor: colors.borderFocus,
+                                      isFocused: state.isFocusVisible,
                                       borderRadius: const .all(.circular(20.0)),
                                       child: Container(
                                         width: 40.0,
                                         height: 40.0,
                                         decoration: BoxDecoration(
-                                          color: isPressed
+                                          color: state.isPressed
                                               ? colors.borderDefault
-                                              : (isHovered
+                                              : (state.isHovered
                                                     ? colors.background
                                                     : colors.card),
                                           shape: .circle,
                                           border: .all(
-                                            color: isFocused
+                                            color: state.isFocused
                                                 ? colors.borderFocus
                                                 : colors.borderDefault,
-                                            width: isFocused ? 2.0 : 1.0,
+                                            width: state.isFocused ? 2.0 : 1.0,
                                           ),
                                           boxShadow: shadows.md,
                                         ),

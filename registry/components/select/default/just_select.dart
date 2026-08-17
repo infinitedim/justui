@@ -366,7 +366,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       child: JustPressable(
         enabled: widget.enabled,
         onTap: _toggleDropdown,
-        builder: (context, isHovered, isPressed, isFocused, _) {
+        builder: (BuildContext context, JustInteractionState state) {
           Widget inner = Container(
             height: height,
             padding: .symmetric(horizontal: spacing.md),
@@ -426,12 +426,12 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
 
           if (presetTokens.showsDefaultBorder) {
             inner = customTheme.buildPressEffect(
-              isPressed: isPressed,
+              isPressed: state.isPressed,
               child: Container(
                 decoration: BoxDecoration(
                   boxShadow: customTheme.resolveShadows(
                     shadows.md,
-                    isPressed: isPressed,
+                    isPressed: state.isPressed,
                   ),
                   borderRadius: .zero,
                 ),
@@ -441,8 +441,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
           }
 
           return FocusIndicator(
-            isFocused: isFocused,
-            focusColor: colors.borderFocus,
+            isFocused: state.isFocusVisible,
             borderRadius: presetTokens.showsDefaultBorder ? .zero : finalRadius,
             child: inner,
           );
@@ -645,7 +644,11 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                   enabled: option.enabled,
                                   onTap: () => _selectOption(option),
                                   builder:
-                                      (context, isHovered, isPressed, _, _) {
+                                      (
+                                        BuildContext context,
+                                        JustInteractionState state,
+                                      ) {
+                                        final isHovered = state.isHovered;
                                         final showHover =
                                             isHovered || isKeyboardFocused;
                                         Color itemBg = optionBg;

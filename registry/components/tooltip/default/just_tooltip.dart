@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/services.dart' show KeyDownEvent, LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 
 import '../../theme/theme_provider.dart';
@@ -8,71 +9,38 @@ import 'just_tooltip_style.dart';
 import 'just_tooltip_theme.dart';
 import 'just_tooltip_variants.dart';
 
-/// A declarative tooltip widget that displays a floating label when hovered or long-pressed.
-class JustTooltip extends StatefulWidget {
-  /// The message to display inside the tooltip.
-  final String message;
-
-  /// The target widget that triggers the tooltip.
-  final Widget child;
-
-  /// The position of the tooltip relative to the target. Defaults to [.auto].
-  final TooltipPosition position;
-
-  /// Whether the tooltip should trigger on hover (mouse hover).
-  final bool triggerOnHover;
-
-  /// Whether the tooltip should trigger on long press (touch/gesture).
-  final bool triggerOnLongPress;
-
-  /// Delay before the tooltip becomes visible.
-  final Duration showDelay;
-
-  /// Delay before the tooltip disappears after the trigger ends.
-  final Duration hideDelay;
-
-  /// Per-instance style overrides.
-  final JustTooltipStyle? style;
-
-  /// Optional custom animation controller.
-  final AnimationController? animationController;
-
-  /// Optional custom animation builder.
+/// A declarative, accessible tooltip widget that displays a floating label
+/// relative to its target using the native [OverlayPortal.overlayChildLayoutBuilder] API.
+class const JustTooltip({
+  required final String message,
+  required final Widget child,
+  super.key,
+  final TooltipPosition preferredPosition = TooltipPosition.auto,
+  final bool triggerOnHover = true,
+  final bool triggerOnLongPress = true,
+  final Duration showDelay = Duration.zero,
+  final Duration hideDelay = const Duration(milliseconds: 150),
+  final JustTooltipStyle? style,
+  final bool showArrow = false,
+  final OverlayPortalController? controller,
+  final AnimationController? animationController,
   final Widget Function(BuildContext, Animation<double>, Widget)?
-  animationBuilder;
-
-  /// Creates a [JustTooltip].
-  const JustTooltip({
-    super.key,
-    required this.message,
-    required this.child,
-    this.position = .auto,
-    this.triggerOnHover = true,
-    this.triggerOnLongPress = true,
-    this.showDelay = Duration.zero,
-    this.hideDelay = const Duration(milliseconds: 150),
-    this.style,
-    this.animationController,
-    this.animationBuilder,
-  });
-
+  animationBuilder,
+}) extends StatefulWidget {
   @override
   State<JustTooltip> createState() => _JustTooltipState();
 }
 
 class _JustTooltipState extends State<JustTooltip>
     with SingleTickerProviderStateMixin {
+  late OverlayPortalController _overlayController;
   late final AnimationController _localAnimController;
   AnimationController get _animController =>
       widget.animationController ?? _localAnimController;
 
-  final LayerLink _layerLink = LayerLink();
   final FocusNode _focusNode = FocusNode();
-  OverlayEntry? _overlayEntry;
   Timer? _showTimer;
   Timer? _hideTimer;
-  bool _isVisible = false;
-
   bool _isHovered = false;
   bool _isFocused = false;
   bool _isLongPressed = false;
@@ -80,6 +48,7 @@ class _JustTooltipState extends State<JustTooltip>
   @override
   void initState() {
     super.initState();
+    _overlayController = widget.controller ?? OverlayPortalController();
     _localAnimController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),
@@ -88,12 +57,19 @@ class _JustTooltipState extends State<JustTooltip>
   }
 
   @override
+  void didUpdateWidget(covariant JustTooltip oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      _overlayController = widget.controller ?? OverlayPortalController();
+    }
+  }
+
+  @override
   void dispose() {
     _focusNode.removeListener(_onFocusChanged);
     _focusNode.dispose();
     _showTimer?.cancel();
     _hideTimer?.cancel();
-    _removeOverlayImmediate();
     _localAnimController.dispose();
     super.dispose();
   }
@@ -113,30 +89,99 @@ class _JustTooltipState extends State<JustTooltip>
 
   void _showTooltip() {
     _hideTimer?.cancel();
-    if (_isVisible || _showTimer?.isActive == true) return;
+    if (_overlayController.isShowing || _showTimer?.isActive == true) return;
 
     _showTimer = Timer(widget.showDelay, () {
-      _createAndInsertOverlay();
+      if (mounted) {
+        _overlayController.show();
+        _animController.forward();
+      }
     });
   }
 
   void _hideTooltip() {
     _showTimer?.cancel();
-    if (!_isVisible) return;
+    if (!_overlayController.isShowing) return;
 
     _hideTimer = Timer(widget.hideDelay, () {
-      _performHide();
+      if (mounted) {
+        _animController.reverse().then((_) {
+          if (mounted && !_isHovered && !_isFocused && !_isLongPressed) {
+            _overlayController.hide();
+          }
+        });
+      }
     });
   }
 
-  void _createAndInsertOverlay() {
-    if (_overlayEntry != null) return;
+  TooltipPosition _resolvePosition(Size screenSize, Rect childRect) {
+    if (widget.preferredPosition != .auto) {
+      return widget.preferredPosition;
+    }
 
-    // Resolve dynamic position based on available screen space
-    final resolvedPosition = _resolvePosition();
+    final spaceTop = childRect.top;
+    final spaceBottom = screenSize.height - childRect.bottom;
+    final spaceLeft = childRect.left;
+    final spaceRight = screenSize.width - childRect.right;
 
-    _overlayEntry = OverlayEntry(
-      builder: (context) {
+    if (spaceTop > 48.0) return .top;
+    if (spaceBottom > 48.0) return .bottom;
+    if (spaceLeft > 80.0) return .left;
+    if (spaceRight > 80.0) return .right;
+    return .top;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget target = Focus(
+      focusNode: _focusNode,
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.escape &&
+            _overlayController.isShowing) {
+          _isHovered = false;
+          _isFocused = false;
+          _isLongPressed = false;
+          _overlayController.hide();
+          return .handled;
+        }
+        return .ignored;
+      },
+      child: widget.child,
+    );
+
+    if (widget.triggerOnHover) {
+      target = MouseRegion(
+        onEnter: (_) {
+          _isHovered = true;
+          _updateTooltipVisibility();
+        },
+        onExit: (_) {
+          _isHovered = false;
+          _updateTooltipVisibility();
+        },
+        child: target,
+      );
+    }
+
+    if (widget.triggerOnLongPress) {
+      target = GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onLongPressStart: (_) {
+          _isLongPressed = true;
+          _updateTooltipVisibility();
+        },
+        onLongPressEnd: (_) {
+          _isLongPressed = false;
+          _updateTooltipVisibility();
+        },
+        child: target,
+      );
+    }
+
+    return OverlayPortal.overlayChildLayoutBuilder(
+      controller: _overlayController,
+      overlayChildBuilder: (BuildContext context, info) {
         final theme = JustThemeProvider.of(context).theme;
         final colors = theme.colors;
         final spacing = theme.spacing;
@@ -175,39 +220,60 @@ class _JustTooltipState extends State<JustTooltip>
         final showBorder = theme.presetTokens.showsDefaultBorder;
         final borderWidth = showBorder ? theme.presetTokens.borderWidth : 0.0;
 
-        Alignment targetAnchor;
-        Alignment followerAnchor;
-        Offset offset;
+        final targetOffset = MatrixUtils.transformPoint(
+          info.childPaintTransform,
+          .zero,
+        );
+        final childSize = info.childSize;
+        final childRect = targetOffset & childSize;
+        final screenSize = MediaQuery.of(context).size;
 
-        switch (resolvedPosition) {
+        final resolvedPos = _resolvePosition(screenSize, childRect);
+
+        double left = 0.0;
+        double top = 0.0;
+        const double gap = 6.0;
+
+        switch (resolvedPos) {
           case .top:
-            targetAnchor = .topCenter;
-            followerAnchor = .bottomCenter;
-            offset = const Offset(0, -6.0);
+            left = childRect.left + (childRect.width / 2);
+            top = childRect.top - gap;
             break;
           case .bottom:
-            targetAnchor = .bottomCenter;
-            followerAnchor = .topCenter;
-            offset = const Offset(0, 6.0);
+            left = childRect.left + (childRect.width / 2);
+            top = childRect.bottom + gap;
             break;
           case .left:
-            targetAnchor = .centerLeft;
-            followerAnchor = .centerRight;
-            offset = const Offset(-6.0, 0);
+            left = childRect.left - gap;
+            top = childRect.top + (childRect.height / 2);
             break;
           case .right:
-            targetAnchor = .centerRight;
-            followerAnchor = .centerLeft;
-            offset = const Offset(6.0, 0);
+            left = childRect.right + gap;
+            top = childRect.top + (childRect.height / 2);
             break;
           case .auto:
-            targetAnchor = .topCenter;
-            followerAnchor = .bottomCenter;
-            offset = const Offset(0, -6.0);
+            left = childRect.left + (childRect.width / 2);
+            top = childRect.top - gap;
             break;
         }
 
-        final animatedBubble = AnimatedBuilder(
+        final tooltipBubble = Container(
+          padding: resolvedPadding,
+          decoration: BoxDecoration(
+            color: resolvedBg,
+            borderRadius: resolvedRadius,
+            border: showBorder
+                ? .all(color: resolvedBorderColor, width: borderWidth)
+                : null,
+            boxShadow: theme.shadows.md,
+          ),
+          child: Text(
+            widget.message,
+            style: theme.typography.bodySm.copyWith(color: resolvedTextColor),
+          ),
+        );
+
+        final animatedTooltip = AnimatedBuilder(
           animation: _animController,
           builder: (context, child) {
             return Transform.scale(
@@ -215,142 +281,27 @@ class _JustTooltipState extends State<JustTooltip>
               child: Opacity(opacity: _animController.value, child: child),
             );
           },
-          child: Container(
-            padding: resolvedPadding,
-            decoration: BoxDecoration(
-              color: resolvedBg,
-              borderRadius: resolvedRadius,
-              border: showBorder
-                  ? .all(color: resolvedBorderColor, width: borderWidth)
-                  : null,
-              boxShadow: theme.shadows.md,
-            ),
-            child: Text(
-              widget.message,
-              style: theme.typography.bodySm.copyWith(color: resolvedTextColor),
-            ),
-          ),
+          child: tooltipBubble,
         );
 
-        return RepaintBoundary(
-          child: CompositedTransformFollower(
-            link: _layerLink,
-            showWhenUnlinked: false,
-            targetAnchor: targetAnchor,
-            followerAnchor: followerAnchor,
-            offset: offset,
-            child: Align(
-              alignment: .topLeft,
-              child: Semantics(tooltip: widget.message, child: animatedBubble),
+        return Positioned(
+          left: left,
+          top: top,
+          child: FractionalTranslation(
+            translation: switch (resolvedPos) {
+              .top => const Offset(-0.5, -1.0),
+              .bottom => const Offset(-0.5, 0.0),
+              .left => const Offset(-1.0, -0.5),
+              .right => const Offset(0.0, -0.5),
+              .auto => const Offset(-0.5, -1.0),
+            },
+            child: IgnorePointer(
+              child: Semantics(tooltip: widget.message, child: animatedTooltip),
             ),
           ),
         );
       },
+      child: Semantics(tooltip: widget.message, child: target),
     );
-
-    final overlayState = Overlay.maybeOf(context);
-    if (overlayState != null && overlayState.mounted) {
-      overlayState.insert(_overlayEntry!);
-      _isVisible = true;
-      _animController.forward();
-    } else {
-      _overlayEntry = null;
-    }
-  }
-
-  void _performHide() {
-    if (_overlayEntry == null) return;
-    _animController.reverse().then((_) {
-      _removeOverlayImmediate();
-    });
-  }
-
-  void _removeOverlayImmediate() {
-    if (_overlayEntry != null) {
-      try {
-        if (_overlayEntry!.mounted) {
-          _overlayEntry!.remove();
-        }
-      } catch (_) {}
-      try {
-        _overlayEntry!.dispose();
-      } catch (_) {}
-      _overlayEntry = null;
-    }
-    _isVisible = false;
-  }
-
-  TooltipPosition _resolvePosition() {
-    if (widget.position != .auto) {
-      return widget.position;
-    }
-
-    final renderBox = context.findRenderObject() as RenderBox?;
-    if (renderBox == null || !renderBox.hasSize) {
-      return .top;
-    }
-
-    final offset = renderBox.localToGlobal(.zero);
-    final size = renderBox.size;
-    final screenSize = MediaQuery.of(context).size;
-
-    final spaceTop = offset.dy;
-    final spaceBottom = screenSize.height - (offset.dy + size.height);
-    final spaceLeft = offset.dx;
-    final spaceRight = screenSize.width - (offset.dx + size.width);
-
-    // Priority: top -> bottom -> left -> right
-    if (spaceTop > 48.0) {
-      return .top;
-    } else if (spaceBottom > 48.0) {
-      return .bottom;
-    } else if (spaceLeft > 80.0) {
-      return .left;
-    } else if (spaceRight > 80.0) {
-      return .right;
-    }
-
-    return .top;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Widget result = CompositedTransformTarget(
-      link: _layerLink,
-      child: widget.child,
-    );
-
-    result = Focus(focusNode: _focusNode, child: result);
-
-    if (widget.triggerOnHover) {
-      result = MouseRegion(
-        onEnter: (_) {
-          _isHovered = true;
-          _updateTooltipVisibility();
-        },
-        onExit: (_) {
-          _isHovered = false;
-          _updateTooltipVisibility();
-        },
-        child: result,
-      );
-    }
-
-    if (widget.triggerOnLongPress) {
-      result = GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onLongPressStart: (_) {
-          _isLongPressed = true;
-          _updateTooltipVisibility();
-        },
-        onLongPressEnd: (_) {
-          _isLongPressed = false;
-          _updateTooltipVisibility();
-        },
-        child: result,
-      );
-    }
-
-    return Semantics(tooltip: widget.message, child: result);
   }
 }

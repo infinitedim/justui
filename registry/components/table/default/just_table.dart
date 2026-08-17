@@ -422,7 +422,8 @@ class _JustTableState<T> extends State<JustTable<T>> {
 
           final Widget rowWidget = JustPressable(
             onTap: widget.selectable ? () => _toggleRow(rowIndex) : () {},
-            builder: (context, isHovered, isPressed, _, _) {
+            builder: (BuildContext context, JustInteractionState state) {
+              final isHovered = state.isHovered;
               Color finalRowBg = currentBg;
               if (isHovered) {
                 finalRowBg = isSelected
@@ -535,7 +536,7 @@ class _CustomCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     return JustPressable(
       onTap: () => onChanged(!value),
-      builder: (context, isHovered, isPressed, isFocused, _) {
+      builder: (BuildContext context, JustInteractionState state) {
         final borderSize = presetTokens.borderWidth;
 
         final Widget box = Container(
@@ -568,8 +569,7 @@ class _CustomCheckbox extends StatelessWidget {
         );
 
         return FocusIndicator(
-          isFocused: isFocused,
-          focusColor: colors.borderFocus,
+          isFocused: state.isFocusVisible,
           borderRadius: presetTokens.showsDefaultBorder
               ? .zero
               : const .all(.circular(4)),

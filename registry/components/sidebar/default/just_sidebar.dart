@@ -347,7 +347,9 @@ class _JustSidebarState extends State<JustSidebar>
           widget.onItemSelected?.call(index);
         }
       },
-      builder: (context, isHovered, isPressed, isFocused, focusNode) {
+      builder: (BuildContext context, JustInteractionState state) {
+        final isHovered = state.isHovered;
+        final isPressed = state.isPressed;
         final double itemOpacity = item.enabled ? 1.0 : 0.5;
 
         final presetTokens = customTheme.presetTokens;
@@ -552,7 +554,9 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
           expanded: isFolderExpanded,
           child: JustPressable(
             onTap: _toggleExpand,
-            builder: (context, isHovered, isPressed, isFocused, focusNode) {
+            builder: (BuildContext context, JustInteractionState state) {
+              final isHovered = state.isHovered;
+              final isPressed = state.isPressed;
               final Color itemBg = isPressed
                   ? widget.activeColor.withValues(alpha: 0.12)
                   : (isHovered
@@ -700,7 +704,9 @@ class _JustSidebarItemWidget extends StatelessWidget {
     Widget content = JustPressable(
       enabled: item.enabled,
       onTap: item.onTap,
-      builder: (context, isHovered, isPressed, isFocused, focusNode) {
+      builder: (BuildContext context, JustInteractionState state) {
+        final isHovered = state.isHovered;
+        final isPressed = state.isPressed;
         final double itemOpacity = item.enabled ? 1.0 : 0.5;
 
         final Color itemBg = isPressed
