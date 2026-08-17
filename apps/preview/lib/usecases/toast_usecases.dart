@@ -17,49 +17,61 @@ Widget buildJustToastDefaultUseCase(BuildContext context) {
     label: 'Message',
     initialValue: 'Changes saved successfully!',
   );
+  final limit = context.knobs.int.slider(
+    label: 'Max Toast Limit',
+    initialValue: 3,
+    min: 1,
+    max: 10,
+  );
+  final behavior = context.knobs.object.dropdown<ToastBehavior>(
+    label: 'Behavior',
+    options: ToastBehavior.values,
+    initialOption: ToastBehavior.stacked,
+  );
+  final position = context.knobs.object.dropdown<ToastPosition>(
+    label: 'Position',
+    options: ToastPosition.values,
+    initialOption: ToastPosition.bottomCenter,
+  );
 
-  return _ToastDemoView(variant: variant, message: message);
+  return _ToastDemoView(
+    variant: variant,
+    message: message,
+    limit: limit,
+    behavior: behavior,
+    position: position,
+  );
 }
 
-class _ToastDemoView extends StatefulWidget {
+class _ToastDemoView extends StatelessWidget {
   final ToastVariant variant;
   final String message;
+  final int limit;
+  final ToastBehavior behavior;
+  final ToastPosition position;
 
-  const _ToastDemoView({required this.variant, required this.message});
-
-  @override
-  State<_ToastDemoView> createState() => _ToastDemoViewState();
-}
-
-class _ToastDemoViewState extends State<_ToastDemoView> {
-  late final JustToastController _toastController;
-
-  @override
-  void initState() {
-    super.initState();
-    _toastController = JustToastController();
-  }
-
-  @override
-  void dispose() {
-    _toastController.dispose();
-    super.dispose();
-  }
+  const _ToastDemoView({
+    required this.variant,
+    required this.message,
+    required this.limit,
+    required this.behavior,
+    required this.position,
+  });
 
   @override
   Widget build(BuildContext context) {
     return JustToastScope(
-      controller: _toastController,
+      key: ValueKey('toast_scope_${limit}_${behavior.name}_${position.name}'),
+      limit: limit,
+      behavior: behavior,
+      position: position,
       child: Builder(
         builder: (scopeContext) {
           return Center(
             child: JustButton.primary(
-              label: 'Trigger ${widget.variant.name} Toast',
+              label: 'Trigger ${variant.name} Toast',
               onPressed: () {
-                scopeContext.justToast.show(
-                  message: widget.message,
-                  variant: widget.variant,
-                );
+                scopeContext.justToast.show(message: message, variant: variant);
               },
             ),
           );

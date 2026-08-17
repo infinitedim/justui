@@ -19,6 +19,13 @@ class _SheetInstance<T> {
   final AnimationController animationController;
   final bool isLocalController;
 
+  /// Set as soon as a dismissal has been requested for this instance, so a
+  /// second dismiss request for the same instance (e.g. a held-down Escape
+  /// key delivering repeated key events, or a drag-to-dismiss racing the
+  /// Escape handler) is a no-op instead of starting a second reverse
+  /// animation.
+  bool _dismissRequested = false;
+
   _SheetInstance({
     required this.id,
     required this.completer,
@@ -138,23 +145,38 @@ class JustSheetController extends JustOverlayController {
   }
 
   void _dismissSheet(_SheetInstance<dynamic> instance, dynamic result) {
-    if (!_activeSheets.contains(instance)) return;
+    if (!_activeSheets.contains(instance) || instance._dismissRequested) {
+      return;
+    }
+    instance._dismissRequested = true;
 
     instance.animationController.reverse().then((_) {
-      instance.barrierEntry.remove();
-      instance.barrierEntry.dispose();
-      instance.contentEntry.remove();
-      instance.contentEntry.dispose();
-
-      if (instance.isLocalController) {
-        instance.animationController.dispose();
-      }
-
-      _activeSheets.remove(instance);
-      if (!instance.completer.isCompleted) {
-        instance.completer.complete(result);
-      }
+      _cleanupSheetInstance(instance, result);
     });
+  }
+
+  /// Synchronously removes and disposes [instance]'s overlay entries and
+  /// (if locally-owned) its animation controller, then completes its result.
+  ///
+  /// Guarded by [List.remove] returning `false` for an instance no longer in
+  /// [_activeSheets], so this is safe to call more than once for the same
+  /// [instance] — only the first call has any effect. This makes it safe to
+  /// race against the animated cleanup scheduled by [_dismissSheet].
+  void _cleanupSheetInstance(_SheetInstance<dynamic> instance, dynamic result) {
+    if (!_activeSheets.remove(instance)) return;
+
+    instance.barrierEntry.remove();
+    instance.barrierEntry.dispose();
+    instance.contentEntry.remove();
+    instance.contentEntry.dispose();
+
+    if (instance.isLocalController) {
+      instance.animationController.dispose();
+    }
+
+    if (!instance.completer.isCompleted) {
+      instance.completer.complete(result);
+    }
   }
 
   @override
@@ -162,6 +184,23 @@ class JustSheetController extends JustOverlayController {
     final targets = List<_SheetInstance<dynamic>>.from(_activeSheets);
     for (final sheet in targets) {
       _dismissSheet(sheet, null);
+    }
+  }
+
+  /// Immediately tears down every active sheet without waiting for the exit
+  /// animation to finish.
+  ///
+  /// Called when the hosting [JustSheetScope] is being disposed — its
+  /// [TickerProvider]/[OverlayState] are about to become unavailable, so any
+  /// sheet still open must have its [OverlayEntry]s and locally-owned
+  /// [AnimationController] released synchronously. Without this, entries
+  /// inserted into an ancestor [Overlay] that outlives the scope (e.g. the
+  /// app/root [Navigator]'s overlay) would stay inserted indefinitely,
+  /// continuing to render stale content after the scope is gone.
+  void forceDismissAll() {
+    final targets = List<_SheetInstance<dynamic>>.from(_activeSheets);
+    for (final instance in targets) {
+      _cleanupSheetInstance(instance, null);
     }
   }
 
@@ -262,6 +301,7 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     final radius = theme.radius;
     final shadows = theme.shadows;
     final motion = theme.animations.resolve(context);
+    final typography = theme.typography;
 
     final globalTheme = Theme.of(context).extension<JustSheetTheme>();
 
@@ -412,7 +452,15 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
                 ),
               ),
             ],
-            Expanded(child: widget.content),
+            Expanded(
+              child: DefaultTextStyle(
+                style: typography.bodyMd.copyWith(color: colors.textPrimary),
+                child: IconTheme.merge(
+                  data: IconThemeData(color: colors.textPrimary),
+                  child: widget.content,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -487,6 +535,7 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
                 child: Semantics(
                   scopesRoute: true,
                   namesRoute: true,
+                  explicitChildNodes: true,
                   label: 'Sheet',
                   child: animatedChild,
                 ),
@@ -538,6 +587,9 @@ class _JustSheetScopeState extends State<JustSheetScope>
   void didUpdateWidget(covariant JustSheetScope oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
+      // The old controller is being detached from this scope, so it must
+      // release any sheets it still has open the same way dispose() does.
+      oldWidget.controller.forceDismissAll();
       oldWidget.controller._vsync = null;
       oldWidget.controller._overlayState = null;
       widget.controller._vsync = this;
@@ -553,6 +605,10 @@ class _JustSheetScopeState extends State<JustSheetScope>
 
   @override
   void dispose() {
+    // Force-clear any sheets still open before this scope's TickerProvider
+    // and OverlayState become unavailable below, otherwise their
+    // OverlayEntry(s) would be orphaned in the ancestor Overlay indefinitely.
+    widget.controller.forceDismissAll();
     widget.controller._vsync = null;
     widget.controller._overlayState = null;
     super.dispose();

@@ -191,7 +191,9 @@ class JustBreadcrumb extends StatelessWidget {
 
     return JustPressable(
       onTap: item.onTap,
-      builder: (context, isHovered, isPressed, isFocused, focusNode) {
+      builder: (BuildContext context, JustInteractionState state) {
+        final isHovered = state.isHovered;
+        final isPressed = state.isPressed;
         final itemColor = isPressed
             ? activeColor.withValues(alpha: 0.8)
             : (isHovered ? activeColor : normalColor);
@@ -317,12 +319,11 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
                           },
                           builder:
                               (
-                                context,
-                                isHovered,
-                                isPressed,
-                                isFocused,
-                                focusNode,
+                                BuildContext context,
+                                JustInteractionState state,
                               ) {
+                                final isHovered = state.isHovered;
+                                final isPressed = state.isPressed;
                                 final itemBg = isPressed
                                     ? colors.borderFocus.withValues(alpha: 0.15)
                                     : (isHovered
@@ -385,7 +386,9 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
       child: JustPressable(
         focusNode: _focusNode,
         onTap: () => _controller.toggle(),
-        builder: (context, isHovered, isPressed, isFocused, focusNode) {
+        builder: (BuildContext context, JustInteractionState state) {
+          final isHovered = state.isHovered;
+          final isPressed = state.isPressed;
           final customTheme = JustThemeProvider.of(context).theme;
           final presetTokens = customTheme.presetTokens;
           final Widget collapsedIndicatorWidget = Container(

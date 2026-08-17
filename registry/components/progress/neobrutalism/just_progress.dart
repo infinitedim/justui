@@ -92,7 +92,7 @@ class _JustProgressState extends State<JustProgress>
     if (widget.value == null) {
       _indeterminateController ??= AnimationController(
         vsync: this,
-        duration: const Duration(milliseconds: 1500),
+        duration: JustDuration.slower,
       )..repeat();
     } else {
       _indeterminateController?.dispose();
@@ -243,7 +243,7 @@ class _JustProgressState extends State<JustProgress>
             TweenAnimationBuilder<double>(
               tween: Tween<double>(begin: 0.0, end: _fraction),
               duration:
-                  widget.animationDuration ?? const Duration(milliseconds: 200),
+                  widget.animationDuration ?? JustDuration.fast,
               curve: Curves.easeOutCubic,
               builder: (context, value, child) {
                 return FractionallySizedBox(
