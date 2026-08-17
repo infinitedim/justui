@@ -110,6 +110,13 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   final FocusNode _searchFocusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
 
+  /// Internal dummy focus node required by the search box's [EditableText].
+  /// Keyboard navigation/events are actually handled by the ancestor [Focus]
+  /// widget bound to [_searchFocusNode] — this node exists only so
+  /// [EditableText] has a focus target to render a cursor against, and must
+  /// be created once (not per-build) so it can be disposed.
+  final FocusNode _searchEditableFocusNode = FocusNode();
+
   String _searchQuery = '';
   int _focusedOptionIndex =
       -1; // Keyboard navigation index within filtered options
@@ -126,6 +133,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     _searchController.dispose();
     _triggerFocusNode.dispose();
     _searchFocusNode.dispose();
+    _searchEditableFocusNode.dispose();
     super.dispose();
   }
 
@@ -541,7 +549,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                   child: EditableText(
                                     controller: _searchController,
                                     focusNode:
-                                        FocusNode(), // internal dummy focus
+                                        _searchEditableFocusNode, // internal dummy focus
                                     style: textStyle.copyWith(
                                       color: colors.textPrimary,
                                     ),
