@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart' show Theme, ThemeExtension;
+import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_tabs_style.dart';
-
-import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for tabs, extending Flutter's [ThemeExtension].
 class JustTabsTheme extends ThemeExtension<JustTabsTheme> {
@@ -29,10 +27,6 @@ class JustTabsTheme extends ThemeExtension<JustTabsTheme> {
   /// Default theme configuration.
   static const defaults = JustTabsTheme();
 
-  /// Fallback factory constructor from [JustThemeData].
-  factory JustTabsTheme.fromTheme(JustThemeData justTheme) =>
-      const JustTabsTheme();
-
   @override
   JustTabsTheme copyWith({
     JustTabsStyle? lineStyle,
@@ -53,11 +47,4 @@ class JustTabsTheme extends ThemeExtension<JustTabsTheme> {
     if (other is! JustTabsTheme) return this;
     return t < 0.5 ? this : other;
   }
-}
-
-/// Extension method on [BuildContext] to access [JustTabsTheme] safely.
-extension JustTabsThemeContext on BuildContext {
-  JustTabsTheme get justTabsTheme =>
-      Theme.of(this).extension<JustTabsTheme>() ??
-      JustTabsTheme.fromTheme(justTheme);
 }

@@ -4,10 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
+import '../../theme/theme_provider.dart';
 import 'just_input_style.dart';
 import 'just_input_variants.dart';
-
-import 'package:just_ui_core/just_ui_core.dart';
 
 /// A highly customizable, theme-aware text input field supporting multiple variants and states.
 class JustInput extends StatefulWidget {

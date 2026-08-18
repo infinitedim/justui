@@ -6,11 +6,10 @@ import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../overlay/just_overlay_controller.dart';
+import '../../theme/theme_provider.dart';
 import 'just_toast_style.dart';
 import 'just_toast_theme.dart';
 import 'just_toast_variants.dart';
-
-import 'package:just_ui_core/just_ui_core.dart';
 
 /// Represents a single active toast entry in the overlay.
 class _ToastEntry {
