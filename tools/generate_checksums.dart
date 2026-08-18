@@ -211,23 +211,21 @@ ResolvedPaths _resolvePaths({
   required bool isInternal,
   required String projectRoot,
 }) {
-  final bool sourcedFromCore = !isInternal;
+  final String srcRelPath = relPath.replaceFirst(
+    RegExp(r'/(default|neobrutalism)/'),
+    '/',
+  );
+  final coreFile = File(
+    p.join(projectRoot, 'packages', 'core', 'lib', 'src', srcRelPath),
+  );
+  final bool sourcedFromCore = coreFile.existsSync();
   final origin = sourcedFromCore
       ? FileOrigin.coreMirrored
       : FileOrigin.registryNative;
 
-  final File srcFile;
-  if (sourcedFromCore) {
-    final String srcRelPath = relPath.replaceFirst(
-      RegExp(r'/(default|neobrutalism)/'),
-      '/',
-    );
-    srcFile = File(
-      p.join(projectRoot, 'packages', 'core', 'lib', 'src', srcRelPath),
-    );
-  } else {
-    srcFile = File(p.join(projectRoot, 'registry', relPath));
-  }
+  final File srcFile = sourcedFromCore
+      ? coreFile
+      : File(p.join(projectRoot, 'registry', relPath));
 
   final destFile = File(p.join(projectRoot, 'registry', relPath));
 
