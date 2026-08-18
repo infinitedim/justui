@@ -1,6 +1,6 @@
 name: just_ui_core
 description: Core UI library for JustUI including the high-performance theming engine and responsive utilities.
-version: 0.6.0
+version: 0.7.0
 publish_to: none
 
 environment:
