@@ -46,17 +46,11 @@ class const FocusIndicator({
   }
 }
 
-class _FocusRingPainter extends CustomPainter {
-  final Color color;
-  final BorderRadius borderRadius;
-  final double strokeWidth;
-
-  const _FocusRingPainter({
-    required this.color,
-    required this.borderRadius,
-    this.strokeWidth = 2.0,
-  });
-
+class const _FocusRingPainter({
+  required final Color color,
+  required final BorderRadius borderRadius,
+  final double strokeWidth = 2.0,
+}) extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()

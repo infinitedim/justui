@@ -3,13 +3,10 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_separator_style.dart';
 
 /// Global theme configuration for separators, extending Flutter's [ThemeExtension].
-class JustSeparatorTheme extends ThemeExtension<JustSeparatorTheme> {
+class const JustSeparatorTheme({
   /// The global style override for all separators.
-  final JustSeparatorStyle? style;
-
-  /// Creates a [JustSeparatorTheme] configuration.
-  const JustSeparatorTheme({this.style});
-
+  final JustSeparatorStyle? style,
+}) extends ThemeExtension<JustSeparatorTheme> {
   /// Default configuration for the theme.
   static const defaults = JustSeparatorTheme();
 

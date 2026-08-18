@@ -25,32 +25,29 @@ class JustBreadcrumbItem {
 /// Under zero-Material dependency constraints, it supports custom separators,
 /// auto-collapsing middle items when length exceeds [maxItems], and showing collapsed
 /// items inside a custom floating dropdown menu when the collapse indicator is clicked.
-class JustBreadcrumb extends StatelessWidget {
+/// A breadcrumb trail component that provides clean horizontal hierarchy navigation.
+///
+/// Under zero-Material dependency constraints, it supports custom separators,
+/// auto-collapsing middle items when length exceeds [maxItems], and showing collapsed
+/// items inside a custom floating dropdown menu when the collapse indicator is clicked.
+class const JustBreadcrumb({
+  super.key,
+
   /// The list of items in the breadcrumb trail.
-  final List<JustBreadcrumbItem> items;
+  required final List<JustBreadcrumbItem> items,
 
   /// Custom separator widget displayed between items. Defaults to a standard text "/".
-  final Widget? separator;
+  final Widget? separator,
 
   /// Maximum number of items to display. If exceeded, middle items collapse into a single indicator.
-  final int? maxItems;
+  final int? maxItems,
 
   /// Custom collapsed indicator widget (defaults to standard "...").
-  final Widget? collapsed;
+  final Widget? collapsed,
 
   /// Custom style overrides.
-  final JustBreadcrumbStyle? style;
-
-  /// Creates a [JustBreadcrumb] widget.
-  const JustBreadcrumb({
-    super.key,
-    required this.items,
-    this.separator,
-    this.maxItems,
-    this.collapsed,
-    this.style,
-  });
-
+  final JustBreadcrumbStyle? style,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) return const SizedBox.shrink();
@@ -234,17 +231,11 @@ class JustBreadcrumb extends StatelessWidget {
   }
 }
 
-class _JustBreadcrumbCollapsed extends StatefulWidget {
-  final List<JustBreadcrumbItem> collapsedItems;
-  final Widget collapsedIndicator;
-  final JustBreadcrumbStyle? style;
-
-  const _JustBreadcrumbCollapsed({
-    required this.collapsedItems,
-    required this.collapsedIndicator,
-    this.style,
-  });
-
+class const _JustBreadcrumbCollapsed({
+  required final List<JustBreadcrumbItem> collapsedItems,
+  required final Widget collapsedIndicator,
+  final JustBreadcrumbStyle? style,
+}) extends StatefulWidget {
   @override
   State<_JustBreadcrumbCollapsed> createState() =>
       _JustBreadcrumbCollapsedState();

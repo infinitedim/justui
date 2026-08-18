@@ -3,13 +3,10 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_skeleton_style.dart';
 
 /// Global theme configuration for skeletons, extending Flutter's [ThemeExtension].
-class JustSkeletonTheme extends ThemeExtension<JustSkeletonTheme> {
+class const JustSkeletonTheme({
   /// The global base style override for all skeletons.
-  final JustSkeletonStyle? style;
-
-  /// Creates a [JustSkeletonTheme] configuration.
-  const JustSkeletonTheme({this.style});
-
+  final JustSkeletonStyle? style,
+}) extends ThemeExtension<JustSkeletonTheme> {
   /// Default configuration for the theme.
   static const defaults = JustSkeletonTheme();
 

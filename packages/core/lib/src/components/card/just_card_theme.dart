@@ -3,13 +3,10 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_card_style.dart';
 
 /// Global theme configuration for cards, extending Flutter's [ThemeExtension].
-class JustCardTheme extends ThemeExtension<JustCardTheme> {
+class const JustCardTheme({
   /// The global base style override for all card variants.
-  final JustCardStyle? style;
-
-  /// Creates a [JustCardTheme] configuration.
-  const JustCardTheme({this.style});
-
+  final JustCardStyle? style,
+}) extends ThemeExtension<JustCardTheme> {
   /// Default configuration for the theme.
   static const defaults = JustCardTheme();
 

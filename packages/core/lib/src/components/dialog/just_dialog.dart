@@ -204,25 +204,16 @@ class JustDialogController extends JustOverlayController {
 }
 
 /// The internal widget for rendering the dialog content with focus trapping and keyboard shortcuts.
-class _JustDialogWidget extends StatefulWidget {
-  final _DialogInstance<dynamic> instance;
-  final Widget content;
-  final DialogPosition position;
-  final JustDialogStyle? style;
-  final JustOverlayAnimationBuilder? animationBuilder;
-  final FocusNode? previousFocus;
-  final ValueChanged<dynamic> onDismiss;
-
-  const _JustDialogWidget({
-    required this.instance,
-    required this.content,
-    required this.position,
-    this.style,
-    this.animationBuilder,
-    this.previousFocus,
-    required this.onDismiss,
-  });
-
+/// The internal widget for rendering the dialog content with focus trapping and keyboard shortcuts.
+class const _JustDialogWidget({
+  required final _DialogInstance<dynamic> instance,
+  required final Widget content,
+  required final DialogPosition position,
+  final JustDialogStyle? style,
+  final JustOverlayAnimationBuilder? animationBuilder,
+  final FocusNode? previousFocus,
+  required final ValueChanged<dynamic> onDismiss,
+}) extends StatefulWidget {
   @override
   State<_JustDialogWidget> createState() => _JustDialogWidgetState();
 }
@@ -458,20 +449,16 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
 }
 
 /// Scope widget that binds a [JustDialogController] and handles the Flutter context/ticker binding.
-class JustDialogScope extends StatefulWidget {
+/// Scope widget that binds a [JustDialogController] and handles the Flutter context/ticker binding.
+class const JustDialogScope({
+  super.key,
+
   /// The controller that manages the dialog overlay.
-  final JustDialogController controller;
+  required final JustDialogController controller,
 
   /// The child subtree.
-  final Widget child;
-
-  /// Creates a [JustDialogScope].
-  const JustDialogScope({
-    super.key,
-    required this.controller,
-    required this.child,
-  });
-
+  required final Widget child,
+}) extends StatefulWidget {
   /// Retrieves the nearest [JustDialogController] from the ancestor scope.
   static JustDialogController of(BuildContext context) {
     final scope = context
@@ -527,14 +514,10 @@ class _JustDialogScopeState extends State<JustDialogScope>
   }
 }
 
-class _JustDialogScopeInherited extends InheritedWidget {
-  final JustDialogController controller;
-
-  const _JustDialogScopeInherited({
-    required this.controller,
-    required super.child,
-  });
-
+class const _JustDialogScopeInherited({
+  required super.child,
+  required final JustDialogController controller,
+}) extends InheritedWidget {
   @override
   bool updateShouldNotify(_JustDialogScopeInherited oldWidget) {
     return controller != oldWidget.controller;

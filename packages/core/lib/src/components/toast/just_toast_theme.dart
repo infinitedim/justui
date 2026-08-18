@@ -3,31 +3,22 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_toast_style.dart';
 
 /// Global theme configuration for toasts, extending Flutter's [ThemeExtension].
-class JustToastTheme extends ThemeExtension<JustToastTheme> {
+class const JustToastTheme({
   /// Style override for informational toasts.
-  final JustToastStyle? infoStyle;
+  final JustToastStyle? infoStyle,
 
   /// Style override for success toasts.
-  final JustToastStyle? successStyle;
+  final JustToastStyle? successStyle,
 
   /// Style override for warning toasts.
-  final JustToastStyle? warningStyle;
+  final JustToastStyle? warningStyle,
 
   /// Style override for error toasts.
-  final JustToastStyle? errorStyle;
+  final JustToastStyle? errorStyle,
 
   /// Whether to enable haptic feedback when a toast is shown.
-  final bool enableHaptic;
-
-  /// Creates a [JustToastTheme] configuration.
-  const JustToastTheme({
-    this.infoStyle,
-    this.successStyle,
-    this.warningStyle,
-    this.errorStyle,
-    this.enableHaptic = false,
-  });
-
+  final bool enableHaptic = false,
+}) extends ThemeExtension<JustToastTheme> {
   /// Default configuration for the theme.
   static const defaults = JustToastTheme();
 

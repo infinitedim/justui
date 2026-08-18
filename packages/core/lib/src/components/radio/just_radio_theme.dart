@@ -3,16 +3,13 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_radio_style.dart';
 
 /// Global theme configuration for radio buttons, extending Flutter's [ThemeExtension].
-class JustRadioTheme extends ThemeExtension<JustRadioTheme> {
+class const JustRadioTheme({
   /// Base style override for radio buttons.
-  final JustRadioStyle? style;
+  final JustRadioStyle? style,
 
   /// Whether to enable haptic feedback on radio selection changes.
-  final bool enableHaptic;
-
-  /// Creates a [JustRadioTheme] configuration.
-  const JustRadioTheme({this.style, this.enableHaptic = false});
-
+  final bool enableHaptic = false,
+}) extends ThemeExtension<JustRadioTheme> {
   /// Default configuration for the theme.
   static const defaults = JustRadioTheme();
 

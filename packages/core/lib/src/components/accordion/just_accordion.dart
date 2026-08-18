@@ -39,37 +39,28 @@ class JustAccordionItem {
 }
 
 /// A highly customizable, accessible accordion component supporting single and multi-expansion.
-class JustAccordion extends StatefulWidget {
-  /// The list of accordion items to display.
-  final List<JustAccordionItem> items;
+/// A highly customizable, accessible accordion component supporting single and multi-expansion.
+class const JustAccordion({
+  super.key,
 
-  /// If false, only one item can be expanded at a time (default).
+  /// The list of accordion items to display.
+  required final List<JustAccordionItem> items,
+
   /// If true, multiple items can be expanded concurrently.
-  final bool allowMultiple;
+  final bool allowMultiple = false,
 
   /// The indices of items that should be expanded initially.
-  final Set<int>? initialExpanded;
+  final Set<int>? initialExpanded,
 
   /// Callback when the set of expanded item indices changes.
-  final ValueChanged<Set<int>>? onChanged;
+  final ValueChanged<Set<int>>? onChanged,
 
   /// The visual layout variant.
-  final JustAccordionVariant variant;
+  final JustAccordionVariant variant = .default_,
 
   /// Per-instance style overrides.
-  final JustAccordionStyle? style;
-
-  /// Creates a [JustAccordion] component.
-  const JustAccordion({
-    super.key,
-    required this.items,
-    this.allowMultiple = false,
-    this.initialExpanded,
-    this.onChanged,
-    this.variant = .default_,
-    this.style,
-  });
-
+  final JustAccordionStyle? style,
+}) extends StatefulWidget {
   @override
   State<JustAccordion> createState() => _JustAccordionState();
 }
@@ -236,41 +227,23 @@ class _JustAccordionState extends State<JustAccordion> {
   }
 }
 
-class _JustAccordionItemWidget extends StatefulWidget {
-  final JustAccordionItem item;
-  final bool isExpanded;
-  final VoidCallback onToggle;
-  final JustAccordionVariant variant;
-  final JustAccordionStyle? style;
-  final JustAccordionStyle? themeStyle;
-  final JustPresetTokens presetTokens;
-  final JustColorScheme colors;
-  final JustSpacingScheme spacing;
-  final JustRadiusScheme radius;
-  final JustShadowScheme shadows;
-  final JustTypographyScheme typography;
-  final JustThemeData customTheme;
-  final int index;
-  final int totalItems;
-
-  const _JustAccordionItemWidget({
-    required this.item,
-    required this.isExpanded,
-    required this.onToggle,
-    required this.variant,
-    required this.style,
-    required this.themeStyle,
-    required this.presetTokens,
-    required this.colors,
-    required this.spacing,
-    required this.radius,
-    required this.shadows,
-    required this.typography,
-    required this.customTheme,
-    required this.index,
-    required this.totalItems,
-  });
-
+class const _JustAccordionItemWidget({
+  required final JustAccordionItem item,
+  required final bool isExpanded,
+  required final VoidCallback onToggle,
+  required final JustAccordionVariant variant,
+  required final JustAccordionStyle? style,
+  required final JustAccordionStyle? themeStyle,
+  required final JustPresetTokens presetTokens,
+  required final JustColorScheme colors,
+  required final JustSpacingScheme spacing,
+  required final JustRadiusScheme radius,
+  required final JustShadowScheme shadows,
+  required final JustTypographyScheme typography,
+  required final JustThemeData customTheme,
+  required final int index,
+  required final int totalItems,
+}) extends StatefulWidget {
   @override
   State<_JustAccordionItemWidget> createState() =>
       _JustAccordionItemWidgetState();

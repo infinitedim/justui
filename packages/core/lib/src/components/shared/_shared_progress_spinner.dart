@@ -99,23 +99,14 @@ class _JustProgressSpinnerState extends State<JustProgressSpinner>
   }
 }
 
-class _SpinnerPainter extends CustomPainter {
-  final Color color;
-  final double strokeWidth;
-  final StrokeCap strokeCap;
-  final Color? trackColor;
-  final double startAngle;
-  final double sweepAngle;
-
-  const _SpinnerPainter({
-    required this.color,
-    required this.strokeWidth,
-    required this.strokeCap,
-    this.trackColor,
-    required this.startAngle,
-    required this.sweepAngle,
-  });
-
+class const _SpinnerPainter({
+  required final Color color,
+  required final double strokeWidth,
+  required final StrokeCap strokeCap,
+  final Color? trackColor,
+  required final double startAngle,
+  required final double sweepAngle,
+}) extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Rect rect = .fromLTWH(0.0, 0.0, size.width, size.height);

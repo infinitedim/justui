@@ -3,19 +3,16 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_dialog_style.dart';
 
 /// Global theme configuration for dialogs, extending Flutter's [ThemeExtension].
-class JustDialogTheme extends ThemeExtension<JustDialogTheme> {
+class const JustDialogTheme({
   /// Style override for centered dialogs.
-  final JustDialogStyle? centerStyle;
+  final JustDialogStyle? centerStyle,
 
   /// Style override for bottom sheet-like dialogs.
-  final JustDialogStyle? bottomStyle;
+  final JustDialogStyle? bottomStyle,
 
   /// Style override for top banner-like dialogs.
-  final JustDialogStyle? topStyle;
-
-  /// Creates a [JustDialogTheme] configuration.
-  const JustDialogTheme({this.centerStyle, this.bottomStyle, this.topStyle});
-
+  final JustDialogStyle? topStyle,
+}) extends ThemeExtension<JustDialogTheme> {
   /// Default configuration for the theme.
   static const defaults = JustDialogTheme();
 

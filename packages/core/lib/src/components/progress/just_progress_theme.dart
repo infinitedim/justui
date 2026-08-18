@@ -3,13 +3,10 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_progress_style.dart';
 
 /// Global theme configuration for progress indicators, extending Flutter's [ThemeExtension].
-class JustProgressTheme extends ThemeExtension<JustProgressTheme> {
+class const JustProgressTheme({
   /// Base style override for progress components.
-  final JustProgressStyle? style;
-
-  /// Creates a [JustProgressTheme] configuration.
-  const JustProgressTheme({this.style});
-
+  final JustProgressStyle? style,
+}) extends ThemeExtension<JustProgressTheme> {
   /// Default configuration for the theme.
   static const defaults = JustProgressTheme();
 

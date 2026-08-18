@@ -3,23 +3,16 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_sidebar_style.dart';
 
 /// Global theme configuration for sidebars, extending Flutter's [ThemeExtension].
-class JustSidebarTheme extends ThemeExtension<JustSidebarTheme> {
+class const JustSidebarTheme({
   /// Default style override for [JustSidebarVariant.default_].
-  final JustSidebarStyle? defaultStyle;
+  final JustSidebarStyle? defaultStyle,
 
   /// Default style override for [JustSidebarVariant.floating].
-  final JustSidebarStyle? floatingStyle;
+  final JustSidebarStyle? floatingStyle,
 
   /// Default style override for [JustSidebarVariant.inset].
-  final JustSidebarStyle? insetStyle;
-
-  /// Creates a [JustSidebarTheme] theme extension.
-  const JustSidebarTheme({
-    this.defaultStyle,
-    this.floatingStyle,
-    this.insetStyle,
-  });
-
+  final JustSidebarStyle? insetStyle,
+}) extends ThemeExtension<JustSidebarTheme> {
   /// Default theme configuration.
   static const defaults = JustSidebarTheme();
 

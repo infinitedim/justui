@@ -519,19 +519,13 @@ class _JustTableState<T> extends State<JustTable<T>> {
 }
 
 /// A lightweight, custom checkbox widget to avoid using Material's [Checkbox].
-class _CustomCheckbox extends StatelessWidget {
-  final bool value;
-  final ValueChanged<bool?> onChanged;
-  final JustPresetTokens presetTokens;
-  final JustColorScheme colors;
-
-  const _CustomCheckbox({
-    required this.value,
-    required this.onChanged,
-    required this.presetTokens,
-    required this.colors,
-  });
-
+/// A lightweight, custom checkbox widget to avoid using Material's [Checkbox].
+class const _CustomCheckbox({
+  required final bool value,
+  required final ValueChanged<bool?> onChanged,
+  required final JustPresetTokens presetTokens,
+  required final JustColorScheme colors,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return JustPressable(

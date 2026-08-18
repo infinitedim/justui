@@ -765,20 +765,14 @@ class _JustSkeletonState extends State<JustSkeleton>
 }
 
 /// A scope that provides shared synchronized shimmer parameters.
-class _JustSkeletonScope extends InheritedWidget {
-  final AnimationController animation;
-  final JustSkeletonStyle resolvedStyle;
-  final Color baseColor;
-  final Color highlightColor;
-
-  const _JustSkeletonScope({
-    required this.animation,
-    required this.resolvedStyle,
-    required this.baseColor,
-    required this.highlightColor,
-    required super.child,
-  });
-
+/// A scope that provides shared synchronized shimmer parameters.
+class const _JustSkeletonScope({
+  required super.child,
+  required final AnimationController animation,
+  required final JustSkeletonStyle resolvedStyle,
+  required final Color baseColor,
+  required final Color highlightColor,
+}) extends InheritedWidget {
   static _JustSkeletonScope? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<_JustSkeletonScope>();
   }
@@ -821,19 +815,14 @@ class _JustSkeletonScope extends InheritedWidget {
 
 /// A leaf skeleton shape widget that can either participate in a synchronized parent scope
 /// or run its own independent local animation controller.
-class _JustSkeletonShape extends StatefulWidget {
-  final double? width;
-  final double? height;
-  final BorderRadius? borderRadius;
-  final BoxShape shape;
-
-  const _JustSkeletonShape({
-    this.width,
-    this.height,
-    this.borderRadius,
-    this.shape = .rectangle,
-  });
-
+/// A leaf skeleton shape widget that can either participate in a synchronized parent scope
+/// or run its own independent local animation controller.
+class const _JustSkeletonShape({
+  final double? width,
+  final double? height,
+  final BorderRadius? borderRadius,
+  final BoxShape shape = .rectangle,
+}) extends StatefulWidget {
   @override
   State<_JustSkeletonShape> createState() => _JustSkeletonShapeState();
 }
@@ -1057,13 +1046,14 @@ class _GradientTranslation extends GradientTransform {
 
 /// Wrapper widget that acts as an escape hatch to keep its child and descendants
 /// fully visible and interactive during a skeleton loading state.
-class JustSkeletonIgnore extends StatelessWidget {
+/// Wrapper widget that acts as an escape hatch to keep its child and descendants
+/// fully visible and interactive during a skeleton loading state.
+class const JustSkeletonIgnore({
+  super.key,
+
   /// The child widget.
-  final Widget child;
-
-  /// Creates a [JustSkeletonIgnore] wrapper.
-  const JustSkeletonIgnore({super.key, required this.child});
-
+  required final Widget child,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => child;
 }
@@ -1075,28 +1065,28 @@ class JustSkeletonIgnore extends StatelessWidget {
 /// from the child if it is a [Container] or [SizedBox] with explicit sizes.
 /// If dimensions cannot be resolved, they fall back to predictable defaults
 /// ([double.infinity] for width, and `56.0` for height).
-class JustSkeletonAtomic extends StatelessWidget {
+/// Wrapper widget that acts as an escape hatch to force its entire child sub-tree
+/// into a single atomic solid skeleton shape block during a skeleton loading state.
+///
+/// If [width] or [height] is null, the loader will attempt to resolve dimensions
+/// from the child if it is a [Container] or [SizedBox] with explicit sizes.
+/// If dimensions cannot be resolved, they fall back to predictable defaults
+/// ([double.infinity] for width, and `56.0` for height).
+class const JustSkeletonAtomic({
+  super.key,
+
   /// The child widget.
-  final Widget child;
+  required final Widget child,
 
   /// Optional explicit width for the resulting skeleton block.
-  final double? width;
+  final double? width,
 
   /// Optional explicit height for the resulting skeleton block.
-  final double? height;
+  final double? height,
 
   /// Optional explicit border radius for the resulting skeleton block.
-  final BorderRadius? borderRadius;
-
-  /// Creates a [JustSkeletonAtomic] wrapper.
-  const JustSkeletonAtomic({
-    super.key,
-    required this.child,
-    this.width,
-    this.height,
-    this.borderRadius,
-  });
-
+  final BorderRadius? borderRadius,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => child;
 }

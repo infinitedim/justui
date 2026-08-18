@@ -14,49 +14,37 @@ import 'just_checkbox_theme.dart';
 ///
 /// Follows zero-Material visual widget policy and supports indeterminate state,
 /// custom animated paths via [CustomPainter], haptic feedback, and keyboard navigation.
-class JustCheckbox extends StatefulWidget {
-  /// The current state of the checkbox:
-  /// * `true` — Checked
-  /// * `false` — Unchecked
-  /// * `null` — Indeterminate (e.g. parent status)
-  final bool? value;
+/// A highly customizable, performant, and accessible Checkbox component.
+///
+/// Follows zero-Material visual widget policy and supports indeterminate state,
+/// custom animated paths via [CustomPainter], haptic feedback, and keyboard navigation.
+class const JustCheckbox({
+  super.key,
 
-  /// Callback executed when the checkbox state changes.
+  /// * `null` — Indeterminate (e.g. parent status)
+  required final bool? value,
+
   /// If null, the checkbox is disabled.
-  final ValueChanged<bool?>? onChanged;
+  required final ValueChanged<bool?>? onChanged,
 
   /// Optional text label placed alongside the checkbox. Tapping the label also toggles the checkbox.
-  final Widget? label;
+  final Widget? label,
 
   /// The size of the visual checkbox box. Defaults to [.md].
-  final JustCheckboxSize size;
+  final JustCheckboxSize size = .md,
 
   /// Whether the checkbox is explicitly disabled.
-  final bool isDisabled;
+  final bool isDisabled = false,
 
   /// Per-instance style overrides.
-  final JustCheckboxStyle? style;
+  final JustCheckboxStyle? style,
 
-  /// Whether to trigger haptic feedback on toggles.
   /// If null, falls back to the theme extension setting.
-  final bool? enableHaptic;
+  final bool? enableHaptic,
 
   /// Optional external [FocusNode] to manage focus.
-  final FocusNode? focusNode;
-
-  /// Creates a [JustCheckbox].
-  const JustCheckbox({
-    super.key,
-    required this.value,
-    required this.onChanged,
-    this.label,
-    this.size = .md,
-    this.isDisabled = false,
-    this.style,
-    this.enableHaptic,
-    this.focusNode,
-  });
-
+  final FocusNode? focusNode,
+}) extends StatefulWidget {
   @override
   State<JustCheckbox> createState() => _JustCheckboxState();
 }
@@ -332,17 +320,11 @@ class _JustCheckboxState extends State<JustCheckbox>
   }
 }
 
-class _CheckmarkPainter extends CustomPainter {
-  final double progress;
-  final Color color;
-  final double strokeWidth;
-
-  const _CheckmarkPainter({
-    required this.progress,
-    required this.color,
-    required this.strokeWidth,
-  });
-
+class const _CheckmarkPainter({
+  required final double progress,
+  required final Color color,
+  required final double strokeWidth,
+}) extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (progress <= 0.0) return;
@@ -385,17 +367,11 @@ class _CheckmarkPainter extends CustomPainter {
   }
 }
 
-class _IndeterminatePainter extends CustomPainter {
-  final double progress;
-  final Color color;
-  final double strokeWidth;
-
-  const _IndeterminatePainter({
-    required this.progress,
-    required this.color,
-    required this.strokeWidth,
-  });
-
+class const _IndeterminatePainter({
+  required final double progress,
+  required final Color color,
+  required final double strokeWidth,
+}) extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (progress <= 0.0) return;
