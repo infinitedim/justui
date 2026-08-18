@@ -242,8 +242,7 @@ class _JustProgressState extends State<JustProgress>
             // Determinate Linear Progress
             TweenAnimationBuilder<double>(
               tween: Tween<double>(begin: 0.0, end: _fraction),
-              duration:
-                  widget.animationDuration ?? JustDuration.fast,
+              duration: widget.animationDuration ?? JustDuration.fast,
               curve: Curves.easeOutCubic,
               builder: (context, value, child) {
                 return FractionallySizedBox(

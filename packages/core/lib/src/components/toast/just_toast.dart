@@ -155,8 +155,9 @@ class JustToastController extends JustOverlayController {
     } else {
       if (effectiveLimit != null) {
         // 1. Get non-dismissing active toasts
-        final activeVisible =
-            _activeToasts.where((t) => !t._dismissRequested).toList();
+        final activeVisible = _activeToasts
+            .where((t) => !t._dismissRequested)
+            .toList();
 
         // 2. If active visible toasts reach limit, dismiss the oldest active one
         if (activeVisible.length >= effectiveLimit) {
@@ -167,8 +168,9 @@ class JustToastController extends JustOverlayController {
         // if total entries exceed effectiveLimit to prevent overlay accumulation during rapid click spam
         while (_activeToasts.length >= effectiveLimit &&
             _activeToasts.any((t) => t._dismissRequested)) {
-          final oldestDismissing =
-              _activeToasts.firstWhere((t) => t._dismissRequested);
+          final oldestDismissing = _activeToasts.firstWhere(
+            (t) => t._dismissRequested,
+          );
           _cleanupToastEntry(oldestDismissing);
         }
       }
@@ -179,10 +181,7 @@ class JustToastController extends JustOverlayController {
   void _showToast(_ToastPending pending) {
     final animController =
         pending.animationController ??
-        AnimationController(
-          vsync: _vsync!,
-          duration: JustDuration.normal,
-        );
+        AnimationController(vsync: _vsync!, duration: JustDuration.normal);
 
     late final _ToastEntry entry;
     final overlayEntry = OverlayEntry(
@@ -539,7 +538,10 @@ class _JustToastWidgetState extends State<_JustToastWidget>
       widget.onDismiss();
     } else {
       _swipeBackAnimation = Tween<double>(begin: _dragX, end: 0.0).animate(
-        CurvedAnimation(parent: _swipeBackController, curve: JustCurves.default_),
+        CurvedAnimation(
+          parent: _swipeBackController,
+          curve: JustCurves.default_,
+        ),
       );
       _swipeBackController.forward(from: 0.0);
     }
