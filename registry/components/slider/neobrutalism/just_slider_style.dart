@@ -1,16 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-/// The physical size classification for [JustSlider].
-enum JustSliderSize {
-  /// Small size (thinner track, smaller thumb)
-  sm,
-
-  /// Medium size (default track and thumb size)
-  md,
-
-  /// Large size (thicker track, larger thumb)
-  lg,
-}
+export '../../theme/preset_tokens.dart' show JustSliderSize;
 
 /// Customized per-instance visual styles for [JustSlider].
 class JustSliderStyle {

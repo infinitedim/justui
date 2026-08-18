@@ -3,13 +3,12 @@ import 'package:flutter/services.dart'
     show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
 
+import '../../theme/theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_select_style.dart';
 import 'just_select_theme.dart';
 import 'just_select_variants.dart';
-
-import 'package:just_ui_core/just_ui_core.dart';
 
 /// Data model representing an option in the [JustSelect] dropdown.
 class JustSelectOption<T> {

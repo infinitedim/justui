@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart' show Theme, ThemeExtension;
+import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_slider_style.dart';
-
-import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for sliders, extending Flutter's [ThemeExtension].
 class JustSliderTheme extends ThemeExtension<JustSliderTheme> {
@@ -18,10 +16,6 @@ class JustSliderTheme extends ThemeExtension<JustSliderTheme> {
   /// Default configuration for the theme.
   static const defaults = JustSliderTheme();
 
-  /// Fallback factory constructor from [JustThemeData].
-  factory JustSliderTheme.fromTheme(JustThemeData justTheme) =>
-      const JustSliderTheme();
-
   @override
   JustSliderTheme copyWith({JustSliderStyle? style, bool? enableHaptic}) {
     return JustSliderTheme(
@@ -35,11 +29,4 @@ class JustSliderTheme extends ThemeExtension<JustSliderTheme> {
     if (other is! JustSliderTheme) return this;
     return t < 0.5 ? this : other;
   }
-}
-
-/// Extension method on [BuildContext] to access [JustSliderTheme] safely.
-extension JustSliderThemeContext on BuildContext {
-  JustSliderTheme get justSliderTheme =>
-      Theme.of(this).extension<JustSliderTheme>() ??
-      JustSliderTheme.fromTheme(justTheme);
 }

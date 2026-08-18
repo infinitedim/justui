@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart' show Theme, ThemeExtension;
+import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_dialog_style.dart';
-
-import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for dialogs, extending Flutter's [ThemeExtension].
 class JustDialogTheme extends ThemeExtension<JustDialogTheme> {
@@ -20,10 +18,6 @@ class JustDialogTheme extends ThemeExtension<JustDialogTheme> {
 
   /// Default configuration for the theme.
   static const defaults = JustDialogTheme();
-
-  /// Fallback factory constructor from [JustThemeData].
-  factory JustDialogTheme.fromTheme(JustThemeData justTheme) =>
-      const JustDialogTheme();
 
   @override
   JustDialogTheme copyWith({
@@ -43,11 +37,4 @@ class JustDialogTheme extends ThemeExtension<JustDialogTheme> {
     if (other is! JustDialogTheme) return this;
     return t < 0.5 ? this : other;
   }
-}
-
-/// Extension method on [BuildContext] to access [JustDialogTheme] safely.
-extension JustDialogThemeContext on BuildContext {
-  JustDialogTheme get justDialogTheme =>
-      Theme.of(this).extension<JustDialogTheme>() ??
-      JustDialogTheme.fromTheme(justTheme);
 }
