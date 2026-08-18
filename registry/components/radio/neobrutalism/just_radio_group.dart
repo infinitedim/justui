@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import '../../theme/theme_provider.dart';
 import 'just_radio.dart';
+import 'package:just_ui_core/just_ui_core.dart';
 
 /// Configuration option for [JustRadioGroup].
 class JustRadioOption<T> {

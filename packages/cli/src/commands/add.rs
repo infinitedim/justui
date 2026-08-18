@@ -1,4 +1,5 @@
 use anyhow::Result;
+use regex::Regex;
 use sha2::{Digest, Sha256};
 use std::collections::HashSet;
 
@@ -542,6 +543,29 @@ pub fn add_component(
                 "  - Copied {} to {}/",
                 local_file_name, target_dir
             ));
+
+            if local_file_name.ends_with("_theme.dart") {
+                if let Some(theme_class) = extract_theme_class_name(&final_content) {
+                    let rel_path = target_path
+                        .strip_prefix("lib/")
+                        .unwrap_or(&target_path)
+                        .to_string_lossy();
+                    let import_uri = format!("package:{}/{}", pkg_name, rel_path);
+                    if let Ok(updated) = crate::utils::theme_editor::register_theme_extension(
+                        std::path::Path::new("lib/core/just_theme.dart"),
+                        &pkg_name,
+                        &import_uri,
+                        &theme_class,
+                    ) {
+                        if updated {
+                            logger::stdout(&format!(
+                                "  - Registered {} in lib/core/just_theme.dart",
+                                theme_class
+                            ));
+                        }
+                    }
+                }
+            }
         }
 
         details.push(OperationDetail {
@@ -774,4 +798,9 @@ pub fn sha256_hex(data: &[u8]) -> String {
     let mut hasher = Sha256::new();
     hasher.update(data);
     hex::encode(hasher.finalize())
+}
+
+fn extract_theme_class_name(content: &str) -> Option<String> {
+    let re = Regex::new(r"class\s+([A-Za-z0-9_]+Theme)\s+extends\s+ThemeExtension").unwrap();
+    re.captures(content).map(|cap| cap[1].to_string())
 }

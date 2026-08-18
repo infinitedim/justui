@@ -2,14 +2,12 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
-import '../../theme/theme_data.dart';
-import '../../theme/theme_provider.dart';
-import '../../theme/preset_tokens.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_accordion_style.dart';
 import 'just_accordion_theme.dart';
 import 'just_accordion_variants.dart';
+import 'package:just_ui_core/just_ui_core.dart';
 
 /// Data model representing an individual panel in the [JustAccordion].
 class JustAccordionItem {

@@ -29,7 +29,11 @@ pub fn extract_tokens(target_tokens_dir: &Path, package_name: &str) -> Result<()
 
             file_content = rewrite_tokens_internal_imports(&file_content, package_name);
 
-            let dest_path = target_tokens_dir.join(path_str);
+            let filename = Path::new(path_str)
+                .file_name()
+                .unwrap_or(std::ffi::OsStr::new(path_str));
+
+            let dest_path = target_tokens_dir.join(filename);
             if let Some(parent) = dest_path.parent() {
                 std::fs::create_dir_all(parent)?;
             }
@@ -40,7 +44,7 @@ pub fn extract_tokens(target_tokens_dir: &Path, package_name: &str) -> Result<()
     Ok(())
 }
 
-pub fn extract_core(target_core_dir: &Path, package_name: &str) -> Result<()> {
+pub fn extract_core(target_core_dir: &Path, package_name: &str, tokens_dir: &str) -> Result<()> {
     logger::info(&format!(
         "Extracting core theming engine to {}...",
         target_core_dir.display()
@@ -59,9 +63,13 @@ pub fn extract_core(target_core_dir: &Path, package_name: &str) -> Result<()> {
                 Err(_) => continue,
             };
 
-            file_content = rewrite_core_internal_imports(&file_content, package_name);
+            file_content = rewrite_core_internal_imports(&file_content, package_name, tokens_dir);
 
-            let dest_path = target_core_dir.join(path_str);
+            let filename = Path::new(path_str)
+                .file_name()
+                .unwrap_or(std::ffi::OsStr::new(path_str));
+
+            let dest_path = target_core_dir.join(filename);
             if let Some(parent) = dest_path.parent() {
                 std::fs::create_dir_all(parent)?;
             }
@@ -73,12 +81,27 @@ pub fn extract_core(target_core_dir: &Path, package_name: &str) -> Result<()> {
 }
 
 fn rewrite_tokens_internal_imports(content: &str, _package_name: &str) -> String {
-    content.to_string()
+    content
+        .replace("export 'src/colors/", "export '")
+        .replace("export 'src/", "export '")
+        .replace("import 'src/colors/", "import '")
+        .replace("import 'src/", "import '")
 }
 
-fn rewrite_core_internal_imports(content: &str, package_name: &str) -> String {
-    let tokens_import = format!("package:{}/tokens/just_ui_tokens.dart", package_name);
+fn rewrite_core_internal_imports(content: &str, package_name: &str, tokens_dir: &str) -> String {
+    let tokens_dir_rel = tokens_dir.strip_prefix("lib/").unwrap_or(tokens_dir);
+    let tokens_import = format!(
+        "package:{}/{}/just_ui_tokens.dart",
+        package_name, tokens_dir_rel
+    );
+
     content
+        .replace("export 'src/theme/", "export '")
+        .replace("export 'src/overlay/", "export '")
+        .replace("export 'src/", "export '")
+        .replace("import 'src/theme/", "import '")
+        .replace("import 'src/overlay/", "import '")
+        .replace("import 'src/", "import '")
         .replace(
             "import 'package:just_ui_tokens/just_ui_tokens.dart';",
             &format!("import '{}';", tokens_import),
@@ -89,7 +112,7 @@ fn rewrite_core_internal_imports(content: &str, package_name: &str) -> String {
         )
         .replace(
             "package:just_ui_tokens/",
-            &format!("package:{}/tokens/", package_name),
+            &format!("package:{}/{}/", package_name, tokens_dir_rel),
         )
         .replace(
             "package:just_ui_core/",
