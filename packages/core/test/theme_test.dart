@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
-import 'package:just_ui_core/src/components/progress/just_progress_variants.dart';
-import 'package:just_ui_core/src/components/slider/just_slider_style.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

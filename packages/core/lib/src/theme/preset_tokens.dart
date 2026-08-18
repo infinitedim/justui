@@ -1,10 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
-import '../components/slider/just_slider_style.dart' show JustSliderSize;
-import '../components/progress/just_progress_variants.dart'
-    show JustProgressSize;
 import 'theme_data.dart';
+
+/// Component size enums used for preset-specific token resolution.
+enum JustSliderSize { sm, md, lg }
+enum JustProgressSize { sm, md, lg }
 
 /// Semantic shadow elevation levels, decoupled from preset-specific
 /// shadow implementations (blurred vs flat-offset).
