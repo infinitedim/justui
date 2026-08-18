@@ -3,16 +3,13 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_switch_style.dart';
 
 /// Global theme configuration for switch controls, extending Flutter's [ThemeExtension].
-class JustSwitchTheme extends ThemeExtension<JustSwitchTheme> {
+class const JustSwitchTheme({
   /// Base style override for switches.
-  final JustSwitchStyle? style;
+  final JustSwitchStyle? style,
 
   /// Whether to enable haptic feedback on switch toggles.
-  final bool enableHaptic;
-
-  /// Creates a [JustSwitchTheme] configuration.
-  const JustSwitchTheme({this.style, this.enableHaptic = false});
-
+  final bool enableHaptic = false,
+}) extends ThemeExtension<JustSwitchTheme> {
   /// Default configuration for the theme.
   static const defaults = JustSwitchTheme();
 

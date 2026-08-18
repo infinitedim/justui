@@ -5,60 +5,55 @@ import 'just_badge_style.dart';
 import 'just_badge_variants.dart';
 
 /// A badge component for showing status, counts, or small tags.
-class JustBadge extends StatelessWidget {
+/// A badge component for showing status, counts, or small tags.
+class const JustBadge({
+  super.key,
+
   /// The text label of the badge. Null represents a notification dot badge.
-  final String? label;
+  final String? label,
 
   /// The color category classification.
-  final JustBadgeColor color;
+  final JustBadgeColor color = .primary,
 
   /// The visual style variant.
-  final JustBadgeVariant variant;
+  final JustBadgeVariant variant = .solid,
 
   /// The physical size classification.
-  final JustBadgeSize size;
+  final JustBadgeSize size = .md,
 
   /// An optional icon or widget displayed before the label.
-  final Widget? leading;
+  final Widget? leading,
 
   /// Optional callback to dismiss the badge. If non-null, displays a close icon at the end.
-  final VoidCallback? onDismiss;
+  final VoidCallback? onDismiss,
 
   /// Optional maximum width constraint. Text will truncate with ellipsis if exceeded.
-  final double? maxWidth;
+  final double? maxWidth,
 
   /// Per-instance style overrides.
-  final JustBadgeStyle? style;
+  final JustBadgeStyle? style,
 
   /// Whether to show a pulse animation (only applicable to dot variant).
-  final bool pulse;
-
-  /// Default constructor for [JustBadge].
-  const JustBadge({
-    super.key,
-    this.label,
-    this.color = .primary,
-    this.variant = .solid,
-    this.size = .md,
-    this.leading,
-    this.onDismiss,
-    this.maxWidth,
-    this.style,
-    this.pulse = false,
-  });
-
+  final bool pulse = false,
+}) extends StatelessWidget {
   /// Shorthand constructor for notification dot badges.
-  const JustBadge.dot({
-    super.key,
-    this.color = .error,
-    this.size = .sm,
-    this.pulse = false,
-  }) : label = null,
-       variant = .dot,
-       leading = null,
-       onDismiss = null,
-       maxWidth = null,
-       style = null;
+  const new dot({
+    Key? key,
+    JustBadgeColor color = .error,
+    JustBadgeSize size = .sm,
+    bool pulse = false,
+  }) : this(
+         key: key,
+         label: null,
+         color: color,
+         variant: .dot,
+         size: size,
+         leading: null,
+         onDismiss: null,
+         maxWidth: null,
+         style: null,
+         pulse: pulse,
+       );
 
   /// Convenience utility to overlay a positioned badge on top of another widget.
   static Widget overlay({
@@ -370,17 +365,11 @@ class JustBadge extends StatelessWidget {
   }
 }
 
-class _JustPulsingDot extends StatefulWidget {
-  final double size;
-  final Color color;
-  final double pulseScale;
-
-  const _JustPulsingDot({
-    required this.size,
-    required this.color,
-    required this.pulseScale,
-  });
-
+class const _JustPulsingDot({
+  required final double size,
+  required final Color color,
+  required final double pulseScale,
+}) extends StatefulWidget {
   @override
   State<_JustPulsingDot> createState() => _JustPulsingDotState();
 }

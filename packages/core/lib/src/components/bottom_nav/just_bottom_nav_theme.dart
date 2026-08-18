@@ -3,23 +3,16 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_bottom_nav_style.dart';
 
 /// Global theme configuration for bottom navigation bars, extending Flutter's [ThemeExtension].
-class JustBottomNavTheme extends ThemeExtension<JustBottomNavTheme> {
+class const JustBottomNavTheme({
   /// Default style override for [JustBottomNavVariant.fixed].
-  final JustBottomNavStyle? fixedStyle;
+  final JustBottomNavStyle? fixedStyle,
 
   /// Default style override for [JustBottomNavVariant.shifting].
-  final JustBottomNavStyle? shiftingStyle;
+  final JustBottomNavStyle? shiftingStyle,
 
   /// Default style override for [JustBottomNavVariant.floating].
-  final JustBottomNavStyle? floatingStyle;
-
-  /// Creates a [JustBottomNavTheme] theme extension.
-  const JustBottomNavTheme({
-    this.fixedStyle,
-    this.shiftingStyle,
-    this.floatingStyle,
-  });
-
+  final JustBottomNavStyle? floatingStyle,
+}) extends ThemeExtension<JustBottomNavTheme> {
   /// Default theme configuration.
   static const defaults = JustBottomNavTheme();
 

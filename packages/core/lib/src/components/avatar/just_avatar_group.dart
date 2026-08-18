@@ -5,28 +5,13 @@ import 'just_avatar.dart';
 import 'just_avatar_variants.dart';
 
 /// A widget that displays a group of [JustAvatar]s stacked/overlapped horizontally.
-class JustAvatarGroup extends StatelessWidget {
-  /// The list of avatars to display in the group.
-  final List<JustAvatar> avatars;
-
-  /// The maximum number of avatars to display before showing a "+X" remainder avatar.
-  final int maxDisplay;
-
-  /// The overlap offset between avatars in pixels.
-  final double overlap;
-
-  /// The avatar size classification for the group (overrides individual sizes).
-  final JustAvatarSize size;
-
-  /// Creates a [JustAvatarGroup].
-  const JustAvatarGroup({
-    super.key,
-    required this.avatars,
-    this.maxDisplay = 3,
-    this.overlap = 8.0,
-    this.size = .md,
-  });
-
+class const JustAvatarGroup({
+  super.key,
+  required final List<JustAvatar> avatars,
+  final int maxDisplay = 3,
+  final double overlap = 8.0,
+  final JustAvatarSize size = .md,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (avatars.isEmpty) {

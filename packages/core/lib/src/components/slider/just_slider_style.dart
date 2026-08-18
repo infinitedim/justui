@@ -3,40 +3,28 @@ import 'package:flutter/widgets.dart';
 export '../../theme/preset_tokens.dart' show JustSliderSize;
 
 /// Customized per-instance visual styles for [JustSlider].
-class JustSliderStyle {
+class const JustSliderStyle({
   /// Color of the active track (filled portion).
-  final Color? activeTrackColor;
+  final Color? activeTrackColor,
 
   /// Color of the inactive track (empty portion).
-  final Color? inactiveTrackColor;
+  final Color? inactiveTrackColor,
 
   /// Color of the thumb.
-  final Color? thumbColor;
+  final Color? thumbColor,
 
   /// Border color of the thumb.
-  final Color? thumbBorderColor;
+  final Color? thumbBorderColor,
 
   /// Color of the tick marks.
-  final Color? tickMarkColor;
+  final Color? tickMarkColor,
 
   /// Custom height for the slider track.
-  final double? trackHeight;
+  final double? trackHeight,
 
   /// Custom size (diameter or side length) for the thumb.
-  final double? thumbSize;
+  final double? thumbSize,
 
   /// Border radius of the slider track.
-  final BorderRadius? borderRadius;
-
-  /// Creates a [JustSliderStyle] override.
-  const JustSliderStyle({
-    this.activeTrackColor,
-    this.inactiveTrackColor,
-    this.thumbColor,
-    this.thumbBorderColor,
-    this.tickMarkColor,
-    this.trackHeight,
-    this.thumbSize,
-    this.borderRadius,
-  });
-}
+  final BorderRadius? borderRadius,
+});

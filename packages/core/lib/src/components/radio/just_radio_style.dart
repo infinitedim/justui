@@ -13,24 +13,16 @@ enum JustRadioSize {
 }
 
 /// Customized per-instance visual styles for [JustRadio].
-class JustRadioStyle {
+class const JustRadioStyle({
   /// The active color of the radio ring and inner dot when selected.
-  final Color? activeColor;
+  final Color? activeColor,
 
   /// The color of the radio ring when unselected.
-  final Color? borderColor;
+  final Color? borderColor,
 
   /// The color of the inner dot. Defaults to [activeColor].
-  final Color? dotColor;
+  final Color? dotColor,
 
   /// Text style of the radio label.
-  final TextStyle? textStyle;
-
-  /// Creates a [JustRadioStyle] override.
-  const JustRadioStyle({
-    this.activeColor,
-    this.borderColor,
-    this.dotColor,
-    this.textStyle,
-  });
-}
+  final TextStyle? textStyle,
+});

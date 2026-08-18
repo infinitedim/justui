@@ -10,42 +10,16 @@ import 'theme_data.dart';
 ///
 /// Under the hood, it propagates the active theme down the tree using an [InheritedModel],
 /// enabling widgets to subscribe to specific theme components (aspects) for optimal rendering performance.
-class JustThemeProvider extends StatefulWidget {
-  /// Creates a [JustThemeProvider].
-  const JustThemeProvider({
-    super.key,
-    required this.child,
-    this.onThemeChanged,
-    this.initialThemeMode,
-    this.lightTheme,
-    this.darkTheme,
-    this.transitionDuration = JustDuration.normal,
-    this.transitionCurve = JustCurves.default_,
-  });
-
-  /// The child widget tree.
-  final Widget child;
-
-  /// Optional callback triggered when the theme mode is changed.
-  ///
-  /// Useful for integrating custom storage engines (Hive, Hydrated BLoC, etc.) in user-land.
-  final void Function(ThemeMode)? onThemeChanged;
-
-  /// Optional initial theme mode to restore on startup.
-  final ThemeMode? initialThemeMode;
-
-  /// Custom light theme data. Defaults to [JustThemeData.light].
-  final JustThemeData? lightTheme;
-
-  /// Custom dark theme data. Defaults to [JustThemeData.dark].
-  final JustThemeData? darkTheme;
-
-  /// The transition duration used when switching themes.
-  final Duration transitionDuration;
-
-  /// The easing curve used when switching themes.
-  final Curve transitionCurve;
-
+class const JustThemeProvider({
+  super.key,
+  required final Widget child,
+  final void Function(ThemeMode)? onThemeChanged,
+  final ThemeMode? initialThemeMode,
+  final JustThemeData? lightTheme,
+  final JustThemeData? darkTheme,
+  final Duration transitionDuration = JustDuration.normal,
+  final Curve transitionCurve = JustCurves.default_,
+}) extends StatefulWidget {
   @override
   State<JustThemeProvider> createState() => JustThemeProviderState();
 
@@ -194,18 +168,12 @@ class JustThemeProviderState extends State<JustThemeProvider>
   }
 }
 
-class _JustThemeModel extends InheritedModel<JustThemeAspect> {
-  const _JustThemeModel({
-    required this.state,
-    required this.themeMode,
-    required this.themeData,
-    required super.child,
-  });
-
-  final JustThemeProviderState state;
-  final ThemeMode themeMode;
-  final JustThemeData themeData;
-
+class const _JustThemeModel({
+  required super.child,
+  required final JustThemeProviderState state,
+  required final ThemeMode themeMode,
+  required final JustThemeData themeData,
+}) extends InheritedModel<JustThemeAspect> {
   @override
   bool updateShouldNotify(_JustThemeModel oldWidget) {
     return themeMode != oldWidget.themeMode || themeData != oldWidget.themeData;

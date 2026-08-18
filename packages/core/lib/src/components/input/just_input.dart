@@ -848,29 +848,18 @@ class _JustInputState extends State<JustInput> {
 }
 
 /// A segmented OTP input row that automatically shifts focus.
-class _OtpInputRow extends StatefulWidget {
-  final int length;
-  final bool enabled;
-  final bool autofocus;
-  final JustInputSize size;
-  final JustInputStyle? style;
-  final String? errorText;
-  final String? successText;
-  final ValueChanged<String>? onChanged;
-  final TextEditingController controller;
-
-  const _OtpInputRow({
-    required this.length,
-    required this.enabled,
-    required this.autofocus,
-    required this.size,
-    this.style,
-    this.errorText,
-    this.successText,
-    this.onChanged,
-    required this.controller,
-  });
-
+/// A segmented OTP input row that automatically shifts focus.
+class const _OtpInputRow({
+  required final int length,
+  required final bool enabled,
+  required final bool autofocus,
+  required final JustInputSize size,
+  final JustInputStyle? style,
+  final String? errorText,
+  final String? successText,
+  final ValueChanged<String>? onChanged,
+  required final TextEditingController controller,
+}) extends StatefulWidget {
   @override
   State<_OtpInputRow> createState() => _OtpInputRowState();
 }

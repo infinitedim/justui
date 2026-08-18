@@ -7,36 +7,29 @@ import 'just_tabs_variants.dart';
 
 /// An internal, package-private widget that renders the active tab indicator shape
 /// based on the selected [JustTabVariant].
-class JustTabIndicator extends StatelessWidget {
+/// An internal, package-private widget that renders the active tab indicator shape
+/// based on the selected [JustTabVariant].
+class const JustTabIndicator({
+  super.key,
+
   /// The active variant.
-  final JustTabVariant variant;
+  required final JustTabVariant variant,
 
   /// The active tabs orientation.
-  final Axis orientation;
+  required final Axis orientation,
 
   /// The active color scheme.
-  final JustColorScheme colors;
+  required final JustColorScheme colors,
 
   /// The active radius scheme.
-  final JustRadiusScheme radius;
+  required final JustRadiusScheme radius,
 
   /// The active theme data.
-  final JustThemeData theme;
+  required final JustThemeData theme,
 
   /// Optional per-instance styles.
-  final JustTabsStyle? style;
-
-  /// Creates a [JustTabIndicator] widget.
-  const JustTabIndicator({
-    super.key,
-    required this.variant,
-    required this.orientation,
-    required this.colors,
-    required this.radius,
-    required this.theme,
-    this.style,
-  });
-
+  final JustTabsStyle? style,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final presetTokens = theme.presetTokens;

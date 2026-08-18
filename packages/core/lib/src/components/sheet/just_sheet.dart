@@ -211,31 +211,19 @@ class JustSheetController extends JustOverlayController {
 }
 
 /// The internal widget for rendering the sheet content with drag-to-dismiss and focus trapping.
-class _JustSheetWidget extends StatefulWidget {
-  final _SheetInstance<dynamic> instance;
-  final Widget content;
-  final SheetDirection direction;
-  final double? size;
-  final double? maxSize;
-  final bool draggable;
-  final JustSheetStyle? style;
-  final JustOverlayAnimationBuilder? animationBuilder;
-  final FocusNode? previousFocus;
-  final ValueChanged<dynamic> onDismiss;
-
-  const _JustSheetWidget({
-    required this.instance,
-    required this.content,
-    required this.direction,
-    this.size,
-    this.maxSize,
-    required this.draggable,
-    this.style,
-    this.animationBuilder,
-    this.previousFocus,
-    required this.onDismiss,
-  });
-
+/// The internal widget for rendering the sheet content with drag-to-dismiss and focus trapping.
+class const _JustSheetWidget({
+  required final _SheetInstance<dynamic> instance,
+  required final Widget content,
+  required final SheetDirection direction,
+  final double? size,
+  final double? maxSize,
+  required final bool draggable,
+  final JustSheetStyle? style,
+  final JustOverlayAnimationBuilder? animationBuilder,
+  final FocusNode? previousFocus,
+  required final ValueChanged<dynamic> onDismiss,
+}) extends StatefulWidget {
   @override
   State<_JustSheetWidget> createState() => _JustSheetWidgetState();
 }
@@ -549,20 +537,16 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
 }
 
 /// Scope widget that binds a [JustSheetController] and handles the Flutter context/ticker binding.
-class JustSheetScope extends StatefulWidget {
+/// Scope widget that binds a [JustSheetController] and handles the Flutter context/ticker binding.
+class const JustSheetScope({
+  super.key,
+
   /// The controller that manages the sheet overlay.
-  final JustSheetController controller;
+  required final JustSheetController controller,
 
   /// The child subtree.
-  final Widget child;
-
-  /// Creates a [JustSheetScope].
-  const JustSheetScope({
-    super.key,
-    required this.controller,
-    required this.child,
-  });
-
+  required final Widget child,
+}) extends StatefulWidget {
   /// Retrieves the nearest [JustSheetController] from the ancestor scope.
   static JustSheetController of(BuildContext context) {
     final scope = context
@@ -623,14 +607,10 @@ class _JustSheetScopeState extends State<JustSheetScope>
   }
 }
 
-class _JustSheetScopeInherited extends InheritedWidget {
-  final JustSheetController controller;
-
-  const _JustSheetScopeInherited({
-    required this.controller,
-    required super.child,
-  });
-
+class const _JustSheetScopeInherited({
+  required super.child,
+  required final JustSheetController controller,
+}) extends InheritedWidget {
   @override
   bool updateShouldNotify(_JustSheetScopeInherited oldWidget) {
     return controller != oldWidget.controller;

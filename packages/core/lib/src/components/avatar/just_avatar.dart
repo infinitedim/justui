@@ -10,13 +10,8 @@ import 'just_avatar_variants.dart';
 /// A custom fallback painter that draws a head-and-shoulders person profile.
 ///
 /// Avoids external dependencies on Material icons.
-class PersonFallbackPainter extends CustomPainter {
-  /// The color of the fallback graphic.
-  final Color color;
-
-  /// Creates a [PersonFallbackPainter].
-  const PersonFallbackPainter({required this.color});
-
+class const PersonFallbackPainter({required final Color color})
+    extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
@@ -54,56 +49,20 @@ class PersonFallbackPainter extends CustomPainter {
 }
 
 /// An avatar component for displaying user profile photos, initials, or fallback icons.
-class JustAvatar extends StatelessWidget {
-  /// The network image URL.
-  final String? imageUrl;
-
-  /// The user's name used to automatically generate initials and a deterministic background color.
-  final String? name;
-
-  /// Optional custom icon data if initials/images are not available.
-  final IconData? icon;
-
-  /// The physical size classification.
-  final JustAvatarSize size;
-
-  /// The outer border shape.
-  final JustAvatarShape shape;
-
-  /// Custom border configurations.
-  final BorderSide? border;
-
-  /// Optional presence status dot.
-  final JustAvatarStatus? statusDot;
-
-  /// Custom background color override.
-  final Color? backgroundColor;
-
-  /// Callback executed when the avatar is tapped.
-  final VoidCallback? onTap;
-
-  /// Accessibility semantic description.
-  final String? semanticLabel;
-
-  /// Custom per-instance styles.
-  final JustAvatarStyle? style;
-
-  /// Creates a [JustAvatar].
-  const JustAvatar({
-    super.key,
-    this.imageUrl,
-    this.name,
-    this.icon,
-    this.size = .md,
-    this.shape = .circle,
-    this.border,
-    this.statusDot,
-    this.backgroundColor,
-    this.onTap,
-    this.semanticLabel,
-    this.style,
-  });
-
+class const JustAvatar({
+  super.key,
+  final String? imageUrl,
+  final String? name,
+  final IconData? icon,
+  final JustAvatarSize size = .md,
+  final JustAvatarShape shape = .circle,
+  final BorderSide? border,
+  final JustAvatarStatus? statusDot,
+  final Color? backgroundColor,
+  final VoidCallback? onTap,
+  final String? semanticLabel,
+  final JustAvatarStyle? style,
+}) extends StatelessWidget {
   /// Generate 1-2 letters from a name.
   static String _generateInitials(String? name) {
     if (name == null) return '';

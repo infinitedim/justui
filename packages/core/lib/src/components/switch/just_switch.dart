@@ -15,54 +15,44 @@ import 'just_switch_theme.dart';
 /// Follows zero-Material visual widget policy and supports smooth 60fps translation
 /// animations via [Transform.translate], haptic feedback, tap-to-toggle, drag-to-toggle,
 /// and keyboard navigation.
-class JustSwitch extends StatefulWidget {
-  /// Whether the switch is active (ON) or inactive (OFF).
-  final bool value;
+/// A highly customizable, performant, and accessible Switch component.
+///
+/// Follows zero-Material visual widget policy and supports smooth 60fps translation
+/// animations via [Transform.translate], haptic feedback, tap-to-toggle, drag-to-toggle,
+/// and keyboard navigation.
+class const JustSwitch({
+  super.key,
 
-  /// Callback executed when the switch state changes.
+  /// Whether the switch is active (ON) or inactive (OFF).
+  required final bool value,
+
   /// If null, the switch is disabled.
-  final ValueChanged<bool>? onChanged;
+  required final ValueChanged<bool>? onChanged,
 
   /// Optional text label placed alongside the switch. Tapping the label also toggles the switch.
-  final Widget? label;
+  final Widget? label,
 
   /// The size classification for the switch track. Defaults to [.md].
-  final JustSwitchSize size;
+  final JustSwitchSize size = .md,
 
   /// Whether the switch is explicitly disabled.
-  final bool isDisabled;
+  final bool isDisabled = false,
 
   /// Per-instance style overrides.
-  final JustSwitchStyle? style;
+  final JustSwitchStyle? style,
 
-  /// Whether to trigger haptic feedback on toggles.
   /// If null, falls back to the theme extension setting.
-  final bool? enableHaptic;
+  final bool? enableHaptic,
 
   /// Optional active track color override.
-  final Color? activeColor;
+  final Color? activeColor,
 
   /// Optional builder to display an icon or widget inside the thumb.
-  final Widget? Function(bool value)? thumbIcon;
+  final Widget? Function(bool value)? thumbIcon,
 
   /// Optional external [FocusNode] to manage focus.
-  final FocusNode? focusNode;
-
-  /// Creates a [JustSwitch].
-  const JustSwitch({
-    super.key,
-    required this.value,
-    required this.onChanged,
-    this.label,
-    this.size = .md,
-    this.isDisabled = false,
-    this.style,
-    this.enableHaptic,
-    this.activeColor,
-    this.thumbIcon,
-    this.focusNode,
-  });
-
+  final FocusNode? focusNode,
+}) extends StatefulWidget {
   @override
   State<JustSwitch> createState() => _JustSwitchState();
 }

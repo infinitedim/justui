@@ -13,28 +13,19 @@ enum JustCheckboxSize {
 }
 
 /// Customized per-instance visual styles for [JustCheckbox].
-class JustCheckboxStyle {
+class const JustCheckboxStyle({
   /// Background color of the checkbox when checked.
-  final Color? activeColor;
+  final Color? activeColor,
 
   /// Color of the checkmark/indeterminate dash.
-  final Color? checkColor;
+  final Color? checkColor,
 
   /// Border color of the checkbox when unchecked.
-  final Color? borderColor;
+  final Color? borderColor,
 
   /// Border radius of the checkbox square.
-  final BorderRadius? borderRadius;
+  final BorderRadius? borderRadius,
 
   /// Text style of the checkbox label.
-  final TextStyle? textStyle;
-
-  /// Creates a [JustCheckboxStyle] override.
-  const JustCheckboxStyle({
-    this.activeColor,
-    this.checkColor,
-    this.borderColor,
-    this.borderRadius,
-    this.textStyle,
-  });
-}
+  final TextStyle? textStyle,
+});

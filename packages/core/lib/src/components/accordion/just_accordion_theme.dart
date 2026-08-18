@@ -3,13 +3,10 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_accordion_style.dart';
 
 /// Global theme configuration for accordions, extending Flutter's [ThemeExtension].
-class JustAccordionTheme extends ThemeExtension<JustAccordionTheme> {
+class const JustAccordionTheme({
   /// Base style override for accordion components.
-  final JustAccordionStyle? style;
-
-  /// Creates a [JustAccordionTheme] configuration.
-  const JustAccordionTheme({this.style});
-
+  final JustAccordionStyle? style,
+}) extends ThemeExtension<JustAccordionTheme> {
   /// Default configuration for the theme.
   static const defaults = JustAccordionTheme();
 

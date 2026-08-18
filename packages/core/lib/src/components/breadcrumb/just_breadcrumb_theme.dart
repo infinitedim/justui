@@ -3,13 +3,10 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_breadcrumb_style.dart';
 
 /// Global theme configuration for breadcrumbs, extending Flutter's [ThemeExtension].
-class JustBreadcrumbTheme extends ThemeExtension<JustBreadcrumbTheme> {
+class const JustBreadcrumbTheme({
   /// Default style override for breadcrumbs.
-  final JustBreadcrumbStyle? style;
-
-  /// Creates a [JustBreadcrumbTheme] theme extension.
-  const JustBreadcrumbTheme({this.style});
-
+  final JustBreadcrumbStyle? style,
+}) extends ThemeExtension<JustBreadcrumbTheme> {
   /// Default theme configuration.
   static const defaults = JustBreadcrumbTheme();
 

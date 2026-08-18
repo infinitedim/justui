@@ -408,19 +408,12 @@ class _JustProgressState extends State<JustProgress>
   }
 }
 
-class _CircularProgressPainter extends CustomPainter {
-  final double fraction;
-  final Color trackColor;
-  final Color fillColor;
-  final double strokeWidth;
-
-  const _CircularProgressPainter({
-    required this.fraction,
-    required this.trackColor,
-    required this.fillColor,
-    required this.strokeWidth,
-  });
-
+class const _CircularProgressPainter({
+  required final double fraction,
+  required final Color trackColor,
+  required final Color fillColor,
+  required final double strokeWidth,
+}) extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);

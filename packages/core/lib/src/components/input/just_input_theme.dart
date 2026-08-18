@@ -3,13 +3,10 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_input_style.dart';
 
 /// Global theme configurations for inputs, extending Flutter's [ThemeExtension].
-class JustInputTheme extends ThemeExtension<JustInputTheme> {
+class const JustInputTheme({
   /// Default input styling override.
-  final JustInputStyle? inputStyle;
-
-  /// Creates a [JustInputTheme] configuration.
-  const JustInputTheme({this.inputStyle});
-
+  final JustInputStyle? inputStyle,
+}) extends ThemeExtension<JustInputTheme> {
   /// Default configuration for the theme.
   static const defaults = JustInputTheme();
 
