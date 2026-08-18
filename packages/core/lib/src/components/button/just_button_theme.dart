@@ -3,35 +3,25 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_button_style.dart';
 
 /// Global theme configuration for buttons, extending Flutter's [ThemeExtension].
-class JustButtonTheme extends ThemeExtension<JustButtonTheme> {
+class const JustButtonTheme({
   /// Style override for the primary button.
-  final JustButtonStyle? primaryStyle;
+  final JustButtonStyle? primaryStyle,
 
   /// Style override for the secondary button.
-  final JustButtonStyle? secondaryStyle;
+  final JustButtonStyle? secondaryStyle,
 
   /// Style override for the ghost button.
-  final JustButtonStyle? ghostStyle;
+  final JustButtonStyle? ghostStyle,
 
   /// Style override for the destructive button.
-  final JustButtonStyle? destructiveStyle;
+  final JustButtonStyle? destructiveStyle,
 
   /// Style override for the link button.
-  final JustButtonStyle? linkStyle;
+  final JustButtonStyle? linkStyle,
 
   /// Whether to enable haptic feedback on button presses by default.
-  final bool enableHaptic;
-
-  /// Creates a [JustButtonTheme] configuration.
-  const JustButtonTheme({
-    this.primaryStyle,
-    this.secondaryStyle,
-    this.ghostStyle,
-    this.destructiveStyle,
-    this.linkStyle,
-    this.enableHaptic = false,
-  });
-
+  final bool enableHaptic = false,
+}) extends ThemeExtension<JustButtonTheme> {
   /// Default configuration for the theme.
   static const defaults = JustButtonTheme();
 

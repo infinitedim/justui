@@ -3,13 +3,10 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_scroll_area_style.dart';
 
 /// Global theme configuration for scroll areas, extending Flutter's [ThemeExtension].
-class JustScrollAreaTheme extends ThemeExtension<JustScrollAreaTheme> {
+class const JustScrollAreaTheme({
   /// The global style override for all scroll areas.
-  final JustScrollAreaStyle? style;
-
-  /// Creates a [JustScrollAreaTheme] configuration.
-  const JustScrollAreaTheme({this.style});
-
+  final JustScrollAreaStyle? style,
+}) extends ThemeExtension<JustScrollAreaTheme> {
   /// Default configuration for the theme.
   static const defaults = JustScrollAreaTheme();
 

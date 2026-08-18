@@ -392,19 +392,13 @@ class JustToastController extends JustOverlayController {
 }
 
 /// A wrapper widget that handles the slide/fade entrance and vertical staggering.
-class _ToastPositionedWrapper extends StatelessWidget {
-  final ToastPosition position;
-  final double offset;
-  final Animation<double> animation;
-  final Widget child;
-
-  const _ToastPositionedWrapper({
-    required this.position,
-    required this.offset,
-    required this.animation,
-    required this.child,
-  });
-
+/// A wrapper widget that handles the slide/fade entrance and vertical staggering.
+class const _ToastPositionedWrapper({
+  required final ToastPosition position,
+  required final double offset,
+  required final Animation<double> animation,
+  required final Widget child,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spacing = JustThemeProvider.of(
@@ -485,17 +479,12 @@ class _ToastPositionedWrapper extends StatelessWidget {
 }
 
 /// The actual visual card of the Toast, supporting horizontal swipe-to-dismiss.
-class _JustToastWidget extends StatefulWidget {
-  final _ToastEntry entry;
-  final bool enableDrag;
-  final VoidCallback onDismiss;
-
-  const _JustToastWidget({
-    required this.entry,
-    required this.enableDrag,
-    required this.onDismiss,
-  });
-
+/// The actual visual card of the Toast, supporting horizontal swipe-to-dismiss.
+class const _JustToastWidget({
+  required final _ToastEntry entry,
+  required final bool enableDrag,
+  required final VoidCallback onDismiss,
+}) extends StatefulWidget {
   @override
   State<_JustToastWidget> createState() => _JustToastWidgetState();
 }
@@ -715,37 +704,28 @@ class _JustToastWidgetState extends State<_JustToastWidget>
 }
 
 /// Scope widget that binds a [JustToastController] and handles the Flutter context/ticker binding.
-class JustToastScope extends StatefulWidget {
-  /// The controller that manages the toast notifications.
+/// Scope widget that binds a [JustToastController] and handles the Flutter context/ticker binding.
+class const JustToastScope({
+  super.key,
+
   /// If omitted, a default controller using [limit], [position], [behavior], and [enableDragDismiss] is automatically created.
-  final JustToastController? controller;
+  final JustToastController? controller,
 
   /// The maximum number of active/queued toasts. Defaults to 3.
-  final int? limit;
+  final int? limit = 3,
 
   /// The screen position where toasts are anchored. Defaults to [ToastPosition.bottomCenter].
-  final ToastPosition position;
+  final ToastPosition position = .bottomCenter,
 
   /// The behavior mode (stacked or queue) for multiple toasts. Defaults to [ToastBehavior.stacked].
-  final ToastBehavior behavior;
+  final ToastBehavior behavior = .stacked,
 
   /// Whether to enable horizontal swipe-to-dismiss gesture. Defaults to true.
-  final bool enableDragDismiss;
+  final bool enableDragDismiss = true,
 
   /// The child subtree.
-  final Widget child;
-
-  /// Creates a [JustToastScope].
-  const JustToastScope({
-    super.key,
-    this.controller,
-    this.limit = 3,
-    this.position = .bottomCenter,
-    this.behavior = .stacked,
-    this.enableDragDismiss = true,
-    required this.child,
-  });
-
+  required final Widget child,
+}) extends StatefulWidget {
   /// Retrieves the nearest [JustToastController] from the ancestor scope.
   static JustToastController of(BuildContext context) {
     final scope = context
@@ -829,14 +809,10 @@ class _JustToastScopeState extends State<JustToastScope>
   }
 }
 
-class _JustToastScopeInherited extends InheritedWidget {
-  final JustToastController controller;
-
-  const _JustToastScopeInherited({
-    required this.controller,
-    required super.child,
-  });
-
+class const _JustToastScopeInherited({
+  required super.child,
+  required final JustToastController controller,
+}) extends InheritedWidget {
   @override
   bool updateShouldNotify(_JustToastScopeInherited oldWidget) {
     return controller != oldWidget.controller;

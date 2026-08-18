@@ -43,60 +43,47 @@ class JustSidebarItem {
 
 /// A premium, collapsible sidebar navigation panel supporting recursive sub-menus,
 /// collapsed hover tooltips, and responsive layout scaling.
-class JustSidebar extends StatefulWidget {
+/// A premium, collapsible sidebar navigation panel supporting recursive sub-menus,
+/// collapsed hover tooltips, and responsive layout scaling.
+class const JustSidebar({
+  super.key,
+
   /// The list of sidebar navigation items.
-  final List<JustSidebarItem> items;
+  required final List<JustSidebarItem> items,
 
   /// Logo or brand widget displayed at the top of the sidebar.
-  final Widget? header;
+  final Widget? header,
 
   /// User profile or actions widget displayed at the bottom of the sidebar.
-  final Widget? footer;
+  final Widget? footer,
 
   /// The expanded width of the sidebar (defaults to 260px).
-  final double width;
+  final double width = 260.0,
 
   /// The collapsed width of the sidebar (defaults to 68px).
-  final double collapsedWidth;
+  final double collapsedWidth = 68.0,
 
   /// Whether the sidebar can be collapsed.
-  final bool isCollapsible;
+  final bool isCollapsible = true,
 
   /// Whether the sidebar is currently collapsed.
-  final bool isCollapsed;
+  final bool isCollapsed = false,
 
   /// Callback executed when collapse state changes.
-  final ValueChanged<bool>? onCollapsedChanged;
+  final ValueChanged<bool>? onCollapsedChanged,
 
   /// The active item index in the flattened top-level items.
-  final int selectedIndex;
+  final int selectedIndex = 0,
 
   /// Callback executed when a top-level menu item is selected.
-  final ValueChanged<int>? onItemSelected;
+  final ValueChanged<int>? onItemSelected,
 
   /// The layout variant (default_, floating, inset).
-  final JustSidebarVariant variant;
+  final JustSidebarVariant variant = .default_,
 
   /// Custom style overrides.
-  final JustSidebarStyle? style;
-
-  /// Creates a [JustSidebar] panel.
-  const JustSidebar({
-    super.key,
-    required this.items,
-    this.header,
-    this.footer,
-    this.width = 260.0,
-    this.collapsedWidth = 68.0,
-    this.isCollapsible = true,
-    this.isCollapsed = false,
-    this.onCollapsedChanged,
-    this.selectedIndex = 0,
-    this.onItemSelected,
-    this.variant = .default_,
-    this.style,
-  });
-
+  final JustSidebarStyle? style,
+}) extends StatefulWidget {
   @override
   State<JustSidebar> createState() => _JustSidebarState();
 }
@@ -462,25 +449,15 @@ class _JustSidebarState extends State<JustSidebar>
   }
 }
 
-class _JustSidebarFolder extends StatefulWidget {
-  final JustSidebarItem item;
-  final int depth;
-  final bool isCollapsed;
-  final Color activeColor;
-  final Color inactiveColor;
-  final JustSidebarStyle? themeStyle;
-  final Widget itemWidget;
-
-  const _JustSidebarFolder({
-    required this.item,
-    required this.depth,
-    required this.isCollapsed,
-    required this.activeColor,
-    required this.inactiveColor,
-    this.themeStyle,
-    required this.itemWidget,
-  });
-
+class const _JustSidebarFolder({
+  required final JustSidebarItem item,
+  required final int depth,
+  required final bool isCollapsed,
+  required final Color activeColor,
+  required final Color inactiveColor,
+  final JustSidebarStyle? themeStyle,
+  required final Widget itemWidget,
+}) extends StatefulWidget {
   @override
   State<_JustSidebarFolder> createState() => _JustSidebarFolderState();
 }
@@ -659,23 +636,14 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
 }
 
 // Stateful/Stateless Indentation Helper widget
-class _JustSidebarItemWidget extends StatelessWidget {
-  final JustSidebarItem item;
-  final int depth;
-  final bool isCollapsed;
-  final Color activeColor;
-  final Color inactiveColor;
-  final JustSidebarStyle? themeStyle;
-
-  const _JustSidebarItemWidget({
-    required this.item,
-    required this.depth,
-    required this.isCollapsed,
-    required this.activeColor,
-    required this.inactiveColor,
-    this.themeStyle,
-  });
-
+class const _JustSidebarItemWidget({
+  required final JustSidebarItem item,
+  required final int depth,
+  required final bool isCollapsed,
+  required final Color activeColor,
+  required final Color inactiveColor,
+  final JustSidebarStyle? themeStyle,
+}) extends StatelessWidget {
   @override
   @override
   Widget build(BuildContext context) {

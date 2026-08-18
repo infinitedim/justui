@@ -840,12 +840,10 @@ class _JustScrollAreaState extends State<JustScrollArea>
   }
 }
 
-class _ChevronUpPainter extends CustomPainter {
-  final Color color;
-  final double strokeWidth;
-
-  const _ChevronUpPainter({required this.color, required this.strokeWidth});
-
+class const _ChevronUpPainter({
+  required final Color color,
+  required final double strokeWidth,
+}) extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()

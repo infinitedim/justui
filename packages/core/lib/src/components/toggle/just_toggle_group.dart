@@ -17,46 +17,34 @@ class JustToggleGroupItem {
 }
 
 /// A group of toggle buttons supporting single or multi-select modes.
-class JustToggleGroup extends StatelessWidget {
+/// A group of toggle buttons supporting single or multi-select modes.
+class const JustToggleGroup({
+  super.key,
+
   /// The list of items in the group.
-  final List<JustToggleGroupItem> items;
+  required final List<JustToggleGroupItem> items,
 
   /// The set of currently selected indices.
-  final Set<int> selectedIndices;
+  required final Set<int> selectedIndices,
 
   /// Callback when the set of selected indices changes.
-  final ValueChanged<Set<int>>? onChanged;
+  required final ValueChanged<Set<int>>? onChanged,
 
-  /// If true, multiple items can be selected (checkbox behavior).
   /// If false, only one item can be selected (radio behavior).
-  final bool allowMultiple;
+  final bool allowMultiple = false,
 
-  /// If true, the selection can be empty (nullable).
   /// If false, at least one item must remain selected at all times.
-  final bool nullable;
+  final bool nullable = true,
 
   /// The physical size classification.
-  final JustToggleSize size;
+  final JustToggleSize size = JustToggleSize.md,
 
   /// Per-instance style overrides.
-  final JustToggleStyle? style;
+  final JustToggleStyle? style,
 
   /// The layout direction of the group.
-  final Axis direction;
-
-  /// Creates a [JustToggleGroup] component.
-  const JustToggleGroup({
-    super.key,
-    required this.items,
-    required this.selectedIndices,
-    required this.onChanged,
-    this.allowMultiple = false,
-    this.nullable = true,
-    this.size = JustToggleSize.md,
-    this.style,
-    this.direction = Axis.horizontal,
-  });
-
+  final Axis direction = Axis.horizontal,
+}) extends StatelessWidget {
   void _handlePress(int index) {
     if (onChanged == null) return;
 

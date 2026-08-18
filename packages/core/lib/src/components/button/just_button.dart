@@ -12,25 +12,20 @@ import 'just_button_variants.dart';
 import 'just_button_theme.dart';
 
 /// An InheritedWidget to pass group information to individual buttons.
-class JustButtonGroupInfo extends InheritedWidget {
+/// An InheritedWidget to pass group information to individual buttons.
+class const JustButtonGroupInfo({
+  super.key,
+  required super.child,
+
   /// The index of the button in the group.
-  final int index;
+  required final int index,
 
   /// The total count of buttons in the group.
-  final int totalCount;
+  required final int totalCount,
 
   /// The layout direction of the group.
-  final Axis direction;
-
-  /// Creates a [JustButtonGroupInfo] context.
-  const JustButtonGroupInfo({
-    super.key,
-    required this.index,
-    required this.totalCount,
-    required this.direction,
-    required super.child,
-  });
-
+  required final Axis direction,
+}) extends InheritedWidget {
   /// Retrieves group info from the current context.
   static JustButtonGroupInfo? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<JustButtonGroupInfo>();
@@ -45,131 +40,182 @@ class JustButtonGroupInfo extends InheritedWidget {
 }
 
 /// A highly customizable, accessible button component that adheres to JustUI design tokens.
-class JustButton extends StatefulWidget {
+/// A highly customizable, accessible button component that adheres to JustUI design tokens.
+class const JustButton({
+  super.key,
+
   /// The text label displayed inside the button.
-  final String label;
+  required final String label,
 
   /// Callback executed when the button is tapped. If null, the button is disabled.
-  final VoidCallback? onPressed;
+  required final VoidCallback? onPressed,
 
   /// The visual style variant.
-  final JustButtonVariant variant;
+  final JustButtonVariant variant = .primary,
 
   /// The physical size classification.
-  final JustButtonSize size;
+  final JustButtonSize size = .md,
 
   /// An optional widget (such as an icon) displayed before the label.
-  final Widget? leading;
+  final Widget? leading,
 
   /// An optional widget (such as an icon) displayed after the label.
-  final Widget? trailing;
+  final Widget? trailing,
 
   /// Whether the button is currently in a loading state.
-  final bool isLoading;
+  final bool isLoading = false,
 
   /// Whether the button is explicitly disabled.
-  final bool isDisabled;
+  final bool isDisabled = false,
 
   /// Whether the button should stretch to fill the horizontal width of its parent.
-  final bool isFullWidth;
+  final bool isFullWidth = false,
 
   /// Per-instance style overrides.
-  final JustButtonStyle? style;
+  final JustButtonStyle? style,
 
-  /// Whether to enable haptic feedback on button presses.
   /// If null, falls back to the theme setting.
-  final bool? enableHaptic;
-
-  /// Default constructor for [JustButton].
-  const JustButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.variant = .primary,
-    this.size = .md,
-    this.leading,
-    this.trailing,
-    this.isLoading = false,
-    this.isDisabled = false,
-    this.isFullWidth = false,
-    this.style,
-    this.enableHaptic,
-  });
-
+  final bool? enableHaptic,
+}) extends StatefulWidget {
   /// Named constructor for primary solid buttons.
-  const JustButton.primary({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.size = .md,
-    this.leading,
-    this.trailing,
-    this.isLoading = false,
-    this.isDisabled = false,
-    this.isFullWidth = false,
-    this.style,
-    this.enableHaptic,
-  }) : variant = .primary;
+  const new primary({
+    Key? key,
+    required String label,
+    required VoidCallback? onPressed,
+    JustButtonSize size = .md,
+    Widget? leading,
+    Widget? trailing,
+    bool isLoading = false,
+    bool isDisabled = false,
+    bool isFullWidth = false,
+    JustButtonStyle? style,
+    bool? enableHaptic,
+  }) : this(
+         key: key,
+         label: label,
+         onPressed: onPressed,
+         variant: .primary,
+         size: size,
+         leading: leading,
+         trailing: trailing,
+         isLoading: isLoading,
+         isDisabled: isDisabled,
+         isFullWidth: isFullWidth,
+         style: style,
+         enableHaptic: enableHaptic,
+       );
 
   /// Named constructor for secondary outline buttons.
-  const JustButton.secondary({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.size = .md,
-    this.leading,
-    this.trailing,
-    this.isLoading = false,
-    this.isDisabled = false,
-    this.isFullWidth = false,
-    this.style,
-    this.enableHaptic,
-  }) : variant = .secondary;
+  const new secondary({
+    Key? key,
+    required String label,
+    required VoidCallback? onPressed,
+    JustButtonSize size = .md,
+    Widget? leading,
+    Widget? trailing,
+    bool isLoading = false,
+    bool isDisabled = false,
+    bool isFullWidth = false,
+    JustButtonStyle? style,
+    bool? enableHaptic,
+  }) : this(
+         key: key,
+         label: label,
+         onPressed: onPressed,
+         variant: .secondary,
+         size: size,
+         leading: leading,
+         trailing: trailing,
+         isLoading: isLoading,
+         isDisabled: isDisabled,
+         isFullWidth: isFullWidth,
+         style: style,
+         enableHaptic: enableHaptic,
+       );
 
   /// Named constructor for ghost transparent buttons.
-  const JustButton.ghost({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.size = .md,
-    this.leading,
-    this.trailing,
-    this.isLoading = false,
-    this.isDisabled = false,
-    this.isFullWidth = false,
-    this.style,
-    this.enableHaptic,
-  }) : variant = .ghost;
+  const new ghost({
+    Key? key,
+    required String label,
+    required VoidCallback? onPressed,
+    JustButtonSize size = .md,
+    Widget? leading,
+    Widget? trailing,
+    bool isLoading = false,
+    bool isDisabled = false,
+    bool isFullWidth = false,
+    JustButtonStyle? style,
+    bool? enableHaptic,
+  }) : this(
+         key: key,
+         label: label,
+         onPressed: onPressed,
+         variant: .ghost,
+         size: size,
+         leading: leading,
+         trailing: trailing,
+         isLoading: isLoading,
+         isDisabled: isDisabled,
+         isFullWidth: isFullWidth,
+         style: style,
+         enableHaptic: enableHaptic,
+       );
 
   /// Named constructor for destructive solid buttons.
-  const JustButton.destructive({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.size = .md,
-    this.leading,
-    this.trailing,
-    this.isLoading = false,
-    this.isDisabled = false,
-    this.isFullWidth = false,
-    this.style,
-    this.enableHaptic,
-  }) : variant = .destructive;
+  const new destructive({
+    Key? key,
+    required String label,
+    required VoidCallback? onPressed,
+    JustButtonSize size = .md,
+    Widget? leading,
+    Widget? trailing,
+    bool isLoading = false,
+    bool isDisabled = false,
+    bool isFullWidth = false,
+    JustButtonStyle? style,
+    bool? enableHaptic,
+  }) : this(
+         key: key,
+         label: label,
+         onPressed: onPressed,
+         variant: .destructive,
+         size: size,
+         leading: leading,
+         trailing: trailing,
+         isLoading: isLoading,
+         isDisabled: isDisabled,
+         isFullWidth: isFullWidth,
+         style: style,
+         enableHaptic: enableHaptic,
+       );
 
   /// Named constructor for link buttons.
-  const JustButton.link({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.size = .md,
-    this.leading,
-    this.trailing,
-    this.isLoading = false,
-    this.isDisabled = false,
-    this.isFullWidth = false,
-    this.style,
-    this.enableHaptic,
-  }) : variant = .link;
+  const new link({
+    Key? key,
+    required String label,
+    required VoidCallback? onPressed,
+    JustButtonSize size = .md,
+    Widget? leading,
+    Widget? trailing,
+    bool isLoading = false,
+    bool isDisabled = false,
+    bool isFullWidth = false,
+    JustButtonStyle? style,
+    bool? enableHaptic,
+  }) : this(
+         key: key,
+         label: label,
+         onPressed: onPressed,
+         variant: .link,
+         size: size,
+         leading: leading,
+         trailing: trailing,
+         isLoading: isLoading,
+         isDisabled: isDisabled,
+         isFullWidth: isFullWidth,
+         style: style,
+         enableHaptic: enableHaptic,
+       );
 
   @override
   State<JustButton> createState() => _JustButtonState();
@@ -613,24 +659,19 @@ class _JustButtonState extends State<JustButton> {
 }
 
 /// A layout component to group multiple buttons together.
-class JustButtonGroup extends StatelessWidget {
+/// A layout component to group multiple buttons together.
+class const JustButtonGroup({
+  super.key,
+
   /// The children buttons.
-  final List<JustButton> children;
+  required final List<JustButton> children,
 
   /// The direction to layout the buttons.
-  final Axis direction;
+  final Axis direction = .horizontal,
 
   /// Whether the buttons should be attached directly (sharing borders/corners).
-  final bool attached;
-
-  /// Creates a [JustButtonGroup].
-  const JustButtonGroup({
-    super.key,
-    required this.children,
-    this.direction = .horizontal,
-    this.attached = true,
-  });
-
+  final bool attached = true,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (children.isEmpty) return const SizedBox.shrink();

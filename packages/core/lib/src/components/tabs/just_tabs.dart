@@ -99,83 +99,110 @@ class JustTabController extends ChangeNotifier {
 
 /// A premium, Material-free tabs component supporting sliding indicators, swiping,
 /// lazy loading/caching, and keyboard navigation.
-class JustTabs extends StatefulWidget {
+/// A premium, Material-free tabs component supporting sliding indicators, swiping,
+/// lazy loading/caching, and keyboard navigation.
+class const JustTabs({
+  super.key,
+
   /// The list of tab configurations.
-  final List<JustTab> tabs;
+  required final List<JustTab> tabs,
 
   /// The visual style variant (line, enclosed, pill, vertical).
-  final JustTabVariant variant;
+  final JustTabVariant variant = .line,
 
   /// The initial active tab index (defaults to 0).
-  final int initialIndex;
+  final int initialIndex = 0,
 
   /// Callback executed when the active tab index changes.
-  final ValueChanged<int>? onChanged;
+  final ValueChanged<int>? onChanged,
 
   /// Whether the tab headers scroll horizontally (defaults to false).
-  final bool isScrollable;
+  final bool isScrollable = false,
 
   /// An optional external controller to sync selection and transitions.
-  final JustTabController? controller;
+  final JustTabController? controller,
 
   /// Custom style overrides.
-  final JustTabsStyle? style;
-
-  /// Creates a [JustTabs] component.
-  const JustTabs({
-    super.key,
-    required this.tabs,
-    this.variant = .line,
-    this.initialIndex = 0,
-    this.onChanged,
-    this.isScrollable = false,
-    this.controller,
-    this.style,
-  });
-
+  final JustTabsStyle? style,
+}) extends StatefulWidget {
   /// Named constructor for underline style tabs.
-  const JustTabs.line({
-    super.key,
-    required this.tabs,
-    this.initialIndex = 0,
-    this.onChanged,
-    this.isScrollable = false,
-    this.controller,
-    this.style,
-  }) : variant = .line;
+  const new line({
+    Key? key,
+    required List<JustTab> tabs,
+    int initialIndex = 0,
+    ValueChanged<int>? onChanged,
+    bool isScrollable = false,
+    JustTabController? controller,
+    JustTabsStyle? style,
+  }) : this(
+         key: key,
+         tabs: tabs,
+         variant: .line,
+         initialIndex: initialIndex,
+         onChanged: onChanged,
+         isScrollable: isScrollable,
+         controller: controller,
+         style: style,
+       );
 
   /// Named constructor for card enclosed style tabs.
-  const JustTabs.enclosed({
-    super.key,
-    required this.tabs,
-    this.initialIndex = 0,
-    this.onChanged,
-    this.isScrollable = false,
-    this.controller,
-    this.style,
-  }) : variant = .enclosed;
+  const new enclosed({
+    Key? key,
+    required List<JustTab> tabs,
+    int initialIndex = 0,
+    ValueChanged<int>? onChanged,
+    bool isScrollable = false,
+    JustTabController? controller,
+    JustTabsStyle? style,
+  }) : this(
+         key: key,
+         tabs: tabs,
+         variant: .enclosed,
+         initialIndex: initialIndex,
+         onChanged: onChanged,
+         isScrollable: isScrollable,
+         controller: controller,
+         style: style,
+       );
 
   /// Named constructor for pill style tabs.
-  const JustTabs.pill({
-    super.key,
-    required this.tabs,
-    this.initialIndex = 0,
-    this.onChanged,
-    this.isScrollable = false,
-    this.controller,
-    this.style,
-  }) : variant = .pill;
+  const new pill({
+    Key? key,
+    required List<JustTab> tabs,
+    int initialIndex = 0,
+    ValueChanged<int>? onChanged,
+    bool isScrollable = false,
+    JustTabController? controller,
+    JustTabsStyle? style,
+  }) : this(
+         key: key,
+         tabs: tabs,
+         variant: .pill,
+         initialIndex: initialIndex,
+         onChanged: onChanged,
+         isScrollable: isScrollable,
+         controller: controller,
+         style: style,
+       );
 
   /// Named constructor for vertical layout tabs.
-  const JustTabs.vertical({
-    super.key,
-    required this.tabs,
-    this.initialIndex = 0,
-    this.onChanged,
-    this.controller,
-    this.style,
-  }) : variant = .vertical,
-       isScrollable = false;
+  const new vertical({
+    Key? key,
+    required List<JustTab> tabs,
+    int initialIndex = 0,
+    ValueChanged<int>? onChanged,
+    JustTabController? controller,
+    JustTabsStyle? style,
+  }) : this(
+         key: key,
+         tabs: tabs,
+         variant: .vertical,
+         initialIndex: initialIndex,
+         onChanged: onChanged,
+         isScrollable: false,
+         controller: controller,
+         style: style,
+       );
 
   @override
   State<JustTabs> createState() => _JustTabsState();
@@ -691,10 +718,8 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
   }
 }
 
-class _JustTabKeepAlive extends StatefulWidget {
-  final Widget child;
-  const _JustTabKeepAlive({required this.child});
-
+class const _JustTabKeepAlive({required final Widget child})
+    extends StatefulWidget {
   @override
   State<_JustTabKeepAlive> createState() => _JustTabKeepAliveState();
 }

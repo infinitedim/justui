@@ -3,27 +3,19 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_tabs_style.dart';
 
 /// Global theme configuration for tabs, extending Flutter's [ThemeExtension].
-class JustTabsTheme extends ThemeExtension<JustTabsTheme> {
+class const JustTabsTheme({
   /// Default style override for [JustTabVariant.line].
-  final JustTabsStyle? lineStyle;
+  final JustTabsStyle? lineStyle,
 
   /// Default style override for [JustTabVariant.enclosed].
-  final JustTabsStyle? enclosedStyle;
+  final JustTabsStyle? enclosedStyle,
 
   /// Default style override for [JustTabVariant.pill].
-  final JustTabsStyle? pillStyle;
+  final JustTabsStyle? pillStyle,
 
   /// Default style override for [JustTabVariant.vertical].
-  final JustTabsStyle? verticalStyle;
-
-  /// Creates a [JustTabsTheme] theme extension.
-  const JustTabsTheme({
-    this.lineStyle,
-    this.enclosedStyle,
-    this.pillStyle,
-    this.verticalStyle,
-  });
-
+  final JustTabsStyle? verticalStyle,
+}) extends ThemeExtension<JustTabsTheme> {
   /// Default theme configuration.
   static const defaults = JustTabsTheme();
 

@@ -1,48 +1,34 @@
 import 'package:flutter/widgets.dart';
 
 /// Customized per-instance visual styles for [JustBottomNav].
-class JustBottomNavStyle {
+class const JustBottomNavStyle({
   /// Custom height of the navigation bar.
-  final double? height;
+  final double? height,
 
   /// Custom padding around the bar content.
-  final EdgeInsets? padding;
+  final EdgeInsets? padding,
 
   /// Custom background color of the bar.
-  final Color? backgroundColor;
+  final Color? backgroundColor,
 
   /// Custom border radius of the bar (especially useful for the floating variant).
-  final BorderRadius? borderRadius;
+  final BorderRadius? borderRadius,
 
   /// Custom color of the active item (icon and text).
-  final Color? activeColor;
+  final Color? activeColor,
 
   /// Custom color of inactive items.
-  final Color? inactiveColor;
+  final Color? inactiveColor,
 
   /// Custom text style for labels.
-  final TextStyle? textStyle;
+  final TextStyle? textStyle,
 
   /// Custom icon size.
-  final double? iconSize;
+  final double? iconSize,
 
   /// Custom animation duration for transitions.
-  final Duration? animationDuration;
+  final Duration? animationDuration,
 
   /// Custom animation curve for transitions.
-  final Curve? animationCurve;
-
-  /// Creates a [JustBottomNavStyle] override configuration.
-  const JustBottomNavStyle({
-    this.height,
-    this.padding,
-    this.backgroundColor,
-    this.borderRadius,
-    this.activeColor,
-    this.inactiveColor,
-    this.textStyle,
-    this.iconSize,
-    this.animationDuration,
-    this.animationCurve,
-  });
-}
+  final Curve? animationCurve,
+});

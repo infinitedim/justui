@@ -303,12 +303,10 @@ class _JustRadioState<T> extends State<JustRadio<T>>
   }
 }
 
-class _RadioDotPainter extends CustomPainter {
-  final double progress;
-  final Color color;
-
-  const _RadioDotPainter({required this.progress, required this.color});
-
+class const _RadioDotPainter({
+  required final double progress,
+  required final Color color,
+}) extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (progress <= 0.0) return;

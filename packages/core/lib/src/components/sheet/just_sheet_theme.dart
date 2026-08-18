@@ -3,27 +3,19 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_sheet_style.dart';
 
 /// Global theme configuration for sheets, extending Flutter's [ThemeExtension].
-class JustSheetTheme extends ThemeExtension<JustSheetTheme> {
+class const JustSheetTheme({
   /// Style override for sheets sliding from the bottom.
-  final JustSheetStyle? bottomStyle;
+  final JustSheetStyle? bottomStyle,
 
   /// Style override for sheets sliding from the top.
-  final JustSheetStyle? topStyle;
+  final JustSheetStyle? topStyle,
 
   /// Style override for sheets sliding from the left.
-  final JustSheetStyle? leftStyle;
+  final JustSheetStyle? leftStyle,
 
   /// Style override for sheets sliding from the right.
-  final JustSheetStyle? rightStyle;
-
-  /// Creates a [JustSheetTheme] configuration.
-  const JustSheetTheme({
-    this.bottomStyle,
-    this.topStyle,
-    this.leftStyle,
-    this.rightStyle,
-  });
-
+  final JustSheetStyle? rightStyle,
+}) extends ThemeExtension<JustSheetTheme> {
   /// Default configuration for the theme.
   static const defaults = JustSheetTheme();
 

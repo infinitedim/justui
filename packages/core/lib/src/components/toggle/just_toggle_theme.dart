@@ -3,13 +3,10 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_toggle_style.dart';
 
 /// Global theme configuration for toggle buttons, extending Flutter's [ThemeExtension].
-class JustToggleTheme extends ThemeExtension<JustToggleTheme> {
+class const JustToggleTheme({
   /// Base style override for toggle components.
-  final JustToggleStyle? style;
-
-  /// Creates a [JustToggleTheme] configuration.
-  const JustToggleTheme({this.style});
-
+  final JustToggleStyle? style,
+}) extends ThemeExtension<JustToggleTheme> {
   /// Default configuration for the theme.
   static const defaults = JustToggleTheme();
 

@@ -15,93 +15,123 @@ import 'just_card_theme.dart';
 ///
 /// Can be composed semantically using [JustCardHeader], [JustCardTitle], [JustCardDescription],
 /// [JustCardContent], and [JustCardFooter] for advanced card designs.
-class JustCard extends StatelessWidget {
+/// A highly customizable, beautiful Card component adhering to JustUI design system.
+///
+/// Supports elevated, outlined, and filled visual variants, custom header/footer
+/// sections with dividers, and interactive pressed (scale-down) and hover/focus states.
+///
+/// Can be composed semantically using [JustCardHeader], [JustCardTitle], [JustCardDescription],
+/// [JustCardContent], and [JustCardFooter] for advanced card designs.
+class const JustCard({
+  super.key,
+
   /// The main body content of the card.
-  final Widget child;
+  required final Widget child,
 
   /// The visual variant style. Defaults to [.elevated].
-  final JustCardVariant variant;
+  final JustCardVariant variant = .elevated,
 
   /// Optional widget displayed at the top of the card.
-  final Widget? header;
+  final Widget? header,
 
   /// Optional widget displayed at the bottom of the card.
-  final Widget? footer;
+  final Widget? footer,
 
   /// Inner padding of the card body. Defaults to [JustSpacing.lg].
-  final EdgeInsets? padding;
+  final EdgeInsets? padding,
 
   /// Outer margin around the card.
-  final EdgeInsets? margin;
+  final EdgeInsets? margin,
 
   /// Fixed width of the card.
-  final double? width;
+  final double? width,
 
   /// Fixed height of the card.
-  final double? height;
+  final double? height,
 
   /// Callback executed when the card is tapped. If provided, the card becomes interactive.
-  final VoidCallback? onTap;
+  final VoidCallback? onTap,
 
   /// Per-instance style overrides.
-  final JustCardStyle? style;
-
-  /// Creates a [JustCard] container.
-  const JustCard({
-    super.key,
-    required this.child,
-    this.variant = .elevated,
-    this.header,
-    this.footer,
-    this.padding,
-    this.margin,
-    this.width,
-    this.height,
-    this.onTap,
-    this.style,
-  });
-
+  final JustCardStyle? style,
+}) extends StatelessWidget {
   /// Named constructor for elevated shadow-based cards.
-  const JustCard.elevated({
-    super.key,
-    required this.child,
-    this.header,
-    this.footer,
-    this.padding,
-    this.margin,
-    this.width,
-    this.height,
-    this.onTap,
-    this.style,
-  }) : variant = .elevated;
+  const new elevated({
+    Key? key,
+    required Widget child,
+    Widget? header,
+    Widget? footer,
+    EdgeInsets? padding,
+    EdgeInsets? margin,
+    double? width,
+    double? height,
+    VoidCallback? onTap,
+    JustCardStyle? style,
+  }) : this(
+         key: key,
+         child: child,
+         variant: .elevated,
+         header: header,
+         footer: footer,
+         padding: padding,
+         margin: margin,
+         width: width,
+         height: height,
+         onTap: onTap,
+         style: style,
+       );
 
   /// Named constructor for border-outlined cards.
-  const JustCard.outlined({
-    super.key,
-    required this.child,
-    this.header,
-    this.footer,
-    this.padding,
-    this.margin,
-    this.width,
-    this.height,
-    this.onTap,
-    this.style,
-  }) : variant = .outlined;
+  const new outlined({
+    Key? key,
+    required Widget child,
+    Widget? header,
+    Widget? footer,
+    EdgeInsets? padding,
+    EdgeInsets? margin,
+    double? width,
+    double? height,
+    VoidCallback? onTap,
+    JustCardStyle? style,
+  }) : this(
+         key: key,
+         child: child,
+         variant: .outlined,
+         header: header,
+         footer: footer,
+         padding: padding,
+         margin: margin,
+         width: width,
+         height: height,
+         onTap: onTap,
+         style: style,
+       );
 
   /// Named constructor for filled solid background cards.
-  const JustCard.filled({
-    super.key,
-    required this.child,
-    this.header,
-    this.footer,
-    this.padding,
-    this.margin,
-    this.width,
-    this.height,
-    this.onTap,
-    this.style,
-  }) : variant = .filled;
+  const new filled({
+    Key? key,
+    required Widget child,
+    Widget? header,
+    Widget? footer,
+    EdgeInsets? padding,
+    EdgeInsets? margin,
+    double? width,
+    double? height,
+    VoidCallback? onTap,
+    JustCardStyle? style,
+  }) : this(
+         key: key,
+         child: child,
+         variant: .filled,
+         header: header,
+         footer: footer,
+         padding: padding,
+         margin: margin,
+         width: width,
+         height: height,
+         onTap: onTap,
+         style: style,
+       );
 
   @override
   Widget build(BuildContext context) {
@@ -334,16 +364,16 @@ class JustCard extends StatelessWidget {
 }
 
 /// Composable header sub-widget for [JustCard].
-class JustCardHeader extends StatelessWidget {
+/// Composable header sub-widget for [JustCard].
+class const JustCardHeader({
+  super.key,
+
   /// The header content.
-  final Widget child;
+  required final Widget child,
 
   /// Custom padding override.
-  final EdgeInsets? padding;
-
-  /// Creates a [JustCardHeader].
-  const JustCardHeader({super.key, required this.child, this.padding});
-
+  final EdgeInsets? padding,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spacing = JustThemeProvider.of(
@@ -370,16 +400,16 @@ class JustCardHeader extends StatelessWidget {
 }
 
 /// Composable title sub-widget for [JustCard], usually placed inside [JustCardHeader].
-class JustCardTitle extends StatelessWidget {
+/// Composable title sub-widget for [JustCard], usually placed inside [JustCardHeader].
+class const JustCardTitle({
+  super.key,
+
   /// The title content.
-  final Widget child;
+  required final Widget child,
 
   /// Custom text style override.
-  final TextStyle? style;
-
-  /// Creates a [JustCardTitle].
-  const JustCardTitle({super.key, required this.child, this.style});
-
+  final TextStyle? style,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
@@ -391,16 +421,16 @@ class JustCardTitle extends StatelessWidget {
 }
 
 /// Composable description sub-widget for [JustCard], usually placed inside [JustCardHeader].
-class JustCardDescription extends StatelessWidget {
+/// Composable description sub-widget for [JustCard], usually placed inside [JustCardHeader].
+class const JustCardDescription({
+  super.key,
+
   /// The description content.
-  final Widget child;
+  required final Widget child,
 
   /// Custom text style override.
-  final TextStyle? style;
-
-  /// Creates a [JustCardDescription].
-  const JustCardDescription({super.key, required this.child, this.style});
-
+  final TextStyle? style,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
@@ -412,16 +442,16 @@ class JustCardDescription extends StatelessWidget {
 }
 
 /// Composable main body content sub-widget for [JustCard].
-class JustCardContent extends StatelessWidget {
+/// Composable main body content sub-widget for [JustCard].
+class const JustCardContent({
+  super.key,
+
   /// The body content.
-  final Widget child;
+  required final Widget child,
 
   /// Custom padding override.
-  final EdgeInsets? padding;
-
-  /// Creates a [JustCardContent].
-  const JustCardContent({super.key, required this.child, this.padding});
-
+  final EdgeInsets? padding,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spacing = JustThemeProvider.of(
@@ -438,16 +468,16 @@ class JustCardContent extends StatelessWidget {
 }
 
 /// Composable footer sub-widget for [JustCard].
-class JustCardFooter extends StatelessWidget {
+/// Composable footer sub-widget for [JustCard].
+class const JustCardFooter({
+  super.key,
+
   /// The footer content.
-  final Widget child;
+  required final Widget child,
 
   /// Custom padding override.
-  final EdgeInsets? padding;
-
-  /// Creates a [JustCardFooter].
-  const JustCardFooter({super.key, required this.child, this.padding});
-
+  final EdgeInsets? padding,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spacing = JustThemeProvider.of(

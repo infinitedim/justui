@@ -10,25 +10,20 @@ import 'just_toggle_theme.dart';
 import 'just_toggle_variants.dart';
 
 /// An InheritedWidget to pass group layout and position info to individual [JustToggle] buttons.
-class JustToggleGroupInfo extends InheritedWidget {
+/// An InheritedWidget to pass group layout and position info to individual [JustToggle] buttons.
+class const JustToggleGroupInfo({
+  super.key,
+  required super.child,
+
   /// The index of the toggle within the group.
-  final int index;
+  required final int index,
 
   /// The total count of toggles in the group.
-  final int totalCount;
+  required final int totalCount,
 
   /// The layout direction of the group.
-  final Axis direction;
-
-  /// Creates a [JustToggleGroupInfo] context.
-  const JustToggleGroupInfo({
-    super.key,
-    required this.index,
-    required this.totalCount,
-    required this.direction,
-    required super.child,
-  });
-
+  required final Axis direction,
+}) extends InheritedWidget {
   /// Retrieves group info from the current context.
   static JustToggleGroupInfo? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<JustToggleGroupInfo>();
@@ -43,36 +38,28 @@ class JustToggleGroupInfo extends InheritedWidget {
 }
 
 /// A single button that can be toggled on/off (selected/unselected).
-class JustToggle extends StatelessWidget {
+/// A single button that can be toggled on/off (selected/unselected).
+class const JustToggle({
+  super.key,
+
   /// Whether this toggle is currently in the selected (active) state.
-  final bool selected;
+  required final bool selected,
 
   /// Callback when the toggle is pressed. If null, the toggle is disabled.
-  final VoidCallback? onPressed;
+  required final VoidCallback? onPressed,
 
   /// The content displayed inside the toggle button.
-  final Widget child;
+  required final Widget child,
 
   /// Whether the toggle is interactive.
-  final bool enabled;
+  final bool enabled = true,
 
   /// The physical size classification.
-  final JustToggleSize size;
+  final JustToggleSize size = .md,
 
   /// Per-instance style overrides.
-  final JustToggleStyle? style;
-
-  /// Creates a [JustToggle] component.
-  const JustToggle({
-    super.key,
-    required this.selected,
-    required this.onPressed,
-    required this.child,
-    this.enabled = true,
-    this.size = .md,
-    this.style,
-  });
-
+  final JustToggleStyle? style,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final customTheme = JustThemeProvider.of(context).theme;

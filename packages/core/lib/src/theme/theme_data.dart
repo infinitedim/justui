@@ -496,12 +496,10 @@ final class _DefaultShadowSchemeDark extends JustShadowScheme {
   int get hashCode => const Symbol('_DefaultShadowSchemeDark').hashCode;
 }
 
-final class TintedShadowScheme extends JustShadowScheme {
-  final Color seedColor;
-  final bool isDark;
-
-  const TintedShadowScheme({required this.seedColor, required this.isDark});
-
+final class const TintedShadowScheme({
+  required final Color seedColor,
+  required final bool isDark,
+}) extends JustShadowScheme {
   @override
   List<BoxShadow> get xs =>
       JustShadows.generate(seedColor: seedColor, elevation: 1, isDark: isDark);
@@ -532,10 +530,9 @@ final class TintedShadowScheme extends JustShadowScheme {
   int get hashCode => Object.hash(seedColor, isDark);
 }
 
-final class NeobrutalismShadowScheme extends JustShadowScheme {
-  final Color shadowColor;
-  const NeobrutalismShadowScheme({this.shadowColor = const Color(0xFF000000)});
-
+final class const NeobrutalismShadowScheme({
+  final Color shadowColor = const Color(0xFF000000),
+}) extends JustShadowScheme {
   @override
   List<BoxShadow> get xs => [
     BoxShadow(
@@ -602,42 +599,18 @@ final class NeobrutalismShadowScheme extends JustShadowScheme {
 ///
 /// Converts token values into Material [ThemeData]. Caches the created
 /// [ThemeData] instance to prevent recalculation overhead.
-class JustThemeData {
-  /// Creates a theme configuration.
-  JustThemeData({
-    required this.colors,
-    this.typography = const _DefaultTypographyScheme(),
-    this.spacing = const _DefaultSpacingScheme(),
-    this.radius = const _DefaultRadiusScheme(),
-    required this.shadows,
-    this.animations = .standard,
-    this.preset = .default_,
-  });
-
-  /// The visual style preset.
-  final JustThemePreset preset;
-
+class const JustThemeData({
+  required final JustColorScheme colors,
+  final JustTypographyScheme typography = const _DefaultTypographyScheme(),
+  final JustSpacingScheme spacing = const _DefaultSpacingScheme(),
+  final JustRadiusScheme radius = const _DefaultRadiusScheme(),
+  required final JustShadowScheme shadows,
+  final JustMotionProfile animations = .standard,
+  final JustThemePreset preset = .default_,
+}) {
   /// Resolved preset-specific visual token implementation.
   /// Convenience accessor equivalent to `preset.tokens`.
   JustPresetTokens get presetTokens => preset.tokens;
-
-  /// The active color scheme.
-  final JustColorScheme colors;
-
-  /// The active typography scheme.
-  final JustTypographyScheme typography;
-
-  /// The active spacing scheme.
-  final JustSpacingScheme spacing;
-
-  /// The active radius scheme.
-  final JustRadiusScheme radius;
-
-  /// The active shadow scheme.
-  final JustShadowScheme shadows;
-
-  /// The active animation scheme.
-  final JustMotionProfile animations;
 
   /// Default pre-built light theme.
   static final JustThemeData light = JustThemeData(

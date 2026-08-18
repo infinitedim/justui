@@ -3,16 +3,13 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_slider_style.dart';
 
 /// Global theme configuration for sliders, extending Flutter's [ThemeExtension].
-class JustSliderTheme extends ThemeExtension<JustSliderTheme> {
+class const JustSliderTheme({
   /// Base style override for sliders.
-  final JustSliderStyle? style;
+  final JustSliderStyle? style,
 
   /// Whether to enable haptic feedback on slider interactions.
-  final bool enableHaptic;
-
-  /// Creates a [JustSliderTheme] configuration.
-  const JustSliderTheme({this.style, this.enableHaptic = true});
-
+  final bool enableHaptic = true,
+}) extends ThemeExtension<JustSliderTheme> {
   /// Default configuration for the theme.
   static const defaults = JustSliderTheme();
 

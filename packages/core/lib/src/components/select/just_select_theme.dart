@@ -3,13 +3,10 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'just_select_style.dart';
 
 /// Global theme configuration for select dropdowns, extending Flutter's [ThemeExtension].
-class JustSelectTheme extends ThemeExtension<JustSelectTheme> {
+class const JustSelectTheme({
   /// Base style override for select components.
-  final JustSelectStyle? style;
-
-  /// Creates a [JustSelectTheme] configuration.
-  const JustSelectTheme({this.style});
-
+  final JustSelectStyle? style,
+}) extends ThemeExtension<JustSelectTheme> {
   /// Default configuration for the theme.
   static const defaults = JustSelectTheme();
 
