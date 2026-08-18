@@ -3,6 +3,7 @@ import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import 'just_tabs_style.dart';
 import 'just_tabs_variants.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// An internal, package-private widget that renders the active tab indicator shape

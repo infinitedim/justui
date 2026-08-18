@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_tabs_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for tabs, extending Flutter's [ThemeExtension].
@@ -28,9 +29,9 @@ class JustTabsTheme extends ThemeExtension<JustTabsTheme> {
   /// Default theme configuration.
   static const defaults = JustTabsTheme();
 
-  
   /// Fallback factory constructor from [JustThemeData].
-  factory JustTabsTheme.fromTheme(JustThemeData justTheme) => const JustTabsTheme();
+  factory JustTabsTheme.fromTheme(JustThemeData justTheme) =>
+      const JustTabsTheme();
 
   @override
   JustTabsTheme copyWith({

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_toast_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for toasts, extending Flutter's [ThemeExtension].
@@ -32,9 +33,9 @@ class JustToastTheme extends ThemeExtension<JustToastTheme> {
   /// Default configuration for the theme.
   static const defaults = JustToastTheme();
 
-  
   /// Fallback factory constructor from [JustThemeData].
-  factory JustToastTheme.fromTheme(JustThemeData justTheme) => const JustToastTheme();
+  factory JustToastTheme.fromTheme(JustThemeData justTheme) =>
+      const JustToastTheme();
 
   @override
   JustToastTheme copyWith({

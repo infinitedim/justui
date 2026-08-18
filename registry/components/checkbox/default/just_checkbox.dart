@@ -7,6 +7,7 @@ import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_checkbox_style.dart';
 import 'just_checkbox_theme.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// A highly customizable, performant, and accessible Checkbox component.

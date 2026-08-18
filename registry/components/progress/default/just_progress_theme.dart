@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_progress_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for progress indicators, extending Flutter's [ThemeExtension].
@@ -14,9 +15,9 @@ class JustProgressTheme extends ThemeExtension<JustProgressTheme> {
   /// Default configuration for the theme.
   static const defaults = JustProgressTheme();
 
-  
   /// Fallback factory constructor from [JustThemeData].
-  factory JustProgressTheme.fromTheme(JustThemeData justTheme) => const JustProgressTheme();
+  factory JustProgressTheme.fromTheme(JustThemeData justTheme) =>
+      const JustProgressTheme();
 
   @override
   JustProgressTheme copyWith({JustProgressStyle? style}) {

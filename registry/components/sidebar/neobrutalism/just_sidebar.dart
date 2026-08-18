@@ -8,6 +8,7 @@ import '../shared/_shared_pressable.dart';
 import 'just_sidebar_style.dart';
 import 'just_sidebar_theme.dart';
 import 'just_sidebar_variants.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Represents a single navigation destination item inside [JustSidebar].

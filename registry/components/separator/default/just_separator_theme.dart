@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_separator_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for separators, extending Flutter's [ThemeExtension].
@@ -14,9 +15,9 @@ class JustSeparatorTheme extends ThemeExtension<JustSeparatorTheme> {
   /// Default configuration for the theme.
   static const defaults = JustSeparatorTheme();
 
-  
   /// Fallback factory constructor from [JustThemeData].
-  factory JustSeparatorTheme.fromTheme(JustThemeData justTheme) => const JustSeparatorTheme();
+  factory JustSeparatorTheme.fromTheme(JustThemeData justTheme) =>
+      const JustSeparatorTheme();
 
   @override
   JustSeparatorTheme copyWith({JustSeparatorStyle? style}) {
