@@ -274,28 +274,22 @@ fn validate_binary_executable(bytes: &[u8]) -> Result<()> {
         }
         let e_machine = u16::from_le_bytes([bytes[18], bytes[19]]);
         match target_arch {
-            "x86_64" => {
-                if e_machine != 0x3e {
-                    anyhow::bail!(
-                        "Downloaded binary architecture (e_machine: {:#x}) does not match system x86_64 architecture",
-                        e_machine
-                    );
-                }
+            "x86_64" if e_machine != 0x3e => {
+                anyhow::bail!(
+                    "Downloaded binary architecture (e_machine: {:#x}) does not match system x86_64 architecture",
+                    e_machine
+                );
             }
-            "aarch64" => {
-                if e_machine != 0xb7 {
-                    anyhow::bail!(
-                        "Downloaded binary architecture (e_machine: {:#x}) does not match system AArch64 architecture",
-                        e_machine
-                    );
-                }
+            "aarch64" if e_machine != 0xb7 => {
+                anyhow::bail!(
+                    "Downloaded binary architecture (e_machine: {:#x}) does not match system AArch64 architecture",
+                    e_machine
+                );
             }
             _ => {}
         }
-    } else if target_os == "windows" {
-        if bytes.len() < 2 || &bytes[0..2] != b"MZ" {
-            anyhow::bail!("Extracted binary is not a valid Windows PE executable");
-        }
+    } else if target_os == "windows" && (bytes.len() < 2 || &bytes[0..2] != b"MZ") {
+        anyhow::bail!("Extracted binary is not a valid Windows PE executable");
     }
 
     Ok(())
