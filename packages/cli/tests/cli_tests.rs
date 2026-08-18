@@ -362,6 +362,19 @@ mod cli_integration {
             "theme file should contain neobrutalism preset, got: {}",
             theme
         );
+
+        assert!(
+            dir.path().join("lib/tokens/colors/color_palette.dart").exists(),
+            "lib/tokens/colors/color_palette.dart should exist"
+        );
+        assert!(
+            dir.path().join("lib/core/theme/theme_data.dart").exists(),
+            "lib/core/theme/theme_data.dart should exist"
+        );
+        assert!(
+            dir.path().join("lib/core/overlay/just_overlay_controller.dart").exists(),
+            "lib/core/overlay/just_overlay_controller.dart should exist"
+        );
     }
 
     #[test]
