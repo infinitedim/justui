@@ -5,6 +5,7 @@ import 'theme_data.dart';
 
 /// Component size enums used for preset-specific token resolution.
 enum JustSliderSize { sm, md, lg }
+
 enum JustProgressSize { sm, md, lg }
 
 /// Semantic shadow elevation levels, decoupled from preset-specific
