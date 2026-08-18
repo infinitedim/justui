@@ -15,7 +15,7 @@
     "dev": "next dev",
     "dev:clean": "rm -rf .next && next dev",
     "build": "next build",
-    "build:showcase": "cd ../showcase && export HOME=/home/yourblooo/development/justui/.home && export PUB_CACHE=/home/yourblooo/.pub-cache && /home/yourblooo/fvm/versions/3.44.2/bin/flutter build web --wasm --release --base-href /showcase/ && rm -rf ../docs/public/showcase && cp -r build/web ../docs/public/showcase",
+    "build:showcase": "cd ../showcase && flutter build web --wasm --release --base-href /showcase/ && rm -rf ../docs/public/showcase && cp -r build/web ../docs/public/showcase",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
