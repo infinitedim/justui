@@ -4,6 +4,10 @@ All notable changes to the JustUI monorepo will be documented in this file.
 
 ---
 
+## [0.6.0] - 2026-08-18
+### Fixed
+- Synced CLI package version to `0.6.0` in `Cargo.toml` and pubspec files to ensure `justui version` and `justui upgrade` correctly recognize up-to-date status.
+
 ## [0.5.0] - 2026-06-27
 ### Added
 - Integrated modular AI agent skill library with orchestrator, SEO, and domain-specific toolsets.
