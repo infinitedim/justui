@@ -9,6 +9,7 @@ import '../../overlay/just_overlay_controller.dart';
 import 'just_toast_style.dart';
 import 'just_toast_theme.dart';
 import 'just_toast_variants.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Represents a single active toast entry in the overlay.

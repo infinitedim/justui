@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_card_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for cards, extending Flutter's [ThemeExtension].
@@ -14,9 +15,9 @@ class JustCardTheme extends ThemeExtension<JustCardTheme> {
   /// Default configuration for the theme.
   static const defaults = JustCardTheme();
 
-  
   /// Fallback factory constructor from [JustThemeData].
-  factory JustCardTheme.fromTheme(JustThemeData justTheme) => const JustCardTheme();
+  factory JustCardTheme.fromTheme(JustThemeData justTheme) =>
+      const JustCardTheme();
 
   @override
   JustCardTheme copyWith({JustCardStyle? style}) {

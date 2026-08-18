@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_skeleton_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for skeletons, extending Flutter's [ThemeExtension].
@@ -14,9 +15,9 @@ class JustSkeletonTheme extends ThemeExtension<JustSkeletonTheme> {
   /// Default configuration for the theme.
   static const defaults = JustSkeletonTheme();
 
-  
   /// Fallback factory constructor from [JustThemeData].
-  factory JustSkeletonTheme.fromTheme(JustThemeData justTheme) => const JustSkeletonTheme();
+  factory JustSkeletonTheme.fromTheme(JustThemeData justTheme) =>
+      const JustSkeletonTheme();
 
   @override
   JustSkeletonTheme copyWith({JustSkeletonStyle? style}) {

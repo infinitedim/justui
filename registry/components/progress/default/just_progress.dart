@@ -6,6 +6,7 @@ import 'package:just_ui_tokens/just_ui_tokens.dart';
 import 'just_progress_style.dart';
 import 'just_progress_theme.dart';
 import 'just_progress_variants.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// A custom progress indicator supporting linear and circular shapes,

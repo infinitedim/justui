@@ -8,6 +8,7 @@ import '../shared/_shared_pressable.dart';
 import 'just_select_style.dart';
 import 'just_select_theme.dart';
 import 'just_select_variants.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Data model representing an option in the [JustSelect] dropdown.

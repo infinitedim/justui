@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_table_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for tables, extending Flutter's [ThemeExtension].
@@ -14,9 +15,9 @@ class JustTableTheme extends ThemeExtension<JustTableTheme> {
   /// Default configuration for the theme.
   static const defaults = JustTableTheme();
 
-  
   /// Fallback factory constructor from [JustThemeData].
-  factory JustTableTheme.fromTheme(JustThemeData justTheme) => const JustTableTheme();
+  factory JustTableTheme.fromTheme(JustThemeData justTheme) =>
+      const JustTableTheme();
 
   @override
   JustTableTheme copyWith({JustTableStyle? style}) {

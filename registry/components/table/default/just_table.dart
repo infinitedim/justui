@@ -7,6 +7,7 @@ import '../shared/_shared_pressable.dart';
 import 'just_table_style.dart';
 import 'just_table_theme.dart';
 import 'just_table_variants.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Data model representing a column definition in the [JustTable].

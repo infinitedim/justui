@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_sidebar_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for sidebars, extending Flutter's [ThemeExtension].
@@ -24,9 +25,9 @@ class JustSidebarTheme extends ThemeExtension<JustSidebarTheme> {
   /// Default theme configuration.
   static const defaults = JustSidebarTheme();
 
-  
   /// Fallback factory constructor from [JustThemeData].
-  factory JustSidebarTheme.fromTheme(JustThemeData justTheme) => const JustSidebarTheme();
+  factory JustSidebarTheme.fromTheme(JustThemeData justTheme) =>
+      const JustSidebarTheme();
 
   @override
   JustSidebarTheme copyWith({
