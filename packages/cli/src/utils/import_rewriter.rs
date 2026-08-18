@@ -167,10 +167,13 @@ pub fn rewrite(
 
             // Rewrite just_ui_tokens and just_ui_core package imports to local package imports
             if let Some(subpath) = import_path.strip_prefix("package:just_ui_tokens/") {
-                return format!("import 'package:{}/tokens/{}';", package_name, subpath);
+                let clean_subpath = subpath.split('/').next_back().unwrap_or(subpath);
+                let tokens_rel = tokens_dir.strip_prefix("lib/").unwrap_or(tokens_dir);
+                return format!("import 'package:{}/{}/{}';", package_name, tokens_rel, clean_subpath);
             }
             if let Some(subpath) = import_path.strip_prefix("package:just_ui_core/") {
-                return format!("import 'package:{}/core/{}';", package_name, subpath);
+                let clean_subpath = subpath.split('/').next_back().unwrap_or(subpath);
+                return format!("import 'package:{}/core/{}';", package_name, clean_subpath);
             }
 
             if import_path.starts_with("package:") || import_path.starts_with("dart:") {

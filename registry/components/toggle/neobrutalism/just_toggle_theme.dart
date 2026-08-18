@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_toggle_style.dart';
+import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for toggle buttons, extending Flutter's [ThemeExtension].
 class JustToggleTheme extends ThemeExtension<JustToggleTheme> {
@@ -13,6 +14,10 @@ class JustToggleTheme extends ThemeExtension<JustToggleTheme> {
   /// Default configuration for the theme.
   static const defaults = JustToggleTheme();
 
+  
+  /// Fallback factory constructor from [JustThemeData].
+  factory JustToggleTheme.fromTheme(JustThemeData justTheme) => const JustToggleTheme();
+
   @override
   JustToggleTheme copyWith({JustToggleStyle? style}) {
     return JustToggleTheme(style: style ?? this.style);
@@ -23,4 +28,11 @@ class JustToggleTheme extends ThemeExtension<JustToggleTheme> {
     if (other is! JustToggleTheme) return this;
     return t < 0.5 ? this : other;
   }
+}
+
+/// Extension method on [BuildContext] to access [JustToggleTheme] safely.
+extension JustToggleThemeContext on BuildContext {
+  JustToggleTheme get justToggleTheme =>
+      Theme.of(this).extension<JustToggleTheme>() ??
+      JustToggleTheme.fromTheme(justTheme);
 }

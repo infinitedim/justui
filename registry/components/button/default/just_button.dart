@@ -2,14 +2,13 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
 
-import '../../theme/theme_provider.dart';
-import '../../theme/preset_tokens.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import '../shared/_shared_progress_spinner.dart';
 import 'just_button_style.dart';
 import 'just_button_variants.dart';
 import 'just_button_theme.dart';
+import 'package:just_ui_core/just_ui_core.dart';
 
 /// An InheritedWidget to pass group information to individual buttons.
 class JustButtonGroupInfo extends InheritedWidget {

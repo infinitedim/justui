@@ -3,12 +3,12 @@ import 'package:flutter/material.dart' show Colors, Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
-import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_tab_indicator.dart';
 import 'just_tabs_style.dart';
 import 'just_tabs_theme.dart';
 import 'just_tabs_variants.dart';
+import 'package:just_ui_core/just_ui_core.dart';
 
 /// Represents a single tab configuration containing label, optional icon, and content.
 class JustTab {
