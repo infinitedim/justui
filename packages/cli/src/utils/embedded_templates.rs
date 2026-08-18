@@ -29,11 +29,12 @@ pub fn extract_tokens(target_tokens_dir: &Path, package_name: &str) -> Result<()
 
             file_content = rewrite_tokens_internal_imports(&file_content, package_name);
 
-            let filename = Path::new(path_str)
-                .file_name()
-                .unwrap_or(std::ffi::OsStr::new(path_str));
+            let rel_path_str = path_str
+                .strip_prefix("src/")
+                .or_else(|| path_str.strip_prefix("src\\"))
+                .unwrap_or(path_str);
 
-            let dest_path = target_tokens_dir.join(filename);
+            let dest_path = target_tokens_dir.join(rel_path_str);
             if let Some(parent) = dest_path.parent() {
                 std::fs::create_dir_all(parent)?;
             }
@@ -53,7 +54,7 @@ pub fn extract_core(target_core_dir: &Path, package_name: &str, tokens_dir: &str
     for file_path in CoreAssets::iter() {
         let path_str = file_path.as_ref();
 
-        if path_str.starts_with("src/components/") {
+        if path_str.starts_with("src/components/") || path_str.starts_with("src\\components\\") {
             continue;
         }
 
@@ -65,11 +66,12 @@ pub fn extract_core(target_core_dir: &Path, package_name: &str, tokens_dir: &str
 
             file_content = rewrite_core_internal_imports(&file_content, package_name, tokens_dir);
 
-            let filename = Path::new(path_str)
-                .file_name()
-                .unwrap_or(std::ffi::OsStr::new(path_str));
+            let rel_path_str = path_str
+                .strip_prefix("src/")
+                .or_else(|| path_str.strip_prefix("src\\"))
+                .unwrap_or(path_str);
 
-            let dest_path = target_core_dir.join(filename);
+            let dest_path = target_core_dir.join(rel_path_str);
             if let Some(parent) = dest_path.parent() {
                 std::fs::create_dir_all(parent)?;
             }
@@ -82,9 +84,7 @@ pub fn extract_core(target_core_dir: &Path, package_name: &str, tokens_dir: &str
 
 fn rewrite_tokens_internal_imports(content: &str, _package_name: &str) -> String {
     content
-        .replace("export 'src/colors/", "export '")
         .replace("export 'src/", "export '")
-        .replace("import 'src/colors/", "import '")
         .replace("import 'src/", "import '")
 }
 
@@ -96,11 +96,7 @@ fn rewrite_core_internal_imports(content: &str, package_name: &str, tokens_dir: 
     );
 
     content
-        .replace("export 'src/theme/", "export '")
-        .replace("export 'src/overlay/", "export '")
         .replace("export 'src/", "export '")
-        .replace("import 'src/theme/", "import '")
-        .replace("import 'src/overlay/", "import '")
         .replace("import 'src/", "import '")
         .replace(
             "import 'package:just_ui_tokens/just_ui_tokens.dart';",
