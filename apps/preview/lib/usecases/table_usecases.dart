@@ -31,10 +31,7 @@ Widget buildJustTableDefaultUseCase(BuildContext context) {
       padding: const EdgeInsets.all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 580.0, maxHeight: 360.0),
-        child: _InteractiveTableDemo(
-          selectable: selectable,
-          variant: variant,
-        ),
+        child: _InteractiveTableDemo(selectable: selectable, variant: variant),
       ),
     ),
   );
@@ -76,11 +73,7 @@ class _InteractiveTableDemoState extends State<_InteractiveTableDemo> {
         });
       },
       columns: [
-        JustTableColumn(
-          header: 'ID',
-          width: 80.0,
-          cell: (row) => Text(row.id),
-        ),
+        JustTableColumn(header: 'ID', width: 80.0, cell: (row) => Text(row.id)),
         JustTableColumn(header: 'Name', cell: (row) => Text(row.name)),
         JustTableColumn(header: 'Role', cell: (row) => Text(row.role)),
         JustTableColumn(

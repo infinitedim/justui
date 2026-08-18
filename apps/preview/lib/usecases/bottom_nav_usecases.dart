@@ -29,8 +29,7 @@ class _InteractiveBottomNavDemo extends StatefulWidget {
       _InteractiveBottomNavDemoState();
 }
 
-class _InteractiveBottomNavDemoState
-    extends State<_InteractiveBottomNavDemo> {
+class _InteractiveBottomNavDemoState extends State<_InteractiveBottomNavDemo> {
   int _selectedIndex = 0;
 
   @override

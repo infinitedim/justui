@@ -373,12 +373,37 @@ fn replace_current_executable(new_bytes: &[u8]) -> Result<()> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        let mut perms = fs::metadata(&temp_exe)?.permissions();
-        perms.set_mode(0o755);
-        fs::set_permissions(&temp_exe, perms)?;
+        let perms = fs::Permissions::from_mode(0o755);
+        let _ = fs::set_permissions(&temp_exe, perms);
     }
 
-    fs::rename(&temp_exe, &current_exe).context("Failed to replace binary")?;
+    #[cfg(windows)]
+    {
+        let old_exe = current_exe.with_extension("old");
+        // On Windows, a running executable cannot be directly overwritten due to process file locking.
+        // Step 1: Rename the running binary to .old (Windows allows renaming running binaries).
+        if old_exe.exists() {
+            let _ = fs::remove_file(&old_exe);
+        }
+        fs::rename(&current_exe, &old_exe)
+            .context("Failed to rename running executable to .old")?;
+
+        // Step 2: Move the new binary into place.
+        if let Err(e) = fs::rename(&temp_exe, &current_exe) {
+            // Rollback if move fails
+            let _ = fs::rename(&old_exe, &current_exe);
+            return Err(e).context("Failed to place new binary into executable path");
+        }
+
+        // Clean up old binary (best-effort; OS will delete or allow removal after exit)
+        let _ = fs::remove_file(&old_exe);
+    }
+
+    #[cfg(not(windows))]
+    {
+        fs::rename(&temp_exe, &current_exe).context("Failed to replace binary")?;
+    }
+
     Ok(())
 }
 
