@@ -146,13 +146,28 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
 
     let asset = release.assets.iter().find(|a| {
         let name = a.name.to_lowercase();
+
+        // 1. Strict match on full target triple if present
         if !target_triple.is_empty() && name.contains(target_triple) {
             return true;
         }
+
+        // 2. Fallback OS and strict Architecture matching
         let os_match =
             name.contains(target_os) || (target_os == "macos" && name.contains("darwin"));
-        let arch_match = name.contains(target_arch)
-            || (target_arch == "x86_64" && (name.contains("amd64") || name.contains("x64")));
+
+        let arch_match = match target_arch {
+            "x86_64" => {
+                (name.contains("x86_64") || name.contains("amd64") || name.contains("x64"))
+                    && !name.contains("aarch64")
+                    && !name.contains("arm64")
+            }
+            "aarch64" => {
+                (name.contains("aarch64") || name.contains("arm64")) && !name.contains("x86_64")
+            }
+            other => name.contains(other),
+        };
+
         os_match && arch_match
     });
 
@@ -215,6 +230,12 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
             }
         };
 
+        if let Err(e) = validate_binary_executable(&binary_bytes) {
+            logger::error(&format!("Binary validation failed: {}", e));
+            print_fallback_instructions();
+            return Ok(());
+        }
+
         // Attempt self-update by replacing current executable
         match replace_current_executable(&binary_bytes) {
             Ok(_) => {
@@ -234,6 +255,47 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
             target_os, target_arch
         ));
         print_fallback_instructions();
+    }
+
+    Ok(())
+}
+
+fn validate_binary_executable(bytes: &[u8]) -> Result<()> {
+    if bytes.is_empty() {
+        anyhow::bail!("Extracted binary is empty (0 bytes)");
+    }
+
+    let target_os = env::consts::OS;
+    let target_arch = env::consts::ARCH;
+
+    if target_os == "linux" {
+        if bytes.len() < 20 || &bytes[0..4] != b"\x7fELF" {
+            anyhow::bail!("Extracted binary is not a valid ELF executable");
+        }
+        let e_machine = u16::from_le_bytes([bytes[18], bytes[19]]);
+        match target_arch {
+            "x86_64" => {
+                if e_machine != 0x3e {
+                    anyhow::bail!(
+                        "Downloaded binary architecture (e_machine: {:#x}) does not match system x86_64 architecture",
+                        e_machine
+                    );
+                }
+            }
+            "aarch64" => {
+                if e_machine != 0xb7 {
+                    anyhow::bail!(
+                        "Downloaded binary architecture (e_machine: {:#x}) does not match system AArch64 architecture",
+                        e_machine
+                    );
+                }
+            }
+            _ => {}
+        }
+    } else if target_os == "windows" {
+        if bytes.len() < 2 || &bytes[0..2] != b"MZ" {
+            anyhow::bail!("Extracted binary is not a valid Windows PE executable");
+        }
     }
 
     Ok(())
