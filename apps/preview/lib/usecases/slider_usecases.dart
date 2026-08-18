@@ -22,10 +22,7 @@ Widget buildJustSliderDefaultUseCase(BuildContext context) {
       padding: const EdgeInsets.all(24.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 360.0),
-        child: _InteractiveSliderDemo(
-          showTooltip: showTooltip,
-          size: size,
-        ),
+        child: _InteractiveSliderDemo(showTooltip: showTooltip, size: size),
       ),
     ),
   );
@@ -35,10 +32,7 @@ class _InteractiveSliderDemo extends StatefulWidget {
   final bool showTooltip;
   final JustSliderSize size;
 
-  const _InteractiveSliderDemo({
-    required this.showTooltip,
-    required this.size,
-  });
+  const _InteractiveSliderDemo({required this.showTooltip, required this.size});
 
   @override
   State<_InteractiveSliderDemo> createState() => _InteractiveSliderDemoState();

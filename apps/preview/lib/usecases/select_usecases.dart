@@ -22,10 +22,7 @@ Widget buildJustSelectDefaultUseCase(BuildContext context) {
       padding: const EdgeInsets.all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 340.0),
-        child: _InteractiveSelectDemo(
-          searchable: searchable,
-          size: size,
-        ),
+        child: _InteractiveSelectDemo(searchable: searchable, size: size),
       ),
     ),
   );
@@ -35,10 +32,7 @@ class _InteractiveSelectDemo extends StatefulWidget {
   final bool searchable;
   final JustSelectSize size;
 
-  const _InteractiveSelectDemo({
-    required this.searchable,
-    required this.size,
-  });
+  const _InteractiveSelectDemo({required this.searchable, required this.size});
 
   @override
   State<_InteractiveSelectDemo> createState() => _InteractiveSelectDemoState();
