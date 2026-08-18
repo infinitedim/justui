@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'just_tooltip_style.dart';
 import 'just_tooltip_theme.dart';
 import 'just_tooltip_variants.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// A declarative, accessible tooltip widget that displays a floating label

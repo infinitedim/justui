@@ -7,6 +7,7 @@ import '../shared/_shared_pressable.dart';
 import 'just_bottom_nav_style.dart';
 import 'just_bottom_nav_theme.dart';
 import 'just_bottom_nav_variants.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Represents a single destination item in the bottom navigation bar.

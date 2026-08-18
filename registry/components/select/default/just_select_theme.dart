@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_select_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for select dropdowns, extending Flutter's [ThemeExtension].
@@ -14,9 +15,9 @@ class JustSelectTheme extends ThemeExtension<JustSelectTheme> {
   /// Default configuration for the theme.
   static const defaults = JustSelectTheme();
 
-  
   /// Fallback factory constructor from [JustThemeData].
-  factory JustSelectTheme.fromTheme(JustThemeData justTheme) => const JustSelectTheme();
+  factory JustSelectTheme.fromTheme(JustThemeData justTheme) =>
+      const JustSelectTheme();
 
   @override
   JustSelectTheme copyWith({JustSelectStyle? style}) {

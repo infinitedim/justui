@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_sheet_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for sheets, extending Flutter's [ThemeExtension].
@@ -28,9 +29,9 @@ class JustSheetTheme extends ThemeExtension<JustSheetTheme> {
   /// Default configuration for the theme.
   static const defaults = JustSheetTheme();
 
-  
   /// Fallback factory constructor from [JustThemeData].
-  factory JustSheetTheme.fromTheme(JustThemeData justTheme) => const JustSheetTheme();
+  factory JustSheetTheme.fromTheme(JustThemeData justTheme) =>
+      const JustSheetTheme();
 
   @override
   JustSheetTheme copyWith({

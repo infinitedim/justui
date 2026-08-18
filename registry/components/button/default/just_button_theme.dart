@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_button_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for buttons, extending Flutter's [ThemeExtension].
@@ -36,9 +37,9 @@ class JustButtonTheme extends ThemeExtension<JustButtonTheme> {
   /// Default configuration for the theme.
   static const defaults = JustButtonTheme();
 
-  
   /// Fallback factory constructor from [JustThemeData].
-  factory JustButtonTheme.fromTheme(JustThemeData justTheme) => const JustButtonTheme();
+  factory JustButtonTheme.fromTheme(JustThemeData justTheme) =>
+      const JustButtonTheme();
 
   @override
   JustButtonTheme copyWith({

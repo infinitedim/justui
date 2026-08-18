@@ -7,6 +7,7 @@ import '../shared/_shared_pressable.dart';
 import 'just_accordion_style.dart';
 import 'just_accordion_theme.dart';
 import 'just_accordion_variants.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Data model representing an individual panel in the [JustAccordion].

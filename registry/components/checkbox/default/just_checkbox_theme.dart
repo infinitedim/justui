@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_checkbox_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for checkboxes, extending Flutter's [ThemeExtension].
@@ -17,9 +18,9 @@ class JustCheckboxTheme extends ThemeExtension<JustCheckboxTheme> {
   /// Default configuration for the theme.
   static const defaults = JustCheckboxTheme();
 
-  
   /// Fallback factory constructor from [JustThemeData].
-  factory JustCheckboxTheme.fromTheme(JustThemeData justTheme) => const JustCheckboxTheme();
+  factory JustCheckboxTheme.fromTheme(JustThemeData justTheme) =>
+      const JustCheckboxTheme();
 
   @override
   JustCheckboxTheme copyWith({JustCheckboxStyle? style, bool? enableHaptic}) {

@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../shared/_shared_pressable.dart';
 import 'just_breadcrumb_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Represents an individual navigation link within a [JustBreadcrumb].

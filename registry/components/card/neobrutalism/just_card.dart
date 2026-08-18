@@ -6,6 +6,7 @@ import '../shared/_shared_pressable.dart';
 import '../shared/_shared_focus_indicator.dart';
 import 'just_card_style.dart';
 import 'just_card_theme.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// A highly customizable, beautiful Card component adhering to JustUI design system.

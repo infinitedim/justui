@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_scroll_area_style.dart';
+
 import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for scroll areas, extending Flutter's [ThemeExtension].
@@ -14,9 +15,9 @@ class JustScrollAreaTheme extends ThemeExtension<JustScrollAreaTheme> {
   /// Default configuration for the theme.
   static const defaults = JustScrollAreaTheme();
 
-  
   /// Fallback factory constructor from [JustThemeData].
-  factory JustScrollAreaTheme.fromTheme(JustThemeData justTheme) => const JustScrollAreaTheme();
+  factory JustScrollAreaTheme.fromTheme(JustThemeData justTheme) =>
+      const JustScrollAreaTheme();
 
   @override
   JustScrollAreaTheme copyWith({JustScrollAreaStyle? style}) {
