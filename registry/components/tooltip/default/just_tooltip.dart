@@ -4,10 +4,10 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show KeyDownEvent, LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 
-import '../../theme/theme_provider.dart';
 import 'just_tooltip_style.dart';
 import 'just_tooltip_theme.dart';
 import 'just_tooltip_variants.dart';
+import 'package:just_ui_core/just_ui_core.dart';
 
 /// A declarative, accessible tooltip widget that displays a floating label
 /// relative to its target using the native [OverlayPortal.overlayChildLayoutBuilder] API.

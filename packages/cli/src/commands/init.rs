@@ -160,7 +160,7 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         .unwrap_or_else(|_| "flutter_app".to_string());
 
     embedded_templates::extract_tokens(std::path::Path::new(&tokens_dir), &pkg_name)?;
-    embedded_templates::extract_core(std::path::Path::new("lib/core"), &pkg_name)?;
+    embedded_templates::extract_core(std::path::Path::new("lib/core"), &pkg_name, &tokens_dir)?;
 
     logger::success("Design tokens & Core engine scaffolded locally.");
 
@@ -176,6 +176,11 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
     let theme_content = format!(
         "import 'package:flutter/widgets.dart';\n\
          import 'just_ui_core.dart';\n\
+         \n\
+         /// Component theme extensions registered by JustUI CLI.\n\
+         final List<ThemeExtension<dynamic>> justThemeExtensions = [\n\
+           // CLI:REGISTER_EXTENSIONS\n\
+         ];\n\
          \n\
          /// Dynamically generated light theme from brand seed color.\n\
          final JustThemeData justThemeLight = JustThemeData.fromSeed(\n\

@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 
-import '../../theme/theme_provider.dart';
 import 'just_avatar.dart';
 import 'just_avatar_variants.dart';
+import 'package:just_ui_core/just_ui_core.dart';
 
 /// A widget that displays a group of [JustAvatar]s stacked/overlapped horizontally.
 class JustAvatarGroup extends StatelessWidget {

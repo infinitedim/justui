@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:flutter/material.dart' show Theme, ThemeExtension;
 
 import 'just_accordion_style.dart';
+import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for accordions, extending Flutter's [ThemeExtension].
 class JustAccordionTheme extends ThemeExtension<JustAccordionTheme> {
@@ -13,6 +14,10 @@ class JustAccordionTheme extends ThemeExtension<JustAccordionTheme> {
   /// Default configuration for the theme.
   static const defaults = JustAccordionTheme();
 
+  
+  /// Fallback factory constructor from [JustThemeData].
+  factory JustAccordionTheme.fromTheme(JustThemeData justTheme) => const JustAccordionTheme();
+
   @override
   JustAccordionTheme copyWith({JustAccordionStyle? style}) {
     return JustAccordionTheme(style: style ?? this.style);
@@ -23,4 +28,11 @@ class JustAccordionTheme extends ThemeExtension<JustAccordionTheme> {
     if (other is! JustAccordionTheme) return this;
     return t < 0.5 ? this : other;
   }
+}
+
+/// Extension method on [BuildContext] to access [JustAccordionTheme] safely.
+extension JustAccordionThemeContext on BuildContext {
+  JustAccordionTheme get justAccordionTheme =>
+      Theme.of(this).extension<JustAccordionTheme>() ??
+      JustAccordionTheme.fromTheme(justTheme);
 }
