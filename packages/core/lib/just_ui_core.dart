@@ -1,5 +1,3 @@
-library;
-
 import 'package:flutter/widgets.dart' show BuildContext;
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
