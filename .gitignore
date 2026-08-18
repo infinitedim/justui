@@ -536,5 +536,9 @@ $RECYCLE.BIN/
 # and uncomment the following lines
 # .pnp.*
 
-# End of https://www.toptal.com/developers/gitignore/api/nextjs,vercel,react,sublimetext,visualstudiocode,node,yarn,bower,macos,powershell,windows,linux,vim,dotenv,typings
 .source
+
+**/showcase
+**/docs
+
+# End of https://www.toptal.com/developers/gitignore/api/nextjs,vercel,react,sublimetext,visualstudiocode,node,yarn,bower,macos,powershell,windows,linux,vim,dotenv,typings
