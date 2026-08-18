@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart' show Theme, ThemeExtension;
+import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_sidebar_style.dart';
-
-import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for sidebars, extending Flutter's [ThemeExtension].
 class JustSidebarTheme extends ThemeExtension<JustSidebarTheme> {
@@ -25,10 +23,6 @@ class JustSidebarTheme extends ThemeExtension<JustSidebarTheme> {
   /// Default theme configuration.
   static const defaults = JustSidebarTheme();
 
-  /// Fallback factory constructor from [JustThemeData].
-  factory JustSidebarTheme.fromTheme(JustThemeData justTheme) =>
-      const JustSidebarTheme();
-
   @override
   JustSidebarTheme copyWith({
     JustSidebarStyle? defaultStyle,
@@ -47,11 +41,4 @@ class JustSidebarTheme extends ThemeExtension<JustSidebarTheme> {
     if (other is! JustSidebarTheme) return this;
     return t < 0.5 ? this : other;
   }
-}
-
-/// Extension method on [BuildContext] to access [JustSidebarTheme] safely.
-extension JustSidebarThemeContext on BuildContext {
-  JustSidebarTheme get justSidebarTheme =>
-      Theme.of(this).extension<JustSidebarTheme>() ??
-      JustSidebarTheme.fromTheme(justTheme);
 }

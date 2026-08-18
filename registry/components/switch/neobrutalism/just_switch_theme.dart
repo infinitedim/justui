@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart' show Theme, ThemeExtension;
+import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_switch_style.dart';
-
-import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for switch controls, extending Flutter's [ThemeExtension].
 class JustSwitchTheme extends ThemeExtension<JustSwitchTheme> {
@@ -18,10 +16,6 @@ class JustSwitchTheme extends ThemeExtension<JustSwitchTheme> {
   /// Default configuration for the theme.
   static const defaults = JustSwitchTheme();
 
-  /// Fallback factory constructor from [JustThemeData].
-  factory JustSwitchTheme.fromTheme(JustThemeData justTheme) =>
-      const JustSwitchTheme();
-
   @override
   JustSwitchTheme copyWith({JustSwitchStyle? style, bool? enableHaptic}) {
     return JustSwitchTheme(
@@ -35,11 +29,4 @@ class JustSwitchTheme extends ThemeExtension<JustSwitchTheme> {
     if (other is! JustSwitchTheme) return this;
     return t < 0.5 ? this : other;
   }
-}
-
-/// Extension method on [BuildContext] to access [JustSwitchTheme] safely.
-extension JustSwitchThemeContext on BuildContext {
-  JustSwitchTheme get justSwitchTheme =>
-      Theme.of(this).extension<JustSwitchTheme>() ??
-      JustSwitchTheme.fromTheme(justTheme);
 }

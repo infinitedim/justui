@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart' show Theme, ThemeExtension;
+import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_bottom_nav_style.dart';
-
-import 'package:just_ui_core/just_ui_core.dart';
 
 /// Global theme configuration for bottom navigation bars, extending Flutter's [ThemeExtension].
 class JustBottomNavTheme extends ThemeExtension<JustBottomNavTheme> {
@@ -25,10 +23,6 @@ class JustBottomNavTheme extends ThemeExtension<JustBottomNavTheme> {
   /// Default theme configuration.
   static const defaults = JustBottomNavTheme();
 
-  /// Fallback factory constructor from [JustThemeData].
-  factory JustBottomNavTheme.fromTheme(JustThemeData justTheme) =>
-      const JustBottomNavTheme();
-
   @override
   JustBottomNavTheme copyWith({
     JustBottomNavStyle? fixedStyle,
@@ -47,11 +41,4 @@ class JustBottomNavTheme extends ThemeExtension<JustBottomNavTheme> {
     if (other is! JustBottomNavTheme) return this;
     return t < 0.5 ? this : other;
   }
-}
-
-/// Extension method on [BuildContext] to access [JustBottomNavTheme] safely.
-extension JustBottomNavThemeContext on BuildContext {
-  JustBottomNavTheme get justBottomNavTheme =>
-      Theme.of(this).extension<JustBottomNavTheme>() ??
-      JustBottomNavTheme.fromTheme(justTheme);
 }
