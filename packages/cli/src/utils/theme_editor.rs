@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use std::path::Path;
 
-/// Registers a component's `ThemeExtension` class inside `lib/core/just_theme.dart`.
+/// Registers a component's `ThemeExtension` class inside `lib/core/theme/just_theme.dart`.
 pub fn register_theme_extension(
     theme_file_path: &Path,
     _package_name: &str,

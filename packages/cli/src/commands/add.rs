@@ -552,14 +552,14 @@ pub fn add_component(
                         .to_string_lossy();
                     let import_uri = format!("package:{}/{}", pkg_name, rel_path);
                     if let Ok(updated) = crate::utils::theme_editor::register_theme_extension(
-                        std::path::Path::new("lib/core/just_theme.dart"),
+                        std::path::Path::new("lib/core/theme/just_theme.dart"),
                         &pkg_name,
                         &import_uri,
                         &theme_class,
                     ) {
                         if updated {
                             logger::stdout(&format!(
-                                "  - Registered {} in lib/core/just_theme.dart",
+                                "  - Registered {} in lib/core/theme/just_theme.dart",
                                 theme_class
                             ));
                         }

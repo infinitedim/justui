@@ -356,7 +356,7 @@ mod cli_integration {
             .success()
             .stdout(predicate::str::contains("Bootstrap theme created"));
 
-        let theme = std::fs::read_to_string(dir.path().join("lib/core/just_theme.dart")).unwrap();
+        let theme = std::fs::read_to_string(dir.path().join("lib/core/theme/just_theme.dart")).unwrap();
         assert!(
             theme.contains("JustThemePreset.neobrutalism"),
             "theme file should contain neobrutalism preset, got: {}",

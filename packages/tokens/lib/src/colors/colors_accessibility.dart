@@ -13,11 +13,9 @@ extension JustColorAccessibility on Color {
     final double l1 = computeLuminance();
     final double l2 = other.computeLuminance();
 
-    if (l1 > l2) {
-      return (l1 + 0.05) / (l2 + 0.05);
-    } else {
-      return (l2 + 0.05) / (l1 + 0.05);
-    }
+    if (l1 > l2) return (l1 + 0.05) / (l2 + 0.05);
+
+    return (l2 + 0.05) / (l1 + 0.05);
   }
 
   /// Verifies if this color is accessible when paired with [other] under WCAG AA standards.
