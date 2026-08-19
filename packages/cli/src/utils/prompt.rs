@@ -1,5 +1,9 @@
 use inquire::{MultiSelect, Select};
-use std::io::{self, Write};
+use std::io::{self, IsTerminal, Write};
+
+fn is_interactive() -> bool {
+    io::stdin().is_terminal() && io::stderr().is_terminal()
+}
 
 fn read_line() -> String {
     let mut input = String::new();
@@ -8,9 +12,12 @@ fn read_line() -> String {
 }
 
 pub fn confirm(message: &str, default: bool) -> bool {
+    if !is_interactive() {
+        return default;
+    }
     let suffix = if default { "[Y/n]" } else { "[y/N]" };
-    print!("{} {}: ", message, suffix);
-    io::stdout().flush().unwrap();
+    eprint!("{} {}: ", message, suffix);
+    io::stderr().flush().unwrap();
     let input = read_line().to_lowercase();
     if input.is_empty() {
         return default;
@@ -19,6 +26,9 @@ pub fn confirm(message: &str, default: bool) -> bool {
 }
 
 pub fn select_one(message: &str, options: &[&str], default_index: usize) -> usize {
+    if !is_interactive() {
+        return default_index;
+    }
     let result = Select::new(message, options.to_vec())
         .with_starting_cursor(default_index)
         .prompt();
@@ -33,6 +43,9 @@ pub fn select_one(message: &str, options: &[&str], default_index: usize) -> usiz
 }
 
 pub fn select_multiple(message: &str, options: &[&str]) -> Vec<usize> {
+    if !is_interactive() {
+        return (0..options.len()).collect();
+    }
     let result = MultiSelect::new(message, options.to_vec()).prompt();
 
     match result {
@@ -45,8 +58,11 @@ pub fn select_multiple(message: &str, options: &[&str]) -> Vec<usize> {
 }
 
 pub fn ask(message: &str, default_value: &str) -> String {
-    print!("{} [{}]: ", message, default_value);
-    io::stdout().flush().unwrap();
+    if !is_interactive() {
+        return default_value.to_string();
+    }
+    eprint!("{} [{}]: ", message, default_value);
+    io::stderr().flush().unwrap();
     let input = read_line();
     if input.is_empty() {
         default_value.to_string()

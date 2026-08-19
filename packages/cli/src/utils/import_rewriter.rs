@@ -157,11 +157,15 @@ pub fn rewrite(
         "theme_data.dart",
         "theme_aspects.dart",
         "theme_data_material.dart",
+        "preset_tokens.dart",
+        "just_overlay_controller.dart",
+        "just_overlay_scope.dart",
+        "just_theme.dart",
     ];
 
     let current_file_dir = unix_dirname(&current_file_path);
 
-    import_regex()
+    let rewritten = import_regex()
         .replace_all(&clean_content, |caps: &regex::Captures| {
             let import_path = &caps[1];
 
@@ -187,6 +191,8 @@ pub fn rewrite(
             let resolved_flat_path = normalize_unix_path(&joined);
 
             let is_theme_import = resolved_flat_path.starts_with("components/theme/")
+                || resolved_flat_path.starts_with("theme/")
+                || resolved_flat_path.starts_with("overlay/")
                 || THEME_SUFFIXES
                     .iter()
                     .any(|suffix| resolved_flat_path.ends_with(suffix));
@@ -237,7 +243,27 @@ pub fn rewrite(
             ));
             caps[0].to_string()
         })
-        .into_owned()
+        .into_owned();
+
+    let mut seen_imports = std::collections::HashSet::new();
+    let mut lines = Vec::new();
+
+    for line in rewritten.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with("import ") && trimmed.ends_with(';') {
+            if seen_imports.contains(trimmed) {
+                continue;
+            }
+            seen_imports.insert(trimmed.to_string());
+        }
+        lines.push(line);
+    }
+
+    let mut final_result = lines.join("\n");
+    if clean_content.ends_with('\n') && !final_result.ends_with('\n') {
+        final_result.push('\n');
+    }
+    final_result
 }
 
 #[cfg(test)]
