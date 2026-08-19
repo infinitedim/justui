@@ -1,4 +1,5 @@
 use anyhow::Result;
+use clap::Subcommand;
 use std::collections::HashSet;
 
 use crate::commands::add::add_component;
@@ -6,13 +7,38 @@ use crate::config::JustUIConfig;
 use crate::registry::RegistryClient;
 use crate::utils::{logger, prompt};
 
+#[derive(Subcommand, Debug, Clone)]
+pub enum PresetSubcommands {
+    /// List all available visual design style presets
+    List,
+    /// Apply a visual design style preset to installed components
+    Apply {
+        /// Name of the preset to apply (e.g. default, neobrutalism)
+        name: String,
+    },
+    /// Show detailed token configuration for a specific preset
+    Info {
+        /// Name of the preset to inspect
+        name: String,
+    },
+}
+
 pub fn run(
+    subcommand: Option<PresetSubcommands>,
     name: Option<String>,
     apply: bool,
     list: bool,
     info_preset: Option<String>,
     auto_yes: bool,
 ) -> Result<()> {
+    if let Some(sub) = subcommand {
+        return match sub {
+            PresetSubcommands::List => run_list(),
+            PresetSubcommands::Apply { name } => run_apply(&name, auto_yes),
+            PresetSubcommands::Info { name } => run_info(&name),
+        };
+    }
+
     if list {
         return run_list();
     }

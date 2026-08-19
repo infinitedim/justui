@@ -1,19 +1,19 @@
 use colored::Colorize;
 
 pub fn success(msg: &str) {
-    println!("{}", format!("✓ {}", msg).green());
+    eprintln!("{}", format!("✓ {}", msg).green());
 }
 
 pub fn error(msg: &str) {
-    println!("{}", format!("✗ Error: {}", msg).red());
+    eprintln!("{}", format!("✗ Error: {}", msg).red());
 }
 
 pub fn warning(msg: &str) {
-    println!("{}", format!("⚠ Warning: {}", msg).yellow());
+    eprintln!("{}", format!("⚠ Warning: {}", msg).yellow());
 }
 
 pub fn info(msg: &str) {
-    println!("{}", format!("ℹ {}", msg).cyan());
+    eprintln!("{}", format!("ℹ {}", msg).cyan());
 }
 
 pub fn stdout(msg: &str) {
@@ -27,9 +27,9 @@ pub fn panel(msg: &str) {
     let top = format!("┌{}┐", "─".repeat(inner_width));
     let middle = format!("│  {}  │", msg);
     let bottom = format!("└{}┘", "─".repeat(inner_width));
-    println!("{}", top.cyan());
-    println!("{}", middle.cyan());
-    println!("{}", bottom.cyan());
+    eprintln!("{}", top.cyan());
+    eprintln!("{}", middle.cyan());
+    eprintln!("{}", bottom.cyan());
 }
 
 pub fn summary(title: &str, items: &[SummaryItem]) {
@@ -50,16 +50,16 @@ pub fn summary(title: &str, items: &[SummaryItem]) {
     let top = format!("╭{}╮", "─".repeat(inner_width + 2));
     let bottom = format!("╰{}╯", "─".repeat(inner_width + 2));
 
-    println!("{}", top.green());
-    println!("{}", pad(&format!("  ✔  {}", title)).green());
+    eprintln!("{}", top.green());
+    eprintln!("{}", pad(&format!("  ✔  {}", title)).green());
     if !items.is_empty() {
-        println!("{}", pad("").green());
+        eprintln!("{}", pad("").green());
         for item in items {
             let line = format!("  →  {:<12} {}", item.label, item.value);
-            println!("{}", pad(&line).green());
+            eprintln!("{}", pad(&line).green());
         }
     }
-    println!("{}", bottom.green());
+    eprintln!("{}", bottom.green());
 }
 
 pub struct SummaryItem {

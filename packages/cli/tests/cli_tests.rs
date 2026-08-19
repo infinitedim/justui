@@ -340,7 +340,7 @@ mod cli_integration {
             .current_dir(dir.path())
             .args(["init"])
             .assert()
-            .stdout(predicate::str::contains("No pubspec.yaml found"));
+            .stderr(predicate::str::contains("No pubspec.yaml found"));
     }
 
     #[test]
@@ -354,7 +354,7 @@ mod cli_integration {
             .write_stdin("\n\n\n\n")
             .assert()
             .success()
-            .stdout(predicate::str::contains("Bootstrap theme created"));
+            .stderr(predicate::str::contains("Bootstrap theme created"));
 
         let theme = std::fs::read_to_string(dir.path().join("lib/core/theme/just_theme.dart")).unwrap();
         assert!(
@@ -387,7 +387,7 @@ mod cli_integration {
             .current_dir(dir.path())
             .args(["init"])
             .assert()
-            .stdout(predicate::str::contains("already exists in this project"));
+            .stderr(predicate::str::contains("already exists in this project"));
     }
 
     #[test]
@@ -399,7 +399,7 @@ mod cli_integration {
             .current_dir(dir.path())
             .args(["list"])
             .assert()
-            .stdout(predicate::str::contains("Failed to list components"));
+            .stderr(predicate::str::contains("Failed to list components"));
     }
 
     #[test]
@@ -466,13 +466,13 @@ mod cli_integration {
             .args(["add", "button"])
             .assert()
             .success()
-            .stdout(predicate::str::contains(
-                "Component \"button\" added successfully.",
+            .stderr(predicate::str::contains(
+                "added successfully",
             ))
-            .stdout(predicate::str::contains(
-                "1 component(s) added successfully",
+            .stderr(predicate::str::contains(
+                "button",
             ))
-            .stdout(predicate::str::contains("→  button"));
+            .stderr(predicate::str::contains("→  button"));
 
         let written = dir.path().join("lib/ui/button/just_button.dart");
         assert!(written.exists(), "button file should have been written");
@@ -555,7 +555,7 @@ mod cli_integration {
             .current_dir(dir.path())
             .args(["diff", "button"])
             .assert()
-            .stdout(predicate::str::contains("Project not initialized"));
+            .stderr(predicate::str::contains("Project not initialized"));
     }
 
     #[test]
@@ -565,7 +565,7 @@ mod cli_integration {
             .current_dir(dir.path())
             .args(["create", "my_widget"])
             .assert()
-            .stdout(predicate::str::contains("Project not initialized"));
+            .stderr(predicate::str::contains("Project not initialized"));
     }
 
     #[test]
@@ -582,7 +582,7 @@ mod cli_integration {
             .current_dir(dir.path())
             .args(["create", "my_card"])
             .assert()
-            .stdout(predicate::str::contains(
+            .stderr(predicate::str::contains(
                 "Scaffolded custom component \"MyCard\" successfully.",
             ));
 
@@ -682,10 +682,10 @@ mod cli_integration {
 
         justui()
             .current_dir(dir.path())
-            .args(["preset", "--info", "default"])
+            .args(["preset", "info", "default"])
             .assert()
             .success()
-            .stdout(predicates::str::contains("Preset: default (active)"))
+            .stderr(predicates::str::contains("Preset: default (active)"))
             .stdout(predicates::str::contains("Supported components"))
             .stdout(predicates::str::contains("button"));
 
@@ -694,7 +694,7 @@ mod cli_integration {
             .args(["preset", "default"])
             .assert()
             .success()
-            .stdout(predicates::str::contains("Preset: default (active)"))
+            .stderr(predicates::str::contains("Preset: default (active)"))
             .stdout(predicates::str::contains("Supported components"))
             .stdout(predicates::str::contains("button"));
     }
@@ -793,13 +793,13 @@ mod cli_integration {
 
         justui()
             .current_dir(dir.path())
-            .args(["preset", "neobrutalism", "--apply", "--yes"])
+            .args(["preset", "apply", "neobrutalism", "--yes"])
             .assert()
             .success()
-            .stdout(predicates::str::contains(
+            .stderr(predicates::str::contains(
                 "Preset \"neobrutalism\" applied successfully",
             ))
-            .stdout(predicates::str::contains("Succeeded"));
+            .stderr(predicates::str::contains("Succeeded"));
 
         let config_content =
             std::fs::read_to_string(dir.path().join("justui.config.yaml")).unwrap();
