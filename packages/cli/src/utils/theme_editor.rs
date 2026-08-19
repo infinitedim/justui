@@ -15,9 +15,10 @@ pub fn register_theme_extension(
     let content = std::fs::read_to_string(theme_file_path)
         .with_context(|| format!("Failed to read theme file at {}", theme_file_path.display()))?;
 
-    // Check if the theme class instance is already registered
-    let class_instance_pattern = format!("const {}()", theme_class_name);
-    if content.contains(&class_instance_pattern) {
+    // Check if the theme class instance or defaults is already registered
+    let class_instance_pattern = format!("{}.defaults", theme_class_name);
+    let legacy_instance_pattern = format!("const {}()", theme_class_name);
+    if content.contains(&class_instance_pattern) || content.contains(&legacy_instance_pattern) {
         return Ok(false);
     }
 
@@ -39,11 +40,11 @@ pub fn register_theme_extension(
     let reg_marker = "// CLI:REGISTER_EXTENSIONS";
 
     let final_content = if updated_content.contains(reg_marker) {
-        let replacement = format!("const {}(),\n  {}", theme_class_name, reg_marker);
+        let replacement = format!("  {}.defaults,\n  {}", theme_class_name, reg_marker);
         updated_content.replace(reg_marker, &replacement)
     } else if updated_content.contains("final List<ThemeExtension<dynamic>> justThemeExtensions = [") {
         let search = "final List<ThemeExtension<dynamic>> justThemeExtensions = [";
-        let replacement = format!("{}\n  const {}(),", search, theme_class_name);
+        let replacement = format!("{}\n  {}.defaults,", search, theme_class_name);
         updated_content.replace(search, &replacement)
     } else {
         updated_content
