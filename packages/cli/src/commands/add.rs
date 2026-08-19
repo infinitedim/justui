@@ -543,26 +543,31 @@ pub fn add_component(
                 "  - Copied {} to {}/",
                 local_file_name, target_dir
             ));
+        }
 
-            if local_file_name.ends_with("_theme.dart") {
-                if let Some(theme_class) = extract_theme_class_name(&final_content) {
-                    let rel_path = target_path
-                        .strip_prefix("lib/")
-                        .unwrap_or(&target_path)
-                        .to_string_lossy();
-                    let import_uri = format!("package:{}/{}", pkg_name, rel_path);
-                    if let Ok(updated) = crate::utils::theme_editor::register_theme_extension(
-                        std::path::Path::new("lib/core/theme/just_theme.dart"),
-                        &pkg_name,
-                        &import_uri,
-                        &theme_class,
-                    ) {
-                        if updated {
-                            logger::stdout(&format!(
-                                "  - Registered {} in lib/core/theme/just_theme.dart",
-                                theme_class
-                            ));
-                        }
+        if !dry_run && local_file_name.ends_with("_theme.dart") {
+            let theme_file_content = if target_path.exists() {
+                std::fs::read_to_string(&target_path).unwrap_or_else(|_| final_content.clone())
+            } else {
+                final_content.clone()
+            };
+            if let Some(theme_class) = extract_theme_class_name(&theme_file_content) {
+                let rel_path = target_path
+                    .strip_prefix("lib/")
+                    .unwrap_or(&target_path)
+                    .to_string_lossy();
+                let import_uri = format!("package:{}/{}", pkg_name, rel_path);
+                if let Ok(updated) = crate::utils::theme_editor::register_theme_extension(
+                    std::path::Path::new("lib/core/theme/just_theme.dart"),
+                    &pkg_name,
+                    &import_uri,
+                    &theme_class,
+                ) {
+                    if updated {
+                        logger::stdout(&format!(
+                            "  - Registered {}.defaults in lib/core/theme/just_theme.dart",
+                            theme_class
+                        ));
                     }
                 }
             }
@@ -801,6 +806,9 @@ pub fn sha256_hex(data: &[u8]) -> String {
 }
 
 fn extract_theme_class_name(content: &str) -> Option<String> {
-    let re = Regex::new(r"class\s+([A-Za-z0-9_]+Theme)\s+extends\s+ThemeExtension").unwrap();
+    if !content.contains("extends ThemeExtension") {
+        return None;
+    }
+    let re = Regex::new(r"class\s+(?:const\s+)?([A-Za-z0-9_]+Theme(?:Data)?)").unwrap();
     re.captures(content).map(|cap| cap[1].to_string())
 }
