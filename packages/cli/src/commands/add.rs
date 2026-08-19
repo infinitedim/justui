@@ -557,17 +557,31 @@ pub fn add_component(
                     .unwrap_or(&target_path)
                     .to_string_lossy();
                 let import_uri = format!("package:{}/{}", pkg_name, rel_path);
-                if let Ok(updated) = crate::utils::theme_editor::register_theme_extension(
-                    std::path::Path::new("lib/core/theme/just_theme.dart"),
-                    &pkg_name,
-                    &import_uri,
-                    &theme_class,
-                ) {
-                    if updated {
-                        logger::stdout(&format!(
-                            "  - Registered {}.defaults in lib/core/theme/just_theme.dart",
-                            theme_class
-                        ));
+
+                let candidate_theme_files = [
+                    std::path::PathBuf::from("lib/core/theme/theme_data_material.dart"),
+                    std::path::PathBuf::from("lib/core/theme_data_material.dart"),
+                    std::path::PathBuf::from("lib/core/theme/just_theme.dart"),
+                    std::path::PathBuf::from("lib/core/just_theme.dart"),
+                ];
+
+                for theme_file in &candidate_theme_files {
+                    if theme_file.exists() {
+                        if let Ok(updated) = crate::utils::theme_editor::register_theme_extension(
+                            theme_file,
+                            &pkg_name,
+                            &import_uri,
+                            &theme_class,
+                        ) {
+                            if updated {
+                                logger::stdout(&format!(
+                                    "  - Registered {}.defaults in {}",
+                                    theme_class,
+                                    theme_file.display()
+                                ));
+                                break;
+                            }
+                        }
                     }
                 }
             }

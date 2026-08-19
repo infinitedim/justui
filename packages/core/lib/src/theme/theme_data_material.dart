@@ -37,11 +37,37 @@ extension JustThemeDataMaterialExtension on JustThemeData {
 
   ThemeData _buildMaterialTheme() {
     final isDark = colors.background.computeLuminance() < 0.5;
-    final Brightness brightness = isDark ? .dark : .light;
+    final Brightness brightness = isDark ? Brightness.dark : Brightness.light;
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
+      extensions: const [
+        // CLI:REGISTER_EXTENSIONS
+        JustAccordionTheme.defaults,
+        JustBottomNavTheme.defaults,
+        JustBreadcrumbTheme.defaults,
+        JustButtonTheme.defaults,
+        JustCardTheme.defaults,
+        JustCheckboxTheme.defaults,
+        JustDialogTheme.defaults,
+        JustInputTheme.defaults,
+        JustProgressTheme.defaults,
+        JustRadioTheme.defaults,
+        JustScrollAreaTheme.defaults,
+        JustSelectTheme.defaults,
+        JustSeparatorTheme.defaults,
+        JustSheetTheme.defaults,
+        JustSidebarTheme.defaults,
+        JustSkeletonTheme.defaults,
+        JustSliderTheme.defaults,
+        JustSwitchTheme.defaults,
+        JustTableTheme.defaults,
+        JustTabsTheme.defaults,
+        JustToastTheme.defaults,
+        JustToggleTheme.defaults,
+        JustTooltipTheme.defaults,
+      ],
       scaffoldBackgroundColor: colors.background,
       cardColor: colors.card,
       dividerColor: colors.borderDefault,
@@ -118,31 +144,6 @@ extension JustThemeDataMaterialExtension on JustThemeData {
           textStyle: typography.bodyMd,
         ),
       ),
-      extensions: const [
-        JustAccordionTheme.defaults,
-        JustBottomNavTheme.defaults,
-        JustBreadcrumbTheme.defaults,
-        JustButtonTheme.defaults,
-        JustCardTheme.defaults,
-        JustCheckboxTheme.defaults,
-        JustDialogTheme.defaults,
-        JustInputTheme.defaults,
-        JustProgressTheme.defaults,
-        JustRadioTheme.defaults,
-        JustScrollAreaTheme.defaults,
-        JustSelectTheme.defaults,
-        JustSeparatorTheme.defaults,
-        JustSheetTheme.defaults,
-        JustSidebarTheme.defaults,
-        JustSkeletonTheme.defaults,
-        JustSliderTheme.defaults,
-        JustSwitchTheme.defaults,
-        JustTableTheme.defaults,
-        JustTabsTheme.defaults,
-        JustToastTheme.defaults,
-        JustToggleTheme.defaults,
-        JustTooltipTheme.defaults,
-      ],
     );
   }
 }
