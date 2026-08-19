@@ -142,6 +142,12 @@ abstract class JustTypographyScheme {
   /// Base constructor.
   const JustTypographyScheme();
 
+  /// Creates a default typography scheme, optionally overriding default font families.
+  const factory JustTypographyScheme.fromFontFamily({
+    String fontFamily,
+    String monoFontFamily,
+  }) = DefaultTypographyScheme;
+
   /// Large display text.
   TextStyle get displayLg;
 
@@ -210,44 +216,11 @@ abstract class JustTypographyScheme {
   }
 }
 
-final class _DefaultTypographyScheme extends JustTypographyScheme {
-  const _DefaultTypographyScheme();
-
-  @override
-  TextStyle get displayLg => JustTypo.displayLg;
-  @override
-  TextStyle get displayMd => JustTypo.displayMd;
-  @override
-  TextStyle get displaySm => JustTypo.displaySm;
-  @override
-  TextStyle get headingLg => JustTypo.headingLg;
-  @override
-  TextStyle get headingMd => JustTypo.headingMd;
-  @override
-  TextStyle get headingSm => JustTypo.headingSm;
-  @override
-  TextStyle get bodyLg => JustTypo.bodyLg;
-  @override
-  TextStyle get bodyMd => JustTypo.bodyMd;
-  @override
-  TextStyle get bodySm => JustTypo.bodySm;
-  @override
-  TextStyle get caption => JustTypo.caption;
-  @override
-  TextStyle get overline => JustTypo.overline;
-}
-
-/// A configurable typography scheme allowing custom font families.
-/// Use this when your project uses fonts other than Inter/JetBrains Mono.
-final class JustCustomTypographyScheme extends JustTypographyScheme {
-  final String fontFamily;
-  final String monoFontFamily;
-
-  const JustCustomTypographyScheme({
-    this.fontFamily = JustTypo.fontFamily,
-    this.monoFontFamily = JustTypo.monoFontFamily,
-  });
-
+/// Default typography scheme allowing custom font families.
+final class const DefaultTypographyScheme({
+  final String fontFamily = JustTypo.fontFamily,
+  final String monoFontFamily = JustTypo.monoFontFamily,
+}) extends JustTypographyScheme {
   TextStyle _apply(TextStyle base) => base.copyWith(fontFamily: fontFamily);
 
   @override
@@ -272,7 +245,20 @@ final class JustCustomTypographyScheme extends JustTypographyScheme {
   TextStyle get caption => _apply(JustTypo.caption);
   @override
   TextStyle get overline => _apply(JustTypo.overline);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DefaultTypographyScheme &&
+          fontFamily == other.fontFamily &&
+          monoFontFamily == other.monoFontFamily;
+
+  @override
+  int get hashCode => Object.hash(fontFamily, monoFontFamily);
 }
+
+/// Typedef for backwards compatibility.
+typedef JustCustomTypographyScheme = DefaultTypographyScheme;
 
 // ==========================================
 // --- Radius Scheme ---
@@ -601,7 +587,7 @@ final class const NeobrutalismShadowScheme({
 /// [ThemeData] instance to prevent recalculation overhead.
 class const JustThemeData({
   required final JustColorScheme colors,
-  final JustTypographyScheme typography = const _DefaultTypographyScheme(),
+  final JustTypographyScheme typography = const DefaultTypographyScheme(),
   final JustSpacingScheme spacing = const _DefaultSpacingScheme(),
   final JustRadiusScheme radius = const _DefaultRadiusScheme(),
   required final JustShadowScheme shadows,
@@ -695,7 +681,7 @@ class const JustThemeData({
   static JustThemeData fromSeed(
     Color seedColor, {
     bool isDark = false,
-    JustTypographyScheme typography = const _DefaultTypographyScheme(),
+    JustTypographyScheme typography = const DefaultTypographyScheme(),
     JustSpacingScheme spacing = const _DefaultSpacingScheme(),
     JustRadiusScheme radius = const _DefaultRadiusScheme(),
     JustMotionProfile animations = .standard,

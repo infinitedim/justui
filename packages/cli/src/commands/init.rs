@@ -109,7 +109,7 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         shared_dir_default
     } else {
         logger::stdout(&format!(
-            "  (Folder ini akan dibuat relatif terhadap '{}', contoh: '{}')",
+            "  (This folder will be created relative to '{}', e.g. '{}')",
             components_dir, shared_dir_default
         ));
         let raw_shared_dir = prompt::ask(
@@ -164,8 +164,8 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
 
     logger::success("Design tokens & Core engine scaffolded locally.");
 
-    std::fs::create_dir_all("lib/core")
-        .map_err(|e| anyhow::anyhow!("Failed to create lib/core: {}", e))?;
+    std::fs::create_dir_all("lib/core/theme")
+        .map_err(|e| anyhow::anyhow!("Failed to create lib/core/theme: {}", e))?;
 
     let preset_param = if preset == "neobrutalism" {
         "\n  preset: JustThemePreset.neobrutalism,"
@@ -174,8 +174,8 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
     };
 
     let theme_content = format!(
-        "import 'package:flutter/widgets.dart';\n\
-         import 'just_ui_core.dart';\n\
+        "import 'package:flutter/material.dart' show Color, ThemeExtension;\n\
+         import '../just_ui_core.dart';\n\
          \n\
          /// Component theme extensions registered by JustUI CLI.\n\
          final List<ThemeExtension<dynamic>> justThemeExtensions = [\n\
@@ -196,10 +196,10 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         hex_code, preset_param, hex_code, preset_param
     );
 
-    std::fs::write("lib/core/just_theme.dart", theme_content)
+    std::fs::write("lib/core/theme/just_theme.dart", theme_content)
         .map_err(|e| anyhow::anyhow!("Failed to write theme file: {}", e))?;
 
-    logger::success("Bootstrap theme created at lib/core/just_theme.dart");
+    logger::success("Bootstrap theme created at lib/core/theme/just_theme.dart");
 
     Ok(())
 }
