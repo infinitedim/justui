@@ -268,7 +268,8 @@ class _JustScrollAreaState extends State<JustScrollArea>
 
     // Calculate frame-rate independent delta time (seconds)
     final double dt = _lastTickTime == Duration.zero
-        ? 1.0 / 60.0 // Assume 60fps for the very first frame
+        ? 1.0 /
+              60.0 // Assume 60fps for the very first frame
         : (elapsed - _lastTickTime).inMicroseconds / 1000000.0;
     _lastTickTime = elapsed;
 
@@ -338,17 +339,24 @@ class _JustScrollAreaState extends State<JustScrollArea>
 
     // Multi-notch impulse acceleration multiplier for rapid mechanical wheel ticks
     double impulseMultiplier = 1.0;
-    if (!_isTrackpadSignal && dtMs < 60.0 && rawDelta.sign == _lastDeltaMag.sign && rawDelta.abs() > 0.1) {
+    if (!_isTrackpadSignal &&
+        dtMs < 60.0 &&
+        rawDelta.sign == _lastDeltaMag.sign &&
+        rawDelta.abs() > 0.1) {
       impulseMultiplier = 1.0 + 0.6 * math.exp(-0.02 * dtMs);
     }
     _lastDeltaMag = rawDelta;
 
     // Apply wheel multiplier and impulse acceleration
-    final double delta = rawDelta * _resolvedWheelMultiplier * impulseMultiplier;
+    final double delta =
+        rawDelta * _resolvedWheelMultiplier * impulseMultiplier;
 
     // Accumulate target offset with elastic overscroll allowance (+/- 60px)
     const double overscrollLimit = 60.0;
-    _targetOffset = (_targetOffset + delta).clamp(-overscrollLimit, maxScroll + overscrollLimit);
+    _targetOffset = (_targetOffset + delta).clamp(
+      -overscrollLimit,
+      maxScroll + overscrollLimit,
+    );
 
     // Start the ticker engine if not already running
     _startSmoothing();

@@ -808,4 +808,44 @@ mod cli_integration {
         let content_after = std::fs::read_to_string(&installed_file).unwrap();
         assert!(content_after.contains(neobrutalism_content));
     }
+
+    #[test]
+    fn files_for_preset_aggregates_common_and_preset_files() {
+        use std::collections::HashMap;
+        use justui_cli::registry::{RegistryComponent, RegistryFile};
+
+        let comp = RegistryComponent {
+            name: "button".to_string(),
+            version: "0.1.0".to_string(),
+            description: "".to_string(),
+            category: "primitive".to_string(),
+            internal: false,
+            supported_presets: vec!["default".to_string(), "neobrutalism".to_string()],
+            registry_dependencies: vec![],
+            pub_dependencies: HashMap::new(),
+            files: HashMap::from([
+                (
+                    "common".to_string(),
+                    vec![RegistryFile {
+                        name: "just_button_style.dart".to_string(),
+                        path: "components/button/just_button_style.dart".to_string(),
+                        checksum: "sha256:111".to_string(),
+                    }],
+                ),
+                (
+                    "default".to_string(),
+                    vec![RegistryFile {
+                        name: "just_button.dart".to_string(),
+                        path: "components/button/default/just_button.dart".to_string(),
+                        checksum: "sha256:222".to_string(),
+                    }],
+                ),
+            ]),
+        };
+
+        let files = comp.files_for_preset("default");
+        assert_eq!(files.len(), 2);
+        assert_eq!(files[0].name, "just_button_style.dart");
+        assert_eq!(files[1].name, "just_button.dart");
+    }
 }

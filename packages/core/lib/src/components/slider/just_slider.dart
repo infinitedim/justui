@@ -286,8 +286,8 @@ class _JustSliderState extends State<JustSlider> {
               child: MouseRegion(
                 cursor: isInteractive
                     ? (_activeThumbIndex != -1
-                        ? SystemMouseCursors.grabbing
-                        : SystemMouseCursors.click)
+                          ? SystemMouseCursors.grabbing
+                          : SystemMouseCursors.click)
                     : SystemMouseCursors.forbidden,
                 onEnter: (_) {
                   if (!_isHovered) {
@@ -381,7 +381,8 @@ class _JustSliderState extends State<JustSlider> {
                         if (widget.divisions != null && widget.divisions! > 0)
                           for (int i = 0; i <= widget.divisions!; i++)
                             Positioned(
-                              left: (i / widget.divisions!) * usableWidth +
+                              left:
+                                  (i / widget.divisions!) * usableWidth +
                                   (thumbSize / 2) -
                                   1.0,
                               child: Container(
