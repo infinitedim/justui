@@ -86,12 +86,20 @@ class JustThemeProviderState extends State<JustThemeProvider>
         break;
     }
 
-    final double width = MediaQuery.maybeSizeOf(context)?.width ?? 1024.0;
-    final resolvedAnimations = baseTheme.animations.resolve(context);
+    final isHighContrast =
+        WidgetsBinding.instance.platformDispatcher.accessibilityFeatures.highContrast ||
+            (MediaQuery.maybeHighContrastOf(context) ?? false);
 
-    return baseTheme.copyWith(
-      spacing: baseTheme.spacing.resolve(width),
-      radius: baseTheme.radius.resolve(width),
+    final resolvedTheme = isHighContrast
+        ? baseTheme.applyHighContrastOverrides()
+        : baseTheme;
+
+    final double width = MediaQuery.maybeSizeOf(context)?.width ?? 1024.0;
+    final resolvedAnimations = resolvedTheme.animations.resolve(context);
+
+    return resolvedTheme.copyWith(
+      spacing: resolvedTheme.spacing.resolve(width),
+      radius: resolvedTheme.radius.resolve(width),
       animations: resolvedAnimations,
     );
   }
@@ -127,6 +135,11 @@ class JustThemeProviderState extends State<JustThemeProvider>
     if (_themeMode == .system) {
       setState(() {});
     }
+  }
+
+  @override
+  void didChangeAccessibilityFeatures() {
+    setState(() {});
   }
 
   /// Updates the active theme mode.

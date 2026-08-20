@@ -145,7 +145,9 @@ abstract class JustTypographyScheme {
   /// Creates a default typography scheme, optionally overriding default font families.
   const factory JustTypographyScheme.fromFontFamily({
     String fontFamily,
+    List<String> fontFamilyFallback,
     String monoFontFamily,
+    List<String> monoFontFamilyFallback,
   }) = DefaultTypographyScheme;
 
   /// Large display text.
@@ -216,12 +218,24 @@ abstract class JustTypographyScheme {
   }
 }
 
-/// Default typography scheme allowing custom font families.
-final class const DefaultTypographyScheme({
-  final String fontFamily = JustTypo.fontFamily,
-  final String monoFontFamily = JustTypo.monoFontFamily,
-}) extends JustTypographyScheme {
-  TextStyle _apply(TextStyle base) => base.copyWith(fontFamily: fontFamily);
+/// Default typography scheme allowing custom font families and fallback chains.
+final class DefaultTypographyScheme extends JustTypographyScheme {
+  final String fontFamily;
+  final List<String>? fontFamilyFallback;
+  final String monoFontFamily;
+  final List<String>? monoFontFamilyFallback;
+
+  const DefaultTypographyScheme({
+    this.fontFamily = JustTypo.fontFamily,
+    this.fontFamilyFallback = JustTypo.fontFamilyFallback,
+    this.monoFontFamily = JustTypo.monoFontFamily,
+    this.monoFontFamilyFallback = JustTypo.monoFontFamilyFallback,
+  });
+
+  TextStyle _apply(TextStyle base) => base.copyWith(
+        fontFamily: fontFamily,
+        fontFamilyFallback: fontFamilyFallback,
+      );
 
   @override
   TextStyle get displayLg => _apply(JustTypo.displayLg);
@@ -251,10 +265,17 @@ final class const DefaultTypographyScheme({
       identical(this, other) ||
       other is DefaultTypographyScheme &&
           fontFamily == other.fontFamily &&
-          monoFontFamily == other.monoFontFamily;
+          listEquals(fontFamilyFallback, other.fontFamilyFallback) &&
+          monoFontFamily == other.monoFontFamily &&
+          listEquals(monoFontFamilyFallback, other.monoFontFamilyFallback);
 
   @override
-  int get hashCode => Object.hash(fontFamily, monoFontFamily);
+  int get hashCode => Object.hash(
+        fontFamily,
+        fontFamilyFallback == null ? null : Object.hashAll(fontFamilyFallback!),
+        monoFontFamily,
+        monoFontFamilyFallback == null ? null : Object.hashAll(monoFontFamilyFallback!),
+      );
 }
 
 /// Typedef for backwards compatibility.
@@ -862,6 +883,43 @@ class const JustThemeData({
     }
     final isBgDark = background.computeLuminance() < 0.5;
     return isBgDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
+  }
+
+  /// Returns a copy of this theme with high-contrast color overrides applied.
+  ///
+  /// Increases visual accessibility by enforcing high contrast text, borders,
+  /// and WCAG contrast ratios against the active background surface.
+  JustThemeData applyHighContrastOverrides() {
+    final isBgDark = colors.background.computeLuminance() < 0.5;
+    final highContrastText = isBgDark
+        ? const Color(0xFFFFFFFF)
+        : const Color(0xFF000000);
+    final highContrastBorder = highContrastText;
+
+    final updatedColors = CustomColorScheme(
+      background: colors.background,
+      card: colors.card,
+      elevated: colors.elevated,
+      muted: colors.muted,
+      overlay: colors.overlay,
+      textPrimary: highContrastText,
+      textSecondary: isBgDark
+          ? const Color(0xFFE0E0E0)
+          : const Color(0xFF1A1A1A),
+      textDisabled: isBgDark
+          ? const Color(0xFF9E9E9E)
+          : const Color(0xFF616161),
+      textInverse: colors.textInverse,
+      borderDefault: highContrastBorder,
+      borderFocus: _makeAccessible(colors.borderFocus, colors.background, minRatio: 4.5),
+      borderError: _makeAccessible(colors.borderError, colors.background, minRatio: 4.5),
+      success: _makeAccessible(colors.success, colors.background, minRatio: 4.5),
+      warning: _makeAccessible(colors.warning, colors.background, minRatio: 4.5),
+      error: _makeAccessible(colors.error, colors.background, minRatio: 4.5),
+      info: _makeAccessible(colors.info, colors.background, minRatio: 4.5),
+    );
+
+    return copyWith(colors: updatedColors);
   }
 
   /// Creates a copy of this theme with the given fields replaced by new values.
