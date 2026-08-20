@@ -3,8 +3,8 @@ import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
-import '../../theme/theme_provider.dart';
-import '../shared/_shared_focus_indicator.dart';
+import '../../core/just_theme.dart';
+import '../shared/just_focus_indicator.dart';
 import 'just_slider_style.dart';
 import 'just_slider_theme.dart';
 
@@ -114,6 +114,7 @@ class _JustSliderState extends State<JustSlider> {
 
   late final FocusNode _focusNode;
   bool _isFocused = false;
+  bool _isHovered = false;
 
   @override
   void initState() {
@@ -282,144 +283,153 @@ class _JustSliderState extends State<JustSlider> {
                   FocusManager.instance.highlightMode ==
                       FocusHighlightMode.traditional,
               borderRadius: trackBorderRadius,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onPanStart: (details) => _handleDragStart(
-                  details.localPosition.dx,
-                  startPosition,
-                  endPosition,
-                  thumbSize,
-                  usableWidth,
-                  finalEnableHaptic,
-                ),
-                onPanUpdate: (details) => _handleDragUpdate(
-                  details.localPosition.dx,
-                  usableWidth,
-                  finalEnableHaptic,
-                ),
-                onPanEnd: (_) => _handleDragEnd(),
-                onTapDown: (details) {
-                  _handleDragStart(
+              child: MouseRegion(
+                cursor: isInteractive
+                    ? (_activeThumbIndex != -1
+                        ? SystemMouseCursors.grabbing
+                        : SystemMouseCursors.click)
+                    : SystemMouseCursors.forbidden,
+                onEnter: (_) {
+                  if (!_isHovered) {
+                    setState(() {
+                      _isHovered = true;
+                    });
+                  }
+                },
+                onExit: (_) {
+                  if (_isHovered) {
+                    setState(() {
+                      _isHovered = false;
+                    });
+                  }
+                },
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onPanStart: (details) => _handleDragStart(
                     details.localPosition.dx,
                     startPosition,
                     endPosition,
                     thumbSize,
                     usableWidth,
                     finalEnableHaptic,
-                  );
-                  _handleDragUpdate(
+                  ),
+                  onPanUpdate: (details) => _handleDragUpdate(
                     details.localPosition.dx,
                     usableWidth,
                     finalEnableHaptic,
-                  );
-                  _handleDragEnd();
-                },
-                child: SizedBox(
-                  height: sliderHeight,
-                  child: Stack(
-                    clipBehavior: .none,
-                    alignment: .centerLeft,
-                    children: [
-                      // 1. Inactive Track (Background)
-                      Container(
-                        height: trackHeight,
-                        width: totalWidth,
-                        decoration: BoxDecoration(
-                          color: inactiveTrackColor,
-                          borderRadius: trackBorderRadius,
-                          border: theme.theme.presetTokens.showsDefaultBorder
-                              ? .all(color: colors.textPrimary, width: 2.5)
-                              : null,
-                        ),
-                      ),
-
-                      // 2. Active Track (Highlight)
-                      Positioned(
-                        left: _isRange ? (startPosition + thumbSize / 2) : 0.0,
-                        width: _isRange
-                            ? (endPosition - startPosition)
-                            : (startPosition + thumbSize / 2),
-                        child: Container(
+                  ),
+                  onPanEnd: (_) => _handleDragEnd(),
+                  onTapDown: (details) {
+                    _handleDragStart(
+                      details.localPosition.dx,
+                      startPosition,
+                      endPosition,
+                      thumbSize,
+                      usableWidth,
+                      finalEnableHaptic,
+                    );
+                    _handleDragUpdate(
+                      details.localPosition.dx,
+                      usableWidth,
+                      finalEnableHaptic,
+                    );
+                    _handleDragEnd();
+                  },
+                  child: SizedBox(
+                    height: sliderHeight,
+                    child: Stack(
+                      clipBehavior: .none,
+                      alignment: .centerLeft,
+                      children: [
+                        // 1. Inactive Track (Background)
+                        Container(
                           height: trackHeight,
                           decoration: BoxDecoration(
-                            color: activeTrackColor,
-                            borderRadius: _isRange ? null : trackBorderRadius, // Rounded left edge for single mode
-                            border: theme.theme.presetTokens.showsDefaultBorder
-                                ? .symmetric(
-                                    horizontal: BorderSide(
-                                      color: colors.textPrimary,
-                                      width: 2.5,
-                                    ),
-                                  )
+                            color: inactiveTrackColor,
+                            borderRadius: trackBorderRadius,
+                            border: presetTokens.showsDefaultBorder
+                                ? .all(color: colors.textPrimary, width: 2.0)
                                 : null,
                           ),
                         ),
-                      ),
 
-                      // 3. Tick Marks (if divisions specified)
-                      if (widget.divisions != null)
-                        ...List.generate(widget.divisions! + 1, (index) {
-                          final fraction = index / widget.divisions!;
-                          final tickPos =
-                              fraction * usableWidth + thumbSize / 2;
-                          final isTickActive = _isRange
-                              ? (fraction >= startFraction &&
-                                    fraction <= endFraction)
-                              : (fraction <= startFraction);
+                        // 2. Active Track (Filled)
+                        Positioned(
+                          left: _isRange ? startPosition : 0.0,
+                          width: _isRange
+                              ? (endPosition - startPosition).clamp(
+                                  0.0,
+                                  totalWidth,
+                                )
+                              : (startPosition + thumbSize / 2).clamp(
+                                  0.0,
+                                  totalWidth,
+                                ),
+                          child: Container(
+                            height: trackHeight,
+                            decoration: BoxDecoration(
+                              color: activeTrackColor,
+                              borderRadius: trackBorderRadius,
+                              border: presetTokens.showsDefaultBorder
+                                  ? .all(color: colors.textPrimary, width: 2.0)
+                                  : null,
+                            ),
+                          ),
+                        ),
 
-                          return Positioned(
-                            left: tickPos - 2.0,
-                            child: Container(
-                              width: 4.0,
-                              height: 4.0,
-                              decoration: BoxDecoration(
-                                color: isTickActive
-                                    ? activeTrackColor
-                                    : tickMarkColor,
-                                shape: .circle,
+                        // 3. Division Ticks
+                        if (widget.divisions != null && widget.divisions! > 0)
+                          for (int i = 0; i <= widget.divisions!; i++)
+                            Positioned(
+                              left: (i / widget.divisions!) * usableWidth +
+                                  (thumbSize / 2) -
+                                  1.0,
+                              child: Container(
+                                width: 2.0,
+                                height: trackHeight * 0.6,
+                                decoration: BoxDecoration(
+                                  color: tickMarkColor,
+                                  borderRadius: .all(theme.theme.radius.xs),
+                                ),
                               ),
                             ),
-                          );
-                        }),
 
-                      // 4. Thumbs (with Tooltips)
-                      if (_isRange) ...[
-                        // Start Thumb
-                        _buildThumb(
-                          index: 0,
-                          leftPosition: startPosition,
-                          value: _currentStart,
-                          thumbSize: thumbSize,
-                          colors: colors,
-                          thumbColor: thumbColor,
-                          thumbBorderColor: thumbBorderColor,
-                          theme: theme,
-                        ),
-                        // End Thumb
-                        _buildThumb(
-                          index: 1,
-                          leftPosition: endPosition,
-                          value: _currentEnd,
-                          thumbSize: thumbSize,
-                          colors: colors,
-                          thumbColor: thumbColor,
-                          thumbBorderColor: thumbBorderColor,
-                          theme: theme,
-                        ),
-                      ] else ...[
-                        // Single Thumb
-                        _buildThumb(
-                          index: 0,
-                          leftPosition: startPosition,
-                          value: _currentStart,
-                          thumbSize: thumbSize,
-                          colors: colors,
-                          thumbColor: thumbColor,
-                          thumbBorderColor: thumbBorderColor,
-                          theme: theme,
-                        ),
+                        // 4. Thumbs
+                        if (_isRange) ...[
+                          _buildThumb(
+                            index: 0,
+                            leftPosition: startPosition,
+                            value: _currentStart,
+                            thumbSize: thumbSize,
+                            colors: colors,
+                            thumbColor: thumbColor,
+                            thumbBorderColor: thumbBorderColor,
+                            theme: theme,
+                          ),
+                          _buildThumb(
+                            index: 1,
+                            leftPosition: endPosition,
+                            value: _currentEnd,
+                            thumbSize: thumbSize,
+                            colors: colors,
+                            thumbColor: thumbColor,
+                            thumbBorderColor: thumbBorderColor,
+                            theme: theme,
+                          ),
+                        ] else ...[
+                          _buildThumb(
+                            index: 0,
+                            leftPosition: startPosition,
+                            value: _currentStart,
+                            thumbSize: thumbSize,
+                            colors: colors,
+                            thumbColor: thumbColor,
+                            thumbBorderColor: thumbBorderColor,
+                            theme: theme,
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),

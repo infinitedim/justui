@@ -545,7 +545,7 @@ pub fn add_component(
             ));
         }
 
-        if !dry_run && local_file_name.ends_with("_theme.dart") {
+        if local_file_name.ends_with("_theme.dart") {
             let theme_file_content = if target_path.exists() {
                 std::fs::read_to_string(&target_path).unwrap_or_else(|_| final_content.clone())
             } else {
@@ -567,7 +567,14 @@ pub fn add_component(
 
                 for theme_file in &candidate_theme_files {
                     if theme_file.exists() {
-                        if let Ok(updated) = crate::utils::theme_editor::register_theme_extension(
+                        if dry_run {
+                            logger::stdout(&format!(
+                                "  - [DRY-RUN] Would register {}.defaults in {}",
+                                theme_class,
+                                theme_file.display()
+                            ));
+                            break;
+                        } else if let Ok(updated) = crate::utils::theme_editor::register_theme_extension(
                             theme_file,
                             &pkg_name,
                             &import_uri,

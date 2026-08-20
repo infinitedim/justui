@@ -4,7 +4,6 @@ import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/progress/just_progress.dart';
-import 'package:just_ui_core/src/components/progress/just_progress_variants.dart';
 import 'package:just_ui_core/src/components/shared/_shared_progress_spinner.dart';
 
 @widgetbook.UseCase(name: 'Linear Progress', type: JustProgress)
@@ -44,6 +43,10 @@ Widget buildJustProgressCircularUseCase(BuildContext context) {
     min: 0.0,
     max: 1.0,
   );
+  final showLabel = context.knobs.boolean(
+    label: 'Show Label',
+    initialValue: true,
+  );
   final size = context.knobs.object.dropdown<JustProgressSize>(
     label: 'Size',
     options: JustProgressSize.values,
@@ -53,7 +56,11 @@ Widget buildJustProgressCircularUseCase(BuildContext context) {
   return Center(
     child: Padding(
       padding: const EdgeInsets.all(24.0),
-      child: JustProgress.circular(value: value, showLabel: true, size: size),
+      child: JustProgress.circular(
+        value: value,
+        showLabel: showLabel,
+        size: size,
+      ),
     ),
   );
 }
