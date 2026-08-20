@@ -31,6 +31,12 @@ class const JustScrollAreaStyle({
   /// Corner radius of the scrollbar thumb.
   final Radius? scrollbarRadius,
 
+  /// Optional padding inset for the scrollbar track. Defaults to [EdgeInsets.zero].
+  final EdgeInsets? scrollbarPadding,
+
+  /// Optional main axis margin for the scrollbar track. Defaults to 0.0.
+  final double? scrollbarMargin,
+
   /// When `null`, defaults to `true` on desktop/web and `false` on mobile.
   final bool? smoothScroll,
 

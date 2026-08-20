@@ -8,9 +8,9 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import '../../theme/theme_provider.dart';
-import '../shared/_shared_pressable.dart';
-import '../shared/_shared_focus_indicator.dart';
+import '../../core/theme_provider.dart';
+import '../shared/just_pressable.dart';
+import '../shared/just_focus_indicator.dart';
 import 'just_scroll_area_style.dart';
 import 'just_scroll_area_theme.dart';
 
@@ -268,8 +268,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
 
     // Calculate frame-rate independent delta time (seconds)
     final double dt = _lastTickTime == Duration.zero
-        ? 1.0 /
-              60.0 // Assume 60fps for the very first frame
+        ? 1.0 / 60.0 // Assume 60fps for the very first frame
         : (elapsed - _lastTickTime).inMicroseconds / 1000000.0;
     _lastTickTime = elapsed;
 
@@ -507,7 +506,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
       } else if (event.logicalKey == .pageDown) {
         targetOffset = (baseOffset + viewportDimension).clamp(0.0, maxScroll);
       } else if (event.logicalKey == .pageUp) {
-        targetOffset = (baseOffset - viewportDimension).clamp(0.0, maxScroll);
+        targetOffset = (baseOffset - widget.keyboardScrollStep).clamp(0.0, maxScroll);
       } else {
         return .ignored;
       }
@@ -580,6 +579,13 @@ class _JustScrollAreaState extends State<JustScrollArea>
               themeStyle?.scrollbarRadius ??
               const .circular(3.0));
 
+    final resolvedScrollbarPadding =
+        widget.style?.scrollbarPadding ??
+        themeStyle?.scrollbarPadding ??
+        EdgeInsets.zero;
+    final resolvedScrollbarMargin =
+        widget.style?.scrollbarMargin ?? themeStyle?.scrollbarMargin ?? 0.0;
+
     final bool smoothEnabled = _isSmoothEnabled;
 
     // Create the viewport layout.
@@ -611,6 +617,8 @@ class _JustScrollAreaState extends State<JustScrollArea>
         trackColor: scrollbarTrackColor,
         thickness: scrollbarThickness,
         radius: scrollbarRadius,
+        padding: resolvedScrollbarPadding,
+        mainAxisMargin: resolvedScrollbarMargin,
         child: scrollView,
       );
     }
@@ -857,7 +865,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
                                             width: 16.0,
                                             height: 16.0,
                                             child: CustomPaint(
-                                              painter: _ChevronUpPainter(
+                                              painter: const _ChevronUpPainter(
                                                 color: colors.textPrimary,
                                                 strokeWidth: 2.0,
                                               ),
@@ -892,10 +900,15 @@ class _JustScrollAreaState extends State<JustScrollArea>
   }
 }
 
-class const _ChevronUpPainter({
-  required final Color color,
-  required final double strokeWidth,
-}) extends CustomPainter {
+class _ChevronUpPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+
+  const _ChevronUpPainter({
+    required this.color,
+    required this.strokeWidth,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
