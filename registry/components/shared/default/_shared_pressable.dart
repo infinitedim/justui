@@ -36,7 +36,7 @@ class const JustPressable({
 }
 
 class _JustPressableState extends State<JustPressable> {
-  late final FocusNode _focusNode;
+  late FocusNode _focusNode;
   final ValueNotifier<bool> _isHovered = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _isPressed = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _isFocused = ValueNotifier<bool>(false);
