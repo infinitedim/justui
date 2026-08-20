@@ -162,6 +162,11 @@ class _JustScrollAreaState extends State<JustScrollArea>
   Duration _lastTickTime = Duration.zero;
   bool _isDragging = false;
 
+  // --- Multi-Device Physics State ---
+  DateTime? _lastPointerEventTime;
+  double _lastDeltaMag = 0.0;
+  bool _isTrackpadSignal = false;
+
   ScrollController get _resolvedController =>
       widget.controller ?? _internalController;
 
@@ -187,6 +192,12 @@ class _JustScrollAreaState extends State<JustScrollArea>
   /// Resolves the effective lerp factor from widget, style, or theme.
   double get _resolvedLerpFactor {
     return widget.style?.lerpFactor ?? widget.lerpFactor;
+  }
+
+  /// Resolves the effective lerp factor dynamically based on input device signal.
+  double get _effectiveLerp {
+    if (_isTrackpadSignal) return 0.35; // 1:1 responsive touch-pad feel
+    return _resolvedLerpFactor.clamp(0.01, 1.0);
   }
 
   /// Resolves the effective wheel multiplier.
@@ -257,8 +268,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
 
     // Calculate frame-rate independent delta time (seconds)
     final double dt = _lastTickTime == Duration.zero
-        ? 1.0 /
-              60.0 // Assume 60fps for the very first frame
+        ? 1.0 / 60.0 // Assume 60fps for the very first frame
         : (elapsed - _lastTickTime).inMicroseconds / 1000000.0;
     _lastTickTime = elapsed;
 
@@ -266,8 +276,20 @@ class _JustScrollAreaState extends State<JustScrollArea>
     final double clampedDt = dt.clamp(0.0, 0.1);
 
     // Frame-rate independent exponential interpolation factor
-    final double lerp = _resolvedLerpFactor.clamp(0.01, 1.0);
+    final double lerp = _effectiveLerp;
     final double alpha = 1.0 - math.pow(1.0 - lerp, 60.0 * clampedDt);
+
+    final maxScroll = _resolvedController.position.maxScrollExtent;
+
+    // Damped spring tension when target offset is in elastic overscroll zone
+    if (_targetOffset < 0.0) {
+      _targetOffset += (-_targetOffset * 10.0 * clampedDt);
+      if (_targetOffset.abs() < 0.5) _targetOffset = 0.0;
+    } else if (_targetOffset > maxScroll) {
+      final overshot = _targetOffset - maxScroll;
+      _targetOffset -= (overshot * 10.0 * clampedDt);
+      if ((_targetOffset - maxScroll).abs() < 0.5) _targetOffset = maxScroll;
+    }
 
     // Interpolate current position toward target
     final double diff = _targetOffset - _currentOffset;
@@ -275,36 +297,58 @@ class _JustScrollAreaState extends State<JustScrollArea>
 
     // Epsilon threshold: snap when close enough (< 0.1px) and stop the ticker
     if (diff.abs() < 0.1) {
-      _currentOffset = _targetOffset;
-      _resolvedController.jumpTo(_currentOffset);
+      _currentOffset = _targetOffset.clamp(0.0, maxScroll);
+      _targetOffset = _currentOffset;
+      if (_resolvedController.hasClients) {
+        _resolvedController.jumpTo(_currentOffset);
+      }
       _stopSmoothing();
       return;
     }
 
     // Apply interpolated position via jumpTo (zero animation overhead)
-    _resolvedController.jumpTo(_currentOffset);
+    final double safePosition = _currentOffset.clamp(0.0, maxScroll);
+    if (_resolvedController.hasClients) {
+      _resolvedController.jumpTo(safePosition);
+    }
   }
 
   /// Handles mouse wheel and trackpad pointer signal events.
   ///
-  /// Accumulates the scroll delta into [_targetOffset] and starts the
-  /// smooth ticker if not already running.
+  /// Accumulates the scroll delta into [_targetOffset] with multi-device impulse physics
+  /// and starts the smooth ticker if not already running.
   void _handlePointerSignal(PointerSignalEvent event) {
     if (event is! PointerScrollEvent) return;
     if (!_resolvedController.hasClients) return;
 
     final maxScroll = _resolvedController.position.maxScrollExtent;
+    final now = DateTime.now();
+    final double dtMs = _lastPointerEventTime == null
+        ? 100.0
+        : now.difference(_lastPointerEventTime!).inMicroseconds / 1000.0;
+    _lastPointerEventTime = now;
 
     // Determine raw delta based on scroll axis
     final double rawDelta = widget.direction == .vertical
         ? event.scrollDelta.dy
         : event.scrollDelta.dx;
 
-    // Apply wheel multiplier
-    final double delta = rawDelta * _resolvedWheelMultiplier;
+    // Detect precision trackpad vs mechanical wheel signal profile
+    _isTrackpadSignal = dtMs < 20.0 && rawDelta.abs() < 15.0;
 
-    // Accumulate target offset, clamped to valid scroll range
-    _targetOffset = (_targetOffset + delta).clamp(0.0, maxScroll);
+    // Multi-notch impulse acceleration multiplier for rapid mechanical wheel ticks
+    double impulseMultiplier = 1.0;
+    if (!_isTrackpadSignal && dtMs < 60.0 && rawDelta.sign == _lastDeltaMag.sign && rawDelta.abs() > 0.1) {
+      impulseMultiplier = 1.0 + 0.6 * math.exp(-0.02 * dtMs);
+    }
+    _lastDeltaMag = rawDelta;
+
+    // Apply wheel multiplier and impulse acceleration
+    final double delta = rawDelta * _resolvedWheelMultiplier * impulseMultiplier;
+
+    // Accumulate target offset with elastic overscroll allowance (+/- 60px)
+    const double overscrollLimit = 60.0;
+    _targetOffset = (_targetOffset + delta).clamp(-overscrollLimit, maxScroll + overscrollLimit);
 
     // Start the ticker engine if not already running
     _startSmoothing();
