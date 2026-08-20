@@ -313,8 +313,8 @@ class JustInput extends StatefulWidget {
 }
 
 class _JustInputState extends State<JustInput> {
-  late final TextEditingController _controller;
-  late final FocusNode _focusNode;
+  late TextEditingController _controller;
+  late FocusNode _focusNode;
 
   final ValueNotifier<bool> _isFocused = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _isFilled = ValueNotifier<bool>(false);
