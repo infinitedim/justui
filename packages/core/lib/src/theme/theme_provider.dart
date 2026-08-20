@@ -87,8 +87,12 @@ class JustThemeProviderState extends State<JustThemeProvider>
     }
 
     final isHighContrast =
-        WidgetsBinding.instance.platformDispatcher.accessibilityFeatures.highContrast ||
-            (MediaQuery.maybeHighContrastOf(context) ?? false);
+        WidgetsBinding
+            .instance
+            .platformDispatcher
+            .accessibilityFeatures
+            .highContrast ||
+        (MediaQuery.maybeHighContrastOf(context) ?? false);
 
     final resolvedTheme = isHighContrast
         ? baseTheme.applyHighContrastOverrides()

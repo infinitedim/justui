@@ -3,8 +3,8 @@ import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
-import '../../core/just_theme.dart';
-import '../shared/just_focus_indicator.dart';
+import '../../theme/theme_provider.dart';
+import '../shared/_shared_focus_indicator.dart';
 import 'just_slider_style.dart';
 import 'just_slider_theme.dart';
 
@@ -286,8 +286,8 @@ class _JustSliderState extends State<JustSlider> {
               child: MouseRegion(
                 cursor: isInteractive
                     ? (_activeThumbIndex != -1
-                        ? SystemMouseCursors.grabbing
-                        : SystemMouseCursors.click)
+                          ? SystemMouseCursors.grabbing
+                          : SystemMouseCursors.click)
                     : SystemMouseCursors.forbidden,
                 onEnter: (_) {
                   if (!_isHovered) {
@@ -381,7 +381,8 @@ class _JustSliderState extends State<JustSlider> {
                         if (widget.divisions != null && widget.divisions! > 0)
                           for (int i = 0; i <= widget.divisions!; i++)
                             Positioned(
-                              left: (i / widget.divisions!) * usableWidth +
+                              left:
+                                  (i / widget.divisions!) * usableWidth +
                                   (thumbSize / 2) -
                                   1.0,
                               child: Container(

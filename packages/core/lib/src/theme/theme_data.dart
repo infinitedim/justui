@@ -233,9 +233,9 @@ final class DefaultTypographyScheme extends JustTypographyScheme {
   });
 
   TextStyle _apply(TextStyle base) => base.copyWith(
-        fontFamily: fontFamily,
-        fontFamilyFallback: fontFamilyFallback,
-      );
+    fontFamily: fontFamily,
+    fontFamilyFallback: fontFamilyFallback,
+  );
 
   @override
   TextStyle get displayLg => _apply(JustTypo.displayLg);
@@ -271,11 +271,13 @@ final class DefaultTypographyScheme extends JustTypographyScheme {
 
   @override
   int get hashCode => Object.hash(
-        fontFamily,
-        fontFamilyFallback == null ? null : Object.hashAll(fontFamilyFallback!),
-        monoFontFamily,
-        monoFontFamilyFallback == null ? null : Object.hashAll(monoFontFamilyFallback!),
-      );
+    fontFamily,
+    fontFamilyFallback == null ? null : Object.hashAll(fontFamilyFallback!),
+    monoFontFamily,
+    monoFontFamilyFallback == null
+        ? null
+        : Object.hashAll(monoFontFamilyFallback!),
+  );
 }
 
 /// Typedef for backwards compatibility.
@@ -911,10 +913,26 @@ class const JustThemeData({
           : const Color(0xFF616161),
       textInverse: colors.textInverse,
       borderDefault: highContrastBorder,
-      borderFocus: _makeAccessible(colors.borderFocus, colors.background, minRatio: 4.5),
-      borderError: _makeAccessible(colors.borderError, colors.background, minRatio: 4.5),
-      success: _makeAccessible(colors.success, colors.background, minRatio: 4.5),
-      warning: _makeAccessible(colors.warning, colors.background, minRatio: 4.5),
+      borderFocus: _makeAccessible(
+        colors.borderFocus,
+        colors.background,
+        minRatio: 4.5,
+      ),
+      borderError: _makeAccessible(
+        colors.borderError,
+        colors.background,
+        minRatio: 4.5,
+      ),
+      success: _makeAccessible(
+        colors.success,
+        colors.background,
+        minRatio: 4.5,
+      ),
+      warning: _makeAccessible(
+        colors.warning,
+        colors.background,
+        minRatio: 4.5,
+      ),
       error: _makeAccessible(colors.error, colors.background, minRatio: 4.5),
       info: _makeAccessible(colors.info, colors.background, minRatio: 4.5),
     );
