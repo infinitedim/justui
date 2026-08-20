@@ -580,6 +580,13 @@ class _JustScrollAreaState extends State<JustScrollArea>
               themeStyle?.scrollbarRadius ??
               const .circular(3.0));
 
+    final resolvedScrollbarPadding =
+        widget.style?.scrollbarPadding ??
+        themeStyle?.scrollbarPadding ??
+        EdgeInsets.zero;
+    final resolvedScrollbarMargin =
+        widget.style?.scrollbarMargin ?? themeStyle?.scrollbarMargin ?? 0.0;
+
     final bool smoothEnabled = _isSmoothEnabled;
 
     // Create the viewport layout.
@@ -611,6 +618,8 @@ class _JustScrollAreaState extends State<JustScrollArea>
         trackColor: scrollbarTrackColor,
         thickness: scrollbarThickness,
         radius: scrollbarRadius,
+        padding: resolvedScrollbarPadding,
+        mainAxisMargin: resolvedScrollbarMargin,
         child: scrollView,
       );
     }
