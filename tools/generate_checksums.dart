@@ -53,13 +53,61 @@ void main(List<String> args) async {
     print('-----------------------------------------');
     print('Component: $name${isInternal ? ' [internal]' : ''}');
 
-    for (final String preset in filesMap.keys) {
-      final List<dynamic> files = filesMap[preset] as List<dynamic>;
-      print('  Preset: $preset');
+    // Restructure filesMap to extract common files (_style, _theme, _variants)
+    final Map<String, dynamic> newFilesMap = {};
+    final List<Map<String, dynamic>> commonFiles = [];
+    final Set<String> commonFileNames = {};
 
-      // Poin A: process every file in this preset concurrently — each
-      // file's work is fully independent I/O, so sequential awaiting was
-      // pure wasted wall-clock time.
+    for (final String preset in filesMap.keys.toList()) {
+      if (preset == 'common') continue;
+      final List<dynamic> files = filesMap[preset] as List<dynamic>;
+      final List<Map<String, dynamic>> remainingPresetFiles = [];
+
+      for (final dynamic f in files) {
+        final fileMap = Map<String, dynamic>.from(f as Map<String, dynamic>);
+        final String fileName = fileMap['name'] as String;
+
+        final bool isCommon =
+            fileName.endsWith('_style.dart') ||
+            fileName.endsWith('_theme.dart') ||
+            fileName.endsWith('_variants.dart');
+
+        final String origPath = fileMap['path'] as String;
+
+        if (isCommon) {
+          if (!commonFileNames.contains(fileName)) {
+            commonFileNames.add(fileName);
+            fileMap['path'] = origPath.replaceFirst(
+              RegExp(r'/(default|neobrutalism)/'),
+              '/',
+            );
+            commonFiles.add(fileMap);
+          }
+        } else {
+          fileMap['path'] = origPath;
+          remainingPresetFiles.add(fileMap);
+        }
+      }
+
+      newFilesMap[preset] = remainingPresetFiles;
+    }
+
+    final Map<String, dynamic> orderedFilesMap = {};
+    if (commonFiles.isNotEmpty) {
+      orderedFilesMap['common'] = commonFiles;
+    }
+    for (final key in newFilesMap.keys) {
+      if (newFilesMap[key] != null && (newFilesMap[key] as List).isNotEmpty) {
+        orderedFilesMap[key] = newFilesMap[key];
+      }
+    }
+
+    compMap['files'] = orderedFilesMap;
+
+    for (final String preset in orderedFilesMap.keys) {
+      final List<dynamic> files = orderedFilesMap[preset] as List<dynamic>;
+      print('  Section: $preset');
+
       final results = await Future.wait(
         files.map(
           (dynamic file) => _processFile(
@@ -100,8 +148,6 @@ void main(List<String> args) async {
     exit(1);
   }
 
-  // Poin B: surface a consolidated drift summary instead of forcing the
-  // reader to scroll back through every component's log output.
   if (driftedFiles.isNotEmpty) {
     print('\nDrift summary (${driftedFiles.length} file(s)):');
     for (final path in driftedFiles) {
@@ -117,6 +163,44 @@ void main(List<String> args) async {
           : 'Status: Differences detected between registry and core source.',
     );
   } else {
+    // Collect all valid registry file paths from updated indexJson
+    final Set<String> validAbsolutePaths = {};
+    for (final dynamic comp in components) {
+      final compMap = comp as Map<String, dynamic>;
+      final filesMap = compMap['files'] as Map<String, dynamic>;
+      for (final preset in filesMap.keys) {
+        final List<dynamic> fileList = filesMap[preset] as List<dynamic>;
+        for (final dynamic f in fileList) {
+          final fileMap = f as Map<String, dynamic>;
+          final relPath = fileMap['path'] as String;
+          validAbsolutePaths.add(
+            p.normalize(p.join(projectRoot, 'registry', relPath)),
+          );
+        }
+      }
+    }
+
+    // Clean up redundant/obsolete files in registry/components
+    final registryComponentsDir = Directory(
+      p.join(projectRoot, 'registry', 'components'),
+    );
+    if (registryComponentsDir.existsSync()) {
+      final List<FileSystemEntity> allEntities = registryComponentsDir.listSync(
+        recursive: true,
+      );
+      for (final entity in allEntities) {
+        if (entity is File && entity.path.endsWith('.dart')) {
+          final normalizedPath = p.normalize(entity.path);
+          if (!validAbsolutePaths.contains(normalizedPath)) {
+            print(
+              '  Removing obsolete file: ${p.relative(normalizedPath, from: projectRoot)}',
+            );
+            entity.deleteSync();
+          }
+        }
+      }
+    }
+
     const encoder = JsonEncoder.withIndent('  ');
     await indexFile.writeAsString('${encoder.convert(indexJson)}\n');
     print('\nSuccess: Updated registry/index.json and synced all files.');

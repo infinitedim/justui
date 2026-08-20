@@ -87,16 +87,16 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
     logger::stdout(&format!("Category      : {}", comp.category));
     logger::stdout(&format!("Dependencies  : {}", reg_deps));
     logger::stdout(&format!("Pub deps      : {}", pub_deps_str));
+    let preset_files = comp.files_for_preset(&preset);
     logger::stdout(&format!(
         "File count    : {} file(s)",
-        comp.files_for_preset(&preset).len()
+        preset_files.len()
     ));
     logger::stdout("");
 
     let files_to_show: Vec<_> = if let Some(ref name_filter) = file_filter {
-        let found = comp
-            .files_for_preset(&preset)
-            .iter()
+        let found = preset_files
+            .into_iter()
             .find(|f| &f.name == name_filter);
         match found {
             Some(f) => vec![f],
@@ -109,7 +109,7 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
             }
         }
     } else {
-        comp.files_for_preset(&preset).iter().collect()
+        preset_files
     };
 
     let total_files = files_to_show.len();

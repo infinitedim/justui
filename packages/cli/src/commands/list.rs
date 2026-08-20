@@ -246,7 +246,8 @@ pub fn run() -> Result<()> {
                                 .add_modifier(Modifier::UNDERLINED),
                         )));
 
-                        for file in comp.files_for_preset(&config.preset) {
+                        let files = comp.files_for_preset(&config.preset);
+                        for file in &files {
                             detail_lines.push(ratatui::text::Line::from(vec![
                                 ratatui::text::Span::raw("  • "),
                                 ratatui::text::Span::styled(
@@ -439,7 +440,7 @@ fn get_component_status(comp: &RegistryComponent, config: &JustUIConfig) -> Stri
     let mut existing_count = 0;
     let mut matching_count = 0;
 
-    for file in files {
+    for file in &files {
         let local_file_name = if comp.name == "_shared_theme_provider" {
             file.name.clone()
         } else if comp.internal {

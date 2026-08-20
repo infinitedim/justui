@@ -51,12 +51,15 @@ pub struct RegistryComponent {
 }
 
 impl RegistryComponent {
-    pub fn files_for_preset<'a>(&'a self, preset: &str) -> &'a Vec<RegistryFile> {
-        static EMPTY: Vec<RegistryFile> = Vec::new();
-        self.files
-            .get(preset)
-            .or_else(|| self.files.get("default"))
-            .unwrap_or(&EMPTY)
+    pub fn files_for_preset(&self, preset: &str) -> Vec<RegistryFile> {
+        let mut result = Vec::new();
+        if let Some(common_files) = self.files.get("common") {
+            result.extend(common_files.clone());
+        }
+        if let Some(preset_files) = self.files.get(preset).or_else(|| self.files.get("default")) {
+            result.extend(preset_files.clone());
+        }
+        result
     }
 }
 
