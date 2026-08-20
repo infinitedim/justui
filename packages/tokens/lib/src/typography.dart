@@ -8,8 +8,25 @@ abstract final class JustTypo {
   /// The default font family used by JustUI.
   static const String fontFamily = 'Inter';
 
+  /// Default fallback font family chain for sans-serif typography.
+  static const List<String> fontFamilyFallback = [
+    'SF Pro Text',
+    'Roboto',
+    'Segoe UI',
+    'system-ui',
+    'sans-serif',
+  ];
+
   /// The monospace font family used for code or numbers.
   static const String monoFontFamily = 'JetBrains Mono';
+
+  /// Default fallback font family chain for monospace typography.
+  static const List<String> monoFontFamilyFallback = [
+    'SF Mono',
+    'Fira Code',
+    'Consolas',
+    'monospace',
+  ];
 
   // --- Display Scale ---
   /// Large display text for hero headlines (48px / line-height: 1.2)
