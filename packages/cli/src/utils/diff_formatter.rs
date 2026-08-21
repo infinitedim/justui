@@ -158,3 +158,21 @@ pub fn print_unified_diff(file_name: &str, local: &str, remote: &str, context_co
     let footer = format!("└{}", "─".repeat(border_length));
     logger::stdout(&footer);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_print_unified_diff() {
+        let local = "class JustButton {}\n";
+        let remote = "class JustButton {}\n";
+        // Should handle equal files without panic
+        print_unified_diff("just_button.dart", local, remote, 2);
+
+        let local_diff = "void main() {\n  print('hello');\n}\n";
+        let remote_diff = "void main() {\n  print('world');\n  // new comment\n}\n";
+        print_unified_diff("test.dart", local_diff, remote_diff, 2);
+    }
+}
+
