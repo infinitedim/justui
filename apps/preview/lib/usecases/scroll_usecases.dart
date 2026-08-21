@@ -177,10 +177,7 @@ Widget buildJustScrollAreaDefaultUseCase(BuildContext context) {
               ],
             ),
           ),
-          Container(
-            height: 1.0,
-            color: colors.borderDefault,
-          ),
+          Container(height: 1.0, color: colors.borderDefault),
           // Scrollable Content
           JustScrollArea(
             maxHeight: maxHeight,
@@ -203,7 +200,9 @@ Widget buildJustScrollAreaDefaultUseCase(BuildContext context) {
                     padding: EdgeInsets.all(spacing.md),
                     decoration: BoxDecoration(
                       color: colors.background,
-                      borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(8.0),
+                      ),
                       border: Border.all(
                         color: colors.borderDefault.withValues(alpha: 0.5),
                         width: 1.0,

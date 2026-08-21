@@ -848,4 +848,454 @@ mod cli_integration {
         assert_eq!(files[0].name, "just_button_style.dart");
         assert_eq!(files[1].name, "just_button.dart");
     }
+
+    #[test]
+    fn info_search_view_and_list_commands_work() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let registry_dir = dir.path().join("mock_registry");
+        std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+        std::fs::create_dir_all(registry_dir.join("components/input")).unwrap();
+
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "0.1.0",
+                "presets": ["default"],
+                "components": [
+                    {
+                        "name": "button",
+                        "version": "0.1.0",
+                        "description": "Button component",
+                        "category": "primitives",
+                        "supportedPresets": ["default"],
+                        "registryDependencies": [],
+                        "pubDependencies": {},
+                        "files": {
+                            "default": [{
+                                "name": "just_button.dart",
+                                "path": "components/button/just_button.dart",
+                                "checksum": "sha256:111"
+                            }]
+                        }
+                    },
+                    {
+                        "name": "input",
+                        "version": "0.1.0",
+                        "description": "Text input component",
+                        "category": "forms",
+                        "supportedPresets": ["default"],
+                        "registryDependencies": [],
+                        "pubDependencies": {},
+                        "files": {
+                            "default": [{
+                                "name": "just_input.dart",
+                                "path": "components/input/just_input.dart",
+                                "checksum": "sha256:222"
+                            }]
+                        }
+                    }
+                ]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(registry_dir.join("components/button/just_button.dart"), "class JustButton {}").unwrap();
+        std::fs::write(registry_dir.join("components/input/just_input.dart"), "class JustInput {}").unwrap();
+
+        std::fs::write(dir.path().join("pubspec.yaml"), "name: test_app\n").unwrap();
+        std::fs::write(
+            dir.path().join("justui.config.yaml"),
+            format!(
+                "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\nregistry_url: {}\n",
+                registry_dir.display()
+            ),
+        )
+        .unwrap();
+
+        // 1. Test `info`
+        justui()
+            .current_dir(dir.path())
+            .args(["info", "button"])
+            .assert()
+            .success()
+            .stderr(predicates::str::contains("button"))
+            .stdout(predicates::str::contains("Button component"));
+
+        justui()
+            .current_dir(dir.path())
+            .args(["info", "invalid_comp"])
+            .assert()
+            .failure()
+            .stderr(predicates::str::contains("not found"));
+
+        // 2. Test `search`
+        justui()
+            .current_dir(dir.path())
+            .args(["search", "input"])
+            .assert()
+            .success()
+            .stdout(predicates::str::contains("input"));
+
+        justui()
+            .current_dir(dir.path())
+            .args(["search", "nonexistent_query_xyz"])
+            .assert()
+            .success()
+            .stdout(predicates::str::contains("Tidak ditemukan"));
+
+        // 3. Test `view`
+        justui()
+            .current_dir(dir.path())
+            .args(["view", "button"])
+            .assert()
+            .success()
+            .stdout(predicates::str::contains("class JustButton"));
+
+        justui()
+            .current_dir(dir.path())
+            .args(["view", "button", "--raw"])
+            .assert()
+            .success()
+            .stdout(predicates::str::contains("class JustButton"));
+
+        // 4. Test `list`
+        justui()
+            .current_dir(dir.path())
+            .args(["list", "--json"])
+            .assert()
+            .success()
+            .stdout(predicates::str::contains("\"name\": \"button\""));
+
+        justui()
+            .current_dir(dir.path())
+            .args(["list", "--category", "primitives"])
+            .assert()
+            .success()
+            .stdout(predicates::str::contains("button"));
+    }
+
+    #[test]
+    fn diff_and_update_commands_work() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let registry_dir = dir.path().join("mock_registry");
+        std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+
+        let remote_content = "class JustButton { void render() {} }";
+        let hash = {
+            use sha2::{Digest, Sha256};
+            let mut h = Sha256::new();
+            h.update(remote_content.as_bytes());
+            hex::encode(h.finalize())
+        };
+
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "0.1.0",
+                "presets": ["default"],
+                "components": [{
+                    "name": "button",
+                    "version": "0.1.0",
+                    "description": "Button",
+                    "category": "primitives",
+                    "supportedPresets": ["default"],
+                    "registryDependencies": [],
+                    "pubDependencies": {},
+                    "files": {
+                        "default": [{
+                            "name": "just_button.dart",
+                            "path": "components/button/just_button.dart",
+                            "checksum": format!("sha256:{}", hash)
+                        }]
+                    }
+                }]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(registry_dir.join("components/button/just_button.dart"), remote_content).unwrap();
+
+        std::fs::write(dir.path().join("pubspec.yaml"), "name: test_app\n").unwrap();
+        std::fs::write(
+            dir.path().join("justui.config.yaml"),
+            format!(
+                "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\nregistry_url: {}\n",
+                registry_dir.display()
+            ),
+        )
+        .unwrap();
+
+        // Install button first
+        justui().current_dir(dir.path()).args(["add", "button"]).assert().success();
+
+        // 1. Diff on up-to-date component
+        justui()
+            .current_dir(dir.path())
+            .args(["diff", "button"])
+            .assert()
+            .success();
+
+        // 2. Modify local file
+        let installed_file = dir.path().join("lib/ui/button/just_button.dart");
+        std::fs::write(&installed_file, "// local change\nclass JustButton {}").unwrap();
+
+        // Diff should show local modifications
+        justui()
+            .current_dir(dir.path())
+            .args(["diff", "button"])
+            .assert()
+            .success();
+
+        // Accept remote diff
+        justui()
+            .current_dir(dir.path())
+            .args(["diff", "button", "--accept"])
+            .assert()
+            .success();
+
+        // Update command when up to date
+        justui()
+            .current_dir(dir.path())
+            .args(["update"])
+            .assert()
+            .success()
+            .stdout(predicates::str::contains("Semua komponen sudah menggunakan versi terbaru"));
+
+        // Test `upgrade --check`
+        justui()
+            .current_dir(dir.path())
+            .args(["upgrade", "--check"])
+            .assert()
+            .success();
+    }
+
+    #[test]
+    fn add_all_overwrite_dependencies_and_internal_components() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let registry_dir = dir.path().join("mock_registry");
+        std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+        std::fs::create_dir_all(registry_dir.join("components/shared")).unwrap();
+
+        let button_content = "import '../shared/just_pressable.dart';\nclass JustButton {}";
+        let pressable_content = "class JustPressable {}";
+
+        let button_hash = {
+            use sha2::{Digest, Sha256};
+            let mut h = Sha256::new();
+            h.update(button_content.as_bytes());
+            hex::encode(h.finalize())
+        };
+        let pressable_hash = {
+            use sha2::{Digest, Sha256};
+            let mut h = Sha256::new();
+            h.update(pressable_content.as_bytes());
+            hex::encode(h.finalize())
+        };
+
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "0.1.0",
+                "presets": ["default"],
+                "components": [
+                    {
+                        "name": "button",
+                        "version": "0.1.0",
+                        "description": "Button",
+                        "category": "primitives",
+                        "supportedPresets": ["default"],
+                        "registryDependencies": ["pressable"],
+                        "pubDependencies": { "flutter_svg": "^2.0.0" },
+                        "files": {
+                            "default": [{
+                                "name": "just_button.dart",
+                                "path": "components/button/just_button.dart",
+                                "checksum": format!("sha256:{}", button_hash)
+                            }]
+                        }
+                    },
+                    {
+                        "name": "pressable",
+                        "version": "0.1.0",
+                        "description": "Pressable",
+                        "category": "shared",
+                        "internal": true,
+                        "supportedPresets": ["default"],
+                        "registryDependencies": [],
+                        "pubDependencies": {},
+                        "files": {
+                            "default": [{
+                                "name": "_shared_pressable.dart",
+                                "path": "components/shared/_shared_pressable.dart",
+                                "checksum": format!("sha256:{}", pressable_hash)
+                            }]
+                        }
+                    }
+                ]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(registry_dir.join("components/button/just_button.dart"), button_content).unwrap();
+        std::fs::write(registry_dir.join("components/shared/_shared_pressable.dart"), pressable_content).unwrap();
+
+        std::fs::write(
+            dir.path().join("pubspec.yaml"),
+            "name: my_app\ndependencies:\n  flutter:\n    sdk: flutter\n",
+        )
+        .unwrap();
+        std::fs::write(
+            dir.path().join("justui.config.yaml"),
+            format!(
+                "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\nregistry_url: {}\n",
+                registry_dir.display()
+            ),
+        )
+        .unwrap();
+
+        // Add all components with --all and --yes
+        justui()
+            .current_dir(dir.path())
+            .args(["add", "--all", "--yes"])
+            .assert()
+            .success()
+            .stderr(predicates::str::contains("komponen berhasil ditambahkan"));
+
+        // Verify button and shared pressable were written
+        let button_file = dir.path().join("lib/ui/button/just_button.dart");
+        let pressable_file = dir.path().join("lib/ui/shared/just_pressable.dart");
+        assert!(button_file.exists());
+        assert!(pressable_file.exists());
+
+        // Test `add --all --overwrite --yes`
+        justui()
+            .current_dir(dir.path())
+            .args(["add", "--all", "--overwrite", "--yes"])
+            .assert()
+            .success();
+
+        // Verify pubspec.yaml updated with flutter_svg
+        let pubspec = std::fs::read_to_string(dir.path().join("pubspec.yaml")).unwrap();
+        assert!(pubspec.contains("flutter_svg"));
+
+        // Test update command when a local component is outdated
+        std::fs::write(&button_file, "// outdated local copy\nclass JustButton {}").unwrap();
+
+        // `justui list` should report button as modified/outdated
+        justui()
+            .current_dir(dir.path())
+            .args(["list"])
+            .assert()
+            .success();
+
+        // `justui update --yes` should update the outdated component
+        justui()
+            .current_dir(dir.path())
+            .args(["update", "--yes"])
+            .assert()
+            .success()
+            .stderr(predicates::str::contains("Diperbarui"));
+    }
+
+    #[test]
+    fn init_command_with_custom_flags() {
+        let dir = tempfile::TempDir::new().unwrap();
+        std::fs::write(dir.path().join("pubspec.yaml"), "name: custom_app").unwrap();
+
+        justui()
+            .current_dir(dir.path())
+            .args(["init", "--yes", "--components-dir", "lib/components", "--tokens-dir", "lib/design_tokens"])
+            .assert()
+            .success();
+
+        let config = std::fs::read_to_string(dir.path().join("justui.config.yaml")).unwrap();
+        assert!(config.contains("components_dir: lib/components"));
+        assert!(config.contains("tokens_dir: lib/design_tokens"));
+    }
+
+    #[test]
+    fn diff_verbose_preset_info_and_create_dry_run() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let registry_dir = dir.path().join("mock_registry");
+        std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+
+        let button_content = "class JustButton {}";
+        let hash = {
+            use sha2::{Digest, Sha256};
+            let mut h = Sha256::new();
+            h.update(button_content.as_bytes());
+            hex::encode(h.finalize())
+        };
+
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "0.1.0",
+                "presets": ["default", "neobrutalism"],
+                "components": [{
+                    "name": "button",
+                    "version": "0.1.0",
+                    "description": "Button",
+                    "category": "primitives",
+                    "supportedPresets": ["default", "neobrutalism"],
+                    "registryDependencies": [],
+                    "pubDependencies": {},
+                    "files": {
+                        "default": [{
+                            "name": "just_button.dart",
+                            "path": "components/button/just_button.dart",
+                            "checksum": format!("sha256:{}", hash)
+                        }]
+                    }
+                }]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(registry_dir.join("components/button/just_button.dart"), button_content).unwrap();
+
+        std::fs::write(dir.path().join("pubspec.yaml"), "name: my_app").unwrap();
+        std::fs::write(
+            dir.path().join("justui.config.yaml"),
+            format!(
+                "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\nregistry_url: {}\npreset: default\n",
+                registry_dir.display()
+            ),
+        )
+        .unwrap();
+
+        // 1. Install button
+        justui().current_dir(dir.path()).args(["add", "button"]).assert().success();
+
+        // 2. Modify local file and run `justui diff --verbose`
+        let installed_file = dir.path().join("lib/ui/button/just_button.dart");
+        std::fs::write(&installed_file, "// modified\nclass JustButton {}").unwrap();
+
+        justui()
+            .current_dir(dir.path())
+            .args(["diff", "--verbose"])
+            .assert()
+            .success();
+
+        // 3. Test `preset info neobrutalism`
+        justui()
+            .current_dir(dir.path())
+            .args(["preset", "info", "neobrutalism"])
+            .assert()
+            .success();
+
+        // 4. Test `create --dry-run` and custom category
+        justui()
+            .current_dir(dir.path())
+            .args(["create", "my_custom_widget", "--category", "primitives", "--dry-run"])
+            .assert()
+            .success();
+    }
 }
+
+
+
