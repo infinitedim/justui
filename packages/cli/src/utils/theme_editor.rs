@@ -58,3 +58,54 @@ pub fn register_theme_extension(
         Ok(false)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::tempdir;
+
+    #[test]
+    fn test_register_theme_extension() {
+        let dir = tempdir().unwrap();
+        let theme_path = dir.path().join("just_theme.dart");
+
+        // 1. Non-existent file
+        assert!(!register_theme_extension(&theme_path, "my_app", "button/just_button.dart", "JustButtonTheme").unwrap());
+
+        // 2. Initial theme file with marker
+        let initial_code = r#"import 'package:flutter/material.dart';
+
+final List<ThemeExtension<dynamic>> justThemeExtensions = [
+  // CLI:REGISTER_EXTENSIONS
+];
+"#;
+        std::fs::write(&theme_path, initial_code).unwrap();
+
+        // 3. Register first extension
+        let registered = register_theme_extension(&theme_path, "my_app", "button/just_button.dart", "JustButtonTheme").unwrap();
+        assert!(registered);
+
+        let updated = std::fs::read_to_string(&theme_path).unwrap();
+        assert!(updated.contains("import 'button/just_button.dart';"));
+        assert!(updated.contains("JustButtonTheme.defaults,"));
+
+        // 4. Register duplicate extension (should return false)
+        let duplicate = register_theme_extension(&theme_path, "my_app", "button/just_button.dart", "JustButtonTheme").unwrap();
+        assert!(!duplicate);
+
+        // 5. Fallback registration without marker
+        let fallback_path = dir.path().join("fallback_theme.dart");
+        let fallback_code = r#"import 'package:flutter/material.dart';
+
+final List<ThemeExtension<dynamic>> justThemeExtensions = [
+];
+"#;
+        std::fs::write(&fallback_path, fallback_code).unwrap();
+
+        let fallback_registered = register_theme_extension(&fallback_path, "my_app", "card/just_card.dart", "JustCardTheme").unwrap();
+        assert!(fallback_registered);
+        let fallback_updated = std::fs::read_to_string(&fallback_path).unwrap();
+        assert!(fallback_updated.contains("JustCardTheme.defaults,"));
+    }
+}
+

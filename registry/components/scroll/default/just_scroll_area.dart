@@ -268,7 +268,8 @@ class _JustScrollAreaState extends State<JustScrollArea>
 
     // Calculate frame-rate independent delta time (seconds)
     final double dt = _lastTickTime == Duration.zero
-        ? 1.0 / 60.0 // Assume 60fps for the very first frame
+        ? 1.0 /
+              60.0 // Assume 60fps for the very first frame
         : (elapsed - _lastTickTime).inMicroseconds / 1000000.0;
     _lastTickTime = elapsed;
 
@@ -506,7 +507,10 @@ class _JustScrollAreaState extends State<JustScrollArea>
       } else if (event.logicalKey == .pageDown) {
         targetOffset = (baseOffset + viewportDimension).clamp(0.0, maxScroll);
       } else if (event.logicalKey == .pageUp) {
-        targetOffset = (baseOffset - widget.keyboardScrollStep).clamp(0.0, maxScroll);
+        targetOffset = (baseOffset - widget.keyboardScrollStep).clamp(
+          0.0,
+          maxScroll,
+        );
       } else {
         return .ignored;
       }
@@ -904,10 +908,7 @@ class _ChevronUpPainter extends CustomPainter {
   final Color color;
   final double strokeWidth;
 
-  const _ChevronUpPainter({
-    required this.color,
-    required this.strokeWidth,
-  });
+  const _ChevronUpPainter({required this.color, required this.strokeWidth});
 
   @override
   void paint(Canvas canvas, Size size) {

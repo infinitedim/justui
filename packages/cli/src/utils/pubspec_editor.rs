@@ -67,3 +67,40 @@ pub fn get_package_name(pubspec_path: &Path) -> Result<String> {
 
     anyhow::bail!("Could not parse 'name:' from pubspec.yaml")
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::tempdir;
+
+    #[test]
+    fn test_add_dependency_and_get_package_name() {
+        let dir = tempdir().unwrap();
+        let pubspec_path = dir.path().join("pubspec.yaml");
+
+        // Test non-existent pubspec
+        assert!(add_dependency(&pubspec_path, "flutter_svg", "^2.0.0").is_err());
+        assert!(get_package_name(&pubspec_path).is_err());
+
+        // Test valid pubspec
+        let content = "name: my_test_app\ndependencies:\n  flutter:\n    sdk: flutter\n";
+        std::fs::write(&pubspec_path, content).unwrap();
+
+        assert_eq!(get_package_name(&pubspec_path).unwrap(), "my_test_app");
+
+        // Add dependency
+        assert!(add_dependency(&pubspec_path, "flutter_svg", "^2.0.0").is_ok());
+        let updated = std::fs::read_to_string(&pubspec_path).unwrap();
+        assert!(updated.contains("flutter_svg: \"^2.0.0\""));
+
+        // Adding duplicate dependency should succeed without duplication
+        assert!(add_dependency(&pubspec_path, "flutter_svg", "^2.0.0").is_ok());
+
+        // Test pubspec missing dependencies section
+        let no_deps_path = dir.path().join("no_deps_pubspec.yaml");
+        std::fs::write(&no_deps_path, "name: simple_app\n").unwrap();
+        assert_eq!(get_package_name(&no_deps_path).unwrap(), "simple_app");
+        assert!(add_dependency(&no_deps_path, "flutter_svg", "^2.0.0").is_err());
+    }
+}
+

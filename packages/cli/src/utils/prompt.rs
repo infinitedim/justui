@@ -70,3 +70,22 @@ pub fn ask(message: &str, default_value: &str) -> String {
         input
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_non_interactive_prompt_fallbacks() {
+        // In non-interactive test runner environment:
+        assert_eq!(confirm("Proceed?", true), true);
+        assert_eq!(confirm("Proceed?", false), false);
+
+        let options = ["option_a", "option_b", "option_c"];
+        assert_eq!(select_one("Select option:", &options, 1), 1);
+        assert_eq!(select_multiple("Select options:", &options), vec![0, 1, 2]);
+
+        assert_eq!(ask("Enter name:", "default_name"), "default_name");
+    }
+}
+

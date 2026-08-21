@@ -521,4 +521,38 @@ mod tests {
         let extracted = unpack_binary_bytes(&gz_bytes, "justui").unwrap();
         assert_eq!(extracted, binary_content);
     }
+
+    #[test]
+    fn test_validate_binary_executable() {
+        // Empty bytes
+        assert!(validate_binary_executable(&[]).is_err());
+
+        #[cfg(target_os = "linux")]
+        {
+            // Invalid ELF header
+            assert!(validate_binary_executable(b"not_an_elf_binary_file_header").is_err());
+
+            // Valid ELF header matching current arch
+            let mut valid_elf = vec![0u8; 64];
+            valid_elf[0..4].copy_from_slice(b"\x7fELF");
+            #[cfg(target_arch = "x86_64")]
+            {
+                valid_elf[18] = 0x3e;
+                valid_elf[19] = 0x00;
+            }
+            #[cfg(target_arch = "aarch64")]
+            {
+                valid_elf[18] = 0xb7;
+                valid_elf[19] = 0x00;
+            }
+            assert!(validate_binary_executable(&valid_elf).is_ok());
+        }
+
+        #[cfg(target_os = "windows")]
+        {
+            assert!(validate_binary_executable(b"not_pe").is_err());
+            assert!(validate_binary_executable(b"MZ_valid_pe").is_ok());
+        }
+    }
 }
+
