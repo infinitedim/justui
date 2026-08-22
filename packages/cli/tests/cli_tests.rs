@@ -356,7 +356,8 @@ mod cli_integration {
             .success()
             .stderr(predicate::str::contains("Bootstrap theme created"));
 
-        let theme = std::fs::read_to_string(dir.path().join("lib/core/theme/just_theme.dart")).unwrap();
+        let theme =
+            std::fs::read_to_string(dir.path().join("lib/core/theme/just_theme.dart")).unwrap();
         assert!(
             theme.contains("JustThemePreset.neobrutalism"),
             "theme file should contain neobrutalism preset, got: {}",
@@ -364,7 +365,9 @@ mod cli_integration {
         );
 
         assert!(
-            dir.path().join("lib/tokens/colors/color_palette.dart").exists(),
+            dir.path()
+                .join("lib/tokens/colors/color_palette.dart")
+                .exists(),
             "lib/tokens/colors/color_palette.dart should exist"
         );
         assert!(
@@ -372,7 +375,9 @@ mod cli_integration {
             "lib/core/theme/theme_data.dart should exist"
         );
         assert!(
-            dir.path().join("lib/core/overlay/just_overlay_controller.dart").exists(),
+            dir.path()
+                .join("lib/core/overlay/just_overlay_controller.dart")
+                .exists(),
             "lib/core/overlay/just_overlay_controller.dart should exist"
         );
     }
@@ -466,12 +471,8 @@ mod cli_integration {
             .args(["add", "button"])
             .assert()
             .success()
-            .stderr(predicate::str::contains(
-                "added successfully",
-            ))
-            .stderr(predicate::str::contains(
-                "button",
-            ))
+            .stderr(predicate::str::contains("added successfully"))
+            .stderr(predicate::str::contains("button"))
             .stderr(predicate::str::contains("→  button"));
 
         let written = dir.path().join("lib/ui/button/just_button.dart");
@@ -811,8 +812,8 @@ mod cli_integration {
 
     #[test]
     fn files_for_preset_aggregates_common_and_preset_files() {
-        use std::collections::HashMap;
         use justui_cli::registry::{RegistryComponent, RegistryFile};
+        use std::collections::HashMap;
 
         let comp = RegistryComponent {
             name: "button".to_string(),
@@ -900,8 +901,16 @@ mod cli_integration {
         )
         .unwrap();
 
-        std::fs::write(registry_dir.join("components/button/just_button.dart"), "class JustButton {}").unwrap();
-        std::fs::write(registry_dir.join("components/input/just_input.dart"), "class JustInput {}").unwrap();
+        std::fs::write(
+            registry_dir.join("components/button/just_button.dart"),
+            "class JustButton {}",
+        )
+        .unwrap();
+        std::fs::write(
+            registry_dir.join("components/input/just_input.dart"),
+            "class JustInput {}",
+        )
+        .unwrap();
 
         std::fs::write(dir.path().join("pubspec.yaml"), "name: test_app\n").unwrap();
         std::fs::write(
@@ -1015,7 +1024,11 @@ mod cli_integration {
         )
         .unwrap();
 
-        std::fs::write(registry_dir.join("components/button/just_button.dart"), remote_content).unwrap();
+        std::fs::write(
+            registry_dir.join("components/button/just_button.dart"),
+            remote_content,
+        )
+        .unwrap();
 
         std::fs::write(dir.path().join("pubspec.yaml"), "name: test_app\n").unwrap();
         std::fs::write(
@@ -1028,7 +1041,11 @@ mod cli_integration {
         .unwrap();
 
         // Install button first
-        justui().current_dir(dir.path()).args(["add", "button"]).assert().success();
+        justui()
+            .current_dir(dir.path())
+            .args(["add", "button"])
+            .assert()
+            .success();
 
         // 1. Diff on up-to-date component
         justui()
@@ -1061,7 +1078,9 @@ mod cli_integration {
             .args(["update"])
             .assert()
             .success()
-            .stdout(predicates::str::contains("Semua komponen sudah menggunakan versi terbaru"));
+            .stdout(predicates::str::contains(
+                "Semua komponen sudah menggunakan versi terbaru",
+            ));
 
         // Test `upgrade --check`
         justui()
@@ -1139,8 +1158,16 @@ mod cli_integration {
         )
         .unwrap();
 
-        std::fs::write(registry_dir.join("components/button/just_button.dart"), button_content).unwrap();
-        std::fs::write(registry_dir.join("components/shared/_shared_pressable.dart"), pressable_content).unwrap();
+        std::fs::write(
+            registry_dir.join("components/button/just_button.dart"),
+            button_content,
+        )
+        .unwrap();
+        std::fs::write(
+            registry_dir.join("components/shared/_shared_pressable.dart"),
+            pressable_content,
+        )
+        .unwrap();
 
         std::fs::write(
             dir.path().join("pubspec.yaml"),
@@ -1207,7 +1234,14 @@ mod cli_integration {
 
         justui()
             .current_dir(dir.path())
-            .args(["init", "--yes", "--components-dir", "lib/components", "--tokens-dir", "lib/design_tokens"])
+            .args([
+                "init",
+                "--yes",
+                "--components-dir",
+                "lib/components",
+                "--tokens-dir",
+                "lib/design_tokens",
+            ])
             .assert()
             .success();
 
@@ -1256,7 +1290,11 @@ mod cli_integration {
         )
         .unwrap();
 
-        std::fs::write(registry_dir.join("components/button/just_button.dart"), button_content).unwrap();
+        std::fs::write(
+            registry_dir.join("components/button/just_button.dart"),
+            button_content,
+        )
+        .unwrap();
 
         std::fs::write(dir.path().join("pubspec.yaml"), "name: my_app").unwrap();
         std::fs::write(
@@ -1269,7 +1307,11 @@ mod cli_integration {
         .unwrap();
 
         // 1. Install button
-        justui().current_dir(dir.path()).args(["add", "button"]).assert().success();
+        justui()
+            .current_dir(dir.path())
+            .args(["add", "button"])
+            .assert()
+            .success();
 
         // 2. Modify local file and run `justui diff --verbose`
         let installed_file = dir.path().join("lib/ui/button/just_button.dart");
@@ -1291,11 +1333,110 @@ mod cli_integration {
         // 4. Test `create --dry-run` and custom category
         justui()
             .current_dir(dir.path())
-            .args(["create", "my_custom_widget", "--category", "primitives", "--dry-run"])
+            .args([
+                "create",
+                "my_custom_widget",
+                "--category",
+                "primitives",
+                "--dry-run",
+            ])
+            .assert()
+            .success();
+    }
+
+    #[test]
+    fn test_cli_flags_version_help_cwd_and_errors() {
+        // Test `justui --help`
+        justui()
+            .arg("--help")
+            .assert()
+            .success()
+            .stdout(predicates::str::contains("JustUI CLI"));
+
+        // Test `justui --version`
+        justui().arg("--version").assert().success();
+
+        // Test `justui version` command
+        justui().arg("version").assert().success();
+
+        // Test `justui --cwd invalid_dir_path`
+        let temp_dir = tempfile::TempDir::new().unwrap();
+        justui()
+            .args(["--cwd", "/invalid/nonexistent/directory/path/12345", "list"])
+            .assert()
+            .failure();
+
+        // Test `justui init --preset invalid_preset`
+        justui()
+            .current_dir(temp_dir.path())
+            .args(["init", "--preset", "invalid_preset_name"])
+            .assert()
+            .failure();
+
+        // Test `justui add button --diff`
+        let registry_dir = temp_dir.path().join("mock_registry");
+        std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "0.1.0",
+                "presets": ["default"],
+                "components": [{
+                    "name": "button",
+                    "version": "0.1.0",
+                    "description": "Button",
+                    "category": "primitives",
+                    "supportedPresets": ["default"],
+                    "registryDependencies": [],
+                    "pubDependencies": {},
+                    "files": {
+                        "default": [{
+                            "name": "just_button.dart",
+                            "path": "components/button/just_button.dart",
+                            "checksum": "sha256:111"
+                        }]
+                    }
+                }]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+        std::fs::write(
+            registry_dir.join("components/button/just_button.dart"),
+            "class JustButton {}",
+        )
+        .unwrap();
+        std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: my_app").unwrap();
+        std::fs::write(
+            temp_dir.path().join("justui.config.yaml"),
+            format!("components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\nregistry_url: {}\n", registry_dir.display()),
+        ).unwrap();
+
+        justui()
+            .current_dir(temp_dir.path())
+            .args(["add", "button", "--diff", "-y"])
+            .assert()
+            .success();
+
+        // Test `justui diff missing_component`
+        justui()
+            .current_dir(temp_dir.path())
+            .args(["diff", "nonexistent_component"])
+            .assert()
+            .success();
+
+        // Test `justui preset info invalid_preset`
+        justui()
+            .current_dir(temp_dir.path())
+            .args(["preset", "info", "invalid_preset"])
+            .assert()
+            .success();
+
+        // Test `justui search nonexistent_query`
+        justui()
+            .current_dir(temp_dir.path())
+            .args(["search", "nonexistent_query_12345"])
             .assert()
             .success();
     }
 }
-
-
-

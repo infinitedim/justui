@@ -115,3 +115,29 @@ fn rewrite_core_internal_imports(content: &str, package_name: &str, tokens_dir: 
             &format!("package:{}/core/", package_name),
         )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_rewrite_imports_helpers() {
+        let tok_res = rewrite_tokens_internal_imports("import 'src/colors/color.dart';", "my_app");
+        assert_eq!(tok_res, "import 'colors/color.dart';");
+
+        let core_res = rewrite_core_internal_imports(
+            "import 'package:just_ui_tokens/just_ui_tokens.dart';\nimport 'src/theme/theme.dart';",
+            "my_app",
+            "lib/tokens",
+        );
+        assert!(core_res.contains("import 'package:my_app/tokens/just_ui_tokens.dart';"));
+        assert!(core_res.contains("import 'theme/theme.dart';"));
+
+        let temp_dir = tempfile::tempdir().unwrap();
+        let tok_dir = temp_dir.path().join("tokens");
+        let core_dir = temp_dir.path().join("core");
+
+        assert!(extract_tokens(&tok_dir, "my_app").is_ok());
+        assert!(extract_core(&core_dir, "my_app", "lib/tokens").is_ok());
+    }
+}

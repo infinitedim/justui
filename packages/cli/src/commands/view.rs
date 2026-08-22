@@ -88,16 +88,11 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
     logger::stdout(&format!("Dependencies  : {}", reg_deps));
     logger::stdout(&format!("Pub deps      : {}", pub_deps_str));
     let preset_files = comp.files_for_preset(&preset);
-    logger::stdout(&format!(
-        "File count    : {} file(s)",
-        preset_files.len()
-    ));
+    logger::stdout(&format!("File count    : {} file(s)", preset_files.len()));
     logger::stdout("");
 
     let files_to_show: Vec<_> = if let Some(ref name_filter) = file_filter {
-        let found = preset_files
-            .into_iter()
-            .find(|f| &f.name == name_filter);
+        let found = preset_files.into_iter().find(|f| &f.name == name_filter);
         match found {
             Some(f) => vec![f],
             None => {
@@ -164,4 +159,66 @@ pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Re
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_view_run_uninitialized() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        assert!(run("button".to_string(), None, true).is_ok());
+
+        // Initialized with local registry
+        let registry_dir = temp_dir.path().join("registry");
+        std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "0.1.0",
+                "presets": ["default"],
+                "components": [{
+                    "name": "button",
+                    "version": "0.1.0",
+                    "description": "Button",
+                    "category": "primitives",
+                    "supportedPresets": ["default"],
+                    "registryDependencies": ["pressable"],
+                    "pubDependencies": {"flutter_svg": "^2.0.0"},
+                    "files": {
+                        "default": [{
+                            "name": "just_button.dart",
+                            "path": "components/button/just_button.dart",
+                            "checksum": "sha256:111"
+                        }]
+                    }
+                }]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(
+            registry_dir.join("components/button/just_button.dart"),
+            "class JustButton {}",
+        )
+        .unwrap();
+        std::fs::write("pubspec.yaml", "name: test_app").unwrap();
+        std::fs::write(
+            "justui.config.yaml",
+            format!("components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\npreset: default\nregistry_url: {}\n", registry_dir.display()),
+        )
+        .unwrap();
+
+        assert!(run("button".to_string(), None, true).is_ok());
+        assert!(run(
+            "button".to_string(),
+            Some("just_button.dart".to_string()),
+            true
+        )
+        .is_ok());
+    }
 }

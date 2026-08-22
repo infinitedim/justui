@@ -1,28 +1,35 @@
 use inquire::{MultiSelect, Select};
-use std::io::{self, IsTerminal, Write};
+use std::io::{self, IsTerminal};
 
 fn is_interactive() -> bool {
     io::stdin().is_terminal() && io::stderr().is_terminal()
 }
 
-fn read_line() -> String {
+pub fn confirm_with_input<R: io::BufRead, W: io::Write>(
+    reader: &mut R,
+    writer: &mut W,
+    message: &str,
+    default: bool,
+) -> bool {
+    let suffix = if default { "[Y/n]" } else { "[y/N]" };
+    let _ = write!(writer, "{} {}: ", message, suffix);
+    let _ = writer.flush();
     let mut input = String::new();
-    io::stdin().read_line(&mut input).unwrap_or(0);
-    input.trim().to_string()
+    let _ = reader.read_line(&mut input);
+    let trimmed = input.trim().to_lowercase();
+    if trimmed.is_empty() {
+        return default;
+    }
+    trimmed == "y" || trimmed == "yes"
 }
 
 pub fn confirm(message: &str, default: bool) -> bool {
     if !is_interactive() {
         return default;
     }
-    let suffix = if default { "[Y/n]" } else { "[y/N]" };
-    eprint!("{} {}: ", message, suffix);
-    io::stderr().flush().unwrap();
-    let input = read_line().to_lowercase();
-    if input.is_empty() {
-        return default;
-    }
-    input == "y" || input == "yes"
+    let mut stdin = io::BufReader::new(io::stdin());
+    let mut stderr = io::stderr();
+    confirm_with_input(&mut stdin, &mut stderr, message, default)
 }
 
 pub fn select_one(message: &str, options: &[&str], default_index: usize) -> usize {
@@ -57,18 +64,31 @@ pub fn select_multiple(message: &str, options: &[&str]) -> Vec<usize> {
     }
 }
 
+pub fn ask_with_input<R: io::BufRead, W: io::Write>(
+    reader: &mut R,
+    writer: &mut W,
+    message: &str,
+    default_value: &str,
+) -> String {
+    let _ = write!(writer, "{} [{}]: ", message, default_value);
+    let _ = writer.flush();
+    let mut input = String::new();
+    let _ = reader.read_line(&mut input);
+    let trimmed = input.trim().to_string();
+    if trimmed.is_empty() {
+        default_value.to_string()
+    } else {
+        trimmed
+    }
+}
+
 pub fn ask(message: &str, default_value: &str) -> String {
     if !is_interactive() {
         return default_value.to_string();
     }
-    eprint!("{} [{}]: ", message, default_value);
-    io::stderr().flush().unwrap();
-    let input = read_line();
-    if input.is_empty() {
-        default_value.to_string()
-    } else {
-        input
-    }
+    let mut stdin = io::BufReader::new(io::stdin());
+    let mut stderr = io::stderr();
+    ask_with_input(&mut stdin, &mut stderr, message, default_value)
 }
 
 #[cfg(test)]
@@ -77,7 +97,6 @@ mod tests {
 
     #[test]
     fn test_non_interactive_prompt_fallbacks() {
-        // In non-interactive test runner environment:
         assert_eq!(confirm("Proceed?", true), true);
         assert_eq!(confirm("Proceed?", false), false);
 
@@ -87,5 +106,44 @@ mod tests {
 
         assert_eq!(ask("Enter name:", "default_name"), "default_name");
     }
-}
 
+    #[test]
+    fn test_confirm_and_ask_with_input_streams() {
+        let mut out = Vec::new();
+
+        // 1. Confirm 'y' input
+        let mut input = std::io::Cursor::new(b"y\n");
+        assert_eq!(
+            confirm_with_input(&mut input, &mut out, "Continue?", false),
+            true
+        );
+
+        // 2. Confirm empty input fallback
+        let mut input_empty = std::io::Cursor::new(b"\n");
+        assert_eq!(
+            confirm_with_input(&mut input_empty, &mut out, "Continue?", true),
+            true
+        );
+
+        // 3. Confirm 'n' input
+        let mut input_n = std::io::Cursor::new(b"n\n");
+        assert_eq!(
+            confirm_with_input(&mut input_n, &mut out, "Continue?", true),
+            false
+        );
+
+        // 4. Ask custom input
+        let mut input_ask = std::io::Cursor::new(b"my_custom_value\n");
+        assert_eq!(
+            ask_with_input(&mut input_ask, &mut out, "Enter value:", "default"),
+            "my_custom_value"
+        );
+
+        // 5. Ask empty input fallback
+        let mut input_ask_empty = std::io::Cursor::new(b"\n");
+        assert_eq!(
+            ask_with_input(&mut input_ask_empty, &mut out, "Enter value:", "default"),
+            "default"
+        );
+    }
+}

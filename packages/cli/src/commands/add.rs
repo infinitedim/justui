@@ -574,12 +574,14 @@ pub fn add_component(
                                 theme_file.display()
                             ));
                             break;
-                        } else if let Ok(updated) = crate::utils::theme_editor::register_theme_extension(
-                            theme_file,
-                            &pkg_name,
-                            &import_uri,
-                            &theme_class,
-                        ) {
+                        } else if let Ok(updated) =
+                            crate::utils::theme_editor::register_theme_extension(
+                                theme_file,
+                                &pkg_name,
+                                &import_uri,
+                                &theme_class,
+                            )
+                        {
                             if updated {
                                 logger::stdout(&format!(
                                     "  - Registered {}.defaults in {}",
@@ -832,4 +834,70 @@ fn extract_theme_class_name(content: &str) -> Option<String> {
     }
     let re = Regex::new(r"class\s+(?:const\s+)?([A-Za-z0-9_]+Theme(?:Data)?)").unwrap();
     re.captures(content).map(|cap| cap[1].to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_add_helpers() {
+        let mut s1 = DryRunStats::new();
+        s1.will_write = 2;
+        let mut s2 = DryRunStats::new();
+        s2.skipped = 1;
+        s2.conflicts = 3;
+        s1.merge(&s2);
+
+        assert_eq!(s1.will_write, 2);
+        assert_eq!(s1.skipped, 1);
+        assert_eq!(s1.conflicts, 3);
+
+        let hash = sha256_hex(b"hello");
+        assert_eq!(
+            hash,
+            "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+        );
+
+        assert_eq!(
+            extract_theme_class_name("class ButtonTheme extends ThemeExtension<ButtonTheme>"),
+            Some("ButtonTheme".to_string())
+        );
+        assert_eq!(extract_theme_class_name("class RegularClass {}"), None);
+    }
+
+    #[test]
+    fn test_add_run_uninitialized_and_conflict_resolution() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        // 1. Uninitialized project returns Ok with warning
+        assert!(run(vec![], false, false, true).is_ok());
+
+        // 2. Test resolve_conflict when target file exists with metadata up-to-date
+        let file_path = temp_dir.path().join("just_button.dart");
+        let raw_code = "class JustButton {}";
+        let hash = sha256_hex(raw_code.as_bytes());
+        let meta_content = import_rewriter::inject_metadata(raw_code, &hash, &hash);
+        std::fs::write(&file_path, &meta_content).unwrap();
+
+        let (will_write, status) = resolve_conflict(
+            &file_path,
+            "just_button.dart",
+            &hash,
+            raw_code,
+            &meta_content,
+            true,
+        )
+        .unwrap();
+        assert!(!will_write);
+        assert_eq!(status, OperationStatus::UpToDate);
+
+        // 3. Test resolve_conflict_dry when target file exists with metadata up-to-date
+        let (will_write_dry, conflict, _, status_dry) =
+            resolve_conflict_dry(&file_path, "just_button.dart", &hash, raw_code, true).unwrap();
+        assert!(!will_write_dry);
+        assert!(!conflict);
+        assert_eq!(status_dry, OperationStatus::UpToDate);
+    }
 }

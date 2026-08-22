@@ -473,3 +473,118 @@ fn get_component_status(comp: &RegistryComponent, config: &JustUIConfig) -> Stri
         "Partially Installed".to_string()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::utils::import_rewriter;
+    use std::collections::HashMap;
+
+    #[test]
+    fn test_get_component_status_matrix() {
+        let config = JustUIConfig::default();
+        let comp_empty = RegistryComponent {
+            name: "empty".to_string(),
+            version: "1.0".to_string(),
+            description: "".to_string(),
+            category: "general".to_string(),
+            internal: false,
+            supported_presets: vec![],
+            registry_dependencies: vec![],
+            pub_dependencies: HashMap::new(),
+            files: HashMap::new(),
+        };
+
+        assert_eq!(get_component_status(&comp_empty, &config), "N/A");
+
+        let comp_not_installed = RegistryComponent {
+            name: "uninstalled_comp".to_string(),
+            version: "1.0".to_string(),
+            description: "".to_string(),
+            category: "general".to_string(),
+            internal: false,
+            supported_presets: vec![],
+            registry_dependencies: vec![],
+            pub_dependencies: HashMap::new(),
+            files: {
+                let mut map = HashMap::new();
+                map.insert(
+                    "default".to_string(),
+                    vec![crate::registry::RegistryFile {
+                        name: "missing.dart".to_string(),
+                        path: "missing.dart".to_string(),
+                        checksum: "sha256:123".to_string(),
+                    }],
+                );
+                map
+            },
+        };
+
+        assert_eq!(
+            get_component_status(&comp_not_installed, &config),
+            "Not Installed"
+        );
+
+        // Temporary directory for file checks
+        let temp_dir = tempfile::tempdir().unwrap();
+        let file1 = temp_dir.path().join("file1.dart");
+        let file2 = temp_dir.path().join("file2.dart");
+
+        let raw1 = "class File1 {}";
+        let raw2 = "class File2 {}";
+        let hash1 = sha256_hex(raw1.as_bytes());
+        let hash2 = sha256_hex(raw2.as_bytes());
+
+        // 1. Up-to-date Installed
+        let content1 = import_rewriter::inject_metadata(raw1, &hash1, &hash1);
+        let content2 = import_rewriter::inject_metadata(raw2, &hash2, &hash2);
+        std::fs::write(&file1, content1).unwrap();
+        std::fs::write(&file2, content2).unwrap();
+
+        let comp_installed = RegistryComponent {
+            name: "installed_comp".to_string(),
+            version: "1.0".to_string(),
+            description: "".to_string(),
+            category: "general".to_string(),
+            internal: false,
+            supported_presets: vec![],
+            registry_dependencies: vec![],
+            pub_dependencies: HashMap::new(),
+            files: {
+                let mut map = HashMap::new();
+                map.insert(
+                    "default".to_string(),
+                    vec![
+                        crate::registry::RegistryFile {
+                            name: "file1.dart".to_string(),
+                            path: file1.to_string_lossy().to_string(),
+                            checksum: format!("sha256:{}", hash1),
+                        },
+                        crate::registry::RegistryFile {
+                            name: "file2.dart".to_string(),
+                            path: file2.to_string_lossy().to_string(),
+                            checksum: format!("sha256:{}", hash2),
+                        },
+                    ],
+                );
+                map
+            },
+        };
+
+        assert_eq!(get_component_status(&comp_installed, &config), "Installed");
+
+        // 2. Outdated / Modified
+        std::fs::write(&file1, "class Modified {}").unwrap();
+        assert_eq!(
+            get_component_status(&comp_installed, &config),
+            "Outdated / Modified"
+        );
+
+        // 3. Partially Installed
+        std::fs::remove_file(&file2).unwrap();
+        assert_eq!(
+            get_component_status(&comp_installed, &config),
+            "Partially Installed"
+        );
+    }
+}
