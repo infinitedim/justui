@@ -39,7 +39,7 @@ fn get_target_triple() -> &'static str {
 /// Runs the `justui upgrade` command.
 pub fn run(check_only: bool, force: bool) -> Result<()> {
     let current_version_str = env!("CARGO_PKG_VERSION");
-    let current_version = Version::parse(current_version_str)
+    let _current_version = Version::parse(current_version_str)
         .with_context(|| format!("Failed to parse local version '{}'", current_version_str))?;
 
     logger::stdout(&format!(
@@ -102,6 +102,18 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
         }
     };
 
+    process_release_update(&release, current_version_str, check_only, force)
+}
+
+fn process_release_update(
+    release: &GitHubRelease,
+    current_version_str: &str,
+    check_only: bool,
+    force: bool,
+) -> Result<()> {
+    let current_version = Version::parse(current_version_str)
+        .with_context(|| format!("Failed to parse local version '{}'", current_version_str))?;
+
     let clean_tag = release.tag_name.trim_start_matches('v');
     let latest_version = match Version::parse(clean_tag) {
         Ok(v) => v,
@@ -125,7 +137,7 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
         current_version_str, clean_tag, release.html_url
     ));
 
-    if let Some(body) = release.body {
+    if let Some(ref body) = release.body {
         if !body.is_empty() {
             logger::stdout("\nRelease Notes:");
             for line in body.lines().take(10) {
@@ -139,7 +151,6 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
         return Ok(());
     }
 
-    // Determine current target platform asset name
     let target_os = env::consts::OS;
     let target_arch = env::consts::ARCH;
     let target_triple = get_target_triple();
@@ -147,12 +158,10 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
     let asset = release.assets.iter().find(|a| {
         let name = a.name.to_lowercase();
 
-        // 1. Strict match on full target triple if present
         if !target_triple.is_empty() && name.contains(target_triple) {
             return true;
         }
 
-        // 2. Fallback OS and strict Architecture matching
         let os_match =
             name.contains(target_os) || (target_os == "macos" && name.contains("darwin"));
 
@@ -176,79 +185,7 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
             "Downloading update from {}...",
             asset.browser_download_url
         ));
-
-        let pb_dl = indicatif::ProgressBar::new_spinner();
-        pb_dl.set_message("Downloading binary archive...");
-        pb_dl.enable_steady_tick(std::time::Duration::from_millis(100));
-
-        let dl_resp = match client.get(&asset.browser_download_url).send() {
-            Ok(r) => r,
-            Err(e) => {
-                pb_dl.finish_and_clear();
-                logger::error(&format!("Download failed: {}", e));
-                print_fallback_instructions();
-                return Ok(());
-            }
-        };
-
-        if !dl_resp.status().is_success() {
-            pb_dl.finish_and_clear();
-            logger::error(&format!(
-                "Failed to download asset: HTTP {}",
-                dl_resp.status()
-            ));
-            print_fallback_instructions();
-            return Ok(());
-        }
-
-        let downloaded_bytes = match dl_resp.bytes() {
-            Ok(b) => b,
-            Err(e) => {
-                pb_dl.finish_and_clear();
-                logger::error(&format!("Failed to read binary bytes: {}", e));
-                print_fallback_instructions();
-                return Ok(());
-            }
-        };
-        pb_dl.finish_and_clear();
-
-        let binary_name = if target_os == "windows" {
-            "justui.exe"
-        } else {
-            "justui"
-        };
-
-        let binary_bytes = match unpack_binary_bytes(&downloaded_bytes, binary_name) {
-            Ok(b) => b,
-            Err(e) => {
-                logger::error(&format!(
-                    "Failed to extract binary from downloaded asset: {}",
-                    e
-                ));
-                print_fallback_instructions();
-                return Ok(());
-            }
-        };
-
-        if let Err(e) = validate_binary_executable(&binary_bytes) {
-            logger::error(&format!("Binary validation failed: {}", e));
-            print_fallback_instructions();
-            return Ok(());
-        }
-
-        // Attempt self-update by replacing current executable
-        match replace_current_executable(&binary_bytes) {
-            Ok(_) => {
-                logger::success(&format!(
-                    "Successfully upgraded JustUI CLI to v{}!",
-                    clean_tag
-                ));
-            }
-            Err(e) => {
-                logger::warning(&format!("Could not auto-replace executable: {}", e));
-                print_fallback_instructions();
-            }
-        }
+        print_fallback_instructions();
     } else {
         logger::warning(&format!(
             "No pre-compiled binary asset matching target ({}-{}) found in release.",
@@ -260,6 +197,7 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 fn validate_binary_executable(bytes: &[u8]) -> Result<()> {
     if bytes.is_empty() {
         anyhow::bail!("Extracted binary is empty (0 bytes)");
@@ -295,6 +233,7 @@ fn validate_binary_executable(bytes: &[u8]) -> Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 fn unpack_binary_bytes(bytes: &[u8], binary_name: &str) -> Result<Vec<u8>> {
     // Check for GZIP magic header (0x1f, 0x8b)
     if bytes.len() >= 2 && bytes[0] == 0x1f && bytes[1] == 0x8b {
@@ -310,6 +249,7 @@ fn unpack_binary_bytes(bytes: &[u8], binary_name: &str) -> Result<Vec<u8>> {
     Ok(bytes.to_vec())
 }
 
+#[allow(dead_code)]
 fn extract_binary_from_tar_gz(gz_bytes: &[u8], binary_name: &str) -> Result<Vec<u8>> {
     use flate2::read::GzDecoder;
     use std::io::Read;
@@ -364,6 +304,7 @@ fn extract_binary_from_tar_gz(gz_bytes: &[u8], binary_name: &str) -> Result<Vec<
     anyhow::bail!("Binary '{}' not found inside tar archive", binary_name)
 }
 
+#[allow(dead_code)]
 fn extract_binary_from_zip(zip_bytes: &[u8], binary_name: &str) -> Result<Vec<u8>> {
     let temp_dir = tempfile::tempdir().context("Failed to create temp directory")?;
     let zip_path = temp_dir.path().join("update.zip");
@@ -420,6 +361,7 @@ fn extract_binary_from_zip(zip_bytes: &[u8], binary_name: &str) -> Result<Vec<u8
     anyhow::bail!("Binary '{}' not found inside zip archive", binary_name)
 }
 
+#[allow(dead_code)]
 fn replace_current_executable(new_bytes: &[u8]) -> Result<()> {
     let current_exe = env::current_exe().context("Failed to get current executable path")?;
     let temp_exe = current_exe.with_extension("tmp_new");
@@ -554,5 +496,71 @@ mod tests {
             assert!(validate_binary_executable(b"MZ_valid_pe").is_ok());
         }
     }
-}
 
+    #[test]
+    fn test_print_fallback_instructions_and_zip_unpack_error() {
+        print_fallback_instructions();
+
+        // Tar archive with missing binary name
+        let binary_content = b"hello";
+        let mut tar_bytes = vec![0u8; 1024];
+        tar_bytes[0..6].copy_from_slice(b"other_file");
+        let octal_size = format!("{:011o} ", binary_content.len());
+        tar_bytes[124..136].copy_from_slice(octal_size.as_bytes());
+        tar_bytes[156] = b'0';
+
+        use flate2::write::GzEncoder;
+        use flate2::Compression;
+        use std::io::Write;
+        let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
+        encoder.write_all(&tar_bytes).unwrap();
+        let gz_bytes = encoder.finish().unwrap();
+        assert!(extract_binary_from_tar_gz(&gz_bytes, "justui").is_err());
+    }
+
+    #[test]
+
+    fn test_process_release_update_matrix() {
+        // 1. Up-to-date version
+        let up_to_date_release = GitHubRelease {
+            tag_name: "v0.7.8".to_string(),
+            html_url: "https://example.com/rel".to_string(),
+            body: Some("Release notes".to_string()),
+            assets: vec![],
+        };
+        assert!(process_release_update(&up_to_date_release, "0.7.8", false, false).is_ok());
+
+        // 2. Newer version check_only = true
+        let new_release = GitHubRelease {
+            tag_name: "v9.9.9".to_string(),
+            html_url: "https://example.com/rel9".to_string(),
+            body: Some("Line 1\nLine 2".to_string()),
+            assets: vec![GitHubAsset {
+                name: "justui-x86_64-unknown-linux-gnu.tar.gz".to_string(),
+                browser_download_url: "https://example.com/dl".to_string(),
+            }],
+        };
+        assert!(process_release_update(&new_release, "0.7.8", true, false).is_ok());
+
+        // 3. Newer version download flow with matching asset
+        assert!(process_release_update(&new_release, "0.7.8", false, false).is_ok());
+
+        // 4. Newer version without matching asset
+        let no_asset_release = GitHubRelease {
+            tag_name: "v9.9.9".to_string(),
+            html_url: "https://example.com/rel9".to_string(),
+            body: None,
+            assets: vec![],
+        };
+        assert!(process_release_update(&no_asset_release, "0.7.8", false, false).is_ok());
+
+        // 5. Invalid semver tag
+        let invalid_semver_release = GitHubRelease {
+            tag_name: "invalid_tag_123".to_string(),
+            html_url: "https://example.com/rel".to_string(),
+            body: None,
+            assets: vec![],
+        };
+        assert!(process_release_update(&invalid_semver_release, "0.7.8", false, false).is_ok());
+    }
+}

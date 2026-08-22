@@ -173,7 +173,10 @@ pub fn rewrite(
             if let Some(subpath) = import_path.strip_prefix("package:just_ui_tokens/") {
                 let clean_subpath = subpath.split('/').next_back().unwrap_or(subpath);
                 let tokens_rel = tokens_dir.strip_prefix("lib/").unwrap_or(tokens_dir);
-                return format!("import 'package:{}/{}/{}';", package_name, tokens_rel, clean_subpath);
+                return format!(
+                    "import 'package:{}/{}/{}';",
+                    package_name, tokens_rel, clean_subpath
+                );
             }
             if let Some(subpath) = import_path.strip_prefix("package:just_ui_core/") {
                 let clean_subpath = subpath.split('/').next_back().unwrap_or(subpath);
@@ -267,13 +270,60 @@ pub fn rewrite(
 }
 
 #[cfg(test)]
-#[allow(dead_code)]
-pub(crate) fn path_relative_unix_pub(target: &str, from_dir: &str) -> String {
-    path_relative_unix(target, from_dir)
-}
+mod tests {
+    use super::*;
 
-#[cfg(test)]
-#[allow(dead_code)]
-pub(crate) fn normalize_unix_path_pub(path: &str) -> String {
-    normalize_unix_path(path)
+    #[test]
+    fn test_import_rewriter_path_helpers() {
+        assert_eq!(unix_dirname("a/b/c.dart"), "a/b");
+        assert_eq!(unix_dirname("c.dart"), ".");
+
+        assert_eq!(unix_join("a/b", "c.dart"), "a/b/c.dart");
+        assert_eq!(unix_join(".", "c.dart"), "c.dart");
+        assert_eq!(unix_join("a", "/c.dart"), "/c.dart");
+
+        assert_eq!(normalize_unix_path("a/b/../c/./d"), "a/c/d");
+        assert_eq!(normalize_unix_path("a/.."), ".");
+
+        assert_eq!(
+            path_relative_unix("lib/tokens/color.dart", "lib/widgets/button"),
+            "../../tokens/color.dart"
+        );
+        assert_eq!(
+            path_relative_unix("lib/widgets/button/just_button.dart", "lib/widgets/button"),
+            "just_button.dart"
+        );
+    }
+
+    #[test]
+    fn test_package_and_unresolved_import_rewriting() {
+        let index = RegistryIndex {
+            version: "1.0".to_string(),
+            presets: vec!["default".to_string()],
+            components: vec![],
+        };
+
+        let content = "import 'package:just_ui_tokens/src/colors.dart';\nimport 'package:just_ui_core/src/theme.dart';\nimport 'unresolved.dart';\nimport 'unresolved.dart';";
+        let rewritten = rewrite(
+            content,
+            "components/button/just_button.dart",
+            "button",
+            &index,
+            "lib/widgets",
+            "lib/tokens",
+            "lib/widgets/shared",
+            "default",
+            "my_app",
+        );
+
+        assert!(rewritten.contains("import 'package:my_app/tokens/colors.dart';"));
+        assert!(rewritten.contains("import 'package:my_app/core/theme.dart';"));
+        assert!(rewritten.contains("import 'unresolved.dart';"));
+        // Check line deduplication
+        let count = rewritten
+            .lines()
+            .filter(|l| l.trim() == "import 'unresolved.dart';")
+            .count();
+        assert_eq!(count, 1);
+    }
 }

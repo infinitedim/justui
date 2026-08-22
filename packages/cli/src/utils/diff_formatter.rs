@@ -175,4 +175,3 @@ mod tests {
         print_unified_diff("test.dart", local_diff, remote_diff, 2);
     }
 }
-

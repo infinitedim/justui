@@ -123,3 +123,54 @@ impl RegistryClient {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::tempdir;
+
+    #[test]
+    fn test_registry_client_local_and_remote() {
+        let remote_client = RegistryClient::new("https://example.com/registry".to_string());
+        assert!(remote_client.is_remote());
+
+        let remote_client_slash = RegistryClient::new("http://example.com/registry/".to_string());
+        assert!(remote_client_slash.is_remote());
+
+        let local_dir = tempdir().unwrap();
+        let local_client = RegistryClient::new(local_dir.path().to_string_lossy().to_string());
+        assert!(!local_client.is_remote());
+
+        // Local non-existent file
+        assert!(local_client.fetch_file_content("nonexistent.json").is_err());
+        assert!(local_client.fetch_index().is_err());
+
+        // Local valid file
+        let index_path = local_dir.path().join("index.json");
+        std::fs::write(
+            &index_path,
+            r#"{"version": "1.0", "presets": ["default"], "components": []}"#,
+        )
+        .unwrap();
+
+        let index = local_client.fetch_index().unwrap();
+        assert_eq!(index.version, "1.0");
+        assert_eq!(index.presets, vec!["default"]);
+    }
+
+    #[test]
+    fn test_files_for_preset_fallback() {
+        let comp = RegistryComponent {
+            name: "test".to_string(),
+            version: "1.0".to_string(),
+            description: "".to_string(),
+            category: "general".to_string(),
+            internal: false,
+            supported_presets: vec![],
+            registry_dependencies: vec![],
+            pub_dependencies: HashMap::new(),
+            files: HashMap::new(),
+        };
+        assert!(comp.files_for_preset("unknown_preset").is_empty());
+    }
+}

@@ -131,3 +131,16 @@ fn highlight_query(text: &str, query: &str) -> String {
     result.push_str(&text[last..]);
     result
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_search_run_uninitialized() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        assert!(run("button".to_string(), None).is_ok());
+    }
+}

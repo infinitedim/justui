@@ -415,3 +415,102 @@ fn apply_file_change(
     logger::stdout(&format!("  - Updated {}", fs.file.name));
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_diff_helpers_and_uninitialized() {
+        let local = "line 1\nline 2 local\nline 3 local";
+        let remote = "line 1\nline 2 remote\nline 4 remote";
+        print_line_diff("just_button.dart", local, remote);
+
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        // Uninitialized project returns Ok without crashing
+        assert!(run("button".to_string(), false, true).is_ok());
+
+        // Test apply_file_change
+        let target_file = temp_dir.path().join("lib/ui/just_button.dart");
+        let fs_status = DiffFileStatus {
+            file: crate::registry::RegistryFile {
+                name: "just_button.dart".to_string(),
+                path: "components/button/just_button.dart".to_string(),
+                checksum: "sha256:hash1".to_string(),
+            },
+            status_type: DiffStatusType::LocallyModified,
+            local_content: "class Old {}".to_string(),
+            target_path: target_file.to_string_lossy().to_string(),
+            expected_hash: "hash1".to_string(),
+            remote_content: None,
+        };
+
+        let dummy_index = crate::registry::RegistryIndex {
+            version: "0.1.0".to_string(),
+            presets: vec![],
+            components: vec![],
+        };
+
+        assert!(apply_file_change(&fs_status, "class New {}", "button", &dummy_index).is_ok());
+        assert!(target_file.exists());
+
+        // Test show_all_diffs
+        let mut map = std::collections::HashMap::new();
+        map.insert(0, "class New {}".to_string());
+        show_all_diffs(&[fs_status], &[0], &map, 2);
+
+        // Test run with initialized project and mock local registry
+        let registry_dir = temp_dir.path().join("registry");
+        std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "0.1.0",
+                "presets": ["default"],
+                "components": [{
+                    "name": "button",
+                    "version": "0.1.0",
+                    "description": "Button",
+                    "category": "primitives",
+                    "supportedPresets": ["default"],
+                    "registryDependencies": [],
+                    "pubDependencies": {},
+                    "files": {
+                        "default": [{
+                            "name": "just_button.dart",
+                            "path": "components/button/just_button.dart",
+                            "checksum": "sha256:111"
+                        }]
+                    }
+                }]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(
+            registry_dir.join("components/button/just_button.dart"),
+            "class JustButton {}",
+        )
+        .unwrap();
+        std::fs::write("pubspec.yaml", "name: test_app").unwrap();
+        std::fs::write(
+            "justui.config.yaml",
+            format!("components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\npreset: default\nregistry_url: {}\n", registry_dir.display()),
+        )
+        .unwrap();
+
+        assert!(run("button".to_string(), true, true).is_ok());
+        assert!(run("button".to_string(), false, true).is_ok());
+
+        // Test run with modified local component and auto_yes
+        let local_comp_file = temp_dir.path().join("lib/ui/just_button.dart");
+        std::fs::create_dir_all(local_comp_file.parent().unwrap()).unwrap();
+        std::fs::write(&local_comp_file, "class ModifiedButton {}").unwrap();
+
+        assert!(run("button".to_string(), true, true).is_ok());
+        assert!(run("button".to_string(), false, true).is_ok());
+    }
+}

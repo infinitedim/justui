@@ -372,3 +372,105 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_preset_subcommands_dispatch() {
+        let info_sub = PresetSubcommands::Info {
+            name: "default".to_string(),
+        };
+        if let PresetSubcommands::Info { name } = info_sub {
+            assert_eq!(name, "default");
+        }
+    }
+
+    #[test]
+    fn test_preset_run_uninitialized() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        // Without config file, preset commands return Ok without erroring out
+        assert!(run_list().is_ok());
+        assert!(run_info("default").is_ok());
+        assert!(run_apply("default", true).is_ok());
+        assert!(run(None, Some("default".to_string()), true, false, None, true).is_ok());
+        assert!(run(None, None, false, true, None, true).is_ok());
+        assert!(run(None, None, false, false, Some("default".to_string()), true).is_ok());
+    }
+
+    #[test]
+    fn test_preset_run_initialized_with_local_registry() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        let registry_dir = temp_dir.path().join("registry");
+        std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "0.1.0",
+                "presets": ["default", "neobrutalism"],
+                "components": [{
+                    "name": "button",
+                    "version": "0.1.0",
+                    "description": "Button",
+                    "category": "primitives",
+                    "supportedPresets": ["default", "neobrutalism"],
+                    "registryDependencies": [],
+                    "pubDependencies": {},
+                    "files": {
+                        "default": [{
+                            "name": "just_button.dart",
+                            "path": "components/button/just_button.dart",
+                            "checksum": "sha256:111"
+                        }],
+                        "neobrutalism": [{
+                            "name": "just_button.dart",
+                            "path": "components/button/just_button.dart",
+                            "checksum": "sha256:222"
+                        }]
+                    }
+                }]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(
+            registry_dir.join("components/button/just_button.dart"),
+            "class JustButton {}",
+        )
+        .unwrap();
+        std::fs::write("pubspec.yaml", "name: test_app").unwrap();
+        std::fs::write(
+            "justui.config.yaml",
+            format!("components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\npreset: default\nregistry_url: {}\n", registry_dir.display()),
+        )
+        .unwrap();
+
+        // Scaffold installed component directory so run_apply finds installed components
+        std::fs::create_dir_all("lib/ui/button").unwrap();
+        std::fs::write("lib/ui/button/just_button.dart", "class JustButton {}").unwrap();
+
+        // 1. run_list
+        assert!(run_list().is_ok());
+
+        // 2. run_info (existing preset)
+        assert!(run_info("default").is_ok());
+
+        // 3. run_info (non-existent preset)
+        assert!(run_info("invalid_preset").is_ok());
+
+        // 4. run_apply (to same active preset -> notice info)
+        assert!(run_apply("default", true).is_ok());
+
+        // 5. run_apply (to neobrutalism preset with auto_yes)
+        assert!(run_apply("neobrutalism", true).is_ok());
+
+        // 6. run_apply (to non-existent preset -> error notice)
+        assert!(run_apply("nonexistent_preset", true).is_ok());
+    }
+}

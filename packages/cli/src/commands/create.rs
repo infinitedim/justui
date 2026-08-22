@@ -328,3 +328,39 @@ fn generate_widget_template(class_name: &str, snake_name: &str) -> String {
         snake_name = snake_name
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_case_conversion_helpers() {
+        assert_eq!(to_snake_case("CustomButton"), "custom_button");
+        assert_eq!(to_snake_case("custom-card"), "custom_card");
+        assert_eq!(to_snake_case("my_widget"), "my_widget");
+
+        assert_eq!(to_pascal_case("custom_button"), "CustomButton");
+        assert_eq!(to_pascal_case("custom-card"), "CustomCard");
+        assert_eq!(to_pascal_case("my_widget"), "MyWidget");
+    }
+
+    #[test]
+    fn test_create_run_execution() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        // 1. Uninitialized -> returns Ok with warning
+        assert!(run(None, false).is_ok());
+
+        // 2. Initialized -> creates component files
+        std::fs::write("pubspec.yaml", "name: test_app").unwrap();
+        std::fs::write(
+            "justui.config.yaml",
+            "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\npreset: default\n",
+        )
+        .unwrap();
+
+        assert!(run(Some("my_widget".to_string()), true).is_ok());
+        assert!(run(None, false).is_ok());
+    }
+}

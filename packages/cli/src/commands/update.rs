@@ -180,3 +180,16 @@ pub fn run(auto_yes: bool) -> Result<()> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_update_run_uninitialized() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        assert!(run(true).is_ok());
+    }
+}

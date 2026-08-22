@@ -206,7 +206,11 @@ fn main() {
 
     if let Some(ref path) = cli.cwd {
         if let Err(e) = std::env::set_current_dir(path) {
-            utils::logger::error(&format!("Failed to change working directory to {}: {}", path.display(), e));
+            utils::logger::error(&format!(
+                "Failed to change working directory to {}: {}",
+                path.display(),
+                e
+            ));
             process::exit(1);
         }
     }
