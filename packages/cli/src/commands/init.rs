@@ -203,3 +203,47 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_init_helpers() {
+        assert_eq!(normalize_preset("neo"), "neobrutalism");
+        assert_eq!(normalize_preset("d"), "default");
+        assert_eq!(normalize_preset("custom"), "custom");
+
+        assert_eq!(to_lib_path("widgets"), "lib/widgets");
+        assert_eq!(to_lib_path("lib/components"), "lib/components");
+
+        assert_eq!(
+            resolve_shared_dir("", "lib/widgets", "lib/widgets/shared"),
+            "lib/widgets/shared"
+        );
+        assert_eq!(
+            resolve_shared_dir("common", "lib/widgets", "lib/widgets/shared"),
+            "lib/widgets/common"
+        );
+        assert_eq!(
+            resolve_shared_dir("lib/shared_custom", "lib/widgets", "lib/widgets/shared"),
+            "lib/shared_custom"
+        );
+    }
+
+    #[test]
+    fn test_init_run_execution() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        // 1. Without pubspec -> fails cleanly
+        assert!(run(None, true).is_ok());
+
+        // 2. With pubspec -> succeeds in auto_yes mode
+        std::fs::write("pubspec.yaml", "name: test_app").unwrap();
+        assert!(run(Some("neo".to_string()), true).is_ok());
+
+        // 3. Already initialized -> warns and returns Ok
+        assert!(run(None, true).is_ok());
+    }
+}

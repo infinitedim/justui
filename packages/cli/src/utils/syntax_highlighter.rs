@@ -48,3 +48,15 @@ pub fn highlight_code(code: &str, extension: &str) -> Vec<String> {
 
     highlighted_lines
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_highlight_code_unknown_extension_fallback() {
+        let lines = highlight_code("plain text line", "unknown_ext_123");
+        assert_eq!(lines.len(), 1);
+        assert!(lines[0].contains("plain text line"));
+    }
+}

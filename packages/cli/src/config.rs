@@ -82,3 +82,24 @@ impl Default for JustUIConfig {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_config_default_and_yaml() {
+        let def = JustUIConfig::default();
+        assert_eq!(def.components_dir, "lib/widgets");
+        assert_eq!(def.tokens_dir, "lib/tokens");
+        assert_eq!(def.shared_dir, "lib/widgets/shared");
+        assert_eq!(def.preset, "default");
+
+        let yaml = def.to_yaml_string();
+        let parsed = JustUIConfig::from_yaml(&yaml);
+        assert_eq!(parsed.components_dir, def.components_dir);
+        assert_eq!(parsed.tokens_dir, def.tokens_dir);
+        assert_eq!(parsed.shared_dir, def.shared_dir);
+        assert_eq!(parsed.preset, def.preset);
+    }
+}

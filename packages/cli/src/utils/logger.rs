@@ -66,3 +66,20 @@ pub struct SummaryItem {
     pub label: String,
     pub value: String,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_logger_panel_and_summary() {
+        panel("Test Panel Header");
+        summary(
+            "Test Summary Header",
+            &[SummaryItem {
+                label: "Item A".to_string(),
+                value: "Value A".to_string(),
+            }],
+        );
+    }
+}

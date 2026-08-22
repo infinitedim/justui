@@ -101,6 +101,14 @@ mod tests {
         std::fs::write(&no_deps_path, "name: simple_app\n").unwrap();
         assert_eq!(get_package_name(&no_deps_path).unwrap(), "simple_app");
         assert!(add_dependency(&no_deps_path, "flutter_svg", "^2.0.0").is_err());
+
+        // Test pubspec missing name key
+        let no_name_path = dir.path().join("no_name_pubspec.yaml");
+        std::fs::write(
+            &no_name_path,
+            "dependencies:\n  flutter:\n    sdk: flutter\n",
+        )
+        .unwrap();
+        assert!(get_package_name(&no_name_path).is_err());
     }
 }
-
