@@ -72,6 +72,12 @@ enum Commands {
             value_parser = clap::builder::PossibleValuesParser::new(["default", "d", "neobrutalism", "neo"])
         )]
         preset: Option<String>,
+        /// Target UI components directory
+        #[arg(long = "components-dir")]
+        components_dir: Option<String>,
+        /// Target design tokens directory
+        #[arg(long = "tokens-dir")]
+        tokens_dir: Option<String>,
     },
 
     /// Manage and apply visual design style presets (e.g. default, neobrutalism)
@@ -111,6 +117,12 @@ enum Commands {
         /// Display file diffs before applying changes
         #[arg(long = "diff")]
         show_diff: bool,
+        /// Add all available components
+        #[arg(long = "all")]
+        all: bool,
+        /// Overwrite existing local components without prompting
+        #[arg(long = "overwrite")]
+        overwrite: bool,
     },
 
     /// Synchronize local components with upstream registry updates
@@ -128,6 +140,12 @@ enum Commands {
     Create {
         /// Name of the new component to scaffold
         component_name: Option<String>,
+        /// Category for the component
+        #[arg(long = "category")]
+        category: Option<String>,
+        /// Preview component creation without writing files
+        #[arg(long = "dry-run")]
+        dry_run: bool,
     },
 
     /// Inspect local component modifications vs upstream registry source code
@@ -137,10 +155,13 @@ enum Commands {
     )]
     Diff {
         /// Component name to inspect
-        component: String,
+        component: Option<String>,
         /// Show detailed line-by-line diff breakdown
         #[arg(short, long)]
         verbose: bool,
+        /// Automatically accept diff updates
+        #[arg(long = "accept")]
+        accept: bool,
     },
 
     /// List all available components in the JustUI registry
@@ -148,7 +169,11 @@ enum Commands {
         subcommand_help_heading = "Discovery & Inspection",
         after_help = "EXAMPLES:\n  justui list"
     )]
-    List,
+    List {
+        /// Filter components by category
+        #[arg(long = "category")]
+        category: Option<String>,
+    },
 
     /// Search for components in the registry by keyword or category
     #[command(
@@ -174,6 +199,9 @@ enum Commands {
         /// Specific file within component to inspect
         #[arg(long = "file")]
         file: Option<String>,
+        /// Output raw code without formatting
+        #[arg(long = "raw")]
+        raw: bool,
     },
 
     /// Display project configuration, installed components, and system status
@@ -181,7 +209,10 @@ enum Commands {
         subcommand_help_heading = "Discovery & Inspection",
         after_help = "EXAMPLES:\n  justui info"
     )]
-    Info,
+    Info {
+        /// Optional component name for component specific info
+        component: Option<String>,
+    },
 
     /// Check for and upgrade JustUI CLI to the latest version
     #[command(
@@ -235,20 +266,38 @@ fn main() {
 
     let result = match command {
         Commands::Version => commands::upgrade::run(true, false),
-        Commands::Init { preset } => commands::init::run(preset, auto_yes),
+        Commands::Init {
+            preset,
+            components_dir,
+            tokens_dir,
+        } => commands::init::run(preset, components_dir, tokens_dir, auto_yes),
         Commands::Add {
             components,
             dry_run,
             show_diff,
-        } => commands::add::run(components, dry_run, show_diff, auto_yes),
-        Commands::List => commands::list::run(),
-        Commands::Diff { component, verbose } => commands::diff::run(component, verbose, auto_yes),
+            all,
+            overwrite,
+        } => commands::add::run(components, dry_run, show_diff, all, overwrite, auto_yes),
+        Commands::List { category } => commands::list::run(category),
+        Commands::Diff {
+            component,
+            verbose,
+            accept,
+        } => commands::diff::run(component, verbose, accept, auto_yes),
         Commands::Update => commands::update::run(auto_yes),
         Commands::Upgrade { check_only, force } => commands::upgrade::run(check_only, force),
-        Commands::Create { component_name } => commands::create::run(component_name, auto_yes),
-        Commands::View { component, file } => commands::view::run(component, file, auto_yes),
+        Commands::Create {
+            component_name,
+            category,
+            dry_run,
+        } => commands::create::run(component_name, category, dry_run, auto_yes),
+        Commands::View {
+            component,
+            file,
+            raw,
+        } => commands::view::run(component, file, raw, auto_yes),
         Commands::Search { query, category } => commands::search::run(query, category),
-        Commands::Info => commands::info::run(),
+        Commands::Info { component } => commands::info::run(component),
         Commands::Preset {
             subcommand,
             name,

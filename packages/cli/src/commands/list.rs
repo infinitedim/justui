@@ -25,7 +25,7 @@ enum InputMode {
     Searching,
 }
 
-pub fn run() -> Result<()> {
+pub fn run(category: Option<String>) -> Result<()> {
     let config = if let Ok(content) = std::fs::read_to_string(JustUIConfig::CONFIG_FILE_NAME) {
         JustUIConfig::from_yaml(&content)
     } else {
@@ -37,7 +37,7 @@ pub fn run() -> Result<()> {
     pb_index.enable_steady_tick(std::time::Duration::from_millis(100));
 
     let client = RegistryClient::new(config.registry_url.clone());
-    let index = match client.fetch_index() {
+    let mut index = match client.fetch_index() {
         Ok(idx) => {
             pb_index.finish_and_clear();
             idx
@@ -48,6 +48,10 @@ pub fn run() -> Result<()> {
             return Ok(());
         }
     };
+
+    if let Some(ref cat) = category {
+        index.components.retain(|c| c.category == *cat);
+    }
 
     if index.components.is_empty() {
         logger::warning("No components found in the registry.");
@@ -527,8 +531,15 @@ mod tests {
 
         // Temporary directory for file checks
         let temp_dir = tempfile::tempdir().unwrap();
-        let file1 = temp_dir.path().join("file1.dart");
-        let file2 = temp_dir.path().join("file2.dart");
+        let config_installed = JustUIConfig {
+            components_dir: temp_dir.path().to_string_lossy().to_string(),
+            ..Default::default()
+        };
+
+        let comp_dir = temp_dir.path().join("installed_comp");
+        std::fs::create_dir_all(&comp_dir).unwrap();
+        let file1 = comp_dir.join("file1.dart");
+        let file2 = comp_dir.join("file2.dart");
 
         let raw1 = "class File1 {}";
         let raw2 = "class File2 {}";
@@ -571,19 +582,22 @@ mod tests {
             },
         };
 
-        assert_eq!(get_component_status(&comp_installed, &config), "Installed");
+        assert_eq!(
+            get_component_status(&comp_installed, &config_installed),
+            "Installed"
+        );
 
         // 2. Outdated / Modified
         std::fs::write(&file1, "class Modified {}").unwrap();
         assert_eq!(
-            get_component_status(&comp_installed, &config),
+            get_component_status(&comp_installed, &config_installed),
             "Outdated / Modified"
         );
 
         // 3. Partially Installed
         std::fs::remove_file(&file2).unwrap();
         assert_eq!(
-            get_component_status(&comp_installed, &config),
+            get_component_status(&comp_installed, &config_installed),
             "Partially Installed"
         );
     }

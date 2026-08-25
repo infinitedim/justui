@@ -35,7 +35,12 @@ fn resolve_shared_dir(raw_input: &str, components_dir: &str, default_full_path: 
     format!("{}/{}", components_dir, trimmed)
 }
 
-pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
+pub fn run(
+    preset_arg: Option<String>,
+    components_dir_arg: Option<String>,
+    tokens_dir_arg: Option<String>,
+    auto_yes: bool,
+) -> Result<()> {
     if !std::path::Path::new("pubspec.yaml").exists() {
         logger::error(
             "No pubspec.yaml found in the current directory.\n\
@@ -75,7 +80,9 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         }
     };
 
-    let components_dir = if auto_yes {
+    let components_dir = if let Some(d) = components_dir_arg {
+        to_lib_path(&d)
+    } else if auto_yes {
         let dir = "lib/widgets".to_string();
         logger::stdout(&format!("[auto] Using components dir: {}", dir));
         dir
@@ -93,7 +100,9 @@ pub fn run(preset_arg: Option<String>, auto_yes: bool) -> Result<()> {
         }
     };
 
-    let tokens_dir = if auto_yes {
+    let tokens_dir = if let Some(t) = tokens_dir_arg {
+        to_lib_path(&t)
+    } else if auto_yes {
         let dir = "lib/tokens".to_string();
         logger::stdout(&format!("[auto] Using tokens dir: {}", dir));
         dir
@@ -233,17 +242,18 @@ mod tests {
 
     #[test]
     fn test_init_run_execution() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
         // 1. Without pubspec -> fails cleanly
-        assert!(run(None, true).is_ok());
+        assert!(run(None, None, None, true).is_ok());
 
         // 2. With pubspec -> succeeds in auto_yes mode
         std::fs::write("pubspec.yaml", "name: test_app").unwrap();
-        assert!(run(Some("neo".to_string()), true).is_ok());
+        assert!(run(Some("neo".to_string()), None, None, true).is_ok());
 
         // 3. Already initialized -> warns and returns Ok
-        assert!(run(None, true).is_ok());
+        assert!(run(None, None, None, true).is_ok());
     }
 }

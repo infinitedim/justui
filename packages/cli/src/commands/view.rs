@@ -5,7 +5,12 @@ use crate::config::JustUIConfig;
 use crate::registry::RegistryClient;
 use crate::utils::logger;
 
-pub fn run(component: String, file_filter: Option<String>, auto_yes: bool) -> Result<()> {
+pub fn run(
+    component: String,
+    file_filter: Option<String>,
+    _raw: bool,
+    auto_yes: bool,
+) -> Result<()> {
     let (registry_url, preset) =
         if let Ok(content) = std::fs::read_to_string(JustUIConfig::CONFIG_FILE_NAME) {
             let config = JustUIConfig::from_yaml(&content);
@@ -167,10 +172,11 @@ mod tests {
 
     #[test]
     fn test_view_run_uninitialized() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
-        assert!(run("button".to_string(), None, true).is_ok());
+        assert!(run("button".to_string(), None, false, true).is_ok());
 
         // Initialized with local registry
         let registry_dir = temp_dir.path().join("registry");
@@ -213,10 +219,11 @@ mod tests {
         )
         .unwrap();
 
-        assert!(run("button".to_string(), None, true).is_ok());
+        assert!(run("button".to_string(), None, false, true).is_ok());
         assert!(run(
             "button".to_string(),
             Some("just_button.dart".to_string()),
+            false,
             true
         )
         .is_ok());

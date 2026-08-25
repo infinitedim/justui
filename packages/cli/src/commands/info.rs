@@ -5,9 +5,13 @@ use crate::config::JustUIConfig;
 use crate::registry::RegistryClient;
 use crate::utils::logger;
 
-pub fn run() -> Result<()> {
+pub fn run(component_name: Option<String>) -> Result<()> {
     let version = env!("CARGO_PKG_VERSION");
-    logger::stdout(&format!("JustUI CLI v{}", version));
+    if let Some(ref comp) = component_name {
+        logger::stdout(&format!("JustUI CLI v{} - Info for {}", version, comp));
+    } else {
+        logger::stdout(&format!("JustUI CLI v{}", version));
+    }
     logger::stdout("");
 
     let config_file = JustUIConfig::CONFIG_FILE_NAME;
@@ -86,8 +90,9 @@ mod tests {
 
     #[test]
     fn test_info_run_without_config() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
-        assert!(run().is_ok());
+        assert!(run(None).is_ok());
     }
 }
