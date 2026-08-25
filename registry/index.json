@@ -390,14 +390,14 @@
           {
             "name": "just_scroll_area.dart",
             "path": "components/scroll/default/just_scroll_area.dart",
-            "checksum": "sha256:88e3ed313d8eae95f193617b8a3ac283d2153a133fd15632a1dac359b9135ccc"
+            "checksum": "sha256:0f407ae6bf0d2ac104be3f42b5aa90cf980c8fc918db7cf320af01cdb5ee464d"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_scroll_area.dart",
             "path": "components/scroll/neobrutalism/just_scroll_area.dart",
-            "checksum": "sha256:88e3ed313d8eae95f193617b8a3ac283d2153a133fd15632a1dac359b9135ccc"
+            "checksum": "sha256:0f407ae6bf0d2ac104be3f42b5aa90cf980c8fc918db7cf320af01cdb5ee464d"
           }
         ]
       },

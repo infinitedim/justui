@@ -66,6 +66,19 @@ extension JustThemeContext on BuildContext {
   JustPresetTokens get justPresetTokens =>
       JustThemeProvider.of(this, aspect: .preset).theme.presetTokens;
 
+  /// Retrieves the active [JustThemePreset] enum value.
+  JustThemePreset get justPreset =>
+      JustThemeProvider.of(this, aspect: .preset).theme.preset;
+
+  /// Returns true if the active theme background is dark (luminance < 0.5).
+  bool get isDarkMode =>
+      JustThemeProvider.of(this, aspect: .colors)
+          .theme
+          .colors
+          .background
+          .computeLuminance() <
+      0.5;
+
   /// Reads the active theme configuration without registering a rebuild dependency.
   ///
   /// Ideal for use within callbacks or static configurations.
