@@ -134,6 +134,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
     }
 
     if outdated_components.is_empty() {
+        logger::stdout("Semua komponen sudah menggunakan versi terbaru");
         logger::success("All components are up-to-date!");
         return Ok(());
     }
@@ -187,6 +188,7 @@ mod tests {
 
     #[test]
     fn test_update_run_uninitialized() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 

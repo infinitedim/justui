@@ -22,6 +22,13 @@ pub fn register_theme_extension(
         return Ok(false);
     }
 
+    let reg_marker = "// CLI:REGISTER_EXTENSIONS";
+    let list_search = "final List<ThemeExtension<dynamic>> justThemeExtensions = [";
+
+    if !content.contains(reg_marker) && !content.contains(list_search) {
+        return Ok(false);
+    }
+
     let import_line = format!("import '{}';", component_import_path);
     let mut lines: Vec<String> = content.lines().map(|s| s.to_string()).collect();
 

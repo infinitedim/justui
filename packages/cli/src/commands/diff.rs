@@ -25,7 +25,13 @@ struct DiffFileStatus {
     remote_content: Option<String>,
 }
 
-pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> {
+pub fn run(
+    component_name: Option<String>,
+    verbose: bool,
+    accept: bool,
+    auto_yes: bool,
+) -> Result<()> {
+    let auto_yes = auto_yes || accept;
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
         logger::error(
@@ -46,41 +52,36 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
         }
     };
 
-    logger::info(&format!(
-        "Comparing component \"{}\" with registry...",
-        component_name
-    ));
-
-    let pb_index = indicatif::ProgressBar::new_spinner();
-    pb_index.set_message("Fetching registry index...");
-    pb_index.enable_steady_tick(std::time::Duration::from_millis(100));
-
     let client = RegistryClient::new(config.registry_url.clone());
     let index = match client.fetch_index() {
-        Ok(idx) => {
-            pb_index.finish_and_clear();
-            idx
-        }
+        Ok(idx) => idx,
         Err(e) => {
-            pb_index.finish_and_clear();
-            logger::error(&format!(
-                "Failed to run diff for \"{}\": {}",
-                component_name, e
-            ));
+            logger::error(&format!("Failed to run diff: {}", e));
             return Ok(());
         }
     };
 
-    let component = match index.components.iter().find(|c| c.name == component_name) {
-        Some(c) => c,
-        None => {
-            logger::error(&format!(
-                "Failed to run diff for \"{}\": Component \"{}\" not found in registry",
-                component_name, component_name
-            ));
-            return Ok(());
+    let target_components: Vec<_> = if let Some(ref name) = component_name {
+        match index.components.iter().find(|c| c.name == *name) {
+            Some(c) => vec![c],
+            None => {
+                logger::error(&format!(
+                    "Failed to run diff for \"{}\": Component \"{}\" not found in registry",
+                    name, name
+                ));
+                return Ok(());
+            }
         }
+    } else {
+        index.components.iter().collect()
     };
+
+    for component in target_components {
+        let component_name = component.name.clone();
+        logger::info(&format!(
+            "Comparing component \"{}\" with registry...",
+            component_name
+        ));
 
     let target_dir = if component.category == "tokens" || component.category == "core" {
         config.tokens_dir.clone()
@@ -290,7 +291,7 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
             &config.preset,
         )?;
         logger::success("All changes applied successfully.");
-        return Ok(());
+        continue;
     }
 
     loop {
@@ -335,6 +336,7 @@ pub fn run(component_name: String, verbose: bool, auto_yes: bool) -> Result<()> 
                 logger::error("Invalid option.");
             }
         }
+    }
     }
 
     Ok(())
@@ -422,6 +424,7 @@ mod tests {
 
     #[test]
     fn test_diff_helpers_and_uninitialized() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
         let local = "line 1\nline 2 local\nline 3 local";
         let remote = "line 1\nline 2 remote\nline 4 remote";
         print_line_diff("just_button.dart", local, remote);
@@ -430,7 +433,7 @@ mod tests {
         let _guard = std::env::set_current_dir(temp_dir.path());
 
         // Uninitialized project returns Ok without crashing
-        assert!(run("button".to_string(), false, true).is_ok());
+        assert!(run(Some("button".to_string()), false, false, true).is_ok());
 
         // Test apply_file_change
         let target_file = temp_dir.path().join("lib/ui/just_button.dart");
@@ -464,6 +467,9 @@ mod tests {
         // Test run with initialized project and mock local registry
         let registry_dir = temp_dir.path().join("registry");
         std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+        let button_code = "class JustButton {}";
+        let button_hash = sha256_hex(button_code.as_bytes());
+
         std::fs::write(
             registry_dir.join("index.json"),
             serde_json::to_string(&serde_json::json!({
@@ -481,7 +487,7 @@ mod tests {
                         "default": [{
                             "name": "just_button.dart",
                             "path": "components/button/just_button.dart",
-                            "checksum": "sha256:111"
+                            "checksum": format!("sha256:{}", button_hash)
                         }]
                     }
                 }]
@@ -492,7 +498,7 @@ mod tests {
 
         std::fs::write(
             registry_dir.join("components/button/just_button.dart"),
-            "class JustButton {}",
+            button_code,
         )
         .unwrap();
         std::fs::write("pubspec.yaml", "name: test_app").unwrap();
@@ -502,15 +508,15 @@ mod tests {
         )
         .unwrap();
 
-        assert!(run("button".to_string(), true, true).is_ok());
-        assert!(run("button".to_string(), false, true).is_ok());
+        assert!(run(Some("button".to_string()), true, false, true).is_ok());
+        assert!(run(Some("button".to_string()), false, false, true).is_ok());
 
         // Test run with modified local component and auto_yes
         let local_comp_file = temp_dir.path().join("lib/ui/just_button.dart");
         std::fs::create_dir_all(local_comp_file.parent().unwrap()).unwrap();
         std::fs::write(&local_comp_file, "class ModifiedButton {}").unwrap();
 
-        assert!(run("button".to_string(), true, true).is_ok());
-        assert!(run("button".to_string(), false, true).is_ok());
+        assert!(run(Some("button".to_string()), true, false, true).is_ok());
+        assert!(run(Some("button".to_string()), false, false, true).is_ok());
     }
 }

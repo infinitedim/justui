@@ -6,3 +6,6 @@ pub mod prompt;
 pub mod pubspec_editor;
 pub mod syntax_highlighter;
 pub mod theme_editor;
+
+#[cfg(test)]
+pub static TEST_MUTEX: std::sync::Mutex<()> = std::sync::Mutex::new(());
