@@ -8,9 +8,9 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import '../../core/theme_provider.dart';
-import '../shared/just_pressable.dart';
-import '../shared/just_focus_indicator.dart';
+import '../../theme/theme_provider.dart';
+import '../shared/_shared_pressable.dart';
+import '../shared/_shared_focus_indicator.dart';
 import 'just_scroll_area_style.dart';
 import 'just_scroll_area_theme.dart';
 
@@ -507,10 +507,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
       } else if (event.logicalKey == .pageDown) {
         targetOffset = (baseOffset + viewportDimension).clamp(0.0, maxScroll);
       } else if (event.logicalKey == .pageUp) {
-        targetOffset = (baseOffset - widget.keyboardScrollStep).clamp(
-          0.0,
-          maxScroll,
-        );
+        targetOffset = (baseOffset - viewportDimension).clamp(0.0, maxScroll);
       } else {
         return .ignored;
       }
@@ -869,7 +866,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
                                             width: 16.0,
                                             height: 16.0,
                                             child: CustomPaint(
-                                              painter: const _ChevronUpPainter(
+                                              painter: _ChevronUpPainter(
                                                 color: colors.textPrimary,
                                                 strokeWidth: 2.0,
                                               ),
@@ -904,12 +901,10 @@ class _JustScrollAreaState extends State<JustScrollArea>
   }
 }
 
-class _ChevronUpPainter extends CustomPainter {
-  final Color color;
-  final double strokeWidth;
-
-  const _ChevronUpPainter({required this.color, required this.strokeWidth});
-
+class const _ChevronUpPainter({
+  required final Color color,
+  required final double strokeWidth,
+}) extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()

@@ -575,4 +575,79 @@ final class CustomColorScheme extends JustColorScheme {
     required this.error,
     required this.info,
   });
+
+  /// Factory helper to resolve semantic text and border colors based on theme preset and mode (DRY).
+  factory CustomColorScheme.resolveSemantic({
+    required Color background,
+    required Color card,
+    required Color elevated,
+    required Color muted,
+    required Color overlay,
+    required Color borderFocus,
+    required Color success,
+    required Color warning,
+    required Color error,
+    required Color info,
+    required bool isDark,
+    required JustThemePreset preset,
+  }) {
+    if (preset == .neobrutalism) {
+      return CustomColorScheme(
+        background: background,
+        card: card,
+        elevated: elevated,
+        muted: muted,
+        overlay: overlay,
+        textPrimary: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
+        textSecondary: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF222222),
+        textDisabled: isDark ? const Color(0xFF666666) : const Color(0xFF777777),
+        textInverse: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
+        borderDefault: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
+        borderFocus: borderFocus,
+        borderError: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
+        success: success,
+        warning: warning,
+        error: error,
+        info: info,
+      );
+    }
+
+    final semanticTextPrimary = isDark
+        ? JustColorSemanticDark.textPrimary
+        : JustColorSemanticLight.textPrimary;
+    final semanticTextSecondary = isDark
+        ? JustColorSemanticDark.textSecondary
+        : JustColorSemanticLight.textSecondary;
+    final semanticTextDisabled = isDark
+        ? JustColorSemanticDark.textDisabled
+        : JustColorSemanticLight.textDisabled;
+    final semanticTextInverse = isDark
+        ? JustColorSemanticDark.textInverse
+        : JustColorSemanticLight.textInverse;
+    final semanticBorderDefault = isDark
+        ? JustColorSemanticDark.borderDefault
+        : JustColorSemanticLight.borderDefault;
+    final semanticBorderError = isDark
+        ? JustColorSemanticDark.borderError
+        : JustColorSemanticLight.borderError;
+
+    return CustomColorScheme(
+      background: background,
+      card: card,
+      elevated: elevated,
+      muted: muted,
+      overlay: overlay,
+      textPrimary: semanticTextPrimary,
+      textSecondary: semanticTextSecondary,
+      textDisabled: semanticTextDisabled,
+      textInverse: semanticTextInverse,
+      borderDefault: semanticBorderDefault,
+      borderFocus: borderFocus,
+      borderError: semanticBorderError,
+      success: success,
+      warning: warning,
+      error: error,
+      info: info,
+    );
+  }
 }

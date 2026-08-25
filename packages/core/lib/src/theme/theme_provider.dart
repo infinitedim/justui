@@ -159,11 +159,7 @@ class JustThemeProviderState extends State<JustThemeProvider>
 
   /// Toggles between light and dark themes.
   void toggleTheme() {
-    if (_themeMode == .light) {
-      setThemeMode(.dark);
-    } else {
-      setThemeMode(.light);
-    }
+    setThemeMode(_themeMode == .light ? .dark : .light);
   }
 
   /// Replaces the active light/dark themes dynamically.
@@ -201,34 +197,23 @@ class const _JustThemeModel({
     _JustThemeModel oldWidget,
     Set<JustThemeAspect> dependencies,
   ) {
-    if (dependencies.contains(JustThemeAspect.colors) &&
-        themeData.colors != oldWidget.themeData.colors) {
-      return true;
-    }
-    if (dependencies.contains(JustThemeAspect.typography) &&
-        themeData.typography != oldWidget.themeData.typography) {
-      return true;
-    }
-    if (dependencies.contains(JustThemeAspect.spacing) &&
-        themeData.spacing != oldWidget.themeData.spacing) {
-      return true;
-    }
-    if (dependencies.contains(JustThemeAspect.radius) &&
-        themeData.radius != oldWidget.themeData.radius) {
-      return true;
-    }
-    if (dependencies.contains(JustThemeAspect.shadows) &&
-        themeData.shadows != oldWidget.themeData.shadows) {
-      return true;
-    }
-    if (dependencies.contains(JustThemeAspect.animations) &&
-        themeData.animations != oldWidget.themeData.animations) {
-      return true;
-    }
-    if (dependencies.contains(JustThemeAspect.preset) &&
-        themeData.preset != oldWidget.themeData.preset) {
-      return true;
-    }
-    return false;
+    return dependencies.any(
+      (aspect) => switch (aspect) {
+        JustThemeAspect.colors =>
+          themeData.colors != oldWidget.themeData.colors,
+        JustThemeAspect.typography =>
+          themeData.typography != oldWidget.themeData.typography,
+        JustThemeAspect.spacing =>
+          themeData.spacing != oldWidget.themeData.spacing,
+        JustThemeAspect.radius =>
+          themeData.radius != oldWidget.themeData.radius,
+        JustThemeAspect.shadows =>
+          themeData.shadows != oldWidget.themeData.shadows,
+        JustThemeAspect.animations =>
+          themeData.animations != oldWidget.themeData.animations,
+        JustThemeAspect.preset =>
+          themeData.preset != oldWidget.themeData.preset,
+      },
+    );
   }
 }
