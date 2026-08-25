@@ -62,31 +62,33 @@ class JustColorScale {
     final double seedS = hsl.saturation;
     final double seedL = hsl.lightness;
 
-    // Helper to interpolate and adjust saturation dynamically
+    // Helper to interpolate and adjust saturation dynamically using early returns
     Color makeShade(double targetL) {
-      double adjustedS = seedS;
-      if (targetL > seedL) {
-        // Light shades: scale saturation down (prevents neon glow)
-        final double t = (targetL - seedL) / (0.96 - seedL + 1e-5);
-        adjustedS = seedS * (1.0 - t * 0.6);
-      } else if (targetL < seedL) {
-        // Dark shades: scale saturation up (prevents dull/washed-out grey)
-        final double t = (seedL - targetL) / (seedL - 0.06 + 1e-5);
-        adjustedS = (seedS * (1.0 + t * 0.25)).clamp(0.0, 1.0);
-      }
+      if (targetL == seedL) return seed;
+
+      final bool isLighter = targetL > seedL;
+      final double range = isLighter ? (0.96 - seedL) : (seedL - 0.06);
+      final double delta = (targetL - seedL).abs();
+      final double progress = delta / (range + 1e-5);
+
+      final double adjustedS = isLighter
+          ? seedS * (1.0 - progress * 0.6)
+          : (seedS * (1.0 + progress * 0.25)).clamp(0.0, 1.0);
+
       return HSLColor.fromAHSL(1.0, seedH, adjustedS, targetL).toColor();
     }
 
-    // We adjust target lightness levels dynamically based on seedL position
+    // Adjust target lightness levels dynamically based on step using early returns
     double getLightnessForStep(double baseLightness, int step) {
       if (step == 500) return seedL;
+
       if (step < 500) {
         final double weight = (500 - step) / 500;
         return seedL + (0.96 - seedL) * weight;
-      } else {
-        final double weight = (step - 500) / 450;
-        return seedL - (seedL - 0.06) * weight;
       }
+
+      final double weight = (step - 500) / 450;
+      return seedL - (seedL - 0.06) * weight;
     }
 
     return JustColorScale(

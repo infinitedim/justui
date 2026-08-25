@@ -37,7 +37,7 @@ extension JustThemeDataMaterialExtension on JustThemeData {
 
   ThemeData _buildMaterialTheme() {
     final isDark = colors.background.computeLuminance() < 0.5;
-    final Brightness brightness = isDark ? Brightness.dark : Brightness.light;
+    final Brightness brightness = isDark ? .dark : .light;
 
     return ThemeData(
       useMaterial3: true,
