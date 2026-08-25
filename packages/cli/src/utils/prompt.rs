@@ -97,8 +97,8 @@ mod tests {
 
     #[test]
     fn test_non_interactive_prompt_fallbacks() {
-        assert_eq!(confirm("Proceed?", true), true);
-        assert_eq!(confirm("Proceed?", false), false);
+        assert!(confirm("Proceed?", true));
+        assert!(!confirm("Proceed?", false));
 
         let options = ["option_a", "option_b", "option_c"];
         assert_eq!(select_one("Select option:", &options, 1), 1);
@@ -113,24 +113,21 @@ mod tests {
 
         // 1. Confirm 'y' input
         let mut input = std::io::Cursor::new(b"y\n");
-        assert_eq!(
-            confirm_with_input(&mut input, &mut out, "Continue?", false),
-            true
-        );
+        assert!(confirm_with_input(
+            &mut input, &mut out, "Continue?", false
+        ));
 
         // 2. Confirm empty input fallback
         let mut input_empty = std::io::Cursor::new(b"\n");
-        assert_eq!(
-            confirm_with_input(&mut input_empty, &mut out, "Continue?", true),
-            true
-        );
+        assert!(confirm_with_input(
+            &mut input_empty, &mut out, "Continue?", true
+        ));
 
         // 3. Confirm 'n' input
         let mut input_n = std::io::Cursor::new(b"n\n");
-        assert_eq!(
-            confirm_with_input(&mut input_n, &mut out, "Continue?", true),
-            false
-        );
+        assert!(!confirm_with_input(
+            &mut input_n, &mut out, "Continue?", true
+        ));
 
         // 4. Ask custom input
         let mut input_ask = std::io::Cursor::new(b"my_custom_value\n");

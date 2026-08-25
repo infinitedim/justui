@@ -504,7 +504,7 @@ mod tests {
         // Tar archive with missing binary name
         let binary_content = b"hello";
         let mut tar_bytes = vec![0u8; 1024];
-        tar_bytes[0..6].copy_from_slice(b"other_file");
+        tar_bytes[0..10].copy_from_slice(b"other_file");
         let octal_size = format!("{:011o} ", binary_content.len());
         tar_bytes[124..136].copy_from_slice(octal_size.as_bytes());
         tar_bytes[156] = b'0';

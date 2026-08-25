@@ -599,10 +599,16 @@ final class CustomColorScheme extends JustColorScheme {
         muted: muted,
         overlay: overlay,
         textPrimary: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
-        textSecondary: isDark ? const Color(0xFFCCCCCC) : const Color(0xFF222222),
-        textDisabled: isDark ? const Color(0xFF666666) : const Color(0xFF777777),
+        textSecondary: isDark
+            ? const Color(0xFFCCCCCC)
+            : const Color(0xFF222222),
+        textDisabled: isDark
+            ? const Color(0xFF666666)
+            : const Color(0xFF777777),
         textInverse: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-        borderDefault: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
+        borderDefault: isDark
+            ? const Color(0xFFFFFFFF)
+            : const Color(0xFF000000),
         borderFocus: borderFocus,
         borderError: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
         success: success,

@@ -4,7 +4,12 @@ use regex::Regex;
 use crate::config::JustUIConfig;
 use crate::utils::{logger, prompt};
 
-pub fn run(component_name_arg: Option<String>, auto_yes: bool) -> Result<()> {
+pub fn run(
+    component_name_arg: Option<String>,
+    _category_arg: Option<String>,
+    dry_run: bool,
+    auto_yes: bool,
+) -> Result<()> {
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
         logger::error(
@@ -44,6 +49,21 @@ pub fn run(component_name_arg: Option<String>, auto_yes: bool) -> Result<()> {
             "Invalid component name \"{}\". \
              It must contain only letters, numbers, or underscores.",
             component_name
+        ));
+        return Ok(());
+    }
+
+    let pascal_name = to_pascal_case(&snake_name);
+    let component_dir_name = snake_name
+        .strip_prefix("just_")
+        .unwrap_or(&snake_name)
+        .to_string();
+    let target_dir = format!("{}/{}", config.components_dir, component_dir_name);
+
+    if dry_run {
+        logger::stdout(&format!(
+            "[dry-run] Would scaffold component \"{}\" in {}",
+            pascal_name, target_dir
         ));
         return Ok(());
     }
@@ -346,11 +366,12 @@ mod tests {
 
     #[test]
     fn test_create_run_execution() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
         // 1. Uninitialized -> returns Ok with warning
-        assert!(run(None, false).is_ok());
+        assert!(run(None, None, false, false).is_ok());
 
         // 2. Initialized -> creates component files
         std::fs::write("pubspec.yaml", "name: test_app").unwrap();
@@ -360,7 +381,7 @@ mod tests {
         )
         .unwrap();
 
-        assert!(run(Some("my_widget".to_string()), true).is_ok());
-        assert!(run(None, false).is_ok());
+        assert!(run(Some("my_widget".to_string()), None, false, true).is_ok());
+        assert!(run(None, None, false, false).is_ok());
     }
 }

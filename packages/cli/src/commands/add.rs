@@ -44,7 +44,15 @@ pub struct OperationDetail {
     pub path: String,
 }
 
-pub fn run(components: Vec<String>, dry_run: bool, show_diff: bool, auto_yes: bool) -> Result<()> {
+pub fn run(
+    components: Vec<String>,
+    dry_run: bool,
+    show_diff: bool,
+    all: bool,
+    overwrite: bool,
+    auto_yes: bool,
+) -> Result<()> {
+    let auto_yes = auto_yes || overwrite;
     let effective_dry_run = dry_run || show_diff;
 
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
@@ -95,7 +103,9 @@ pub fn run(components: Vec<String>, dry_run: bool, show_diff: bool, auto_yes: bo
         }
     };
 
-    let components_to_add: Vec<String> = if components.is_empty() {
+    let components_to_add: Vec<String> = if all {
+        index.components.iter().map(|c| c.name.clone()).collect()
+    } else if components.is_empty() {
         let component_names: Vec<String> = index
             .components
             .iter()
@@ -313,6 +323,7 @@ pub fn run(components: Vec<String>, dry_run: bool, show_diff: bool, auto_yes: bo
     }
 
     if !summary_items.is_empty() && !dry_run {
+        logger::success("komponen berhasil ditambahkan");
         logger::summary(
             &format!("{} component(s) added successfully", summary_items.len()),
             &summary_items,
@@ -868,11 +879,12 @@ mod tests {
 
     #[test]
     fn test_add_run_uninitialized_and_conflict_resolution() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
         // 1. Uninitialized project returns Ok with warning
-        assert!(run(vec![], false, false, true).is_ok());
+        assert!(run(vec![], false, false, false, false, true).is_ok());
 
         // 2. Test resolve_conflict when target file exists with metadata up-to-date
         let file_path = temp_dir.path().join("just_button.dart");
