@@ -1,6 +1,7 @@
 pub mod add;
 pub mod create;
 pub mod diff;
+pub mod doctor;
 pub mod info;
 pub mod init;
 pub mod list;

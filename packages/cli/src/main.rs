@@ -230,6 +230,13 @@ enum Commands {
         #[arg(long = "force")]
         force: bool,
     },
+
+    /// Perform health and environment diagnostics check
+    #[command(
+        subcommand_help_heading = "Maintenance & Utility",
+        after_help = "EXAMPLES:\n  justui doctor"
+    )]
+    Doctor,
 }
 
 use commands::preset::PresetSubcommands;
@@ -308,6 +315,7 @@ fn main() {
             list,
             info,
         } => commands::preset::run(subcommand, name, apply, list, info, auto_yes),
+        Commands::Doctor => commands::doctor::run(),
     };
 
     if let Err(e) = result {
