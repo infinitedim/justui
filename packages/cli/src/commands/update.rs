@@ -161,6 +161,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
     let mut visited: HashSet<String> = HashSet::new();
     for idx in selected_indices {
         let comp_name = &outdated_components[idx];
+        logger::info(&format!("Diperbarui component \"{}\"", comp_name));
         if let Err(e) = add_component(
             comp_name,
             &index,

@@ -25,7 +25,7 @@ enum InputMode {
     Searching,
 }
 
-pub fn run(category: Option<String>) -> Result<()> {
+pub fn run(category: Option<String>, json: bool) -> Result<()> {
     let config = if let Ok(content) = std::fs::read_to_string(JustUIConfig::CONFIG_FILE_NAME) {
         JustUIConfig::from_yaml(&content)
     } else {
@@ -53,12 +53,31 @@ pub fn run(category: Option<String>) -> Result<()> {
         index.components.retain(|c| c.category == *cat);
     }
 
+    if json {
+        if let Ok(json_str) = serde_json::to_string_pretty(&index.components) {
+            logger::stdout(&json_str);
+            return Ok(());
+        }
+    }
+
     if index.components.is_empty() {
         logger::warning("No components found in the registry.");
         return Ok(());
     }
 
-    enable_raw_mode()?;
+    let is_tty = crossterm::tty::IsTty::is_tty(&io::stdout());
+    if !is_tty || enable_raw_mode().is_err() {
+        logger::stdout("=== JustUI Registry Components ===");
+        for comp in &index.components {
+            let status = get_component_status(comp, &config);
+            logger::stdout(&format!(
+                "  {:<20} v{:<8} [{:<12}] ({})",
+                comp.name, comp.version, status, comp.category
+            ));
+        }
+        return Ok(());
+    }
+
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen)?;
     let backend = CrosstermBackend::new(stdout);
