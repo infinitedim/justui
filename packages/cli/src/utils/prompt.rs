@@ -2,6 +2,9 @@ use inquire::{MultiSelect, Select};
 use std::io::{self, IsTerminal};
 
 fn is_interactive() -> bool {
+    if cfg!(test) {
+        return false;
+    }
     io::stdin().is_terminal() && io::stderr().is_terminal()
 }
 
