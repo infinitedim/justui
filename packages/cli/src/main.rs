@@ -173,6 +173,9 @@ enum Commands {
         /// Filter components by category
         #[arg(long = "category")]
         category: Option<String>,
+        /// Output component list in JSON format
+        #[arg(long = "json")]
+        json: bool,
     },
 
     /// Search for components in the registry by keyword or category
@@ -278,7 +281,7 @@ fn main() {
             all,
             overwrite,
         } => commands::add::run(components, dry_run, show_diff, all, overwrite, auto_yes),
-        Commands::List { category } => commands::list::run(category),
+        Commands::List { category, json } => commands::list::run(category, json),
         Commands::Diff {
             component,
             verbose,
