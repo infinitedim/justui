@@ -32,12 +32,13 @@ python3 scripts/deployment_manager.py deploy --env=staging --image=app:1.2.3 --s
 Scaffolds CI/CD pipeline configurations for GitHub Actions or CircleCI, with stages for build, test, security scan, and deploy.
 
 **Example — GitHub Actions workflow:**
+
 ```yaml
 # .github/workflows/ci.yml
 name: CI/CD Pipeline
 on:
   push:
-    branches: [main, develop]
+    branches: [main, development]
   pull_request:
     branches: [main]
 
@@ -49,8 +50,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
       - run: npm ci
       - run: npm run lint
       - run: npm test -- --coverage
@@ -82,6 +83,7 @@ jobs:
 ```
 
 **Usage:**
+
 ```bash
 python scripts/pipeline_generator.py <project-path> --platform=github|circleci --stages=build,test,deploy
 ```
@@ -91,6 +93,7 @@ python scripts/pipeline_generator.py <project-path> --platform=github|circleci -
 Generates, validates, and plans Terraform modules. Enforces consistent module structure and runs `terraform validate` + `terraform plan` before any apply.
 
 **Example — AWS ECS service module:**
+
 ```hcl
 # modules/ecs-service/main.tf
 resource "aws_ecs_task_definition" "app" {
@@ -142,6 +145,7 @@ resource "aws_ecs_service" "app" {
 ```
 
 **Usage:**
+
 ```bash
 python scripts/terraform_scaffolder.py <target-path> --provider=aws|gcp|azure --module=ecs-service|gke-deployment|aks-service [--verbose]
 ```
@@ -151,6 +155,7 @@ python scripts/terraform_scaffolder.py <target-path> --provider=aws|gcp|azure --
 Generates Kubernetes deployment manifests and ordered kubectl runbooks for blue/green or rolling strategies, with health-check gates before traffic switches and rollback runbooks. The tool writes manifests and prints the commands — it never applies them to a cluster itself, so every change gets a human review.
 
 **Example — Kubernetes blue/green deployment (blue-slot specific elements):**
+
 ```yaml
 # k8s/deployment-blue.yaml
 apiVersion: apps/v1
@@ -159,7 +164,7 @@ metadata:
   name: app-blue
   labels:
     app: myapp
-    slot: blue      # slot label distinguishes blue from green
+    slot: blue # slot label distinguishes blue from green
 spec:
   replicas: 3
   selector:
@@ -175,7 +180,7 @@ spec:
       containers:
         - name: app
           image: ghcr.io/org/app:1.2.3
-          readinessProbe:       # gate: pod must pass before traffic switches
+          readinessProbe: # gate: pod must pass before traffic switches
             httpGet:
               path: /healthz
               port: 8080
@@ -191,6 +196,7 @@ spec:
 ```
 
 **Usage:**
+
 ```bash
 python scripts/deployment_manager.py deploy \
   --env=staging|production \
@@ -275,13 +281,14 @@ curl -sf https://app.example.com/healthz || echo "ROLLBACK FAILED — escalate"
 
 Use these companion skills for cloud-specific deep dives:
 
-| Skill | Cloud | Use When |
-|-------|-------|----------|
-| **aws-solution-architect** | AWS | ECS/EKS, Lambda, VPC design, cost optimization |
-| **azure-cloud-architect** | Azure | AKS, App Service, Virtual Networks, Azure DevOps |
-| **gcp-cloud-architect** | GCP | GKE, Cloud Run, VPC, Cloud Build *(coming soon)* |
+| Skill                      | Cloud | Use When                                         |
+| -------------------------- | ----- | ------------------------------------------------ |
+| **aws-solution-architect** | AWS   | ECS/EKS, Lambda, VPC design, cost optimization   |
+| **azure-cloud-architect**  | Azure | AKS, App Service, Virtual Networks, Azure DevOps |
+| **gcp-cloud-architect**    | GCP   | GKE, Cloud Run, VPC, Cloud Build _(coming soon)_ |
 
 **Multi-cloud vs single-cloud decision:**
+
 - **Single-cloud** (default) — lower operational complexity, deeper managed-service integration, better cost leverage with committed-use discounts
 - **Multi-cloud** — required when mandated by compliance/data residency, acquiring companies on different clouds, or needing best-of-breed services across providers (e.g., AWS for compute + GCP for ML)
 - **Hybrid** — on-prem + cloud; use when regulated workloads must stay on-prem while burst/non-sensitive workloads run in the cloud
@@ -295,6 +302,7 @@ Use these companion skills for cloud-specific deep dives:
 ### Terraform / OpenTofu (Default Choice)
 
 Terraform (or its open-source fork OpenTofu) is the recommended IaC tool for most teams:
+
 - Single language (HCL) across AWS, Azure, GCP, and 3,000+ providers
 - State management with remote backends (S3, GCS, Azure Blob)
 - Plan-before-apply workflow prevents drift surprises
@@ -303,17 +311,18 @@ Terraform (or its open-source fork OpenTofu) is the recommended IaC tool for mos
 ### Pulumi (Programming Language IaC)
 
 Choose Pulumi when the team strongly prefers TypeScript, Python, Go, or C# over HCL:
+
 - Full programming language — loops, conditionals, unit tests native
 - Same cloud provider coverage as Terraform
 - Easier onboarding for dev teams that resist learning HCL
 
 ### When to Use Cloud-Native IaC
 
-| Tool | Use When |
-|------|----------|
-| **CloudFormation** | AWS-only shop; need native AWS support (StackSets, Service Catalog) |
-| **Bicep** | Azure-only shop; simpler syntax than ARM templates |
-| **Cloud Deployment Manager** | GCP-only; rare — most GCP teams prefer Terraform |
+| Tool                         | Use When                                                            |
+| ---------------------------- | ------------------------------------------------------------------- |
+| **CloudFormation**           | AWS-only shop; need native AWS support (StackSets, Service Catalog) |
+| **Bicep**                    | Azure-only shop; simpler syntax than ARM templates                  |
+| **Cloud Deployment Manager** | GCP-only; rare — most GCP teams prefer Terraform                    |
 
 > **Rule of thumb:** Use Terraform/OpenTofu unless you are 100% committed to a single cloud AND the cloud-native tool offers a feature Terraform cannot replicate (e.g., AWS Service Catalog integration).
 
