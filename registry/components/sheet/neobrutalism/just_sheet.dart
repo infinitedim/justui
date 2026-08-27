@@ -408,6 +408,11 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     // Drag handle bar
     final isVertical = widget.direction == .bottom || widget.direction == .top;
 
+    // Keyboard inset awareness for bottom sheets
+    final bottomInset = widget.direction == .bottom
+        ? MediaQuery.of(context).viewInsets.bottom
+        : 0.0;
+
     Widget card = Container(
       width: width,
       height: height,
@@ -449,6 +454,9 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
                 ),
               ),
             ),
+            // Reserve space for keyboard when visible on bottom sheets
+            if (bottomInset > 0)
+              SizedBox(height: bottomInset),
           ],
         ),
       ),
