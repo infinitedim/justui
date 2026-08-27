@@ -10,6 +10,10 @@ enum JustDatePickerVariant {
 
   /// Calendar is attached as a dropdown popup beneath a trigger field.
   dropdown,
+
+  /// Adaptive variant: floating popover on desktop/tablet (≥ 640px),
+  /// draggable bottom sheet on mobile (< 640px).
+  responsive,
 }
 
 /// The currently active calendar view mode.
