@@ -216,7 +216,7 @@ class const JustToggle({
 
           BoxBorder resolvedBorder;
           if (hasBorder) {
-            resolvedBorder = Border.all(
+            resolvedBorder = .all(
               color: border,
               width: customTheme.presetTokens.borderWidth,
             );
@@ -237,7 +237,7 @@ class const JustToggle({
               );
             }
           } else {
-            resolvedBorder = Border.all(color: border, width: 1.0);
+            resolvedBorder = .all(color: border, width: 1.0);
           }
 
           Widget buttonContent = Container(

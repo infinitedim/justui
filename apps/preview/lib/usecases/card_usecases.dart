@@ -27,7 +27,7 @@ Widget buildJustCardDefaultUseCase(BuildContext context) {
         onTap: isInteractive ? () {} : null,
         header: const JustCardHeader(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               JustCardTitle(child: Text('Card Title')),
               JustCardDescription(
@@ -38,7 +38,7 @@ Widget buildJustCardDefaultUseCase(BuildContext context) {
         ),
         footer: JustCardFooter(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: .end,
             children: [
               JustButton.ghost(label: 'Cancel', onPressed: () {}),
               const SizedBox(width: 8.0),

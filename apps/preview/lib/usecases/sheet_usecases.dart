@@ -28,15 +28,12 @@ Widget buildJustSheetDefaultUseCase(BuildContext context) {
                 direction: direction,
                 draggable: true,
                 content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: .min,
+                  crossAxisAlignment: .start,
                   children: [
                     const Text(
                       'Sheet Header',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
-                      ),
+                      style: TextStyle(fontWeight: .bold, fontSize: 18.0),
                     ),
                     const SizedBox(height: 12.0),
                     const Text(

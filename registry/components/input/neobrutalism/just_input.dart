@@ -531,7 +531,7 @@ class _JustInputState extends State<JustInput> {
                     widget.label!,
                     style: finalLabelStyle.copyWith(
                       fontSize: fontSize - 1,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: .w500,
                       color: widget.errorText != null
                           ? errorBorder
                           : (isFocused ? focusedBorder : colors.textPrimary),
