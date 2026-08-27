@@ -26,6 +26,8 @@ import 'package:preview/usecases/card_usecases.dart'
     as _preview_usecases_card_usecases;
 import 'package:preview/usecases/checkbox_usecases.dart'
     as _preview_usecases_checkbox_usecases;
+import 'package:preview/usecases/date_picker_usecases.dart'
+    as _preview_usecases_date_picker_usecases;
 import 'package:preview/usecases/dialog_usecases.dart'
     as _preview_usecases_dialog_usecases;
 import 'package:preview/usecases/input_usecases.dart'
@@ -204,6 +206,51 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'date_picker',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'JustDatePicker',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inline Date Picker',
+                builder: _preview_usecases_date_picker_usecases
+                    .buildJustDatePickerInlineUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Dropdown Date Picker',
+                builder: _preview_usecases_date_picker_usecases
+                    .buildJustDatePickerDropdownUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Modal Dialog Date Picker',
+                builder: _preview_usecases_date_picker_usecases
+                    .buildJustDatePickerModalUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Date Constraints & Predicate',
+                builder: _preview_usecases_date_picker_usecases
+                    .buildJustDatePickerConstraintsUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Custom Day & Header Builders',
+                builder: _preview_usecases_date_picker_usecases
+                    .buildJustDatePickerCustomBuildersUseCase,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'JustDateRangePicker',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Date Range Picker',
+                builder: _preview_usecases_date_picker_usecases
+                    .buildJustDateRangePickerUseCase,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'dialog',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -258,16 +305,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Linear Progress',
                 builder: _preview_usecases_progress_usecases
                     .buildJustProgressLinearUseCase,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'JustProgressSpinner',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Variable Arc Sweep Spinner',
-                builder: _preview_usecases_progress_usecases
-                    .buildJustProgressSpinnerUseCase,
               ),
             ],
           ),
@@ -333,6 +370,21 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Vertical Separator',
                 builder: _preview_usecases_separator_usecases
                     .buildJustSeparatorVerticalUseCase,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'shared',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'JustProgressSpinner',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Variable Arc Sweep Spinner',
+                builder: _preview_usecases_progress_usecases
+                    .buildJustProgressSpinnerUseCase,
               ),
             ],
           ),

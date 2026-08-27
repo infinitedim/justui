@@ -323,7 +323,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
     if (!_resolvedController.hasClients) return;
 
     final maxScroll = _resolvedController.position.maxScrollExtent;
-    final now = DateTime.now();
+    final DateTime now = .now();
     final double dtMs = _lastPointerEventTime == null
         ? 100.0
         : now.difference(_lastPointerEventTime!).inMicroseconds / 1000.0;

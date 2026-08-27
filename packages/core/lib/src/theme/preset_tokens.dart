@@ -102,7 +102,7 @@ abstract class JustPresetTokens {
   };
 
   /// Label font weight for progress — neobrutalism uses bold.
-  FontWeight get progressLabelWeight => FontWeight.w500;
+  FontWeight get progressLabelWeight => .w500;
 
   // ── Separator ────────────────────────────────────────────────────────────────
 
@@ -137,6 +137,15 @@ abstract class JustPresetTokens {
 
   /// Whether the skeleton loader should pulse opacity instead of showing a gradient sweep shimmer.
   bool get usePulsingSkeleton;
+
+  // ── Date Picker ─────────────────────────────────────────────────────────────
+
+  /// Resolves cell size (width/height) for date picker day cells.
+  double resolveDatePickerCellSize() => 40.0;
+
+  /// Whether the day cell selected state should use circular (default) or
+  /// sharp-cornered (neobrutalism) indicator.
+  bool get datePickerCircularSelection => true;
 }
 
 /// Default preset — soft shadows, minimal/no borders, rounded corners,
@@ -348,7 +357,7 @@ class NeobrutalismPresetTokens extends JustPresetTokens {
   };
 
   @override
-  FontWeight get progressLabelWeight => FontWeight.w700;
+  FontWeight get progressLabelWeight => .w700;
 
   @override
   double resolveSeparatorThickness(double base) => base < 2.0 ? 2.0 : base;
@@ -382,6 +391,12 @@ class NeobrutalismPresetTokens extends JustPresetTokens {
 
   @override
   bool get usePulsingSkeleton => true;
+
+  @override
+  double resolveDatePickerCellSize() => 42.0;
+
+  @override
+  bool get datePickerCircularSelection => false;
 }
 
 /// Resolves the [JustPresetTokens] implementation for a given preset.

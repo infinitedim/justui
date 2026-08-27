@@ -81,14 +81,14 @@
           {
             "name": "just_input.dart",
             "path": "components/input/default/just_input.dart",
-            "checksum": "sha256:7ab851d27e508ef31320093262d4737d75e6d0c5bec8fd48a6b143902de7fa7c"
+            "checksum": "sha256:02b3bb849c490616f9b1b189650e36e5d0dfbc83cde43e1ee58899441e4145a4"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_input.dart",
             "path": "components/input/neobrutalism/just_input.dart",
-            "checksum": "sha256:7ab851d27e508ef31320093262d4737d75e6d0c5bec8fd48a6b143902de7fa7c"
+            "checksum": "sha256:02b3bb849c490616f9b1b189650e36e5d0dfbc83cde43e1ee58899441e4145a4"
           }
         ]
       },
@@ -390,14 +390,14 @@
           {
             "name": "just_scroll_area.dart",
             "path": "components/scroll/default/just_scroll_area.dart",
-            "checksum": "sha256:0f407ae6bf0d2ac104be3f42b5aa90cf980c8fc918db7cf320af01cdb5ee464d"
+            "checksum": "sha256:f475db85177d16611626375419b0b194628d0a53ba56b0ede49d21c0ae0470e1"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_scroll_area.dart",
             "path": "components/scroll/neobrutalism/just_scroll_area.dart",
-            "checksum": "sha256:0f407ae6bf0d2ac104be3f42b5aa90cf980c8fc918db7cf320af01cdb5ee464d"
+            "checksum": "sha256:f475db85177d16611626375419b0b194628d0a53ba56b0ede49d21c0ae0470e1"
           }
         ]
       },
@@ -470,14 +470,14 @@
           {
             "name": "just_skeleton.dart",
             "path": "components/skeleton/default/just_skeleton.dart",
-            "checksum": "sha256:2e3bf32165c43fecad908c8a6707fcc765b331025ec64fab53f5bd9c88cde54e"
+            "checksum": "sha256:271d4c115eef2df75ff2656b5dae8bc22b151a9308c5e37d4a9bce49bd015653"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_skeleton.dart",
             "path": "components/skeleton/neobrutalism/just_skeleton.dart",
-            "checksum": "sha256:2e3bf32165c43fecad908c8a6707fcc765b331025ec64fab53f5bd9c88cde54e"
+            "checksum": "sha256:271d4c115eef2df75ff2656b5dae8bc22b151a9308c5e37d4a9bce49bd015653"
           }
         ]
       },
@@ -828,14 +828,14 @@
           {
             "name": "just_select.dart",
             "path": "components/select/default/just_select.dart",
-            "checksum": "sha256:9f2adb5228f0b63a5c8523e18353332e21d2f4ae73ff3e3cfa89381a1fb94653"
+            "checksum": "sha256:c8eb7169c8e138cca7b6c7631fe49db89413daf89692c201d5bdaa8b1fe3b218"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_select.dart",
             "path": "components/select/neobrutalism/just_select.dart",
-            "checksum": "sha256:9f2adb5228f0b63a5c8523e18353332e21d2f4ae73ff3e3cfa89381a1fb94653"
+            "checksum": "sha256:c8eb7169c8e138cca7b6c7631fe49db89413daf89692c201d5bdaa8b1fe3b218"
           }
         ]
       },
@@ -857,14 +857,14 @@
           {
             "name": "just_progress.dart",
             "path": "components/progress/default/just_progress.dart",
-            "checksum": "sha256:1ad0280a6e7119c7fafeea016e7ea122b40cd912b4703ed457f8af245cce733d"
+            "checksum": "sha256:a0b7b1fb88f66552c0704b5d0d7695fdd3b336c6c5e74875f52c3b0135f8370d"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_progress.dart",
             "path": "components/progress/neobrutalism/just_progress.dart",
-            "checksum": "sha256:1ad0280a6e7119c7fafeea016e7ea122b40cd912b4703ed457f8af245cce733d"
+            "checksum": "sha256:a0b7b1fb88f66552c0704b5d0d7695fdd3b336c6c5e74875f52c3b0135f8370d"
           }
         ]
       },
@@ -921,24 +921,24 @@
           {
             "name": "just_toggle.dart",
             "path": "components/toggle/default/just_toggle.dart",
-            "checksum": "sha256:721744848387e9f2c0a09f8a1079408ea7a985b602573bbc0a149abfe7c95acc"
+            "checksum": "sha256:8c39cb2feeced69cbca165bfe1c728a48c54befe74790cdb6bca5061cb38473b"
           },
           {
             "name": "just_toggle_group.dart",
             "path": "components/toggle/default/just_toggle_group.dart",
-            "checksum": "sha256:31046de070483f6ea0b7d7722b5591057472481ac309b7234b763866cdb251ac"
+            "checksum": "sha256:0504c9bd09063f49605fb8d3f503e95443fade54c12fc9f5de4b6dd79425aae2"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_toggle.dart",
             "path": "components/toggle/neobrutalism/just_toggle.dart",
-            "checksum": "sha256:721744848387e9f2c0a09f8a1079408ea7a985b602573bbc0a149abfe7c95acc"
+            "checksum": "sha256:8c39cb2feeced69cbca165bfe1c728a48c54befe74790cdb6bca5061cb38473b"
           },
           {
             "name": "just_toggle_group.dart",
             "path": "components/toggle/neobrutalism/just_toggle_group.dart",
-            "checksum": "sha256:31046de070483f6ea0b7d7722b5591057472481ac309b7234b763866cdb251ac"
+            "checksum": "sha256:0504c9bd09063f49605fb8d3f503e95443fade54c12fc9f5de4b6dd79425aae2"
           }
         ]
       },
@@ -963,14 +963,89 @@
           {
             "name": "just_table.dart",
             "path": "components/table/default/just_table.dart",
-            "checksum": "sha256:a2fdf8c9608a5bb49bd6fa6727308454589911d124e4b78da69cae0234239318"
+            "checksum": "sha256:81ee2a246b2dbe006035e5c81ce13d3815c634f881add6fd82cee7bcbf4ef20c"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_table.dart",
             "path": "components/table/neobrutalism/just_table.dart",
-            "checksum": "sha256:a2fdf8c9608a5bb49bd6fa6727308454589911d124e4b78da69cae0234239318"
+            "checksum": "sha256:81ee2a246b2dbe006035e5c81ce13d3815c634f881add6fd82cee7bcbf4ef20c"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
+    },
+    {
+      "name": "date-picker",
+      "version": "0.1.0",
+      "description": "Full-featured calendar date picker with inline, modal, and dropdown variants.",
+      "category": "composite",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_date_picker.dart",
+            "path": "components/date_picker/default/just_date_picker.dart",
+            "checksum": "sha256:f700fb3748cff8cd634ed37a664049a1df70b418a0859e2f6ec885bf414ecec0"
+          },
+          {
+            "name": "_date_picker_calendar.dart",
+            "path": "components/date_picker/default/_date_picker_calendar.dart",
+            "checksum": "sha256:769f1ea9320f9ca9810151ea39c800a3187f5c3c2a4c1e7d3876fe1c3b1d9341"
+          }
+        ],
+        "neobrutalism": [
+          {
+            "name": "just_date_picker.dart",
+            "path": "components/date_picker/neobrutalism/just_date_picker.dart",
+            "checksum": "sha256:f700fb3748cff8cd634ed37a664049a1df70b418a0859e2f6ec885bf414ecec0"
+          },
+          {
+            "name": "_date_picker_calendar.dart",
+            "path": "components/date_picker/neobrutalism/_date_picker_calendar.dart",
+            "checksum": "sha256:769f1ea9320f9ca9810151ea39c800a3187f5c3c2a4c1e7d3876fe1c3b1d9341"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
+    },
+    {
+      "name": "date-range-picker",
+      "version": "0.1.0",
+      "description": "Date range selection picker with quick presets (Today, Last 7 Days, etc.).",
+      "category": "composite",
+      "hidden": false,
+      "registryDependencies": [
+        "date-picker",
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_date_range_picker.dart",
+            "path": "components/date_picker/default/just_date_range_picker.dart",
+            "checksum": "sha256:353fd461bd9e9bc65c955f07f70c7dccf698ae86f49097ad34ce84d9f7589b4b"
+          }
+        ],
+        "neobrutalism": [
+          {
+            "name": "just_date_range_picker.dart",
+            "path": "components/date_picker/neobrutalism/just_date_range_picker.dart",
+            "checksum": "sha256:353fd461bd9e9bc65c955f07f70c7dccf698ae86f49097ad34ce84d9f7589b4b"
           }
         ]
       },
