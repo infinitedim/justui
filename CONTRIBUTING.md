@@ -2,6 +2,8 @@
 
 Thanks for wanting to contribute! This document covers everything you need to know before opening a PR — architecture, dev setup, coding rules, and how to add components to the registry.
 
+Looking for a place to start? Check out open issues tagged with [`good first issue`](https://github.com/infinitedim/justui/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) or [`help wanted`](https://github.com/infinitedim/justui/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22).
+
 ---
 
 ## Table of Contents
@@ -266,6 +268,13 @@ Add your component to the barrel export at `packages/core/lib/just_ui_core.dart`
 ### Step 5 — Write tests
 
 Add widget tests under `packages/core/test/components/just_<name>_test.dart`. Tests must include at minimum: renders without error, responds to theme changes, and handles all variants.
+
+### Step 6 — Add Widgetbook Use-Case
+
+To preview and test your component interactively during development, add a Widgetbook use-case under `apps/showcase/lib/usecases/`:
+- Create `just_<name>_usecase.dart`
+- Register both Light and Dark mode states, plus all visual variants (`default_`, `neobrutalism`).
+- Ensure knobs are provided for key interactive props (labels, sizes, state toggles).
 
 ---
 
