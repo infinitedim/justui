@@ -995,7 +995,7 @@
           {
             "name": "just_date_picker.dart",
             "path": "components/date_picker/default/just_date_picker.dart",
-            "checksum": "sha256:f700fb3748cff8cd634ed37a664049a1df70b418a0859e2f6ec885bf414ecec0"
+            "checksum": "sha256:5e819da8e7fca50a155706288db1f9eed30cbf3a3f64a718d434796f0bf6eb0f"
           },
           {
             "name": "_date_picker_calendar.dart",
@@ -1007,7 +1007,7 @@
           {
             "name": "just_date_picker.dart",
             "path": "components/date_picker/neobrutalism/just_date_picker.dart",
-            "checksum": "sha256:f700fb3748cff8cd634ed37a664049a1df70b418a0859e2f6ec885bf414ecec0"
+            "checksum": "sha256:5e819da8e7fca50a155706288db1f9eed30cbf3a3f64a718d434796f0bf6eb0f"
           },
           {
             "name": "_date_picker_calendar.dart",
