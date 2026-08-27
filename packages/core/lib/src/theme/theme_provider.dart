@@ -23,10 +23,8 @@ class const JustThemeProvider({
   @override
   State<JustThemeProvider> createState() => JustThemeProviderState();
 
-  /// Retrieves the active state of this provider and registers a rebuild dependency on the context.
-  ///
-  /// Specify an [aspect] (e.g., [JustThemeAspect.colors]) to restrict rebuilds to changes in that component only.
-  static JustThemeProviderState of(
+  /// Retrieves the active state of this provider, or null if not found in the widget tree.
+  static JustThemeProviderState? maybeOf(
     BuildContext context, {
     JustThemeAspect? aspect,
   }) {
@@ -34,22 +32,39 @@ class const JustThemeProvider({
       context,
       aspect: aspect,
     );
-    if (model == null) {
+    return model?.state;
+  }
+
+  /// Retrieves the active state of this provider and registers a rebuild dependency on the context.
+  ///
+  /// Specify an [aspect] (e.g., [JustThemeAspect.colors]) to restrict rebuilds to changes in that component only.
+  static JustThemeProviderState of(
+    BuildContext context, {
+    JustThemeAspect? aspect,
+  }) {
+    final state = maybeOf(context, aspect: aspect);
+    if (state == null) {
       throw FlutterError('JustThemeProvider was not found in the widget tree.');
     }
-    return model.state;
+    return state;
+  }
+
+  /// Retrieves the active state without registering a rebuild dependency, or null if not found.
+  static JustThemeProviderState? maybeRead(BuildContext context) {
+    final element = context
+        .getElementForInheritedWidgetOfExactType<_JustThemeModel>();
+    return (element?.widget as _JustThemeModel?)?.state;
   }
 
   /// Retrieves the active state without registering a rebuild dependency.
   ///
   /// Ideal for callbacks, event handlers, or initialization.
   static JustThemeProviderState read(BuildContext context) {
-    final element = context
-        .getElementForInheritedWidgetOfExactType<_JustThemeModel>();
-    if (element == null) {
+    final state = maybeRead(context);
+    if (state == null) {
       throw FlutterError('JustThemeProvider was not found in the widget tree.');
     }
-    return (element.widget as _JustThemeModel).state;
+    return state;
   }
 }
 
