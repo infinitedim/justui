@@ -3,8 +3,11 @@ import 'package:flutter/material.dart'
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 
+
 import '../dialog/just_dialog.dart';
+import '../shared/_shared_overlay_transition.dart';
 import '../shared/_shared_pressable.dart';
+import '../sheet/just_sheet.dart';
 import '_date_picker_calendar.dart';
 import 'just_date_picker_style.dart';
 import 'just_date_picker_variants.dart';
@@ -26,7 +29,7 @@ class JustDatePicker extends StatefulWidget {
   /// Dates that cannot be selected.
   final bool Function(DateTime)? selectableDayPredicate;
 
-  /// Display variant (.inline, .modal, .dropdown).
+  /// Display variant (.inline, .modal, .dropdown, .responsive).
   final JustDatePickerVariant variant;
 
   /// Initial calendar view (.day, .month, .year).
@@ -149,6 +152,37 @@ class JustDatePicker extends StatefulWidget {
          enableHaptic: enableHaptic,
        );
 
+  /// Named constructor for responsive adaptive mode.
+  ///
+  /// Automatically switches between floating popover (≥ 640px)
+  /// and draggable bottom sheet (< 640px) based on screen width.
+  const JustDatePicker.responsive({
+    Key? key,
+    DateTime? value,
+    ValueChanged<DateTime>? onChanged,
+    DateTime? firstDate,
+    DateTime? lastDate,
+    bool Function(DateTime)? selectableDayPredicate,
+    String? placeholder,
+    String? label,
+    JustDatePickerLocale locale = const JustDatePickerLocale(),
+    JustDatePickerStyle? style,
+    bool? enableHaptic,
+  }) : this(
+         key: key,
+         value: value,
+         onChanged: onChanged,
+         firstDate: firstDate,
+         lastDate: lastDate,
+         selectableDayPredicate: selectableDayPredicate,
+         variant: .responsive,
+         placeholder: placeholder,
+         label: label,
+         locale: locale,
+         style: style,
+         enableHaptic: enableHaptic,
+       );
+
   @override
   State<JustDatePicker> createState() => _JustDatePickerState();
 }
@@ -162,7 +196,8 @@ class _JustDatePickerState extends State<JustDatePicker> {
 
   void _onDateSelected(DateTime date) {
     widget.onChanged?.call(date);
-    if (widget.variant == .dropdown && _overlayController.isShowing) {
+    if ((widget.variant == .dropdown || widget.variant == .responsive) &&
+        _overlayController.isShowing) {
       _overlayController.hide();
     }
   }
@@ -173,33 +208,45 @@ class _JustDatePickerState extends State<JustDatePicker> {
     return '$dayStr $monthStr ${date.year}';
   }
 
+  DatePickerCalendar _buildCalendarWidget({ValueChanged<DateTime>? onDateSelected}) {
+    return DatePickerCalendar(
+      selectedDate: widget.value,
+      onDateSelected: onDateSelected ?? _onDateSelected,
+      firstDate: widget.firstDate,
+      lastDate: widget.lastDate,
+      selectableDayPredicate: widget.selectableDayPredicate,
+      initialView: widget.initialView,
+      showWeekNumbers: widget.showWeekNumbers,
+      firstDayOfWeek: widget.firstDayOfWeek,
+      dayBuilder: widget.dayBuilder,
+      headerBuilder: widget.headerBuilder,
+      locale: widget.locale,
+      style: widget.style,
+      enableHaptic: widget.enableHaptic,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.variant == .inline) {
-      return DatePickerCalendar(
-        selectedDate: widget.value,
-        onDateSelected: _onDateSelected,
-        firstDate: widget.firstDate,
-        lastDate: widget.lastDate,
-        selectableDayPredicate: widget.selectableDayPredicate,
-        initialView: widget.initialView,
-        showWeekNumbers: widget.showWeekNumbers,
-        firstDayOfWeek: widget.firstDayOfWeek,
-        dayBuilder: widget.dayBuilder,
-        headerBuilder: widget.headerBuilder,
-        locale: widget.locale,
-        style: widget.style,
-        enableHaptic: widget.enableHaptic,
-      );
+      return _buildCalendarWidget();
     }
 
     if (widget.variant == .dropdown) {
       return _buildDropdownVariant(context);
     }
 
+    if (widget.variant == .responsive) {
+      return _buildResponsiveVariant(context);
+    }
+
     // Modal variant renders as an inline trigger button that shows modal dialog on tap
     return _buildModalTriggerButton(context);
   }
+
+  // ---------------------------------------------------------------------------
+  // Dropdown Variant (Floating Popover with dynamic positioning & animation)
+  // ---------------------------------------------------------------------------
 
   Widget _buildDropdownVariant(BuildContext context) {
     final colors = context.justColors;
@@ -236,6 +283,8 @@ class _JustDatePickerState extends State<JustDatePicker> {
         final bool fitsAbove =
             targetOffset.dy - spacing.xs - estimatedCalendarHeight >= margin;
 
+        final bool showAbove = !fitsBelow && fitsAbove;
+
         final double topPosition;
         if (fitsBelow || !fitsAbove) {
           topPosition = targetOffset.dy + triggerHeight + spacing.xs;
@@ -256,21 +305,16 @@ class _JustDatePickerState extends State<JustDatePicker> {
           leftPosition = (screenWidth - calendarWidth) / 2;
         }
 
-        final calendarWidget = DatePickerCalendar(
-          selectedDate: widget.value,
-          onDateSelected: _onDateSelected,
-          firstDate: widget.firstDate,
-          lastDate: widget.lastDate,
-          selectableDayPredicate: widget.selectableDayPredicate,
-          initialView: widget.initialView,
-          showWeekNumbers: widget.showWeekNumbers,
-          firstDayOfWeek: widget.firstDayOfWeek,
-          dayBuilder: widget.dayBuilder,
-          headerBuilder: widget.headerBuilder,
-          locale: widget.locale,
-          style: widget.style,
-          enableHaptic: widget.enableHaptic,
-        );
+        final calendarWidget = _buildCalendarWidget();
+
+        final themedCalendar = theme != null
+            ? JustThemeProvider(
+                lightTheme: theme,
+                darkTheme: theme,
+                initialThemeMode: themeState!.themeMode,
+                child: calendarWidget,
+              )
+            : calendarWidget;
 
         return Stack(
           children: [
@@ -285,66 +329,176 @@ class _JustDatePickerState extends State<JustDatePicker> {
                 },
               ),
             ),
-            // Positioned Dropdown Calendar
+            // Positioned Dropdown Calendar with entrance animation
             Positioned(
               left: leftPosition,
               top: topPosition,
               child: SizedBox(
                 width: calendarWidth,
-                child: theme != null
-                    ? JustThemeProvider(
-                        lightTheme: theme,
-                        darkTheme: theme,
-                        initialThemeMode: themeState!.themeMode,
-                        child: calendarWidget,
-                      )
-                    : calendarWidget,
+                child: JustOverlayTransition(
+                  isVisible: true,
+                  scaleAlignment: showAbove ? Alignment.bottomCenter : Alignment.topCenter,
+                  child: themedCalendar,
+                ),
               ),
             ),
           ],
         );
       },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (widget.label != null) ...[
-            Text(
-              widget.label!,
-              style: typo.bodySm.copyWith(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
+      child: _buildTriggerButton(
+        context,
+        colors: colors,
+        typo: typo,
+        spacing: spacing,
+        radius: radius,
+        presetTokens: presetTokens,
+        displayText: displayText,
+        showChevron: true,
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Responsive Variant (Desktop popover vs Mobile bottom sheet)
+  // ---------------------------------------------------------------------------
+
+  Widget _buildResponsiveVariant(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    if (screenWidth >= JustBreakpoints.sm) {
+      return _buildDropdownVariant(context);
+    }
+    return _buildMobileSheetTrigger(context);
+  }
+
+  Widget _buildMobileSheetTrigger(BuildContext context) {
+    final colors = context.justColors;
+    final typo = context.justTypo;
+    final spacing = context.justSpacing;
+    final radius = context.justRadius;
+    final themeState = JustThemeProvider.maybeOf(context);
+    final theme = themeState?.theme;
+    final presetTokens = (theme ?? context.justTheme).presetTokens;
+
+    final displayText = widget.value != null ? _formatDate(widget.value!) : (widget.placeholder ?? 'Select date');
+
+    return _buildTriggerButton(
+      context,
+      colors: colors,
+      typo: typo,
+      spacing: spacing,
+      radius: radius,
+      presetTokens: presetTokens,
+      displayText: displayText,
+      showChevron: false,
+      onTap: () {
+        final calendarWidget = _buildCalendarWidget(
+          onDateSelected: (date) {
+            widget.onChanged?.call(date);
+            // Dismiss the sheet after selection
+            try {
+              JustSheetScope.of(context).dismiss();
+            } catch (_) {
+              // If no JustSheetScope, do nothing (sheet was already dismissed)
+            }
+          },
+        );
+
+        Widget content = SizedBox(
+          width: double.infinity,
+          child: calendarWidget,
+        );
+
+        if (theme != null) {
+          content = JustThemeProvider(
+            lightTheme: theme,
+            darkTheme: theme,
+            initialThemeMode: themeState!.themeMode,
+            child: content,
+          );
+        }
+
+        try {
+          JustSheetScope.of(context).show<void>(
+            content: content,
+            draggable: true,
+          );
+        } catch (_) {
+          // Fallback: use modal dialog if JustSheetScope is not available
+          showJustDatePicker(
+            context: context,
+            initialDate: widget.value,
+            firstDate: widget.firstDate,
+            lastDate: widget.lastDate,
+            selectableDayPredicate: widget.selectableDayPredicate,
+            locale: widget.locale,
+            style: widget.style,
+          ).then((selected) {
+            if (selected != null) {
+              widget.onChanged?.call(selected);
+            }
+          });
+        }
+      },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Shared Trigger Button Builder
+  // ---------------------------------------------------------------------------
+
+  Widget _buildTriggerButton(
+    BuildContext context, {
+    required JustColorScheme colors,
+    required JustTypographyScheme typo,
+    required JustSpacingScheme spacing,
+    required JustRadiusScheme radius,
+    required JustPresetTokens presetTokens,
+    required String displayText,
+    required bool showChevron,
+    VoidCallback? onTap,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (widget.label != null) ...[
+          Text(
+            widget.label!,
+            style: typo.bodySm.copyWith(
+              color: colors.textPrimary,
+              fontWeight: FontWeight.w600,
             ),
-            SizedBox(height: spacing.xs),
-          ],
-          JustPressable(
-            onTap: _toggleDropdown,
-            builder: (context, state) {
-              return Container(
-                padding: .symmetric(horizontal: spacing.md, vertical: spacing.sm),
-                decoration: BoxDecoration(
-                  color: colors.card,
-                  borderRadius: presetTokens.resolveBorderRadius(radius),
-                  border: presetTokens.showsDefaultBorder
-                      ? .all(color: colors.textPrimary, width: presetTokens.borderWidth)
-                      : .all(color: colors.borderDefault, width: presetTokens.borderWidth),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.calendar_today_rounded,
-                      size: 16.0,
-                      color: colors.textSecondary,
+          ),
+          SizedBox(height: spacing.xs),
+        ],
+        JustPressable(
+          onTap: onTap ?? _toggleDropdown,
+          builder: (context, state) {
+            return Container(
+              padding: .symmetric(horizontal: spacing.md, vertical: spacing.sm),
+              decoration: BoxDecoration(
+                color: colors.card,
+                borderRadius: presetTokens.resolveBorderRadius(radius),
+                border: presetTokens.showsDefaultBorder
+                    ? .all(color: colors.textPrimary, width: presetTokens.borderWidth)
+                    : .all(color: colors.borderDefault, width: presetTokens.borderWidth),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.calendar_today_rounded,
+                    size: 16.0,
+                    color: colors.textSecondary,
+                  ),
+                  SizedBox(width: spacing.xs),
+                  Text(
+                    displayText,
+                    style: typo.bodyMd.copyWith(
+                      color: widget.value != null ? colors.textPrimary : colors.textSecondary,
                     ),
-                    SizedBox(width: spacing.xs),
-                    Text(
-                      displayText,
-                      style: typo.bodyMd.copyWith(
-                        color: widget.value != null ? colors.textPrimary : colors.textSecondary,
-                      ),
-                    ),
+                  ),
+                  if (showChevron) ...[
                     SizedBox(width: spacing.md),
                     Icon(
                       _overlayController.isShowing
@@ -354,14 +508,18 @@ class _JustDatePickerState extends State<JustDatePicker> {
                       color: colors.textSecondary,
                     ),
                   ],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
+
+  // ---------------------------------------------------------------------------
+  // Modal Variant
+  // ---------------------------------------------------------------------------
 
   Widget _buildModalTriggerButton(BuildContext context) {
     final colors = context.justColors;
@@ -421,7 +579,10 @@ class _JustDatePickerState extends State<JustDatePicker> {
   }
 }
 
-/// Imperative helper to display a [JustDatePicker] inside a modal dialog.
+/// Imperative helper to display a [JustDatePicker] inside a modal layer.
+///
+/// Automatically uses a bottom sheet ([JustSheetScope]) on mobile (< 640px)
+/// and a centered dialog ([JustDialogScope]) on desktop/tablet (≥ 640px).
 Future<DateTime?> showJustDatePicker({
   required BuildContext context,
   DateTime? initialDate,
@@ -447,6 +608,39 @@ Future<DateTime?> showJustDatePicker({
     }
     return child;
   }
+
+  final isMobile = MediaQuery.sizeOf(context).width < JustBreakpoints.sm;
+
+  if (isMobile) {
+    try {
+      final sheetScope = JustSheetScope.of(context);
+      await sheetScope.show<void>(
+        content: wrapWithTheme(
+          SizedBox(
+            width: double.infinity,
+            child: JustDatePicker.inline(
+              value: initialDate,
+              firstDate: firstDate,
+              lastDate: lastDate,
+              selectableDayPredicate: selectableDayPredicate,
+              locale: locale,
+              style: style,
+              onChanged: (date) {
+                result = date;
+                sheetScope.dismiss();
+              },
+            ),
+          ),
+        ),
+        draggable: true,
+      );
+      return result;
+    } catch (_) {
+      // Fallback to dialog if JustSheetScope is not found
+    }
+  }
+
+  if (!context.mounted) return null;
 
   try {
     final dialogScope = JustDialogScope.of(context);

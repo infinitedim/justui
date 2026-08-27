@@ -212,19 +212,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'JustDatePicker',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Inline Date Picker',
+                name: 'Custom Day & Header Builders',
                 builder: _preview_usecases_date_picker_usecases
-                    .buildJustDatePickerInlineUseCase,
-              ),
-              _widgetbook.WidgetbookUseCase(
-                name: 'Dropdown Date Picker',
-                builder: _preview_usecases_date_picker_usecases
-                    .buildJustDatePickerDropdownUseCase,
-              ),
-              _widgetbook.WidgetbookUseCase(
-                name: 'Modal Dialog Date Picker',
-                builder: _preview_usecases_date_picker_usecases
-                    .buildJustDatePickerModalUseCase,
+                    .buildJustDatePickerCustomBuildersUseCase,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Date Constraints & Predicate',
@@ -232,9 +222,19 @@ final directories = <_widgetbook.WidgetbookNode>[
                     .buildJustDatePickerConstraintsUseCase,
               ),
               _widgetbook.WidgetbookUseCase(
-                name: 'Custom Day & Header Builders',
+                name: 'Dropdown Date Picker',
                 builder: _preview_usecases_date_picker_usecases
-                    .buildJustDatePickerCustomBuildersUseCase,
+                    .buildJustDatePickerDropdownUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inline Date Picker',
+                builder: _preview_usecases_date_picker_usecases
+                    .buildJustDatePickerInlineUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Modal Dialog Date Picker',
+                builder: _preview_usecases_date_picker_usecases
+                    .buildJustDatePickerModalUseCase,
               ),
             ],
           ),
