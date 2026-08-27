@@ -41,7 +41,7 @@ Widget buildJustButtonDefaultUseCase(BuildContext context) {
         constraints: const BoxConstraints(maxWidth: 600.0),
         child: isFullWidth
             ? Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: variants.map((variant) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),

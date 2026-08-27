@@ -18,15 +18,12 @@ Widget buildJustDialogDefaultUseCase(BuildContext context) {
             onPressed: () {
               scopeContext.justDialog.show<void>(
                 content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: .min,
+                  crossAxisAlignment: .start,
                   children: [
                     const Text(
                       'Confirm Action',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
-                      ),
+                      style: TextStyle(fontWeight: .bold, fontSize: 18.0),
                     ),
                     const SizedBox(height: 12.0),
                     const Text(
@@ -34,7 +31,7 @@ Widget buildJustDialogDefaultUseCase(BuildContext context) {
                     ),
                     const SizedBox(height: 20.0),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: .end,
                       children: [
                         JustButton.secondary(
                           label: 'Cancel',

@@ -56,7 +56,7 @@ class _InteractiveSidebarDemoState extends State<_InteractiveSidebarDemo> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Text(
           _isCollapsed ? 'UI' : 'JustUI Admin',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+          style: const TextStyle(fontWeight: .bold, fontSize: 18.0),
         ),
       ),
       items: const [

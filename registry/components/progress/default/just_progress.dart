@@ -216,7 +216,7 @@ class _JustProgressState extends State<JustProgress>
     }
 
     final BorderRadius defaultRadius = presetTokens.showsDefaultBorder
-        ? BorderRadius.zero
+        ? .zero
         : .all(radius.full);
     final finalRadius =
         widget.style?.borderRadius ??
@@ -228,10 +228,7 @@ class _JustProgressState extends State<JustProgress>
       decoration: BoxDecoration(
         color: trackBg,
         border: presetTokens.showsDefaultBorder
-            ? Border.all(
-                color: colors.textPrimary,
-                width: presetTokens.borderWidth,
-              )
+            ? .all(color: colors.textPrimary, width: presetTokens.borderWidth)
             : null,
         borderRadius: finalRadius,
       ),

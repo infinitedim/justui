@@ -748,7 +748,7 @@ class _JustSkeletonState extends State<JustSkeleton>
       if (dynamicWidget.children is List<Widget>) {
         final childrenList = (dynamicWidget.children as List).cast<Widget>();
         return Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           crossAxisAlignment: .start,
           children: childrenList.map((c) => _transform(c, context)).toList(),
         );

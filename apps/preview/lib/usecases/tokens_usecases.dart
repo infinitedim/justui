@@ -43,13 +43,13 @@ Widget buildColorTokensUseCase(BuildContext context) {
     padding: const EdgeInsets.all(24.0),
     child: SingleChildScrollView(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Text(
             'Semantic Color Tokens ($schemeType)',
             style: TextStyle(
               fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontWeight: .bold,
               color: scheme.textPrimary,
             ),
           ),
@@ -92,7 +92,7 @@ Widget buildColorTokensUseCase(BuildContext context) {
             'Raw Palette Shades (Slate / Primary)',
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: .bold,
               color: scheme.textPrimary,
             ),
           ),
@@ -131,23 +131,19 @@ Widget _buildSwatch(String label, Color color, Color textColor) {
     padding: const EdgeInsets.all(10),
     decoration: BoxDecoration(
       color: color,
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: const Color(0x33888888)),
+      borderRadius: .circular(8),
+      border: .all(color: const Color(0x33888888)),
     ),
     child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: .start,
+      mainAxisAlignment: .spaceBetween,
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
+          style: TextStyle(fontSize: 12, fontWeight: .bold, color: textColor),
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: [
             Text(
               '$contrast:1',
@@ -157,7 +153,7 @@ Widget _buildSwatch(String label, Color color, Color textColor) {
               isAA ? 'WCAG AA' : 'Fail',
               style: TextStyle(
                 fontSize: 10,
-                fontWeight: FontWeight.bold,
+                fontWeight: .bold,
                 color: isAA ? textColor : const Color(0xFFFF3B30),
               ),
             ),
@@ -176,8 +172,8 @@ Widget _buildMiniSwatch(String label, Color color) {
         height: 32,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: const Color(0x22888888)),
+          borderRadius: .circular(4),
+          border: .all(color: const Color(0x22888888)),
         ),
       ),
       const SizedBox(height: 4),
@@ -195,7 +191,7 @@ Widget buildTypographyTokensUseCase(BuildContext context) {
     padding: const EdgeInsets.all(24.0),
     child: const SingleChildScrollView(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Text('Display Large (48px)', style: JustTypo.displayLg),
           SizedBox(height: 12),
@@ -257,7 +253,7 @@ Widget buildSpacingTokensUseCase(BuildContext context) {
     padding: const EdgeInsets.all(24.0),
     child: SingleChildScrollView(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: spacings.entries.map((e) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -267,10 +263,7 @@ Widget buildSpacingTokensUseCase(BuildContext context) {
                   width: 110,
                   child: Text(
                     e.key,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
+                    style: const TextStyle(fontWeight: .bold, fontSize: 13),
                   ),
                 ),
                 Container(
@@ -278,7 +271,7 @@ Widget buildSpacingTokensUseCase(BuildContext context) {
                   height: 24,
                   decoration: BoxDecoration(
                     color: const Color(0xFF007AFF),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: .circular(4),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -334,10 +327,7 @@ Widget buildRadiusTokensUseCase(BuildContext context) {
               const SizedBox(height: 8),
               Text(
                 e.key,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: const TextStyle(fontSize: 12, fontWeight: .bold),
               ),
             ],
           );
@@ -373,7 +363,7 @@ Widget buildShadowsTokensUseCase(BuildContext context) {
             height: 100,
             decoration: BoxDecoration(
               color: const Color(0xFFFFFFFF),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: .circular(12),
               boxShadow: e.value,
             ),
             child: Center(
@@ -381,7 +371,7 @@ Widget buildShadowsTokensUseCase(BuildContext context) {
                 'Shadow ${e.key.toUpperCase()}',
                 style: const TextStyle(
                   fontSize: 13,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                   color: Color(0xFF111111),
                 ),
               ),
@@ -419,7 +409,7 @@ class _MotionDemoWidgetState extends State<_MotionDemoWidget> {
     return Container(
       padding: const EdgeInsets.all(24.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           GestureDetector(
             onTap: () {
@@ -431,14 +421,11 @@ class _MotionDemoWidgetState extends State<_MotionDemoWidget> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: const Color(0xFF007AFF),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: .circular(8),
               ),
               child: const Text(
                 'Tap to Trigger Motion Demos',
-                style: TextStyle(
-                  color: Color(0xFFFFFFFF),
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Color(0xFFFFFFFF), fontWeight: .bold),
               ),
             ),
           ),
@@ -468,12 +455,9 @@ class _MotionDemoWidgetState extends State<_MotionDemoWidget> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-          ),
+          Text(label, style: const TextStyle(fontWeight: .bold, fontSize: 13)),
           const SizedBox(height: 6),
           SizedBox(
             width: 300,
@@ -490,7 +474,7 @@ class _MotionDemoWidgetState extends State<_MotionDemoWidget> {
                     height: 32,
                     decoration: BoxDecoration(
                       color: const Color(0xFF007AFF),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: .circular(16),
                     ),
                   ),
                 ),

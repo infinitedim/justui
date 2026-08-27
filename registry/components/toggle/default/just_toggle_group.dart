@@ -94,10 +94,10 @@ class const JustToggleGroup({
     });
 
     if (direction == Axis.horizontal) {
-      return Row(mainAxisSize: MainAxisSize.min, children: children);
+      return Row(mainAxisSize: .min, children: children);
     } else {
       return Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         crossAxisAlignment: .stretch,
         children: children,
       );

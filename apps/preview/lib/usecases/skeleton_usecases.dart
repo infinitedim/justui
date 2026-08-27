@@ -53,8 +53,8 @@ Widget buildJustSkeletonDefaultUseCase(BuildContext context) {
 @widgetbook.UseCase(name: 'Manual Shapes', type: JustSkeleton)
 Widget buildJustSkeletonManualUseCase(BuildContext context) {
   return const Column(
-    mainAxisSize: MainAxisSize.min,
-    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: .min,
+    crossAxisAlignment: .start,
     children: [
       JustSkeleton.circle(size: 48.0),
       SizedBox(height: 12.0),

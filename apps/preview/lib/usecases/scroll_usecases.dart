@@ -140,12 +140,12 @@ Widget buildJustScrollAreaDefaultUseCase(BuildContext context) {
       width: 440.0,
       decoration: BoxDecoration(
         color: colors.card,
-        borderRadius: const BorderRadius.all(Radius.circular(12.0)),
-        border: Border.all(color: colors.borderDefault, width: 1.0),
+        borderRadius: const .all(Radius.circular(12.0)),
+        border: .all(color: colors.borderDefault, width: 1.0),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: .min,
+        crossAxisAlignment: .stretch,
         children: [
           // Header
           Padding(
@@ -165,7 +165,7 @@ Widget buildJustScrollAreaDefaultUseCase(BuildContext context) {
                   'Activity & Audit Log',
                   style: typo.headingSm.copyWith(
                     color: colors.textPrimary,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: .w600,
                   ),
                 ),
                 const Spacer(),
@@ -200,16 +200,14 @@ Widget buildJustScrollAreaDefaultUseCase(BuildContext context) {
                     padding: EdgeInsets.all(spacing.md),
                     decoration: BoxDecoration(
                       color: colors.background,
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(8.0),
-                      ),
-                      border: Border.all(
+                      borderRadius: const .all(Radius.circular(8.0)),
+                      border: .all(
                         color: colors.borderDefault.withValues(alpha: 0.5),
                         width: 1.0,
                       ),
                     ),
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         Container(
                           width: 32.0,
@@ -232,7 +230,7 @@ Widget buildJustScrollAreaDefaultUseCase(BuildContext context) {
                         SizedBox(width: spacing.md),
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
                               Row(
                                 children: [
@@ -241,7 +239,7 @@ Widget buildJustScrollAreaDefaultUseCase(BuildContext context) {
                                       item.title,
                                       style: typo.bodySm.copyWith(
                                         color: colors.textPrimary,
-                                        fontWeight: FontWeight.w600,
+                                        fontWeight: .w600,
                                       ),
                                     ),
                                   ),

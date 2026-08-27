@@ -250,7 +250,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
 
     // Outer Container Border
     final tableDecoration = BoxDecoration(
-      border: Border.all(color: borderColor, width: presetTokens.borderWidth),
+      border: .all(color: borderColor, width: presetTokens.borderWidth),
       borderRadius: finalRadius,
     );
 
@@ -542,7 +542,7 @@ class const _CustomCheckbox({
                       ? colors.textPrimary
                       : colors.borderFocus)
                 : colors.background,
-            border: Border.all(
+            border: .all(
               color: presetTokens.showsDefaultBorder
                   ? colors.textPrimary
                   : (value ? colors.borderFocus : colors.borderDefault),

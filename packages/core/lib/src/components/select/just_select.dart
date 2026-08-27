@@ -349,7 +349,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
 
     final triggerDecoration = BoxDecoration(
       color: widget.enabled ? finalBg : finalBg.withValues(alpha: 0.5),
-      border: Border.all(
+      border: .all(
         color: hasError
             ? colors.error
             : (_overlayController.isShowing
@@ -506,7 +506,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
 
               final dropdownDecoration = BoxDecoration(
                 color: dropdownContainerBg,
-                border: Border.all(
+                border: .all(
                   color: presetTokens.showsDefaultBorder
                       ? colors.textPrimary
                       : colors.borderDefault,
@@ -543,7 +543,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                             height: 36,
                             decoration: BoxDecoration(
                               color: colors.background,
-                              border: Border.all(
+                              border: .all(
                                 color: colors.borderDefault,
                                 width: presetTokens.showsDefaultBorder
                                     ? 2.0
