@@ -1053,6 +1053,74 @@
         "default",
         "neobrutalism"
       ]
+    },
+    {
+      "name": "time-picker",
+      "version": "0.1.0",
+      "description": "Full-featured clock time picker with dial, spinner, and direct numeric input modes.",
+      "category": "composite",
+      "hidden": false,
+      "dependencies": [
+        "button",
+        "input"
+      ],
+      "registryDependencies": [
+        "button",
+        "input",
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_time_picker.dart",
+            "path": "components/time_picker/default/just_time_picker.dart",
+            "checksum": "sha256:468b0d7727854e57dfb8c9f0004a83c3e04440cb648554c944e3796acd60a67b"
+          },
+          {
+            "name": "_time_picker_dial.dart",
+            "path": "components/time_picker/default/_time_picker_dial.dart",
+            "checksum": "sha256:12455addc9c54928011fb90966dfac98efaf8980fc6b5dac40c82047dee40048"
+          },
+          {
+            "name": "_time_picker_spinner.dart",
+            "path": "components/time_picker/default/_time_picker_spinner.dart",
+            "checksum": "sha256:ead434bfe5c68dc30acbc5c8eb0ff3cca665317abd76caf643ed440f6a1a1c9a"
+          },
+          {
+            "name": "_time_picker_input.dart",
+            "path": "components/time_picker/default/_time_picker_input.dart",
+            "checksum": "sha256:2322837e80bfc4863f8abf1fe9c20bde92a55e080dc61f0d45460304e8973d39"
+          }
+        ],
+        "neobrutalism": [
+          {
+            "name": "just_time_picker.dart",
+            "path": "components/time_picker/neobrutalism/just_time_picker.dart",
+            "checksum": "sha256:468b0d7727854e57dfb8c9f0004a83c3e04440cb648554c944e3796acd60a67b"
+          },
+          {
+            "name": "_time_picker_dial.dart",
+            "path": "components/time_picker/neobrutalism/_time_picker_dial.dart",
+            "checksum": "sha256:12455addc9c54928011fb90966dfac98efaf8980fc6b5dac40c82047dee40048"
+          },
+          {
+            "name": "_time_picker_spinner.dart",
+            "path": "components/time_picker/neobrutalism/_time_picker_spinner.dart",
+            "checksum": "sha256:ead434bfe5c68dc30acbc5c8eb0ff3cca665317abd76caf643ed440f6a1a1c9a"
+          },
+          {
+            "name": "_time_picker_input.dart",
+            "path": "components/time_picker/neobrutalism/_time_picker_input.dart",
+            "checksum": "sha256:2322837e80bfc4863f8abf1fe9c20bde92a55e080dc61f0d45460304e8973d39"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     }
   ],
   "presets": [
