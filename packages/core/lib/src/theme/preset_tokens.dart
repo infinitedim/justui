@@ -146,6 +146,17 @@ abstract class JustPresetTokens {
   /// Whether the day cell selected state should use circular (default) or
   /// sharp-cornered (neobrutalism) indicator.
   bool get datePickerCircularSelection => true;
+
+  // ── Time Picker ─────────────────────────────────────────────────────────────
+
+  /// Resolves clock dial diameter.
+  double resolveTimePickerDialSize() => 240.0;
+
+  /// Resolves spinner row height.
+  double resolveTimePickerSpinnerRowHeight() => 44.0;
+
+  /// Whether clock hand selection uses a circular thumb or sharp-cornered box.
+  bool get timePickerCircularSelection => true;
 }
 
 /// Default preset — soft shadows, minimal/no borders, rounded corners,
@@ -397,6 +408,15 @@ class NeobrutalismPresetTokens extends JustPresetTokens {
 
   @override
   bool get datePickerCircularSelection => false;
+
+  @override
+  double resolveTimePickerDialSize() => 240.0;
+
+  @override
+  double resolveTimePickerSpinnerRowHeight() => 48.0;
+
+  @override
+  bool get timePickerCircularSelection => false;
 }
 
 /// Resolves the [JustPresetTokens] implementation for a given preset.
