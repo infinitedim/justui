@@ -422,11 +422,44 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     return .ignored;
   }
 
+  void _animateWheelToItem(
+    FixedExtentScrollController controller,
+    int targetIndex,
+    int itemCount, {
+    bool isLooping = true,
+  }) {
+    if (!controller.hasClients) return;
+    if (!isLooping) {
+      controller.animateToItem(
+        targetIndex.clamp(0, itemCount - 1),
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+      );
+      return;
+    }
+
+    final current = controller.selectedItem;
+    final currentNorm = ((current % itemCount) + itemCount) % itemCount;
+    int diff = targetIndex - currentNorm;
+
+    if (diff > itemCount / 2) {
+      diff -= itemCount;
+    } else if (diff < -itemCount / 2) {
+      diff += itemCount;
+    }
+
+    controller.animateToItem(
+      current + diff,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
   void _scrollHourUp() {
     if (_hourController.hasClients) {
       _hourController.animateToItem(
         _hourController.selectedItem - 1,
-        duration: const Duration(milliseconds: 150),
+        duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
       );
     }
@@ -436,7 +469,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     if (_hourController.hasClients) {
       _hourController.animateToItem(
         _hourController.selectedItem + 1,
-        duration: const Duration(milliseconds: 150),
+        duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
       );
     }
@@ -446,7 +479,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     if (_minuteController.hasClients) {
       _minuteController.animateToItem(
         _minuteController.selectedItem - 1,
-        duration: const Duration(milliseconds: 150),
+        duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
       );
     }
@@ -456,7 +489,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     if (_minuteController.hasClients) {
       _minuteController.animateToItem(
         _minuteController.selectedItem + 1,
-        duration: const Duration(milliseconds: 150),
+        duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
       );
     }
@@ -466,7 +499,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     if (!widget.is24Hour && _periodController.hasClients) {
       _periodController.animateToItem(
         index.clamp(0, 1),
-        duration: const Duration(milliseconds: 150),
+        duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
       );
     }
@@ -691,6 +724,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
               colors: colors,
               typo: typo,
               itemExtent: itemExtent,
+              onTap: () => _animateWheelToItem(_hourController, i, hourCount),
             );
           }),
         ),
@@ -737,6 +771,8 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
               colors: colors,
               typo: typo,
               itemExtent: itemExtent,
+              onTap: () =>
+                  _animateWheelToItem(_minuteController, i, minuteCount),
             );
           }),
         ),
@@ -779,6 +815,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
               colors: colors,
               typo: typo,
               itemExtent: itemExtent,
+              onTap: () => _animatePeriodTo(0),
             ),
             _buildWheelItem(
               text: locale.pmLabel,
@@ -787,6 +824,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
               colors: colors,
               typo: typo,
               itemExtent: itemExtent,
+              onTap: () => _animatePeriodTo(1),
             ),
           ],
         ),
@@ -801,6 +839,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     required JustColorScheme colors,
     required JustTypographyScheme typo,
     required double itemExtent,
+    VoidCallback? onTap,
   }) {
     final selectedColor = widget.style?.selectedTextColor ?? colors.textPrimary;
     final unselectedColor =
@@ -810,16 +849,22 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
         ? colors.textDisabled.withValues(alpha: 0.38)
         : (isSelected ? selectedColor : unselectedColor);
 
-    return Container(
-      height: itemExtent,
-      alignment: .center,
-      child: Text(
-        text,
-        style: typo.headingSm.copyWith(
-          color: color,
-          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+    return GestureDetector(
+      onTap: isDisabled ? null : onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        height: itemExtent,
+        alignment: .center,
+        child: AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          style: typo.headingSm.copyWith(
+            color: color,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+          ),
+          textAlign: .center,
+          child: Text(text),
         ),
-        textAlign: .center,
       ),
     );
   }
