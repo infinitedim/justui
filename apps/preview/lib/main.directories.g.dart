@@ -56,6 +56,8 @@ import 'package:preview/usecases/table_usecases.dart'
     as _preview_usecases_table_usecases;
 import 'package:preview/usecases/tabs_usecases.dart'
     as _preview_usecases_tabs_usecases;
+import 'package:preview/usecases/time_picker_usecases.dart'
+    as _preview_usecases_time_picker_usecases;
 import 'package:preview/usecases/toast_usecases.dart'
     as _preview_usecases_toast_usecases;
 import 'package:preview/usecases/toggle_usecases.dart'
@@ -500,6 +502,41 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Default Tabs',
                 builder:
                     _preview_usecases_tabs_usecases.buildJustTabsDefaultUseCase,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'time_picker',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'JustTimePicker',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Dropdown popover',
+                builder: _preview_usecases_time_picker_usecases
+                    .buildJustTimePickerDropdownUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inline Dial',
+                builder: _preview_usecases_time_picker_usecases
+                    .buildJustTimePickerInlineDialUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inline Input',
+                builder: _preview_usecases_time_picker_usecases
+                    .buildJustTimePickerInlineInputUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inline Spinner',
+                builder: _preview_usecases_time_picker_usecases
+                    .buildJustTimePickerInlineSpinnerUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Modal Dialog',
+                builder: _preview_usecases_time_picker_usecases
+                    .buildJustTimePickerModalUseCase,
               ),
             ],
           ),
