@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/material.dart' show Theme, showGeneralDialog;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -363,8 +363,6 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
 
     // Calculate layout sizing based on direction and screen dimensions
     final screenSize = MediaQuery.of(context).size;
-    const double defaultSizeFraction = 0.4;
-    final double fraction = widget.size ?? defaultSizeFraction;
 
     double? width;
     double? height;
@@ -372,32 +370,32 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
 
     switch (widget.direction) {
       case .bottom:
-        height = screenSize.height * fraction;
-        if (widget.maxSize != null) {
+        height = widget.size != null ? screenSize.height * widget.size! : null;
+        if (widget.maxSize != null && height != null) {
           height = height.clamp(0.0, screenSize.height * widget.maxSize!);
         }
         width = .infinity;
         alignment = .bottomCenter;
         break;
       case .top:
-        height = screenSize.height * fraction;
-        if (widget.maxSize != null) {
+        height = widget.size != null ? screenSize.height * widget.size! : null;
+        if (widget.maxSize != null && height != null) {
           height = height.clamp(0.0, screenSize.height * widget.maxSize!);
         }
         width = .infinity;
         alignment = .topCenter;
         break;
       case .left:
-        width = screenSize.width * fraction;
-        if (widget.maxSize != null) {
+        width = widget.size != null ? screenSize.width * widget.size! : null;
+        if (widget.maxSize != null && width != null) {
           width = width.clamp(0.0, screenSize.width * widget.maxSize!);
         }
         height = .infinity;
         alignment = .centerLeft;
         break;
       case .right:
-        width = screenSize.width * fraction;
-        if (widget.maxSize != null) {
+        width = widget.size != null ? screenSize.width * widget.size! : null;
+        if (widget.maxSize != null && width != null) {
           width = width.clamp(0.0, screenSize.width * widget.maxSize!);
         }
         height = .infinity;
@@ -412,6 +410,8 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     final bottomInset = widget.direction == .bottom
         ? MediaQuery.of(context).viewInsets.bottom
         : 0.0;
+
+    final MainAxisSize mainAxisSize = widget.size != null ? .max : .min;
 
     Widget card = Container(
       width: width,
@@ -429,7 +429,7 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
         left: widget.direction == .left,
         right: widget.direction == .right,
         child: Column(
-          mainAxisSize: .max,
+          mainAxisSize: mainAxisSize,
           crossAxisAlignment: .stretch,
           children: [
             if (widget.draggable && isVertical) ...[
@@ -445,18 +445,26 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
                 ),
               ),
             ],
-            Expanded(
-              child: DefaultTextStyle(
+            if (widget.size != null)
+              Expanded(
+                child: DefaultTextStyle(
+                  style: typography.bodyMd.copyWith(color: colors.textPrimary),
+                  child: IconTheme.merge(
+                    data: IconThemeData(color: colors.textPrimary),
+                    child: widget.content,
+                  ),
+                ),
+              )
+            else
+              DefaultTextStyle(
                 style: typography.bodyMd.copyWith(color: colors.textPrimary),
                 child: IconTheme.merge(
                   data: IconThemeData(color: colors.textPrimary),
                   child: widget.content,
                 ),
               ),
-            ),
             // Reserve space for keyboard when visible on bottom sheets
-            if (bottomInset > 0)
-              SizedBox(height: bottomInset),
+            if (bottomInset > 0) SizedBox(height: bottomInset),
           ],
         ),
       ),
@@ -519,8 +527,7 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
         child: KeyboardListener(
           focusNode: _focusNode,
           onKeyEvent: (event) {
-            if (event is KeyDownEvent &&
-                event.logicalKey == LogicalKeyboardKey.escape) {
+            if (event is KeyDownEvent && event.logicalKey == .escape) {
               widget.onDismiss(null);
             }
           },
@@ -561,6 +568,13 @@ class const JustSheetScope({
         .dependOnInheritedWidgetOfExactType<_JustSheetScopeInherited>();
     assert(scope != null, 'No JustSheetScope found in context');
     return scope!.controller;
+  }
+
+  /// Retrieves the nearest [JustSheetController] from the ancestor scope if available.
+  static JustSheetController? maybeOf(BuildContext context) {
+    final scope = context
+        .dependOnInheritedWidgetOfExactType<_JustSheetScopeInherited>();
+    return scope?.controller;
   }
 
   @override
@@ -629,4 +643,153 @@ class const _JustSheetScopeInherited({
 extension JustSheetContextExtension on BuildContext {
   /// Retrieves the nearest [JustSheetController] for showing sheets.
   JustSheetController get justSheet => JustSheetScope.of(this);
+}
+
+/// Shows a modal bottom sheet with JustUI styling and physics-based enter/exit animations.
+///
+/// If a [JustSheetScope] is present in [context], it delegates to it. Otherwise,
+/// it presents a modal sheet route matching the exact visual and animation specs of [JustSheet].
+Future<T?> showJustBottomSheet<T>({
+  required BuildContext context,
+  required Widget content,
+  SheetDirection direction = .bottom,
+  bool barrierDismissable = true,
+  Color? barrierColor,
+  double? size,
+  double? maxSize,
+  bool draggable = true,
+  JustSheetStyle? style,
+}) {
+  final scope = JustSheetScope.maybeOf(context);
+  if (scope != null) {
+    return scope.show<T>(
+      content: content,
+      direction: direction,
+      barrierDismissable: barrierDismissable,
+      barrierColor: barrierColor,
+      size: size,
+      maxSize: maxSize,
+      draggable: draggable,
+      style: style,
+    );
+  }
+
+  final themeState = JustThemeProvider.maybeOf(context);
+  final theme = themeState?.theme ?? JustThemeProvider.of(context).theme;
+  final colors = theme.colors;
+  final radius = theme.radius;
+  final spacing = theme.spacing;
+  final shadows = theme.shadows;
+  final presetTokens = theme.presetTokens;
+
+  final borderSide = BorderSide(
+    color: presetTokens.showsDefaultBorder
+        ? colors.textPrimary
+        : colors.borderDefault,
+    width: presetTokens.borderWidth,
+  );
+
+  final isVertical = direction == .bottom || direction == .top;
+
+  return showGeneralDialog<T>(
+    context: context,
+    barrierDismissible: barrierDismissable,
+    useRootNavigator: false,
+    barrierLabel: 'Dismiss',
+    transitionDuration: const Duration(milliseconds: 300),
+    barrierColor:
+        style?.barrierColor ??
+        barrierColor ??
+        colors.overlay.withValues(alpha: 0.5),
+    pageBuilder: (context, animation, secondaryAnimation) {
+      Alignment alignment;
+      switch (direction) {
+        case .bottom:
+          alignment = .bottomCenter;
+          break;
+        case .top:
+          alignment = .topCenter;
+          break;
+        case .left:
+          alignment = .centerLeft;
+          break;
+        case .right:
+          alignment = .centerRight;
+          break;
+      }
+
+      return Align(
+        alignment: alignment,
+        child: Container(
+          width: .infinity,
+          decoration: BoxDecoration(
+            color: style?.backgroundColor ?? colors.card,
+            borderRadius: style?.borderRadius ?? .vertical(top: radius.lg),
+            border: .fromBorderSide(borderSide),
+            boxShadow: theme.resolveShadows(
+              style?.shadows ?? shadows.lg,
+              isPressed: false,
+            ),
+          ),
+          padding: style?.padding ?? .all(spacing.lg),
+          child: SafeArea(
+            top: direction == .top,
+            bottom: direction == .bottom,
+            left: direction == .left,
+            right: direction == .right,
+            child: Column(
+              mainAxisSize: size != null ? .max : .min,
+              crossAxisAlignment: .stretch,
+              children: [
+                if (draggable && isVertical)
+                  Center(
+                    child: Container(
+                      width: 36.0,
+                      height: 4.0,
+                      margin: .only(bottom: spacing.md),
+                      decoration: BoxDecoration(
+                        color: style?.handleColor ?? colors.borderDefault,
+                        borderRadius: .all(radius.xs),
+                      ),
+                    ),
+                  ),
+                if (size != null) Expanded(child: content) else content,
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+    transitionBuilder: (context, animation, secondaryAnimation, child) {
+      Offset beginOffset;
+      switch (direction) {
+        case .bottom:
+          beginOffset = const Offset(0, 1.0);
+          break;
+        case .top:
+          beginOffset = const Offset(0, -1.0);
+          break;
+        case .left:
+          beginOffset = const Offset(-1.0, 0);
+          break;
+        case .right:
+          beginOffset = const Offset(1.0, 0);
+          break;
+      }
+
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: theme.animations.enter,
+        reverseCurve: theme.animations.exit,
+      );
+
+      return SlideTransition(
+        position: Tween<Offset>(
+          begin: beginOffset,
+          end: .zero,
+        ).animate(curvedAnimation),
+        child: child,
+      );
+    },
+  );
 }

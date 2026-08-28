@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart'
-    show Icon, Icons, showGeneralDialog;
+import 'package:flutter/material.dart' show Icon, Icons, showGeneralDialog;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
-
 
 import '../dialog/just_dialog.dart';
 import '../shared/_shared_overlay_transition.dart';
@@ -42,7 +40,8 @@ class JustDatePicker extends StatefulWidget {
   final int firstDayOfWeek;
 
   /// Custom day cell builder for highlighting.
-  final Widget Function(BuildContext context, DateTime date, bool isSelected)? dayBuilder;
+  final Widget Function(BuildContext context, DateTime date, bool isSelected)?
+  dayBuilder;
 
   /// Custom header builder for month/year navigation.
   final Widget Function(
@@ -52,7 +51,8 @@ class JustDatePicker extends StatefulWidget {
     VoidCallback toggleView,
     VoidCallback onPrev,
     VoidCallback onNext,
-  )? headerBuilder;
+  )?
+  headerBuilder;
 
   /// Custom locale names provider.
   final JustDatePickerLocale locale;
@@ -62,6 +62,9 @@ class JustDatePicker extends StatefulWidget {
 
   /// Label displayed above the date picker field.
   final String? label;
+
+  /// Whether to render the outer card container in inline mode.
+  final bool showContainer;
 
   /// Per-instance style overrides.
   final JustDatePickerStyle? style;
@@ -80,12 +83,13 @@ class JustDatePicker extends StatefulWidget {
     this.variant = .inline,
     this.initialView = .day,
     this.showWeekNumbers = false,
-    this.firstDayOfWeek = 1,
+    this.firstDayOfWeek = 7,
     this.dayBuilder,
     this.headerBuilder,
     this.locale = const JustDatePickerLocale(),
     this.placeholder,
     this.label,
+    this.showContainer = true,
     this.style,
     this.enableHaptic,
   });
@@ -100,10 +104,19 @@ class JustDatePicker extends StatefulWidget {
     bool Function(DateTime)? selectableDayPredicate,
     JustCalendarView initialView = .day,
     bool showWeekNumbers = false,
-    int firstDayOfWeek = 1,
+    int firstDayOfWeek = 7,
     Widget Function(BuildContext, DateTime, bool)? dayBuilder,
-    Widget Function(BuildContext, DateTime, JustCalendarView, VoidCallback, VoidCallback, VoidCallback)? headerBuilder,
+    Widget Function(
+      BuildContext,
+      DateTime,
+      JustCalendarView,
+      VoidCallback,
+      VoidCallback,
+      VoidCallback,
+    )?
+    headerBuilder,
     JustDatePickerLocale locale = const JustDatePickerLocale(),
+    bool showContainer = true,
     JustDatePickerStyle? style,
     bool? enableHaptic,
   }) : this(
@@ -120,6 +133,7 @@ class JustDatePicker extends StatefulWidget {
          dayBuilder: dayBuilder,
          headerBuilder: headerBuilder,
          locale: locale,
+         showContainer: showContainer,
          style: style,
          enableHaptic: enableHaptic,
        );
@@ -208,7 +222,9 @@ class _JustDatePickerState extends State<JustDatePicker> {
     return '$dayStr $monthStr ${date.year}';
   }
 
-  DatePickerCalendar _buildCalendarWidget({ValueChanged<DateTime>? onDateSelected}) {
+  DatePickerCalendar _buildCalendarWidget({
+    ValueChanged<DateTime>? onDateSelected,
+  }) {
     return DatePickerCalendar(
       selectedDate: widget.value,
       onDateSelected: onDateSelected ?? _onDateSelected,
@@ -221,6 +237,7 @@ class _JustDatePickerState extends State<JustDatePicker> {
       dayBuilder: widget.dayBuilder,
       headerBuilder: widget.headerBuilder,
       locale: widget.locale,
+      showContainer: widget.showContainer,
       style: widget.style,
       enableHaptic: widget.enableHaptic,
     );
@@ -257,14 +274,16 @@ class _JustDatePickerState extends State<JustDatePicker> {
     final theme = themeState?.theme;
     final presetTokens = (theme ?? context.justTheme).presetTokens;
 
-    final displayText = widget.value != null ? _formatDate(widget.value!) : (widget.placeholder ?? 'Select date');
+    final displayText = widget.value != null
+        ? _formatDate(widget.value!)
+        : (widget.placeholder ?? 'Select date');
 
     return OverlayPortal.overlayChildLayoutBuilder(
       controller: _overlayController,
       overlayChildBuilder: (overlayContext, info) {
         final targetOffset = MatrixUtils.transformPoint(
           info.childPaintTransform,
-          Offset.zero,
+          .zero,
         );
         final triggerHeight = info.childSize.height;
         final triggerWidth = info.childSize.width;
@@ -273,12 +292,18 @@ class _JustDatePickerState extends State<JustDatePicker> {
         final screenHeight = screenSize.height;
 
         const margin = 16.0;
-        final double calendarWidth = (screenWidth - margin * 2).clamp(280.0, 320.0);
+        final double calendarWidth = (screenWidth - margin * 2).clamp(
+          280.0,
+          320.0,
+        );
         const double estimatedCalendarHeight = 340.0;
 
         // Vertical flip logic
         final bool fitsBelow =
-            targetOffset.dy + triggerHeight + spacing.xs + estimatedCalendarHeight <=
+            targetOffset.dy +
+                triggerHeight +
+                spacing.xs +
+                estimatedCalendarHeight <=
             screenHeight - margin;
         final bool fitsAbove =
             targetOffset.dy - spacing.xs - estimatedCalendarHeight >= margin;
@@ -337,7 +362,7 @@ class _JustDatePickerState extends State<JustDatePicker> {
                 width: calendarWidth,
                 child: JustOverlayTransition(
                   isVisible: true,
-                  scaleAlignment: showAbove ? Alignment.bottomCenter : Alignment.topCenter,
+                  scaleAlignment: showAbove ? .bottomCenter : .topCenter,
                   child: themedCalendar,
                 ),
               ),
@@ -379,7 +404,9 @@ class _JustDatePickerState extends State<JustDatePicker> {
     final theme = themeState?.theme;
     final presetTokens = (theme ?? context.justTheme).presetTokens;
 
-    final displayText = widget.value != null ? _formatDate(widget.value!) : (widget.placeholder ?? 'Select date');
+    final displayText = widget.value != null
+        ? _formatDate(widget.value!)
+        : (widget.placeholder ?? 'Select date');
 
     return _buildTriggerButton(
       context,
@@ -391,16 +418,29 @@ class _JustDatePickerState extends State<JustDatePicker> {
       displayText: displayText,
       showChevron: false,
       onTap: () {
-        final calendarWidget = _buildCalendarWidget(
+        final calendarWidget = DatePickerCalendar(
+          selectedDate: widget.value,
           onDateSelected: (date) {
             widget.onChanged?.call(date);
-            // Dismiss the sheet after selection
-            try {
-              JustSheetScope.of(context).dismiss();
-            } catch (_) {
-              // If no JustSheetScope, do nothing (sheet was already dismissed)
+            final scope = JustSheetScope.maybeOf(context);
+            if (scope != null) {
+              scope.dismiss();
+            } else {
+              Navigator.of(context, rootNavigator: false).pop();
             }
           },
+          firstDate: widget.firstDate,
+          lastDate: widget.lastDate,
+          selectableDayPredicate: widget.selectableDayPredicate,
+          initialView: widget.initialView,
+          showWeekNumbers: widget.showWeekNumbers,
+          firstDayOfWeek: widget.firstDayOfWeek,
+          dayBuilder: widget.dayBuilder,
+          headerBuilder: widget.headerBuilder,
+          locale: widget.locale,
+          showContainer: false,
+          style: widget.style,
+          enableHaptic: widget.enableHaptic,
         );
 
         Widget content = SizedBox(
@@ -417,27 +457,11 @@ class _JustDatePickerState extends State<JustDatePicker> {
           );
         }
 
-        try {
-          JustSheetScope.of(context).show<void>(
-            content: content,
-            draggable: true,
-          );
-        } catch (_) {
-          // Fallback: use modal dialog if JustSheetScope is not available
-          showJustDatePicker(
-            context: context,
-            initialDate: widget.value,
-            firstDate: widget.firstDate,
-            lastDate: widget.lastDate,
-            selectableDayPredicate: widget.selectableDayPredicate,
-            locale: widget.locale,
-            style: widget.style,
-          ).then((selected) {
-            if (selected != null) {
-              widget.onChanged?.call(selected);
-            }
-          });
-        }
+        showJustBottomSheet<void>(
+          context: context,
+          content: content,
+          draggable: true,
+        );
       },
     );
   }
@@ -458,15 +482,15 @@ class _JustDatePickerState extends State<JustDatePicker> {
     VoidCallback? onTap,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: .start,
+      mainAxisSize: .min,
       children: [
         if (widget.label != null) ...[
           Text(
             widget.label!,
             style: typo.bodySm.copyWith(
               color: colors.textPrimary,
-              fontWeight: FontWeight.w600,
+              fontWeight: .w600,
             ),
           ),
           SizedBox(height: spacing.xs),
@@ -480,11 +504,17 @@ class _JustDatePickerState extends State<JustDatePicker> {
                 color: colors.card,
                 borderRadius: presetTokens.resolveBorderRadius(radius),
                 border: presetTokens.showsDefaultBorder
-                    ? .all(color: colors.textPrimary, width: presetTokens.borderWidth)
-                    : .all(color: colors.borderDefault, width: presetTokens.borderWidth),
+                    ? .all(
+                        color: colors.textPrimary,
+                        width: presetTokens.borderWidth,
+                      )
+                    : .all(
+                        color: colors.borderDefault,
+                        width: presetTokens.borderWidth,
+                      ),
               ),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   Icon(
                     Icons.calendar_today_rounded,
@@ -495,7 +525,9 @@ class _JustDatePickerState extends State<JustDatePicker> {
                   Text(
                     displayText,
                     style: typo.bodyMd.copyWith(
-                      color: widget.value != null ? colors.textPrimary : colors.textSecondary,
+                      color: widget.value != null
+                          ? colors.textPrimary
+                          : colors.textSecondary,
                     ),
                   ),
                   if (showChevron) ...[
@@ -529,7 +561,9 @@ class _JustDatePickerState extends State<JustDatePicker> {
     final theme = JustThemeProvider.of(context).theme;
     final presetTokens = theme.presetTokens;
 
-    final displayText = widget.value != null ? _formatDate(widget.value!) : (widget.placeholder ?? 'Select date');
+    final displayText = widget.value != null
+        ? _formatDate(widget.value!)
+        : (widget.placeholder ?? 'Select date');
 
     return JustPressable(
       onTap: () async {
@@ -553,11 +587,17 @@ class _JustDatePickerState extends State<JustDatePicker> {
             color: colors.card,
             borderRadius: presetTokens.resolveBorderRadius(radius),
             border: presetTokens.showsDefaultBorder
-                ? .all(color: colors.textPrimary, width: presetTokens.borderWidth)
-                : .all(color: colors.borderDefault, width: presetTokens.borderWidth),
+                ? .all(
+                    color: colors.textPrimary,
+                    width: presetTokens.borderWidth,
+                  )
+                : .all(
+                    color: colors.borderDefault,
+                    width: presetTokens.borderWidth,
+                  ),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               Icon(
                 Icons.calendar_today_rounded,
@@ -568,7 +608,9 @@ class _JustDatePickerState extends State<JustDatePicker> {
               Text(
                 displayText,
                 style: typo.bodyMd.copyWith(
-                  color: widget.value != null ? colors.textPrimary : colors.textSecondary,
+                  color: widget.value != null
+                      ? colors.textPrimary
+                      : colors.textSecondary,
                 ),
               ),
             ],
@@ -598,46 +640,51 @@ Future<DateTime?> showJustDatePicker({
   final theme = themeState?.theme;
 
   Widget wrapWithTheme(Widget child) {
+    Widget themedChild = child;
     if (theme != null) {
-      return JustThemeProvider(
+      themedChild = JustThemeProvider(
         lightTheme: theme,
         darkTheme: theme,
         initialThemeMode: themeState!.themeMode,
         child: child,
       );
     }
-    return child;
+    return DefaultTextStyle(
+      style: const TextStyle(decoration: .none),
+      child: themedChild,
+    );
   }
 
   final isMobile = MediaQuery.sizeOf(context).width < JustBreakpoints.sm;
 
   if (isMobile) {
-    try {
-      final sheetScope = JustSheetScope.of(context);
-      await sheetScope.show<void>(
-        content: wrapWithTheme(
-          SizedBox(
-            width: double.infinity,
-            child: JustDatePicker.inline(
-              value: initialDate,
-              firstDate: firstDate,
-              lastDate: lastDate,
-              selectableDayPredicate: selectableDayPredicate,
-              locale: locale,
-              style: style,
-              onChanged: (date) {
-                result = date;
-                sheetScope.dismiss();
-              },
-            ),
+    return showJustBottomSheet<DateTime>(
+      context: context,
+      content: wrapWithTheme(
+        SizedBox(
+          width: double.infinity,
+          child: JustDatePicker.inline(
+            value: initialDate,
+            firstDate: firstDate,
+            lastDate: lastDate,
+            selectableDayPredicate: selectableDayPredicate,
+            locale: locale,
+            showContainer: false,
+            style: style,
+            onChanged: (date) {
+              result = date;
+              final scope = JustSheetScope.maybeOf(context);
+              if (scope != null) {
+                scope.dismiss();
+              } else {
+                Navigator.of(context, rootNavigator: false).pop();
+              }
+            },
           ),
         ),
-        draggable: true,
-      );
-      return result;
-    } catch (_) {
-      // Fallback to dialog if JustSheetScope is not found
-    }
+      ),
+      draggable: true,
+    ).then((_) => result);
   }
 
   if (!context.mounted) return null;
@@ -670,28 +717,33 @@ Future<DateTime?> showJustDatePicker({
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Dismiss',
-      pageBuilder: (BuildContext dialogContext, Animation<double> animation, Animation<double> secondaryAnimation) {
-        return Center(
-          child: wrapWithTheme(
-            SizedBox(
-              width: 340.0,
-              child: JustDatePicker.inline(
-                value: initialDate,
-                firstDate: firstDate,
-                lastDate: lastDate,
-                selectableDayPredicate: selectableDayPredicate,
-                locale: locale,
-                style: style,
-                onChanged: (date) {
-                  result = date;
-                  Navigator.of(dialogContext).pop();
-                },
+      pageBuilder:
+          (
+            BuildContext dialogContext,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+          ) {
+            return Center(
+              child: wrapWithTheme(
+                SizedBox(
+                  width: 340.0,
+                  child: JustDatePicker.inline(
+                    value: initialDate,
+                    firstDate: firstDate,
+                    lastDate: lastDate,
+                    selectableDayPredicate: selectableDayPredicate,
+                    locale: locale,
+                    style: style,
+                    onChanged: (date) {
+                      result = date;
+                      Navigator.of(dialogContext).pop();
+                    },
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
-      },
-    );
     return result;
   }
 }

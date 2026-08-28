@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart'
     show DayPeriod, Icons, MaterialApp, Scaffold, ThemeData, TimeOfDay;
 import 'package:flutter/rendering.dart' show SemanticsFlag;

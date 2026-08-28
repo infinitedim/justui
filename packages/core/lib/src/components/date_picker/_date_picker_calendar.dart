@@ -62,6 +62,9 @@ class DatePickerCalendar extends StatefulWidget {
   /// Custom locale names provider.
   final JustDatePickerLocale locale;
 
+  /// Whether to render the outer card container (background, border, shadow).
+  final bool showContainer;
+
   /// Per-instance style overrides.
   final JustDatePickerStyle? style;
 
@@ -80,10 +83,11 @@ class DatePickerCalendar extends StatefulWidget {
     this.selectableDayPredicate,
     this.initialView = .day,
     this.showWeekNumbers = false,
-    this.firstDayOfWeek = 1,
+    this.firstDayOfWeek = 7,
     this.dayBuilder,
     this.headerBuilder,
     this.locale = const JustDatePickerLocale(),
+    this.showContainer = true,
     this.style,
     this.enableHaptic,
   });
@@ -334,21 +338,23 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
       focusNode: _focusNode,
       onKeyEvent: _handleKeyEvent,
       child: Container(
-        padding: padding,
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: borderRadius,
-          border: presetTokens.showsDefaultBorder
-              ? .all(color: borderColor, width: borderWidth)
-              : (borderWidth > 0
-                    ? .all(color: colors.borderDefault, width: borderWidth)
-                    : null),
-          boxShadow: presetTokens.resolveShadow(
-            theme.shadows,
-            .md,
-            isPressed: false,
-          ),
-        ),
+        padding: widget.showContainer ? padding : .zero,
+        decoration: widget.showContainer
+            ? BoxDecoration(
+                color: bgColor,
+                borderRadius: borderRadius,
+                border: presetTokens.showsDefaultBorder
+                    ? .all(color: borderColor, width: borderWidth)
+                    : (borderWidth > 0
+                        ? .all(color: colors.borderDefault, width: borderWidth)
+                        : null),
+                boxShadow: presetTokens.resolveShadow(
+                  theme.shadows,
+                  .md,
+                  isPressed: false,
+                ),
+              )
+            : null,
         child: Column(
           mainAxisSize: .min,
           children: [
@@ -494,13 +500,17 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     if (firstWeekdayOffset < 0) firstWeekdayOffset += 7;
 
     // Shift weekday headers according to firstDayOfWeek
-    final shiftedWeekdayHeaders = <String>[];
+    final shiftedWeekdayHeaders = <({String header, bool isSunday})>[];
     for (int i = 0; i < 7; i++) {
       final idx = (widget.firstDayOfWeek - 1 + i) % 7;
-      shiftedWeekdayHeaders.add(widget.locale.weekdayHeaders[idx]);
+      shiftedWeekdayHeaders.add((
+        header: widget.locale.weekdayHeaders[idx],
+        isSunday: idx == 6,
+      ));
     }
 
-    final int totalItems = firstWeekdayOffset + daysInMonth;
+    // Always render 6 rows (42 cells: 6 rows x 7 days) for constant height across all months
+    const int totalItems = 42;
 
     return KeyedSubtree(
       key: ValueKey('day_view_${_activeDate.year}_${_activeDate.month}'),
@@ -511,12 +521,14 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
           Row(
             children: shiftedWeekdayHeaders
                 .map(
-                  (header) => Expanded(
+                  (item) => Expanded(
                     child: Center(
                       child: Text(
-                        header,
+                        item.header,
                         style: typo.caption.copyWith(
-                          color: colors.textSecondary,
+                          color: item.isSunday
+                              ? (widget.style?.sundayTextColor ?? colors.error)
+                              : colors.textSecondary,
                           fontWeight: .w600,
                         ),
                       ),
@@ -537,7 +549,8 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
             ),
             itemCount: totalItems,
             itemBuilder: (context, index) {
-              if (index < firstWeekdayOffset) {
+              if (index < firstWeekdayOffset ||
+                  index >= firstWeekdayOffset + daysInMonth) {
                 return const SizedBox.shrink();
               }
               final day = index - firstWeekdayOffset + 1;
@@ -604,7 +617,11 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
           colors.borderFocus.withValues(alpha: 0.15);
     }
 
-    Color cellTextColor = colors.textPrimary;
+    final isSunday = date.weekday == DateTime.sunday;
+
+    Color cellTextColor = isSunday
+        ? (widget.style?.sundayTextColor ?? colors.error)
+        : (widget.style?.dayTextColor ?? colors.textPrimary);
     if (isHighlight) {
       cellTextColor = widget.style?.selectedDayTextColor ?? colors.textInverse;
     } else if (!isSelectable) {
