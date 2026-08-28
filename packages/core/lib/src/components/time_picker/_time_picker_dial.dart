@@ -90,15 +90,18 @@ class TimePickerDial extends StatefulWidget {
 class _TimePickerDialState extends State<TimePickerDial>
     with SingleTickerProviderStateMixin {
   late JustTimePickerSegment _activeSegment;
+  late TimeOfDay _currentTime;
   late double _currentAngle;
   late double _currentRadius;
   bool _isDragging = false;
   int? _lastHapticValue;
+  Offset _lastTouchPosition = .zero;
 
   late final AnimationController _handController;
   double _startAngle = 0.0;
   double _deltaAngle = 0.0;
   double _startRadius = 0.0;
+  double _targetAngle = -1.0;
   double _targetRadius = 0.0;
 
   Timer? _autoAdvanceTimer;
@@ -110,6 +113,7 @@ class _TimePickerDialState extends State<TimePickerDial>
   void initState() {
     super.initState();
     _activeSegment = widget.activeSegment;
+    _currentTime = widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
     _handController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),
@@ -117,16 +121,16 @@ class _TimePickerDialState extends State<TimePickerDial>
 
     _focusNode.addListener(_onFocusChange);
 
-    final initialTime =
-        widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
-    _currentAngle = _angleForTime(initialTime, _activeSegment, widget.timeFormat);
+    _currentAngle = _angleForTime(_currentTime, _activeSegment, widget.timeFormat);
+    _targetAngle = _currentAngle;
     _currentRadius = _radiusForTime(
-      initialTime,
+      _currentTime,
       _activeSegment,
       widget.timeFormat,
       _resolveOuterRadius(240.0),
       _resolveInnerRadius(240.0),
     );
+    _targetRadius = _currentRadius;
   }
 
   @override
@@ -136,23 +140,25 @@ class _TimePickerDialState extends State<TimePickerDial>
     final size = widget.style?.dialSize ?? 240.0;
     final outerR = _resolveOuterRadius(size);
     final innerR = _resolveInnerRadius(size);
-    final time = widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
 
-    if (widget.activeSegment != oldWidget.activeSegment) {
-      _activeSegment = widget.activeSegment;
-      final targetAngle = _angleForTime(time, _activeSegment, widget.timeFormat);
+    if (widget.selectedTime != null &&
+        widget.selectedTime != _currentTime &&
+        !_isDragging) {
+      _currentTime = widget.selectedTime!;
+      final targetAngle = _angleForTime(_currentTime, _activeSegment, widget.timeFormat);
       final targetRadius = _radiusForTime(
-        time,
+        _currentTime,
         _activeSegment,
         widget.timeFormat,
         outerR,
         innerR,
       );
       _animateHandTo(targetAngle, targetRadius);
-    } else if (widget.selectedTime != oldWidget.selectedTime && !_isDragging) {
-      final targetAngle = _angleForTime(time, _activeSegment, widget.timeFormat);
+    } else if (widget.activeSegment != oldWidget.activeSegment) {
+      _activeSegment = widget.activeSegment;
+      final targetAngle = _angleForTime(_currentTime, _activeSegment, widget.timeFormat);
       final targetRadius = _radiusForTime(
-        time,
+        _currentTime,
         _activeSegment,
         widget.timeFormat,
         outerR,
@@ -226,14 +232,20 @@ class _TimePickerDialState extends State<TimePickerDial>
     return outerR;
   }
 
-  void _animateHandTo(double targetAngle, double targetRadius) {
+  void _animateHandTo(
+    double targetAngle,
+    double targetRadius, {
+    Duration duration = const Duration(milliseconds: 200),
+  }) {
     _handController.stop();
     _startAngle = _currentAngle;
+    _targetAngle = targetAngle;
     // Shortest angular delta: (target - start + pi) % (2pi) - pi
     _deltaAngle = (targetAngle - _startAngle + math.pi) % (2 * math.pi) - math.pi;
     _startRadius = _currentRadius;
     _targetRadius = targetRadius;
 
+    _handController.duration = duration;
     _handController.forward(from: 0.0);
   }
 
@@ -284,8 +296,8 @@ class _TimePickerDialState extends State<TimePickerDial>
 
   void _scheduleAutoAdvance(int selectedHour) {
     _autoAdvanceTimer?.cancel();
-    _autoAdvanceTimer = Timer(const Duration(milliseconds: 250), () {
-      if (!mounted) return;
+    _autoAdvanceTimer = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted || _isDragging) return;
       setState(() {
         _activeSegment = .minute;
         final time =
@@ -317,6 +329,7 @@ class _TimePickerDialState extends State<TimePickerDial>
     Size size, {
     required bool isFinal,
   }) {
+    _lastTouchPosition = localPosition;
     final center = Offset(size.width / 2, size.height / 2);
     final dx = localPosition.dx - center.dx;
     final dy = localPosition.dy - center.dy;
@@ -331,8 +344,7 @@ class _TimePickerDialState extends State<TimePickerDial>
     final innerR = _resolveInnerRadius(size.width);
     final thresholdR = (outerR + innerR) / 2;
 
-    final currentTime =
-        widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
+    final currentTime = _currentTime;
     TimeOfDay newTime;
     double targetAngle;
     double targetRadius;
@@ -382,7 +394,14 @@ class _TimePickerDialState extends State<TimePickerDial>
 
     if (isFinal) {
       _isDragging = false;
-      _animateHandTo(targetAngle, targetRadius);
+      setState(() {
+        _currentTime = newTime;
+      });
+      _animateHandTo(
+        targetAngle,
+        targetRadius,
+        duration: const Duration(milliseconds: 200),
+      );
       widget.onChanged?.call(newTime);
       _announceTime(newTime);
 
@@ -392,11 +411,23 @@ class _TimePickerDialState extends State<TimePickerDial>
         _scheduleAutoAdvance(justSelectedHour);
       }
     } else {
+      _autoAdvanceTimer?.cancel();
       _isDragging = true;
       setState(() {
-        _currentAngle = targetAngle;
-        _currentRadius = targetRadius;
+        _currentTime = newTime;
       });
+      if (targetAngle != _targetAngle || targetRadius != _targetRadius) {
+        _animateHandTo(
+          targetAngle,
+          targetRadius,
+          duration: const Duration(milliseconds: 120),
+        );
+      } else if (!_handController.isAnimating) {
+        setState(() {
+          _currentAngle = targetAngle;
+          _currentRadius = targetRadius;
+        });
+      }
       widget.onChanged?.call(newTime);
       _announceTime(newTime);
     }
@@ -555,7 +586,7 @@ class _TimePickerDialState extends State<TimePickerDial>
               isFinal: false,
             ),
             onPanEnd: (_) => _handleTouch(
-              .zero,
+              _lastTouchPosition,
               Size(dialSize, dialSize),
               isFinal: true,
             ),
