@@ -14,11 +14,33 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_button_theme.dart",
+            "path": "components/button/just_button_theme.dart",
+            "checksum": "sha256:0e2ddd8d19a6ee5dda8d09bb582b67b35f4191c4e2f0c34fb0d435a93a335174"
+          },
+          {
+            "name": "just_button_variants.dart",
+            "path": "components/button/just_button_variants.dart",
+            "checksum": "sha256:9bea3b598953dd5286287ab5c798c28ed738c1a57204fccd3842d03a468f30cc"
+          },
+          {
+            "name": "just_button_style.dart",
+            "path": "components/button/just_button_style.dart",
+            "checksum": "sha256:be92fb72e1fa01cc4d4bdacacf1c01630a1fe87813591982d63c0d62d2e291a2"
+          }
+        ],
         "default": [
           {
             "name": "just_button.dart",
             "path": "components/button/default/just_button.dart",
             "checksum": "sha256:8ac968cabf513a838788898bad6153f3b549458bd98a479072e7542c107f2614"
+          },
+          {
+            "name": "just_icon_button.dart",
+            "path": "components/button/default/just_icon_button.dart",
+            "checksum": "sha256:a2082286c8ec98c737b4a504c8ba12e013921d07c1dac9d59695ae46e7439b92"
           }
         ],
         "neobrutalism": [
@@ -77,6 +99,23 @@
       "registryDependencies": [],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_input_variants.dart",
+            "path": "components/input/just_input_variants.dart",
+            "checksum": "sha256:6c24b485a5d5140fd3195ddd83de963b6c62987813f734e06f41bc8b5f677408"
+          },
+          {
+            "name": "just_input_theme.dart",
+            "path": "components/input/just_input_theme.dart",
+            "checksum": "sha256:40110dd2a5f17746637b76cc083584f3ade97e6553fdc24e8ffefb6636ecc7ee"
+          },
+          {
+            "name": "just_input_style.dart",
+            "path": "components/input/just_input_style.dart",
+            "checksum": "sha256:20449f9394c6b215b846e0984d6be3529aefe1848595000a8c21ac500a26d3a6"
+          }
+        ],
         "default": [
           {
             "name": "just_input.dart",
@@ -106,6 +145,18 @@
       "registryDependencies": [],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_badge_style.dart",
+            "path": "components/badge/just_badge_style.dart",
+            "checksum": "sha256:f6fb80db7bc065b6e39da3bb3b1e59c6cd4ebadd114188ed63f5b5b671be65c9"
+          },
+          {
+            "name": "just_badge_variants.dart",
+            "path": "components/badge/just_badge_variants.dart",
+            "checksum": "sha256:5cccf772fdeecec5ac32f4a3589c2421671cb9b3374e44e5c058b15919763822"
+          }
+        ],
         "default": [
           {
             "name": "just_badge.dart",
@@ -135,11 +186,28 @@
       "registryDependencies": [],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_avatar_style.dart",
+            "path": "components/avatar/just_avatar_style.dart",
+            "checksum": "sha256:48f91ff68af55f044d204519cfd20de4594bcaa3ad29d289d9c2432ed0a4c212"
+          },
+          {
+            "name": "just_avatar_variants.dart",
+            "path": "components/avatar/just_avatar_variants.dart",
+            "checksum": "sha256:c924f3f83a250f154c975722148828042a49db34f03c8be11987119346a01ea9"
+          }
+        ],
         "default": [
           {
             "name": "just_avatar.dart",
             "path": "components/avatar/default/just_avatar.dart",
             "checksum": "sha256:dde4e3a33084cb8ad67f567a9d37620efb8c51f8613f0a0981e503436499a014"
+          },
+          {
+            "name": "just_avatar_group.dart",
+            "path": "components/avatar/default/just_avatar_group.dart",
+            "checksum": "sha256:17d79b14fa95b73e42b349e0fa72b57ed838d5696f408bd93b2aafe45f36f66a"
           }
         ],
         "neobrutalism": [
@@ -198,6 +266,18 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_checkbox_style.dart",
+            "path": "components/checkbox/just_checkbox_style.dart",
+            "checksum": "sha256:cc58e44dfe676b2a5c066244797ce7da54559d085826867bfe77b2f7e35a7192"
+          },
+          {
+            "name": "just_checkbox_theme.dart",
+            "path": "components/checkbox/just_checkbox_theme.dart",
+            "checksum": "sha256:5271cf6c8480f45702e30aea96b0ec5c798164a6c3ba3154670b300d6cdac17e"
+          }
+        ],
         "default": [
           {
             "name": "just_checkbox.dart",
@@ -230,11 +310,28 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_radio_theme.dart",
+            "path": "components/radio/just_radio_theme.dart",
+            "checksum": "sha256:15c2c225aa0f9dd5171a6561f8827a386425c43e56a1e50ac0427e0d8cec3b7b"
+          },
+          {
+            "name": "just_radio_style.dart",
+            "path": "components/radio/just_radio_style.dart",
+            "checksum": "sha256:bf927bf92d45f37fb5bb7093ed890698d6ac158d4b1b6a111b59b9d13e2c6c16"
+          }
+        ],
         "default": [
           {
             "name": "just_radio.dart",
             "path": "components/radio/default/just_radio.dart",
             "checksum": "sha256:9f31435449bb768d79162509c190678f2a1e16639a0bceebc3ed28c561e89a07"
+          },
+          {
+            "name": "just_radio_group.dart",
+            "path": "components/radio/default/just_radio_group.dart",
+            "checksum": "sha256:a50c6eaeb87f9a15c84bca1f3025b074e32d4a9d0d61dadb8d3e2f28c9aa021c"
           }
         ],
         "neobrutalism": [
@@ -293,6 +390,18 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_switch_style.dart",
+            "path": "components/switch/just_switch_style.dart",
+            "checksum": "sha256:d7f08624ad94e083319923c86680c71c40c138a5eadc2da53508c60858bdb2a7"
+          },
+          {
+            "name": "just_switch_theme.dart",
+            "path": "components/switch/just_switch_theme.dart",
+            "checksum": "sha256:52cd7e0eefe50a91330caa3fe029c99de15b9764ae4183f078f24a547a54cf6e"
+          }
+        ],
         "default": [
           {
             "name": "just_switch.dart",
@@ -325,6 +434,18 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_card_style.dart",
+            "path": "components/card/just_card_style.dart",
+            "checksum": "sha256:8b90a32390f360b0ec64a8cb403ff598da4f9f8c0e9151c97535db3aa39b0547"
+          },
+          {
+            "name": "just_card_theme.dart",
+            "path": "components/card/just_card_theme.dart",
+            "checksum": "sha256:e635d9c8dc3d5b3254b268e6372363f09e22656eca300b6aa3f845eb1e6cdee7"
+          }
+        ],
         "default": [
           {
             "name": "just_card.dart",
@@ -354,6 +475,18 @@
       "registryDependencies": [],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_separator_style.dart",
+            "path": "components/separator/just_separator_style.dart",
+            "checksum": "sha256:5d50b41362cab850217519a259713fb6e9925c4faf5aef1dc286542e2f3bce3e"
+          },
+          {
+            "name": "just_separator_theme.dart",
+            "path": "components/separator/just_separator_theme.dart",
+            "checksum": "sha256:9d40ec1154f69dc69eb34dfc0d5b34b95f8bd5c5dcd122c47a236fb718f42b24"
+          }
+        ],
         "default": [
           {
             "name": "just_separator.dart",
@@ -386,6 +519,18 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_scroll_area_theme.dart",
+            "path": "components/scroll/just_scroll_area_theme.dart",
+            "checksum": "sha256:4669942cd7d1326107bae771bbac077bafb442b9c30faef41669faee8b331195"
+          },
+          {
+            "name": "just_scroll_area_style.dart",
+            "path": "components/scroll/just_scroll_area_style.dart",
+            "checksum": "sha256:daf08550ea0997cd155358af6f5d193087e373898b69a4d580d0dd90d17032f7"
+          }
+        ],
         "default": [
           {
             "name": "just_scroll_area.dart",
@@ -421,6 +566,11 @@
             "name": "just_pressable.dart",
             "path": "components/shared/default/_shared_pressable.dart",
             "checksum": "sha256:0a91c217e0111fa24d406c7b570518b723c4280821d591f6133d129cc9b38db9"
+          },
+          {
+            "name": "_shared_pressable.dart",
+            "path": "components/shared/default/_shared_pressable.dart",
+            "checksum": "sha256:0a91c217e0111fa24d406c7b570518b723c4280821d591f6133d129cc9b38db9"
           }
         ]
       },
@@ -441,6 +591,11 @@
         "default": [
           {
             "name": "just_focus_indicator.dart",
+            "path": "components/shared/default/_shared_focus_indicator.dart",
+            "checksum": "sha256:ea7aa851710455caaaec043e15cbc50d2773d5a757fa12a5cfd8c22bdcc90f19"
+          },
+          {
+            "name": "_shared_focus_indicator.dart",
             "path": "components/shared/default/_shared_focus_indicator.dart",
             "checksum": "sha256:ea7aa851710455caaaec043e15cbc50d2773d5a757fa12a5cfd8c22bdcc90f19"
           }
@@ -466,6 +621,18 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_skeleton_style.dart",
+            "path": "components/skeleton/just_skeleton_style.dart",
+            "checksum": "sha256:a79c7696649d11f379e41c2da66d1398071c14f885aa1ceb0ae26040cf7cf673"
+          },
+          {
+            "name": "just_skeleton_theme.dart",
+            "path": "components/skeleton/just_skeleton_theme.dart",
+            "checksum": "sha256:89d6056d064cf2f6a7c630ab7b703702ddd40a16d9f8d106944a8f845cffbeae"
+          }
+        ],
         "default": [
           {
             "name": "just_skeleton.dart",
@@ -497,6 +664,18 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_slider_theme.dart",
+            "path": "components/slider/just_slider_theme.dart",
+            "checksum": "sha256:d52cab130b0710e6b4e5e846b842679cf324d65532b797b4ad488ca4c7ffa8c9"
+          },
+          {
+            "name": "just_slider_style.dart",
+            "path": "components/slider/just_slider_style.dart",
+            "checksum": "sha256:d6531b58b5b206cc86ed00e2a5c344dd3392e05c11e36dd9c8a955ab7d781927"
+          }
+        ],
         "default": [
           {
             "name": "just_slider.dart",
@@ -532,6 +711,11 @@
             "name": "just_progress_spinner.dart",
             "path": "components/shared/default/_shared_progress_spinner.dart",
             "checksum": "sha256:ad4b188a0380721b8d6354b01b05444e033402fb2a65a05c94f9d23d0b88eb9b"
+          },
+          {
+            "name": "_shared_progress_spinner.dart",
+            "path": "components/shared/default/_shared_progress_spinner.dart",
+            "checksum": "sha256:ad4b188a0380721b8d6354b01b05444e033402fb2a65a05c94f9d23d0b88eb9b"
           }
         ]
       },
@@ -550,6 +734,23 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_breadcrumb_theme.dart",
+            "path": "components/breadcrumb/just_breadcrumb_theme.dart",
+            "checksum": "sha256:0f744f75a31ec7a971c8f66c4fd72d1ac26670638b8fdcf76d1017f44f3eb8cf"
+          },
+          {
+            "name": "just_breadcrumb_style.dart",
+            "path": "components/breadcrumb/just_breadcrumb_style.dart",
+            "checksum": "sha256:ef15b0bab4a590b00d340c52b3f841d67c85a2a5b06ca319b060e763153cef23"
+          },
+          {
+            "name": "just_breadcrumb_variants.dart",
+            "path": "components/breadcrumb/just_breadcrumb_variants.dart",
+            "checksum": "sha256:ff63d18f651b1ad6dca2270c3226eec4096577bee717302a3846b77d7d1419ad"
+          }
+        ],
         "default": [
           {
             "name": "just_breadcrumb.dart",
@@ -581,6 +782,23 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_tabs_variants.dart",
+            "path": "components/tabs/just_tabs_variants.dart",
+            "checksum": "sha256:1b314729be3321a83cdc0f888e6167a252b8c7c87069c2ddd7d4142273f25ccc"
+          },
+          {
+            "name": "just_tabs_style.dart",
+            "path": "components/tabs/just_tabs_style.dart",
+            "checksum": "sha256:a073f6ea0cd1aa1abbc4067a868638a7cd4150c6020df6d07ae5adf5fb7a7351"
+          },
+          {
+            "name": "just_tabs_theme.dart",
+            "path": "components/tabs/just_tabs_theme.dart",
+            "checksum": "sha256:cce95434d552ff074d3418cd4dcb2c8c89a87fcc6fba9024299681cec72877dd"
+          }
+        ],
         "default": [
           {
             "name": "just_tabs.dart",
@@ -622,6 +840,23 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_bottom_nav_theme.dart",
+            "path": "components/bottom_nav/just_bottom_nav_theme.dart",
+            "checksum": "sha256:bb4d3c347a2ea9e3ec6c84875b9745a51feb20e6e6afe22438ca91650ab1e4a1"
+          },
+          {
+            "name": "just_bottom_nav_variants.dart",
+            "path": "components/bottom_nav/just_bottom_nav_variants.dart",
+            "checksum": "sha256:85eacd8b822b79acee41f3e30d0690e7525fc057eccd4ded7af6fbc8b8bb166f"
+          },
+          {
+            "name": "just_bottom_nav_style.dart",
+            "path": "components/bottom_nav/just_bottom_nav_style.dart",
+            "checksum": "sha256:31bc6f0bcf514a99e44c64dd24a91fc8879481846c1c5b2631c99d23b10091c9"
+          }
+        ],
         "default": [
           {
             "name": "just_bottom_nav.dart",
@@ -657,6 +892,11 @@
             "name": "just_tooltip_overlay.dart",
             "path": "components/shared/default/_shared_tooltip_overlay.dart",
             "checksum": "sha256:66dee601399ca4bd94b62308ab8396dbbba379943b91d00a9ff6ec57dba4e063"
+          },
+          {
+            "name": "_shared_tooltip_overlay.dart",
+            "path": "components/shared/default/_shared_tooltip_overlay.dart",
+            "checksum": "sha256:66dee601399ca4bd94b62308ab8396dbbba379943b91d00a9ff6ec57dba4e063"
           }
         ]
       },
@@ -676,6 +916,23 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_sidebar_variants.dart",
+            "path": "components/sidebar/just_sidebar_variants.dart",
+            "checksum": "sha256:4509d3dff6284e23475df95701dcfd1f747f7a6d242d610787c151772a77522a"
+          },
+          {
+            "name": "just_sidebar_style.dart",
+            "path": "components/sidebar/just_sidebar_style.dart",
+            "checksum": "sha256:7cbfc66312bf9a57a8827b7be209177862cf2babb933ab1930263adcc923f09b"
+          },
+          {
+            "name": "just_sidebar_theme.dart",
+            "path": "components/sidebar/just_sidebar_theme.dart",
+            "checksum": "sha256:d92ae611a7ddd3540c70d6fb61f4277a788590c38d52371593493205ea691640"
+          }
+        ],
         "default": [
           {
             "name": "just_sidebar.dart",
@@ -705,6 +962,23 @@
       "registryDependencies": [],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_toast_theme.dart",
+            "path": "components/toast/just_toast_theme.dart",
+            "checksum": "sha256:790636410ca043e519c1df34bea547490c447ff7a12659c1cf2b018e96d3bea7"
+          },
+          {
+            "name": "just_toast_style.dart",
+            "path": "components/toast/just_toast_style.dart",
+            "checksum": "sha256:5a61ec6894613c4a2896d596bd42920b9d2bbf6e7489eecd2ea58d9320962492"
+          },
+          {
+            "name": "just_toast_variants.dart",
+            "path": "components/toast/just_toast_variants.dart",
+            "checksum": "sha256:fe4c3e22ecba3d8a339f6d61ec007682ce61d651a87d6e7fe3fcb39f8696b82f"
+          }
+        ],
         "default": [
           {
             "name": "just_toast.dart",
@@ -734,6 +1008,23 @@
       "registryDependencies": [],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_dialog_variants.dart",
+            "path": "components/dialog/just_dialog_variants.dart",
+            "checksum": "sha256:d77c224dfb1a039f527f5f3cdd5354ad7591f90a26b771992af13898b2c693d6"
+          },
+          {
+            "name": "just_dialog_theme.dart",
+            "path": "components/dialog/just_dialog_theme.dart",
+            "checksum": "sha256:bbbb6c55417059722b4715e2d5f2896912127252873e748f40bd7f31b6cbca1c"
+          },
+          {
+            "name": "just_dialog_style.dart",
+            "path": "components/dialog/just_dialog_style.dart",
+            "checksum": "sha256:7cf69d86827bf7ac2a2141bf68461b71cfd12bff3409ee05ac3a2532dceee9ee"
+          }
+        ],
         "default": [
           {
             "name": "just_dialog.dart",
@@ -763,18 +1054,35 @@
       "registryDependencies": [],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_sheet_variants.dart",
+            "path": "components/sheet/just_sheet_variants.dart",
+            "checksum": "sha256:874bc18c34e88271407881b731e61c3c47fbc42975996a54e98d652e8bec202f"
+          },
+          {
+            "name": "just_sheet_style.dart",
+            "path": "components/sheet/just_sheet_style.dart",
+            "checksum": "sha256:e10fed5e990a9d1375ab78848e72862278e8ebe62b685c3dd85753fba232f6b6"
+          },
+          {
+            "name": "just_sheet_theme.dart",
+            "path": "components/sheet/just_sheet_theme.dart",
+            "checksum": "sha256:8da5b9ab2265851a900cdc7c807a99678854ff2a1f32ac9d3c4bb3229fc7092d"
+          }
+        ],
         "default": [
           {
             "name": "just_sheet.dart",
             "path": "components/sheet/default/just_sheet.dart",
-            "checksum": "sha256:c1a70e0fac3392d4513cb78d95ad436f49268d684b18ac60a8774e57631908c2"
+            "checksum": "sha256:047139904991700eade0b85e2485169434e6de74f77564229664c8679ec958a9"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_sheet.dart",
             "path": "components/sheet/neobrutalism/just_sheet.dart",
-            "checksum": "sha256:c1a70e0fac3392d4513cb78d95ad436f49268d684b18ac60a8774e57631908c2"
+            "checksum": "sha256:047139904991700eade0b85e2485169434e6de74f77564229664c8679ec958a9"
           }
         ]
       },
@@ -792,6 +1100,23 @@
       "registryDependencies": [],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_tooltip_theme.dart",
+            "path": "components/tooltip/just_tooltip_theme.dart",
+            "checksum": "sha256:32f9c401d33484293d7b8d93a208a88841289d752ffb24021ab9cf321f09ebf2"
+          },
+          {
+            "name": "just_tooltip_style.dart",
+            "path": "components/tooltip/just_tooltip_style.dart",
+            "checksum": "sha256:e362dcdd6851d2803972dedff509760a74823d49b0aa5464e4c307d72d4e428c"
+          },
+          {
+            "name": "just_tooltip_variants.dart",
+            "path": "components/tooltip/just_tooltip_variants.dart",
+            "checksum": "sha256:a422e8ee007e739de9a41c7dd635d76c44a9a513b2992fbdfbd467d567e4b6df"
+          }
+        ],
         "default": [
           {
             "name": "just_tooltip.dart",
@@ -824,6 +1149,23 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_select_theme.dart",
+            "path": "components/select/just_select_theme.dart",
+            "checksum": "sha256:2c30deb981e5eabdd4f4d25fcf243e117c4b11ec14685010eb8859693a7a44f8"
+          },
+          {
+            "name": "just_select_style.dart",
+            "path": "components/select/just_select_style.dart",
+            "checksum": "sha256:038cab311adc91ac112f4cf650184bfd082c774ee34057f30aa5986ae3b45896"
+          },
+          {
+            "name": "just_select_variants.dart",
+            "path": "components/select/just_select_variants.dart",
+            "checksum": "sha256:05a5ef8d8248350c597c7d34e3cacc68179c95f13dc9ae1bf46865d3fdc61997"
+          }
+        ],
         "default": [
           {
             "name": "just_select.dart",
@@ -853,6 +1195,23 @@
       "registryDependencies": [],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_progress_style.dart",
+            "path": "components/progress/just_progress_style.dart",
+            "checksum": "sha256:a9fa5102b62a4241cbe553c1adfd60b5a71b61969fc3c5713a3cfb494a6da3c4"
+          },
+          {
+            "name": "just_progress_variants.dart",
+            "path": "components/progress/just_progress_variants.dart",
+            "checksum": "sha256:ebf25df22ee41d363f541821791bf305e01117f08d61500c756b780fd8119b8b"
+          },
+          {
+            "name": "just_progress_theme.dart",
+            "path": "components/progress/just_progress_theme.dart",
+            "checksum": "sha256:b0daccf2155b281df42a47bda1ddec5817e0c3fd844a8d07f94a1665c1cba334"
+          }
+        ],
         "default": [
           {
             "name": "just_progress.dart",
@@ -885,6 +1244,23 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_accordion_style.dart",
+            "path": "components/accordion/just_accordion_style.dart",
+            "checksum": "sha256:cfed2a3d95d9ac163c0e416a4b21fa1b22d6f5e20133003d4beb16a649bf38e8"
+          },
+          {
+            "name": "just_accordion_theme.dart",
+            "path": "components/accordion/just_accordion_theme.dart",
+            "checksum": "sha256:156d53cd594c214967ca9294dfe65ca9952d392c6011b9ad86a8b4295a5c89ee"
+          },
+          {
+            "name": "just_accordion_variants.dart",
+            "path": "components/accordion/just_accordion_variants.dart",
+            "checksum": "sha256:e56d60927717a5deeca00c65c3b1faf06841330fa057d503d3e2a31eae1e32f7"
+          }
+        ],
         "default": [
           {
             "name": "just_accordion.dart",
@@ -917,6 +1293,23 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_toggle_theme.dart",
+            "path": "components/toggle/just_toggle_theme.dart",
+            "checksum": "sha256:831e62bcd5a658526132133b7103cf704e4affd64838bbe34a7bace20432c84b"
+          },
+          {
+            "name": "just_toggle_variants.dart",
+            "path": "components/toggle/just_toggle_variants.dart",
+            "checksum": "sha256:10e727dc4fb7211021cddbe21cba08c07d4288817a902f8f60bbc6e33733b658"
+          },
+          {
+            "name": "just_toggle_style.dart",
+            "path": "components/toggle/just_toggle_style.dart",
+            "checksum": "sha256:05e1b3f3e243d604e506e000ea7af1117ca8c827229748a77a84319b7850b028"
+          }
+        ],
         "default": [
           {
             "name": "just_toggle.dart",
@@ -959,6 +1352,23 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_table_variants.dart",
+            "path": "components/table/just_table_variants.dart",
+            "checksum": "sha256:3dd8a1844817fa1de3e75f27e8ff14dde0e6ead2cd024315cab44b5937a1bbcf"
+          },
+          {
+            "name": "just_table_theme.dart",
+            "path": "components/table/just_table_theme.dart",
+            "checksum": "sha256:46dab696d696d2550c9096743646964288bda6dfbe42699f80ef3db0b15264d5"
+          },
+          {
+            "name": "just_table_style.dart",
+            "path": "components/table/just_table_style.dart",
+            "checksum": "sha256:b817c0cf8af6c0d6ab61285c348208f73048849125fe4fa0c076504d6cc3ce38"
+          }
+        ],
         "default": [
           {
             "name": "just_table.dart",
@@ -991,28 +1401,45 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_date_picker_variants.dart",
+            "path": "components/date_picker/just_date_picker_variants.dart",
+            "checksum": "sha256:ee2d2134b878450af3cd505a02a972ef62c075e06d8c84ec678b0ea34c1b96e6"
+          },
+          {
+            "name": "just_date_picker_style.dart",
+            "path": "components/date_picker/just_date_picker_style.dart",
+            "checksum": "sha256:5568fd1fc2838818e22aab45f517c81d4e10c8792bd9557b49aa4d0da7c304bb"
+          },
+          {
+            "name": "just_date_picker_theme.dart",
+            "path": "components/date_picker/just_date_picker_theme.dart",
+            "checksum": "sha256:d6a32050dc43499c920250f3a4dd7a8c0e787919f8accfdbe320fd1e200a4cca"
+          }
+        ],
         "default": [
           {
             "name": "just_date_picker.dart",
             "path": "components/date_picker/default/just_date_picker.dart",
-            "checksum": "sha256:a99f01bddaaafc848d18a93f0f4b5b4245ffc32cc27c1567c3c811db16d817ba"
+            "checksum": "sha256:25994a77760fb755e94b4ad13e7eb9d4632b4358b959504aa644ce3ddac3aca3"
           },
           {
             "name": "_date_picker_calendar.dart",
             "path": "components/date_picker/default/_date_picker_calendar.dart",
-            "checksum": "sha256:769f1ea9320f9ca9810151ea39c800a3187f5c3c2a4c1e7d3876fe1c3b1d9341"
+            "checksum": "sha256:a38faeaaf2488f575eb534ad9abb2a5049c0c2fcc57216fc6d780504499504fd"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_date_picker.dart",
             "path": "components/date_picker/neobrutalism/just_date_picker.dart",
-            "checksum": "sha256:a99f01bddaaafc848d18a93f0f4b5b4245ffc32cc27c1567c3c811db16d817ba"
+            "checksum": "sha256:25994a77760fb755e94b4ad13e7eb9d4632b4358b959504aa644ce3ddac3aca3"
           },
           {
             "name": "_date_picker_calendar.dart",
             "path": "components/date_picker/neobrutalism/_date_picker_calendar.dart",
-            "checksum": "sha256:769f1ea9320f9ca9810151ea39c800a3187f5c3c2a4c1e7d3876fe1c3b1d9341"
+            "checksum": "sha256:a38faeaaf2488f575eb534ad9abb2a5049c0c2fcc57216fc6d780504499504fd"
           }
         ]
       },
@@ -1038,14 +1465,14 @@
           {
             "name": "just_date_range_picker.dart",
             "path": "components/date_picker/default/just_date_range_picker.dart",
-            "checksum": "sha256:353fd461bd9e9bc65c955f07f70c7dccf698ae86f49097ad34ce84d9f7589b4b"
+            "checksum": "sha256:49cdcaf937604c3b050295a951847908900f114855eaf57b84dcb334cb4150f3"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_date_range_picker.dart",
             "path": "components/date_picker/neobrutalism/just_date_range_picker.dart",
-            "checksum": "sha256:353fd461bd9e9bc65c955f07f70c7dccf698ae86f49097ad34ce84d9f7589b4b"
+            "checksum": "sha256:49cdcaf937604c3b050295a951847908900f114855eaf57b84dcb334cb4150f3"
           }
         ]
       },
@@ -1072,11 +1499,28 @@
       ],
       "pubDependencies": {},
       "files": {
+        "common": [
+          {
+            "name": "just_time_picker_variants.dart",
+            "path": "components/time_picker/just_time_picker_variants.dart",
+            "checksum": "sha256:7548b8e50d221ceecb38540a1ac2cba9e56d09d6a70aa7aa2ec0d67a2342872e"
+          },
+          {
+            "name": "just_time_picker_style.dart",
+            "path": "components/time_picker/just_time_picker_style.dart",
+            "checksum": "sha256:c3772b4ffc7b718e004234f5ada6e4317a3a5bdcd9517c7bf4995a2119514cb8"
+          },
+          {
+            "name": "just_time_picker_theme.dart",
+            "path": "components/time_picker/just_time_picker_theme.dart",
+            "checksum": "sha256:62061e838b622c991abf35eec2d1fe58d6cc6675355c9558459a14e6bfb7190c"
+          }
+        ],
         "default": [
           {
             "name": "just_time_picker.dart",
             "path": "components/time_picker/default/just_time_picker.dart",
-            "checksum": "sha256:468b0d7727854e57dfb8c9f0004a83c3e04440cb648554c944e3796acd60a67b"
+            "checksum": "sha256:40d300473711157867b1223d77ef36eca3879667393c19b9c45a167365fbbe68"
           },
           {
             "name": "_time_picker_dial.dart",
@@ -1098,7 +1542,7 @@
           {
             "name": "just_time_picker.dart",
             "path": "components/time_picker/neobrutalism/just_time_picker.dart",
-            "checksum": "sha256:468b0d7727854e57dfb8c9f0004a83c3e04440cb648554c944e3796acd60a67b"
+            "checksum": "sha256:40d300473711157867b1223d77ef36eca3879667393c19b9c45a167365fbbe68"
           },
           {
             "name": "_time_picker_dial.dart",
