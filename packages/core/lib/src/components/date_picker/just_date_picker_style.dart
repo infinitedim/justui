@@ -8,6 +8,9 @@ class const JustDatePickerStyle({
   /// Custom text color for unselected day cells.
   final Color? dayTextColor,
 
+  /// Custom text color for Sunday cells and Sunday header.
+  final Color? sundayTextColor,
+
   /// Custom background color for the selected date.
   final Color? selectedDayColor,
 

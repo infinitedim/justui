@@ -86,6 +86,9 @@ class JustTimePicker extends StatefulWidget {
   /// Label text displayed above the trigger button.
   final String? label;
 
+  /// Whether to render the outer card container in inline mode.
+  final bool showContainer;
+
   /// Creates a [JustTimePicker] widget.
   const JustTimePicker({
     super.key,
@@ -100,6 +103,7 @@ class JustTimePicker extends StatefulWidget {
     this.minuteInterval = 1,
     this.initialSegment = .hour,
     this.allowModeSwitch = true,
+    this.showContainer = true,
     this.style,
     this.enableHaptic,
     this.locale = const JustTimePickerLocale(),
@@ -120,6 +124,7 @@ class JustTimePicker extends StatefulWidget {
     int minuteInterval = 1,
     JustTimePickerSegment initialSegment = .hour,
     bool allowModeSwitch = true,
+    bool showContainer = true,
     JustTimePickerStyle? style,
     bool? enableHaptic,
     JustTimePickerLocale locale = const JustTimePickerLocale(),
@@ -136,6 +141,7 @@ class JustTimePicker extends StatefulWidget {
          minuteInterval: minuteInterval,
          initialSegment: initialSegment,
          allowModeSwitch: allowModeSwitch,
+         showContainer: showContainer,
          style: style,
          enableHaptic: enableHaptic,
          locale: locale,
@@ -383,21 +389,23 @@ class _JustTimePickerState extends State<JustTimePicker> {
     final effectiveOnChanged = onTimeSelected ?? _onTimeSelected;
 
     return Container(
-      padding: padding,
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: borderRadius,
-        border: presetTokens.showsDefaultBorder
-            ? .all(color: borderColor, width: borderWidth)
-            : (borderWidth > 0
-                ? .all(color: colors.borderDefault, width: borderWidth)
-                : null),
-        boxShadow: presetTokens.resolveShadow(
-          theme.shadows,
-          .md,
-          isPressed: false,
-        ),
-      ),
+      padding: widget.showContainer ? padding : .zero,
+      decoration: widget.showContainer
+          ? BoxDecoration(
+              color: bgColor,
+              borderRadius: borderRadius,
+              border: presetTokens.showsDefaultBorder
+                  ? .all(color: borderColor, width: borderWidth)
+                  : (borderWidth > 0
+                      ? .all(color: colors.borderDefault, width: borderWidth)
+                      : null),
+              boxShadow: presetTokens.resolveShadow(
+                theme.shadows,
+                .md,
+                isPressed: false,
+              ),
+            )
+          : null,
       child: Column(
         mainAxisSize: .min,
         crossAxisAlignment: .center,
@@ -899,31 +907,11 @@ class _JustTimePickerState extends State<JustTimePicker> {
           );
         }
 
-        try {
-          JustSheetScope.of(context).show<void>(
-            content: content,
-            draggable: true,
-          );
-        } catch (_) {
-          // Fallback to modal dialog if JustSheetScope is not available
-          showJustTimePicker(
-            context: context,
-            initialTime: widget.value,
-            firstTime: widget.firstTime,
-            lastTime: widget.lastTime,
-            selectableTimePredicate: widget.selectableTimePredicate,
-            mode: widget.mode,
-            timeFormat: widget.timeFormat,
-            minuteInterval: widget.minuteInterval,
-            locale: widget.locale,
-            style: widget.style,
-            enableHaptic: widget.enableHaptic,
-          ).then((selected) {
-            if (selected != null) {
-              _onTimeSelected(selected);
-            }
-          });
-        }
+        showJustBottomSheet<void>(
+          context: context,
+          content: content,
+          draggable: true,
+        );
       },
     );
   }
@@ -1150,6 +1138,7 @@ class _ModalTimePickerContentState extends State<_ModalTimePickerContent> {
           timeFormat: widget.timeFormat,
           minuteInterval: widget.minuteInterval,
           locale: widget.locale,
+          showContainer: false,
           style: widget.style,
           enableHaptic: widget.enableHaptic,
           onChanged: (time) {
@@ -1205,51 +1194,62 @@ Future<TimeOfDay?> showJustTimePicker({
   final theme = themeState?.theme;
 
   Widget wrapWithTheme(Widget child) {
+    Widget themedChild = child;
     if (theme != null) {
-      return JustThemeProvider(
+      themedChild = JustThemeProvider(
         lightTheme: theme,
         darkTheme: theme,
         initialThemeMode: themeState!.themeMode,
         child: child,
       );
     }
-    return child;
+    return DefaultTextStyle(
+      style: const TextStyle(decoration: TextDecoration.none),
+      child: themedChild,
+    );
   }
 
   final isMobile = MediaQuery.sizeOf(context).width < JustBreakpoints.sm;
 
   if (isMobile) {
-    try {
-      final sheetScope = JustSheetScope.of(context);
-      await sheetScope.show<void>(
-        content: wrapWithTheme(
-          SizedBox(
-            width: double.infinity,
-            child: _ModalTimePickerContent(
-              initialTime: initialTime,
-              firstTime: firstTime,
-              lastTime: lastTime,
-              selectableTimePredicate: selectableTimePredicate,
-              mode: mode,
-              timeFormat: timeFormat,
-              minuteInterval: minuteInterval,
-              locale: locale,
-              style: style,
-              enableHaptic: enableHaptic,
-              onConfirm: (time) {
-                result = time;
-                sheetScope.dismiss();
-              },
-              onCancel: () => sheetScope.dismiss(),
-            ),
+    return showJustBottomSheet<TimeOfDay>(
+      context: context,
+      content: wrapWithTheme(
+        SizedBox(
+          width: double.infinity,
+          child: _ModalTimePickerContent(
+            initialTime: initialTime,
+            firstTime: firstTime,
+            lastTime: lastTime,
+            selectableTimePredicate: selectableTimePredicate,
+            mode: mode,
+            timeFormat: timeFormat,
+            minuteInterval: minuteInterval,
+            locale: locale,
+            style: style,
+            enableHaptic: enableHaptic,
+            onConfirm: (time) {
+              result = time;
+              final scope = JustSheetScope.maybeOf(context);
+              if (scope != null) {
+                scope.dismiss();
+              } else {
+                Navigator.of(context, rootNavigator: false).pop();
+              }
+            },
+            onCancel: () {
+              final scope = JustSheetScope.maybeOf(context);
+              if (scope != null) {
+                scope.dismiss();
+              } else {
+                Navigator.of(context, rootNavigator: false).pop();
+              }
+            },
           ),
         ),
-        draggable: true,
-      );
-      return result;
-    } catch (_) {
-      // Fallback to dialog if JustSheetScope is not found
-    }
+      ),
+      draggable: true,
+    ).then((_) => result);
   }
 
   if (!context.mounted) return null;

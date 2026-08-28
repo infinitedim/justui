@@ -67,7 +67,7 @@ class JustDateRangePicker extends StatelessWidget {
     this.selectableDayPredicate,
     this.presets,
     this.showWeekNumbers = false,
-    this.firstDayOfWeek = 1,
+    this.firstDayOfWeek = 7,
     this.dayBuilder,
     this.headerBuilder,
     this.locale = const JustDatePickerLocale(),

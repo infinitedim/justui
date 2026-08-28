@@ -44,6 +44,20 @@ void main(List<String> args) async {
   bool hasErrors = false;
   final List<String> driftedFiles = [];
 
+  // Build a set of all file names already registered across all components in index.json
+  final Set<String> registeredFileNames = {};
+  for (final dynamic comp in components) {
+    final compMap = comp as Map<String, dynamic>;
+    final filesMap = compMap['files'] as Map<String, dynamic>? ?? {};
+    for (final preset in filesMap.keys) {
+      final List<dynamic> fileList = filesMap[preset] as List<dynamic>? ?? [];
+      for (final dynamic f in fileList) {
+        final fMap = f as Map<String, dynamic>;
+        registeredFileNames.add(fMap['name'] as String);
+      }
+    }
+  }
+
   for (final dynamic component in components) {
     final compMap = component as Map<String, dynamic>;
     final Map<String, dynamic> filesMap =
@@ -53,10 +67,109 @@ void main(List<String> args) async {
     print('-----------------------------------------');
     print('Component: $name${isInternal ? ' [internal]' : ''}');
 
+    // Determine component folder in packages/core/lib/src/components/
+    String? compFolder;
+    for (final preset in filesMap.keys) {
+      final fileList = filesMap[preset] as List<dynamic>? ?? [];
+      for (final f in fileList) {
+        final path = (f as Map<String, dynamic>)['path'] as String?;
+        if (path != null && path.startsWith('components/')) {
+          final parts = path.split('/');
+          if (parts.length > 1) {
+            compFolder = parts[1];
+            break;
+          }
+        }
+      }
+      if (compFolder != null) break;
+    }
+    compFolder ??= name.replaceAll('-', '_');
+
+    // Auto-Discovery: scan packages/core/lib/src/components/<compFolder>
+    final coreCompDir = Directory(
+      p.join(projectRoot, 'packages', 'core', 'lib', 'src', 'components', compFolder),
+    );
+
+    final Set<String> existingComponentFileNames = {};
+    for (final preset in filesMap.keys) {
+      final fileList = filesMap[preset] as List<dynamic>? ?? [];
+      for (final f in fileList) {
+        existingComponentFileNames.add((f as Map<String, dynamic>)['name'] as String);
+      }
+    }
+
+    if (coreCompDir.existsSync()) {
+      final coreFiles = coreCompDir
+          .listSync()
+          .whereType<File>()
+          .where((f) => f.path.endsWith('.dart'));
+
+      final String nameSnake = name.replaceAll('-', '_');
+
+      for (final fileEntity in coreFiles) {
+        final fileName = p.basename(fileEntity.path);
+        if (existingComponentFileNames.contains(fileName)) continue;
+
+        // Check if this auto-discovered file belongs to this component
+        bool isCommonFile = fileName.endsWith('_style.dart') ||
+            fileName.endsWith('_theme.dart') ||
+            fileName.endsWith('_variants.dart');
+
+        bool belongsToThisComp = false;
+
+        if (isCommonFile) {
+          if (fileName.startsWith('just_${nameSnake}_') ||
+              fileName.startsWith('_${nameSnake}_') ||
+              fileName.contains(nameSnake)) {
+            belongsToThisComp = true;
+          } else if (!registeredFileNames.contains(fileName)) {
+            belongsToThisComp = true;
+          }
+        } else if (fileName.contains(nameSnake) || fileName.startsWith('just_${nameSnake}')) {
+          belongsToThisComp = true;
+        }
+
+        if (belongsToThisComp) {
+          print('  Auto-discovered file: $fileName');
+          existingComponentFileNames.add(fileName);
+          registeredFileNames.add(fileName);
+
+          final newEntry = <String, dynamic>{
+            'name': fileName,
+            'path': isCommonFile
+                ? 'components/$compFolder/$fileName'
+                : 'components/$compFolder/default/$fileName',
+          };
+
+          if (isCommonFile) {
+            final commonList = (filesMap['common'] as List<dynamic>?) ?? [];
+            commonList.add(newEntry);
+            filesMap['common'] = commonList;
+          } else {
+            final defaultList = (filesMap['default'] as List<dynamic>?) ?? [];
+            defaultList.add(newEntry);
+            filesMap['default'] = defaultList;
+          }
+        }
+      }
+    }
+
     // Restructure filesMap to extract common files (_style, _theme, _variants)
     final Map<String, dynamic> newFilesMap = {};
     final List<Map<String, dynamic>> commonFiles = [];
     final Set<String> commonFileNames = {};
+
+    if (filesMap.containsKey('common')) {
+      final List<dynamic> files = filesMap['common'] as List<dynamic>;
+      for (final dynamic f in files) {
+        final fileMap = Map<String, dynamic>.from(f as Map<String, dynamic>);
+        final String fileName = fileMap['name'] as String;
+        if (!commonFileNames.contains(fileName)) {
+          commonFileNames.add(fileName);
+          commonFiles.add(fileMap);
+        }
+      }
+    }
 
     for (final String preset in filesMap.keys.toList()) {
       if (preset == 'common') continue;
