@@ -9,6 +9,8 @@ pub struct JustUIConfig {
     pub registry_url: String,
 
     pub preset: String,
+
+    pub dart_target: crate::utils::env_resolver::DartTarget,
 }
 
 impl JustUIConfig {
@@ -36,6 +38,16 @@ impl JustUIConfig {
             get_str("shared_dir").unwrap_or_else(|| format!("{}/shared", components_dir));
         let preset = get_str("preset").unwrap_or_else(|| "default".to_string());
 
+        let dart_target = get_str("dart_target")
+            .and_then(|s| match s.as_str() {
+                "primary" => Some(crate::utils::env_resolver::DartTarget::Primary),
+                "standard" => Some(crate::utils::env_resolver::DartTarget::Standard),
+                _ => None,
+            })
+            .unwrap_or_else(|| {
+                crate::utils::env_resolver::resolve_dart_target(std::path::Path::new("."))
+            });
+
         Self {
             components_dir,
             tokens_dir: get_str("tokens_dir").unwrap_or_else(|| "lib/tokens".to_string()),
@@ -43,6 +55,7 @@ impl JustUIConfig {
             registry_url: get_str("registry_url")
                 .unwrap_or_else(|| Self::DEFAULT_REGISTRY_URL.to_string()),
             preset,
+            dart_target,
         }
     }
 
@@ -65,8 +78,19 @@ impl JustUIConfig {
              registry_url: {}\n\
              \n\
              # Active style preset to use (e.g., 'default', 'neobrutalism')\n\
-             preset: {}\n",
-            self.components_dir, self.tokens_dir, self.shared_dir, self.registry_url, self.preset
+             preset: {}\n\
+             \n\
+             # Target Dart constructor syntax ('primary' or 'standard')\n\
+             dart_target: {}\n",
+            self.components_dir,
+            self.tokens_dir,
+            self.shared_dir,
+            self.registry_url,
+            self.preset,
+            match self.dart_target {
+                crate::utils::env_resolver::DartTarget::Primary => "primary",
+                crate::utils::env_resolver::DartTarget::Standard => "standard",
+            }
         )
     }
 }
@@ -79,6 +103,7 @@ impl Default for JustUIConfig {
             shared_dir: "lib/widgets/shared".to_string(),
             registry_url: Self::DEFAULT_REGISTRY_URL.to_string(),
             preset: "default".to_string(),
+            dart_target: crate::utils::env_resolver::DartTarget::Standard,
         }
     }
 }

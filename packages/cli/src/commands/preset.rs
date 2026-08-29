@@ -330,6 +330,7 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
             true,
             &None,
             &new_config.preset,
+            new_config.dart_target,
         ) {
             Ok(_) => success_count += 1,
             Err(e) => {

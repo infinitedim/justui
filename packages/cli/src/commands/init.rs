@@ -149,12 +149,15 @@ pub fn run(
     }
     let hex_code = format!("0xFF{}", clean_hex);
 
+    let dart_target = crate::utils::env_resolver::resolve_dart_target(std::path::Path::new("."));
+
     let config = JustUIConfig {
         components_dir: components_dir.clone(),
         tokens_dir: tokens_dir.clone(),
         shared_dir: shared_dir.clone(),
         registry_url: JustUIConfig::DEFAULT_REGISTRY_URL.to_string(),
         preset: preset.clone(),
+        dart_target,
     };
     std::fs::write(config_path, config.to_yaml_string())
         .map_err(|e| anyhow::anyhow!("Failed to initialize JustUI: {}", e))?;

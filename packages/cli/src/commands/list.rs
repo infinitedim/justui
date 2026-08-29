@@ -380,6 +380,7 @@ pub fn run(category: Option<String>, json: bool) -> Result<()> {
                                             true,
                                             &Some(pb_files.clone()),
                                             &config.preset,
+                                            config.dart_target,
                                         ) {
                                             Ok((_stats, details)) => {
                                                 pb_files.finish_and_clear();

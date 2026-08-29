@@ -289,6 +289,7 @@ pub fn run(
             true,
             &None,
             &config.preset,
+            config.dart_target,
         )?;
         logger::success("All changes applied successfully.");
         continue;
