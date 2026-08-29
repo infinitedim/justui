@@ -1,5 +1,6 @@
 pub mod diff_formatter;
 pub mod embedded_templates;
+pub mod fvm_detector;
 pub mod import_rewriter;
 pub mod logger;
 pub mod prompt;
