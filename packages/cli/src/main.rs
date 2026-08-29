@@ -78,6 +78,17 @@ enum Commands {
         /// Target design tokens directory
         #[arg(long = "tokens-dir")]
         tokens_dir: Option<String>,
+        /// Enable experimental features (e.g. auto-detect-flutter-version)
+        #[arg(
+            long = "experimental",
+            value_name = "FEATURE",
+            help = "Activate an experimental feature by name",
+            long_help = "Activate an experimental feature by name.\n\n\
+                Available experimental features:\n  \
+                auto-detect-flutter-version  Auto-detect Dart SDK version from pubspec.yaml and FVM\n                                       \
+                to determine constructor syntax (primary vs standard)",
+        )]
+        experimental: Option<String>,
     },
 
     /// Manage and apply visual design style presets (e.g. default, neobrutalism)
@@ -280,7 +291,8 @@ fn main() {
             preset,
             components_dir,
             tokens_dir,
-        } => commands::init::run(preset, components_dir, tokens_dir, auto_yes),
+            experimental,
+        } => commands::init::run(preset, components_dir, tokens_dir, auto_yes, experimental),
         Commands::Add {
             components,
             dry_run,

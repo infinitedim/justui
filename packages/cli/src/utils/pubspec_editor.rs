@@ -218,12 +218,20 @@ mod tests {
 
         // 6. Flutter >= 3.47.0 (True)
         let p6 = dir.path().join("p6.yaml");
-        std::fs::write(&p6, "environment:\n  sdk: '>=3.10.0 <4.0.0'\n  flutter: '>=3.47.0'\n").unwrap();
+        std::fs::write(
+            &p6,
+            "environment:\n  sdk: '>=3.10.0 <4.0.0'\n  flutter: '>=3.47.0'\n",
+        )
+        .unwrap();
         assert!(supports_primary_constructors(&p6).unwrap());
 
         // 7. Dart >= 3.10.0 but Flutter < 3.47.0 (False - Fail Safe)
         let p7 = dir.path().join("p7.yaml");
-        std::fs::write(&p7, "environment:\n  sdk: '>=3.10.0 <4.0.0'\n  flutter: '>=3.22.0'\n").unwrap();
+        std::fs::write(
+            &p7,
+            "environment:\n  sdk: '>=3.10.0 <4.0.0'\n  flutter: '>=3.22.0'\n",
+        )
+        .unwrap();
         assert!(!supports_primary_constructors(&p7).unwrap());
 
         // 8. Missing environment (False)
@@ -241,4 +249,3 @@ mod tests {
         assert!(!supports_primary_constructors(&p10).unwrap());
     }
 }
-

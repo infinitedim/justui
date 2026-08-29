@@ -471,7 +471,10 @@ pub fn add_component(
         );
 
         if dart_target == crate::utils::env_resolver::DartTarget::Primary {
-            rewritten_content = crate::utils::constructor_transpiler::transpile_to_primary_constructor(&rewritten_content);
+            rewritten_content =
+                crate::utils::constructor_transpiler::transpile_to_primary_constructor(
+                    &rewritten_content,
+                );
         }
 
         let local_rewritten_hash = sha256_hex(rewritten_content.as_bytes());

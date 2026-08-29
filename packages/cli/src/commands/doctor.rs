@@ -120,9 +120,7 @@ pub fn perform_checks() -> Vec<DoctorCheck> {
     // 2. Dart SDK Check
     match Command::new("dart").arg("--version").output() {
         Ok(out) if out.status.success() => {
-            let version_str = String::from_utf8_lossy(&out.stdout)
-                .trim()
-                .to_string();
+            let version_str = String::from_utf8_lossy(&out.stdout).trim().to_string();
             let msg = if version_str.is_empty() {
                 String::from_utf8_lossy(&out.stderr).trim().to_string()
             } else {
@@ -132,7 +130,11 @@ pub fn perform_checks() -> Vec<DoctorCheck> {
                 category: "Toolchain".to_string(),
                 title: "Dart SDK".to_string(),
                 status: CheckStatus::Ok,
-                message: if msg.is_empty() { "Dart SDK active".to_string() } else { msg },
+                message: if msg.is_empty() {
+                    "Dart SDK active".to_string()
+                } else {
+                    msg
+                },
             });
         }
         _ => {
@@ -164,14 +166,17 @@ pub fn perform_checks() -> Vec<DoctorCheck> {
                     category: "Dependencies".to_string(),
                     title: "JustUI Packages".to_string(),
                     status: CheckStatus::Ok,
-                    message: "JustUI core/tokens dependencies detected in pubspec.yaml.".to_string(),
+                    message: "JustUI core/tokens dependencies detected in pubspec.yaml."
+                        .to_string(),
                 });
             } else {
                 checks.push(DoctorCheck {
                     category: "Dependencies".to_string(),
                     title: "JustUI Packages".to_string(),
                     status: CheckStatus::Warning,
-                    message: "just_ui_tokens or just_ui_core not listed in pubspec.yaml dependencies.".to_string(),
+                    message:
+                        "just_ui_tokens or just_ui_core not listed in pubspec.yaml dependencies."
+                            .to_string(),
                 });
             }
         }
@@ -257,6 +262,18 @@ pub fn perform_checks() -> Vec<DoctorCheck> {
                 });
             }
 
+            // Dart Target Check
+            let target_label = match config.dart_target {
+                crate::utils::env_resolver::DartTarget::Primary => "primary (Dart 3.10+)",
+                crate::utils::env_resolver::DartTarget::Standard => "standard",
+            };
+            checks.push(DoctorCheck {
+                category: "Configuration".to_string(),
+                title: "Dart Target".to_string(),
+                status: CheckStatus::Ok,
+                message: format!("Constructor syntax target: {}", target_label),
+            });
+
             // Check registry client reachability
             let client = RegistryClient::new(config.registry_url.clone());
             match client.fetch_index() {
@@ -278,7 +295,10 @@ pub fn perform_checks() -> Vec<DoctorCheck> {
                         category: "Registry".to_string(),
                         title: "Registry Index".to_string(),
                         status: CheckStatus::Warning,
-                        message: format!("Could not fetch index from \"{}\": {}", config.registry_url, e),
+                        message: format!(
+                            "Could not fetch index from \"{}\": {}",
+                            config.registry_url, e
+                        ),
                     });
                 }
             }
@@ -288,7 +308,8 @@ pub fn perform_checks() -> Vec<DoctorCheck> {
             category: "Configuration".to_string(),
             title: "justui.config.yaml".to_string(),
             status: CheckStatus::Warning,
-            message: "Project is uninitialized. Run \"justui init\" to generate configuration.".to_string(),
+            message: "Project is uninitialized. Run \"justui init\" to generate configuration."
+                .to_string(),
         });
     }
 

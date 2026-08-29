@@ -39,7 +39,10 @@ pub fn detect_local_fvm_version(project_root: &Path) -> Option<Version> {
     }
 
     // 3. Check .fvm/flutter_sdk/version
-    let version_file_path = project_root.join(".fvm").join("flutter_sdk").join("version");
+    let version_file_path = project_root
+        .join(".fvm")
+        .join("flutter_sdk")
+        .join("version");
     if let Ok(content) = std::fs::read_to_string(&version_file_path) {
         if let Some(version) = parse_min_version(&content) {
             return Some(version);
