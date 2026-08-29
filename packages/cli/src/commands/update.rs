@@ -175,6 +175,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
             auto_yes,
             &None,
             &config.preset,
+            config.dart_target,
         ) {
             logger::error(&format!("Failed to update \"{}\": {}", comp_name, e));
         }

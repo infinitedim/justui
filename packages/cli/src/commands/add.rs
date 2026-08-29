@@ -202,6 +202,7 @@ pub fn run(
             auto_yes,
             &pb_files,
             &config.preset,
+            config.dart_target,
         ) {
             Ok((stats, details)) => {
                 total_stats.merge(&stats);
@@ -371,6 +372,7 @@ pub fn add_component(
     auto_yes: bool,
     pb: &Option<indicatif::ProgressBar>,
     preset: &str,
+    dart_target: crate::utils::env_resolver::DartTarget,
 ) -> Result<(DryRunStats, Vec<OperationDetail>)> {
     if visited.contains(name) {
         return Ok((DryRunStats::new(), Vec::new()));
@@ -400,6 +402,7 @@ pub fn add_component(
             auto_yes,
             pb,
             preset,
+            dart_target,
         )?;
         stats.merge(&dep_stats);
         details.extend(dep_details);
@@ -455,7 +458,7 @@ pub fn add_component(
         let pkg_name = pubspec_editor::get_package_name(std::path::Path::new("pubspec.yaml"))
             .unwrap_or_else(|_| "flutter_app".to_string());
 
-        let rewritten_content = import_rewriter::rewrite(
+        let mut rewritten_content = import_rewriter::rewrite(
             &content,
             &file.path,
             &comp_name,
@@ -466,6 +469,10 @@ pub fn add_component(
             preset,
             &pkg_name,
         );
+
+        if dart_target == crate::utils::env_resolver::DartTarget::Primary {
+            rewritten_content = crate::utils::constructor_transpiler::transpile_to_primary_constructor(&rewritten_content);
+        }
 
         let local_rewritten_hash = sha256_hex(rewritten_content.as_bytes());
         let final_content = import_rewriter::inject_metadata(
