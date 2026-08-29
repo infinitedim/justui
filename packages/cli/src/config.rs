@@ -44,9 +44,7 @@ impl JustUIConfig {
                 "standard" => Some(crate::utils::env_resolver::DartTarget::Standard),
                 _ => None,
             })
-            .unwrap_or_else(|| {
-                crate::utils::env_resolver::resolve_dart_target(std::path::Path::new("."))
-            });
+            .unwrap_or(crate::utils::env_resolver::DartTarget::Standard);
 
         Self {
             components_dir,

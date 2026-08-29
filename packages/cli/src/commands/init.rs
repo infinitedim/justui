@@ -40,6 +40,7 @@ pub fn run(
     components_dir_arg: Option<String>,
     tokens_dir_arg: Option<String>,
     auto_yes: bool,
+    experimental: Option<String>,
 ) -> Result<()> {
     if !std::path::Path::new("pubspec.yaml").exists() {
         logger::error(
@@ -149,7 +150,30 @@ pub fn run(
     }
     let hex_code = format!("0xFF{}", clean_hex);
 
-    let dart_target = crate::utils::env_resolver::resolve_dart_target(std::path::Path::new("."));
+    let enable_auto_detect = experimental
+        .as_deref()
+        .map(|f| f == "auto-detect-flutter-version")
+        .unwrap_or(false);
+
+    if let Some(ref feat) = experimental {
+        if feat != "auto-detect-flutter-version" {
+            logger::warning(&format!(
+                "Unknown experimental feature: \"{}\". Ignoring.",
+                feat
+            ));
+        }
+    }
+
+    let dart_target = if enable_auto_detect {
+        let target = crate::utils::env_resolver::resolve_dart_target(std::path::Path::new("."));
+        logger::info(&format!(
+            "[experimental] Auto-detected dart_target: {:?}",
+            target
+        ));
+        target
+    } else {
+        crate::utils::env_resolver::DartTarget::Standard
+    };
 
     let config = JustUIConfig {
         components_dir: components_dir.clone(),
@@ -250,13 +274,78 @@ mod tests {
         let _guard = std::env::set_current_dir(temp_dir.path());
 
         // 1. Without pubspec -> fails cleanly
-        assert!(run(None, None, None, true).is_ok());
+        assert!(run(None, None, None, true, None).is_ok());
 
         // 2. With pubspec -> succeeds in auto_yes mode
         std::fs::write("pubspec.yaml", "name: test_app").unwrap();
-        assert!(run(Some("neo".to_string()), None, None, true).is_ok());
+        assert!(run(Some("neo".to_string()), None, None, true, None).is_ok());
 
         // 3. Already initialized -> warns and returns Ok
-        assert!(run(None, None, None, true).is_ok());
+        assert!(run(None, None, None, true, None).is_ok());
+    }
+
+    #[test]
+    fn test_init_with_experimental_auto_detect() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        std::fs::write(
+            "pubspec.yaml",
+            "name: test_app\nenvironment:\n  sdk: '>=3.10.0 <4.0.0'\n",
+        )
+        .unwrap();
+
+        let result = run(
+            Some("default".to_string()),
+            None,
+            None,
+            true,
+            Some("auto-detect-flutter-version".to_string()),
+        );
+        assert!(result.is_ok());
+
+        let config_content = std::fs::read_to_string("justui.config.yaml").unwrap();
+        assert!(config_content.contains("dart_target: primary"));
+    }
+
+    #[test]
+    fn test_init_without_experimental_defaults_standard() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        std::fs::write(
+            "pubspec.yaml",
+            "name: test_app\nenvironment:\n  sdk: '>=3.10.0 <4.0.0'\n",
+        )
+        .unwrap();
+
+        let result = run(Some("default".to_string()), None, None, true, None);
+        assert!(result.is_ok());
+
+        let config_content = std::fs::read_to_string("justui.config.yaml").unwrap();
+        assert!(config_content.contains("dart_target: standard"));
+    }
+
+    #[test]
+    fn test_init_unknown_experimental_warns() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        std::fs::write("pubspec.yaml", "name: test_app").unwrap();
+
+        let result = run(
+            Some("default".to_string()),
+            None,
+            None,
+            true,
+            Some("unknown-feature".to_string()),
+        );
+        assert!(result.is_ok());
+
+        let config_content = std::fs::read_to_string("justui.config.yaml").unwrap();
+        assert!(config_content.contains("dart_target: standard"));
     }
 }

@@ -116,20 +116,24 @@ mod tests {
 
         // 1. Confirm 'y' input
         let mut input = std::io::Cursor::new(b"y\n");
-        assert!(confirm_with_input(
-            &mut input, &mut out, "Continue?", false
-        ));
+        assert!(confirm_with_input(&mut input, &mut out, "Continue?", false));
 
         // 2. Confirm empty input fallback
         let mut input_empty = std::io::Cursor::new(b"\n");
         assert!(confirm_with_input(
-            &mut input_empty, &mut out, "Continue?", true
+            &mut input_empty,
+            &mut out,
+            "Continue?",
+            true
         ));
 
         // 3. Confirm 'n' input
         let mut input_n = std::io::Cursor::new(b"n\n");
         assert!(!confirm_with_input(
-            &mut input_n, &mut out, "Continue?", true
+            &mut input_n,
+            &mut out,
+            "Continue?",
+            true
         ));
 
         // 4. Ask custom input

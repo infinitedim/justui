@@ -31,7 +31,10 @@ pub fn run(component_name: Option<String>) -> Result<()> {
                 return Ok(());
             }
         }
-        return Err(anyhow::anyhow!("Component \"{}\" not found in registry", name));
+        return Err(anyhow::anyhow!(
+            "Component \"{}\" not found in registry",
+            name
+        ));
     }
 
     logger::stdout(&format!("JustUI CLI v{}", version));
