@@ -5,7 +5,9 @@ use std::collections::HashMap;
 /// If the code does not match the expected pattern or has syntax that cannot be safely converted,
 /// it returns the original code unchanged (fail-safe).
 pub fn transpile_to_primary_constructor(code: &str) -> String {
-    let class_regex = match Regex::new(r"class\s+([A-Z][a-zA-Z0-9_]*)\s*(?:(extends|with|implements)\s+([^{]+))?\s*\{") {
+    let class_regex = match Regex::new(
+        r"class\s+([A-Z][a-zA-Z0-9_]*)\s*(?:(extends|with|implements)\s+([^{]+))?\s*\{",
+    ) {
         Ok(r) => r,
         Err(_) => return code.to_string(),
     };
@@ -15,10 +17,11 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
         Err(_) => return code.to_string(),
     };
 
-    let constructor_regex = match Regex::new(r"const\s+([A-Z][a-zA-Z0-9_]*)\s*\(\s*\{([\s\S]*?)\}\s*\)\s*;") {
-        Ok(r) => r,
-        Err(_) => return code.to_string(),
-    };
+    let constructor_regex =
+        match Regex::new(r"const\s+([A-Z][a-zA-Z0-9_]*)\s*\(\s*\{([\s\S]*?)\}\s*\)\s*;") {
+            Ok(r) => r,
+            Err(_) => return code.to_string(),
+        };
 
     let mut result = code.to_string();
 
@@ -46,7 +49,10 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
         let mut fields: HashMap<String, String> = HashMap::new();
         for field_cap in field_regex.captures_iter(code) {
             if let (Some(type_match), Some(name_match)) = (field_cap.get(1), field_cap.get(2)) {
-                fields.insert(name_match.as_str().to_string(), type_match.as_str().to_string());
+                fields.insert(
+                    name_match.as_str().to_string(),
+                    type_match.as_str().to_string(),
+                );
             }
         }
 
@@ -104,7 +110,8 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
         }
 
         let full_class_match = class_cap.get(0).unwrap().as_str();
-        let primary_header = if let (Some(kw), Some(parent)) = (class_cap.get(2), class_cap.get(3)) {
+        let primary_header = if let (Some(kw), Some(parent)) = (class_cap.get(2), class_cap.get(3))
+        {
             format!(
                 "class {}({{\n{}\n}}) {} {} {{",
                 class_name,
