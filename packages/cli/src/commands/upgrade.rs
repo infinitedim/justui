@@ -364,6 +364,11 @@ fn extract_binary_from_zip(zip_bytes: &[u8], binary_name: &str) -> Result<Vec<u8
 #[allow(dead_code)]
 fn replace_current_executable(new_bytes: &[u8]) -> Result<()> {
     let current_exe = env::current_exe().context("Failed to get current executable path")?;
+    replace_executable_at_path(&current_exe, new_bytes)
+}
+
+#[allow(dead_code)]
+fn replace_executable_at_path(current_exe: &std::path::Path, new_bytes: &[u8]) -> Result<()> {
     let temp_exe = current_exe.with_extension("tmp_new");
 
     fs::write(&temp_exe, new_bytes).context("Failed to write temporary binary")?;
@@ -378,28 +383,34 @@ fn replace_current_executable(new_bytes: &[u8]) -> Result<()> {
     #[cfg(windows)]
     {
         let old_exe = current_exe.with_extension("old");
-        // On Windows, a running executable cannot be directly overwritten due to process file locking.
-        // Step 1: Rename the running binary to .old (Windows allows renaming running binaries).
         if old_exe.exists() {
             let _ = fs::remove_file(&old_exe);
         }
-        fs::rename(&current_exe, &old_exe)
+        fs::rename(current_exe, &old_exe)
             .context("Failed to rename running executable to .old")?;
 
-        // Step 2: Move the new binary into place.
-        if let Err(e) = fs::rename(&temp_exe, &current_exe) {
-            // Rollback if move fails
-            let _ = fs::rename(&old_exe, &current_exe);
+        if let Err(e) = fs::rename(&temp_exe, current_exe) {
+            let _ = fs::rename(&old_exe, current_exe);
             return Err(e).context("Failed to place new binary into executable path");
         }
 
-        // Clean up old binary (best-effort; OS will delete or allow removal after exit)
         let _ = fs::remove_file(&old_exe);
     }
 
     #[cfg(not(windows))]
     {
-        fs::rename(&temp_exe, &current_exe).context("Failed to replace binary")?;
+        let old_exe = current_exe.with_extension("old");
+        let _ = fs::remove_file(&old_exe);
+        if current_exe.exists() {
+            let _ = fs::rename(current_exe, &old_exe);
+        }
+        if let Err(e) = fs::rename(&temp_exe, current_exe) {
+            if old_exe.exists() {
+                let _ = fs::rename(&old_exe, current_exe);
+            }
+            return Err(e).context("Failed to replace binary");
+        }
+        let _ = fs::remove_file(&old_exe);
     }
 
     Ok(())
@@ -462,6 +473,66 @@ mod tests {
         // Extract using unpack_binary_bytes
         let extracted = unpack_binary_bytes(&gz_bytes, "justui").unwrap();
         assert_eq!(extracted, binary_content);
+
+        // Subpath match test: "bin/justui"
+        let mut tar_bytes_sub = vec![0u8; 1024];
+        tar_bytes_sub[0..10].copy_from_slice(b"bin/justui");
+        tar_bytes_sub[124..136].copy_from_slice(octal_size.as_bytes());
+        tar_bytes_sub[156] = b'0';
+        tar_bytes_sub[512..512 + binary_content.len()].copy_from_slice(binary_content);
+        let mut encoder_sub = GzEncoder::new(Vec::new(), Compression::default());
+        encoder_sub.write_all(&tar_bytes_sub).unwrap();
+        let gz_bytes_sub = encoder_sub.finish().unwrap();
+        let extracted_sub = unpack_binary_bytes(&gz_bytes_sub, "justui").unwrap();
+        assert_eq!(extracted_sub, binary_content);
+    }
+
+    #[test]
+    fn test_tar_gz_archive_corrupted_or_missing() {
+        use flate2::write::GzEncoder;
+        use flate2::Compression;
+        use std::io::Write;
+
+        // Tar with size beyond buffer
+        let mut tar_bytes = vec![0u8; 512];
+        tar_bytes[0..6].copy_from_slice(b"justui");
+        let octal_size = format!("{:011o} ", 10000);
+        tar_bytes[124..136].copy_from_slice(octal_size.as_bytes());
+        tar_bytes[156] = b'0';
+
+        let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
+        encoder.write_all(&tar_bytes).unwrap();
+        let gz_bytes = encoder.finish().unwrap();
+        assert!(extract_binary_from_tar_gz(&gz_bytes, "justui").is_err());
+    }
+
+    #[test]
+    fn test_unpack_zip_archive() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let binary_path = temp_dir.path().join("justui");
+        std::fs::write(&binary_path, b"zip binary contents").unwrap();
+
+        // Create zip using system zip command if available
+        let zip_status = std::process::Command::new("zip")
+            .arg("update.zip")
+            .arg("justui")
+            .current_dir(temp_dir.path())
+            .status();
+
+        if let Ok(status) = zip_status {
+            if status.success() {
+                let zip_bytes = std::fs::read(temp_dir.path().join("update.zip")).unwrap();
+                let extracted = unpack_binary_bytes(&zip_bytes, "justui").unwrap();
+                assert_eq!(extracted, b"zip binary contents");
+
+                // Missing binary in zip
+                assert!(unpack_binary_bytes(&zip_bytes, "missing_bin").is_err());
+            }
+        }
+
+        // Invalid zip bytes test
+        let invalid_zip = b"PK\x03\x04invalid_zip_header_bytes";
+        assert!(extract_binary_from_zip(invalid_zip, "justui").is_err());
     }
 
     #[test]
@@ -469,10 +540,20 @@ mod tests {
         // Empty bytes
         assert!(validate_binary_executable(&[]).is_err());
 
+        // Short bytes < 20
+        assert!(validate_binary_executable(b"\x7fELF_short").is_err());
+
         #[cfg(target_os = "linux")]
         {
             // Invalid ELF header
-            assert!(validate_binary_executable(b"not_an_elf_binary_file_header").is_err());
+            assert!(validate_binary_executable(b"not_an_elf_binary_file_header_long_enough").is_err());
+
+            // Invalid architecture (e_machine mismatch)
+            let mut bad_arch_elf = vec![0u8; 64];
+            bad_arch_elf[0..4].copy_from_slice(b"\x7fELF");
+            bad_arch_elf[18] = 0x00;
+            bad_arch_elf[19] = 0x00;
+            assert!(validate_binary_executable(&bad_arch_elf).is_err());
 
             // Valid ELF header matching current arch
             let mut valid_elf = vec![0u8; 64];
@@ -519,9 +600,8 @@ mod tests {
     }
 
     #[test]
-
     fn test_process_release_update_matrix() {
-        // 1. Up-to-date version
+        // 1. Up-to-date version with force=false
         let up_to_date_release = GitHubRelease {
             tag_name: "v0.7.8".to_string(),
             html_url: "https://example.com/rel".to_string(),
@@ -530,15 +610,37 @@ mod tests {
         };
         assert!(process_release_update(&up_to_date_release, "0.7.8", false, false).is_ok());
 
-        // 2. Newer version check_only = true
+        // 1b. Up-to-date version with force=true
+        assert!(process_release_update(&up_to_date_release, "0.7.8", false, true).is_ok());
+
+        // 2. Newer version check_only = true with long release notes body (>10 lines)
+        let long_body = (0..15).map(|i| format!("Line {}", i)).collect::<Vec<_>>().join("\n");
         let new_release = GitHubRelease {
             tag_name: "v9.9.9".to_string(),
             html_url: "https://example.com/rel9".to_string(),
-            body: Some("Line 1\nLine 2".to_string()),
-            assets: vec![GitHubAsset {
-                name: "justui-x86_64-unknown-linux-gnu.tar.gz".to_string(),
-                browser_download_url: "https://example.com/dl".to_string(),
-            }],
+            body: Some(long_body),
+            assets: vec![
+                GitHubAsset {
+                    name: "justui-x86_64-unknown-linux-gnu.tar.gz".to_string(),
+                    browser_download_url: "https://example.com/dl".to_string(),
+                },
+                GitHubAsset {
+                    name: "justui-aarch64-apple-darwin.tar.gz".to_string(),
+                    browser_download_url: "https://example.com/dl_mac".to_string(),
+                },
+                GitHubAsset {
+                    name: "justui-x86_64-pc-windows-msvc.zip".to_string(),
+                    browser_download_url: "https://example.com/dl_win".to_string(),
+                },
+                GitHubAsset {
+                    name: "justui-linux-amd64.tar.gz".to_string(),
+                    browser_download_url: "https://example.com/dl_amd64".to_string(),
+                },
+                GitHubAsset {
+                    name: "justui-darwin-arm64.tar.gz".to_string(),
+                    browser_download_url: "https://example.com/dl_arm64".to_string(),
+                },
+            ],
         };
         assert!(process_release_update(&new_release, "0.7.8", true, false).is_ok());
 
@@ -550,7 +652,10 @@ mod tests {
             tag_name: "v9.9.9".to_string(),
             html_url: "https://example.com/rel9".to_string(),
             body: None,
-            assets: vec![],
+            assets: vec![GitHubAsset {
+                name: "other-platform-asset.tar.gz".to_string(),
+                browser_download_url: "https://example.com/dl_other".to_string(),
+            }],
         };
         assert!(process_release_update(&no_asset_release, "0.7.8", false, false).is_ok());
 
@@ -562,5 +667,25 @@ mod tests {
             assets: vec![],
         };
         assert!(process_release_update(&invalid_semver_release, "0.7.8", false, false).is_ok());
+    }
+
+    #[test]
+    fn test_run_command_execution() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        assert!(run(true, false).is_ok());
+        assert!(run(false, false).is_ok());
+    }
+
+    #[test]
+    fn test_replace_executable_at_path() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let exe_path = temp_dir.path().join("dummy_binary");
+        std::fs::write(&exe_path, b"old_binary_content").unwrap();
+
+        let res = replace_executable_at_path(&exe_path, b"new_binary_content");
+        assert!(res.is_ok());
+
+        let new_content = std::fs::read(&exe_path).unwrap();
+        assert_eq!(new_content, b"new_binary_content");
     }
 }

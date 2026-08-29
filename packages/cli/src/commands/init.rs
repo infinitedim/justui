@@ -244,6 +244,18 @@ pub fn run(
 mod tests {
     use super::*;
 
+    struct DirGuard(std::path::PathBuf);
+    impl Drop for DirGuard {
+        fn drop(&mut self) {
+            let _ = std::env::set_current_dir(&self.0);
+        }
+    }
+    fn set_dir<P: AsRef<std::path::Path>>(p: P) -> DirGuard {
+        let orig = std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("/home/yourblooo/development/justui"));
+        let _ = std::env::set_current_dir(p);
+        DirGuard(orig)
+    }
+
     #[test]
     fn test_init_helpers() {
         assert_eq!(normalize_preset("neo"), "neobrutalism");
@@ -269,9 +281,9 @@ mod tests {
 
     #[test]
     fn test_init_run_execution() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = set_dir(temp_dir.path());
 
         // 1. Without pubspec -> fails cleanly
         assert!(run(None, None, None, true, None).is_ok());
@@ -286,9 +298,9 @@ mod tests {
 
     #[test]
     fn test_init_with_experimental_auto_detect() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = set_dir(temp_dir.path());
 
         std::fs::write(
             "pubspec.yaml",
@@ -311,9 +323,9 @@ mod tests {
 
     #[test]
     fn test_init_without_experimental_defaults_standard() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = set_dir(temp_dir.path());
 
         std::fs::write(
             "pubspec.yaml",
@@ -330,9 +342,9 @@ mod tests {
 
     #[test]
     fn test_init_unknown_experimental_warns() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = set_dir(temp_dir.path());
 
         std::fs::write("pubspec.yaml", "name: test_app").unwrap();
 
