@@ -346,8 +346,11 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
                 border: presetTokens.showsDefaultBorder
                     ? .all(color: borderColor, width: borderWidth)
                     : (borderWidth > 0
-                        ? .all(color: colors.borderDefault, width: borderWidth)
-                        : null),
+                          ? .all(
+                              color: colors.borderDefault,
+                              width: borderWidth,
+                            )
+                          : null),
                 boxShadow: presetTokens.resolveShadow(
                   theme.shadows,
                   .md,

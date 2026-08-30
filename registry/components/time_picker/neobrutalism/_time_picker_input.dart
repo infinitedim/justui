@@ -82,8 +82,9 @@ class _TimePickerInputState extends State<TimePickerInput> {
     _currentTime = widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
 
     _hourController = TextEditingController(text: _formatHour(_currentTime));
-    _minuteController =
-        TextEditingController(text: _formatMinute(_currentTime));
+    _minuteController = TextEditingController(
+      text: _formatMinute(_currentTime),
+    );
 
     _hourFocusNode = FocusNode();
     _minuteFocusNode = FocusNode();
@@ -163,7 +164,9 @@ class _TimePickerInputState extends State<TimePickerInput> {
       _applyTimeChange(_currentTime.replacing(hour: validHour));
     } else {
       if (parsed == null) {
-        validHour = _currentTime.hourOfPeriod == 0 ? 12 : _currentTime.hourOfPeriod;
+        validHour = _currentTime.hourOfPeriod == 0
+            ? 12
+            : _currentTime.hourOfPeriod;
       } else {
         validHour = parsed.clamp(1, 12);
       }
@@ -211,9 +214,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
         }
       } else {
         if (val >= 1 && val <= 12) {
-          _applyTimeChange(
-            _currentTime.withHour12(val, _currentTime.period),
-          );
+          _applyTimeChange(_currentTime.withHour12(val, _currentTime.period));
         }
       }
 
@@ -398,8 +399,11 @@ class _TimePickerInputState extends State<TimePickerInput> {
     final activeFg = widget.style?.selectedTextColor ?? colors.textInverse;
     final inactiveBg = colors.muted;
     final inactiveFg = widget.style?.dialTextColor ?? colors.textSecondary;
-    final borderColor = widget.style?.borderColor ??
-        (presetTokens.showsDefaultBorder ? colors.borderDefault : colors.borderDefault);
+    final borderColor =
+        widget.style?.borderColor ??
+        (presetTokens.showsDefaultBorder
+            ? colors.borderDefault
+            : colors.borderDefault);
 
     final resolvedRadius = presetTokens.resolveBorderRadius(radius);
 
@@ -409,7 +413,9 @@ class _TimePickerInputState extends State<TimePickerInput> {
         borderRadius: resolvedRadius,
         border: Border.all(
           color: borderColor,
-          width: presetTokens.showsDefaultBorder ? presetTokens.borderWidth : 1.0,
+          width: presetTokens.showsDefaultBorder
+              ? presetTokens.borderWidth
+              : 1.0,
         ),
       ),
       child: Column(
