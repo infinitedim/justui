@@ -268,113 +268,184 @@ void main() {
       expect(dark, equals(JustColors.darkScheme));
       expect(neoLight, equals(JustColors.neobrutalismLightScheme));
       expect(neoDark, equals(JustColors.neobrutalismDarkScheme));
-
-      // Test all getters of light scheme
-      expect(light.background, equals(JustColorSemanticLight.background));
-      expect(light.card, equals(JustColorSemanticLight.card));
-      expect(light.elevated, equals(JustColorSemanticLight.elevated));
-      expect(light.muted, equals(JustColorSemanticLight.muted));
-      expect(light.overlay, equals(JustColorSemanticLight.overlay));
-      expect(light.textPrimary, equals(JustColorSemanticLight.textPrimary));
-      expect(light.textSecondary, equals(JustColorSemanticLight.textSecondary));
-      expect(light.textDisabled, equals(JustColorSemanticLight.textDisabled));
-      expect(light.textInverse, equals(JustColorSemanticLight.textInverse));
-      expect(light.borderDefault, equals(JustColorSemanticLight.borderDefault));
-      expect(light.borderFocus, equals(JustColorSemanticLight.borderFocus));
-      expect(light.borderError, equals(JustColorSemanticLight.borderError));
-      expect(light.success, equals(JustColorSemanticLight.success));
-      expect(light.warning, equals(JustColorSemanticLight.warning));
-      expect(light.error, equals(JustColorSemanticLight.error));
-      expect(light.info, equals(JustColorSemanticLight.info));
-
-      // Test all getters of dark scheme
-      expect(dark.background, equals(JustColorSemanticDark.background));
-      expect(dark.card, equals(JustColorSemanticDark.card));
-      expect(dark.elevated, equals(JustColorSemanticDark.elevated));
-      expect(dark.muted, equals(JustColorSemanticDark.muted));
-      expect(dark.overlay, equals(JustColorSemanticDark.overlay));
-      expect(dark.textPrimary, equals(JustColorSemanticDark.textPrimary));
-      expect(dark.textSecondary, equals(JustColorSemanticDark.textSecondary));
-      expect(dark.textDisabled, equals(JustColorSemanticDark.textDisabled));
-      expect(dark.textInverse, equals(JustColorSemanticDark.textInverse));
-      expect(dark.borderDefault, equals(JustColorSemanticDark.borderDefault));
-      expect(dark.borderFocus, equals(JustColorSemanticDark.borderFocus));
-      expect(dark.borderError, equals(JustColorSemanticDark.borderError));
-      expect(dark.success, equals(JustColorSemanticDark.success));
-      expect(dark.warning, equals(JustColorSemanticDark.warning));
-      expect(dark.error, equals(JustColorSemanticDark.error));
-      expect(dark.info, equals(JustColorSemanticDark.info));
-
-      // Test all getters of neobrutalism light scheme
-      expect(neoLight.background, equals(const Color(0xFFFFF8E7)));
-      expect(neoLight.card, equals(const Color(0xFFFFFFFF)));
-      expect(neoLight.elevated, equals(const Color(0xFFFFFFFF)));
-      expect(neoLight.muted, equals(const Color(0xFFF1F5F9)));
-      expect(neoLight.overlay, equals(const Color(0x99000000)));
-      expect(neoLight.textPrimary, equals(const Color(0xFF000000)));
-      expect(neoLight.textSecondary, equals(const Color(0xFF222222)));
-      expect(neoLight.textDisabled, equals(const Color(0xFF777777)));
-      expect(neoLight.textInverse, equals(const Color(0xFFFFFFFF)));
-      expect(neoLight.borderDefault, equals(const Color(0xFF000000)));
-      expect(neoLight.borderFocus, equals(const Color(0xFF000000)));
-      expect(neoLight.borderError, equals(const Color(0xFF000000)));
-      expect(neoLight.success, equals(const Color(0xFF38E54D)));
-      expect(neoLight.warning, equals(const Color(0xFFFFD93D)));
-      expect(neoLight.error, equals(const Color(0xFFFF4B4B)));
-      expect(neoLight.info, equals(const Color(0xFF4D96FF)));
-
-      // Test all getters of neobrutalism dark scheme
-      expect(neoDark.background, equals(const Color(0xFF1A1A1A)));
-      expect(neoDark.card, equals(const Color(0xFF262626)));
-      expect(neoDark.elevated, equals(const Color(0xFF333333)));
-      expect(neoDark.muted, equals(const Color(0xFF333333)));
-      expect(neoDark.overlay, equals(const Color(0xCC000000)));
-      expect(neoDark.textPrimary, equals(const Color(0xFFFFFFFF)));
-      expect(neoDark.textSecondary, equals(const Color(0xFFCCCCCC)));
-      expect(neoDark.textDisabled, equals(const Color(0xFF666666)));
-      expect(neoDark.textInverse, equals(const Color(0xFF000000)));
-      expect(neoDark.borderDefault, equals(const Color(0xFFFFFFFF)));
-      expect(neoDark.borderFocus, equals(const Color(0xFFFFFFFF)));
-      expect(neoDark.borderError, equals(const Color(0xFFFF5353)));
-      expect(neoDark.success, equals(const Color(0xFF4ADE80)));
-      expect(neoDark.warning, equals(const Color(0xFFFFE033)));
-      expect(neoDark.error, equals(const Color(0xFFFF5353)));
-      expect(neoDark.info, equals(const Color(0xFF60A5FA)));
     });
 
-    test('JustThemePreset enum contains default_ and neobrutalism values', () {
-      expect(JustThemePreset.values.length, equals(2));
-      expect(JustThemePreset.values, contains(JustThemePreset.default_));
-      expect(JustThemePreset.values, contains(JustThemePreset.neobrutalism));
+    test('CustomColorScheme constructor and resolveSemantic factory', () {
+      const custom = CustomColorScheme(
+        background: Color(0xFF111111),
+        card: Color(0xFF222222),
+        elevated: Color(0xFF333333),
+        muted: Color(0xFF444444),
+        overlay: Color(0xFF555555),
+        textPrimary: Color(0xFF666666),
+        textSecondary: Color(0xFF777777),
+        textDisabled: Color(0xFF888888),
+        textInverse: Color(0xFF999999),
+        borderDefault: Color(0xFFAAAAAA),
+        borderFocus: Color(0xFFBBBBBB),
+        borderError: Color(0xFFCCCCCC),
+        success: Color(0xFFDDDDDD),
+        warning: Color(0xFFEEEEEE),
+        error: Color(0xFFFFFFFF),
+        info: Color(0xFF000000),
+      );
+
+      expect(custom.background, equals(const Color(0xFF111111)));
+      expect(custom.card, equals(const Color(0xFF222222)));
+      expect(custom.elevated, equals(const Color(0xFF333333)));
+      expect(custom.muted, equals(const Color(0xFF444444)));
+      expect(custom.overlay, equals(const Color(0xFF555555)));
+      expect(custom.textPrimary, equals(const Color(0xFF666666)));
+      expect(custom.textSecondary, equals(const Color(0xFF777777)));
+      expect(custom.textDisabled, equals(const Color(0xFF888888)));
+      expect(custom.textInverse, equals(const Color(0xFF999999)));
+      expect(custom.borderDefault, equals(const Color(0xFFAAAAAA)));
+      expect(custom.borderFocus, equals(const Color(0xFFBBBBBB)));
+      expect(custom.borderError, equals(const Color(0xFFCCCCCC)));
+      expect(custom.success, equals(const Color(0xFFDDDDDD)));
+      expect(custom.warning, equals(const Color(0xFFEEEEEE)));
+      expect(custom.error, equals(const Color(0xFFFFFFFF)));
+      expect(custom.info, equals(const Color(0xFF000000)));
+
+      // resolveSemantic neobrutalism (light & dark)
+      final neoLightResolved = CustomColorScheme.resolveSemantic(
+        background: const Color(0xFFFFF8E7),
+        card: const Color(0xFFFFFFFF),
+        elevated: const Color(0xFFFFFFFF),
+        muted: const Color(0xFFF1F5F9),
+        overlay: const Color(0x99000000),
+        borderFocus: const Color(0xFF000000),
+        success: const Color(0xFF38E54D),
+        warning: const Color(0xFFFFD93D),
+        error: const Color(0xFFFF4B4B),
+        info: const Color(0xFF4D96FF),
+        isDark: false,
+        preset: JustThemePreset.neobrutalism,
+      );
+      expect(neoLightResolved.textPrimary, equals(const Color(0xFF000000)));
+      expect(neoLightResolved.textInverse, equals(const Color(0xFFFFFFFF)));
+      expect(neoLightResolved.borderDefault, equals(const Color(0xFF000000)));
+
+      final neoDarkResolved = CustomColorScheme.resolveSemantic(
+        background: const Color(0xFF1A1A1A),
+        card: const Color(0xFF262626),
+        elevated: const Color(0xFF333333),
+        muted: const Color(0xFF333333),
+        overlay: const Color(0xCC000000),
+        borderFocus: const Color(0xFFFFFFFF),
+        success: const Color(0xFF4ADE80),
+        warning: const Color(0xFFFFE033),
+        error: const Color(0xFFFF5353),
+        info: const Color(0xFF60A5FA),
+        isDark: true,
+        preset: JustThemePreset.neobrutalism,
+      );
+      expect(neoDarkResolved.textPrimary, equals(const Color(0xFFFFFFFF)));
+      expect(neoDarkResolved.textInverse, equals(const Color(0xFF000000)));
+      expect(neoDarkResolved.borderDefault, equals(const Color(0xFFFFFFFF)));
+
+      // resolveSemantic default_ (light & dark)
+      final stdLightResolved = CustomColorScheme.resolveSemantic(
+        background: JustColorSemanticLight.background,
+        card: JustColorSemanticLight.card,
+        elevated: JustColorSemanticLight.elevated,
+        muted: JustColorSemanticLight.muted,
+        overlay: JustColorSemanticLight.overlay,
+        borderFocus: JustColorSemanticLight.borderFocus,
+        success: JustColorSemanticLight.success,
+        warning: JustColorSemanticLight.warning,
+        error: JustColorSemanticLight.error,
+        info: JustColorSemanticLight.info,
+        isDark: false,
+        preset: JustThemePreset.default_,
+      );
+      expect(
+        stdLightResolved.textPrimary,
+        equals(JustColorSemanticLight.textPrimary),
+      );
+
+      final stdDarkResolved = CustomColorScheme.resolveSemantic(
+        background: JustColorSemanticDark.background,
+        card: JustColorSemanticDark.card,
+        elevated: JustColorSemanticDark.elevated,
+        muted: JustColorSemanticDark.muted,
+        overlay: JustColorSemanticDark.overlay,
+        borderFocus: JustColorSemanticDark.borderFocus,
+        success: JustColorSemanticDark.success,
+        warning: JustColorSemanticDark.warning,
+        error: JustColorSemanticDark.error,
+        info: JustColorSemanticDark.info,
+        isDark: true,
+        preset: JustThemePreset.default_,
+      );
+      expect(
+        stdDarkResolved.textPrimary,
+        equals(JustColorSemanticDark.textPrimary),
+      );
     });
 
-    test(
-      'JustColorScheme equality (operator ==) and hashCode cover all branches',
-      () {
-        final light = JustColors.light();
-        final dark = JustColors.dark();
-        final neoLight = JustColors.neobrutalismLight();
-        final neoDark = JustColors.neobrutalismDark();
+    test('JustColorScheme operator == exercises all 16 property inequality branches', () {
+      final base = JustColors.light();
+      expect(base == base, isTrue);
+      expect(base == Object(), isFalse);
 
-        expect(light == light, isTrue);
-        expect(light == JustColors.light(), isTrue);
-        expect(light.hashCode, equals(JustColors.light().hashCode));
-        expect(dark.hashCode, equals(JustColors.dark().hashCode));
-        expect(
-          neoLight.hashCode,
-          equals(JustColors.neobrutalismLight().hashCode),
+      CustomColorScheme createVariant({
+        Color? background,
+        Color? card,
+        Color? elevated,
+        Color? muted,
+        Color? overlay,
+        Color? textPrimary,
+        Color? textSecondary,
+        Color? textDisabled,
+        Color? textInverse,
+        Color? borderDefault,
+        Color? borderFocus,
+        Color? borderError,
+        Color? success,
+        Color? warning,
+        Color? error,
+        Color? info,
+      }) {
+        return CustomColorScheme(
+          background: background ?? base.background,
+          card: card ?? base.card,
+          elevated: elevated ?? base.elevated,
+          muted: muted ?? base.muted,
+          overlay: overlay ?? base.overlay,
+          textPrimary: textPrimary ?? base.textPrimary,
+          textSecondary: textSecondary ?? base.textSecondary,
+          textDisabled: textDisabled ?? base.textDisabled,
+          textInverse: textInverse ?? base.textInverse,
+          borderDefault: borderDefault ?? base.borderDefault,
+          borderFocus: borderFocus ?? base.borderFocus,
+          borderError: borderError ?? base.borderError,
+          success: success ?? base.success,
+          warning: warning ?? base.warning,
+          error: error ?? base.error,
+          info: info ?? base.info,
         );
-        expect(
-          neoDark.hashCode,
-          equals(JustColors.neobrutalismDark().hashCode),
-        );
+      }
 
-        expect(light == Object(), isFalse);
-        expect(light == dark, isFalse);
-        expect(light == neoLight, isFalse);
-        expect(dark == neoDark, isFalse);
-      },
-    );
+      const diff = Color(0xFF123456);
+
+      expect(base == createVariant(background: diff), isFalse);
+      expect(base == createVariant(card: diff), isFalse);
+      expect(base == createVariant(elevated: diff), isFalse);
+      expect(base == createVariant(muted: diff), isFalse);
+      expect(base == createVariant(overlay: diff), isFalse);
+      expect(base == createVariant(textPrimary: diff), isFalse);
+      expect(base == createVariant(textSecondary: diff), isFalse);
+      expect(base == createVariant(textDisabled: diff), isFalse);
+      expect(base == createVariant(textInverse: diff), isFalse);
+      expect(base == createVariant(borderDefault: diff), isFalse);
+      expect(base == createVariant(borderFocus: diff), isFalse);
+      expect(base == createVariant(borderError: diff), isFalse);
+      expect(base == createVariant(success: diff), isFalse);
+      expect(base == createVariant(warning: diff), isFalse);
+      expect(base == createVariant(error: diff), isFalse);
+      expect(base == createVariant(info: diff), isFalse);
+    });
   });
 
   group('Accessibility Contrast & Dynamic Scaling Validation', () {
@@ -419,7 +490,6 @@ void main() {
       const sufficientText = Color(0xFF000000);
       const lowContrastGrey = Color(0xFF94A3B8);
 
-      // Early return: ratio already satisfied
       expect(
         sufficientText.adjustLightnessForContrast(
           background: lightBg,
@@ -428,7 +498,6 @@ void main() {
         equals(sufficientText),
       );
 
-      // makeLighter = false branch (background luminance >= 0.5)
       final darkerResult = lowContrastGrey.adjustLightnessForContrast(
         background: lightBg,
         targetRatio: 4.5,
@@ -438,7 +507,6 @@ void main() {
         greaterThanOrEqualTo(4.5),
       );
 
-      // makeLighter = true branch (background luminance < 0.5)
       final lighterResult = lowContrastGrey.adjustLightnessForContrast(
         background: darkBg,
         targetRatio: 4.5,

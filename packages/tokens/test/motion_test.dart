@@ -14,7 +14,7 @@ void main() {
       expect(JustDuration.slower.inMilliseconds, equals(600));
     });
 
-    test('JustDuration.scaleForDistance handles zero, negative, mid, and max clamped distances', () {
+    test('JustDuration.scaleForDistance handles zero, negative, default speed, mid, and max clamped distances', () {
       expect(
         JustDuration.scaleForDistance(
           0,
@@ -31,6 +31,7 @@ void main() {
         ),
         equals(JustDuration.fast),
       );
+      // Default speedPixelsPerMs = 1.5
       expect(
         JustDuration.scaleForDistance(
           150.0,
@@ -63,6 +64,12 @@ void main() {
       expect(JustCurves.exit, isNotNull);
       expect(JustCurves.spring, isNotNull);
     });
+
+    test('JustSpring physics constants are valid', () {
+      expect(JustSpring.snappy.stiffness, equals(400.0));
+      expect(JustSpring.smooth.stiffness, equals(220.0));
+      expect(JustSpring.expressive.stiffness, equals(180.0));
+    });
   });
 
   group('JustMotionProfile Validation', () {
@@ -85,6 +92,55 @@ void main() {
       expect(red.normal, equals(Duration.zero));
       expect(red.slow, equals(Duration.zero));
       expect(red.slower, equals(Duration.zero));
+
+      // Test all operator == property inequality branches
+      JustMotionProfile createVariant({
+        Duration? instant,
+        Duration? fast,
+        Duration? normal,
+        Duration? slow,
+        Duration? slower,
+        Curve? defaultCurve,
+        Curve? enter,
+        Curve? exit,
+        Curve? spring,
+        Curve? sharp,
+        SpringDescription? springPhysics,
+      }) {
+        return JustMotionProfile(
+          instant: instant ?? std.instant,
+          fast: fast ?? std.fast,
+          normal: normal ?? std.normal,
+          slow: slow ?? std.slow,
+          slower: slower ?? std.slower,
+          defaultCurve: defaultCurve ?? std.defaultCurve,
+          enter: enter ?? std.enter,
+          exit: exit ?? std.exit,
+          spring: spring ?? std.spring,
+          sharp: sharp ?? std.sharp,
+          springPhysics: springPhysics ?? std.springPhysics,
+        );
+      }
+
+      const diffDuration = Duration(milliseconds: 999);
+      const diffCurve = Curves.bounceIn;
+      const diffPhysics = SpringDescription(
+        mass: 2.0,
+        stiffness: 200,
+        damping: 20,
+      );
+
+      expect(std == createVariant(instant: diffDuration), isFalse);
+      expect(std == createVariant(fast: diffDuration), isFalse);
+      expect(std == createVariant(normal: diffDuration), isFalse);
+      expect(std == createVariant(slow: diffDuration), isFalse);
+      expect(std == createVariant(slower: diffDuration), isFalse);
+      expect(std == createVariant(defaultCurve: diffCurve), isFalse);
+      expect(std == createVariant(enter: diffCurve), isFalse);
+      expect(std == createVariant(exit: diffCurve), isFalse);
+      expect(std == createVariant(spring: diffCurve), isFalse);
+      expect(std == createVariant(sharp: diffCurve), isFalse);
+      expect(std == createVariant(springPhysics: diffPhysics), isFalse);
 
       await tester.pumpWidget(
         MediaQuery(
