@@ -2,6 +2,9 @@ import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_checkbox_style.dart';
 
+/// Alias for [JustCheckboxTheme] for convention parity.
+typedef JustCheckboxThemeData = JustCheckboxTheme;
+
 /// Global theme configuration for checkboxes, extending Flutter's [ThemeExtension].
 class const JustCheckboxTheme({
   /// Base style override for checkboxes.
@@ -24,6 +27,20 @@ class const JustCheckboxTheme({
   @override
   JustCheckboxTheme lerp(ThemeExtension<JustCheckboxTheme>? other, double t) {
     if (other is! JustCheckboxTheme) return this;
-    return t < 0.5 ? this : other;
+    return JustCheckboxTheme(
+      style: JustCheckboxStyle.lerp(style, other.style, t),
+      enableHaptic: t < 0.5 ? enableHaptic : other.enableHaptic,
+    );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JustCheckboxTheme &&
+          runtimeType == other.runtimeType &&
+          style == other.style &&
+          enableHaptic == other.enableHaptic;
+
+  @override
+  int get hashCode => Object.hash(style, enableHaptic);
 }
