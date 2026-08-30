@@ -195,4 +195,117 @@ mod tests {
 
         assert!(run(true).is_ok());
     }
+
+    #[test]
+    fn test_update_invalid_yaml_config() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        std::fs::write(
+            temp_dir.path().join("justui.config.yaml"),
+            "invalid: [yaml: :",
+        )
+        .unwrap();
+        assert!(run(true).is_ok());
+    }
+
+    #[test]
+    fn test_update_missing_components_dir_and_empty_components() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        let reg_dir = temp_dir.path().join("registry");
+        std::fs::create_dir_all(&reg_dir).unwrap();
+        std::fs::write(
+            reg_dir.join("index.json"),
+            r#"{"version":"1.0.0","presets":["default"],"components":[]}"#,
+        )
+        .unwrap();
+
+        let comp_dir = temp_dir.path().join("lib/components");
+
+        let config_yaml = format!(
+            "registry_url: {}\ncomponents_dir: {}\n",
+            reg_dir.to_string_lossy(),
+            comp_dir.to_string_lossy()
+        );
+        std::fs::write(temp_dir.path().join("justui.config.yaml"), config_yaml).unwrap();
+
+        // 1. Missing components_dir
+        assert!(run(true).is_ok());
+
+        // 2. Empty components_dir (no subdirectories)
+        std::fs::create_dir_all(&comp_dir).unwrap();
+        assert!(run(true).is_ok());
+    }
+
+    #[test]
+    fn test_update_outdated_component_auto_yes() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        let reg_dir = temp_dir.path().join("registry");
+        std::fs::create_dir_all(&reg_dir).unwrap();
+        let file_content = "// new button content";
+        std::fs::write(reg_dir.join("just_button.dart"), file_content).unwrap();
+        let new_hash = sha256_hex(file_content.as_bytes());
+
+        std::fs::write(
+            reg_dir.join("index.json"),
+            format!(
+                r#"{{
+                    "version": "1.0.0",
+                    "presets": ["default"],
+                    "components": [
+                        {{
+                            "name": "button",
+                            "version": "1.1.0",
+                            "description": "Button",
+                            "category": "primitive",
+                            "internal": false,
+                            "supported_presets": ["default"],
+                            "registry_dependencies": [],
+                            "pub_dependencies": {{}},
+                            "files": {{
+                                "default": [
+                                    {{
+                                        "name": "just_button.dart",
+                                        "path": "just_button.dart",
+                                        "checksum": "sha256:{}"
+                                    }}
+                                ]
+                            }}
+                        }}
+                    ]
+                }}"#,
+                new_hash
+            ),
+        )
+        .unwrap();
+
+        let comp_dir = temp_dir.path().join("lib/components");
+        let installed_button_dir = comp_dir.join("button");
+        std::fs::create_dir_all(&installed_button_dir).unwrap();
+
+        let local_file = installed_button_dir.join("just_button.dart");
+        std::fs::write(&local_file, "// old button content").unwrap();
+
+        let config_yaml = format!(
+            "registry_url: {}\ncomponents_dir: {}\ntokens_dir: {}\nshared_dir: {}\n",
+            reg_dir.to_string_lossy(),
+            comp_dir.to_string_lossy(),
+            temp_dir.path().join("lib/tokens").to_string_lossy(),
+            temp_dir.path().join("lib/shared").to_string_lossy(),
+        );
+        std::fs::write(temp_dir.path().join("justui.config.yaml"), config_yaml).unwrap();
+
+        // 1. Run update with auto_yes = true (outdated detected and updated)
+        assert!(run(true).is_ok());
+
+        // 2. Run update again (now up-to-date)
+        assert!(run(true).is_ok());
+    }
 }

@@ -83,156 +83,182 @@ pub fn run(
             component_name
         ));
 
-    let target_dir = if component.category == "tokens" || component.category == "core" {
-        config.tokens_dir.clone()
-    } else if component.name == "_shared_theme_provider" {
-        "lib/theme".to_string()
-    } else if component.internal {
-        config.shared_dir.clone()
-    } else {
-        format!("{}/{}", config.components_dir, component.name)
-    };
-
-    let mut files_status: Vec<DiffFileStatus> = Vec::new();
-
-    for file in component.files_for_preset(&config.preset) {
-        let local_file_name = if component.name == "_shared_theme_provider" {
-            file.name.clone()
+        let target_dir = if component.category == "tokens" || component.category == "core" {
+            config.tokens_dir.clone()
+        } else if component.name == "_shared_theme_provider" {
+            "lib/theme".to_string()
         } else if component.internal {
-            import_rewriter::normalize_shared_file_name(&file.name)
+            config.shared_dir.clone()
         } else {
-            file.name.clone()
+            format!("{}/{}", config.components_dir, component.name)
         };
-        let target_path = format!("{}/{}", target_dir, local_file_name);
-        let local_file_path = std::path::Path::new(&target_path);
-        let expected_hash = file.checksum.replace("sha256:", "").trim().to_string();
 
-        if !local_file_path.exists() {
-            files_status.push(DiffFileStatus {
-                file: file.clone(),
-                target_path: target_path.clone(),
-                status_type: DiffStatusType::Missing,
-                local_content: String::new(),
-                expected_hash,
-                remote_content: None,
-            });
-            continue;
-        }
+        let mut files_status: Vec<DiffFileStatus> = Vec::new();
 
-        let raw = std::fs::read_to_string(local_file_path).unwrap_or_default();
-        let local_content = raw.replace("\r\n", "\n");
+        for file in component.files_for_preset(&config.preset) {
+            let local_file_name = if component.name == "_shared_theme_provider" {
+                file.name.clone()
+            } else if component.internal {
+                import_rewriter::normalize_shared_file_name(&file.name)
+            } else {
+                file.name.clone()
+            };
+            let target_path = format!("{}/{}", target_dir, local_file_name);
+            let local_file_path = std::path::Path::new(&target_path);
+            let expected_hash = file.checksum.replace("sha256:", "").trim().to_string();
 
-        let status = if let Some(meta) = import_rewriter::parse_metadata(&local_content) {
-            let local_clean = import_rewriter::strip_metadata(&local_content);
-            let current_local_hash = sha256_hex(local_clean.as_bytes());
+            if !local_file_path.exists() {
+                files_status.push(DiffFileStatus {
+                    file: file.clone(),
+                    target_path: target_path.clone(),
+                    status_type: DiffStatusType::Missing,
+                    local_content: String::new(),
+                    expected_hash,
+                    remote_content: None,
+                });
+                continue;
+            }
 
-            if current_local_hash == meta.local_hash {
-                if meta.registry_hash == expected_hash {
+            let raw = std::fs::read_to_string(local_file_path).unwrap_or_default();
+            let local_content = raw.replace("\r\n", "\n");
+
+            let status = if let Some(meta) = import_rewriter::parse_metadata(&local_content) {
+                let local_clean = import_rewriter::strip_metadata(&local_content);
+                let current_local_hash = sha256_hex(local_clean.as_bytes());
+
+                if current_local_hash == meta.local_hash {
+                    if meta.registry_hash == expected_hash {
+                        DiffFileStatus {
+                            file: file.clone(),
+                            target_path: target_path.clone(),
+                            status_type: DiffStatusType::UpToDate,
+                            local_content: local_clean,
+                            expected_hash,
+                            remote_content: None,
+                        }
+                    } else {
+                        DiffFileStatus {
+                            file: file.clone(),
+                            target_path: target_path.clone(),
+                            status_type: DiffStatusType::UpdateAvailable,
+                            local_content: local_clean,
+                            expected_hash,
+                            remote_content: None,
+                        }
+                    }
+                } else {
+                    if meta.registry_hash == expected_hash {
+                        DiffFileStatus {
+                            file: file.clone(),
+                            target_path: target_path.clone(),
+                            status_type: DiffStatusType::LocallyModified,
+                            local_content: local_clean,
+                            expected_hash,
+                            remote_content: None,
+                        }
+                    } else {
+                        DiffFileStatus {
+                            file: file.clone(),
+                            target_path: target_path.clone(),
+                            status_type: DiffStatusType::Conflict,
+                            local_content: local_clean,
+                            expected_hash,
+                            remote_content: None,
+                        }
+                    }
+                }
+            } else {
+                let local_hash = sha256_hex(local_content.as_bytes());
+                if local_hash == expected_hash {
                     DiffFileStatus {
                         file: file.clone(),
                         target_path: target_path.clone(),
                         status_type: DiffStatusType::UpToDate,
-                        local_content: local_clean,
+                        local_content,
                         expected_hash,
                         remote_content: None,
                     }
                 } else {
-                    DiffFileStatus {
-                        file: file.clone(),
-                        target_path: target_path.clone(),
-                        status_type: DiffStatusType::UpdateAvailable,
-                        local_content: local_clean,
-                        expected_hash,
-                        remote_content: None,
-                    }
-                }
-            } else {
-                if meta.registry_hash == expected_hash {
                     DiffFileStatus {
                         file: file.clone(),
                         target_path: target_path.clone(),
                         status_type: DiffStatusType::LocallyModified,
-                        local_content: local_clean,
-                        expected_hash,
-                        remote_content: None,
-                    }
-                } else {
-                    DiffFileStatus {
-                        file: file.clone(),
-                        target_path: target_path.clone(),
-                        status_type: DiffStatusType::Conflict,
-                        local_content: local_clean,
+                        local_content,
                         expected_hash,
                         remote_content: None,
                     }
                 }
-            }
-        } else {
-            let local_hash = sha256_hex(local_content.as_bytes());
-            if local_hash == expected_hash {
-                DiffFileStatus {
-                    file: file.clone(),
-                    target_path: target_path.clone(),
-                    status_type: DiffStatusType::UpToDate,
-                    local_content,
-                    expected_hash,
-                    remote_content: None,
-                }
-            } else {
-                DiffFileStatus {
-                    file: file.clone(),
-                    target_path: target_path.clone(),
-                    status_type: DiffStatusType::LocallyModified,
-                    local_content,
-                    expected_hash,
-                    remote_content: None,
-                }
-            }
-        };
-        files_status.push(status);
-    }
-
-    for fs in &files_status {
-        match fs.status_type {
-            DiffStatusType::UpToDate => logger::success(&format!("{}: Up to date.", fs.file.name)),
-            DiffStatusType::LocallyModified => {
-                logger::warning(&format!("{}: Modified locally.", fs.file.name))
-            }
-            DiffStatusType::UpdateAvailable => {
-                logger::info(&format!("{}: Update available.", fs.file.name))
-            }
-            DiffStatusType::Conflict => {
-                logger::warning(&format!("{}: Conflict (both modified).", fs.file.name))
-            }
-            DiffStatusType::Missing => logger::warning(&format!(
-                "File {} is missing locally (needs to be added).",
-                fs.file.name
-            )),
+            };
+            files_status.push(status);
         }
-    }
 
-    let changed_files: Vec<usize> = files_status
-        .iter()
-        .enumerate()
-        .filter(|(_, fs)| fs.status_type != DiffStatusType::UpToDate)
-        .map(|(i, _)| i)
-        .collect();
+        for fs in &files_status {
+            match fs.status_type {
+                DiffStatusType::UpToDate => {
+                    logger::success(&format!("{}: Up to date.", fs.file.name))
+                }
+                DiffStatusType::LocallyModified => {
+                    logger::warning(&format!("{}: Modified locally.", fs.file.name))
+                }
+                DiffStatusType::UpdateAvailable => {
+                    logger::info(&format!("{}: Update available.", fs.file.name))
+                }
+                DiffStatusType::Conflict => {
+                    logger::warning(&format!("{}: Conflict (both modified).", fs.file.name))
+                }
+                DiffStatusType::Missing => logger::warning(&format!(
+                    "File {} is missing locally (needs to be added).",
+                    fs.file.name
+                )),
+            }
+        }
 
-    if changed_files.is_empty() {
-        return Ok(());
-    }
+        let changed_files: Vec<usize> = files_status
+            .iter()
+            .enumerate()
+            .filter(|(_, fs)| fs.status_type != DiffStatusType::UpToDate)
+            .map(|(i, _)| i)
+            .collect();
 
-    let pkg_name = pubspec_editor::get_package_name(std::path::Path::new("pubspec.yaml"))
-        .unwrap_or_else(|_| "flutter_app".to_string());
+        if changed_files.is_empty() {
+            return Ok(());
+        }
 
-    if verbose {
+        let pkg_name = pubspec_editor::get_package_name(std::path::Path::new("pubspec.yaml"))
+            .unwrap_or_else(|_| "flutter_app".to_string());
+
+        if verbose {
+            for &idx in &changed_files {
+                let fs = &files_status[idx];
+                if fs.status_type == DiffStatusType::Missing {
+                    continue;
+                }
+                let remote_raw = client.fetch_file_content(&fs.file.path).unwrap_or_default();
+                let remote_rewritten = import_rewriter::rewrite(
+                    &remote_raw,
+                    &fs.file.path,
+                    &component_name,
+                    &index,
+                    &config.components_dir,
+                    &config.tokens_dir,
+                    &config.shared_dir,
+                    &config.preset,
+                    &pkg_name,
+                );
+                print_line_diff(&fs.file.name, &fs.local_content, &remote_rewritten);
+            }
+            return Ok(());
+        }
+
+        let mut remote_rewritten_map: std::collections::HashMap<usize, String> =
+            std::collections::HashMap::new();
         for &idx in &changed_files {
             let fs = &files_status[idx];
             if fs.status_type == DiffStatusType::Missing {
                 continue;
             }
             let remote_raw = client.fetch_file_content(&fs.file.path).unwrap_or_default();
-            let remote_rewritten = import_rewriter::rewrite(
+            let rr = import_rewriter::rewrite(
                 &remote_raw,
                 &fs.file.path,
                 &component_name,
@@ -243,100 +269,78 @@ pub fn run(
                 &config.preset,
                 &pkg_name,
             );
-            print_line_diff(&fs.file.name, &fs.local_content, &remote_rewritten);
+            remote_rewritten_map.insert(idx, rr);
         }
-        return Ok(());
-    }
 
-    let mut remote_rewritten_map: std::collections::HashMap<usize, String> =
-        std::collections::HashMap::new();
-    for &idx in &changed_files {
-        let fs = &files_status[idx];
-        if fs.status_type == DiffStatusType::Missing {
+        show_all_diffs(&files_status, &changed_files, &remote_rewritten_map, 3);
+
+        if auto_yes {
+            logger::stdout("[auto] Applying all changes");
+            let mut visited: HashSet<String> = HashSet::new();
+
+            add_component(
+                &component_name,
+                &index,
+                &client,
+                &config.components_dir,
+                &config.tokens_dir,
+                &config.shared_dir,
+                &mut visited,
+                false,
+                false,
+                true,
+                &None,
+                &config.preset,
+            )?;
+            logger::success("All changes applied successfully.");
             continue;
         }
-        let remote_raw = client.fetch_file_content(&fs.file.path).unwrap_or_default();
-        let rr = import_rewriter::rewrite(
-            &remote_raw,
-            &fs.file.path,
-            &component_name,
-            &index,
-            &config.components_dir,
-            &config.tokens_dir,
-            &config.shared_dir,
-            &config.preset,
-            &pkg_name,
-        );
-        remote_rewritten_map.insert(idx, rr);
-    }
 
-    show_all_diffs(&files_status, &changed_files, &remote_rewritten_map, 3);
+        loop {
+            logger::stdout("\nOptions:");
+            logger::stdout("  [a] Apply all changes");
+            logger::stdout("  [s] Select changes to apply");
+            logger::stdout("  [v] View full diff");
+            logger::stdout("  [q] Quit");
 
-    if auto_yes {
-        logger::stdout("[auto] Applying all changes");
-        let mut visited: HashSet<String> = HashSet::new();
+            let choice = prompt::ask("Choose option", "q").to_lowercase();
 
-        add_component(
-            &component_name,
-            &index,
-            &client,
-            &config.components_dir,
-            &config.tokens_dir,
-            &config.shared_dir,
-            &mut visited,
-            false,
-            false,
-            true,
-            &None,
-            &config.preset,
-        )?;
-        logger::success("All changes applied successfully.");
-        continue;
-    }
-
-    loop {
-        logger::stdout("\nOptions:");
-        logger::stdout("  [a] Apply all changes");
-        logger::stdout("  [s] Select changes to apply");
-        logger::stdout("  [v] View full diff");
-        logger::stdout("  [q] Quit");
-
-        let choice = prompt::ask("Choose option", "q").to_lowercase();
-
-        match choice.as_str() {
-            "q" => break,
-            "v" => {
-                show_all_diffs(&files_status, &changed_files, &remote_rewritten_map, 99999);
-            }
-            "a" => {
-                for &idx in &changed_files {
-                    let fs = &files_status[idx];
-                    if let Some(rr) = remote_rewritten_map.get(&idx) {
-                        apply_file_change(fs, rr, &component_name, &index)?;
-                    }
+            match choice.as_str() {
+                "q" => break,
+                "v" => {
+                    show_all_diffs(&files_status, &changed_files, &remote_rewritten_map, 99999);
                 }
-                logger::success("All changes applied successfully.");
-                break;
-            }
-            "s" => {
-                for &idx in &changed_files {
-                    let fs = &files_status[idx];
-                    let confirm =
-                        prompt::confirm(&format!("Apply changes to \"{}\"?", fs.file.name), false);
-                    if confirm {
+                "a" => {
+                    for &idx in &changed_files {
+                        let fs = &files_status[idx];
                         if let Some(rr) = remote_rewritten_map.get(&idx) {
                             apply_file_change(fs, rr, &component_name, &index)?;
                         }
                     }
+                    logger::success("All changes applied successfully.");
+                    break;
                 }
-                logger::success("Selected changes applied successfully.");
-                break;
-            }
-            _ => {
-                logger::error("Invalid option.");
+                "s" => {
+                    for &idx in &changed_files {
+                        let fs = &files_status[idx];
+                        let confirm = prompt::confirm(
+                            &format!("Apply changes to \"{}\"?", fs.file.name),
+                            false,
+                        );
+                        if confirm {
+                            if let Some(rr) = remote_rewritten_map.get(&idx) {
+                                apply_file_change(fs, rr, &component_name, &index)?;
+                            }
+                        }
+                    }
+                    logger::success("Selected changes applied successfully.");
+                    break;
+                }
+                _ => {
+                    logger::error("Invalid option.");
+                }
             }
         }
-    }
     }
 
     Ok(())
@@ -517,6 +521,58 @@ mod tests {
         std::fs::write(&local_comp_file, "class ModifiedButton {}").unwrap();
 
         assert!(run(Some("button".to_string()), true, false, true).is_ok());
+        assert!(run(Some("button".to_string()), false, false, true).is_ok());
+
+        // Test missing component in registry
+        assert!(run(Some("nonexistent_comp".to_string()), false, false, true).is_ok());
+
+        // Test run(None, ...) -> diff all components
+        assert!(run(None, false, false, true).is_ok());
+        assert!(run(None, true, false, true).is_ok());
+
+        // Test DiffStatusType::Missing in show_all_diffs
+        let fs_missing = DiffFileStatus {
+            file: crate::registry::RegistryFile {
+                name: "missing.dart".to_string(),
+                path: "components/button/missing.dart".to_string(),
+                checksum: "sha256:hash2".to_string(),
+            },
+            status_type: DiffStatusType::Missing,
+            local_content: String::new(),
+            target_path: temp_dir
+                .path()
+                .join("lib/ui/missing.dart")
+                .to_string_lossy()
+                .to_string(),
+            expected_hash: "hash2".to_string(),
+            remote_content: None,
+        };
+        show_all_diffs(&[fs_missing], &[0], &std::collections::HashMap::new(), 3);
+
+        // Test metadata with UpdateAvailable and Conflict
+        let old_reg_hash = "old_reg_hash_123";
+        let _new_reg_hash = "new_reg_hash_456";
+        let content_unmodified = "class Button {}";
+        let content_modified = "class ButtonModified {}";
+        let local_hash_unmodified = sha256_hex(content_unmodified.as_bytes());
+        let _local_hash_modified = sha256_hex(content_modified.as_bytes());
+
+        // UpdateAvailable metadata
+        let meta_update = import_rewriter::inject_metadata(
+            content_unmodified,
+            old_reg_hash,
+            &local_hash_unmodified,
+        );
+        std::fs::write(&local_comp_file, meta_update).unwrap();
+        assert!(run(Some("button".to_string()), false, false, true).is_ok());
+
+        // Conflict metadata
+        let meta_conflict = import_rewriter::inject_metadata(
+            content_modified,
+            old_reg_hash,
+            &local_hash_unmodified,
+        );
+        std::fs::write(&local_comp_file, meta_conflict).unwrap();
         assert!(run(Some("button".to_string()), false, false, true).is_ok());
     }
 }
