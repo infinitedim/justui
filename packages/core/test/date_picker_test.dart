@@ -18,7 +18,9 @@ void main() {
   }
 
   group('JustDatePicker Widget Tests', () {
-    testWidgets('Renders inline date picker and selects a date', (tester) async {
+    testWidgets('Renders inline date picker and selects a date', (
+      tester,
+    ) async {
       DateTime? selectedDate;
       final initialDate = DateTime(2026, 8, 15);
 
@@ -42,7 +44,9 @@ void main() {
       expect(selectedDate, equals(DateTime(2026, 8, 20)));
     });
 
-    testWidgets('Restricts date selection with firstDate and lastDate', (tester) async {
+    testWidgets('Restricts date selection with firstDate and lastDate', (
+      tester,
+    ) async {
       DateTime? selectedDate;
       final initialDate = DateTime(2026, 8, 15);
       final firstDate = DateTime(2026, 8, 10);
@@ -74,9 +78,7 @@ void main() {
       final initialDate = DateTime(2026, 8, 15);
 
       await tester.pumpWidget(
-        buildTestApp(
-          JustDatePicker.inline(value: initialDate),
-        ),
+        buildTestApp(JustDatePicker.inline(value: initialDate)),
       );
 
       expect(find.text('August 2026'), findsOneWidget);
@@ -101,9 +103,12 @@ void main() {
         buildTestApp(
           JustDatePicker.inline(
             value: initialDate,
-            headerBuilder: (context, activeDate, view, toggleView, onPrev, onNext) {
-              return Text('Custom Header ${activeDate.month}/${activeDate.year}');
-            },
+            headerBuilder:
+                (context, activeDate, view, toggleView, onPrev, onNext) {
+                  return Text(
+                    'Custom Header ${activeDate.month}/${activeDate.year}',
+                  );
+                },
           ),
         ),
       );
@@ -111,7 +116,9 @@ void main() {
       expect(find.text('Custom Header 8/2026'), findsOneWidget);
     });
 
-    testWidgets('Renders dropdown variant and toggles popup overlay', (tester) async {
+    testWidgets('Renders dropdown variant and toggles popup overlay', (
+      tester,
+    ) async {
       final initialDate = DateTime(2026, 8, 15);
 
       await tester.pumpWidget(
@@ -142,7 +149,10 @@ void main() {
       await tester.pumpWidget(
         buildTestApp(
           JustDateRangePicker(
-            value: DateTimeRange(start: DateTime(2026, 8, 1), end: DateTime(2026, 8, 1)),
+            value: DateTimeRange(
+              start: DateTime(2026, 8, 1),
+              end: DateTime(2026, 8, 1),
+            ),
             onChanged: (DateTimeRange range) => selectedRange = range,
           ),
         ),

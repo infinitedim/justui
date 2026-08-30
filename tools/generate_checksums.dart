@@ -87,22 +87,31 @@ void main(List<String> args) async {
 
     // Auto-Discovery: scan packages/core/lib/src/components/<compFolder>
     final coreCompDir = Directory(
-      p.join(projectRoot, 'packages', 'core', 'lib', 'src', 'components', compFolder),
+      p.join(
+        projectRoot,
+        'packages',
+        'core',
+        'lib',
+        'src',
+        'components',
+        compFolder,
+      ),
     );
 
     final Set<String> existingComponentFileNames = {};
     for (final preset in filesMap.keys) {
       final fileList = filesMap[preset] as List<dynamic>? ?? [];
       for (final f in fileList) {
-        existingComponentFileNames.add((f as Map<String, dynamic>)['name'] as String);
+        existingComponentFileNames.add(
+          (f as Map<String, dynamic>)['name'] as String,
+        );
       }
     }
 
     if (coreCompDir.existsSync()) {
-      final coreFiles = coreCompDir
-          .listSync()
-          .whereType<File>()
-          .where((f) => f.path.endsWith('.dart'));
+      final coreFiles = coreCompDir.listSync().whereType<File>().where(
+        (f) => f.path.endsWith('.dart'),
+      );
 
       final String nameSnake = name.replaceAll('-', '_');
 
@@ -111,7 +120,8 @@ void main(List<String> args) async {
         if (existingComponentFileNames.contains(fileName)) continue;
 
         // Check if this auto-discovered file belongs to this component
-        bool isCommonFile = fileName.endsWith('_style.dart') ||
+        final bool isCommonFile =
+            fileName.endsWith('_style.dart') ||
             fileName.endsWith('_theme.dart') ||
             fileName.endsWith('_variants.dart');
 
@@ -125,7 +135,8 @@ void main(List<String> args) async {
           } else if (!registeredFileNames.contains(fileName)) {
             belongsToThisComp = true;
           }
-        } else if (fileName.contains(nameSnake) || fileName.startsWith('just_${nameSnake}')) {
+        } else if (fileName.contains(nameSnake) ||
+            fileName.startsWith('just_$nameSnake')) {
           belongsToThisComp = true;
         }
 
