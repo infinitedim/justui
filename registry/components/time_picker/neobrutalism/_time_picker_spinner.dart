@@ -3,10 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart' show DayPeriod, Theme, TimeOfDay;
 import 'package:flutter/rendering.dart' show SemanticsService, TextDirection;
 import 'package:flutter/services.dart'
-    show
-        HapticFeedback,
-        KeyDownEvent,
-        KeyEvent;
+    show HapticFeedback, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 
@@ -105,7 +102,9 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     final initialMinuteIndex = _calculateMinuteIndex(_currentTime);
     final initialPeriodIndex = _calculatePeriodIndex(_currentTime);
 
-    _hourController = FixedExtentScrollController(initialItem: initialHourIndex);
+    _hourController = FixedExtentScrollController(
+      initialItem: initialHourIndex,
+    );
     _minuteController = FixedExtentScrollController(
       initialItem: initialMinuteIndex,
     );
@@ -259,8 +258,9 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
       _triggerHaptic();
     }
 
-    final hour12 =
-        _currentTime.hourOfPeriod == 0 ? 12 : _currentTime.hourOfPeriod;
+    final hour12 = _currentTime.hourOfPeriod == 0
+        ? 12
+        : _currentTime.hourOfPeriod;
     final newHour24 = isAm
         ? (hour12 == 12 ? 0 : hour12)
         : (hour12 == 12 ? 12 : hour12 + 12);
@@ -308,8 +308,9 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   }
 
   bool _isPeriodAllowed(DayPeriod period) {
-    final hour12 =
-        _currentTime.hourOfPeriod == 0 ? 12 : _currentTime.hourOfPeriod;
+    final hour12 = _currentTime.hourOfPeriod == 0
+        ? 12
+        : _currentTime.hourOfPeriod;
     final hour24 = period == DayPeriod.am
         ? (hour12 == 12 ? 0 : hour12)
         : (hour12 == 12 ? 12 : hour12 + 12);
@@ -331,7 +332,8 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   void _triggerHaptic() {
     final theme = JustThemeProvider.of(context).theme;
     final themeExtension = Theme.of(context).extension<JustTimePickerTheme>();
-    final shouldHaptic = widget.enableHaptic ??
+    final shouldHaptic =
+        widget.enableHaptic ??
         themeExtension?.enableHaptic ??
         theme.presetTokens.selectionHapticDefault;
     if (shouldHaptic) {
@@ -522,8 +524,9 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     if (widget.is24Hour) {
       return ((_currentTime.hour + 1) % 24).toString().padLeft(2, '0');
     }
-    final current12 =
-        _currentTime.hourOfPeriod == 0 ? 12 : _currentTime.hourOfPeriod;
+    final current12 = _currentTime.hourOfPeriod == 0
+        ? 12
+        : _currentTime.hourOfPeriod;
     final next12 = (current12 % 12) + 1;
     return next12.toString().padLeft(2, '0');
   }
@@ -532,8 +535,9 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     if (widget.is24Hour) {
       return ((_currentTime.hour + 23) % 24).toString().padLeft(2, '0');
     }
-    final current12 =
-        _currentTime.hourOfPeriod == 0 ? 12 : _currentTime.hourOfPeriod;
+    final current12 = _currentTime.hourOfPeriod == 0
+        ? 12
+        : _currentTime.hourOfPeriod;
     final prev12 = current12 <= 1 ? 12 : current12 - 1;
     return prev12.toString().padLeft(2, '0');
   }
@@ -564,18 +568,22 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     final themeExtension = Theme.of(context).extension<JustTimePickerTheme>();
     final style = widget.style;
 
-    final bgColor = style?.backgroundColor ??
+    final bgColor =
+        style?.backgroundColor ??
         themeExtension?.inlineStyle?.backgroundColor ??
         colors.card;
-    final borderColor = style?.borderColor ??
+    final borderColor =
+        style?.borderColor ??
         themeExtension?.inlineStyle?.borderColor ??
         (presetTokens.showsDefaultBorder
             ? colors.textPrimary
             : colors.borderDefault);
-    final borderRadius = style?.borderRadius ??
+    final borderRadius =
+        style?.borderRadius ??
         themeExtension?.inlineStyle?.borderRadius ??
         presetTokens.resolveBorderRadius(radius);
-    final padding = style?.padding ??
+    final padding =
+        style?.padding ??
         themeExtension?.inlineStyle?.padding ??
         .symmetric(horizontal: spacing.md, vertical: spacing.sm);
     final borderWidth = presetTokens.borderWidth;
@@ -596,8 +604,8 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
             border: presetTokens.showsDefaultBorder
                 ? .all(color: borderColor, width: borderWidth)
                 : (borderWidth > 0
-                    ? .all(color: colors.borderDefault, width: borderWidth)
-                    : null),
+                      ? .all(color: colors.borderDefault, width: borderWidth)
+                      : null),
             boxShadow: presetTokens.resolveShadow(
               theme.shadows,
               .md,
@@ -707,14 +715,14 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
             final hour24 = widget.is24Hour
                 ? i
                 : (_currentTime.period == DayPeriod.am
-                    ? (displayHour == 12 ? 0 : displayHour)
-                    : (displayHour == 12 ? 12 : displayHour + 12));
+                      ? (displayHour == 12 ? 0 : displayHour)
+                      : (displayHour == 12 ? 12 : displayHour + 12));
             final isSelected = widget.is24Hour
                 ? displayHour == _currentTime.hour
                 : displayHour ==
-                    (_currentTime.hourOfPeriod == 0
-                        ? 12
-                        : _currentTime.hourOfPeriod);
+                      (_currentTime.hourOfPeriod == 0
+                          ? 12
+                          : _currentTime.hourOfPeriod);
             final isAllowed = _isHourAllowed(hour24);
 
             return _buildWheelItem(
@@ -842,8 +850,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     VoidCallback? onTap,
   }) {
     final selectedColor = widget.style?.selectedTextColor ?? colors.textPrimary;
-    final unselectedColor =
-        widget.style?.dialTextColor ?? colors.textSecondary;
+    final unselectedColor = widget.style?.dialTextColor ?? colors.textSecondary;
 
     final color = isDisabled
         ? colors.textDisabled.withValues(alpha: 0.38)

@@ -743,7 +743,7 @@ Future<DateTime?> showJustDatePicker({
               ),
             );
           },
-        );
+    );
     return result;
   }
 }

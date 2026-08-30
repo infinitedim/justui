@@ -370,18 +370,22 @@ class _JustTimePickerState extends State<JustTimePicker> {
     final themeExtension = Theme.of(context).extension<JustTimePickerTheme>();
     final style = widget.style;
 
-    final bgColor = style?.backgroundColor ??
+    final bgColor =
+        style?.backgroundColor ??
         themeExtension?.inlineStyle?.backgroundColor ??
         colors.card;
-    final borderColor = style?.borderColor ??
+    final borderColor =
+        style?.borderColor ??
         themeExtension?.inlineStyle?.borderColor ??
         (presetTokens.showsDefaultBorder
             ? colors.textPrimary
             : colors.borderDefault);
-    final borderRadius = style?.borderRadius ??
+    final borderRadius =
+        style?.borderRadius ??
         themeExtension?.inlineStyle?.borderRadius ??
         presetTokens.resolveBorderRadius(radius);
-    final padding = style?.padding ??
+    final padding =
+        style?.padding ??
         themeExtension?.inlineStyle?.padding ??
         .all(spacing.md);
     final borderWidth = presetTokens.borderWidth;
@@ -397,8 +401,8 @@ class _JustTimePickerState extends State<JustTimePicker> {
               border: presetTokens.showsDefaultBorder
                   ? .all(color: borderColor, width: borderWidth)
                   : (borderWidth > 0
-                      ? .all(color: colors.borderDefault, width: borderWidth)
-                      : null),
+                        ? .all(color: colors.borderDefault, width: borderWidth)
+                        : null),
               boxShadow: presetTokens.resolveShadow(
                 theme.shadows,
                 .md,
@@ -417,45 +421,45 @@ class _JustTimePickerState extends State<JustTimePicker> {
           // Active Mode Engine
           switch (_currentMode) {
             .dial => TimePickerDial(
-                selectedTime: _currentTime,
-                onChanged: effectiveOnChanged,
-                firstTime: widget.firstTime,
-                lastTime: widget.lastTime,
-                selectableTimePredicate: widget.selectableTimePredicate,
-                timeFormat: widget.timeFormat,
-                minuteInterval: widget.minuteInterval,
-                activeSegment: _activeSegment,
-                onSegmentChanged: (seg) => setState(() => _activeSegment = seg),
-                autoAdvance: true,
-                locale: widget.locale,
-                style: widget.style,
-                enableHaptic: widget.enableHaptic,
-              ),
+              selectedTime: _currentTime,
+              onChanged: effectiveOnChanged,
+              firstTime: widget.firstTime,
+              lastTime: widget.lastTime,
+              selectableTimePredicate: widget.selectableTimePredicate,
+              timeFormat: widget.timeFormat,
+              minuteInterval: widget.minuteInterval,
+              activeSegment: _activeSegment,
+              onSegmentChanged: (seg) => setState(() => _activeSegment = seg),
+              autoAdvance: true,
+              locale: widget.locale,
+              style: widget.style,
+              enableHaptic: widget.enableHaptic,
+            ),
             .spinner => TimePickerSpinner(
-                value: _currentTime,
-                onChanged: effectiveOnChanged,
-                firstTime: widget.firstTime,
-                lastTime: widget.lastTime,
-                selectableTimePredicate: widget.selectableTimePredicate,
-                timeFormat: widget.timeFormat,
-                minuteInterval: widget.minuteInterval,
-                initialSegment: _activeSegment,
-                locale: widget.locale,
-                style: widget.style,
-                enableHaptic: widget.enableHaptic,
-              ),
+              value: _currentTime,
+              onChanged: effectiveOnChanged,
+              firstTime: widget.firstTime,
+              lastTime: widget.lastTime,
+              selectableTimePredicate: widget.selectableTimePredicate,
+              timeFormat: widget.timeFormat,
+              minuteInterval: widget.minuteInterval,
+              initialSegment: _activeSegment,
+              locale: widget.locale,
+              style: widget.style,
+              enableHaptic: widget.enableHaptic,
+            ),
             .input => TimePickerInput(
-                selectedTime: _currentTime,
-                onChanged: effectiveOnChanged,
-                firstTime: widget.firstTime,
-                lastTime: widget.lastTime,
-                selectableTimePredicate: widget.selectableTimePredicate,
-                timeFormat: widget.timeFormat,
-                minuteInterval: widget.minuteInterval,
-                locale: widget.locale,
-                style: widget.style,
-                enableHaptic: widget.enableHaptic,
-              ),
+              selectedTime: _currentTime,
+              onChanged: effectiveOnChanged,
+              firstTime: widget.firstTime,
+              lastTime: widget.lastTime,
+              selectableTimePredicate: widget.selectableTimePredicate,
+              timeFormat: widget.timeFormat,
+              minuteInterval: widget.minuteInterval,
+              locale: widget.locale,
+              style: widget.style,
+              enableHaptic: widget.enableHaptic,
+            ),
           },
         ],
       ),
@@ -530,11 +534,11 @@ class _JustTimePickerState extends State<JustTimePicker> {
                       border: Border.all(
                         color: isHourActive
                             ? (presetTokens.showsDefaultBorder
-                                ? colors.textPrimary
-                                : colors.borderFocus)
+                                  ? colors.textPrimary
+                                  : colors.borderFocus)
                             : (presetTokens.showsDefaultBorder
-                                ? colors.borderDefault
-                                : colors.borderDefault),
+                                  ? colors.borderDefault
+                                  : colors.borderDefault),
                         width: borderWidth,
                       ),
                     ),
@@ -582,11 +586,11 @@ class _JustTimePickerState extends State<JustTimePicker> {
                       border: Border.all(
                         color: isMinuteActive
                             ? (presetTokens.showsDefaultBorder
-                                ? colors.textPrimary
-                                : colors.borderFocus)
+                                  ? colors.textPrimary
+                                  : colors.borderFocus)
                             : (presetTokens.showsDefaultBorder
-                                ? colors.borderDefault
-                                : colors.borderDefault),
+                                  ? colors.borderDefault
+                                  : colors.borderDefault),
                         width: borderWidth,
                       ),
                     ),
@@ -642,7 +646,9 @@ class _JustTimePickerState extends State<JustTimePicker> {
                             child: Text(
                               widget.locale.amLabel,
                               style: typo.bodySm.copyWith(
-                                fontWeight: isAm ? FontWeight.w700 : FontWeight.w500,
+                                fontWeight: isAm
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
                                 color: isAm ? activeFg : inactiveFg,
                               ),
                             ),
@@ -674,7 +680,9 @@ class _JustTimePickerState extends State<JustTimePicker> {
                             child: Text(
                               widget.locale.pmLabel,
                               style: typo.bodySm.copyWith(
-                                fontWeight: !isAm ? FontWeight.w700 : FontWeight.w500,
+                                fontWeight: !isAm
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
                                 color: !isAm ? activeFg : inactiveFg,
                               ),
                             ),
@@ -764,7 +772,10 @@ class _JustTimePickerState extends State<JustTimePicker> {
 
         // Vertical flip logic
         final bool fitsBelow =
-            targetOffset.dy + triggerHeight + spacing.xs + estimatedPickerHeight <=
+            targetOffset.dy +
+                triggerHeight +
+                spacing.xs +
+                estimatedPickerHeight <=
             screenHeight - margin;
         final bool fitsAbove =
             targetOffset.dy - spacing.xs - estimatedPickerHeight >= margin;
@@ -893,10 +904,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
           },
         );
 
-        Widget content = SizedBox(
-          width: double.infinity,
-          child: pickerWidget,
-        );
+        Widget content = SizedBox(width: double.infinity, child: pickerWidget);
 
         if (theme != null) {
           content = JustThemeProvider(
@@ -949,10 +957,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
           onTap: onTap ?? _toggleDropdown,
           builder: (context, state) {
             return Container(
-              padding: .symmetric(
-                horizontal: spacing.md,
-                vertical: spacing.sm,
-              ),
+              padding: .symmetric(horizontal: spacing.md, vertical: spacing.sm),
               decoration: BoxDecoration(
                 color: colors.card,
                 borderRadius: presetTokens.resolveBorderRadius(radius),
@@ -1109,7 +1114,8 @@ class _ModalTimePickerContent extends StatefulWidget {
   });
 
   @override
-  State<_ModalTimePickerContent> createState() => _ModalTimePickerContentState();
+  State<_ModalTimePickerContent> createState() =>
+      _ModalTimePickerContentState();
 }
 
 class _ModalTimePickerContentState extends State<_ModalTimePickerContent> {
@@ -1287,36 +1293,37 @@ Future<TimeOfDay?> showJustTimePicker({
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Dismiss',
-      pageBuilder: (
-        BuildContext dialogContext,
-        Animation<double> animation,
-        Animation<double> secondaryAnimation,
-      ) {
-        return Center(
-          child: wrapWithTheme(
-            SizedBox(
-              width: 340.0,
-              child: _ModalTimePickerContent(
-                initialTime: initialTime,
-                firstTime: firstTime,
-                lastTime: lastTime,
-                selectableTimePredicate: selectableTimePredicate,
-                mode: mode,
-                timeFormat: timeFormat,
-                minuteInterval: minuteInterval,
-                locale: locale,
-                style: style,
-                enableHaptic: enableHaptic,
-                onConfirm: (time) {
-                  result = time;
-                  Navigator.of(dialogContext).pop();
-                },
-                onCancel: () => Navigator.of(dialogContext).pop(),
+      pageBuilder:
+          (
+            BuildContext dialogContext,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+          ) {
+            return Center(
+              child: wrapWithTheme(
+                SizedBox(
+                  width: 340.0,
+                  child: _ModalTimePickerContent(
+                    initialTime: initialTime,
+                    firstTime: firstTime,
+                    lastTime: lastTime,
+                    selectableTimePredicate: selectableTimePredicate,
+                    mode: mode,
+                    timeFormat: timeFormat,
+                    minuteInterval: minuteInterval,
+                    locale: locale,
+                    style: style,
+                    enableHaptic: enableHaptic,
+                    onConfirm: (time) {
+                      result = time;
+                      Navigator.of(dialogContext).pop();
+                    },
+                    onCancel: () => Navigator.of(dialogContext).pop(),
+                  ),
+                ),
               ),
-            ),
-          ),
-        );
-      },
+            );
+          },
     );
     return result;
   }

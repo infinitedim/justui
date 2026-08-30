@@ -35,7 +35,10 @@ class const JustDatePickerTheme({
   }
 
   @override
-  JustDatePickerTheme lerp(ThemeExtension<JustDatePickerTheme>? other, double t) {
+  JustDatePickerTheme lerp(
+    ThemeExtension<JustDatePickerTheme>? other,
+    double t,
+  ) {
     if (other is! JustDatePickerTheme) return this;
     return t < 0.5 ? this : other;
   }
