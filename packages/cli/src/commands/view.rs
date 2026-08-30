@@ -27,7 +27,7 @@ pub fn run(
         Ok(idx) => idx,
         Err(e) => {
             logger::error(&format!("Failed to fetch registry: {}", e));
-            std::process::exit(1);
+            return Ok(());
         }
     };
 
@@ -54,7 +54,7 @@ pub fn run(
                 }
             }
 
-            std::process::exit(1);
+            return Ok(());
         }
     };
 
@@ -105,7 +105,7 @@ pub fn run(
                     "File \"{}\" not found in component \"{}\".",
                     name_filter, comp.name
                 ));
-                std::process::exit(1);
+                return Ok(());
             }
         }
     } else {
@@ -118,7 +118,7 @@ pub fn run(
             Ok(c) => c,
             Err(e) => {
                 logger::error(&format!("Failed to fetch \"{}\": {}", file.name, e));
-                std::process::exit(1);
+                return Ok(());
             }
         };
 
@@ -181,27 +181,60 @@ mod tests {
         // Initialized with local registry
         let registry_dir = temp_dir.path().join("registry");
         std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+
+        let multiline_code = (0..105)
+            .map(|i| format!("// line {}", i))
+            .collect::<Vec<_>>()
+            .join("\n");
+
         std::fs::write(
             registry_dir.join("index.json"),
             serde_json::to_string(&serde_json::json!({
                 "version": "0.1.0",
                 "presets": ["default"],
-                "components": [{
-                    "name": "button",
-                    "version": "0.1.0",
-                    "description": "Button",
-                    "category": "primitives",
-                    "supportedPresets": ["default"],
-                    "registryDependencies": ["pressable"],
-                    "pubDependencies": {"flutter_svg": "^2.0.0"},
-                    "files": {
-                        "default": [{
-                            "name": "just_button.dart",
-                            "path": "components/button/just_button.dart",
-                            "checksum": "sha256:111"
-                        }]
+                "components": [
+                    {
+                        "name": "button",
+                        "version": "0.1.0",
+                        "description": "Button",
+                        "category": "primitives",
+                        "supportedPresets": ["default"],
+                        "registryDependencies": ["pressable"],
+                        "pubDependencies": {"flutter_svg": "^2.0.0"},
+                        "files": {
+                            "default": [
+                                {
+                                    "name": "just_button.dart",
+                                    "path": "components/button/just_button.dart",
+                                    "checksum": "sha256:111"
+                                },
+                                {
+                                    "name": "just_button_theme.dart",
+                                    "path": "components/button/just_button_theme.dart",
+                                    "checksum": "sha256:222"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "empty_dep_comp",
+                        "version": "1.0.0",
+                        "description": "Empty deps",
+                        "category": "primitives",
+                        "supportedPresets": ["default"],
+                        "registryDependencies": [],
+                        "pubDependencies": {},
+                        "files": {
+                            "default": [
+                                {
+                                    "name": "missing_file.dart",
+                                    "path": "components/button/missing_file.dart",
+                                    "checksum": "sha256:333"
+                                }
+                            ]
+                        }
                     }
-                }]
+                ]
             }))
             .unwrap(),
         )
@@ -209,7 +242,12 @@ mod tests {
 
         std::fs::write(
             registry_dir.join("components/button/just_button.dart"),
-            "class JustButton {}",
+            multiline_code,
+        )
+        .unwrap();
+        std::fs::write(
+            registry_dir.join("components/button/just_button_theme.dart"),
+            "class Theme {}",
         )
         .unwrap();
         std::fs::write("pubspec.yaml", "name: test_app").unwrap();
@@ -219,7 +257,10 @@ mod tests {
         )
         .unwrap();
 
+        // 1. View button with auto_yes = true (multi-file with >100 lines)
         assert!(run("button".to_string(), None, false, true).is_ok());
+
+        // 2. View button with single file filter
         assert!(run(
             "button".to_string(),
             Some("just_button.dart".to_string()),
@@ -227,5 +268,23 @@ mod tests {
             true
         )
         .is_ok());
+
+        // 4. View with file_filter not found
+        assert!(run(
+            "button".to_string(),
+            Some("nonexistent.dart".to_string()),
+            false,
+            true
+        )
+        .is_ok());
+
+        // 5. View component not found with suggestion
+        assert!(run("btn".to_string(), None, false, true).is_ok());
+
+        // 6. View component not found without suggestion
+        assert!(run("xyz_123_456".to_string(), None, false, true).is_ok());
+
+        // 7. View component with empty deps and missing file on disk
+        assert!(run("empty_dep_comp".to_string(), None, false, true).is_ok());
     }
 }

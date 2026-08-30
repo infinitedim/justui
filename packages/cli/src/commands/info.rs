@@ -31,7 +31,10 @@ pub fn run(component_name: Option<String>) -> Result<()> {
                 return Ok(());
             }
         }
-        return Err(anyhow::anyhow!("Component \"{}\" not found in registry", name));
+        return Err(anyhow::anyhow!(
+            "Component \"{}\" not found in registry",
+            name
+        ));
     }
 
     logger::stdout(&format!("JustUI CLI v{}", version));
@@ -104,6 +107,70 @@ mod tests {
         let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
+        assert!(run(None).is_ok());
+    }
+
+    #[test]
+    fn test_info_with_config_and_pubspec() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        // Create pubspec.yaml with name
+        std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: my_test_app\n").unwrap();
+
+        // Create local registry with index.json
+        let reg_dir = temp_dir.path().join("registry");
+        std::fs::create_dir_all(&reg_dir).unwrap();
+        std::fs::write(
+            reg_dir.join("index.json"),
+            r#"{
+                "version": "1.2.3",
+                "presets": ["default"],
+                "components": [
+                    {
+                        "name": "button",
+                        "version": "1.0.0",
+                        "description": "Button component",
+                        "category": "primitive",
+                        "internal": false,
+                        "supported_presets": ["default"],
+                        "registry_dependencies": [],
+                        "pub_dependencies": {},
+                        "files": {}
+                    }
+                ]
+            }"#,
+        )
+        .unwrap();
+
+        // Create justui.config.yaml
+        let config_yaml = format!("registry_url: {}\n", reg_dir.to_string_lossy());
+        std::fs::write(temp_dir.path().join("justui.config.yaml"), config_yaml).unwrap();
+
+        // Test run(None) -> prints config, pubspec, registry OK
+        assert!(run(None).is_ok());
+
+        // Test run(Some("button")) -> prints component info
+        assert!(run(Some("button".to_string())).is_ok());
+
+        // Test run(Some("invalid")) -> returns Err
+        assert!(run(Some("invalid".to_string())).is_err());
+    }
+
+    #[test]
+    fn test_info_pubspec_without_name() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        // Create pubspec.yaml without name:
+        std::fs::write(
+            temp_dir.path().join("pubspec.yaml"),
+            "description: test app\n",
+        )
+        .unwrap();
+
         assert!(run(None).is_ok());
     }
 }

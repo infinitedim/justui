@@ -362,10 +362,15 @@ fn extract_binary_from_zip(zip_bytes: &[u8], binary_name: &str) -> Result<Vec<u8
 }
 
 #[allow(dead_code)]
+#[allow(dead_code)]
 fn replace_current_executable(new_bytes: &[u8]) -> Result<()> {
     let current_exe = env::current_exe().context("Failed to get current executable path")?;
-    let temp_exe = current_exe.with_extension("tmp_new");
+    replace_executable_at(&current_exe, new_bytes)
+}
 
+#[allow(dead_code)]
+fn replace_executable_at(current_exe: &std::path::Path, new_bytes: &[u8]) -> Result<()> {
+    let temp_exe = current_exe.with_extension("tmp_new");
     fs::write(&temp_exe, new_bytes).context("Failed to write temporary binary")?;
 
     #[cfg(unix)]
@@ -378,28 +383,22 @@ fn replace_current_executable(new_bytes: &[u8]) -> Result<()> {
     #[cfg(windows)]
     {
         let old_exe = current_exe.with_extension("old");
-        // On Windows, a running executable cannot be directly overwritten due to process file locking.
-        // Step 1: Rename the running binary to .old (Windows allows renaming running binaries).
         if old_exe.exists() {
             let _ = fs::remove_file(&old_exe);
         }
-        fs::rename(&current_exe, &old_exe)
-            .context("Failed to rename running executable to .old")?;
+        fs::rename(current_exe, &old_exe).context("Failed to rename running executable to .old")?;
 
-        // Step 2: Move the new binary into place.
-        if let Err(e) = fs::rename(&temp_exe, &current_exe) {
-            // Rollback if move fails
-            let _ = fs::rename(&old_exe, &current_exe);
+        if let Err(e) = fs::rename(&temp_exe, current_exe) {
+            let _ = fs::rename(&old_exe, current_exe);
             return Err(e).context("Failed to place new binary into executable path");
         }
 
-        // Clean up old binary (best-effort; OS will delete or allow removal after exit)
         let _ = fs::remove_file(&old_exe);
     }
 
     #[cfg(not(windows))]
     {
-        fs::rename(&temp_exe, &current_exe).context("Failed to replace binary")?;
+        fs::rename(&temp_exe, current_exe).context("Failed to replace binary")?;
     }
 
     Ok(())
@@ -439,42 +438,32 @@ mod tests {
         use flate2::Compression;
         use std::io::Write;
 
-        // Build a minimal POSIX tar header for "justui" file containing "hello world"
         let binary_content = b"hello world executable bytes";
-        let mut tar_bytes = vec![0u8; 1024]; // 512 header + 512 data
+        let mut tar_bytes = vec![0u8; 1024];
 
-        // Header: name (0..100) = "justui"
         tar_bytes[0..6].copy_from_slice(b"justui");
-        // Header: size in octal (124..136) = "00000000034 " (28 bytes)
         let octal_size = format!("{:011o} ", binary_content.len());
         tar_bytes[124..136].copy_from_slice(octal_size.as_bytes());
-        // Header: typeflag (156) = '0'
         tar_bytes[156] = b'0';
 
-        // Data block at 512..512 + binary_content.len()
         tar_bytes[512..512 + binary_content.len()].copy_from_slice(binary_content);
 
-        // Compress tar_bytes into gzip
         let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
         encoder.write_all(&tar_bytes).unwrap();
         let gz_bytes = encoder.finish().unwrap();
 
-        // Extract using unpack_binary_bytes
         let extracted = unpack_binary_bytes(&gz_bytes, "justui").unwrap();
         assert_eq!(extracted, binary_content);
     }
 
     #[test]
     fn test_validate_binary_executable() {
-        // Empty bytes
         assert!(validate_binary_executable(&[]).is_err());
 
         #[cfg(target_os = "linux")]
         {
-            // Invalid ELF header
             assert!(validate_binary_executable(b"not_an_elf_binary_file_header").is_err());
 
-            // Valid ELF header matching current arch
             let mut valid_elf = vec![0u8; 64];
             valid_elf[0..4].copy_from_slice(b"\x7fELF");
             #[cfg(target_arch = "x86_64")]
@@ -501,7 +490,6 @@ mod tests {
     fn test_print_fallback_instructions_and_zip_unpack_error() {
         print_fallback_instructions();
 
-        // Tar archive with missing binary name
         let binary_content = b"hello";
         let mut tar_bytes = vec![0u8; 1024];
         tar_bytes[0..10].copy_from_slice(b"other_file");
@@ -516,10 +504,24 @@ mod tests {
         encoder.write_all(&tar_bytes).unwrap();
         let gz_bytes = encoder.finish().unwrap();
         assert!(extract_binary_from_tar_gz(&gz_bytes, "justui").is_err());
+
+        // Test ZIP magic header with invalid zip data
+        let invalid_zip_header = b"PK\x03\x04invalid_zip_content";
+        assert!(unpack_binary_bytes(invalid_zip_header, "justui").is_err());
     }
 
     #[test]
+    fn test_replace_executable_at() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let fake_exe = temp_dir.path().join("fake_justui");
+        std::fs::write(&fake_exe, b"old_exe_content").unwrap();
 
+        let new_bytes = b"new_exe_content";
+        assert!(replace_executable_at(&fake_exe, new_bytes).is_ok());
+        assert_eq!(std::fs::read(&fake_exe).unwrap(), new_bytes);
+    }
+
+    #[test]
     fn test_process_release_update_matrix() {
         // 1. Up-to-date version
         let up_to_date_release = GitHubRelease {
@@ -535,10 +537,16 @@ mod tests {
             tag_name: "v9.9.9".to_string(),
             html_url: "https://example.com/rel9".to_string(),
             body: Some("Line 1\nLine 2".to_string()),
-            assets: vec![GitHubAsset {
-                name: "justui-x86_64-unknown-linux-gnu.tar.gz".to_string(),
-                browser_download_url: "https://example.com/dl".to_string(),
-            }],
+            assets: vec![
+                GitHubAsset {
+                    name: "justui-x86_64-unknown-linux-gnu.tar.gz".to_string(),
+                    browser_download_url: "https://example.com/dl".to_string(),
+                },
+                GitHubAsset {
+                    name: "justui-darwin-arm64.tar.gz".to_string(),
+                    browser_download_url: "https://example.com/dl2".to_string(),
+                },
+            ],
         };
         assert!(process_release_update(&new_release, "0.7.8", true, false).is_ok());
 
