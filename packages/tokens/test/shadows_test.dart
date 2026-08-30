@@ -31,67 +31,92 @@ void main() {
       }
     });
 
-    test(
-      'JustShadows.generate covers all elevation branches and dark/light modes',
-      () {
-        const seed = Color(0xFF3B82F6);
+    test('JustShadows.generate covers all 5 elevation interval branches across light and dark modes', () {
+      const seed = Color(0xFF3B82F6);
 
-        // elevation <= 4 branch (light & dark)
-        final elev2Light = JustShadows.generate(
-          seedColor: seed,
-          elevation: 2,
-          isDark: false,
-        );
-        final elev2Dark = JustShadows.generate(
-          seedColor: seed,
-          elevation: 2,
-          isDark: true,
-        );
-        expect(elev2Light.length, equals(2));
-        expect(elev2Dark.length, equals(2));
+      // elevation <= 1 branch (light & dark)
+      final elev1Light = JustShadows.generate(
+        seedColor: seed,
+        elevation: 1,
+        isDark: false,
+      );
+      final elev1Dark = JustShadows.generate(
+        seedColor: seed,
+        elevation: 1,
+        isDark: true,
+      );
+      expect(elev1Light.length, equals(2));
+      expect(elev1Dark.length, equals(2));
 
-        // elevation <= 8 branch (light & dark)
-        final elev6Light = JustShadows.generate(
-          seedColor: seed,
-          elevation: 6,
-          isDark: false,
-        );
-        final elev6Dark = JustShadows.generate(
-          seedColor: seed,
-          elevation: 6,
-          isDark: true,
-        );
-        expect(elev6Light.length, equals(2));
-        expect(elev6Dark.length, equals(2));
+      // elevation <= 2 branch (light & dark)
+      final elev2Light = JustShadows.generate(
+        seedColor: seed,
+        elevation: 2,
+        isDark: false,
+      );
+      final elev2Dark = JustShadows.generate(
+        seedColor: seed,
+        elevation: 2,
+        isDark: true,
+      );
+      expect(elev2Light.length, equals(2));
+      expect(elev2Dark.length, equals(2));
 
-        // elevation <= 16 branch (light & dark)
-        final elev12Light = JustShadows.generate(
-          seedColor: seed,
-          elevation: 12,
-          isDark: false,
-        );
-        final elev12Dark = JustShadows.generate(
-          seedColor: seed,
-          elevation: 12,
-          isDark: true,
-        );
-        expect(elev12Light.length, equals(2));
-        expect(elev12Dark.length, equals(2));
+      // elevation <= 4 branch (light & dark)
+      final elev4Light = JustShadows.generate(
+        seedColor: seed,
+        elevation: 4,
+        isDark: false,
+      );
+      final elev4Dark = JustShadows.generate(
+        seedColor: seed,
+        elevation: 4,
+        isDark: true,
+      );
+      expect(elev4Light.length, equals(2));
+      expect(elev4Dark.length, equals(2));
 
-        // elevation > 16 branch (light & dark)
-        final elev24Light = JustShadows.generate(
-          seedColor: seed,
-          elevation: 24,
-          isDark: false,
-        );
-        final elev24Dark = JustShadows.generate(
-          seedColor: seed,
-          elevation: 24,
-          isDark: true,
-        );
-        expect(elev24Light.length, equals(2));
-        expect(elev24Dark.length, equals(2));
-      },
-    );
+      // elevation <= 8 branch (light & dark)
+      final elev6Light = JustShadows.generate(
+        seedColor: seed,
+        elevation: 6,
+        isDark: false,
+      );
+      final elev6Dark = JustShadows.generate(
+        seedColor: seed,
+        elevation: 6,
+        isDark: true,
+      );
+      expect(elev6Light.length, equals(2));
+      expect(elev6Dark.length, equals(2));
+
+      // elevation <= 16 branch (light & dark)
+      final elev12Light = JustShadows.generate(
+        seedColor: seed,
+        elevation: 12,
+        isDark: false,
+      );
+      final elev12Dark = JustShadows.generate(
+        seedColor: seed,
+        elevation: 12,
+        isDark: true,
+      );
+      expect(elev12Light.length, equals(2));
+      expect(elev12Dark.length, equals(2));
+
+      // elevation > 16 branch (light & dark)
+      final elev24Light = JustShadows.generate(
+        seedColor: seed,
+        elevation: 24,
+        isDark: false,
+      );
+      final elev24Dark = JustShadows.generate(
+        seedColor: seed,
+        elevation: 24,
+        isDark: true,
+      );
+      expect(elev24Light.length, equals(2));
+      expect(elev24Dark.length, equals(2));
+    });
   });
 }
