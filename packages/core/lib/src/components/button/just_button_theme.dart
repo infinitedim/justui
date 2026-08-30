@@ -2,6 +2,9 @@ import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_button_style.dart';
 
+/// Alias for [JustButtonTheme] for convention parity.
+typedef JustButtonThemeData = JustButtonTheme;
+
 /// Global theme configuration for buttons, extending Flutter's [ThemeExtension].
 class const JustButtonTheme({
   /// Style override for the primary button.
@@ -47,6 +50,43 @@ class const JustButtonTheme({
   @override
   JustButtonTheme lerp(ThemeExtension<JustButtonTheme>? other, double t) {
     if (other is! JustButtonTheme) return this;
-    return t < 0.5 ? this : other;
+    return JustButtonTheme(
+      primaryStyle: JustButtonStyle.lerp(primaryStyle, other.primaryStyle, t),
+      secondaryStyle: JustButtonStyle.lerp(
+        secondaryStyle,
+        other.secondaryStyle,
+        t,
+      ),
+      ghostStyle: JustButtonStyle.lerp(ghostStyle, other.ghostStyle, t),
+      destructiveStyle: JustButtonStyle.lerp(
+        destructiveStyle,
+        other.destructiveStyle,
+        t,
+      ),
+      linkStyle: JustButtonStyle.lerp(linkStyle, other.linkStyle, t),
+      enableHaptic: t < 0.5 ? enableHaptic : other.enableHaptic,
+    );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JustButtonTheme &&
+          runtimeType == other.runtimeType &&
+          primaryStyle == other.primaryStyle &&
+          secondaryStyle == other.secondaryStyle &&
+          ghostStyle == other.ghostStyle &&
+          destructiveStyle == other.destructiveStyle &&
+          linkStyle == other.linkStyle &&
+          enableHaptic == other.enableHaptic;
+
+  @override
+  int get hashCode => Object.hash(
+    primaryStyle,
+    secondaryStyle,
+    ghostStyle,
+    destructiveStyle,
+    linkStyle,
+    enableHaptic,
+  );
 }
