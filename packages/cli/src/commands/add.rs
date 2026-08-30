@@ -912,4 +912,193 @@ mod tests {
         assert!(!conflict);
         assert_eq!(status_dry, OperationStatus::UpToDate);
     }
+
+    #[test]
+    fn test_add_resolve_conflict_matrix() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let file_path = temp_dir.path().join("just_button.dart");
+
+        let orig_code = "class Button {}";
+        let modified_code = "class ButtonModified {}";
+        let reg_hash_old = "1111111111111111111111111111111111111111111111111111111111111111";
+        let reg_hash_new = "2222222222222222222222222222222222222222222222222222222222222222";
+
+        let local_hash_orig = sha256_hex(orig_code.as_bytes());
+
+        // 1. Metadata present: local modified, registry hash unchanged -> SkippedLocalCustomization
+        // Metadata says original hash was local_hash_orig, but file content is modified_code
+        let meta1 = import_rewriter::inject_metadata(modified_code, reg_hash_old, &local_hash_orig);
+        std::fs::write(&file_path, &meta1).unwrap();
+        let (write, status) = resolve_conflict(
+            &file_path,
+            "just_button.dart",
+            reg_hash_old,
+            orig_code,
+            &meta1,
+            true,
+        )
+        .unwrap();
+        assert!(!write);
+        assert_eq!(status, OperationStatus::SkippedLocalCustomization);
+
+        // 2. Metadata present: local modified, registry hash updated -> ConflictResolvedSkip (auto_yes=true)
+        let (write, status) = resolve_conflict(
+            &file_path,
+            "just_button.dart",
+            reg_hash_new,
+            orig_code,
+            &meta1,
+            true,
+        )
+        .unwrap();
+        assert!(!write);
+        assert_eq!(status, OperationStatus::ConflictResolvedSkip);
+
+        // 3. Metadata present: local unmodified, registry hash updated -> Overwritten (auto_yes=true)
+        // File content is orig_code, metadata local_hash matches orig_code hash
+        let meta3 = import_rewriter::inject_metadata(orig_code, reg_hash_old, &local_hash_orig);
+        std::fs::write(&file_path, &meta3).unwrap();
+        let (write, status) = resolve_conflict(
+            &file_path,
+            "just_button.dart",
+            reg_hash_new,
+            orig_code,
+            &meta3,
+            true,
+        )
+        .unwrap();
+        assert!(write);
+        assert_eq!(status, OperationStatus::Overwritten);
+
+        // 4. No metadata present: local file differs from expected_hash -> ConflictResolvedOverwrite (auto_yes=true)
+        std::fs::write(&file_path, "class RawButton {}").unwrap();
+        let (write, status) = resolve_conflict(
+            &file_path,
+            "just_button.dart",
+            reg_hash_new,
+            orig_code,
+            "class RawButton {}",
+            true,
+        )
+        .unwrap();
+        assert!(write);
+        assert_eq!(status, OperationStatus::ConflictResolvedOverwrite);
+
+        // 5. Dry run conflict resolution for existing modified file
+        let (write_dry, _conflict_dry, _, status_dry) = resolve_conflict_dry(
+            &file_path,
+            "just_button.dart",
+            reg_hash_old,
+            orig_code,
+            true,
+        )
+        .unwrap();
+        assert!(!write_dry);
+        assert_eq!(status_dry, OperationStatus::SkippedLocalCustomization);
+    }
+
+    #[test]
+    fn test_add_run_initialized_all_flags() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        // Setup local registry
+        let reg_dir = temp_dir.path().join("registry");
+        std::fs::create_dir_all(reg_dir.join("components/button")).unwrap();
+        std::fs::create_dir_all(reg_dir.join("components/_shared_theme_provider")).unwrap();
+
+        let button_code = "class JustButton {}";
+        let button_hash = sha256_hex(button_code.as_bytes());
+
+        std::fs::write(reg_dir.join("just_button.dart"), button_code).unwrap();
+        std::fs::write(
+            reg_dir.join("just_theme_provider.dart"),
+            "class JustThemeProvider {}",
+        )
+        .unwrap();
+
+        std::fs::write(
+            reg_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "1.0.0",
+                "presets": ["default"],
+                "components": [
+                    {
+                        "name": "button",
+                        "version": "1.0.0",
+                        "description": "Button",
+                        "category": "primitive",
+                        "internal": false,
+                        "supportedPresets": ["default"],
+                        "registryDependencies": ["_shared_theme_provider"],
+                        "pubDependencies": {"flutter_svg": "^2.0.0"},
+                        "files": {
+                            "default": [{
+                                "name": "just_button.dart",
+                                "path": "just_button.dart",
+                                "checksum": format!("sha256:{}", button_hash)
+                            }]
+                        }
+                    },
+                    {
+                        "name": "_shared_theme_provider",
+                        "version": "1.0.0",
+                        "description": "Theme provider",
+                        "category": "core",
+                        "internal": true,
+                        "supportedPresets": ["default"],
+                        "registryDependencies": [],
+                        "pubDependencies": {},
+                        "files": {
+                            "default": [{
+                                "name": "just_theme_provider.dart",
+                                "path": "just_theme_provider.dart",
+                                "checksum": "sha256:abc"
+                            }]
+                        }
+                    }
+                ]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(
+            "pubspec.yaml",
+            "name: test_app\ndependencies:\n  flutter:\n    sdk: flutter\n",
+        )
+        .unwrap();
+        std::fs::write(
+            "justui.config.yaml",
+            format!("components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\npreset: default\nregistry_url: {}\n", reg_dir.display()),
+        )
+        .unwrap();
+
+        // 1. Run add single component (button) with auto_yes = true
+        assert!(run(vec!["button".to_string()], false, false, false, false, true).is_ok());
+
+        // 2. Run add with --overwrite flag = true
+        assert!(run(vec!["button".to_string()], true, false, false, false, true).is_ok());
+
+        // 3. Run add with --dry-run = true
+        assert!(run(vec!["button".to_string()], false, true, false, false, true).is_ok());
+
+        // 4. Run add with --all = true
+        assert!(run(vec![], false, false, true, false, true).is_ok());
+
+        // 5. Run add with non-existent component name
+        assert!(run(
+            vec!["nonexistent".to_string()],
+            false,
+            false,
+            false,
+            false,
+            true
+        )
+        .is_ok());
+
+        // 6. Run add empty names without --all and auto_yes = true
+        assert!(run(vec![], false, false, false, false, true).is_ok());
+    }
 }

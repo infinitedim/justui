@@ -2,7 +2,7 @@ use inquire::{MultiSelect, Select};
 use std::io::{self, IsTerminal};
 
 fn is_interactive() -> bool {
-    if cfg!(test) {
+    if cfg!(test) && std::env::var("JUSTUI_FORCE_INTERACTIVE").is_err() {
         return false;
     }
     io::stdin().is_terminal() && io::stderr().is_terminal()
@@ -116,20 +116,24 @@ mod tests {
 
         // 1. Confirm 'y' input
         let mut input = std::io::Cursor::new(b"y\n");
-        assert!(confirm_with_input(
-            &mut input, &mut out, "Continue?", false
-        ));
+        assert!(confirm_with_input(&mut input, &mut out, "Continue?", false));
 
         // 2. Confirm empty input fallback
         let mut input_empty = std::io::Cursor::new(b"\n");
         assert!(confirm_with_input(
-            &mut input_empty, &mut out, "Continue?", true
+            &mut input_empty,
+            &mut out,
+            "Continue?",
+            true
         ));
 
         // 3. Confirm 'n' input
         let mut input_n = std::io::Cursor::new(b"n\n");
         assert!(!confirm_with_input(
-            &mut input_n, &mut out, "Continue?", true
+            &mut input_n,
+            &mut out,
+            "Continue?",
+            true
         ));
 
         // 4. Ask custom input
@@ -145,5 +149,13 @@ mod tests {
             ask_with_input(&mut input_ask_empty, &mut out, "Enter value:", "default"),
             "default"
         );
+    }
+
+    #[test]
+    fn test_force_interactive_branch() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        std::env::set_var("JUSTUI_FORCE_INTERACTIVE", "1");
+        assert!(is_interactive());
+        std::env::remove_var("JUSTUI_FORCE_INTERACTIVE");
     }
 }
