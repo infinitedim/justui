@@ -435,7 +435,7 @@ mod tests {
         print_line_diff("just_button.dart", local, remote);
 
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         // Uninitialized project returns Ok without crashing
         assert!(run(Some("button".to_string()), false, false, true).is_ok());

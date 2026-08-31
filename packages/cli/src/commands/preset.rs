@@ -392,7 +392,7 @@ mod tests {
     fn test_preset_run_uninitialized() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         // Without config file, preset commands return Ok without erroring out
         assert!(run_list().is_ok());
@@ -407,7 +407,7 @@ mod tests {
     fn test_preset_run_initialized_with_local_registry() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         let registry_dir = temp_dir.path().join("registry");
         std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();

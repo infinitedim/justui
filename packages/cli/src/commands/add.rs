@@ -861,17 +861,7 @@ fn extract_theme_class_name(content: &str) -> Option<String> {
 mod tests {
     use super::*;
 
-    struct DirGuard(std::path::PathBuf);
-    impl Drop for DirGuard {
-        fn drop(&mut self) {
-            let _ = std::env::set_current_dir(&self.0);
-        }
-    }
-    fn set_dir<P: AsRef<std::path::Path>>(p: P) -> DirGuard {
-        let orig = std::env::current_dir().unwrap_or_else(|_| std::env::temp_dir());
-        let _ = std::env::set_current_dir(p);
-        DirGuard(orig)
-    }
+    use crate::utils::set_dir;
 
     #[test]
     fn test_add_helpers() {
@@ -1985,7 +1975,7 @@ mod tests {
     fn test_add_run_initialized_all_flags() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = set_dir(temp_dir.path());
 
         // Setup local registry
         let reg_dir = temp_dir.path().join("registry");

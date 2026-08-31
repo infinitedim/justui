@@ -949,10 +949,15 @@ mod tests {
 
     #[test]
     fn test_run_interactive_tui_mock() {
+        let _lock = crate::utils::lock_test_mutex();
         let backend = CrosstermBackend::new(Vec::<u8>::new());
-        let mut terminal = Terminal::new(backend).unwrap();
+        let options = ratatui::TerminalOptions {
+            viewport: ratatui::Viewport::Fixed(ratatui::layout::Rect::new(0, 0, 80, 24)),
+        };
+        let mut terminal = Terminal::with_options(backend, options).unwrap();
 
         let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = crate::utils::set_dir(temp_dir.path());
         let reg_dir = temp_dir.path().join("registry");
         std::fs::create_dir_all(&reg_dir).unwrap();
         let file_content = "// button source";
@@ -1274,8 +1279,7 @@ mod tests {
         let config_yaml = format!("registryUrl: \"{}\"", registry_dir.to_string_lossy());
         std::fs::write(&config_file, config_yaml).unwrap();
 
-        let orig_cwd = std::env::current_dir().unwrap_or_else(|_| std::env::temp_dir());
-        let _ = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         // 1. JSON output
         assert!(run(None, true).is_ok());
@@ -1286,7 +1290,7 @@ mod tests {
         // 3. Non-existent category
         assert!(run(Some("nonexistent".to_string()), false).is_ok());
 
-        let _ = std::env::set_current_dir(&orig_cwd);
+
 
         // 4. Error case: invalid registry
         let _ = run(None, false);

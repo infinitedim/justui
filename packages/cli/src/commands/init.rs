@@ -276,17 +276,7 @@ pub fn run(
 mod tests {
     use super::*;
 
-    struct DirGuard(std::path::PathBuf);
-    impl Drop for DirGuard {
-        fn drop(&mut self) {
-            let _ = std::env::set_current_dir(&self.0);
-        }
-    }
-    fn set_dir<P: AsRef<std::path::Path>>(p: P) -> DirGuard {
-        let orig = std::env::current_dir().unwrap_or_else(|_| std::env::temp_dir());
-        let _ = std::env::set_current_dir(p);
-        DirGuard(orig)
-    }
+    use crate::utils::set_dir;
 
     #[test]
     fn test_init_helpers() {

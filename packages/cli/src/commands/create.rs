@@ -368,7 +368,7 @@ mod tests {
     fn test_create_run_execution() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         // 1. Uninitialized -> returns Ok with warning
         assert!(run(None, None, false, false).is_ok());

@@ -103,17 +103,7 @@ mod tests {
     use super::*;
     use tempfile::tempdir;
 
-    struct DirGuard(std::path::PathBuf);
-    impl Drop for DirGuard {
-        fn drop(&mut self) {
-            let _ = std::env::set_current_dir(&self.0);
-        }
-    }
-    fn set_dir<P: AsRef<std::path::Path>>(p: P) -> DirGuard {
-        let orig = std::env::current_dir().unwrap_or_else(|_| std::env::temp_dir());
-        let _ = std::env::set_current_dir(p);
-        DirGuard(orig)
-    }
+    use crate::utils::set_dir;
 
     #[test]
     fn test_info_run_without_config() {
@@ -232,7 +222,7 @@ mod tests {
     fn test_info_with_config_and_pubspec() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = set_dir(temp_dir.path());
 
         // Create pubspec.yaml with name
         std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: my_test_app\n").unwrap();
@@ -280,7 +270,7 @@ mod tests {
     fn test_info_pubspec_without_name() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = set_dir(temp_dir.path());
 
         // Create pubspec.yaml without name:
         std::fs::write(

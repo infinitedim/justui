@@ -143,7 +143,7 @@ mod tests {
     fn test_search_run_uninitialized() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         assert!(run("button".to_string(), None).is_ok());
     }
