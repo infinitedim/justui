@@ -23,16 +23,19 @@ pub enum CheckStatus {
 
 pub fn run() -> Result<()> {
     logger::panel("JustUI Environment & Project Doctor");
-
     let checks = perform_checks();
+    print_doctor_report(&checks);
+    Ok(())
+}
 
+pub fn print_doctor_report(checks: &[DoctorCheck]) {
     let mut ok_count = 0;
     let mut warn_count = 0;
     let mut error_count = 0;
 
     let mut summary_items = Vec::new();
 
-    for check in &checks {
+    for check in checks {
         let (icon, label) = match check.status {
             CheckStatus::Ok => {
                 ok_count += 1;
@@ -85,67 +88,49 @@ pub fn run() -> Result<()> {
         ),
         &summary_items,
     );
+}
 
-    Ok(())
+pub fn check_toolchain(cmd: &str, name: &str) -> DoctorCheck {
+    match Command::new(cmd).arg("--version").output() {
+        Ok(out) if out.status.success() => {
+            let stdout_str = String::from_utf8_lossy(&out.stdout).trim().to_string();
+            let stderr_str = String::from_utf8_lossy(&out.stderr).trim().to_string();
+            let version_str = if !stdout_str.is_empty() {
+                stdout_str
+            } else {
+                stderr_str
+            };
+
+            let first_line = version_str.lines().next().unwrap_or("").to_string();
+
+            DoctorCheck {
+                category: "Toolchain".to_string(),
+                title: format!("{} SDK", name),
+                status: CheckStatus::Ok,
+                message: if first_line.is_empty() {
+                    format!("{} SDK active", name)
+                } else {
+                    first_line
+                },
+            }
+        }
+        _ => DoctorCheck {
+            category: "Toolchain".to_string(),
+            title: format!("{} SDK", name),
+            status: CheckStatus::Warning,
+            message: format!("{} CLI binary not found in system PATH.", name),
+        },
+    }
 }
 
 pub fn perform_checks() -> Vec<DoctorCheck> {
     let mut checks = Vec::new();
 
     // 1. Flutter SDK Check
-    match Command::new("flutter").arg("--version").output() {
-        Ok(out) if out.status.success() => {
-            let first_line = String::from_utf8_lossy(&out.stdout)
-                .lines()
-                .next()
-                .unwrap_or("Flutter SDK installed")
-                .to_string();
-            checks.push(DoctorCheck {
-                category: "Toolchain".to_string(),
-                title: "Flutter SDK".to_string(),
-                status: CheckStatus::Ok,
-                message: first_line,
-            });
-        }
-        _ => {
-            checks.push(DoctorCheck {
-                category: "Toolchain".to_string(),
-                title: "Flutter SDK".to_string(),
-                status: CheckStatus::Warning,
-                message: "Flutter CLI binary not found in system PATH.".to_string(),
-            });
-        }
-    }
+    checks.push(check_toolchain("flutter", "Flutter"));
 
     // 2. Dart SDK Check
-    match Command::new("dart").arg("--version").output() {
-        Ok(out) if out.status.success() => {
-            let version_str = String::from_utf8_lossy(&out.stdout).trim().to_string();
-            let msg = if version_str.is_empty() {
-                String::from_utf8_lossy(&out.stderr).trim().to_string()
-            } else {
-                version_str
-            };
-            checks.push(DoctorCheck {
-                category: "Toolchain".to_string(),
-                title: "Dart SDK".to_string(),
-                status: CheckStatus::Ok,
-                message: if msg.is_empty() {
-                    "Dart SDK active".to_string()
-                } else {
-                    msg
-                },
-            });
-        }
-        _ => {
-            checks.push(DoctorCheck {
-                category: "Toolchain".to_string(),
-                title: "Dart SDK".to_string(),
-                status: CheckStatus::Warning,
-                message: "Dart CLI binary not found in system PATH.".to_string(),
-            });
-        }
-    }
+    checks.push(check_toolchain("dart", "Dart"));
 
     // 3. Flutter Project Context Check (pubspec.yaml)
     let pubspec_path = Path::new("pubspec.yaml");
@@ -323,7 +308,9 @@ mod tests {
 
     #[test]
     fn test_doctor_all_ok_and_toolchain_edge_cases() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
@@ -362,8 +349,12 @@ mod tests {
 
         // Run checks - confirms registry reachability and OK outcome
         let checks = perform_checks();
-        assert!(checks.iter().any(|c| c.title == "Registry Index" && c.status == CheckStatus::Ok));
-        assert!(checks.iter().any(|c| c.title == "JustUI Packages" && c.status == CheckStatus::Ok));
+        assert!(checks
+            .iter()
+            .any(|c| c.title == "Registry Index" && c.status == CheckStatus::Ok));
+        assert!(checks
+            .iter()
+            .any(|c| c.title == "JustUI Packages" && c.status == CheckStatus::Ok));
 
         // Create mock binary dir for toolchain edge cases
         let bin_dir = temp_dir.path().join("mock_bin");
@@ -382,21 +373,30 @@ mod tests {
         std::env::set_var("PATH", format!("{}:{}", bin_dir.display(), old_path));
 
         let checks_empty_dart = perform_checks();
-        let dart_check = checks_empty_dart.iter().find(|c| c.title == "Dart SDK").unwrap();
+        let dart_check = checks_empty_dart
+            .iter()
+            .find(|c| c.title == "Dart SDK")
+            .unwrap();
         assert_eq!(dart_check.message, "Dart SDK active");
 
         // Set PATH to empty directory to test CLI missing warning
         std::env::set_var("PATH", temp_dir.path().display().to_string());
         let checks_missing_tools = perform_checks();
-        assert!(checks_missing_tools.iter().any(|c| c.title == "Dart SDK" && c.status == CheckStatus::Warning));
-        assert!(checks_missing_tools.iter().any(|c| c.title == "Flutter SDK" && c.status == CheckStatus::Warning));
+        assert!(checks_missing_tools
+            .iter()
+            .any(|c| c.title == "Dart SDK" && c.status == CheckStatus::Warning));
+        assert!(checks_missing_tools
+            .iter()
+            .any(|c| c.title == "Flutter SDK" && c.status == CheckStatus::Warning));
 
         std::env::set_var("PATH", old_path);
     }
 
     #[test]
     fn test_doctor_run_all_status_outcomes() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
@@ -457,24 +457,38 @@ mod tests {
 
     #[test]
     fn test_doctor_perform_checks_comprehensive() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
         // 1. Check uninitialized (no pubspec.yaml, no config)
         let checks_uninit = perform_checks();
-        assert!(checks_uninit.iter().any(|c| c.status == CheckStatus::Error && c.title == "pubspec.yaml"));
-        assert!(checks_uninit.iter().any(|c| c.status == CheckStatus::Warning && c.title == "justui.config.yaml"));
+        assert!(checks_uninit
+            .iter()
+            .any(|c| c.status == CheckStatus::Error && c.title == "pubspec.yaml"));
+        assert!(checks_uninit
+            .iter()
+            .any(|c| c.status == CheckStatus::Warning && c.title == "justui.config.yaml"));
 
         // 2. Add pubspec without just_ui dependencies
         fs::write("pubspec.yaml", "name: my_app\n").unwrap();
         let checks_no_deps = perform_checks();
-        assert!(checks_no_deps.iter().any(|c| c.status == CheckStatus::Warning && c.title == "JustUI Packages"));
+        assert!(checks_no_deps
+            .iter()
+            .any(|c| c.status == CheckStatus::Warning && c.title == "JustUI Packages"));
 
         // 3. Add pubspec with just_ui_core
-        fs::write("pubspec.yaml", "name: my_app\ndependencies:\n  just_ui_core: 1.0.0\n").unwrap();
+        fs::write(
+            "pubspec.yaml",
+            "name: my_app\ndependencies:\n  just_ui_core: 1.0.0\n",
+        )
+        .unwrap();
         let checks_core_dep = perform_checks();
-        assert!(checks_core_dep.iter().any(|c| c.status == CheckStatus::Ok && c.title == "JustUI Packages"));
+        assert!(checks_core_dep
+            .iter()
+            .any(|c| c.status == CheckStatus::Ok && c.title == "JustUI Packages"));
 
         // 4. Add config with non-existent directories and invalid registry URL
         let config_yaml = r#"
@@ -488,16 +502,28 @@ dart_target: standard
 "#;
         fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
         let checks_config = perform_checks();
-        assert!(checks_config.iter().any(|c| c.title == "Components Directory" && c.status == CheckStatus::Warning));
-        assert!(checks_config.iter().any(|c| c.title == "Tokens Directory" && c.status == CheckStatus::Warning));
-        assert!(checks_config.iter().any(|c| c.title == "Shared Directory" && c.status == CheckStatus::Warning));
-        assert!(checks_config.iter().any(|c| c.title == "Dart Target" && c.message.contains("standard")));
-        assert!(checks_config.iter().any(|c| c.title == "Registry Index" && c.status == CheckStatus::Warning));
+        assert!(checks_config
+            .iter()
+            .any(|c| c.title == "Components Directory" && c.status == CheckStatus::Warning));
+        assert!(checks_config
+            .iter()
+            .any(|c| c.title == "Tokens Directory" && c.status == CheckStatus::Warning));
+        assert!(checks_config
+            .iter()
+            .any(|c| c.title == "Shared Directory" && c.status == CheckStatus::Warning));
+        assert!(checks_config
+            .iter()
+            .any(|c| c.title == "Dart Target" && c.message.contains("standard")));
+        assert!(checks_config
+            .iter()
+            .any(|c| c.title == "Registry Index" && c.status == CheckStatus::Warning));
     }
 
     #[test]
     fn test_doctor_toolchain_version_parsing_fallbacks() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
@@ -507,11 +533,19 @@ dart_target: standard
 
         // 1. Flutter script returning stdout version
         let flutter_bin = bin_dir.join("flutter");
-        fs::write(&flutter_bin, "#!/bin/sh\necho 'Flutter 3.19.0 • channel stable'\n").unwrap();
+        fs::write(
+            &flutter_bin,
+            "#!/bin/sh\necho 'Flutter 3.19.0 • channel stable'\n",
+        )
+        .unwrap();
 
         // 2. Dart script returning version on stderr fallback
         let dart_bin = bin_dir.join("dart");
-        fs::write(&dart_bin, "#!/bin/sh\necho 'Dart SDK version: 3.3.0 (stable)' >&2\n").unwrap();
+        fs::write(
+            &dart_bin,
+            "#!/bin/sh\necho 'Dart SDK version: 3.3.0 (stable)' >&2\n",
+        )
+        .unwrap();
 
         #[cfg(unix)]
         {
@@ -534,5 +568,128 @@ dart_target: standard
         assert!(dart_check.message.contains("Dart SDK version: 3.3.0"));
 
         std::env::set_var("PATH", old_path);
+    }
+
+    #[test]
+    fn test_doctor_healthy_project() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        // Create pubspec.yaml with just_ui_tokens
+        std::fs::write(
+            temp_dir.path().join("pubspec.yaml"),
+            "name: test_app\ndependencies:\n  just_ui_tokens: ^1.0.0\n",
+        )
+        .unwrap();
+
+        // Create directories
+        let comp_dir = temp_dir.path().join("lib/src/components");
+        let token_dir = temp_dir.path().join("lib/src/tokens");
+        let shared_dir = temp_dir.path().join("lib/src/shared");
+        std::fs::create_dir_all(&comp_dir).unwrap();
+        std::fs::create_dir_all(&token_dir).unwrap();
+        std::fs::create_dir_all(&shared_dir).unwrap();
+
+        // Create local registry directory with index.json
+        let reg_dir = temp_dir.path().join("registry");
+        std::fs::create_dir_all(&reg_dir).unwrap();
+        std::fs::write(
+            reg_dir.join("index.json"),
+            r#"{"version":"1.0.0","presets":["default"],"components":[]}"#,
+        )
+        .unwrap();
+
+        // Create justui.config.yaml
+        let config_yaml = format!(
+            "registry_url: {}\ncomponents_dir: {}\ntokens_dir: {}\nshared_dir: {}\n",
+            reg_dir.to_string_lossy(),
+            comp_dir.to_string_lossy(),
+            token_dir.to_string_lossy(),
+            shared_dir.to_string_lossy(),
+        );
+        std::fs::write(temp_dir.path().join("justui.config.yaml"), config_yaml).unwrap();
+
+        let checks = perform_checks();
+        assert!(checks
+            .iter()
+            .any(|c| c.title == "JustUI Packages" && c.status == CheckStatus::Ok));
+        assert!(checks
+            .iter()
+            .any(|c| c.title == "Components Directory" && c.status == CheckStatus::Ok));
+        assert!(checks
+            .iter()
+            .any(|c| c.title == "Registry Index" && c.status == CheckStatus::Ok));
+
+        assert!(run().is_ok());
+    }
+
+    #[test]
+    fn test_doctor_warnings_matrix() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        // Create pubspec.yaml WITHOUT just_ui dependencies
+        std::fs::write(
+            temp_dir.path().join("pubspec.yaml"),
+            "name: test_app\ndependencies:\n  flutter:\n    sdk: flutter\n",
+        )
+        .unwrap();
+
+        // Create config with non-existent directories and invalid registry URL
+        let config_yaml = "registry_url: http://invalid.invalid/registry\ncomponents_dir: non_existent_comp\ntokens_dir: non_existent_token\nshared_dir: non_existent_shared\n";
+        std::fs::write(temp_dir.path().join("justui.config.yaml"), config_yaml).unwrap();
+
+        let checks = perform_checks();
+        assert!(checks
+            .iter()
+            .any(|c| c.title == "JustUI Packages" && c.status == CheckStatus::Warning));
+        assert!(checks
+            .iter()
+            .any(|c| c.title == "Components Directory" && c.status == CheckStatus::Warning));
+        assert!(checks
+            .iter()
+            .any(|c| c.title == "Tokens Directory" && c.status == CheckStatus::Warning));
+        assert!(checks
+            .iter()
+            .any(|c| c.title == "Shared Directory" && c.status == CheckStatus::Warning));
+        assert!(checks
+            .iter()
+            .any(|c| c.title == "Registry Index" && c.status == CheckStatus::Warning));
+
+        assert!(run().is_ok());
+    }
+
+    #[test]
+    fn test_doctor_errors_matrix() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        // No pubspec.yaml -> triggers CheckStatus::Error
+        let checks = perform_checks();
+        assert!(checks
+            .iter()
+            .any(|c| c.title == "pubspec.yaml" && c.status == CheckStatus::Error));
+
+        assert!(run().is_ok());
+    }
+
+    #[test]
+    fn test_print_doctor_report_perfect_health() {
+        let checks = vec![DoctorCheck {
+            category: "Test".to_string(),
+            title: "Perfect".to_string(),
+            status: CheckStatus::Ok,
+            message: "All good".to_string(),
+        }];
+        print_doctor_report(&checks);
+    }
+
+    #[test]
+    fn test_check_toolchain_helpers() {
+        let check_invalid = check_toolchain("non_existent_binary_xyz_123", "NonExistent");
+        assert_eq!(check_invalid.status, CheckStatus::Warning);
     }
 }

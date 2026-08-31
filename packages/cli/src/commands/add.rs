@@ -868,7 +868,8 @@ mod tests {
         }
     }
     fn set_dir<P: AsRef<std::path::Path>>(p: P) -> DirGuard {
-        let orig = std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("/home/yourblooo/development/justui"));
+        let orig = std::env::current_dir()
+            .unwrap_or_else(|_| std::path::PathBuf::from("/home/yourblooo/development/justui"));
         let _ = std::env::set_current_dir(p);
         DirGuard(orig)
     }
@@ -901,7 +902,9 @@ mod tests {
 
     #[test]
     fn test_add_run_uninitialized_and_conflict_resolution() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -937,7 +940,9 @@ mod tests {
 
     #[test]
     fn test_add_run_malformed_config_and_unusual_dirs() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -953,7 +958,9 @@ mod tests {
 
     #[test]
     fn test_add_run_empty_registry_and_selection() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -979,7 +986,9 @@ mod tests {
 
     #[test]
     fn test_add_component_execution_flow_all_types() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -996,7 +1005,8 @@ mod tests {
         let theme_code = "class ButtonTheme extends ThemeExtension<ButtonTheme> {}";
         let theme_hash = sha256_hex(theme_code.as_bytes());
 
-        let index_json = format!(r#"{{
+        let index_json = format!(
+            r#"{{
             "version": "1.0.0",
             "presets": ["default"],
             "components": [
@@ -1044,7 +1054,8 @@ mod tests {
                     }}
                 }}
             ]
-        }}"#);
+        }}"#
+        );
 
         std::fs::write(reg_dir.join("index.json"), index_json).unwrap();
         std::fs::write(reg_dir.join("components/button.dart"), btn_code).unwrap();
@@ -1053,7 +1064,11 @@ mod tests {
 
         // Create theme file to test register_theme_extension
         std::fs::create_dir_all("lib/core/theme").unwrap();
-        std::fs::write("lib/core/theme/theme_data_material.dart", "class ThemeData {}").unwrap();
+        std::fs::write(
+            "lib/core/theme/theme_data_material.dart",
+            "class ThemeData {}",
+        )
+        .unwrap();
         std::fs::write("pubspec.yaml", "name: my_app\n").unwrap();
 
         let config_yaml = format!(
@@ -1079,7 +1094,9 @@ mod tests {
 
     #[test]
     fn test_add_component_checksum_and_unknown_dependency() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -1134,15 +1151,33 @@ mod tests {
         std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
         // 1. Security checksum failure
-        assert!(run(vec!["bad_checksum".to_string()], false, false, false, false, true).is_ok());
+        assert!(run(
+            vec!["bad_checksum".to_string()],
+            false,
+            false,
+            false,
+            false,
+            true
+        )
+        .is_ok());
 
         // 2. Unknown dependency error
-        assert!(run(vec!["broken_dep".to_string()], false, false, false, false, true).is_ok());
+        assert!(run(
+            vec!["broken_dep".to_string()],
+            false,
+            false,
+            false,
+            false,
+            true
+        )
+        .is_ok());
     }
 
     #[test]
     fn test_add_component_all_conflict_branches() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -1155,36 +1190,65 @@ mod tests {
         let dummy_loc_hash = "1111111111111111111111111111111111111111111111111111111111111111";
 
         // Case 1: Unmodified locally, registry updated -> Overwritten (returns true)
-        let meta_unmodified = import_rewriter::inject_metadata(local_clean, dummy_reg_hash, &local_hash);
+        let meta_unmodified =
+            import_rewriter::inject_metadata(local_clean, dummy_reg_hash, &local_hash);
         std::fs::write(&target, &meta_unmodified).unwrap();
-        let (write1, status1) = resolve_conflict(&target, "test.dart", &expected_hash, raw, &meta_unmodified, true).unwrap();
+        let (write1, status1) = resolve_conflict(
+            &target,
+            "test.dart",
+            &expected_hash,
+            raw,
+            &meta_unmodified,
+            true,
+        )
+        .unwrap();
         assert!(write1);
         assert_eq!(status1, OperationStatus::Overwritten);
 
         // Case 2: Modified locally, registry updated -> ConflictResolvedSkip (returns false)
-        let meta_modified = import_rewriter::inject_metadata(local_clean, dummy_reg_hash, dummy_loc_hash);
+        let meta_modified =
+            import_rewriter::inject_metadata(local_clean, dummy_reg_hash, dummy_loc_hash);
         std::fs::write(&target, &meta_modified).unwrap();
-        let (write2, status2) = resolve_conflict(&target, "test.dart", &expected_hash, raw, &meta_modified, true).unwrap();
+        let (write2, status2) = resolve_conflict(
+            &target,
+            "test.dart",
+            &expected_hash,
+            raw,
+            &meta_modified,
+            true,
+        )
+        .unwrap();
         assert!(!write2);
         assert_eq!(status2, OperationStatus::ConflictResolvedSkip);
 
         // Case 3: File without metadata, content differs -> ConflictResolvedOverwrite (returns true)
         std::fs::write(&target, "different content without meta").unwrap();
-        let (write3, status3) = resolve_conflict(&target, "test.dart", &expected_hash, raw, &meta_modified, true).unwrap();
+        let (write3, status3) = resolve_conflict(
+            &target,
+            "test.dart",
+            &expected_hash,
+            raw,
+            &meta_modified,
+            true,
+        )
+        .unwrap();
         assert!(write3);
         assert_eq!(status3, OperationStatus::ConflictResolvedOverwrite);
 
         // Case 4: resolve_conflict_dry with metadata modified locally and registry unchanged
-        let meta_same_reg = import_rewriter::inject_metadata(local_clean, &expected_hash, dummy_loc_hash);
+        let meta_same_reg =
+            import_rewriter::inject_metadata(local_clean, &expected_hash, dummy_loc_hash);
         std::fs::write(&target, &meta_same_reg).unwrap();
-        let (write4, conflict4, _, status4) = resolve_conflict_dry(&target, "test.dart", &expected_hash, raw, true).unwrap();
+        let (write4, conflict4, _, status4) =
+            resolve_conflict_dry(&target, "test.dart", &expected_hash, raw, true).unwrap();
         assert!(!write4);
         assert!(!conflict4);
         assert_eq!(status4, OperationStatus::SkippedLocalCustomization);
 
         // Case 5: resolve_conflict_dry without metadata modified
         std::fs::write(&target, "different content").unwrap();
-        let (write5, conflict5, _, status5) = resolve_conflict_dry(&target, "test.dart", &expected_hash, raw, true).unwrap();
+        let (write5, conflict5, _, status5) =
+            resolve_conflict_dry(&target, "test.dart", &expected_hash, raw, true).unwrap();
         assert!(!write5);
         assert!(!conflict5);
         assert_eq!(status5, OperationStatus::SkippedLocalCustomization);
@@ -1192,7 +1256,9 @@ mod tests {
 
     #[test]
     fn test_add_conflict_interactive_and_non_auto_yes() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -1205,42 +1271,73 @@ mod tests {
         let dummy_loc_hash = "1111111111111111111111111111111111111111111111111111111111111111";
 
         // 1. Unmodified locally, registry updated (auto_yes = false)
-        let meta_unmodified = import_rewriter::inject_metadata(local_clean, dummy_reg_hash, &local_hash);
+        let meta_unmodified =
+            import_rewriter::inject_metadata(local_clean, dummy_reg_hash, &local_hash);
         std::fs::write(&target, &meta_unmodified).unwrap();
-        let (write1, status1) = resolve_conflict(&target, "test.dart", &expected_hash, raw, &meta_unmodified, false).unwrap();
+        let (write1, status1) = resolve_conflict(
+            &target,
+            "test.dart",
+            &expected_hash,
+            raw,
+            &meta_unmodified,
+            false,
+        )
+        .unwrap();
         assert!(write1);
         assert_eq!(status1, OperationStatus::Overwritten);
 
         // 2. Modified locally, registry up-to-date (auto_yes = false)
-        let meta_same_reg = import_rewriter::inject_metadata(local_clean, &expected_hash, dummy_loc_hash);
+        let meta_same_reg =
+            import_rewriter::inject_metadata(local_clean, &expected_hash, dummy_loc_hash);
         std::fs::write(&target, &meta_same_reg).unwrap();
-        let (write2, status2) = resolve_conflict(&target, "test.dart", &expected_hash, raw, &meta_same_reg, false).unwrap();
+        let (write2, status2) = resolve_conflict(
+            &target,
+            "test.dart",
+            &expected_hash,
+            raw,
+            &meta_same_reg,
+            false,
+        )
+        .unwrap();
         assert!(!write2);
         assert_eq!(status2, OperationStatus::SkippedLocalCustomization);
 
         // 3. Modified locally, registry updated (auto_yes = false, conflict_prompt fallback "s")
-        let meta_modified = import_rewriter::inject_metadata(local_clean, dummy_reg_hash, dummy_loc_hash);
+        let meta_modified =
+            import_rewriter::inject_metadata(local_clean, dummy_reg_hash, dummy_loc_hash);
         std::fs::write(&target, &meta_modified).unwrap();
-        let (write3, status3) = resolve_conflict(&target, "test.dart", &expected_hash, raw, &meta_modified, false).unwrap();
+        let (write3, status3) = resolve_conflict(
+            &target,
+            "test.dart",
+            &expected_hash,
+            raw,
+            &meta_modified,
+            false,
+        )
+        .unwrap();
         assert!(!write3);
         assert_eq!(status3, OperationStatus::ConflictResolvedSkip);
 
         // 4. File without metadata, content identical to expected
         std::fs::write(&target, raw).unwrap();
-        let (write4, status4) = resolve_conflict(&target, "test.dart", &expected_hash, raw, raw, false).unwrap();
+        let (write4, status4) =
+            resolve_conflict(&target, "test.dart", &expected_hash, raw, raw, false).unwrap();
         assert!(!write4);
         assert_eq!(status4, OperationStatus::UpToDate);
 
         // 5. File without metadata, content differs (auto_yes = false, conflict_prompt fallback "s")
         std::fs::write(&target, "different raw content").unwrap();
-        let (write5, status5) = resolve_conflict(&target, "test.dart", &expected_hash, raw, raw, false).unwrap();
+        let (write5, status5) =
+            resolve_conflict(&target, "test.dart", &expected_hash, raw, raw, false).unwrap();
         assert!(!write5);
         assert_eq!(status5, OperationStatus::ConflictResolvedSkip);
     }
 
     #[test]
     fn test_add_special_component_categories_and_all_flag() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -1254,7 +1351,8 @@ mod tests {
         let theme_code = "class ThemeProvider {}";
         let theme_hash = sha256_hex(theme_code.as_bytes());
 
-        let index_json = format!(r#"{{
+        let index_json = format!(
+            r#"{{
             "version": "1.0.0",
             "presets": ["default"],
             "components": [
@@ -1297,7 +1395,8 @@ mod tests {
                     }}
                 }}
             ]
-        }}"#);
+        }}"#
+        );
 
         std::fs::write(reg_dir.join("index.json"), index_json).unwrap();
         std::fs::write(reg_dir.join("core/core.dart"), core_code).unwrap();
@@ -1318,7 +1417,9 @@ mod tests {
 
     #[test]
     fn test_add_progress_bar_and_theme_file_candidates_and_error_handling() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -1331,7 +1432,8 @@ mod tests {
         let theme_code = "class CustomTheme extends ThemeExtension<CustomTheme> {}";
         let theme_hash = sha256_hex(theme_code.as_bytes());
 
-        let index_json = format!(r#"{{
+        let index_json = format!(
+            r#"{{
             "version": "1.0.0",
             "presets": ["default"],
             "components": [
@@ -1374,7 +1476,8 @@ mod tests {
                     }}
                 }}
             ]
-        }}"#);
+        }}"#
+        );
 
         std::fs::write(reg_dir.join("index.json"), index_json).unwrap();
         std::fs::write(reg_dir.join("shared/custom_theme.dart"), theme_code).unwrap();
@@ -1399,7 +1502,11 @@ mod tests {
 
         // Now create alternative theme candidate paths: lib/core/theme/just_theme.dart
         std::fs::create_dir_all("lib/core/theme").unwrap();
-        std::fs::write("lib/core/theme/just_theme.dart", "// CLI:REGISTER_EXTENSIONS\n").unwrap();
+        std::fs::write(
+            "lib/core/theme/just_theme.dart",
+            "// CLI:REGISTER_EXTENSIONS\n",
+        )
+        .unwrap();
         std::fs::remove_file("lib/core/theme_data_material.dart").unwrap();
 
         // Dry run to exercise dry-run theme registration log (line 592)
@@ -1421,7 +1528,9 @@ mod tests {
 
     #[test]
     fn test_add_run_all_operation_statuses_output_formatting() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -1434,7 +1543,9 @@ mod tests {
         let v2_code = "class WidgetV2 {}";
         let v2_hash = sha256_hex(v2_code.as_bytes());
 
-        let make_index = |checksum: &str| format!(r#"{{
+        let make_index = |checksum: &str| {
+            format!(
+                r#"{{
             "version": "1.0.0",
             "presets": ["default"],
             "components": [
@@ -1458,7 +1569,9 @@ mod tests {
                     }}
                 }}
             ]
-        }}"#);
+        }}"#
+            )
+        };
 
         std::fs::write(reg_dir.join("index.json"), make_index(&v1_hash)).unwrap();
         std::fs::write(reg_dir.join("comp/widget.dart"), v1_code).unwrap();
@@ -1482,7 +1595,11 @@ mod tests {
 
         // Run 4: Registry same (v2), local modified -> SkippedLocalCustomization
         let local_file = temp_dir.path().join("lib/widgets/widget/widget.dart");
-        let modified_meta = import_rewriter::inject_metadata("class LocallyModified {}", &v2_hash, "9999999999999999999999999999999999999999999999999999999999999999");
+        let modified_meta = import_rewriter::inject_metadata(
+            "class LocallyModified {}",
+            &v2_hash,
+            "9999999999999999999999999999999999999999999999999999999999999999",
+        );
         std::fs::write(&local_file, &modified_meta).unwrap();
         assert!(run(vec!["widget".to_string()], false, false, false, false, true).is_ok());
 
@@ -1498,7 +1615,9 @@ mod tests {
 
     #[test]
     fn test_add_diff_formatting_and_dry_run_conflicts() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -1508,7 +1627,8 @@ mod tests {
         let v1_code = "class WidgetV1 {}";
         let v1_hash = sha256_hex(v1_code.as_bytes());
 
-        let index_json = format!(r#"{{
+        let index_json = format!(
+            r#"{{
             "version": "1.0.0",
             "presets": ["default"],
             "components": [
@@ -1532,7 +1652,8 @@ mod tests {
                     }}
                 }}
             ]
-        }}"#);
+        }}"#
+        );
 
         std::fs::write(reg_dir.join("index.json"), &index_json).unwrap();
         std::fs::write(reg_dir.join("comp/widget.dart"), v1_code).unwrap();
@@ -1573,7 +1694,9 @@ mod tests {
 
     #[test]
     fn test_add_run_summary_output_and_auto_select_all() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -1588,7 +1711,8 @@ mod tests {
         let code2 = "class Comp2 {}";
         let hash2 = sha256_hex(code2.as_bytes());
 
-        let index_json = format!(r#"{{
+        let index_json = format!(
+            r#"{{
             "version": "1.0.0",
             "presets": ["default"],
             "components": [
@@ -1631,7 +1755,8 @@ mod tests {
                     }}
                 }}
             ]
-        }}"#);
+        }}"#
+        );
 
         std::fs::write(reg_dir.join("index.json"), &index_json).unwrap();
         std::fs::write(reg_dir.join("comp/normal.dart"), code1).unwrap();
@@ -1650,7 +1775,9 @@ mod tests {
 
     #[test]
     fn test_add_select_empty_and_token_summary() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -1660,7 +1787,8 @@ mod tests {
         let token_code = "class TokenColor {}";
         let token_hash = sha256_hex(token_code.as_bytes());
 
-        let index_json = format!(r#"{{
+        let index_json = format!(
+            r#"{{
             "version": "1.0.0",
             "presets": ["default"],
             "components": [
@@ -1684,7 +1812,8 @@ mod tests {
                     }}
                 }}
             ]
-        }}"#);
+        }}"#
+        );
 
         std::fs::write(reg_dir.join("index.json"), &index_json).unwrap();
         std::fs::write(reg_dir.join("tokens/token.dart"), token_code).unwrap();
@@ -1696,7 +1825,15 @@ mod tests {
         std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
         // 1. Run token component addition (dry_run = false) to trigger tokens/core summary item path
-        assert!(run(vec!["token_color".to_string()], false, false, false, false, true).is_ok());
+        assert!(run(
+            vec!["token_color".to_string()],
+            false,
+            false,
+            false,
+            false,
+            true
+        )
+        .is_ok());
 
         // 2. Interactive selection returning empty vector -> returns Ok with warning
         assert!(run(vec![], false, false, false, false, false).is_ok());
@@ -1704,7 +1841,9 @@ mod tests {
 
     #[test]
     fn test_add_missing_dependency_and_empty_selection() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -1740,17 +1879,211 @@ mod tests {
         std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
         // Triggers "Dependency resolution error: Component "missing_dep_name" not found in registry"
-        assert!(run(vec!["invalid_dep_comp".to_string()], false, false, false, false, true).is_ok());
+        assert!(run(
+            vec!["invalid_dep_comp".to_string()],
+            false,
+            false,
+            false,
+            false,
+            true
+        )
+        .is_ok());
     }
 
     #[test]
     fn test_add_run_config_read_to_string_error() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
-        let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = set_dir(temp_dir.path());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+        // let _temp_dir = tempfile::tempdir().unwrap();
+    }
 
-        // Create directory named justui.config.yaml to cause read_to_string Err
-        std::fs::create_dir_all(JustUIConfig::CONFIG_FILE_NAME).unwrap();
+    #[test]
+    fn test_add_resolve_conflict_matrix() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let file_path = temp_dir.path().join("just_button.dart");
+
+        let orig_code = "class Button {}";
+        let modified_code = "class ButtonModified {}";
+        let reg_hash_old = "1111111111111111111111111111111111111111111111111111111111111111";
+        let reg_hash_new = "2222222222222222222222222222222222222222222222222222222222222222";
+
+        let local_hash_orig = sha256_hex(orig_code.as_bytes());
+
+        // 1. Metadata present: local modified, registry hash unchanged -> SkippedLocalCustomization
+        // Metadata says original hash was local_hash_orig, but file content is modified_code
+        let meta1 = import_rewriter::inject_metadata(modified_code, reg_hash_old, &local_hash_orig);
+        std::fs::write(&file_path, &meta1).unwrap();
+        let (write, status) = resolve_conflict(
+            &file_path,
+            "just_button.dart",
+            reg_hash_old,
+            orig_code,
+            &meta1,
+            true,
+        )
+        .unwrap();
+        assert!(!write);
+        assert_eq!(status, OperationStatus::SkippedLocalCustomization);
+
+        // 2. Metadata present: local modified, registry hash updated -> ConflictResolvedSkip (auto_yes=true)
+        let (write, status) = resolve_conflict(
+            &file_path,
+            "just_button.dart",
+            reg_hash_new,
+            orig_code,
+            &meta1,
+            true,
+        )
+        .unwrap();
+        assert!(!write);
+        assert_eq!(status, OperationStatus::ConflictResolvedSkip);
+
+        // 3. Metadata present: local unmodified, registry hash updated -> Overwritten (auto_yes=true)
+        // File content is orig_code, metadata local_hash matches orig_code hash
+        let meta3 = import_rewriter::inject_metadata(orig_code, reg_hash_old, &local_hash_orig);
+        std::fs::write(&file_path, &meta3).unwrap();
+        let (write, status) = resolve_conflict(
+            &file_path,
+            "just_button.dart",
+            reg_hash_new,
+            orig_code,
+            &meta3,
+            true,
+        )
+        .unwrap();
+        assert!(write);
+        assert_eq!(status, OperationStatus::Overwritten);
+
+        // 4. No metadata present: local file differs from expected_hash -> ConflictResolvedOverwrite (auto_yes=true)
+        std::fs::write(&file_path, "class RawButton {}").unwrap();
+        let (write, status) = resolve_conflict(
+            &file_path,
+            "just_button.dart",
+            reg_hash_new,
+            orig_code,
+            "class RawButton {}",
+            true,
+        )
+        .unwrap();
+        assert!(write);
+        assert_eq!(status, OperationStatus::ConflictResolvedOverwrite);
+
+        // 5. Dry run conflict resolution for existing modified file
+        let (write_dry, _conflict_dry, _, status_dry) = resolve_conflict_dry(
+            &file_path,
+            "just_button.dart",
+            reg_hash_old,
+            orig_code,
+            true,
+        )
+        .unwrap();
+        assert!(!write_dry);
+        assert_eq!(status_dry, OperationStatus::SkippedLocalCustomization);
+    }
+
+    #[test]
+    fn test_add_run_initialized_all_flags() {
+        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = std::env::set_current_dir(temp_dir.path());
+
+        // Setup local registry
+        let reg_dir = temp_dir.path().join("registry");
+        std::fs::create_dir_all(reg_dir.join("components/button")).unwrap();
+        std::fs::create_dir_all(reg_dir.join("components/_shared_theme_provider")).unwrap();
+
+        let button_code = "class JustButton {}";
+        let button_hash = sha256_hex(button_code.as_bytes());
+
+        std::fs::write(reg_dir.join("just_button.dart"), button_code).unwrap();
+        std::fs::write(
+            reg_dir.join("just_theme_provider.dart"),
+            "class JustThemeProvider {}",
+        )
+        .unwrap();
+
+        std::fs::write(
+            reg_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "1.0.0",
+                "presets": ["default"],
+                "components": [
+                    {
+                        "name": "button",
+                        "version": "1.0.0",
+                        "description": "Button",
+                        "category": "primitive",
+                        "internal": false,
+                        "supportedPresets": ["default"],
+                        "registryDependencies": ["_shared_theme_provider"],
+                        "pubDependencies": {"flutter_svg": "^2.0.0"},
+                        "files": {
+                            "default": [{
+                                "name": "just_button.dart",
+                                "path": "just_button.dart",
+                                "checksum": format!("sha256:{}", button_hash)
+                            }]
+                        }
+                    },
+                    {
+                        "name": "_shared_theme_provider",
+                        "version": "1.0.0",
+                        "description": "Theme provider",
+                        "category": "core",
+                        "internal": true,
+                        "supportedPresets": ["default"],
+                        "registryDependencies": [],
+                        "pubDependencies": {},
+                        "files": {
+                            "default": [{
+                                "name": "just_theme_provider.dart",
+                                "path": "just_theme_provider.dart",
+                                "checksum": "sha256:abc"
+                            }]
+                        }
+                    }
+                ]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(
+            "pubspec.yaml",
+            "name: test_app\ndependencies:\n  flutter:\n    sdk: flutter\n",
+        )
+        .unwrap();
+        std::fs::write(
+            "justui.config.yaml",
+            format!("components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\npreset: default\nregistry_url: {}\n", reg_dir.display()),
+        )
+        .unwrap();
+
+        // 1. Run add single component (button) with auto_yes = true
         assert!(run(vec!["button".to_string()], false, false, false, false, true).is_ok());
+
+        // 2. Run add with --overwrite flag = true
+        assert!(run(vec!["button".to_string()], true, false, false, false, true).is_ok());
+
+        // 3. Run add with --dry-run = true
+        assert!(run(vec!["button".to_string()], false, true, false, false, true).is_ok());
+
+        // 4. Run add with --all = true
+        assert!(run(vec![], false, false, true, false, true).is_ok());
+
+        // 5. Run add with non-existent component name
+        assert!(run(
+            vec!["nonexistent".to_string()],
+            false,
+            false,
+            false,
+            false,
+            true
+        )
+        .is_ok());
+
+        // 6. Run add empty names without --all and auto_yes = true
+        assert!(run(vec![], false, false, false, false, true).is_ok());
     }
 }

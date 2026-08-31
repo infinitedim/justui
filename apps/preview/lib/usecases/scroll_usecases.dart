@@ -192,7 +192,7 @@ Widget buildJustScrollAreaDefaultUseCase(BuildContext context) {
               vertical: spacing.sm,
             ),
             child: Column(
-              children: List.generate(activityData.length, (index) {
+              children: .generate(activityData.length, (index) {
                 final item = activityData[index];
                 return Padding(
                   padding: EdgeInsets.symmetric(vertical: spacing.xs),

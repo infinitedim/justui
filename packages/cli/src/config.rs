@@ -10,6 +10,8 @@ pub struct JustUIConfig {
 
     pub preset: String,
 
+    pub color_space: String,
+
     pub dart_target: crate::utils::env_resolver::DartTarget,
 }
 
@@ -37,6 +39,7 @@ impl JustUIConfig {
         let shared_dir =
             get_str("shared_dir").unwrap_or_else(|| format!("{}/shared", components_dir));
         let preset = get_str("preset").unwrap_or_else(|| "default".to_string());
+        let color_space = get_str("color_space").unwrap_or_else(|| "hsl".to_string());
 
         let dart_target = get_str("dart_target")
             .and_then(|s| match s.as_str() {
@@ -53,6 +56,7 @@ impl JustUIConfig {
             registry_url: get_str("registry_url")
                 .unwrap_or_else(|| Self::DEFAULT_REGISTRY_URL.to_string()),
             preset,
+            color_space,
             dart_target,
         }
     }
@@ -78,6 +82,9 @@ impl JustUIConfig {
              # Active style preset to use (e.g., 'default', 'neobrutalism')\n\
              preset: {}\n\
              \n\
+             # Active color space engine to use (e.g., 'hsl', 'oklch', 'hsluv')\n\
+             color_space: {}\n\
+             \n\
              # Target Dart constructor syntax ('primary' or 'standard')\n\
              dart_target: {}\n",
             self.components_dir,
@@ -85,6 +92,7 @@ impl JustUIConfig {
             self.shared_dir,
             self.registry_url,
             self.preset,
+            self.color_space,
             match self.dart_target {
                 crate::utils::env_resolver::DartTarget::Primary => "primary",
                 crate::utils::env_resolver::DartTarget::Standard => "standard",
@@ -101,6 +109,7 @@ impl Default for JustUIConfig {
             shared_dir: "lib/widgets/shared".to_string(),
             registry_url: Self::DEFAULT_REGISTRY_URL.to_string(),
             preset: "default".to_string(),
+            color_space: "hsl".to_string(),
             dart_target: crate::utils::env_resolver::DartTarget::Standard,
         }
     }
@@ -117,6 +126,7 @@ mod tests {
         assert_eq!(def.tokens_dir, "lib/tokens");
         assert_eq!(def.shared_dir, "lib/widgets/shared");
         assert_eq!(def.preset, "default");
+        assert_eq!(def.color_space, "hsl");
 
         let yaml = def.to_yaml_string();
         let parsed = JustUIConfig::from_yaml(&yaml);
@@ -124,5 +134,6 @@ mod tests {
         assert_eq!(parsed.tokens_dir, def.tokens_dir);
         assert_eq!(parsed.shared_dir, def.shared_dir);
         assert_eq!(parsed.preset, def.preset);
+        assert_eq!(parsed.color_space, def.color_space);
     }
 }
