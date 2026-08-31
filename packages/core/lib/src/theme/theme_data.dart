@@ -28,6 +28,7 @@ class const JustThemeData({
   required final JustShadowScheme shadows,
   final JustMotionProfile animations = .standard,
   final JustThemePreset preset = .default_,
+  final JustColorSpaceEngine colorSpace = .hsl,
 }) {
   /// Resolved preset-specific visual token implementation.
   /// Convenience accessor equivalent to `preset.tokens`.
@@ -121,6 +122,7 @@ class const JustThemeData({
     JustRadiusScheme radius = const DefaultRadiusScheme(),
     JustMotionProfile animations = .standard,
     JustThemePreset preset = .default_,
+    JustColorSpaceEngine colorSpace = .hsl,
   }) {
     assert(seedColor.a == 1.0, 'Seed color must be fully opaque');
 
@@ -131,22 +133,30 @@ class const JustThemeData({
     final Color overlay;
 
     if (isDark) {
-      bg = JustDynamicSurfaces.generateDarkSurface(seedColor, lightness: 0.03);
+      bg = JustDynamicSurfaces.generateDarkSurface(
+        seedColor,
+        lightness: 0.03,
+        engine: colorSpace,
+      );
       card = JustDynamicSurfaces.generateDarkSurface(
         seedColor,
         lightness: 0.07,
+        engine: colorSpace,
       );
       elevated = JustDynamicSurfaces.generateDarkSurface(
         seedColor,
         lightness: 0.12,
+        engine: colorSpace,
       );
       muted = JustDynamicSurfaces.generateDarkSurface(
         seedColor,
         lightness: 0.10,
+        engine: colorSpace,
       );
       overlay = JustDynamicSurfaces.generateDarkSurface(
         seedColor,
         lightness: 0.02,
+        engine: colorSpace,
       );
     } else {
       bg = preset == .neobrutalism
@@ -158,10 +168,13 @@ class const JustThemeData({
       overlay = JustColorSemanticLight.overlay;
     }
 
-    // Generate an HSL-based primary color variant.
-    final HSLColor hsl = .fromColor(seedColor);
+    // Generate a primary color variant using the configured colorSpace engine.
+    final pc = ColorSpaceOps.toPerceptual(seedColor, colorSpace);
     final targetLightness = isDark ? 0.6 : 0.5;
-    final primary = hsl.withLightness(targetLightness).toColor();
+    final primary = ColorSpaceOps.fromPerceptual(
+      PerceptualColor(targetLightness, pc.c, pc.h),
+      colorSpace,
+    );
 
     // Adjust lightness dynamically to guarantee at least 3.0:1 contrast.
     final Color borderFocusColor;
@@ -170,7 +183,12 @@ class const JustThemeData({
           ? const Color(0xFFFFFFFF)
           : const Color(0xFF000000);
     } else {
-      borderFocusColor = _makeAccessible(primary, bg, minRatio: 3.0);
+      borderFocusColor = _makeAccessible(
+        primary,
+        bg,
+        minRatio: 3.0,
+        engine: colorSpace,
+      );
     }
 
     // Dynamic contrast enforcement for semantic state colors against generated background
@@ -187,10 +205,30 @@ class const JustThemeData({
         ? JustColorSemanticDark.info
         : JustColorSemanticLight.info;
 
-    final successColor = _makeAccessible(successBase, bg, minRatio: 4.5);
-    final warningColor = _makeAccessible(warningBase, bg, minRatio: 3.0);
-    final errorColor = _makeAccessible(errorBase, bg, minRatio: 4.5);
-    final infoColor = _makeAccessible(infoBase, bg, minRatio: 4.5);
+    final successColor = _makeAccessible(
+      successBase,
+      bg,
+      minRatio: 4.5,
+      engine: colorSpace,
+    );
+    final warningColor = _makeAccessible(
+      warningBase,
+      bg,
+      minRatio: 3.0,
+      engine: colorSpace,
+    );
+    final errorColor = _makeAccessible(
+      errorBase,
+      bg,
+      minRatio: 4.5,
+      engine: colorSpace,
+    );
+    final infoColor = _makeAccessible(
+      infoBase,
+      bg,
+      minRatio: 4.5,
+      engine: colorSpace,
+    );
 
     final colors = CustomColorScheme.resolveSemantic(
       background: bg,
@@ -229,6 +267,7 @@ class const JustThemeData({
           ? JustMotionProfile.neobrutalism
           : animations,
       preset: preset,
+      colorSpace: colorSpace,
     );
   }
 
@@ -236,10 +275,12 @@ class const JustThemeData({
     Color color,
     Color background, {
     double minRatio = 3.0,
+    JustColorSpaceEngine engine = .hsl,
   }) {
     final adjusted = color.adjustLightnessForContrast(
       background: background,
       targetRatio: minRatio,
+      engine: engine,
     );
     if (adjusted.contrastRatioWith(background) >= minRatio) {
       return adjusted;
@@ -278,24 +319,38 @@ class const JustThemeData({
         colors.borderFocus,
         colors.background,
         minRatio: 4.5,
+        engine: colorSpace,
       ),
       borderError: _makeAccessible(
         colors.borderError,
         colors.background,
         minRatio: 4.5,
+        engine: colorSpace,
       ),
       success: _makeAccessible(
         colors.success,
         colors.background,
         minRatio: 4.5,
+        engine: colorSpace,
       ),
       warning: _makeAccessible(
         colors.warning,
         colors.background,
         minRatio: 4.5,
+        engine: colorSpace,
       ),
-      error: _makeAccessible(colors.error, colors.background, minRatio: 4.5),
-      info: _makeAccessible(colors.info, colors.background, minRatio: 4.5),
+      error: _makeAccessible(
+        colors.error,
+        colors.background,
+        minRatio: 4.5,
+        engine: colorSpace,
+      ),
+      info: _makeAccessible(
+        colors.info,
+        colors.background,
+        minRatio: 4.5,
+        engine: colorSpace,
+      ),
     );
 
     return copyWith(colors: updatedColors);
@@ -310,6 +365,7 @@ class const JustThemeData({
     JustShadowScheme? shadows,
     JustMotionProfile? animations,
     JustThemePreset? preset,
+    JustColorSpaceEngine? colorSpace,
   }) {
     return JustThemeData(
       colors: colors ?? this.colors,
@@ -319,6 +375,7 @@ class const JustThemeData({
       shadows: shadows ?? this.shadows,
       animations: animations ?? this.animations,
       preset: preset ?? this.preset,
+      colorSpace: colorSpace ?? this.colorSpace,
     );
   }
 
@@ -333,7 +390,8 @@ class const JustThemeData({
           radius == other.radius &&
           shadows == other.shadows &&
           animations == other.animations &&
-          preset == other.preset;
+          preset == other.preset &&
+          colorSpace == other.colorSpace;
 
   @override
   int get hashCode => Object.hash(
@@ -344,5 +402,6 @@ class const JustThemeData({
     shadows,
     animations,
     preset,
+    colorSpace,
   );
 }
