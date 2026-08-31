@@ -110,17 +110,14 @@ mod tests {
         }
     }
     fn set_dir<P: AsRef<std::path::Path>>(p: P) -> DirGuard {
-        let orig = std::env::current_dir()
-            .unwrap_or_else(|_| std::path::PathBuf::from("/home/yourblooo/development/justui"));
+        let orig = std::env::current_dir().unwrap_or_else(|_| std::env::temp_dir());
         let _ = std::env::set_current_dir(p);
         DirGuard(orig)
     }
 
     #[test]
     fn test_info_run_without_config() {
-        let _lock = crate::utils::TEST_MUTEX
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
         assert!(run(None).is_ok());
@@ -128,9 +125,7 @@ mod tests {
 
     #[test]
     fn test_info_run_with_pubspec_name_and_nameless() {
-        let _lock = crate::utils::TEST_MUTEX
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -153,9 +148,7 @@ mod tests {
 
     #[test]
     fn test_info_run_with_valid_config_and_local_registry() {
-        let _lock = crate::utils::TEST_MUTEX
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -212,9 +205,7 @@ mod tests {
 
     #[test]
     fn test_info_run_unreachable_registry_and_read_error_config() {
-        let _lock = crate::utils::TEST_MUTEX
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -239,7 +230,7 @@ mod tests {
 
     #[test]
     fn test_info_with_config_and_pubspec() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
@@ -287,7 +278,7 @@ mod tests {
 
     #[test]
     fn test_info_pubspec_without_name() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 

@@ -868,8 +868,7 @@ mod tests {
         }
     }
     fn set_dir<P: AsRef<std::path::Path>>(p: P) -> DirGuard {
-        let orig = std::env::current_dir()
-            .unwrap_or_else(|_| std::path::PathBuf::from("/home/yourblooo/development/justui"));
+        let orig = std::env::current_dir().unwrap_or_else(|_| std::env::temp_dir());
         let _ = std::env::set_current_dir(p);
         DirGuard(orig)
     }
@@ -1984,7 +1983,7 @@ mod tests {
 
     #[test]
     fn test_add_run_initialized_all_flags() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 

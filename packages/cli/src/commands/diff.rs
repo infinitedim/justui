@@ -429,7 +429,7 @@ mod tests {
 
     #[test]
     fn test_diff_helpers_and_uninitialized() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::lock_test_mutex();
         let local = "line 1\nline 2 local\nline 3 local";
         let remote = "line 1\nline 2 remote\nline 4 remote";
         print_line_diff("just_button.dart", local, remote);

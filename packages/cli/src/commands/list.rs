@@ -1274,8 +1274,7 @@ mod tests {
         let config_yaml = format!("registryUrl: \"{}\"", registry_dir.to_string_lossy());
         std::fs::write(&config_file, config_yaml).unwrap();
 
-        let orig_cwd = std::env::current_dir()
-            .unwrap_or_else(|_| std::path::PathBuf::from("/home/yourblooo/development/justui"));
+        let orig_cwd = std::env::current_dir().unwrap_or_else(|_| std::env::temp_dir());
         let _ = std::env::set_current_dir(temp_dir.path());
 
         // 1. JSON output
