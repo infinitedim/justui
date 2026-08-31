@@ -192,7 +192,7 @@ mod tests {
     fn test_update_run_uninitialized() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         assert!(run(true).is_ok());
     }
@@ -201,7 +201,7 @@ mod tests {
     fn test_update_invalid_yaml_config() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         std::fs::write(
             temp_dir.path().join("justui.config.yaml"),
@@ -215,7 +215,7 @@ mod tests {
     fn test_update_missing_components_dir_and_empty_components() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         let reg_dir = temp_dir.path().join("registry");
         std::fs::create_dir_all(&reg_dir).unwrap();
@@ -246,7 +246,7 @@ mod tests {
     fn test_update_outdated_component_auto_yes() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         let reg_dir = temp_dir.path().join("registry");
         std::fs::create_dir_all(&reg_dir).unwrap();
