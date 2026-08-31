@@ -249,6 +249,7 @@ fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Event>>>(
                         let mut buffer = String::new();
                         if std::env::var("CI").is_err()
                             && std::env::var("JUSTUI_NON_INTERACTIVE").is_err()
+                            && crate::utils::prompt::is_interactive()
                         {
                             let _ = io::stdin().read_line(&mut buffer);
                         }
@@ -1286,7 +1287,7 @@ mod tests {
         // 3. Non-existent category
         assert!(run(Some("nonexistent".to_string()), false).is_ok());
 
-        if let Ok(_) = std::env::set_current_dir(&orig_cwd) {}
+        let _ = std::env::set_current_dir(&orig_cwd);
 
         // 4. Error case: invalid registry
         let _ = run(None, false);
