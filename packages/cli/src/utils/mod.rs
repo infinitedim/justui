@@ -17,3 +17,20 @@ pub static TEST_MUTEX: std::sync::Mutex<()> = std::sync::Mutex::new(());
 pub fn lock_test_mutex() -> std::sync::MutexGuard<'static, ()> {
     TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner())
 }
+
+#[cfg(test)]
+pub struct DirGuard(pub std::path::PathBuf);
+
+#[cfg(test)]
+impl Drop for DirGuard {
+    fn drop(&mut self) {
+        let _ = std::env::set_current_dir(&self.0);
+    }
+}
+
+#[cfg(test)]
+pub fn set_dir<P: AsRef<std::path::Path>>(p: P) -> DirGuard {
+    let orig = std::env::current_dir().unwrap_or_else(|_| std::env::temp_dir());
+    let _ = std::env::set_current_dir(p);
+    DirGuard(orig)
+}

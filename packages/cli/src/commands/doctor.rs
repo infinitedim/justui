@@ -310,7 +310,7 @@ mod tests {
     fn test_doctor_all_ok_and_toolchain_edge_cases() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         // 1. Create pubspec with just_ui_core dependency
         fs::write(
@@ -394,7 +394,7 @@ mod tests {
     fn test_doctor_run_all_status_outcomes() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         // Uninitialized: returns warnings
         assert!(run().is_ok());
@@ -455,7 +455,7 @@ mod tests {
     fn test_doctor_perform_checks_comprehensive() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         // 1. Check uninitialized (no pubspec.yaml, no config)
         let checks_uninit = perform_checks();
@@ -517,7 +517,7 @@ dart_target: standard
     fn test_doctor_toolchain_version_parsing_fallbacks() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         // Create mock binary dir
         let bin_dir = temp_dir.path().join("bin");
@@ -566,7 +566,7 @@ dart_target: standard
     fn test_doctor_healthy_project() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         // Create pubspec.yaml with just_ui_tokens
         std::fs::write(
@@ -620,7 +620,7 @@ dart_target: standard
     fn test_doctor_warnings_matrix() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         // Create pubspec.yaml WITHOUT just_ui dependencies
         std::fs::write(
@@ -657,7 +657,7 @@ dart_target: standard
     fn test_doctor_errors_matrix() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
-        let _guard = std::env::set_current_dir(temp_dir.path());
+        let _guard = crate::utils::set_dir(temp_dir.path());
 
         // No pubspec.yaml -> triggers CheckStatus::Error
         let checks = perform_checks();
