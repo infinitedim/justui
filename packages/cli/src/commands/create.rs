@@ -366,7 +366,7 @@ mod tests {
 
     #[test]
     fn test_create_run_execution() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 

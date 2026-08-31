@@ -12,3 +12,8 @@ pub mod theme_editor;
 
 #[cfg(test)]
 pub static TEST_MUTEX: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
+#[cfg(test)]
+pub fn lock_test_mutex() -> std::sync::MutexGuard<'static, ()> {
+    TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner())
+}

@@ -390,7 +390,7 @@ mod tests {
 
     #[test]
     fn test_preset_run_uninitialized() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
@@ -405,7 +405,7 @@ mod tests {
 
     #[test]
     fn test_preset_run_initialized_with_local_registry() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
