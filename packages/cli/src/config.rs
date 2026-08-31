@@ -9,6 +9,8 @@ pub struct JustUIConfig {
     pub registry_url: String,
 
     pub preset: String,
+
+    pub color_space: String,
 }
 
 impl JustUIConfig {
@@ -35,6 +37,7 @@ impl JustUIConfig {
         let shared_dir =
             get_str("shared_dir").unwrap_or_else(|| format!("{}/shared", components_dir));
         let preset = get_str("preset").unwrap_or_else(|| "default".to_string());
+        let color_space = get_str("color_space").unwrap_or_else(|| "hsl".to_string());
 
         Self {
             components_dir,
@@ -43,6 +46,7 @@ impl JustUIConfig {
             registry_url: get_str("registry_url")
                 .unwrap_or_else(|| Self::DEFAULT_REGISTRY_URL.to_string()),
             preset,
+            color_space,
         }
     }
 
@@ -65,8 +69,16 @@ impl JustUIConfig {
              registry_url: {}\n\
              \n\
              # Active style preset to use (e.g., 'default', 'neobrutalism')\n\
-             preset: {}\n",
-            self.components_dir, self.tokens_dir, self.shared_dir, self.registry_url, self.preset
+             preset: {}\n\
+             \n\
+             # Active color space engine to use (e.g., 'hsl', 'oklch', 'hsluv')\n\
+             color_space: {}\n",
+            self.components_dir,
+            self.tokens_dir,
+            self.shared_dir,
+            self.registry_url,
+            self.preset,
+            self.color_space
         )
     }
 }
@@ -79,6 +91,7 @@ impl Default for JustUIConfig {
             shared_dir: "lib/widgets/shared".to_string(),
             registry_url: Self::DEFAULT_REGISTRY_URL.to_string(),
             preset: "default".to_string(),
+            color_space: "hsl".to_string(),
         }
     }
 }
@@ -94,6 +107,7 @@ mod tests {
         assert_eq!(def.tokens_dir, "lib/tokens");
         assert_eq!(def.shared_dir, "lib/widgets/shared");
         assert_eq!(def.preset, "default");
+        assert_eq!(def.color_space, "hsl");
 
         let yaml = def.to_yaml_string();
         let parsed = JustUIConfig::from_yaml(&yaml);
@@ -101,5 +115,6 @@ mod tests {
         assert_eq!(parsed.tokens_dir, def.tokens_dir);
         assert_eq!(parsed.shared_dir, def.shared_dir);
         assert_eq!(parsed.preset, def.preset);
+        assert_eq!(parsed.color_space, def.color_space);
     }
 }

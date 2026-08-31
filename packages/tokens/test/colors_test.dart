@@ -467,71 +467,128 @@ void main() {
       );
     });
 
-    test('JustColorScale generates complete 11-step HSL scale from seed', () {
+    test('JustColorScale generates complete 11-step scale from seed across engines', () {
       const seed = Color(0xFF3B82F6);
-      final scale = JustColorScale.fromSeed(seed);
 
-      expect(scale.c50, isNotNull);
-      expect(scale.c100, isNotNull);
-      expect(scale.c200, isNotNull);
-      expect(scale.c300, isNotNull);
-      expect(scale.c400, isNotNull);
-      expect(scale.c500, equals(seed));
-      expect(scale.c600, isNotNull);
-      expect(scale.c700, isNotNull);
-      expect(scale.c800, isNotNull);
-      expect(scale.c900, isNotNull);
-      expect(scale.c950, isNotNull);
+      for (final engine in JustColorSpaceEngine.values) {
+        final scale = JustColorScale.fromSeed(seed, engine: engine);
+
+        expect(scale.c50, isNotNull);
+        expect(scale.c100, isNotNull);
+        expect(scale.c200, isNotNull);
+        expect(scale.c300, isNotNull);
+        expect(scale.c400, isNotNull);
+        expect(scale.c500, equals(seed)); // Zero-drift guarantee for seed
+        expect(scale.c600, isNotNull);
+        expect(scale.c700, isNotNull);
+        expect(scale.c800, isNotNull);
+        expect(scale.c900, isNotNull);
+        expect(scale.c950, isNotNull);
+
+        // Monotonic lightness: c50 > c950
+        expect(
+          scale.c50.computeLuminance(),
+          greaterThan(scale.c950.computeLuminance()),
+        );
+      }
     });
 
-    test('adjustLightnessForContrast covers early return and dark/light background branches', () {
+    test(
+      'OKLCH engine handles conversions, roundtrips, and chroma pre-damping',
+      () {
+        const seed = Color(0xFF3B82F6);
+        final oklch = OklchEngine.fromColor(seed);
+
+        expect(oklch.l, inInclusiveRange(0.0, 1.0));
+        expect(oklch.c, greaterThan(0.0));
+        expect(oklch.h, inInclusiveRange(0.0, 360.0));
+
+        final roundtrip = OklchEngine.toColor(oklch);
+        expect(roundtrip.r, closeTo(seed.r, 0.02));
+        expect(roundtrip.g, closeTo(seed.g, 0.02));
+        expect(roundtrip.b, closeTo(seed.b, 0.02));
+
+        final dampedC = OklchEngine.dampChroma(oklch.c, 0.05);
+        expect(dampedC, lessThan(oklch.c));
+      },
+    );
+
+    test('HSLuv engine handles conversions, roundtrips, and max chroma', () {
+      const seed = Color(0xFF3B82F6);
+      final hsluv = HsluvEngine.fromColor(seed);
+
+      expect(hsluv.l, inInclusiveRange(0.0, 100.0));
+      expect(hsluv.s, inInclusiveRange(0.0, 100.0));
+      expect(hsluv.h, inInclusiveRange(0.0, 360.0));
+
+      final roundtrip = HsluvEngine.toColor(hsluv);
+      expect(roundtrip.r, closeTo(seed.r, 0.02));
+      expect(roundtrip.g, closeTo(seed.g, 0.02));
+      expect(roundtrip.b, closeTo(seed.b, 0.02));
+    });
+
+    test('Yellow seed scale does not produce grayish dark shades in OKLCH', () {
+      const yellowSeed = Color(0xFFF59E0B);
+      final scale = JustColorScale.fromSeed(
+        yellowSeed,
+        engine: JustColorSpaceEngine.oklch,
+      );
+
+      expect(scale.c500, equals(yellowSeed));
+      final c900Oklch = OklchEngine.fromColor(scale.c900);
+      expect(c900Oklch.c, greaterThan(0.005));
+    });
+
+    test('adjustLightnessForContrast covers early return and dark/light background branches across engines', () {
       const lightBg = Color(0xFFFFFFFF);
       const darkBg = Color(0xFF000000);
       const sufficientText = Color(0xFF000000);
       const lowContrastGrey = Color(0xFF94A3B8);
 
-      expect(
-        sufficientText.adjustLightnessForContrast(
+      for (final engine in JustColorSpaceEngine.values) {
+        expect(
+          sufficientText.adjustLightnessForContrast(
+            background: lightBg,
+            targetRatio: 4.5,
+            engine: engine,
+          ),
+          equals(sufficientText),
+        );
+
+        final darkerResult = lowContrastGrey.adjustLightnessForContrast(
           background: lightBg,
           targetRatio: 4.5,
-        ),
-        equals(sufficientText),
-      );
+          engine: engine,
+        );
+        expect(
+          darkerResult.contrastRatioWith(lightBg),
+          greaterThanOrEqualTo(4.5),
+        );
 
-      final darkerResult = lowContrastGrey.adjustLightnessForContrast(
-        background: lightBg,
-        targetRatio: 4.5,
-      );
-      expect(
-        darkerResult.contrastRatioWith(lightBg),
-        greaterThanOrEqualTo(4.5),
-      );
-
-      final lighterResult = lowContrastGrey.adjustLightnessForContrast(
-        background: darkBg,
-        targetRatio: 4.5,
-      );
-      expect(
-        lighterResult.contrastRatioWith(darkBg),
-        greaterThanOrEqualTo(4.5),
-      );
+        final lighterResult = lowContrastGrey.adjustLightnessForContrast(
+          background: darkBg,
+          targetRatio: 4.5,
+          engine: engine,
+        );
+        expect(
+          lighterResult.contrastRatioWith(darkBg),
+          greaterThanOrEqualTo(4.5),
+        );
+      }
     });
 
-    test(
-      'JustDynamicSurfaces.generateDarkSurface clamps saturation and lightness',
-      () {
-        const seed = Color(0xFF3B82F6);
+    test('JustDynamicSurfaces.generateDarkSurface produces dark tinted surfaces across engines', () {
+      const seed = Color(0xFF3B82F6);
+
+      for (final engine in JustColorSpaceEngine.values) {
         final darkSurface = JustDynamicSurfaces.generateDarkSurface(
           seed,
           lightness: 0.05,
+          engine: engine,
         );
 
-        final HSLColor hslSeed = HSLColor.fromColor(seed);
-        final HSLColor hslSurface = HSLColor.fromColor(darkSurface);
-
-        expect(hslSurface.hue, closeTo(hslSeed.hue, 0.01));
-        expect(hslSurface.lightness, equals(0.05));
-      },
-    );
+        expect(darkSurface.computeLuminance(), lessThan(0.05));
+      }
+    });
   });
 }

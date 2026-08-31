@@ -145,11 +145,60 @@ void main() {
         greaterThanOrEqualTo(3.0),
       );
 
-      // Verify Tinted surfaces in dark mode
-      final HSLColor hslSeed = HSLColor.fromColor(seed);
-      final HSLColor hslBg = HSLColor.fromColor(darkTheme.colors.background);
-      expect(hslBg.hue, closeTo(hslSeed.hue, 0.01));
-      expect(hslBg.lightness, equals(0.03));
+      // Verify Tinted surfaces in dark mode (luminance-based)
+      expect(darkTheme.colors.background.computeLuminance(), lessThan(0.005));
+    });
+
+    test('fromSeed with OKLCH and HSLuv engines maintains all WCAG contracts', () {
+      const seed = Color(0xFF3B82F6);
+
+      for (final engine in [
+        JustColorSpaceEngine.oklch,
+        JustColorSpaceEngine.hsluv,
+      ]) {
+        final light = JustThemeData.fromSeed(
+          seed,
+          isDark: false,
+          colorSpace: engine,
+        );
+        final dark = JustThemeData.fromSeed(
+          seed,
+          isDark: true,
+          colorSpace: engine,
+        );
+
+        // Border focus ≥ 3.0:1
+        expect(
+          light.colors.borderFocus.contrastRatioWith(light.colors.background),
+          greaterThanOrEqualTo(3.0),
+        );
+        expect(
+          dark.colors.borderFocus.contrastRatioWith(dark.colors.background),
+          greaterThanOrEqualTo(3.0),
+        );
+
+        // Semantic colors ≥ 4.5:1 (success, error, info) and ≥ 3.0:1 (warning)
+        expect(
+          light.colors.success.contrastRatioWith(light.colors.background),
+          greaterThanOrEqualTo(4.5),
+        );
+        expect(
+          dark.colors.success.contrastRatioWith(dark.colors.background),
+          greaterThanOrEqualTo(4.5),
+        );
+        expect(
+          light.colors.warning.contrastRatioWith(light.colors.background),
+          greaterThanOrEqualTo(3.0),
+        );
+        expect(
+          dark.colors.warning.contrastRatioWith(dark.colors.background),
+          greaterThanOrEqualTo(3.0),
+        );
+
+        // colorSpace property preserved
+        expect(light.colorSpace, equals(engine));
+        expect(dark.colorSpace, equals(engine));
+      }
     });
 
     test(

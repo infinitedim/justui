@@ -1,11 +1,12 @@
 import 'package:flutter/painting.dart';
 
+import 'color_space.dart';
 import 'colors_accessibility.dart';
 
 /// A dynamic 11-step color scale generated from a single seed color.
 ///
-/// Maintains Hue and adjusts Lightness while dynamically curving Saturation
-/// (boosting saturation for dark shades, and reducing it for light shades).
+/// Supports multi-engine color space manipulation ([JustColorSpaceEngine.hsl],
+/// [JustColorSpaceEngine.oklch], [JustColorSpaceEngine.hsluv]).
 class JustColorScale {
   /// The shade 50 (lightest).
   final Color c50;
@@ -55,30 +56,47 @@ class JustColorScale {
     required this.c950,
   });
 
-  /// Generates a complete 11-step HSL color scale using a dynamic saturation curve.
-  factory JustColorScale.fromSeed(Color seed) {
-    final HSLColor hsl = .fromColor(seed);
-    final double seedH = hsl.hue;
-    final double seedS = hsl.saturation;
-    final double seedL = hsl.lightness;
+  /// Generates a complete 11-step color scale using the specified color space [engine].
+  ///
+  /// The [engine] determines the color model used for lightness and chroma manipulation:
+  /// - [JustColorSpaceEngine.hsl]: Legacy HSL (default, backward compatible)
+  /// - [JustColorSpaceEngine.oklch]: OKLCH perceptually uniform color space
+  /// - [JustColorSpaceEngine.hsluv]: HSLuv gamut-safe human-friendly space
+  factory JustColorScale.fromSeed(
+    Color seed, {
+    JustColorSpaceEngine engine =.hsl,
+  }) {
+    final pc = ColorSpaceOps.toPerceptual(seed, engine);
+    final double seedL = pc.l;
 
-    // Helper to interpolate and adjust saturation dynamically using early returns
     Color makeShade(double targetL) {
-      if (targetL == seedL) return seed;
+      if (targetL == seedL) {
+        return seed; // c500: direct assignment bypass, zero drift
+      }
 
-      final bool isLighter = targetL > seedL;
-      final double range = isLighter ? (0.96 - seedL) : (seedL - 0.06);
-      final double delta = (targetL - seedL).abs();
-      final double progress = delta / (range + 1e-5);
+      if (engine == JustColorSpaceEngine.hsl) {
+        final bool isLighter = targetL > seedL;
+        final double range = isLighter ? (0.96 - seedL) : (seedL - 0.06);
+        final double delta = (targetL - seedL).abs();
+        final double progress = delta / (range + 1e-5);
 
-      final double adjustedS = isLighter
-          ? seedS * (1.0 - progress * 0.6)
-          : (seedS * (1.0 + progress * 0.25)).clamp(0.0, 1.0);
+        final double adjustedC = isLighter
+            ? pc.c * (1.0 - progress * 0.6)
+            : (pc.c * (1.0 + progress * 0.25)).clamp(0.0, 1.0);
 
-      return HSLColor.fromAHSL(1.0, seedH, adjustedS, targetL).toColor();
+        return ColorSpaceOps.fromPerceptual(
+          PerceptualColor(targetL, adjustedC, pc.h),
+          engine,
+        );
+      }
+
+      final double dampedC = ColorSpaceOps.dampChroma(pc.c, targetL, engine);
+      return ColorSpaceOps.fromPerceptual(
+        PerceptualColor(targetL, dampedC, pc.h),
+        engine,
+      );
     }
 
-    // Adjust target lightness levels dynamically based on step using early returns
     double getLightnessForStep(double baseLightness, int step) {
       if (step == 500) return seedL;
 
@@ -97,7 +115,7 @@ class JustColorScale {
       c200: makeShade(getLightnessForStep(0.80, 200)),
       c300: makeShade(getLightnessForStep(0.70, 300)),
       c400: makeShade(getLightnessForStep(0.60, 400)),
-      c500: seed,
+      c500: seed, // Direct assignment, zero drift guarantee
       c600: makeShade(getLightnessForStep(0.40, 600)),
       c700: makeShade(getLightnessForStep(0.30, 700)),
       c800: makeShade(getLightnessForStep(0.20, 800)),
@@ -110,28 +128,32 @@ class JustColorScale {
 /// Extension methods on [Color] to dynamically enforce WCAG contrast compliance.
 extension JustColorContrastCorrection on Color {
   /// Adjusts the lightness of this color so it meets the target contrast ratio
-  /// against a given [background] color.
+  /// against a given [background] color using the specified [engine].
   ///
-  /// Uses a binary search algorithm to shift lightness as minimally as possible
-  /// to satisfy the accessibility constraints while preserving hue and saturation.
+  /// Uses a binary search algorithm in the target perceptual color space while
+  /// validating compliance using exact sRGB relative luminance (`contrastRatioWith`).
   Color adjustLightnessForContrast({
     required Color background,
     double targetRatio = 4.5,
+    JustColorSpaceEngine engine = .hsl,
   }) {
     final double currentRatio = contrastRatioWith(background);
     if (currentRatio >= targetRatio) return this;
 
     final double bgLuminance = background.computeLuminance();
-    final HSLColor hsl = .fromColor(this);
+    final pc = ColorSpaceOps.toPerceptual(this, engine);
     final bool makeLighter = bgLuminance < 0.5;
 
-    double low = makeLighter ? hsl.lightness : 0.0;
-    double high = makeLighter ? 1.0 : hsl.lightness;
+    double low = makeLighter ? pc.l : 0.0;
+    double high = makeLighter ? 1.0 : pc.l;
     Color bestColor = this;
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 12; i++) {
       final double mid = (low + high) / 2;
-      final Color testColor = hsl.withLightness(mid).toColor();
+      final Color testColor = ColorSpaceOps.fromPerceptual(
+        PerceptualColor(mid, pc.c, pc.h),
+        engine,
+      );
       final double ratio = testColor.contrastRatioWith(background);
 
       if (ratio >= targetRatio) {
@@ -156,20 +178,21 @@ extension JustColorContrastCorrection on Color {
 
 /// Utility class for dynamic surface color generation.
 abstract final class JustDynamicSurfaces {
-  /// Generates a brand-tinted dark surface color from a [seedColor].
+  /// Generates a brand-tinted dark surface color from a [seedColor] using [engine].
   ///
-  /// Blends the seed's hue with very low lightness and saturation for dark mode.
+  /// Blends the seed's hue with low lightness and saturation for dark mode.
   static Color generateDarkSurface(
     Color seedColor, {
     required double lightness,
     double maxSaturation = 0.12,
     double saturationFactor = 0.20,
+    JustColorSpaceEngine engine = .hsl,
   }) {
-    final HSLColor hsl = .fromColor(seedColor);
-    final double s = (hsl.saturation * saturationFactor).clamp(
-      0.0,
-      maxSaturation,
+    final pc = ColorSpaceOps.toPerceptual(seedColor, engine);
+    final double dampedC = (pc.c * saturationFactor).clamp(0.0, maxSaturation);
+    return ColorSpaceOps.fromPerceptual(
+      PerceptualColor(lightness, dampedC, pc.h),
+      engine,
     );
-    return HSLColor.fromAHSL(1.0, hsl.hue, s, lightness).toColor();
   }
 }
