@@ -523,5 +523,57 @@ mod tests {
 
         assert!(run(Some("button".to_string()), true, false, true).is_ok());
         assert!(run(Some("button".to_string()), false, false, true).is_ok());
+
+        // Test missing component in registry
+        assert!(run(Some("nonexistent_comp".to_string()), false, false, true).is_ok());
+
+        // Test run(None, ...) -> diff all components
+        assert!(run(None, false, false, true).is_ok());
+        assert!(run(None, true, false, true).is_ok());
+
+        // Test DiffStatusType::Missing in show_all_diffs
+        let fs_missing = DiffFileStatus {
+            file: crate::registry::RegistryFile {
+                name: "missing.dart".to_string(),
+                path: "components/button/missing.dart".to_string(),
+                checksum: "sha256:hash2".to_string(),
+            },
+            status_type: DiffStatusType::Missing,
+            local_content: String::new(),
+            target_path: temp_dir
+                .path()
+                .join("lib/ui/missing.dart")
+                .to_string_lossy()
+                .to_string(),
+            expected_hash: "hash2".to_string(),
+            remote_content: None,
+        };
+        show_all_diffs(&[fs_missing], &[0], &std::collections::HashMap::new(), 3);
+
+        // Test metadata with UpdateAvailable and Conflict
+        let old_reg_hash = "old_reg_hash_123";
+        let _new_reg_hash = "new_reg_hash_456";
+        let content_unmodified = "class Button {}";
+        let content_modified = "class ButtonModified {}";
+        let local_hash_unmodified = sha256_hex(content_unmodified.as_bytes());
+        let _local_hash_modified = sha256_hex(content_modified.as_bytes());
+
+        // UpdateAvailable metadata
+        let meta_update = import_rewriter::inject_metadata(
+            content_unmodified,
+            old_reg_hash,
+            &local_hash_unmodified,
+        );
+        std::fs::write(&local_comp_file, meta_update).unwrap();
+        assert!(run(Some("button".to_string()), false, false, true).is_ok());
+
+        // Conflict metadata
+        let meta_conflict = import_rewriter::inject_metadata(
+            content_modified,
+            old_reg_hash,
+            &local_hash_unmodified,
+        );
+        std::fs::write(&local_comp_file, meta_conflict).unwrap();
+        assert!(run(Some("button".to_string()), false, false, true).is_ok());
     }
 }

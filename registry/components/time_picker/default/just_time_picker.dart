@@ -1210,7 +1210,7 @@ Future<TimeOfDay?> showJustTimePicker({
       );
     }
     return DefaultTextStyle(
-      style: const TextStyle(decoration: TextDecoration.none),
+      style: const TextStyle(decoration: .none),
       child: themedChild,
     );
   }

@@ -37,6 +37,7 @@ fn resolve_shared_dir(raw_input: &str, components_dir: &str, default_full_path: 
 
 pub fn run(
     preset_arg: Option<String>,
+    color_space_arg: Option<String>,
     components_dir_arg: Option<String>,
     tokens_dir_arg: Option<String>,
     auto_yes: bool,
@@ -78,6 +79,30 @@ pub fn run(
             "neobrutalism".to_string()
         } else {
             "default".to_string()
+        }
+    };
+
+    let color_space = if let Some(cs) = color_space_arg {
+        cs.to_lowercase()
+    } else if auto_yes {
+        logger::stdout("[auto] Using color space: hsl");
+        "hsl".to_string()
+    } else {
+        logger::stdout("");
+        logger::stdout("Select color space engine:");
+        let cs_idx = prompt::select_one(
+            "Choose color space",
+            &[
+                "hsl (classic)",
+                "oklch (perceptual uniform)",
+                "hsluv (gamut-safe)",
+            ],
+            0,
+        );
+        match cs_idx {
+            1 => "oklch".to_string(),
+            2 => "hsluv".to_string(),
+            _ => "hsl".to_string(),
         }
     };
 
@@ -181,6 +206,7 @@ pub fn run(
         shared_dir: shared_dir.clone(),
         registry_url: JustUIConfig::DEFAULT_REGISTRY_URL.to_string(),
         preset: preset.clone(),
+        color_space: color_space.clone(),
         dart_target,
     };
     std::fs::write(config_path, config.to_yaml_string())
@@ -209,6 +235,12 @@ pub fn run(
         ""
     };
 
+    let color_space_param = match color_space.as_str() {
+        "oklch" => "\n  colorSpace: JustColorSpaceEngine.oklch,",
+        "hsluv" => "\n  colorSpace: JustColorSpaceEngine.hsluv,",
+        _ => "",
+    };
+
     let theme_content = format!(
         "import 'package:flutter/material.dart' show Color, ThemeExtension;\n\
          import '../just_ui_core.dart';\n\
@@ -221,15 +253,15 @@ pub fn run(
          /// Dynamically generated light theme from brand seed color.\n\
          final JustThemeData justThemeLight = JustThemeData.fromSeed(\n\
            const Color({}),\n\
-           isDark: false,{}\n\
+           isDark: false,{}{}\n\
          );\n\
          \n\
          /// Dynamically generated dark theme from brand seed color.\n\
          final JustThemeData justThemeDark = JustThemeData.fromSeed(\n\
            const Color({}),\n\
-           isDark: true,{}\n\
+           isDark: true,{}{}\n\
          );\n",
-        hex_code, preset_param, hex_code, preset_param
+        hex_code, preset_param, color_space_param, hex_code, preset_param, color_space_param
     );
 
     std::fs::write("lib/core/theme/just_theme.dart", theme_content)
@@ -251,7 +283,8 @@ mod tests {
         }
     }
     fn set_dir<P: AsRef<std::path::Path>>(p: P) -> DirGuard {
-        let orig = std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("/home/yourblooo/development/justui"));
+        let orig = std::env::current_dir()
+            .unwrap_or_else(|_| std::path::PathBuf::from("/home/yourblooo/development/justui"));
         let _ = std::env::set_current_dir(p);
         DirGuard(orig)
     }
@@ -281,24 +314,36 @@ mod tests {
 
     #[test]
     fn test_init_run_execution() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
         // 1. Without pubspec -> fails cleanly
-        assert!(run(None, None, None, true, None).is_ok());
+        assert!(run(None, None, None, None, true, None).is_ok());
 
         // 2. With pubspec -> succeeds in auto_yes mode
         std::fs::write("pubspec.yaml", "name: test_app").unwrap();
-        assert!(run(Some("neo".to_string()), None, None, true, None).is_ok());
+        assert!(run(
+            Some("neo".to_string()),
+            Some("oklch".to_string()),
+            None,
+            None,
+            true,
+            None
+        )
+        .is_ok());
 
         // 3. Already initialized -> warns and returns Ok
-        assert!(run(None, None, None, true, None).is_ok());
+        assert!(run(None, None, None, None, true, None).is_ok());
     }
 
     #[test]
     fn test_init_with_experimental_auto_detect() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -310,6 +355,7 @@ mod tests {
 
         let result = run(
             Some("default".to_string()),
+            None,
             None,
             None,
             true,
@@ -323,7 +369,9 @@ mod tests {
 
     #[test]
     fn test_init_without_experimental_defaults_standard() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -333,7 +381,7 @@ mod tests {
         )
         .unwrap();
 
-        let result = run(Some("default".to_string()), None, None, true, None);
+        let result = run(Some("default".to_string()), None, None, None, true, None);
         assert!(result.is_ok());
 
         let config_content = std::fs::read_to_string("justui.config.yaml").unwrap();
@@ -342,7 +390,9 @@ mod tests {
 
     #[test]
     fn test_init_unknown_experimental_warns() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -350,6 +400,7 @@ mod tests {
 
         let result = run(
             Some("default".to_string()),
+            None,
             None,
             None,
             true,

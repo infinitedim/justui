@@ -507,8 +507,8 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
           builder: (BuildContext context, JustInteractionState state) {
             final double distance = (activeVal - i).abs();
             final double textInterpolation = (1.0 - distance).clamp(0.0, 1.0);
-            final textColor =
-                Color.lerp(inactiveColor, activeColor, textInterpolation) ??
+            final Color textColor =
+                .lerp(inactiveColor, activeColor, textInterpolation) ??
                 inactiveColor;
 
             final resolvedTextStyle = isSelected
