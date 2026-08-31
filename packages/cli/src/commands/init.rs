@@ -311,7 +311,7 @@ mod tests {
         assert!(run(None, None, None, None, true, None).is_ok());
 
         // 2. With pubspec -> succeeds in auto_yes mode
-        std::fs::write("pubspec.yaml", "name: test_app").unwrap();
+        std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: test_app").unwrap();
         assert!(run(
             Some("neo".to_string()),
             Some("oklch".to_string()),
@@ -333,7 +333,7 @@ mod tests {
         let _guard = set_dir(temp_dir.path());
 
         std::fs::write(
-            "pubspec.yaml",
+            temp_dir.path().join("pubspec.yaml"),
             "name: test_app\nenvironment:\n  sdk: '>=3.10.0 <4.0.0'\n",
         )
         .unwrap();
@@ -348,7 +348,8 @@ mod tests {
         );
         assert!(result.is_ok());
 
-        let config_content = std::fs::read_to_string("justui.config.yaml").unwrap();
+        let config_content =
+            std::fs::read_to_string(temp_dir.path().join("justui.config.yaml")).unwrap();
         assert!(config_content.contains("dart_target: primary"));
     }
 
@@ -359,7 +360,7 @@ mod tests {
         let _guard = set_dir(temp_dir.path());
 
         std::fs::write(
-            "pubspec.yaml",
+            temp_dir.path().join("pubspec.yaml"),
             "name: test_app\nenvironment:\n  sdk: '>=3.10.0 <4.0.0'\n",
         )
         .unwrap();
@@ -367,7 +368,8 @@ mod tests {
         let result = run(Some("default".to_string()), None, None, None, true, None);
         assert!(result.is_ok());
 
-        let config_content = std::fs::read_to_string("justui.config.yaml").unwrap();
+        let config_content =
+            std::fs::read_to_string(temp_dir.path().join("justui.config.yaml")).unwrap();
         assert!(config_content.contains("dart_target: standard"));
     }
 
@@ -377,7 +379,7 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
-        std::fs::write("pubspec.yaml", "name: test_app").unwrap();
+        std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: test_app").unwrap();
 
         let result = run(
             Some("default".to_string()),
@@ -389,7 +391,8 @@ mod tests {
         );
         assert!(result.is_ok());
 
-        let config_content = std::fs::read_to_string("justui.config.yaml").unwrap();
+        let config_content =
+            std::fs::read_to_string(temp_dir.path().join("justui.config.yaml")).unwrap();
         assert!(config_content.contains("dart_target: standard"));
     }
 }
