@@ -34,7 +34,7 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
         // Find matching constructor for this class
         let ctor_cap = match constructor_regex
             .captures_iter(code)
-            .find(|c| c.get(1).map_or(false, |m| m.as_str() == class_name))
+            .find(|c| c.get(1).is_some_and(|m| m.as_str() == class_name))
         {
             Some(c) => c,
             None => continue,

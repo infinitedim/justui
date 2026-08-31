@@ -362,7 +362,6 @@ fn extract_binary_from_zip(zip_bytes: &[u8], binary_name: &str) -> Result<Vec<u8
 }
 
 #[allow(dead_code)]
-#[allow(dead_code)]
 fn replace_current_executable(new_bytes: &[u8]) -> Result<()> {
     let current_exe = env::current_exe().context("Failed to get current executable path")?;
     replace_executable_at_path(&current_exe, new_bytes)
