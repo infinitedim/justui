@@ -1,7 +1,7 @@
 use inquire::{MultiSelect, Select};
 use std::io::{self, IsTerminal};
 
-fn is_interactive() -> bool {
+pub fn is_interactive() -> bool {
     if cfg!(test) && std::env::var("JUSTUI_FORCE_INTERACTIVE").is_err() {
         return false;
     }
