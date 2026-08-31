@@ -362,6 +362,7 @@ fn extract_binary_from_zip(zip_bytes: &[u8], binary_name: &str) -> Result<Vec<u8
 }
 
 #[allow(dead_code)]
+#[allow(dead_code)]
 fn replace_current_executable(new_bytes: &[u8]) -> Result<()> {
     let current_exe = env::current_exe().context("Failed to get current executable path")?;
     replace_executable_at_path(&current_exe, new_bytes)
@@ -369,8 +370,12 @@ fn replace_current_executable(new_bytes: &[u8]) -> Result<()> {
 
 #[allow(dead_code)]
 fn replace_executable_at_path(current_exe: &std::path::Path, new_bytes: &[u8]) -> Result<()> {
-    let temp_exe = current_exe.with_extension("tmp_new");
+    replace_executable_at(current_exe, new_bytes)
+}
 
+#[allow(dead_code)]
+fn replace_executable_at(current_exe: &std::path::Path, new_bytes: &[u8]) -> Result<()> {
+    let temp_exe = current_exe.with_extension("tmp_new");
     fs::write(&temp_exe, new_bytes).context("Failed to write temporary binary")?;
 
     #[cfg(unix)]
@@ -386,8 +391,7 @@ fn replace_executable_at_path(current_exe: &std::path::Path, new_bytes: &[u8]) -
         if old_exe.exists() {
             let _ = fs::remove_file(&old_exe);
         }
-        fs::rename(current_exe, &old_exe)
-            .context("Failed to rename running executable to .old")?;
+        fs::rename(current_exe, &old_exe).context("Failed to rename running executable to .old")?;
 
         if let Err(e) = fs::rename(&temp_exe, current_exe) {
             let _ = fs::rename(&old_exe, current_exe);
@@ -450,27 +454,20 @@ mod tests {
         use flate2::Compression;
         use std::io::Write;
 
-        // Build a minimal POSIX tar header for "justui" file containing "hello world"
         let binary_content = b"hello world executable bytes";
-        let mut tar_bytes = vec![0u8; 1024]; // 512 header + 512 data
+        let mut tar_bytes = vec![0u8; 1024];
 
-        // Header: name (0..100) = "justui"
         tar_bytes[0..6].copy_from_slice(b"justui");
-        // Header: size in octal (124..136) = "00000000034 " (28 bytes)
         let octal_size = format!("{:011o} ", binary_content.len());
         tar_bytes[124..136].copy_from_slice(octal_size.as_bytes());
-        // Header: typeflag (156) = '0'
         tar_bytes[156] = b'0';
 
-        // Data block at 512..512 + binary_content.len()
         tar_bytes[512..512 + binary_content.len()].copy_from_slice(binary_content);
 
-        // Compress tar_bytes into gzip
         let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
         encoder.write_all(&tar_bytes).unwrap();
         let gz_bytes = encoder.finish().unwrap();
 
-        // Extract using unpack_binary_bytes
         let extracted = unpack_binary_bytes(&gz_bytes, "justui").unwrap();
         assert_eq!(extracted, binary_content);
 
@@ -537,7 +534,6 @@ mod tests {
 
     #[test]
     fn test_validate_binary_executable() {
-        // Empty bytes
         assert!(validate_binary_executable(&[]).is_err());
 
         // Short bytes < 20
@@ -546,7 +542,9 @@ mod tests {
         #[cfg(target_os = "linux")]
         {
             // Invalid ELF header
-            assert!(validate_binary_executable(b"not_an_elf_binary_file_header_long_enough").is_err());
+            assert!(
+                validate_binary_executable(b"not_an_elf_binary_file_header_long_enough").is_err()
+            );
 
             // Invalid architecture (e_machine mismatch)
             let mut bad_arch_elf = vec![0u8; 64];
@@ -555,7 +553,6 @@ mod tests {
             bad_arch_elf[19] = 0x00;
             assert!(validate_binary_executable(&bad_arch_elf).is_err());
 
-            // Valid ELF header matching current arch
             let mut valid_elf = vec![0u8; 64];
             valid_elf[0..4].copy_from_slice(b"\x7fELF");
             #[cfg(target_arch = "x86_64")]
@@ -582,7 +579,6 @@ mod tests {
     fn test_print_fallback_instructions_and_zip_unpack_error() {
         print_fallback_instructions();
 
-        // Tar archive with missing binary name
         let binary_content = b"hello";
         let mut tar_bytes = vec![0u8; 1024];
         tar_bytes[0..10].copy_from_slice(b"other_file");
@@ -597,6 +593,21 @@ mod tests {
         encoder.write_all(&tar_bytes).unwrap();
         let gz_bytes = encoder.finish().unwrap();
         assert!(extract_binary_from_tar_gz(&gz_bytes, "justui").is_err());
+
+        // Test ZIP magic header with invalid zip data
+        let invalid_zip_header = b"PK\x03\x04invalid_zip_content";
+        assert!(unpack_binary_bytes(invalid_zip_header, "justui").is_err());
+    }
+
+    #[test]
+    fn test_replace_executable_at() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let fake_exe = temp_dir.path().join("fake_justui");
+        std::fs::write(&fake_exe, b"old_exe_content").unwrap();
+
+        let new_bytes = b"new_exe_content";
+        assert!(replace_executable_at(&fake_exe, new_bytes).is_ok());
+        assert_eq!(std::fs::read(&fake_exe).unwrap(), new_bytes);
     }
 
     #[test]
@@ -614,7 +625,10 @@ mod tests {
         assert!(process_release_update(&up_to_date_release, "0.7.8", false, true).is_ok());
 
         // 2. Newer version check_only = true with long release notes body (>10 lines)
-        let long_body = (0..15).map(|i| format!("Line {}", i)).collect::<Vec<_>>().join("\n");
+        let long_body = (0..15)
+            .map(|i| format!("Line {}", i))
+            .collect::<Vec<_>>()
+            .join("\n");
         let new_release = GitHubRelease {
             tag_name: "v9.9.9".to_string(),
             html_url: "https://example.com/rel9".to_string(),
@@ -671,7 +685,9 @@ mod tests {
 
     #[test]
     fn test_run_command_execution() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::TEST_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         assert!(run(true, false).is_ok());
         assert!(run(false, false).is_ok());
     }

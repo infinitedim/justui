@@ -742,14 +742,14 @@ class _JustScrollAreaState extends State<JustScrollArea>
                       ? .bottomCenter
                       : .centerRight,
                   colors: [
-                    Color.lerp(
+                    .lerp(
                       const Color(0xFFFFFFFF),
                       const Color(0x00FFFFFF),
                       topOpacity,
                     )!,
                     const Color(0xFFFFFFFF),
                     const Color(0xFFFFFFFF),
-                    Color.lerp(
+                    .lerp(
                       const Color(0xFFFFFFFF),
                       const Color(0x00FFFFFF),
                       bottomOpacity,

@@ -50,7 +50,7 @@ void main() {
                             max: 100.0,
                             onChanged: (v) => setState(() => sliderVal = v),
                           ),
-                          ...List.generate(
+                          ....generate(
                             40,
                             (index) => SizedBox(
                               height: 50.0,

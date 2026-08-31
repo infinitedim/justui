@@ -72,6 +72,12 @@ enum Commands {
             value_parser = clap::builder::PossibleValuesParser::new(["default", "d", "neobrutalism", "neo"])
         )]
         preset: Option<String>,
+        /// Color space engine for dynamic palette generation (hsl, oklch, hsluv)
+        #[arg(
+            long = "color-space",
+            value_parser = clap::builder::PossibleValuesParser::new(["hsl", "oklch", "hsluv"])
+        )]
+        color_space: Option<String>,
         /// Target UI components directory
         #[arg(long = "components-dir")]
         components_dir: Option<String>,
@@ -86,7 +92,7 @@ enum Commands {
             long_help = "Activate an experimental feature by name.\n\n\
                 Available experimental features:\n  \
                 auto-detect-flutter-version  Auto-detect Dart SDK version from pubspec.yaml and FVM\n                                       \
-                to determine constructor syntax (primary vs standard)",
+                to determine constructor syntax (primary vs standard)"
         )]
         experimental: Option<String>,
     },
@@ -289,10 +295,18 @@ fn main() {
         Commands::Version => commands::upgrade::run(true, false),
         Commands::Init {
             preset,
+            color_space,
             components_dir,
             tokens_dir,
             experimental,
-        } => commands::init::run(preset, components_dir, tokens_dir, auto_yes, experimental),
+        } => commands::init::run(
+            preset,
+            color_space,
+            components_dir,
+            tokens_dir,
+            auto_yes,
+            experimental,
+        ),
         Commands::Add {
             components,
             dry_run,

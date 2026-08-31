@@ -2,6 +2,9 @@ import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_switch_style.dart';
 
+/// Alias for [JustSwitchTheme] for convention parity.
+typedef JustSwitchThemeData = JustSwitchTheme;
+
 /// Global theme configuration for switch controls, extending Flutter's [ThemeExtension].
 class const JustSwitchTheme({
   /// Base style override for switches.
@@ -24,6 +27,20 @@ class const JustSwitchTheme({
   @override
   JustSwitchTheme lerp(ThemeExtension<JustSwitchTheme>? other, double t) {
     if (other is! JustSwitchTheme) return this;
-    return t < 0.5 ? this : other;
+    return JustSwitchTheme(
+      style: .lerp(style, other.style, t),
+      enableHaptic: t < 0.5 ? enableHaptic : other.enableHaptic,
+    );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JustSwitchTheme &&
+          runtimeType == other.runtimeType &&
+          style == other.style &&
+          enableHaptic == other.enableHaptic;
+
+  @override
+  int get hashCode => Object.hash(style, enableHaptic);
 }
