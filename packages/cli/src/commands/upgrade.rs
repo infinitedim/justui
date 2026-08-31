@@ -684,9 +684,7 @@ mod tests {
 
     #[test]
     fn test_run_command_execution() {
-        let _lock = crate::utils::TEST_MUTEX
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::lock_test_mutex();
         assert!(run(true, false).is_ok());
         assert!(run(false, false).is_ok());
     }

@@ -283,8 +283,7 @@ mod tests {
         }
     }
     fn set_dir<P: AsRef<std::path::Path>>(p: P) -> DirGuard {
-        let orig = std::env::current_dir()
-            .unwrap_or_else(|_| std::path::PathBuf::from("/home/yourblooo/development/justui"));
+        let orig = std::env::current_dir().unwrap_or_else(|_| std::env::temp_dir());
         let _ = std::env::set_current_dir(p);
         DirGuard(orig)
     }
@@ -314,9 +313,7 @@ mod tests {
 
     #[test]
     fn test_init_run_execution() {
-        let _lock = crate::utils::TEST_MUTEX
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -341,9 +338,7 @@ mod tests {
 
     #[test]
     fn test_init_with_experimental_auto_detect() {
-        let _lock = crate::utils::TEST_MUTEX
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -369,9 +364,7 @@ mod tests {
 
     #[test]
     fn test_init_without_experimental_defaults_standard() {
-        let _lock = crate::utils::TEST_MUTEX
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
@@ -390,9 +383,7 @@ mod tests {
 
     #[test]
     fn test_init_unknown_experimental_warns() {
-        let _lock = crate::utils::TEST_MUTEX
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 

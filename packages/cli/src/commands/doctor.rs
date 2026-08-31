@@ -308,9 +308,7 @@ mod tests {
 
     #[test]
     fn test_doctor_all_ok_and_toolchain_edge_cases() {
-        let _lock = crate::utils::TEST_MUTEX
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
@@ -394,9 +392,7 @@ mod tests {
 
     #[test]
     fn test_doctor_run_all_status_outcomes() {
-        let _lock = crate::utils::TEST_MUTEX
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
@@ -457,9 +453,7 @@ mod tests {
 
     #[test]
     fn test_doctor_perform_checks_comprehensive() {
-        let _lock = crate::utils::TEST_MUTEX
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
@@ -521,9 +515,7 @@ dart_target: standard
 
     #[test]
     fn test_doctor_toolchain_version_parsing_fallbacks() {
-        let _lock = crate::utils::TEST_MUTEX
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
@@ -572,7 +564,7 @@ dart_target: standard
 
     #[test]
     fn test_doctor_healthy_project() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
@@ -626,7 +618,7 @@ dart_target: standard
 
     #[test]
     fn test_doctor_warnings_matrix() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
@@ -663,7 +655,7 @@ dart_target: standard
 
     #[test]
     fn test_doctor_errors_matrix() {
-        let _lock = crate::utils::TEST_MUTEX.lock().unwrap();
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = std::env::set_current_dir(temp_dir.path());
 
