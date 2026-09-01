@@ -1,6 +1,6 @@
 [package]
 name = "justui"
-version = "0.7.8"
+version = "0.10.0"
 edition = "2021"
 authors = ["JustUI Contributors"]
 description = "JustUI CLI - Scaffolding and copy-paste component tool for Flutter."
