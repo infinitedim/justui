@@ -89,8 +89,17 @@ pub fn run(category: Option<String>, json: bool) -> Result<()> {
         if !filtered.is_empty() {
             state.select(Some(0));
         }
+        let empty_selected = HashSet::new();
         let _ = term.draw(|f| {
-            draw_ui(f, &mut state, "", InputMode::Normal, &filtered, &config);
+            draw_ui(
+                f,
+                &mut state,
+                "",
+                InputMode::Normal,
+                &filtered,
+                &config,
+                &empty_selected,
+            );
             draw_ui(
                 f,
                 &mut state,
@@ -98,11 +107,20 @@ pub fn run(category: Option<String>, json: bool) -> Result<()> {
                 InputMode::Searching,
                 &filtered,
                 &config,
+                &empty_selected,
             );
         });
         state.select(None);
         let _ = term.draw(|f| {
-            draw_ui(f, &mut state, "", InputMode::Normal, &filtered, &config);
+            draw_ui(
+                f,
+                &mut state,
+                "",
+                InputMode::Normal,
+                &filtered,
+                &config,
+                &empty_selected,
+            );
         });
 
         logger::stdout("=== JustUI Registry Components ===");
@@ -182,6 +200,7 @@ fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Event>>>(
                 input_mode,
                 &filtered_components,
                 config,
+                &selected_names,
             );
         })?;
 
@@ -386,6 +405,7 @@ fn draw_ui(
     input_mode: InputMode,
     filtered_components: &[&RegistryComponent],
     config: &JustUIConfig,
+    selected_names: &HashSet<String>,
 ) {
     let size = f.area();
 
@@ -413,15 +433,30 @@ fn draw_ui(
         .constraints([Constraint::Percentage(35), Constraint::Percentage(65)])
         .split(chunks[1]);
 
-    let list_title = if input_mode == InputMode::Searching {
-        format!(" Components (Filter: {}) ", search_query)
-    } else {
-        " Components ".to_string()
+    let list_title = match (input_mode == InputMode::Searching, selected_names.is_empty()) {
+        (true, true) => format!(" Components (Filter: {}) ", search_query),
+        (true, false) => format!(
+            " Components (Filter: {}) ({} selected) ",
+            search_query,
+            selected_names.len()
+        ),
+        (false, true) => " Components ".to_string(),
+        (false, false) => format!(" Components ({} selected) ", selected_names.len()),
     };
 
     let items: Vec<ListItem> = filtered_components
         .iter()
         .map(|comp| {
+            let is_checked = selected_names.contains(&comp.name);
+            let checkbox_span = if is_checked {
+                ratatui::text::Span::styled(
+                    "[x] ",
+                    Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD),
+                )
+            } else {
+                ratatui::text::Span::styled("[ ] ", Style::default().fg(Color::DarkGray))
+            };
+
             let status = get_component_status(comp, config);
             let status_style = match status.as_str() {
                 "Installed" => Style::default().fg(Color::Green),
@@ -431,7 +466,8 @@ fn draw_ui(
             };
 
             let content = ratatui::text::Line::from(vec![
-                ratatui::text::Span::raw(format!("{:<18}", comp.name)),
+                checkbox_span,
+                ratatui::text::Span::raw(format!("{:<16}", comp.name)),
                 ratatui::text::Span::styled(format!(" [{}]", status), status_style),
             ]);
             ListItem::new(content)
@@ -561,19 +597,28 @@ fn draw_ui(
 
     let footer_text = match input_mode {
         InputMode::Normal => {
+            let install_span = if selected_names.is_empty() {
+                "[Enter] Install".green()
+            } else {
+                format!("[Enter] Install ({})", selected_names.len()).green()
+            };
             vec![
-                "[↑/↓] Navigate".cyan(),
+                "[Space] Toggle".cyan(),
+                "  |  ".into(),
+                "[a] All [n] None".yellow(),
+                "  |  ".into(),
+                "[↑/↓] Nav".cyan(),
                 "  |  ".into(),
                 "[/] Search".yellow(),
                 "  |  ".into(),
-                "[i/Enter] Install".green(),
+                install_span,
                 "  |  ".into(),
                 "[q/Esc] Quit".red(),
             ]
         }
         InputMode::Searching => {
             vec![
-                "[Esc] Normal Mode".yellow(),
+                "[Esc/Enter] Normal Mode".yellow(),
                 "  |  ".into(),
                 "[Type] Filter".cyan(),
             ]
@@ -984,9 +1029,10 @@ mod tests {
 
         let filtered_components = vec![&comp1, &comp2];
 
-        // 1. Draw with selection = Some(0)
+        // 1. Draw with selection = Some(0) and empty selected_names
         let mut list_state = ListState::default();
         list_state.select(Some(0));
+        let mut selected_names = HashSet::new();
 
         terminal
             .draw(|f| {
@@ -997,11 +1043,13 @@ mod tests {
                     InputMode::Normal,
                     &filtered_components,
                     &config,
+                    &selected_names,
                 );
             })
             .unwrap();
 
-        // 2. Draw with selection = Some(1) (component with empty presets/deps)
+        // 2. Draw with selection = Some(1) and button checked in selected_names
+        selected_names.insert("button".to_string());
         list_state.select(Some(1));
         terminal
             .draw(|f| {
@@ -1012,6 +1060,7 @@ mod tests {
                     InputMode::Normal,
                     &filtered_components,
                     &config,
+                    &selected_names,
                 );
             })
             .unwrap();
@@ -1027,6 +1076,7 @@ mod tests {
                     InputMode::Searching,
                     &filtered_components,
                     &config,
+                    &selected_names,
                 );
             })
             .unwrap();
