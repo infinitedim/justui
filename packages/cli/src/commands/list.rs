@@ -101,6 +101,7 @@ pub fn run(category: Option<String>, json: bool) -> Result<()> {
                 &filtered,
                 &config,
                 &empty_selected,
+                &index,
             );
             draw_ui(
                 f,
@@ -110,6 +111,7 @@ pub fn run(category: Option<String>, json: bool) -> Result<()> {
                 &filtered,
                 &config,
                 &empty_selected,
+                &index,
             );
         });
         state.select(None);
@@ -122,6 +124,7 @@ pub fn run(category: Option<String>, json: bool) -> Result<()> {
                 &filtered,
                 &config,
                 &empty_selected,
+                &index,
             );
         });
 
@@ -203,6 +206,7 @@ fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Event>>>(
                 &filtered_components,
                 config,
                 &selected_names,
+                index,
             );
         })?;
 
@@ -455,9 +459,8 @@ fn draw_ui(
     filtered_components: &[&RegistryComponent],
     config: &JustUIConfig,
     selected_names: &HashSet<String>,
+    index: &RegistryIndex,
 ) {
-    let size = f.area();
-
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
@@ -465,7 +468,7 @@ fn draw_ui(
             Constraint::Min(0),
             Constraint::Length(3),
         ])
-        .split(size);
+        .split(f.area());
 
     let header = Paragraph::new(" JustUI Component Explorer ")
         .alignment(ratatui::layout::Alignment::Center)
@@ -548,31 +551,37 @@ fn draw_ui(
         .highlight_symbol("▶ ");
     f.render_stateful_widget(list_widget, main_chunks[0], list_state);
 
+    let details_title = if selected_names.is_empty() {
+        " Component Details ".to_string()
+    } else {
+        format!(" Component Details ({} Selected) ", selected_names.len())
+    };
+
     let details_block = Block::default()
         .borders(Borders::ALL)
-        .title(" Component Details ")
+        .title(details_title)
         .border_style(Style::default().fg(Color::Gray));
+
+    let mut detail_lines = Vec::new();
 
     if let Some(selected_idx) = list_state.selected() {
         if let Some(comp) = filtered_components.get(selected_idx) {
-            let mut detail_lines = vec![
-                ratatui::text::Line::from(vec![
-                    ratatui::text::Span::styled(
-                        &comp.name,
-                        Style::default()
-                            .fg(Color::Cyan)
-                            .add_modifier(Modifier::BOLD),
-                    ),
-                    ratatui::text::Span::raw(format!(" (v{})", comp.version)),
-                ]),
-                ratatui::text::Line::from(vec![
-                    ratatui::text::Span::styled(
-                        "Category:     ",
-                        Style::default().fg(Color::DarkGray),
-                    ),
-                    ratatui::text::Span::raw(&comp.category),
-                ]),
-            ];
+            detail_lines.push(ratatui::text::Line::from(vec![
+                ratatui::text::Span::styled(
+                    &comp.name,
+                    Style::default()
+                        .fg(Color::Cyan)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                ratatui::text::Span::raw(format!(" (v{})", comp.version)),
+            ]));
+            detail_lines.push(ratatui::text::Line::from(vec![
+                ratatui::text::Span::styled(
+                    "Category:     ",
+                    Style::default().fg(Color::DarkGray),
+                ),
+                ratatui::text::Span::raw(&comp.category),
+            ]));
 
             let presets_str = if comp.supported_presets.is_empty() {
                 "default".to_string()
@@ -626,27 +635,118 @@ fn draw_ui(
             )));
 
             let files = comp.files_for_preset(&config.preset);
-            for file in &files {
+            for file in files {
                 detail_lines.push(ratatui::text::Line::from(vec![
                     ratatui::text::Span::raw("  • "),
-                    ratatui::text::Span::styled(&file.name, Style::default().fg(Color::LightGreen)),
+                    ratatui::text::Span::styled(file.name, Style::default().fg(Color::LightGreen)),
                     ratatui::text::Span::styled(
                         format!(" ({})", file.path),
                         Style::default().fg(Color::DarkGray),
                     ),
                 ]));
             }
-
-            let details_paragraph = Paragraph::new(detail_lines)
-                .block(details_block)
-                .wrap(Wrap { trim: true });
-            f.render_widget(details_paragraph, main_chunks[1]);
         }
-    } else {
+    }
+
+    if !selected_names.is_empty() {
+        if !detail_lines.is_empty() {
+            detail_lines.push(ratatui::text::Line::from(""));
+        }
+        detail_lines.push(ratatui::text::Line::from(ratatui::text::Span::styled(
+            format!("─── Selection Summary ({} components) ───", selected_names.len()),
+            Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
+        )));
+
+        for name in index
+            .components
+            .iter()
+            .filter(|c| selected_names.contains(&c.name))
+            .map(|c| &c.name)
+        {
+            detail_lines.push(ratatui::text::Line::from(vec![
+                ratatui::text::Span::styled(
+                    "  ✓ ",
+                    Style::default().fg(Color::Green).add_modifier(Modifier::BOLD),
+                ),
+                ratatui::text::Span::raw(name.as_str()),
+            ]));
+        }
+
+        let selected_list: Vec<String> = index
+            .components
+            .iter()
+            .filter(|c| selected_names.contains(&c.name))
+            .map(|c| c.name.clone())
+            .collect();
+
+        let mut dep_visited = HashSet::new();
+        let mut resolved_components = Vec::new();
+        for comp_name in &selected_list {
+            let _ = resolve_dependencies_recursive(
+                comp_name,
+                index,
+                &mut dep_visited,
+                &mut resolved_components,
+            );
+        }
+
+        let additional_deps: Vec<String> = resolved_components
+            .iter()
+            .filter(|name| !selected_names.contains(*name))
+            .cloned()
+            .collect();
+
+        if !additional_deps.is_empty() {
+            detail_lines.push(ratatui::text::Line::from(""));
+            detail_lines.push(ratatui::text::Line::from(ratatui::text::Span::styled(
+                "Auto-resolved Dependencies:",
+                Style::default().fg(Color::DarkGray).add_modifier(Modifier::UNDERLINED),
+            )));
+            for dep in &additional_deps {
+                let normalized = if dep.starts_with("_shared_") {
+                    crate::utils::import_rewriter::normalize_shared_file_name(&format!("{}.dart", dep))
+                } else {
+                    format!("{}.dart", dep)
+                };
+                detail_lines.push(ratatui::text::Line::from(vec![
+                    ratatui::text::Span::styled("  • ", Style::default().fg(Color::Cyan)),
+                    ratatui::text::Span::raw(format!("{} (→ {})", dep, normalized)),
+                ]));
+            }
+        }
+
+        let total_files: usize = resolved_components
+            .iter()
+            .map(|name| {
+                index
+                    .components
+                    .iter()
+                    .find(|c| c.name == *name)
+                    .map(|c| c.files_for_preset(&config.preset).len())
+                    .unwrap_or(0)
+            })
+            .sum();
+
+        detail_lines.push(ratatui::text::Line::from(""));
+        detail_lines.push(ratatui::text::Line::from(vec![
+            ratatui::text::Span::styled("Total files to write: ", Style::default().fg(Color::DarkGray)),
+            ratatui::text::Span::styled(
+                format!("{}", total_files),
+                Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD),
+            ),
+        ]));
+    }
+
+    if detail_lines.is_empty() {
         let no_selection = Paragraph::new("No component selected.")
             .block(details_block)
             .alignment(ratatui::layout::Alignment::Center);
         f.render_widget(no_selection, main_chunks[1]);
+    } else {
+        let details_paragraph = Paragraph::new(detail_lines)
+            .block(details_block)
+            .wrap(Wrap { trim: true });
+        f.render_widget(details_paragraph, main_chunks[1]);
     }
 
     let footer_text = match input_mode {
@@ -1082,6 +1182,11 @@ mod tests {
         };
 
         let filtered_components = vec![&comp1, &comp2];
+        let test_index = RegistryIndex {
+            version: "1.0.0".to_string(),
+            presets: vec!["default".to_string()],
+            components: vec![comp1.clone(), comp2.clone()],
+        };
 
         // 1. Draw with selection = Some(0) and empty selected_names
         let mut list_state = ListState::default();
@@ -1098,6 +1203,7 @@ mod tests {
                     &filtered_components,
                     &config,
                     &selected_names,
+                    &test_index,
                 );
             })
             .unwrap();
@@ -1115,6 +1221,7 @@ mod tests {
                     &filtered_components,
                     &config,
                     &selected_names,
+                    &test_index,
                 );
             })
             .unwrap();
@@ -1131,6 +1238,7 @@ mod tests {
                     &filtered_components,
                     &config,
                     &selected_names,
+                    &test_index,
                 );
             })
             .unwrap();
