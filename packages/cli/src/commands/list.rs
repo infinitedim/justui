@@ -139,12 +139,11 @@ pub fn run(category: Option<String>, json: bool) -> Result<()> {
         return Ok(());
     }
 
-    let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen)?;
-    let backend = CrosstermBackend::new(stdout);
+    let mut guard = crate::utils::terminal_guard::TerminalGuard::enter()?;
+    let backend = CrosstermBackend::new(io::stdout());
     let mut terminal = Terminal::new(backend)?;
 
-    let loop_result = run_interactive_tui(
+    run_interactive_tui(
         &mut terminal,
         || {
             if event::poll(std::time::Duration::from_millis(100))? {
@@ -155,12 +154,8 @@ pub fn run(category: Option<String>, json: bool) -> Result<()> {
         },
         &index,
         &config,
-    );
-
-    disable_raw_mode()?;
-    execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-
-    loop_result
+        &mut guard,
+    )
 }
 
 fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Event>>>(
@@ -168,6 +163,7 @@ fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Event>>>(
     mut next_event: E,
     index: &RegistryIndex,
     config: &JustUIConfig,
+    guard: &mut crate::utils::terminal_guard::TerminalGuard,
 ) -> Result<()> {
     let mut list_state = ListState::default();
     list_state.select(Some(0));
@@ -294,8 +290,7 @@ fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Event>>>(
                             })
                             .sum();
 
-                        disable_raw_mode()?;
-                        execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+                        guard.leave_temporarily()?;
 
                         println!("\nInstalling {} component(s)...", resolved_components.len());
 
@@ -378,8 +373,7 @@ fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Event>>>(
                             let _ = io::stdin().read_line(&mut buffer);
                         }
 
-                        let _ = enable_raw_mode();
-                        let _ = execute!(terminal.backend_mut(), EnterAlternateScreen);
+                        let _ = guard.re_enter();
                         let _ = terminal.clear();
                     }
                 }
@@ -1332,6 +1326,7 @@ mod tests {
             Event::Key(crossterm::event::KeyEvent::from(KeyCode::Char('q'))),
         ];
 
+        let mut dummy_guard = crate::utils::terminal_guard::TerminalGuard::dummy();
         let result = run_interactive_tui(
             &mut terminal,
             || {
@@ -1345,6 +1340,7 @@ mod tests {
             },
             &index,
             &config,
+            &mut dummy_guard,
         );
 
         assert!(result.is_ok());
