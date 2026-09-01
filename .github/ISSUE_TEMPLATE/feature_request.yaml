@@ -1,33 +1,65 @@
-name: Feature Request
-description: Suggest a new component, visual token, or CLI feature.
-title: "[FEAT]: "
-labels: ["enhancement", "proposal"]
+name: Feature Request / Architecture Spec
+description: Propose a new feature, CLI command, or visual preset style.
+title: "feat(): "
+labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Have an idea for a new widget or feature? We'd love to hear it!
-  - type: textarea
-    id: problem
+        Use this template for new features, CLI commands, or preset styles for JustUI.
+  - type: dropdown
+    id: component
     attributes:
-      label: Is your feature request related to a problem?
-      description: A clear and concise description of what the problem is. E.g., "I'm frustrated when..."
-      placeholder: Describe the pain point...
-  - type: textarea
-    id: solution
-    attributes:
-      label: Describe the solution you'd like
-      description: A clear and concise description of what component or feature you want to add. Describe its options, behavior, and visual tokens.
-      placeholder: Describe the widget, layout, or CLI tool additions...
+      label: Target Package / Component
+      description: Select the primary module/package this feature belongs to.
+      options:
+        - just_ui_cli (Rust CLI)
+        - just_ui_core (Theme Engine & InheritedModel)
+        - just_ui_tokens (Design Tokens & HSL Colors)
+        - Preset Style (Neobrutalism / Glassmorphism / etc.)
+        - Docs & Website
     validations:
       required: true
   - type: textarea
-    id: alternatives
+    id: problem_statement
     attributes:
-      label: Describe alternatives you've considered
-      description: A clear and concise description of any alternative solutions or features you've considered.
+      label: 1. Problem Statement & Motivation
+      description: Describe the friction, gap in existing architecture, or developer experience pain point.
+      placeholder: |
+        # Problem Statement
+        Describe what's missing or difficult...
+
+        # Rationale & Motivation
+        Why should we build this feature now?
+    validations:
+      required: true
   - type: textarea
-    id: context
+    id: technical_architecture
     attributes:
-      label: Additional Context
-      description: Add any other context, designs, screenshots, or mockups about the feature request here.
+      label: 2. Technical Architecture & Scope
+      description: Detail the affected files, structs, traits, or Dart widgets.
+      placeholder: |
+        ## Affected Files & Scope
+        - Packages / Files to add or modify
+        - CLI Commands / Subcommands
+        - API & Type signatures
+    validations:
+      required: true
+  - type: textarea
+    id: poc
+    attributes:
+      label: 3. Proof of Concept / Proposed Solution
+      description: Code snippets, Rust/Dart logic, or visual mockups.
+      placeholder: |
+        ```rust // or dart
+        // Code snippet demonstration
+        ```
+  - type: textarea
+    id: estimated_impact
+    attributes:
+      label: 4. Estimated Impact & Definition of Done
+      description: List risk, files modified count, and acceptance criteria.
+      placeholder: |
+        - [ ] Files added / modified
+        - [ ] Unit & Integration tests passing
+        - [ ] Documentation updated

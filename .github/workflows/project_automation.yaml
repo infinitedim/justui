@@ -1,0 +1,18 @@
+name: Project Automation (Auto Triage)
+
+on:
+  issues:
+    types: [opened, labeled]
+  pull_request:
+    types: [opened, ready_for_review]
+
+jobs:
+  add-to-project:
+    name: Add Issue/PR to GitHub Project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add to Project
+        uses: actions/add-to-project@v2
+        with:
+          project-url: "https://github.com/infinitedim/justui/projects/2"
+          github-token: ${{ secrets.PROJECT_PAT || secrets.GITHUB_TOKEN }}

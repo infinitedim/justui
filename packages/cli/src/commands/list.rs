@@ -29,6 +29,7 @@ enum InputMode {
 enum KeyAction {
     None,
     Quit,
+    #[allow(unused)]
     Install(usize),
     ToggleSelect(usize),
     SelectAll,
