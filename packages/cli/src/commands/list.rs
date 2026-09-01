@@ -14,7 +14,9 @@ use ratatui::{
 use std::collections::HashSet;
 use std::io::{self, Write};
 
-use crate::commands::add::{add_component, sha256_hex};
+use crate::commands::add::{
+    add_component, resolve_dependencies_recursive, sha256_hex, OperationDetail,
+};
 use crate::config::JustUIConfig;
 use crate::registry::{RegistryClient, RegistryComponent, RegistryIndex};
 use crate::utils::logger;
@@ -260,18 +262,59 @@ fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Event>>>(
                     };
 
                     if !to_install.is_empty() {
+                        let mut dep_visited = HashSet::new();
+                        let mut resolved_components = Vec::new();
+                        for comp_name in &to_install {
+                            if let Err(e) = resolve_dependencies_recursive(
+                                comp_name,
+                                index,
+                                &mut dep_visited,
+                                &mut resolved_components,
+                            ) {
+                                logger::error(&format!(
+                                    "Dependency resolution failed for \"{}\": {}",
+                                    comp_name, e
+                                ));
+                            }
+                        }
+
+                        let total_files: usize = resolved_components
+                            .iter()
+                            .map(|name| {
+                                index
+                                    .components
+                                    .iter()
+                                    .find(|c| c.name == *name)
+                                    .map(|c| c.files_for_preset(&config.preset).len())
+                                    .unwrap_or(0)
+                            })
+                            .sum();
+
                         disable_raw_mode()?;
                         execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
 
-                        for comp_name in &to_install {
-                            println!("\nInstalling component \"{}\"...", comp_name);
+                        println!("\nInstalling {} component(s)...", resolved_components.len());
 
-                            let mut visited = HashSet::new();
-                            let pb_files = indicatif::ProgressBar::new_spinner();
-                            pb_files.set_message("Installing files...");
-                            pb_files.enable_steady_tick(std::time::Duration::from_millis(100));
+                        let pb_files = if total_files > 0 {
+                            let pb = indicatif::ProgressBar::new(total_files as u64);
+                            pb.set_style(
+                                indicatif::ProgressStyle::default_bar()
+                                    .template(
+                                        "{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} {msg}",
+                                    )
+                                    .expect("Valid progress bar template")
+                                    .progress_chars("#>-"),
+                            );
+                            Some(pb)
+                        } else {
+                            None
+                        };
 
-                            let client = RegistryClient::new(config.registry_url.clone());
+                        let mut visited = HashSet::new();
+                        let mut all_details = Vec::<OperationDetail>::new();
+                        let client = RegistryClient::new(config.registry_url.clone());
+
+                        for comp_name in &resolved_components {
                             match add_component(
                                 comp_name,
                                 index,
@@ -283,34 +326,40 @@ fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Event>>>(
                                 false,
                                 false,
                                 true,
-                                &Some(pb_files.clone()),
+                                &pb_files,
                                 &config.preset,
                                 config.dart_target,
                             ) {
                                 Ok((_stats, details)) => {
-                                    pb_files.finish_and_clear();
-                                    logger::success(&format!(
-                                        "Component \"{}\" added successfully.",
-                                        comp_name
-                                    ));
-
-                                    let mut summary_items = Vec::new();
-                                    for detail in details {
-                                        summary_items.push(logger::SummaryItem {
-                                            label: detail.file_name,
-                                            value: detail.path,
-                                        });
-                                    }
-                                    logger::summary("File Summary", &summary_items);
+                                    all_details.extend(details);
                                 }
                                 Err(e) => {
-                                    pb_files.finish_and_clear();
                                     logger::error(&format!(
-                                        "Failed to install \"{}\": {}",
+                                        "Failed to install component \"{}\": {}",
                                         comp_name, e
                                     ));
                                 }
                             }
+                        }
+
+                        if let Some(ref pb) = pb_files {
+                            pb.finish_and_clear();
+                        }
+
+                        logger::success(&format!(
+                            "Bulk installation completed ({} component(s) processed).",
+                            resolved_components.len()
+                        ));
+
+                        if !all_details.is_empty() {
+                            let mut summary_items = Vec::new();
+                            for detail in all_details {
+                                summary_items.push(logger::SummaryItem {
+                                    label: detail.file_name,
+                                    value: detail.path,
+                                });
+                            }
+                            logger::summary("File Summary", &summary_items);
                         }
 
                         selected_names.clear();
@@ -433,7 +482,10 @@ fn draw_ui(
         .constraints([Constraint::Percentage(35), Constraint::Percentage(65)])
         .split(chunks[1]);
 
-    let list_title = match (input_mode == InputMode::Searching, selected_names.is_empty()) {
+    let list_title = match (
+        input_mode == InputMode::Searching,
+        selected_names.is_empty(),
+    ) {
         (true, true) => format!(" Components (Filter: {}) ", search_query),
         (true, false) => format!(
             " Components (Filter: {}) ({} selected) ",
@@ -451,7 +503,9 @@ fn draw_ui(
             let checkbox_span = if is_checked {
                 ratatui::text::Span::styled(
                     "[x] ",
-                    Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD),
+                    Style::default()
+                        .fg(Color::Cyan)
+                        .add_modifier(Modifier::BOLD),
                 )
             } else {
                 ratatui::text::Span::styled("[ ] ", Style::default().fg(Color::DarkGray))
