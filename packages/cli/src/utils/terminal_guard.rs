@@ -13,6 +13,7 @@ pub struct TerminalGuard {
 
 impl TerminalGuard {
     /// Creates a dummy (inactive) guard that performs no terminal manipulations. Useful for unit tests.
+    #[allow(dead_code)]
     pub fn dummy() -> Self {
         Self { active: false }
     }
