@@ -444,6 +444,7 @@ fn handle_key_code(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn draw_ui(
     f: &mut ratatui::Frame,
     list_state: &mut ListState,
@@ -1609,33 +1610,69 @@ mod tests {
 
         // Space -> ToggleSelect
         assert_eq!(
-            handle_key_code(KeyCode::Char(' '), &mut input_mode, &mut query, &mut state, 5),
+            handle_key_code(
+                KeyCode::Char(' '),
+                &mut input_mode,
+                &mut query,
+                &mut state,
+                5
+            ),
             KeyAction::ToggleSelect(1)
         );
 
         // 'a' / 'A' -> SelectAll
         assert_eq!(
-            handle_key_code(KeyCode::Char('a'), &mut input_mode, &mut query, &mut state, 5),
+            handle_key_code(
+                KeyCode::Char('a'),
+                &mut input_mode,
+                &mut query,
+                &mut state,
+                5
+            ),
             KeyAction::SelectAll
         );
         assert_eq!(
-            handle_key_code(KeyCode::Char('A'), &mut input_mode, &mut query, &mut state, 5),
+            handle_key_code(
+                KeyCode::Char('A'),
+                &mut input_mode,
+                &mut query,
+                &mut state,
+                5
+            ),
             KeyAction::SelectAll
         );
 
         // 'n' / 'N' -> DeselectAll
         assert_eq!(
-            handle_key_code(KeyCode::Char('n'), &mut input_mode, &mut query, &mut state, 5),
+            handle_key_code(
+                KeyCode::Char('n'),
+                &mut input_mode,
+                &mut query,
+                &mut state,
+                5
+            ),
             KeyAction::DeselectAll
         );
         assert_eq!(
-            handle_key_code(KeyCode::Char('N'), &mut input_mode, &mut query, &mut state, 5),
+            handle_key_code(
+                KeyCode::Char('N'),
+                &mut input_mode,
+                &mut query,
+                &mut state,
+                5
+            ),
             KeyAction::DeselectAll
         );
 
         // 'i' -> InstallSelected
         assert_eq!(
-            handle_key_code(KeyCode::Char('i'), &mut input_mode, &mut query, &mut state, 5),
+            handle_key_code(
+                KeyCode::Char('i'),
+                &mut input_mode,
+                &mut query,
+                &mut state,
+                5
+            ),
             KeyAction::InstallSelected
         );
     }
@@ -1773,7 +1810,9 @@ mod tests {
             &mut terminal,
             || {
                 Ok(if events.is_empty() {
-                    Some(Event::Key(crossterm::event::KeyEvent::from(KeyCode::Char('q'))))
+                    Some(Event::Key(crossterm::event::KeyEvent::from(KeyCode::Char(
+                        'q',
+                    ))))
                 } else {
                     Some(events.remove(0))
                 })
