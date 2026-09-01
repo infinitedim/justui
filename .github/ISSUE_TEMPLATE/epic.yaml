@@ -1,0 +1,42 @@
+name: Epic / Milestone Initiative
+description: Propose a major Epic or Milestone grouping multiple user stories or tasks.
+title: "epic(): "
+labels: ["epic"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for high-level Epic initiatives grouping features and tasks.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Primary Domain / Layer
+      description: What is the main focus of this epic?
+      options:
+        - CLI Expansion (Rust CLI)
+        - Core & Token Architecture
+        - New Component Presets
+        - Infrastructure & Tooling
+    validations:
+      required: true
+  - type: textarea
+    id: vision
+    attributes:
+      label: 1. Strategic Vision & Goal
+      description: High-level overview of what this epic accomplishes.
+      placeholder: |
+        # Strategic Vision
+        What initiative does this epic drive for JustUI?
+    validations:
+      required: true
+  - type: textarea
+    id: subtasks
+    attributes:
+      label: 2. Breakdown of Stories & Sub-tasks
+      description: List the child issues or features in scope for this epic.
+      placeholder: |
+        - [ ] #43 CLI Feature - justui theme Generator
+        - [ ] #44 CLI Feature - justui list Interactive Bulk Selector
+        - [ ] #61 Preset Style - Glassmorphism
+    validations:
+      required: true

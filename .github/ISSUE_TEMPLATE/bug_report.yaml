@@ -1,61 +1,47 @@
 name: Bug Report
-description: Create a report to help us improve JustUI components or CLI.
-title: "[BUG]: "
-labels: ["bug", "untriaged"]
+description: Create a report to help us fix bugs in JustUI CLI or components.
+title: "fix(): "
+labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
-  - type: textarea
-    id: description
+        Thanks for reporting a bug! Please fill out the details below.
+  - type: dropdown
+    id: component
     attributes:
-      label: Bug Description
-      description: A clear and concise description of what the bug is.
-      placeholder: Describe the problem...
+      label: Affected Package / Component
+      description: Which module has the issue?
+      options:
+        - just_ui_cli (Rust CLI)
+        - just_ui_core (Theme Engine)
+        - just_ui_tokens (Design Tokens)
+        - Preset Style / UI Widgets
+        - Docs & Examples
     validations:
       required: true
   - type: textarea
-    id: reproduction
+    id: description
     attributes:
-      label: Steps to Reproduce
-      description: Steps to reproduce the behavior.
+      label: 1. Bug Description & Reproduction
+      description: Describe what happens and steps to reproduce.
       placeholder: |
-        1. Copy component using 'justui add <component>'
-        2. ...
-        3. See error
+        # Problem Description
+        Describe the bug...
+
+        # Steps to Reproduce
+        1. Run `justui ...`
+        2. See error...
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: Expected Behavior
-      description: A clear and concise description of what you expected to happen.
-  - type: input
-    id: dart-version
-    attributes:
-      label: Dart SDK Version
-      description: e.g., 3.12.0
-  - type: input
-    id: flutter-version
-    attributes:
-      label: Flutter SDK Version
-      description: e.g., 3.27.0
-  - type: dropdown
-    id: platform
-    attributes:
-      label: Target Platform
-      description: Which platform did this occur on?
-      options:
-        - Android
-        - iOS
-        - Web
-        - macOS
-        - Windows
-        - Linux
+      label: 2. Expected vs Actual Behavior
+      description: What should have happened instead?
   - type: textarea
-    id: code
+    id: code_or_logs
     attributes:
-      label: Code Snippet / Logs
-      description: Paste the offending widget code or logs here.
-      render: dart
+      label: 3. Panic Trace / Stack Trace / Logs
+      description: Paste any Rust panic backtraces, terminal output, or Dart stack traces.
+      render: shell

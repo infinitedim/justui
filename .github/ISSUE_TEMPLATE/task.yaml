@@ -1,0 +1,53 @@
+name: Technical Task / Chore / Test
+description: Create a technical task, refactoring, test suite, or maintenance work.
+title: "task(): "
+labels: ["task"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for internal refactoring, test additions, CI/CD, or maintenance tasks.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Target Package / Scope
+      description: Select the package or scope for this task.
+      options:
+        - just_ui_cli (Rust CLI)
+        - just_ui_core
+        - just_ui_tokens
+        - CI/CD & Workflows
+        - Docs & Repository
+    validations:
+      required: true
+  - type: textarea
+    id: task_summary
+    attributes:
+      label: 1. Task Objective & Context
+      description: Detail what technical task needs to be performed.
+      placeholder: |
+        # Objective
+        Summary of the technical task or refactoring...
+
+        # Context & Rationale
+        Why is this refactor or test necessary?
+    validations:
+      required: true
+  - type: textarea
+    id: technical_details
+    attributes:
+      label: 2. Technical Scope & Implementation Plan
+      description: Specify files, structs, functions, or test suites to modify.
+      placeholder: |
+        - [ ] File/Module 1
+        - [ ] File/Module 2
+    validations:
+      required: true
+  - type: textarea
+    id: dod
+    attributes:
+      label: 3. Definition of Done
+      description: Criteria required to complete this task.
+      placeholder: |
+        - [ ] Code compiles cleanly without warnings
+        - [ ] All static analysis and unit tests pass
