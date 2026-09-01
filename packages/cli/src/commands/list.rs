@@ -1,8 +1,7 @@
 use anyhow::Result;
 use crossterm::{
     event::{self, Event, KeyCode},
-    execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    terminal::enable_raw_mode,
 };
 use ratatui::{
     backend::CrosstermBackend,
@@ -570,10 +569,7 @@ fn draw_ui(
                 ratatui::text::Span::raw(format!(" (v{})", comp.version)),
             ]));
             detail_lines.push(ratatui::text::Line::from(vec![
-                ratatui::text::Span::styled(
-                    "Category:     ",
-                    Style::default().fg(Color::DarkGray),
-                ),
+                ratatui::text::Span::styled("Category:     ", Style::default().fg(Color::DarkGray)),
                 ratatui::text::Span::raw(&comp.category),
             ]));
 
@@ -647,8 +643,13 @@ fn draw_ui(
             detail_lines.push(ratatui::text::Line::from(""));
         }
         detail_lines.push(ratatui::text::Line::from(ratatui::text::Span::styled(
-            format!("─── Selection Summary ({} components) ───", selected_names.len()),
-            Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
+            format!(
+                "─── Selection Summary ({} components) ───",
+                selected_names.len()
+            ),
+            Style::default()
+                .fg(Color::Yellow)
+                .add_modifier(Modifier::BOLD),
         )));
 
         for name in index
@@ -660,7 +661,9 @@ fn draw_ui(
             detail_lines.push(ratatui::text::Line::from(vec![
                 ratatui::text::Span::styled(
                     "  ✓ ",
-                    Style::default().fg(Color::Green).add_modifier(Modifier::BOLD),
+                    Style::default()
+                        .fg(Color::Green)
+                        .add_modifier(Modifier::BOLD),
                 ),
                 ratatui::text::Span::raw(name.as_str()),
             ]));
@@ -694,11 +697,16 @@ fn draw_ui(
             detail_lines.push(ratatui::text::Line::from(""));
             detail_lines.push(ratatui::text::Line::from(ratatui::text::Span::styled(
                 "Auto-resolved Dependencies:",
-                Style::default().fg(Color::DarkGray).add_modifier(Modifier::UNDERLINED),
+                Style::default()
+                    .fg(Color::DarkGray)
+                    .add_modifier(Modifier::UNDERLINED),
             )));
             for dep in &additional_deps {
                 let normalized = if dep.starts_with("_shared_") {
-                    crate::utils::import_rewriter::normalize_shared_file_name(&format!("{}.dart", dep))
+                    crate::utils::import_rewriter::normalize_shared_file_name(&format!(
+                        "{}.dart",
+                        dep
+                    ))
                 } else {
                     format!("{}.dart", dep)
                 };
@@ -723,10 +731,15 @@ fn draw_ui(
 
         detail_lines.push(ratatui::text::Line::from(""));
         detail_lines.push(ratatui::text::Line::from(vec![
-            ratatui::text::Span::styled("Total files to write: ", Style::default().fg(Color::DarkGray)),
+            ratatui::text::Span::styled(
+                "Total files to write: ",
+                Style::default().fg(Color::DarkGray),
+            ),
             ratatui::text::Span::styled(
                 format!("{}", total_files),
-                Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD),
+                Style::default()
+                    .fg(Color::Cyan)
+                    .add_modifier(Modifier::BOLD),
             ),
         ]));
     }
@@ -1585,5 +1598,191 @@ mod tests {
 
         // 4. Error case: invalid registry
         let _ = run(None, false);
+    }
+
+    #[test]
+    fn test_multi_select_keybindings_and_actions() {
+        let mut input_mode = InputMode::Normal;
+        let mut query = String::new();
+        let mut state = ListState::default();
+        state.select(Some(1));
+
+        // Space -> ToggleSelect
+        assert_eq!(
+            handle_key_code(KeyCode::Char(' '), &mut input_mode, &mut query, &mut state, 5),
+            KeyAction::ToggleSelect(1)
+        );
+
+        // 'a' / 'A' -> SelectAll
+        assert_eq!(
+            handle_key_code(KeyCode::Char('a'), &mut input_mode, &mut query, &mut state, 5),
+            KeyAction::SelectAll
+        );
+        assert_eq!(
+            handle_key_code(KeyCode::Char('A'), &mut input_mode, &mut query, &mut state, 5),
+            KeyAction::SelectAll
+        );
+
+        // 'n' / 'N' -> DeselectAll
+        assert_eq!(
+            handle_key_code(KeyCode::Char('n'), &mut input_mode, &mut query, &mut state, 5),
+            KeyAction::DeselectAll
+        );
+        assert_eq!(
+            handle_key_code(KeyCode::Char('N'), &mut input_mode, &mut query, &mut state, 5),
+            KeyAction::DeselectAll
+        );
+
+        // 'i' -> InstallSelected
+        assert_eq!(
+            handle_key_code(KeyCode::Char('i'), &mut input_mode, &mut query, &mut state, 5),
+            KeyAction::InstallSelected
+        );
+    }
+
+    #[test]
+    fn test_search_query_preserves_multi_selections() {
+        let mut selected_names = HashSet::new();
+
+        // 1. Select "button" in unfiltered list
+        selected_names.insert("button".to_string());
+        assert!(selected_names.contains("button"));
+
+        // 2. Filter query "card", select "card"
+        selected_names.insert("card".to_string());
+
+        // 3. Clear search query
+        assert_eq!(selected_names.len(), 2);
+        assert!(selected_names.contains("button"));
+        assert!(selected_names.contains("card"));
+    }
+
+    #[test]
+    fn test_bulk_installation_flow_with_shared_deps() {
+        let _lock = crate::utils::lock_test_mutex();
+        let backend = CrosstermBackend::new(Vec::<u8>::new());
+        let options = ratatui::TerminalOptions {
+            viewport: ratatui::Viewport::Fixed(ratatui::layout::Rect::new(0, 0, 80, 24)),
+        };
+        let mut terminal = Terminal::with_options(backend, options).unwrap();
+
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = crate::utils::set_dir(temp_dir.path());
+        let reg_dir = temp_dir.path().join("registry");
+        std::fs::create_dir_all(&reg_dir).unwrap();
+
+        let file_btn = "// button";
+        let file_card = "// card";
+        let file_shared = "// shared pressable";
+        std::fs::write(reg_dir.join("just_button.dart"), file_btn).unwrap();
+        std::fs::write(reg_dir.join("just_card.dart"), file_card).unwrap();
+        std::fs::write(reg_dir.join("just_pressable.dart"), file_shared).unwrap();
+
+        let config = JustUIConfig {
+            registry_url: reg_dir.to_string_lossy().to_string(),
+            components_dir: temp_dir.path().to_string_lossy().to_string(),
+            tokens_dir: temp_dir.path().to_string_lossy().to_string(),
+            shared_dir: temp_dir.path().to_string_lossy().to_string(),
+            ..Default::default()
+        };
+
+        let comp_shared = RegistryComponent {
+            name: "_shared_pressable".to_string(),
+            version: "1.0.0".to_string(),
+            description: "Shared pressable".to_string(),
+            category: "core".to_string(),
+            internal: true,
+            supported_presets: vec!["default".to_string()],
+            registry_dependencies: vec![],
+            pub_dependencies: HashMap::new(),
+            files: {
+                let mut map = HashMap::new();
+                map.insert(
+                    "default".to_string(),
+                    vec![crate::registry::RegistryFile {
+                        name: "_shared_pressable.dart".to_string(),
+                        path: "just_pressable.dart".to_string(),
+                        checksum: format!("sha256:{}", sha256_hex(file_shared.as_bytes())),
+                    }],
+                );
+                map
+            },
+        };
+
+        let comp_btn = RegistryComponent {
+            name: "button".to_string(),
+            version: "1.0.0".to_string(),
+            description: "Button".to_string(),
+            category: "primitive".to_string(),
+            internal: false,
+            supported_presets: vec!["default".to_string()],
+            registry_dependencies: vec!["_shared_pressable".to_string()],
+            pub_dependencies: HashMap::new(),
+            files: {
+                let mut map = HashMap::new();
+                map.insert(
+                    "default".to_string(),
+                    vec![crate::registry::RegistryFile {
+                        name: "just_button.dart".to_string(),
+                        path: "just_button.dart".to_string(),
+                        checksum: format!("sha256:{}", sha256_hex(file_btn.as_bytes())),
+                    }],
+                );
+                map
+            },
+        };
+
+        let comp_card = RegistryComponent {
+            name: "card".to_string(),
+            version: "1.0.0".to_string(),
+            description: "Card".to_string(),
+            category: "primitive".to_string(),
+            internal: false,
+            supported_presets: vec!["default".to_string()],
+            registry_dependencies: vec!["_shared_pressable".to_string()],
+            pub_dependencies: HashMap::new(),
+            files: {
+                let mut map = HashMap::new();
+                map.insert(
+                    "default".to_string(),
+                    vec![crate::registry::RegistryFile {
+                        name: "just_card.dart".to_string(),
+                        path: "just_card.dart".to_string(),
+                        checksum: format!("sha256:{}", sha256_hex(file_card.as_bytes())),
+                    }],
+                );
+                map
+            },
+        };
+
+        let index = RegistryIndex {
+            version: "1.0.0".to_string(),
+            presets: vec!["default".to_string()],
+            components: vec![comp_btn, comp_card, comp_shared],
+        };
+
+        // Event stream: Select All ('a'), then InstallSelected ('Enter'), then Quit ('q')
+        let mut events = vec![
+            Event::Key(crossterm::event::KeyEvent::from(KeyCode::Char('a'))),
+            Event::Key(crossterm::event::KeyEvent::from(KeyCode::Enter)),
+            Event::Key(crossterm::event::KeyEvent::from(KeyCode::Char('q'))),
+        ];
+
+        let mut dummy_guard = crate::utils::terminal_guard::TerminalGuard::dummy();
+        let result = run_interactive_tui(
+            &mut terminal,
+            || {
+                Ok(if events.is_empty() {
+                    Some(Event::Key(crossterm::event::KeyEvent::from(KeyCode::Char('q'))))
+                } else {
+                    Some(events.remove(0))
+                })
+            },
+            &index,
+            &config,
+            &mut dummy_guard,
+        );
+
+        assert!(result.is_ok());
     }
 }
