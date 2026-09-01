@@ -8,6 +8,7 @@ pub mod logger;
 pub mod prompt;
 pub mod pubspec_editor;
 pub mod syntax_highlighter;
+pub mod terminal_guard;
 pub mod theme_editor;
 
 #[cfg(test)]
