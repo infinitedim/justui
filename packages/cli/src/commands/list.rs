@@ -30,6 +30,10 @@ enum KeyAction {
     None,
     Quit,
     Install(usize),
+    ToggleSelect(usize),
+    SelectAll,
+    DeselectAll,
+    InstallSelected,
 }
 
 pub fn run(category: Option<String>, json: bool) -> Result<()> {
@@ -144,6 +148,7 @@ fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Event>>>(
     let mut list_state = ListState::default();
     list_state.select(Some(0));
 
+    let mut selected_names = HashSet::<String>::new();
     let mut search_query = String::new();
     let mut input_mode = InputMode::Normal;
 
@@ -190,59 +195,105 @@ fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Event>>>(
 
             match action {
                 KeyAction::Quit => break,
+                KeyAction::ToggleSelect(selected_idx) => {
+                    if let Some(comp) = filtered_components.get(selected_idx) {
+                        if selected_names.contains(&comp.name) {
+                            selected_names.remove(&comp.name);
+                        } else {
+                            selected_names.insert(comp.name.clone());
+                        }
+                    }
+                }
+                KeyAction::SelectAll => {
+                    for comp in &filtered_components {
+                        selected_names.insert(comp.name.clone());
+                    }
+                }
+                KeyAction::DeselectAll => {
+                    for comp in &filtered_components {
+                        selected_names.remove(&comp.name);
+                    }
+                }
                 KeyAction::Install(selected_idx) => {
                     if let Some(comp) = filtered_components.get(selected_idx) {
-                        let comp_name = comp.name.clone();
+                        selected_names.insert(comp.name.clone());
+                    }
+                }
+                KeyAction::InstallSelected => {
+                    let to_install: Vec<String> = if selected_names.is_empty() {
+                        if let Some(selected_idx) = list_state.selected() {
+                            if let Some(comp) = filtered_components.get(selected_idx) {
+                                vec![comp.name.clone()]
+                            } else {
+                                vec![]
+                            }
+                        } else {
+                            vec![]
+                        }
+                    } else {
+                        index
+                            .components
+                            .iter()
+                            .filter(|c| selected_names.contains(&c.name))
+                            .map(|c| c.name.clone())
+                            .collect()
+                    };
 
+                    if !to_install.is_empty() {
                         disable_raw_mode()?;
                         execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-                        println!("\nInstalling component \"{}\"...", comp_name);
 
-                        let mut visited = HashSet::new();
-                        let pb_files = indicatif::ProgressBar::new_spinner();
-                        pb_files.set_message("Installing files...");
-                        pb_files.enable_steady_tick(std::time::Duration::from_millis(100));
+                        for comp_name in &to_install {
+                            println!("\nInstalling component \"{}\"...", comp_name);
 
-                        let client = RegistryClient::new(config.registry_url.clone());
-                        match add_component(
-                            &comp_name,
-                            index,
-                            &client,
-                            &config.components_dir,
-                            &config.tokens_dir,
-                            &config.shared_dir,
-                            &mut visited,
-                            false,
-                            false,
-                            true,
-                            &Some(pb_files.clone()),
-                            &config.preset,
-                            config.dart_target,
-                        ) {
-                            Ok((_stats, details)) => {
-                                pb_files.finish_and_clear();
-                                logger::success(&format!(
-                                    "Component \"{}\" added successfully.",
-                                    comp_name
-                                ));
+                            let mut visited = HashSet::new();
+                            let pb_files = indicatif::ProgressBar::new_spinner();
+                            pb_files.set_message("Installing files...");
+                            pb_files.enable_steady_tick(std::time::Duration::from_millis(100));
 
-                                let mut summary_items = Vec::new();
-                                for detail in details {
-                                    summary_items.push(logger::SummaryItem {
-                                        label: detail.file_name,
-                                        value: detail.path,
-                                    });
+                            let client = RegistryClient::new(config.registry_url.clone());
+                            match add_component(
+                                comp_name,
+                                index,
+                                &client,
+                                &config.components_dir,
+                                &config.tokens_dir,
+                                &config.shared_dir,
+                                &mut visited,
+                                false,
+                                false,
+                                true,
+                                &Some(pb_files.clone()),
+                                &config.preset,
+                                config.dart_target,
+                            ) {
+                                Ok((_stats, details)) => {
+                                    pb_files.finish_and_clear();
+                                    logger::success(&format!(
+                                        "Component \"{}\" added successfully.",
+                                        comp_name
+                                    ));
+
+                                    let mut summary_items = Vec::new();
+                                    for detail in details {
+                                        summary_items.push(logger::SummaryItem {
+                                            label: detail.file_name,
+                                            value: detail.path,
+                                        });
+                                    }
+                                    logger::summary("File Summary", &summary_items);
                                 }
-                                logger::summary("File Summary", &summary_items);
-                            }
-                            Err(e) => {
-                                pb_files.finish_and_clear();
-                                logger::error(&format!(
-                                    "Failed to install \"{}\": {}",
-                                    comp_name, e
-                                ));
+                                Err(e) => {
+                                    pb_files.finish_and_clear();
+                                    logger::error(&format!(
+                                        "Failed to install \"{}\": {}",
+                                        comp_name, e
+                                    ));
+                                }
                             }
                         }
+
+                        selected_names.clear();
 
                         print!("\nPress Enter to return to the component list...");
                         io::stdout().flush()?;
@@ -292,22 +343,25 @@ fn handle_key_code(
                 }
                 KeyAction::None
             }
-            KeyCode::Char('/') => {
-                *input_mode = InputMode::Searching;
-                KeyAction::None
-            }
-            KeyCode::Char('i') | KeyCode::Enter => {
-                if let Some(selected_idx) = list_state.selected() {
-                    if selected_idx < filtered_len {
-                        return KeyAction::Install(selected_idx);
+            KeyCode::Char(' ') => {
+                if let Some(selected) = list_state.selected() {
+                    if selected < filtered_len {
+                        return KeyAction::ToggleSelect(selected);
                     }
                 }
                 KeyAction::None
             }
+            KeyCode::Char('a') | KeyCode::Char('A') => KeyAction::SelectAll,
+            KeyCode::Char('n') | KeyCode::Char('N') => KeyAction::DeselectAll,
+            KeyCode::Char('/') => {
+                *input_mode = InputMode::Searching;
+                KeyAction::None
+            }
+            KeyCode::Char('i') | KeyCode::Enter => KeyAction::InstallSelected,
             _ => KeyAction::None,
         },
         InputMode::Searching => match code {
-            KeyCode::Esc => {
+            KeyCode::Esc | KeyCode::Enter => {
                 *input_mode = InputMode::Normal;
                 KeyAction::None
             }
@@ -749,7 +803,37 @@ mod tests {
         );
         assert_eq!(input_mode, InputMode::Normal);
 
-        // 5. Normal mode: Install & Quit
+        // 5. Normal mode: Install, Multi-Select Hotkeys, & Quit
+        assert_eq!(
+            handle_key_code(
+                KeyCode::Char(' '),
+                &mut input_mode,
+                &mut search_query,
+                &mut list_state,
+                3
+            ),
+            KeyAction::ToggleSelect(1)
+        );
+        assert_eq!(
+            handle_key_code(
+                KeyCode::Char('a'),
+                &mut input_mode,
+                &mut search_query,
+                &mut list_state,
+                3
+            ),
+            KeyAction::SelectAll
+        );
+        assert_eq!(
+            handle_key_code(
+                KeyCode::Char('n'),
+                &mut input_mode,
+                &mut search_query,
+                &mut list_state,
+                3
+            ),
+            KeyAction::DeselectAll
+        );
         assert_eq!(
             handle_key_code(
                 KeyCode::Enter,
@@ -758,7 +842,7 @@ mod tests {
                 &mut list_state,
                 3
             ),
-            KeyAction::Install(1)
+            KeyAction::InstallSelected
         );
         assert_eq!(
             handle_key_code(
@@ -768,7 +852,7 @@ mod tests {
                 &mut list_state,
                 3
             ),
-            KeyAction::Install(1)
+            KeyAction::InstallSelected
         );
 
         assert_eq!(
@@ -811,7 +895,7 @@ mod tests {
                 &mut unselected_state,
                 3
             ),
-            KeyAction::None
+            KeyAction::InstallSelected
         );
         unselected_state.select(Some(10));
         assert_eq!(
@@ -822,7 +906,7 @@ mod tests {
                 &mut unselected_state,
                 3
             ),
-            KeyAction::None
+            KeyAction::InstallSelected
         );
 
         list_state.select(Some(0));
@@ -1289,8 +1373,6 @@ mod tests {
 
         // 3. Non-existent category
         assert!(run(Some("nonexistent".to_string()), false).is_ok());
-
-
 
         // 4. Error case: invalid registry
         let _ = run(None, false);
