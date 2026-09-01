@@ -334,7 +334,7 @@ pub fn run(
     Ok(())
 }
 
-fn resolve_dependencies_recursive(
+pub fn resolve_dependencies_recursive(
     name: &str,
     index: &RegistryIndex,
     visited: &mut HashSet<String>,
