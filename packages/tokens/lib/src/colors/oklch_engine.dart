@@ -184,12 +184,39 @@ abstract final class OklchEngine {
     //   K > 0 → channel increases with C → will hit 1
     //
     // Channel weight rows are the M1 inverse matrix.
-    final double cR = _channelMaxChroma(lVal, l2, l3, kl, km, ks,
-        4.0767416621, -3.3077115913, 0.2309699292);
-    final double cG = _channelMaxChroma(lVal, l2, l3, kl, km, ks,
-        -1.2684380046, 2.6097574011, -0.3413193965);
-    final double cB = _channelMaxChroma(lVal, l2, l3, kl, km, ks,
-        -0.0041960863, -0.7034186147, 1.7076147010);
+    final double cR = _channelMaxChroma(
+      lVal,
+      l2,
+      l3,
+      kl,
+      km,
+      ks,
+      4.0767416621,
+      -3.3077115913,
+      0.2309699292,
+    );
+    final double cG = _channelMaxChroma(
+      lVal,
+      l2,
+      l3,
+      kl,
+      km,
+      ks,
+      -1.2684380046,
+      2.6097574011,
+      -0.3413193965,
+    );
+    final double cB = _channelMaxChroma(
+      lVal,
+      l2,
+      l3,
+      kl,
+      km,
+      ks,
+      -0.0041960863,
+      -0.7034186147,
+      1.7076147010,
+    );
 
     // The gamut limit is the minimum across all 3 channels
     double maxC = cR;
@@ -372,8 +399,7 @@ abstract final class OklchEngine {
       final double f = wl * p2 * p + wm * q2 * q + ws * r2 * r - target;
 
       // f'(C) = 3·Σ(wi·ki·pi²)
-      final double f1 =
-          3.0 * (wl * kl * p2 + wm * km * q2 + ws * ks * r2);
+      final double f1 = 3.0 * (wl * kl * p2 + wm * km * q2 + ws * ks * r2);
 
       // f''(C) = 6·Σ(wi·ki²·pi)
       final double f2 =
