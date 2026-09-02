@@ -1,5 +1,6 @@
 export 'src/colors/color_space.dart';
 export 'src/colors/oklch_engine.dart';
+export 'src/colors/oklch_color_tween.dart';
 export 'src/colors/hsluv_engine.dart';
 export 'src/colors/color_palette.dart';
 export 'src/colors/color_semantic.dart';
