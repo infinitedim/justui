@@ -58,7 +58,7 @@ class const JustThemeData({
   static final JustThemeData neobrutalismDark = JustThemeData(
     colors: JustColors.neobrutalismDark(),
     shadows: const NeobrutalismShadowScheme(shadowColor: Color(0xFFFFFFFF)),
-    animations: JustMotionProfile.neobrutalism,
+    animations: .neobrutalism,
     preset: .neobrutalism,
   );
 
@@ -96,7 +96,7 @@ class const JustThemeData({
       return AnimatedContainer(
         duration: animations.instant,
         curve: animations.defaultCurve,
-        transform: Matrix4.translationValues(
+        transform: .translationValues(
           isPressed ? offset.dx : 0.0,
           isPressed ? offset.dy : 0.0,
           0.0,
