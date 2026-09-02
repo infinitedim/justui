@@ -1559,6 +1559,7 @@ mod tests {
 
     #[test]
     fn test_run_command_execution() {
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let registry_dir = temp_dir.path().join("registry");
         std::fs::create_dir_all(&registry_dir).unwrap();
