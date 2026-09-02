@@ -590,5 +590,263 @@ void main() {
         expect(darkSurface.computeLuminance(), lessThan(0.05));
       }
     });
+
+    // =========================================================
+    // --- Tier 1: CSS-4 Gamut Mapping Tests ---
+    // =========================================================
+
+    test('gamutMap preserves hue for out-of-gamut vivid colors', () {
+      // Highly saturated OKLCH colors that are outside sRGB gamut
+      const vividColors = [
+        OklchColor(0.7, 0.35, 30.0), // vivid red-orange
+        OklchColor(0.7, 0.35, 150.0), // vivid green
+        OklchColor(0.5, 0.35, 270.0), // vivid blue-purple
+        OklchColor(0.85, 0.30, 90.0), // vivid yellow
+      ];
+
+      for (final oklch in vividColors) {
+        final mapped = OklchEngine.gamutMap(oklch);
+        final roundtrip = OklchEngine.fromColor(mapped);
+
+        // Hue must not drift more than 2° after gamut mapping
+        double hueDiff = (roundtrip.h - oklch.h).abs();
+        if (hueDiff > 180.0) hueDiff = 360.0 - hueDiff;
+        expect(
+          hueDiff,
+          lessThan(2.0),
+          reason: 'Hue drifted ${hueDiff.toStringAsFixed(2)}° for OKLCH(${oklch.l}, ${oklch.c}, ${oklch.h})',
+        );
+
+        // Lightness must be preserved within tolerance
+        expect(
+          roundtrip.l,
+          closeTo(oklch.l, 0.02),
+          reason: 'Lightness drifted for OKLCH(${oklch.l}, ${oklch.c}, ${oklch.h})',
+        );
+      }
+    });
+
+    test('gamutMap returns identical color for in-gamut inputs', () {
+      const inGamutColors = [
+        Color(0xFF3B82F6), // blue
+        Color(0xFFEF4444), // red
+        Color(0xFF22C55E), // green
+        Color(0xFFF59E0B), // amber
+        Color(0xFF000000), // black
+        Color(0xFFFFFFFF), // white
+        Color(0xFF808080), // mid gray
+      ];
+
+      for (final color in inGamutColors) {
+        final oklch = OklchEngine.fromColor(color);
+        final gamutMapped = OklchEngine.gamutMap(oklch);
+        final rawMapped = OklchEngine.toRawColor(oklch);
+
+        expect(gamutMapped.r, closeTo(rawMapped.r, 0.005));
+        expect(gamutMapped.g, closeTo(rawMapped.g, 0.005));
+        expect(gamutMapped.b, closeTo(rawMapped.b, 0.005));
+      }
+    });
+
+    test('toColor uses gamutMap (not raw clamping)', () {
+      // A color that is clearly out of gamut
+      const outOfGamut = OklchColor(0.7, 0.40, 150.0);
+      final viaToColor = OklchEngine.toColor(outOfGamut);
+      final viaGamutMap = OklchEngine.gamutMap(outOfGamut);
+
+      expect(viaToColor.r, equals(viaGamutMap.r));
+      expect(viaToColor.g, equals(viaGamutMap.g));
+      expect(viaToColor.b, equals(viaGamutMap.b));
+    });
+
+    test('toRawColor preserves backward-compatible clamping behavior', () {
+      const oklch = OklchColor(0.7, 0.35, 150.0);
+      final raw = OklchEngine.toRawColor(oklch);
+
+      // Raw clamping must produce valid sRGB values
+      expect(raw.r, inInclusiveRange(0.0, 1.0));
+      expect(raw.g, inInclusiveRange(0.0, 1.0));
+      expect(raw.b, inInclusiveRange(0.0, 1.0));
+    });
+
+    // =========================================================
+    // --- Tier 2: Hue-Aware Chroma Damping Tests ---
+    // =========================================================
+
+    test('maxChromaForLH returns positive values for mid-lightness', () {
+      // Test across 12 hue angles
+      for (double h = 0.0; h < 360.0; h += 30.0) {
+        final maxC = OklchEngine.maxChromaForLH(0.5, h);
+        expect(
+          maxC,
+          greaterThan(0.01),
+          reason: 'maxChroma at L=0.5, H=$h should be > 0.01, got $maxC',
+        );
+
+        // Verify the returned chroma is actually in-gamut
+        final color = OklchEngine.toRawColor(OklchColor(0.5, maxC, h));
+        expect(color.r, inInclusiveRange(0.0, 1.0));
+        expect(color.g, inInclusiveRange(0.0, 1.0));
+        expect(color.b, inInclusiveRange(0.0, 1.0));
+      }
+    });
+
+    test('maxChromaForLH returns 0 at extreme lightness', () {
+      expect(OklchEngine.maxChromaForLH(0.0, 180.0), equals(0.0));
+      expect(OklchEngine.maxChromaForLH(1.0, 180.0), equals(0.0));
+    });
+
+    test('maxChromaForLH varies by hue (yellow > blue at high lightness)', () {
+      // Yellow (H≈90°) has wider gamut at high lightness than blue (H≈265°)
+      final maxYellow = OklchEngine.maxChromaForLH(0.85, 90.0);
+      final maxBlue = OklchEngine.maxChromaForLH(0.85, 265.0);
+
+      expect(
+        maxYellow,
+        greaterThan(maxBlue),
+        reason: 'Yellow should have wider gamut at L=0.85 than blue',
+      );
+    });
+
+    test('dampChromaHueAware preserves more chroma than legacy for yellow darks', () {
+      const yellowHue = 90.0;
+      const seedChroma = 0.18;
+      const darkTargetL = 0.15;
+
+      final legacy = OklchEngine.dampChroma(seedChroma, darkTargetL);
+      final hueAware = OklchEngine.dampChromaHueAware(
+        seedChroma,
+        darkTargetL,
+        yellowHue,
+      );
+
+      // Hue-aware should preserve more chroma for yellow at dark lightness
+      // because yellow's gamut boundary is wider than the blind heuristic assumes
+      expect(
+        hueAware,
+        greaterThan(legacy),
+        reason: 'Hue-aware damping should preserve more chroma for yellow darks '
+            '(hueAware=$hueAware vs legacy=$legacy)',
+      );
+    });
+
+    test('Yellow seed scale with hue-aware damping produces richer dark shades', () {
+      const yellowSeed = Color(0xFFF59E0B);
+      final scale = JustColorScale.fromSeed(
+        yellowSeed,
+        engine: JustColorSpaceEngine.oklch,
+      );
+
+      // c900 and c950 should have meaningful chroma (not grayish)
+      final c900Oklch = OklchEngine.fromColor(scale.c900);
+      final c950Oklch = OklchEngine.fromColor(scale.c950);
+
+      expect(
+        c900Oklch.c,
+        greaterThan(0.01),
+        reason: 'Yellow c900 should be chromatic, not gray (c=${c900Oklch.c})',
+      );
+      expect(
+        c950Oklch.c,
+        greaterThan(0.005),
+        reason: 'Yellow c950 should retain some warmth (c=${c950Oklch.c})',
+      );
+    });
+
+    // =========================================================
+    // --- Tier 3: OKLCH Interpolation Tests ---
+    // =========================================================
+
+    test('OklchEngine.lerp avoids dead gray zone between blue and yellow', () {
+      const blue = Color(0xFF2563EB);
+      const yellow = Color(0xFFFBBF24);
+
+      final midpoint = OklchEngine.lerp(blue, yellow, 0.5);
+      final midOklch = OklchEngine.fromColor(midpoint);
+
+      // The midpoint must have significant chroma (not gray/muddy)
+      expect(
+        midOklch.c,
+        greaterThan(0.05),
+        reason: 'OKLCH lerp midpoint between blue and yellow should be vibrant, '
+            'not gray (c=${midOklch.c})',
+      );
+    });
+
+    test('OklchEngine.lerp edge cases: t=0 returns a, t=1 returns b', () {
+      const a = Color(0xFFFF0000);
+      const b = Color(0xFF0000FF);
+
+      final atZero = OklchEngine.lerp(a, b, 0.0);
+      final atOne = OklchEngine.lerp(a, b, 1.0);
+
+      expect(atZero.r, equals(a.r));
+      expect(atZero.g, equals(a.g));
+      expect(atZero.b, equals(a.b));
+
+      expect(atOne.r, equals(b.r));
+      expect(atOne.g, equals(b.g));
+      expect(atOne.b, equals(b.b));
+    });
+
+    test('OklchEngine.lerp uses shortest-arc hue interpolation', () {
+      // Red (H≈29°) to Magenta (H≈328°): shortest arc goes backward (29→0→328)
+      const red = Color(0xFFFF0000);
+      const magenta = Color(0xFFFF00FF);
+
+      final redOklch = OklchEngine.fromColor(red);
+      final magentaOklch = OklchEngine.fromColor(magenta);
+
+      final midpoint = OklchEngine.lerp(red, magenta, 0.5);
+      final midOklch = OklchEngine.fromColor(midpoint);
+
+      // The hue should be near 0/360° (passing through red), not near 180° (going through cyan)
+      // Since shortest arc crosses 0°, the midpoint hue should be < 30 or > 330
+      final isNearZero = midOklch.h < 40.0 || midOklch.h > 320.0;
+      expect(
+        isNearZero,
+        isTrue,
+        reason: 'Shortest-arc hue interpolation: expected hue near 0/360°, '
+            'got ${midOklch.h}° (red=${redOklch.h}°, magenta=${magentaOklch.h}°)',
+      );
+    });
+
+    test('OklchEngine.lerp interpolates alpha correctly', () {
+      final a = const Color(0xFFFF0000).withValues(alpha: 0.2);
+      final b = const Color(0xFF0000FF).withValues(alpha: 0.8);
+
+      final mid = OklchEngine.lerp(a, b, 0.5);
+      expect(mid.a, closeTo(0.5, 0.01));
+    });
+
+    test('Color.lerpToOklch extension works identically to OklchEngine.lerp', () {
+      const a = Color(0xFF3B82F6);
+      const b = Color(0xFFF59E0B);
+
+      final viaStatic = OklchEngine.lerp(a, b, 0.5);
+      final viaExtension = a.lerpToOklch(b, 0.5);
+
+      expect(viaExtension.r, equals(viaStatic.r));
+      expect(viaExtension.g, equals(viaStatic.g));
+      expect(viaExtension.b, equals(viaStatic.b));
+    });
+
+    test('OklchColorTween produces correct interpolation', () {
+      final tween = OklchColorTween(
+        begin: const Color(0xFF2563EB),
+        end: const Color(0xFFFBBF24),
+      );
+
+      final atZero = tween.transform(0.0);
+      final atMid = tween.transform(0.5);
+      final atOne = tween.transform(1.0);
+
+      expect(atZero.r, closeTo(const Color(0xFF2563EB).r, 0.01));
+      expect(atOne.r, closeTo(const Color(0xFFFBBF24).r, 0.01));
+
+      // Midpoint should be vibrant
+      final midOklch = OklchEngine.fromColor(atMid);
+      expect(midOklch.c, greaterThan(0.05));
+    });
   });
 }
