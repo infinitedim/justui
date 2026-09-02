@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
@@ -848,5 +850,138 @@ void main() {
       final midOklch = OklchEngine.fromColor(atMid);
       expect(midOklch.c, greaterThan(0.05));
     });
+
+    // =========================================================
+    // --- Phase A: Analytical Gamut Mapping + Premultiplied Alpha ---
+    // =========================================================
+
+    test('analytical maxChromaForLH produces colors AT the gamut boundary', () {
+      // The analytical result should be right at the boundary —
+      // the maxC color should be in-gamut, but maxC+epsilon should NOT.
+      const testPoints = [
+        (l: 0.3, h: 0.0),    // dark red
+        (l: 0.5, h: 90.0),   // mid yellow
+        (l: 0.5, h: 180.0),  // mid cyan
+        (l: 0.5, h: 270.0),  // mid blue
+        (l: 0.7, h: 30.0),   // light orange
+        (l: 0.85, h: 90.0),  // light yellow
+        (l: 0.2, h: 265.0),  // dark blue
+        (l: 0.6, h: 145.0),  // mid green
+      ];
+
+      for (final tp in testPoints) {
+        final maxC = OklchEngine.maxChromaForLH(tp.l, tp.h);
+
+        // maxC itself must produce an in-gamut color
+        final (rL, gL, bL) = _oklchToLinearRgbForTest(tp.l, maxC, tp.h);
+        final inGamut = rL >= -0.001 && rL <= 1.001 &&
+            gL >= -0.001 && gL <= 1.001 &&
+            bL >= -0.001 && bL <= 1.001;
+
+        expect(
+          inGamut,
+          isTrue,
+          reason: 'maxChromaForLH(${tp.l}, ${tp.h}) = $maxC should be in-gamut '
+              '(r=$rL, g=$gL, b=$bL)',
+        );
+
+        // maxC + small epsilon should be OUT of gamut (proving we're at the boundary)
+        if (maxC > 0.001) {
+          final (rO, gO, bO) = _oklchToLinearRgbForTest(tp.l, maxC + 0.005, tp.h);
+          final outOfGamut = rO < -0.001 || rO > 1.001 ||
+              gO < -0.001 || gO > 1.001 ||
+              bO < -0.001 || bO > 1.001;
+
+          expect(
+            outOfGamut,
+            isTrue,
+            reason: 'maxChroma + 0.005 at L=${tp.l}, H=${tp.h} should be out-of-gamut '
+                '(r=$rO, g=$gO, b=$bO)',
+          );
+        }
+      }
+    });
+
+    test('analytical maxChromaForLH is symmetric at achromatic boundaries', () {
+      // Very dark and very light: chroma should approach 0
+      expect(OklchEngine.maxChromaForLH(0.001, 180.0), lessThan(0.01));
+      expect(OklchEngine.maxChromaForLH(0.999, 180.0), lessThan(0.01));
+    });
+
+    test('premultiplied alpha lerp: no halo during fade-out', () {
+      // Opaque cyan fading to fully transparent
+      const opaque = Color(0xFF00BCD4);
+      final transparent = const Color(0xFF00BCD4).withValues(alpha: 0.0);
+
+      // Sample 10 points along the transition
+      for (double t = 0.1; t < 1.0; t += 0.1) {
+        final mid = OklchEngine.lerp(opaque, transparent, t);
+        final midOklch = OklchEngine.fromColor(mid);
+
+        // With premultiplied alpha, the visible color should stay cyan —
+        // NOT drift toward gray/black (which is the "halo" artifact)
+        if (mid.a > 0.1) {
+          final opaqueOklch = OklchEngine.fromColor(opaque);
+          // Lightness should stay close to the opaque color's lightness
+          expect(
+            midOklch.l,
+            closeTo(opaqueOklch.l, 0.15),
+            reason: 'At t=$t, lightness should not drift during fade-out '
+                '(expected ~${opaqueOklch.l}, got ${midOklch.l})',
+          );
+        }
+      }
+    });
+
+    test('premultiplied alpha lerp: fully transparent returns transparent', () {
+      final a = const Color(0xFFFF0000).withValues(alpha: 0.0);
+      final b = const Color(0xFF0000FF).withValues(alpha: 0.0);
+
+      final mid = OklchEngine.lerp(a, b, 0.5);
+      expect(mid.a, closeTo(0.0, 0.01));
+    });
+
+    test('lerp achromatic hue handling: gray to color uses color hue', () {
+      const gray = Color(0xFF808080); // achromatic, c ≈ 0
+      const blue = Color(0xFF2563EB); // chromatic
+
+      final mid = OklchEngine.lerp(gray, blue, 0.5);
+      final midOklch = OklchEngine.fromColor(mid);
+      final blueOklch = OklchEngine.fromColor(blue);
+
+      // The hue of the midpoint should be close to blue's hue (not 0°)
+      if (midOklch.c > 0.01) {
+        double hueDiff = (midOklch.h - blueOklch.h).abs();
+        if (hueDiff > 180.0) hueDiff = 360.0 - hueDiff;
+        expect(
+          hueDiff,
+          lessThan(15.0),
+          reason: 'Gray-to-blue midpoint hue should follow blue hue '
+              '(mid=${midOklch.h}°, blue=${blueOklch.h}°)',
+        );
+      }
+    });
   });
 }
+
+/// Test helper: replicates OklchEngine._oklchToLinearRgb for boundary testing.
+(double, double, double) _oklchToLinearRgbForTest(double L, double C, double H) {
+  final double hRad = H * (math.pi / 180.0);
+  final double labA = C * math.cos(hRad);
+  final double labB = C * math.sin(hRad);
+
+  final double lCap = L + 0.3963377774 * labA + 0.2158037573 * labB;
+  final double mCap = L - 0.1055613458 * labA - 0.0638541728 * labB;
+  final double sCap = L - 0.0894841775 * labA - 1.2914855480 * labB;
+
+  final double l = lCap * lCap * lCap;
+  final double m = mCap * mCap * mCap;
+  final double s = sCap * sCap * sCap;
+
+  return (
+    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+    -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s,
+  );
+}
+
