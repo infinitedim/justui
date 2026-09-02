@@ -90,7 +90,7 @@ class JustColorScale {
         );
       }
 
-      final double dampedC = ColorSpaceOps.dampChroma(pc.c, targetL, engine);
+      final double dampedC = ColorSpaceOps.dampChroma(pc.c, targetL, engine, hue: pc.h);
       return ColorSpaceOps.fromPerceptual(
         PerceptualColor(targetL, dampedC, pc.h),
         engine,

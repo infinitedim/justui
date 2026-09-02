@@ -98,17 +98,22 @@ abstract final class ColorSpaceOps {
   }
 
   /// Calculates a pre-damped chroma value for [targetL] to prevent out-of-gamut clipping.
+  ///
+  /// For the OKLCH engine, [hue] is used to compute the actual sRGB gamut
+  /// boundary at the target lightness and hue angle, producing more accurate
+  /// chroma damping than the legacy hue-unaware heuristic.
   static double dampChroma(
     double seedChroma,
     double targetL,
-    JustColorSpaceEngine engine,
-  ) {
+    JustColorSpaceEngine engine, {
+    double hue = 0.0,
+  }) {
     switch (engine) {
       case .hsl:
         return seedChroma; // HSL handles saturation within [0, 1] natively
 
       case .oklch:
-        return OklchEngine.dampChroma(seedChroma, targetL);
+        return OklchEngine.dampChromaHueAware(seedChroma, targetL, hue);
 
       case .hsluv:
         return seedChroma; // HSLuv normalizes chroma to gamut boundary automatically
