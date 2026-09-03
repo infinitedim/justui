@@ -904,7 +904,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
           },
         );
 
-        Widget content = SizedBox(width: double.infinity, child: pickerWidget);
+        Widget content = SizedBox(width: .infinity, child: pickerWidget);
 
         if (theme != null) {
           content = JustThemeProvider(
@@ -1222,7 +1222,7 @@ Future<TimeOfDay?> showJustTimePicker({
       context: context,
       content: wrapWithTheme(
         SizedBox(
-          width: double.infinity,
+          width: .infinity,
           child: _ModalTimePickerContent(
             initialTime: initialTime,
             firstTime: firstTime,
