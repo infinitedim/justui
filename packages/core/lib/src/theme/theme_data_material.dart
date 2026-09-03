@@ -10,6 +10,7 @@ import '../components/dialog/just_dialog_theme.dart';
 import '../components/input/just_input_theme.dart';
 import '../components/progress/just_progress_theme.dart';
 import '../components/radio/just_radio_theme.dart';
+import '../components/resizable/just_resizable_theme.dart';
 import '../components/scroll/just_scroll_area_theme.dart';
 import '../components/select/just_select_theme.dart';
 import '../components/separator/just_separator_theme.dart';
@@ -54,6 +55,7 @@ extension JustThemeDataMaterialExtension on JustThemeData {
         JustInputTheme.defaults,
         JustProgressTheme.defaults,
         JustRadioTheme.defaults,
+        JustResizableTheme.defaults,
         JustScrollAreaTheme.defaults,
         JustSelectTheme.defaults,
         JustSeparatorTheme.defaults,
