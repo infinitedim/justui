@@ -443,10 +443,7 @@ class _JustDatePickerState extends State<JustDatePicker> {
           enableHaptic: widget.enableHaptic,
         );
 
-        Widget content = SizedBox(
-          width: double.infinity,
-          child: calendarWidget,
-        );
+        Widget content = SizedBox(width: .infinity, child: calendarWidget);
 
         if (theme != null) {
           content = JustThemeProvider(
@@ -662,7 +659,7 @@ Future<DateTime?> showJustDatePicker({
       context: context,
       content: wrapWithTheme(
         SizedBox(
-          width: double.infinity,
+          width: .infinity,
           child: JustDatePicker.inline(
             value: initialDate,
             firstDate: firstDate,

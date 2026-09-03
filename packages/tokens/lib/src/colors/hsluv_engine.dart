@@ -122,10 +122,20 @@ abstract final class HsluvEngine {
     final double l = hsluv.l;
 
     if (l > 99.999999) {
-      return .from(alpha: alpha.clamp(0.0, 1.0), red: 1.0, green: 1.0, blue: 1.0);
+      return .from(
+        alpha: alpha.clamp(0.0, 1.0),
+        red: 1.0,
+        green: 1.0,
+        blue: 1.0,
+      );
     }
     if (l < 1e-6) {
-      return .from(alpha: alpha.clamp(0.0, 1.0), red: 0.0, green: 0.0, blue: 0.0);
+      return .from(
+        alpha: alpha.clamp(0.0, 1.0),
+        red: 0.0,
+        green: 0.0,
+        blue: 0.0,
+      );
     }
 
     // HSLuv -> Lch
@@ -226,17 +236,22 @@ abstract final class HsluvEngine {
     return (l, u, v);
   }
 
-  static Color _luvToColor(
-    double l,
-    double u,
-    double v, {
-    double alpha = 1.0,
-  }) {
+  static Color _luvToColor(double l, double u, double v, {double alpha = 1.0}) {
     if (l > 99.999999) {
-      return .from(alpha: alpha.clamp(0.0, 1.0), red: 1.0, green: 1.0, blue: 1.0);
+      return .from(
+        alpha: alpha.clamp(0.0, 1.0),
+        red: 1.0,
+        green: 1.0,
+        blue: 1.0,
+      );
     }
     if (l < 1e-6) {
-      return .from(alpha: alpha.clamp(0.0, 1.0), red: 0.0, green: 0.0, blue: 0.0);
+      return .from(
+        alpha: alpha.clamp(0.0, 1.0),
+        red: 0.0,
+        green: 0.0,
+        blue: 0.0,
+      );
     }
 
     // Luv -> XYZ
@@ -270,7 +285,7 @@ abstract final class HsluvEngine {
     final double sub1 = (l16 * l16 * l16) / 1560896.0;
     final double sub2 = sub1 > _epsilon ? sub1 : l / _kappa;
 
-    double minLength = double.infinity;
+    double minLength = .infinity;
 
     for (int c = 0; c < 3; c++) {
       final double m1 = c == 0 ? _mX0 : (c == 1 ? _mY0 : _mZ0);

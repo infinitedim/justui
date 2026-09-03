@@ -342,7 +342,7 @@ abstract final class OklchEngine {
   /// Uses a linear initial guess followed by 2 iterations of Halley's method
   /// (cubic convergence: error ∝ errorⁿ³ per iteration).
   ///
-  /// Returns [double.infinity] if the channel is not a binding constraint
+  /// Returns [.infinity] if the channel is not a binding constraint
   /// at this hue (its rate of change is negligible).
   static double _channelMaxChroma(
     double L,
@@ -374,10 +374,10 @@ abstract final class OklchEngine {
       C = (1.0 - l3) / (3.0 * l2 * dK);
     } else {
       // Channel barely changes with chroma — not a binding constraint
-      return double.infinity;
+      return .infinity;
     }
 
-    if (C <= 0.0) return double.infinity;
+    if (C <= 0.0) return .infinity;
 
     // 2 iterations of Halley's method for cubic convergence.
     //
@@ -410,10 +410,10 @@ abstract final class OklchEngine {
       if (denom.abs() < 1e-12) break;
 
       C -= 2.0 * f * f1 / denom;
-      if (C < 0.0) return double.infinity;
+      if (C < 0.0) return .infinity;
     }
 
-    return C > 0.0 ? C : double.infinity;
+    return C > 0.0 ? C : .infinity;
   }
 
   // ---------------------------------------------------------------------------
