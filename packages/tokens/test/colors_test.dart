@@ -992,6 +992,148 @@ void main() {
         );
       }
     });
+
+    // =========================================================
+    // --- HSLuv Engine Enhancement Tests ---
+    // =========================================================
+
+    test('HSLuv engine high-precision roundtrip with D65 illuminant', () {
+      const testColors = [
+        Color(0xFF3B82F6), // blue
+        Color(0xFFEF4444), // red
+        Color(0xFF22C55E), // green
+        Color(0xFFF59E0B), // amber
+        Color(0xFF8B5CF6), // purple
+        Color(0xFFEC4899), // pink
+        Color(0xFF14B8A6), // teal
+        Color(0xFF000000), // black
+        Color(0xFFFFFFFF), // white
+      ];
+
+      for (final color in testColors) {
+        final hsluv = HsluvEngine.fromColor(color);
+        expect(hsluv.l, inInclusiveRange(0.0, 100.0));
+        expect(hsluv.s, inInclusiveRange(0.0, 100.0));
+        expect(hsluv.h, inInclusiveRange(0.0, 360.0));
+
+        final roundtrip = HsluvEngine.toColor(hsluv);
+        expect(roundtrip.r, closeTo(color.r, 0.02));
+        expect(roundtrip.g, closeTo(color.g, 0.02));
+        expect(roundtrip.b, closeTo(color.b, 0.02));
+      }
+    });
+
+    test('HSLuv maxChromaForLH returns strictly 0 at extreme lightness boundaries', () {
+      for (double h = 0.0; h < 360.0; h += 45.0) {
+        expect(HsluvEngine.maxChromaForLH(0.0, h), equals(0.0));
+        expect(HsluvEngine.maxChromaForLH(1e-7, h), equals(0.0));
+        expect(HsluvEngine.maxChromaForLH(100.0, h), equals(0.0));
+        expect(HsluvEngine.maxChromaForLH(99.9999999, h), equals(0.0));
+      }
+    });
+
+    test('HSLuv maxChromaForLH returns positive finite chroma for mid-lightness', () {
+      for (double h = 0.0; h < 360.0; h += 30.0) {
+        final maxC = HsluvEngine.maxChromaForLH(50.0, h);
+        expect(maxC, greaterThan(1.0));
+        expect(maxC.isFinite, isTrue);
+      }
+    });
+
+    test('HsluvEngine.lerp edge cases: t=0 returns a, t=1 returns b', () {
+      const a = Color(0xFFFF0000);
+      const b = Color(0xFF0000FF);
+
+      final atZero = HsluvEngine.lerp(a, b, 0.0);
+      final atOne = HsluvEngine.lerp(a, b, 1.0);
+
+      expect(atZero.r, equals(a.r));
+      expect(atZero.g, equals(a.g));
+      expect(atZero.b, equals(a.b));
+
+      expect(atOne.r, equals(b.r));
+      expect(atOne.g, equals(b.g));
+      expect(atOne.b, equals(b.b));
+    });
+
+    test('HsluvEngine.lerp produces smooth midpoint without wibbly-wobbly jumps', () {
+      const blue = Color(0xFF2563EB);
+      const yellow = Color(0xFFFBBF24);
+
+      final midpoint = HsluvEngine.lerp(blue, yellow, 0.5);
+
+      // Verify midpoint values are valid and in sRGB gamut
+      expect(midpoint.r, inInclusiveRange(0.0, 1.0));
+      expect(midpoint.g, inInclusiveRange(0.0, 1.0));
+      expect(midpoint.b, inInclusiveRange(0.0, 1.0));
+
+      // In CIELUV space, midpoint lightness must be between blue and yellow lightness
+      final luvBlue = HsluvEngine.fromColor(blue);
+      final luvYellow = HsluvEngine.fromColor(yellow);
+      final luvMid = HsluvEngine.fromColor(midpoint);
+
+      final minL = math.min(luvBlue.l, luvYellow.l);
+      final maxL = math.max(luvBlue.l, luvYellow.l);
+      expect(luvMid.l, inInclusiveRange(minL - 5.0, maxL + 5.0));
+    });
+
+    test('HsluvEngine.lerp premultiplied alpha: no halo during fade-out', () {
+      const opaque = Color(0xFF00BCD4);
+      final transparent = const Color(0xFF00BCD4).withValues(alpha: 0.0);
+
+      for (double t = 0.1; t < 1.0; t += 0.1) {
+        final mid = HsluvEngine.lerp(opaque, transparent, t);
+        expect(mid.a, closeTo(1.0 - t, 0.02));
+
+        if (mid.a > 0.1) {
+          final opaqueHsluv = HsluvEngine.fromColor(opaque);
+          final midHsluv = HsluvEngine.fromColor(mid);
+          expect(
+            midHsluv.l,
+            closeTo(opaqueHsluv.l, 10.0),
+            reason: 'At t=$t, lightness should not collapse to dark black/gray during fade-out',
+          );
+        }
+      }
+    });
+
+    test('HsluvEngine.lerp fully transparent returns transparent', () {
+      final a = const Color(0xFFFF0000).withValues(alpha: 0.0);
+      final b = const Color(0xFF0000FF).withValues(alpha: 0.0);
+
+      final mid = HsluvEngine.lerp(a, b, 0.5);
+      expect(mid.a, closeTo(0.0, 0.01));
+    });
+
+    test('Color.lerpToHsluv extension works identically to HsluvEngine.lerp', () {
+      const a = Color(0xFF3B82F6);
+      const b = Color(0xFFF59E0B);
+
+      final viaStatic = HsluvEngine.lerp(a, b, 0.5);
+      final viaExtension = a.lerpToHsluv(b, 0.5);
+
+      expect(viaExtension.r, equals(viaStatic.r));
+      expect(viaExtension.g, equals(viaStatic.g));
+      expect(viaExtension.b, equals(viaStatic.b));
+      expect(viaExtension.a, equals(viaStatic.a));
+    });
+
+    test('HsluvColorTween produces correct interpolation', () {
+      final tween = HsluvColorTween(
+        begin: const Color(0xFF2563EB),
+        end: const Color(0xFFFBBF24),
+      );
+
+      final atZero = tween.transform(0.0);
+      final atMid = tween.transform(0.5);
+      final atOne = tween.transform(1.0);
+
+      expect(atZero.r, closeTo(const Color(0xFF2563EB).r, 0.01));
+      expect(atOne.r, closeTo(const Color(0xFFFBBF24).r, 0.01));
+      expect(atMid.r, inInclusiveRange(0.0, 1.0));
+      expect(atMid.g, inInclusiveRange(0.0, 1.0));
+      expect(atMid.b, inInclusiveRange(0.0, 1.0));
+    });
   });
 }
 

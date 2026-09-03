@@ -31,19 +31,41 @@ final class HsluvColor {
       'HsluvColor(H: ${h.toStringAsFixed(1)}°, S: ${s.toStringAsFixed(1)}%, L: ${l.toStringAsFixed(1)}%)';
 }
 
-/// Pure-Dart HSLuv conversion engine and gamut boundary calculations.
+/// Pure-Dart HSLuv conversion engine, gamut boundary calculations, and
+/// CIELUV perceptual color interpolation.
+///
+/// ## Color Science & High Precision
+///
+/// Uses high-precision CIE ASTM E308 reference white constants (D65 illuminant
+/// derived from chromaticity $x=0.3127, y=0.3290$) and exact rational fractions
+/// for CIE L* constants ($\kappa = 24389/27, \epsilon = 216/24389$).
+///
+/// ## Interpolation — Premultiplied CIELUV
+///
+/// Color interpolation ([lerp]) is performed in Cartesian CIELUV ($L^*, u^*, v^*$)
+/// space using premultiplied alpha (Porter-Duff compositing). This avoids the
+/// non-linear chroma jumps ("wibbly-wobbly" artifacts) of interpolating in polar
+/// HSLuv $(H, S, L)$ coordinates, producing smooth, perceptually uniform transitions.
+///
+/// References:
+/// - Alexei Boronine, "HSLuv: A human-friendly alternative to HSL" (2012)
+/// - CIE Publication 15: Colorimetry (3rd Edition, 2004)
+/// - ASTM E308-01: Standard Practice for Computing the Colors of Objects
 abstract final class HsluvEngine {
-  static const double _refX = 0.95047;
-  static const double _refY = 1.00000;
-  static const double _refZ = 1.08883;
+  // High-precision D65 white point derived from sRGB chromaticities:
+  // xw = 0.3127, yw = 0.3290 -> Xn = xw/yw, Yn = 1.0, Zn = (1 - xw - yw)/yw
+  static const double _refX = 0.9504559270516717;
+  static const double _refY = 1.0000000000000000;
+  static const double _refZ = 1.0890577507598784;
 
   static const double _refU =
       (4.0 * _refX) / (_refX + 15.0 * _refY + 3.0 * _refZ);
   static const double _refV =
       (9.0 * _refY) / (_refX + 15.0 * _refY + 3.0 * _refZ);
 
-  static const double _kappa = 903.2962962962963;
-  static const double _epsilon = 0.0088564516790356308;
+  // Exact CIE L* constants (Bruce Lindbloom / CIE 15:2004)
+  static const double _kappa = 903.2962962962963; // 24389 / 27
+  static const double _epsilon = 0.0088564516790356308; // 216 / 24389
 
   // Matrix M_RGB_XYZ
   static const double _mR0 = 0.41239079926595934;
@@ -69,17 +91,7 @@ abstract final class HsluvEngine {
 
   /// Converts a Flutter [Color] (sRGB) to [HsluvColor].
   static HsluvColor fromColor(Color color) {
-    final double rL = _sRgbToLinear(color.r);
-    final double gL = _sRgbToLinear(color.g);
-    final double bL = _sRgbToLinear(color.b);
-
-    // RGB -> XYZ
-    final double x = _mR0 * rL + _mR1 * gL + _mR2 * bL;
-    final double y = _mG0 * rL + _mG1 * gL + _mG2 * bL;
-    final double z = _mB0 * rL + _mB1 * gL + _mB2 * bL;
-
-    // XYZ -> Luv
-    final double l = _yToL(y);
+    final (l, u, v) = _colorToLuv(color);
 
     if (l <= 1e-6) {
       return const HsluvColor(0.0, 0.0, 0.0);
@@ -87,13 +99,6 @@ abstract final class HsluvEngine {
     if (l >= 99.999999) {
       return const HsluvColor(0.0, 0.0, 100.0);
     }
-
-    final double denominator = x + 15.0 * y + 3.0 * z;
-    final double uPrime = denominator < 1e-12 ? _refU : (4.0 * x) / denominator;
-    final double vPrime = denominator < 1e-12 ? _refV : (9.0 * y) / denominator;
-
-    final double u = 13.0 * l * (uPrime - _refU);
-    final double v = 13.0 * l * (vPrime - _refV);
 
     // Luv -> Lch
     final double c = math.sqrt(u * u + v * v);
@@ -117,10 +122,10 @@ abstract final class HsluvEngine {
     final double l = hsluv.l;
 
     if (l > 99.999999) {
-      return Color.from(alpha: alpha, red: 1.0, green: 1.0, blue: 1.0);
+      return .from(alpha: alpha.clamp(0.0, 1.0), red: 1.0, green: 1.0, blue: 1.0);
     }
     if (l < 1e-6) {
-      return Color.from(alpha: alpha, red: 0.0, green: 0.0, blue: 0.0);
+      return .from(alpha: alpha.clamp(0.0, 1.0), red: 0.0, green: 0.0, blue: 0.0);
     }
 
     // HSLuv -> Lch
@@ -131,6 +136,108 @@ abstract final class HsluvEngine {
     final double hRad = h * (math.pi / 180.0);
     final double u = c * math.cos(hRad);
     final double v = c * math.sin(hRad);
+
+    return _luvToColor(l, u, v, alpha: alpha);
+  }
+
+  /// Calculates the maximum allowed Chroma at lightness [l] and hue [h] (in degrees)
+  /// before exiting the sRGB gamut.
+  ///
+  /// Returns 0.0 strictly at extreme lightness boundaries ($L \le 10^{-6}$ or $L \ge 100 - 10^{-6}$)
+  /// to eliminate floating-point roundoff drift.
+  static double maxChromaForLH(double l, double h) {
+    if (l <= 1e-6 || l >= 100.0 - 1e-6) {
+      return 0.0;
+    }
+    final double hRad = h * (math.pi / 180.0);
+    return _intersectBoundingLines(l, hRad);
+  }
+
+  /// Interpolates between two colors in CIELUV Cartesian ($L^*, u^*, v^*$) space
+  /// at parameter [t] (0.0 to 1.0) using **premultiplied alpha**.
+  ///
+  /// Interpolating in Cartesian CIELUV guarantees a straight perceptual path
+  /// through uniform color space, completely avoiding the non-linear chroma
+  /// jumps ("wibbly-wobbly" artifacts) that occur when interpolating directly
+  /// in polar HSLuv $(H, S, L)$ coordinates.
+  ///
+  /// Premultiplied alpha eliminates dark halo artifacts on transparent borders.
+  static Color lerp(Color a, Color b, double t) {
+    if (t <= 0.0) return a;
+    if (t >= 1.0) return b;
+
+    final (lA, uA, vA) = _colorToLuv(a);
+    final (lB, uB, vB) = _colorToLuv(b);
+    final double alphaA = a.a;
+    final double alphaB = b.a;
+
+    // Premultiplied alpha encoding in Cartesian CIELUV space
+    final double lPreA = lA * alphaA;
+    final double uPreA = uA * alphaA;
+    final double vPreA = vA * alphaA;
+
+    final double lPreB = lB * alphaB;
+    final double uPreB = uB * alphaB;
+    final double vPreB = vB * alphaB;
+
+    // Linear interpolation
+    final double lPre = lPreA + (lPreB - lPreA) * t;
+    final double uPre = uPreA + (uPreB - uPreA) * t;
+    final double vPre = vPreA + (vPreB - vPreA) * t;
+    final double alpha = alphaA + (alphaB - alphaA) * t;
+
+    if (alpha < 1e-6) {
+      return const Color(0x00000000);
+    }
+
+    // Decode premultiplied -> straight
+    final double l = (lPre / alpha).clamp(0.0, 100.0);
+    final double u = uPre / alpha;
+    final double v = vPre / alpha;
+
+    return _luvToColor(l, u, v, alpha: alpha);
+  }
+
+  // --- Internal CIELUV helpers ---
+
+  static (double, double, double) _colorToLuv(Color color) {
+    final double rL = _sRgbToLinear(color.r);
+    final double gL = _sRgbToLinear(color.g);
+    final double bL = _sRgbToLinear(color.b);
+
+    // RGB -> XYZ
+    final double x = _mR0 * rL + _mR1 * gL + _mR2 * bL;
+    final double y = _mG0 * rL + _mG1 * gL + _mG2 * bL;
+    final double z = _mB0 * rL + _mB1 * gL + _mB2 * bL;
+
+    // XYZ -> Luv
+    final double l = _yToL(y);
+    if (l <= 1e-6) {
+      return (0.0, 0.0, 0.0);
+    }
+
+    final double denominator = x + 15.0 * y + 3.0 * z;
+    final double uPrime = denominator < 1e-12 ? _refU : (4.0 * x) / denominator;
+    final double vPrime = denominator < 1e-12 ? _refV : (9.0 * y) / denominator;
+
+    final double u = 13.0 * l * (uPrime - _refU);
+    final double v = 13.0 * l * (vPrime - _refV);
+
+    return (l, u, v);
+  }
+
+  static Color _luvToColor(
+    double l,
+    double u,
+    double v, {
+    double alpha = 1.0,
+  }) {
+    if (l > 99.999999) {
+      return .from(alpha: alpha.clamp(0.0, 1.0), red: 1.0, green: 1.0, blue: 1.0);
+    }
+    if (l < 1e-6) {
+      return .from(alpha: alpha.clamp(0.0, 1.0), red: 0.0, green: 0.0, blue: 0.0);
+    }
 
     // Luv -> XYZ
     final double uPrime = u / (13.0 * l) + _refU;
@@ -151,21 +258,16 @@ abstract final class HsluvEngine {
     final double g = _linearToSRgb(gL).clamp(0.0, 1.0);
     final double b = _linearToSRgb(bL).clamp(0.0, 1.0);
 
-    return Color.from(alpha: alpha.clamp(0.0, 1.0), red: r, green: g, blue: b);
-  }
-
-  /// Calculates the maximum allowed Chroma at lightness [l] and hue [h] (in degrees)
-  /// before exiting the sRGB gamut.
-  static double maxChromaForLH(double l, double h) {
-    final double hRad = h * (math.pi / 180.0);
-    return _intersectBoundingLines(l, hRad);
+    return .from(alpha: alpha.clamp(0.0, 1.0), red: r, green: g, blue: b);
   }
 
   static double _intersectBoundingLines(double l, double hRad) {
     final double sinH = math.sin(hRad);
     final double cosH = math.cos(hRad);
 
-    final double sub1 = math.pow(l + 16.0, 3.0) / 1560896.0;
+    // Micro-optimization: avoid math.pow(l + 16.0, 3.0) via direct cubic multiplication
+    final double l16 = l + 16.0;
+    final double sub1 = (l16 * l16 * l16) / 1560896.0;
     final double sub2 = sub1 > _epsilon ? sub1 : l / _kappa;
 
     double minLength = double.infinity;
@@ -185,7 +287,11 @@ abstract final class HsluvEngine {
         final double bottom =
             (632260.0 * m3 - 126452.0 * m2) * sub2 + 126452.0 * bound;
 
-        final double length = top2 / (bottom * sinH - top1 * cosH);
+        // Numerical guard: prevent division by zero or NaN on parallel rays
+        final double denom = bottom * sinH - top1 * cosH;
+        if (denom.abs() < 1e-12) continue;
+
+        final double length = top2 / denom;
         if (length >= 0.0 && length < minLength) {
           minLength = length;
         }
@@ -216,6 +322,17 @@ abstract final class HsluvEngine {
   }
 
   static double _lToY(double l) {
-    return l <= 8.0 ? l / _kappa : math.pow((l + 16.0) / 116.0, 3.0).toDouble();
+    if (l <= 8.0) return l / _kappa;
+    // Micro-optimization: avoid math.pow via direct cubic multiplication
+    final double lNorm = (l + 16.0) / 116.0;
+    return lNorm * lNorm * lNorm;
   }
+}
+
+/// Extension methods on [Color] for HSLuv-aware color interpolation.
+extension HsluvColorLerp on Color {
+  /// Interpolates between this color and [other] in CIELUV space at [t].
+  ///
+  /// See [HsluvEngine.lerp] for details.
+  Color lerpToHsluv(Color other, double t) => HsluvEngine.lerp(this, other, t);
 }
