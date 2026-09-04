@@ -35,7 +35,7 @@ void main() {
       const style = JustDialogStyle(
         backgroundColor: Color(0xFF112233),
         barrierColor: Color(0x88000000),
-        borderRadius: BorderRadius.all(Radius.circular(12.0)),
+        borderRadius: .all(.circular(12.0)),
         padding: EdgeInsets.all(24.0),
         maxWidth: 500.0,
         maxHeight: 600.0,
@@ -379,7 +379,7 @@ void main() {
         const customStyle = JustDialogStyle(
           backgroundColor: Color(0xFF123456),
           barrierColor: Color(0xAAFF0000),
-          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+          borderRadius: .all(.circular(30.0)),
           padding: EdgeInsets.all(32.0),
           maxWidth: 320.0,
           maxHeight: 400.0,
