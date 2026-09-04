@@ -2,10 +2,18 @@ import 'dart:collection' show UnmodifiableListView;
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart' show Theme;
-import 'package:flutter/services.dart' show PointerEnterEvent, PointerExitEvent;
+import 'package:flutter/services.dart'
+    show
+        HardwareKeyboard,
+        KeyDownEvent,
+        KeyEvent,
+        KeyRepeatEvent,
+        PointerEnterEvent,
+        PointerExitEvent;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 
+import '../shared/_shared_focus_indicator.dart';
 import 'just_resizable_style.dart';
 import 'just_resizable_theme.dart';
 import 'just_resizable_variants.dart';
@@ -58,7 +66,10 @@ class const JustResizablePanel({
 /// Complies with the Single Responsibility Principle (SRP) and operates free of widget dependencies.
 abstract final class JustResizableEngine {
   /// Normalizes initial panel sizes into fractional values summing strictly to 1.0.
-  static List<double> normalizeFractions(List<double?> initialSizes, int count) {
+  static List<double> normalizeFractions(
+    List<double?> initialSizes,
+    int count,
+  ) {
     if (count <= 0) return const <double>[];
     if (count == 1) return const <double>[1.0];
 
@@ -117,8 +128,9 @@ abstract final class JustResizableEngine {
       return;
     }
     if (count == 1) {
-      output[0] =
-          (fractions.isNotEmpty && fractions[0] <= 0.0) ? 0.0 : availableSpace;
+      output[0] = (fractions.isNotEmpty && fractions[0] <= 0.0)
+          ? 0.0
+          : availableSpace;
       return;
     }
 
@@ -182,19 +194,25 @@ abstract final class JustResizableEngine {
     if (combined <= 0.0) return;
 
     final deltaF = deltaPixels / availableSpace;
-    final targetA =
-        (currentFractions[splitterIndex] + deltaF).clamp(0.0, combined);
+    final targetA = (currentFractions[splitterIndex] + deltaF).clamp(
+      0.0,
+      combined,
+    );
 
-    final minFA =
-        panelA.minSize != null ? panelA.minSize! / availableSpace : 0.0;
-    final maxFA =
-        panelA.maxSize != null ? panelA.maxSize! / availableSpace : 1.0;
+    final minFA = panelA.minSize != null
+        ? panelA.minSize! / availableSpace
+        : 0.0;
+    final maxFA = panelA.maxSize != null
+        ? panelA.maxSize! / availableSpace
+        : 1.0;
     final threshA = _resolveThreshold(panelA, minFA, availableSpace);
 
-    final minFB =
-        panelB.minSize != null ? panelB.minSize! / availableSpace : 0.0;
-    final maxFB =
-        panelB.maxSize != null ? panelB.maxSize! / availableSpace : 1.0;
+    final minFB = panelB.minSize != null
+        ? panelB.minSize! / availableSpace
+        : 0.0;
+    final maxFB = panelB.maxSize != null
+        ? panelB.maxSize! / availableSpace
+        : 1.0;
     final threshB = _resolveThreshold(panelB, minFB, availableSpace);
 
     double finalA = _constrainPair(
@@ -332,8 +350,10 @@ class JustResizableController extends ChangeNotifier {
   }
 
   void _setInitialFractions(List<double> initial) {
-    final norm =
-        JustResizableEngine.normalizeFractions(initial, initial.length);
+    final norm = JustResizableEngine.normalizeFractions(
+      initial,
+      initial.length,
+    );
     _initialFractions.clear();
     _initialFractions.addAll(norm);
     _fractions.clear();
@@ -366,8 +386,10 @@ class JustResizableController extends ChangeNotifier {
   /// Sets panel fractions directly. Normalizes values to sum to 1.0.
   void setFractions(List<double> newFractions) {
     if (newFractions.isEmpty) return;
-    final norm =
-        JustResizableEngine.normalizeFractions(newFractions, newFractions.length);
+    final norm = JustResizableEngine.normalizeFractions(
+      newFractions,
+      newFractions.length,
+    );
     _fractions.clear();
     _fractions.addAll(norm);
     notifyListeners();
@@ -417,10 +439,9 @@ class JustResizableController extends ChangeNotifier {
     if (targetIndex == -1) return;
 
     final saved = _savedFractions[index];
-    final initial =
-        _initialFractions.isNotEmpty
-            ? _initialFractions[index]
-            : (1.0 / _fractions.length);
+    final initial = _initialFractions.isNotEmpty
+        ? _initialFractions[index]
+        : (1.0 / _fractions.length);
     final restore = (saved != null && saved > 0.0) ? saved : initial;
 
     final available = _fractions[targetIndex];
@@ -504,6 +525,15 @@ class const JustResizable({
 
   /// Per-instance style overrides.
   final JustResizableStyle? style,
+
+  /// Action triggered when double-tapping or double-clicking a splitter handle.
+  final JustResizableDoubleTapBehavior? doubleTapBehavior,
+
+  /// Distance in pixels adjusted per standard arrow keypress.
+  final double? keyboardStep,
+
+  /// Distance in pixels adjusted when Shift is held with arrow keypress.
+  final double? keyboardShiftStep,
 
   /// Builder callback for customized splitter handle rendering (Open/Closed escape hatch).
   final Widget Function(
@@ -593,17 +623,33 @@ class _JustResizableState extends State<JustResizable> {
   }
 
   void _onSplitterDoubleTap(int index) {
-    _effectiveController.toggle(index);
+    final theme =
+        Theme.of(context).extension<JustResizableTheme>() ?? .defaults;
+    final behavior =
+        widget.doubleTapBehavior ??
+        widget.style?.doubleTapBehavior ??
+        theme.style?.doubleTapBehavior ??
+        theme.doubleTapBehavior;
+
+    switch (behavior) {
+      case .toggle:
+        _effectiveController.toggle(index);
+      case .collapse:
+        _effectiveController.collapse(index);
+      case .reset:
+        _effectiveController.reset();
+      case .none:
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final totalSize =
-            widget.direction == .horizontal
-                ? constraints.maxWidth
-                : constraints.maxHeight;
+        final totalSize = widget.direction == .horizontal
+            ? constraints.maxWidth
+            : constraints.maxHeight;
 
         assert(
           totalSize.isFinite,
@@ -616,10 +662,8 @@ class _JustResizableState extends State<JustResizable> {
         }
 
         final theme =
-            Theme.of(context).extension<JustResizableTheme>() ??
-            JustResizableTheme.defaults;
-        final isNeobrutalism =
-            context.justPreset == JustThemePreset.neobrutalism;
+            Theme.of(context).extension<JustResizableTheme>() ?? .defaults;
+        final isNeobrutalism = context.justPreset == .neobrutalism;
         final defaultThickness = isNeobrutalism ? 2.5 : 1.0;
         final thickness =
             widget.dividerThickness ??
@@ -634,6 +678,17 @@ class _JustResizableState extends State<JustResizable> {
             widget.style?.handleVariant ??
             theme.style?.handleVariant ??
             theme.handleVariant;
+
+        final keyboardStep =
+            widget.keyboardStep ??
+            widget.style?.keyboardStep ??
+            theme.style?.keyboardStep ??
+            theme.keyboardStep;
+        final keyboardShiftStep =
+            widget.keyboardShiftStep ??
+            widget.style?.keyboardShiftStep ??
+            theme.style?.keyboardShiftStep ??
+            theme.keyboardShiftStep;
 
         final availableSpace = JustResizableEngine.computeAvailableSpace(
           totalSize,
@@ -659,14 +714,12 @@ class _JustResizableState extends State<JustResizable> {
 
           _flexChildren.add(
             SizedBox(
-              width:
-                  widget.direction == .horizontal
-                      ? (isCollapsed ? 0.0 : size)
-                      : null,
-              height:
-                  widget.direction == .vertical
-                      ? (isCollapsed ? 0.0 : size)
-                      : null,
+              width: widget.direction == .horizontal
+                  ? (isCollapsed ? 0.0 : size)
+                  : null,
+              height: widget.direction == .vertical
+                  ? (isCollapsed ? 0.0 : size)
+                  : null,
               child: Offstage(
                 offstage: isCollapsed,
                 child: TickerMode(enabled: !isCollapsed, child: panel),
@@ -677,6 +730,9 @@ class _JustResizableState extends State<JustResizable> {
           if (i < widget.children.length - 1) {
             final isLocked =
                 !panel.resizable || !widget.children[i + 1].resizable;
+            final fraction = _effectiveController.fractions.length > i
+                ? _effectiveController.fractions[i]
+                : 0.0;
             _flexChildren.add(
               _ResizableSplitter(
                 key: ValueKey<int>(i),
@@ -687,6 +743,9 @@ class _JustResizableState extends State<JustResizable> {
                 variant: variant,
                 style: widget.style,
                 resizable: !isLocked,
+                keyboardStep: keyboardStep,
+                keyboardShiftStep: keyboardShiftStep,
+                fraction: fraction,
                 handleBuilder: widget.handleBuilder,
                 onDragStart: _onSplitterDragStart,
                 onDragUpdate: _onSplitterDragUpdate,
@@ -716,6 +775,9 @@ class _ResizableSplitter extends StatefulWidget {
   final JustResizableHandleVariant variant;
   final JustResizableStyle? style;
   final bool resizable;
+  final double keyboardStep;
+  final double keyboardShiftStep;
+  final double fraction;
   final ValueChanged<int>? onDragStart;
   final void Function(int index, double delta)? onDragUpdate;
   final ValueChanged<int>? onDragEnd;
@@ -737,6 +799,9 @@ class _ResizableSplitter extends StatefulWidget {
     required this.variant,
     this.style,
     this.resizable = true,
+    this.keyboardStep = 16.0,
+    this.keyboardShiftStep = 4.0,
+    this.fraction = 0.5,
     this.onDragStart,
     this.onDragUpdate,
     this.onDragEnd,
@@ -749,14 +814,74 @@ class _ResizableSplitter extends StatefulWidget {
 }
 
 class _ResizableSplitterState extends State<_ResizableSplitter> {
+  late final FocusNode _focusNode;
   bool _isHovered = false;
   bool _isDragging = false;
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode(debugLabel: 'JustResizableSplitter_${widget.index}');
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   MouseCursor get _cursor {
     if (!widget.resizable) return SystemMouseCursors.basic;
     return widget.direction == .horizontal
         ? SystemMouseCursors.resizeColumn
         : SystemMouseCursors.resizeRow;
+  }
+
+  void _handleFocusChange(bool focused) {
+    if (_isFocused != focused) {
+      setState(() => _isFocused = focused);
+    }
+  }
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return .ignored;
+    }
+    if (!widget.resizable) return .ignored;
+
+    final isShift = HardwareKeyboard.instance.isShiftPressed;
+    final step = isShift ? widget.keyboardShiftStep : widget.keyboardStep;
+    final isHorizontal = widget.direction == .horizontal;
+    final key = event.logicalKey;
+
+    final isNegative = isHorizontal ? (key == .arrowLeft) : (key == .arrowUp);
+    final isPositive = isHorizontal
+        ? (key == .arrowRight)
+        : (key == .arrowDown);
+
+    if (isNegative) {
+      widget.onDragUpdate?.call(widget.index, -step);
+      return .handled;
+    }
+    if (isPositive) {
+      widget.onDragUpdate?.call(widget.index, step);
+      return .handled;
+    }
+    if (key == .home) {
+      widget.onDragUpdate?.call(widget.index, -999999.0);
+      return .handled;
+    }
+    if (key == .end) {
+      widget.onDragUpdate?.call(widget.index, 999999.0);
+      return .handled;
+    }
+    if (key == .enter || key == .space) {
+      widget.onDoubleTap?.call(widget.index);
+      return .handled;
+    }
+
+    return .ignored;
   }
 
   void _handleMouseEnter(PointerEnterEvent _) {
@@ -816,21 +941,20 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
     final dot = Container(
       width: 2.5,
       height: 2.5,
-      decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
+      decoration: BoxDecoration(color: dotColor, shape: .circle),
     );
 
-    final dots =
-        isHorizontal
-            ? Column(
-              mainAxisSize: .min,
-              mainAxisAlignment: .center,
-              children: [dot, const SizedBox(height: 3.0), dot],
-            )
-            : Row(
-              mainAxisSize: .min,
-              mainAxisAlignment: .center,
-              children: [dot, const SizedBox(width: 3.0), dot],
-            );
+    final dots = isHorizontal
+        ? Column(
+            mainAxisSize: .min,
+            mainAxisAlignment: .center,
+            children: [dot, const SizedBox(height: 3.0), dot],
+          )
+        : Row(
+            mainAxisSize: .min,
+            mainAxisAlignment: .center,
+            children: [dot, const SizedBox(width: 3.0), dot],
+          );
 
     return Stack(
       alignment: .center,
@@ -853,7 +977,7 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
   @override
   Widget build(BuildContext context) {
     final colors = context.justColors;
-    final isNeobrutalism = context.justPreset == JustThemePreset.neobrutalism;
+    final isNeobrutalism = context.justPreset == .neobrutalism;
 
     final baseDividerColor =
         widget.style?.dividerColor ??
@@ -861,8 +985,9 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
     final activeDividerColor =
         widget.style?.activeDividerColor ??
         (isNeobrutalism ? colors.textPrimary : colors.borderFocus);
-    final effectiveLineColor =
-        (_isHovered || _isDragging) ? activeDividerColor : baseDividerColor;
+    final effectiveLineColor = (_isHovered || _isDragging || _isFocused)
+        ? activeDividerColor
+        : baseDividerColor;
 
     final isHorizontal = widget.direction == .horizontal;
     final halfDiff = math.max(0.0, (widget.hitSize - widget.thickness) / 2.0);
@@ -875,34 +1000,33 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
         _isDragging,
         _isHovered,
       );
-    } else if (widget.variant == JustResizableHandleVariant.none) {
+    } else if (widget.variant == .none) {
       handleContent = const SizedBox.shrink();
     } else {
       final line = Container(
-        width: isHorizontal ? widget.thickness : double.infinity,
-        height: isHorizontal ? double.infinity : widget.thickness,
+        width: isHorizontal ? widget.thickness : .infinity,
+        height: isHorizontal ? .infinity : widget.thickness,
         color: effectiveLineColor,
       );
 
-      if (widget.variant == JustResizableHandleVariant.line) {
+      if (widget.variant == .line) {
         handleContent = Center(child: line);
       } else {
         final gripBg =
             widget.style?.gripColor ??
             (isNeobrutalism ? colors.card : colors.elevated);
-        final gripBorder =
-            (_isHovered || _isDragging)
-                ? (widget.style?.activeGripBorderColor ?? activeDividerColor)
-                : (widget.style?.gripBorderColor ?? baseDividerColor);
+        final gripBorder = (_isHovered || _isDragging || _isFocused)
+            ? (widget.style?.activeGripBorderColor ?? activeDividerColor)
+            : (widget.style?.gripBorderColor ?? baseDividerColor);
         final dotColor =
             widget.style?.gripDotColor ??
-            ((_isHovered || _isDragging)
+            ((_isHovered || _isDragging || _isFocused)
                 ? (isNeobrutalism ? colors.textPrimary : colors.borderFocus)
                 : (isNeobrutalism ? colors.textPrimary : colors.textSecondary));
         final gripBorderWidth = isNeobrutalism ? 2.5 : 1.0;
         final gripRadius =
             widget.style?.gripRadius ??
-            const BorderRadius.all(Radius.circular(3.0));
+            (isNeobrutalism ? .zero : const .all(.circular(3.0)));
 
         handleContent = _buildGrip(
           isHorizontal: isHorizontal,
@@ -916,56 +1040,97 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
       }
     }
 
+    final focusRadius = widget.variant == .grip
+        ? (widget.style?.gripRadius ??
+              (isNeobrutalism ? .zero : const .all(.circular(3.0))))
+        : BorderRadius.zero;
+
+    final indicatorWrapped = FocusIndicator(
+      isFocused: _isFocused,
+      borderRadius: focusRadius,
+      child: handleContent,
+    );
+
     final isCustomHandle = widget.handleBuilder != null;
 
-    return SizedBox(
-      width: isHorizontal ? widget.thickness : null,
-      height: !isHorizontal ? widget.thickness : null,
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: .center,
-        children: [
-          if (isCustomHandle)
-            handleContent
-          else
-            IgnorePointer(child: handleContent),
-          Positioned(
-            left: isHorizontal ? -halfDiff : 0.0,
-            right: isHorizontal ? -halfDiff : 0.0,
-            top: !isHorizontal ? -halfDiff : 0.0,
-            bottom: !isHorizontal ? -halfDiff : 0.0,
-            child: MouseRegion(
-              cursor: _cursor,
-              onEnter: _handleMouseEnter,
-              onExit: _handleMouseExit,
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onDoubleTap: _handleDoubleTap,
-                onHorizontalDragStart:
-                    isHorizontal && widget.resizable ? _handleDragStart : null,
-                onHorizontalDragUpdate:
-                    isHorizontal && widget.resizable
+    return Semantics(
+      slider: true,
+      label: 'Splitter divider ${widget.index + 1}',
+      value: '${(widget.fraction * 100).round()}%',
+      increasedValue:
+          '${math.min(100, ((widget.fraction + 0.05) * 100).round())}%',
+      decreasedValue:
+          '${math.max(0, ((widget.fraction - 0.05) * 100).round())}%',
+      onIncrease: widget.resizable
+          ? () => widget.onDragUpdate?.call(widget.index, widget.keyboardStep)
+          : null,
+      onDecrease: widget.resizable
+          ? () => widget.onDragUpdate?.call(widget.index, -widget.keyboardStep)
+          : null,
+      child: Focus(
+        focusNode: _focusNode,
+        canRequestFocus: widget.resizable,
+        onFocusChange: _handleFocusChange,
+        onKeyEvent: _handleKeyEvent,
+        child: SizedBox(
+          width: isHorizontal ? widget.thickness : null,
+          height: !isHorizontal ? widget.thickness : null,
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: .center,
+            children: [
+              if (isCustomHandle)
+                indicatorWrapped
+              else
+                IgnorePointer(child: indicatorWrapped),
+              Positioned(
+                left: isHorizontal ? -halfDiff : 0.0,
+                right: isHorizontal ? -halfDiff : 0.0,
+                top: !isHorizontal ? -halfDiff : 0.0,
+                bottom: !isHorizontal ? -halfDiff : 0.0,
+                child: MouseRegion(
+                  cursor: _cursor,
+                  onEnter: _handleMouseEnter,
+                  onExit: _handleMouseExit,
+                  child: GestureDetector(
+                    behavior: .translucent,
+                    onTap: () {
+                      if (widget.resizable && !_focusNode.hasFocus) {
+                        _focusNode.requestFocus();
+                      }
+                    },
+                    onDoubleTap: _handleDoubleTap,
+                    onHorizontalDragStart: isHorizontal && widget.resizable
+                        ? _handleDragStart
+                        : null,
+                    onHorizontalDragUpdate: isHorizontal && widget.resizable
                         ? _handleHorizontalDragUpdate
                         : null,
-                onHorizontalDragEnd:
-                    isHorizontal && widget.resizable ? _handleDragEnd : null,
-                onHorizontalDragCancel:
-                    isHorizontal && widget.resizable ? _handleDragCancel : null,
-                onVerticalDragStart:
-                    !isHorizontal && widget.resizable ? _handleDragStart : null,
-                onVerticalDragUpdate:
-                    !isHorizontal && widget.resizable
+                    onHorizontalDragEnd: isHorizontal && widget.resizable
+                        ? _handleDragEnd
+                        : null,
+                    onHorizontalDragCancel: isHorizontal && widget.resizable
+                        ? _handleDragCancel
+                        : null,
+                    onVerticalDragStart: !isHorizontal && widget.resizable
+                        ? _handleDragStart
+                        : null,
+                    onVerticalDragUpdate: !isHorizontal && widget.resizable
                         ? _handleVerticalDragUpdate
                         : null,
-                onVerticalDragEnd:
-                    !isHorizontal && widget.resizable ? _handleDragEnd : null,
-                onVerticalDragCancel:
-                    !isHorizontal && widget.resizable ? _handleDragCancel : null,
-                child: const SizedBox.expand(),
+                    onVerticalDragEnd: !isHorizontal && widget.resizable
+                        ? _handleDragEnd
+                        : null,
+                    onVerticalDragCancel: !isHorizontal && widget.resizable
+                        ? _handleDragCancel
+                        : null,
+                    child: const SizedBox.expand(),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

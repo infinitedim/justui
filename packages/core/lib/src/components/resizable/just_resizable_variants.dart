@@ -11,3 +11,18 @@ enum JustResizableHandleVariant {
   /// Invisible splitter line, interactive hit-box only.
   none,
 }
+
+/// Action performed when double-tapping or double-clicking a splitter handle.
+enum JustResizableDoubleTapBehavior {
+  /// Toggles between collapsed and expanded state for the adjacent collapsible panel.
+  toggle,
+
+  /// Collapses the adjacent collapsible panel.
+  collapse,
+
+  /// Resets all panels to their initial configured proportions.
+  reset,
+
+  /// Disables double-tap interaction.
+  none,
+}
