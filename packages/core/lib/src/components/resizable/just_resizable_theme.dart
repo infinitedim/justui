@@ -19,6 +19,15 @@ class const JustResizableTheme({
 
   /// Default visual variant for handles. Defaults to [JustResizableHandleVariant.line].
   final JustResizableHandleVariant handleVariant = .line,
+
+  /// Default action when double-tapping a splitter. Defaults to [JustResizableDoubleTapBehavior.toggle].
+  final JustResizableDoubleTapBehavior doubleTapBehavior = .toggle,
+
+  /// Distance in pixels adjusted per standard arrow keypress. Defaults to 16.0.
+  final double keyboardStep = 16.0,
+
+  /// Distance in pixels adjusted when Shift is held with arrow keypress. Defaults to 4.0.
+  final double keyboardShiftStep = 4.0,
 }) extends ThemeExtension<JustResizableTheme> {
   /// Default configuration for the theme.
   static const defaults = JustResizableTheme();
@@ -29,12 +38,18 @@ class const JustResizableTheme({
     double? dividerThickness,
     double? handleHitSize,
     JustResizableHandleVariant? handleVariant,
+    JustResizableDoubleTapBehavior? doubleTapBehavior,
+    double? keyboardStep,
+    double? keyboardShiftStep,
   }) {
     return JustResizableTheme(
       style: style ?? this.style,
       dividerThickness: dividerThickness ?? this.dividerThickness,
       handleHitSize: handleHitSize ?? this.handleHitSize,
       handleVariant: handleVariant ?? this.handleVariant,
+      doubleTapBehavior: doubleTapBehavior ?? this.doubleTapBehavior,
+      keyboardStep: keyboardStep ?? this.keyboardStep,
+      keyboardShiftStep: keyboardShiftStep ?? this.keyboardShiftStep,
     );
   }
 
@@ -45,12 +60,19 @@ class const JustResizableTheme({
         dividerThickness + (other.dividerThickness - dividerThickness) * t;
     final lerpedHitSize =
         handleHitSize + (other.handleHitSize - handleHitSize) * t;
+    final lerpedKeyStep =
+        keyboardStep + (other.keyboardStep - keyboardStep) * t;
+    final lerpedKeyShiftStep =
+        keyboardShiftStep + (other.keyboardShiftStep - keyboardShiftStep) * t;
 
     return JustResizableTheme(
-      style: JustResizableStyle.lerp(style, other.style, t),
+      style: .lerp(style, other.style, t),
       dividerThickness: lerpedThickness,
       handleHitSize: lerpedHitSize,
       handleVariant: t < 0.5 ? handleVariant : other.handleVariant,
+      doubleTapBehavior: t < 0.5 ? doubleTapBehavior : other.doubleTapBehavior,
+      keyboardStep: lerpedKeyStep,
+      keyboardShiftStep: lerpedKeyShiftStep,
     );
   }
 
@@ -62,7 +84,10 @@ class const JustResizableTheme({
           style == other.style &&
           dividerThickness == other.dividerThickness &&
           handleHitSize == other.handleHitSize &&
-          handleVariant == other.handleVariant;
+          handleVariant == other.handleVariant &&
+          doubleTapBehavior == other.doubleTapBehavior &&
+          keyboardStep == other.keyboardStep &&
+          keyboardShiftStep == other.keyboardShiftStep;
 
   @override
   int get hashCode => Object.hash(
@@ -70,5 +95,8 @@ class const JustResizableTheme({
     dividerThickness,
     handleHitSize,
     handleVariant,
+    doubleTapBehavior,
+    keyboardStep,
+    keyboardShiftStep,
   );
 }

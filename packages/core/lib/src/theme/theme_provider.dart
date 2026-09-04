@@ -213,21 +213,14 @@ class const _JustThemeModel({
     Set<JustThemeAspect> dependencies,
   ) {
     return dependencies.any(
-      (aspect) => switch (aspect) {
-        JustThemeAspect.colors =>
-          themeData.colors != oldWidget.themeData.colors,
-        JustThemeAspect.typography =>
-          themeData.typography != oldWidget.themeData.typography,
-        JustThemeAspect.spacing =>
-          themeData.spacing != oldWidget.themeData.spacing,
-        JustThemeAspect.radius =>
-          themeData.radius != oldWidget.themeData.radius,
-        JustThemeAspect.shadows =>
-          themeData.shadows != oldWidget.themeData.shadows,
-        JustThemeAspect.animations =>
-          themeData.animations != oldWidget.themeData.animations,
-        JustThemeAspect.preset =>
-          themeData.preset != oldWidget.themeData.preset,
+      (JustThemeAspect aspect) => switch (aspect) {
+        .colors => themeData.colors != oldWidget.themeData.colors,
+        .typography => themeData.typography != oldWidget.themeData.typography,
+        .spacing => themeData.spacing != oldWidget.themeData.spacing,
+        .radius => themeData.radius != oldWidget.themeData.radius,
+        .shadows => themeData.shadows != oldWidget.themeData.shadows,
+        .animations => themeData.animations != oldWidget.themeData.animations,
+        .preset => themeData.preset != oldWidget.themeData.preset,
       },
     );
   }

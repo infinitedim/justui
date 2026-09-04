@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/resizable/just_resizable.dart';
@@ -53,14 +54,21 @@ void main() {
       expect(JustResizableEngine.normalizeFractions([0.5], 1), equals([1.0]));
     });
 
-    test('normalizeFractions handles all null initial sizes by equal distribution', () {
-      final fractions = JustResizableEngine.normalizeFractions([null, null, null], 3);
-      expect(fractions.length, equals(3));
-      for (final f in fractions) {
-        expect(f, closeTo(1.0 / 3.0, 0.0001));
-      }
-      expect(fractions.reduce((a, b) => a + b), closeTo(1.0, 0.0001));
-    });
+    test(
+      'normalizeFractions handles all null initial sizes by equal distribution',
+      () {
+        final fractions = JustResizableEngine.normalizeFractions([
+          null,
+          null,
+          null,
+        ], 3);
+        expect(fractions.length, equals(3));
+        for (final f in fractions) {
+          expect(f, closeTo(1.0 / 3.0, 0.0001));
+        }
+        expect(fractions.reduce((a, b) => a + b), closeTo(1.0, 0.0001));
+      },
+    );
 
     test('normalizeFractions normalizes custom proportions', () {
       final fractions = JustResizableEngine.normalizeFractions([20.0, 80.0], 2);
@@ -202,28 +210,31 @@ void main() {
       expect(output.reduce((a, b) => a + b), closeTo(1.0, 0.0001));
     });
 
-    test('Locked splitter when resizable is false preserves current fractions', () {
-      const availableSpace = 1000.0;
-      final currentFractions = [0.5, 0.5];
-      final panels = [
-        const JustResizablePanel(resizable: false, child: SizedBox()),
-        const JustResizablePanel(child: SizedBox()),
-      ];
-      final output = List<double>.filled(2, 0.0);
+    test(
+      'Locked splitter when resizable is false preserves current fractions',
+      () {
+        const availableSpace = 1000.0;
+        final currentFractions = [0.5, 0.5];
+        final panels = [
+          const JustResizablePanel(resizable: false, child: SizedBox()),
+          const JustResizablePanel(child: SizedBox()),
+        ];
+        final output = List<double>.filled(2, 0.0);
 
-      JustResizableEngine.applySplitterDrag(
-        splitterIndex: 0,
-        deltaPixels: 100.0,
-        availableSpace: availableSpace,
-        currentFractions: currentFractions,
-        panels: panels,
-        outputFractions: output,
-      );
+        JustResizableEngine.applySplitterDrag(
+          splitterIndex: 0,
+          deltaPixels: 100.0,
+          availableSpace: availableSpace,
+          currentFractions: currentFractions,
+          panels: panels,
+          outputFractions: output,
+        );
 
-      // Current fractions MUST be preserved!
-      expect(output[0], equals(0.5));
-      expect(output[1], equals(0.5));
-    });
+        // Current fractions MUST be preserved!
+        expect(output[0], equals(0.5));
+        expect(output[1], equals(0.5));
+      },
+    );
 
     test('Snapping must NOT violate neighbor panel constraints', () {
       const availableSpace = 1000.0;
@@ -376,7 +387,9 @@ void main() {
       expect(controller.fractions[1], closeTo(1.0, 0.0001));
 
       // Collapse the last panel
-      final controller3 = JustResizableController(initialFractions: [0.3, 0.3, 0.4]);
+      final controller3 = JustResizableController(
+        initialFractions: [0.3, 0.3, 0.4],
+      );
       controller3.collapse(2);
       expect(controller3.isCollapsed(2), isTrue);
       expect(controller3.fractions[2], equals(0.0));
@@ -404,31 +417,36 @@ void main() {
       expect(controller.fractions[0], closeTo(0.5, 0.0001));
     });
 
-    test('collapse and expand across multiple panels avoids dead panel lock', () {
-      final controller = JustResizableController(initialFractions: [0.33, 0.33, 0.34]);
-      // Collapse middle panel (1) -> space transferred to panel 2
-      controller.collapse(1);
-      expect(controller.isCollapsed(1), isTrue);
-      expect(controller.isCollapsed(0), isFalse);
-      expect(controller.isCollapsed(2), isFalse);
+    test(
+      'collapse and expand across multiple panels avoids dead panel lock',
+      () {
+        final controller = JustResizableController(
+          initialFractions: [0.33, 0.33, 0.34],
+        );
+        // Collapse middle panel (1) -> space transferred to panel 2
+        controller.collapse(1);
+        expect(controller.isCollapsed(1), isTrue);
+        expect(controller.isCollapsed(0), isFalse);
+        expect(controller.isCollapsed(2), isFalse);
 
-      // Collapse panel 0 -> must transfer to active panel 2, NOT collapsed panel 1
-      controller.collapse(0);
-      expect(controller.isCollapsed(0), isTrue);
-      expect(controller.isCollapsed(1), isTrue);
-      expect(controller.isCollapsed(2), isFalse);
-      expect(controller.fractions[2], closeTo(1.0, 0.0001));
+        // Collapse panel 0 -> must transfer to active panel 2, NOT collapsed panel 1
+        controller.collapse(0);
+        expect(controller.isCollapsed(0), isTrue);
+        expect(controller.isCollapsed(1), isTrue);
+        expect(controller.isCollapsed(2), isFalse);
+        expect(controller.fractions[2], closeTo(1.0, 0.0001));
 
-      // Expand panel 0 -> reclaims space from active panel 2, panel 1 remains collapsed
-      controller.expand(0);
-      expect(controller.isCollapsed(0), isFalse);
-      expect(controller.isCollapsed(1), isTrue);
-      expect(controller.fractions[0], closeTo(0.33, 0.01));
+        // Expand panel 0 -> reclaims space from active panel 2, panel 1 remains collapsed
+        controller.expand(0);
+        expect(controller.isCollapsed(0), isFalse);
+        expect(controller.isCollapsed(1), isTrue);
+        expect(controller.fractions[0], closeTo(0.33, 0.01));
 
-      // Expand panel 1
-      controller.expand(1);
-      expect(controller.isCollapsed(1), isFalse);
-    });
+        // Expand panel 1
+        controller.expand(1);
+        expect(controller.isCollapsed(1), isFalse);
+      },
+    );
 
     test('reset restores initial fractions', () {
       final controller = JustResizableController(initialFractions: [0.2, 0.8]);
@@ -464,14 +482,8 @@ void main() {
     });
 
     test('lerp interpolates theme values', () {
-      const t1 = JustResizableTheme(
-        dividerThickness: 2.0,
-        handleHitSize: 10.0,
-      );
-      const t2 = JustResizableTheme(
-        dividerThickness: 4.0,
-        handleHitSize: 20.0,
-      );
+      const t1 = JustResizableTheme(dividerThickness: 2.0, handleHitSize: 10.0);
+      const t2 = JustResizableTheme(dividerThickness: 4.0, handleHitSize: 20.0);
 
       final lerped = t1.lerp(t2, 0.5);
       expect(lerped.dividerThickness, closeTo(3.0, 0.0001));
@@ -509,7 +521,9 @@ void main() {
   });
 
   group('JustResizable Widget Integration', () {
-    testWidgets('Renders horizontal panels with correct initial sizes', (tester) async {
+    testWidgets('Renders horizontal panels with correct initial sizes', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           const SizedBox(
@@ -519,14 +533,8 @@ void main() {
               direction: Axis.horizontal,
               dividerThickness: 2.0,
               children: [
-                JustResizablePanel(
-                  initialSize: 0.25,
-                  child: Text('Panel A'),
-                ),
-                JustResizablePanel(
-                  initialSize: 0.75,
-                  child: Text('Panel B'),
-                ),
+                JustResizablePanel(initialSize: 0.25, child: Text('Panel A')),
+                JustResizablePanel(initialSize: 0.75, child: Text('Panel B')),
               ],
             ),
           ),
@@ -540,7 +548,9 @@ void main() {
       expect(sizeA.width, greaterThan(0));
     });
 
-    testWidgets('Renders vertical panels with correct initial sizes', (tester) async {
+    testWidgets('Renders vertical panels with correct initial sizes', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           const SizedBox(
@@ -550,10 +560,7 @@ void main() {
               direction: Axis.vertical,
               dividerThickness: 2.0,
               children: [
-                JustResizablePanel(
-                  initialSize: 0.5,
-                  child: Text('Top Panel'),
-                ),
+                JustResizablePanel(initialSize: 0.5, child: Text('Top Panel')),
                 JustResizablePanel(
                   initialSize: 0.5,
                   child: Text('Bottom Panel'),
@@ -568,7 +575,9 @@ void main() {
       expect(find.text('Bottom Panel'), findsOneWidget);
     });
 
-    testWidgets('Offstage preserves child state when panel is collapsed', (tester) async {
+    testWidgets('Offstage preserves child state when panel is collapsed', (
+      tester,
+    ) async {
       final controller = JustResizableController(initialFractions: [0.5, 0.5]);
       final statefulKey = GlobalKey<_StatefulTestWidgetState>();
 
@@ -587,9 +596,7 @@ void main() {
                     label: 'PreservedPanel',
                   ),
                 ),
-                const JustResizablePanel(
-                  child: Text('OtherPanel'),
-                ),
+                const JustResizablePanel(child: Text('OtherPanel')),
               ],
             ),
           ),
@@ -629,13 +636,8 @@ void main() {
             child: JustResizable(
               controller: controller,
               children: const [
-                JustResizablePanel(
-                  collapsible: true,
-                  child: Text('Panel 1'),
-                ),
-                JustResizablePanel(
-                  child: Text('Panel 2'),
-                ),
+                JustResizablePanel(collapsible: true, child: Text('Panel 1')),
+                JustResizablePanel(child: Text('Panel 2')),
               ],
             ),
           ),
@@ -675,29 +677,267 @@ void main() {
       expect(find.text('Right'), findsOneWidget);
     });
 
-    testWidgets('Layout does not overflow when handleHitSize > dividerThickness', (tester) async {
+    testWidgets(
+      'Layout does not overflow when handleHitSize > dividerThickness',
+      (tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            const SizedBox(
+              width: 600.0,
+              height: 400.0,
+              child: JustResizable(
+                handleHitSize: 16.0,
+                dividerThickness: 2.0,
+                children: [
+                  JustResizablePanel(child: Text('Col 1')),
+                  JustResizablePanel(child: Text('Col 2')),
+                  JustResizablePanel(child: Text('Col 3')),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        expect(tester.takeException(), isNull);
+        expect(find.text('Col 1'), findsOneWidget);
+        expect(find.text('Col 2'), findsOneWidget);
+        expect(find.text('Col 3'), findsOneWidget);
+      },
+    );
+
+    testWidgets('Double-tap behavior reset restores initial fractions', (
+      tester,
+    ) async {
+      final controller = JustResizableController(initialFractions: [0.3, 0.7]);
+
       await tester.pumpWidget(
         buildTestApp(
-          const SizedBox(
+          SizedBox(
             width: 600.0,
             height: 400.0,
             child: JustResizable(
-              handleHitSize: 16.0,
-              dividerThickness: 2.0,
-              children: [
-                JustResizablePanel(child: Text('Col 1')),
-                JustResizablePanel(child: Text('Col 2')),
-                JustResizablePanel(child: Text('Col 3')),
+              controller: controller,
+              doubleTapBehavior: JustResizableDoubleTapBehavior.reset,
+              children: const [
+                JustResizablePanel(child: Text('Left')),
+                JustResizablePanel(child: Text('Right')),
               ],
             ),
           ),
         ),
       );
 
-      expect(tester.takeException(), isNull);
-      expect(find.text('Col 1'), findsOneWidget);
-      expect(find.text('Col 2'), findsOneWidget);
-      expect(find.text('Col 3'), findsOneWidget);
+      // Mutate fractions
+      controller.setFractions([0.6, 0.4]);
+      await tester.pumpAndSettle();
+      expect(controller.fractions[0], closeTo(0.6, 0.01));
+
+      // Double-tap splitter
+      final splitterFinder = find.byType(GestureDetector).at(1);
+      await tester.tap(splitterFinder);
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.tap(splitterFinder);
+      await tester.pumpAndSettle();
+
+      // Restored!
+      expect(controller.fractions[0], closeTo(0.3, 0.01));
+      expect(controller.fractions[1], closeTo(0.7, 0.01));
     });
+
+    testWidgets('Double-tap behavior none ignores double-taps', (tester) async {
+      final controller = JustResizableController(initialFractions: [0.5, 0.5]);
+
+      await tester.pumpWidget(
+        buildTestApp(
+          SizedBox(
+            width: 600.0,
+            height: 400.0,
+            child: JustResizable(
+              controller: controller,
+              doubleTapBehavior: JustResizableDoubleTapBehavior.none,
+              children: const [
+                JustResizablePanel(collapsible: true, child: Text('Left')),
+                JustResizablePanel(child: Text('Right')),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final splitterFinder = find.byType(GestureDetector).at(1);
+      await tester.tap(splitterFinder);
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.tap(splitterFinder);
+      await tester.pumpAndSettle();
+
+      // Did not collapse
+      expect(controller.isCollapsed(0), isFalse);
+    });
+
+    testWidgets('Keyboard arrow keys adjust panel fractions', (tester) async {
+      final controller = JustResizableController(initialFractions: [0.5, 0.5]);
+
+      await tester.pumpWidget(
+        buildTestApp(
+          SizedBox(
+            width: 600.0,
+            height: 400.0,
+            child: JustResizable(
+              controller: controller,
+              keyboardStep: 20.0,
+              children: const [
+                JustResizablePanel(child: Text('Left')),
+                JustResizablePanel(child: Text('Right')),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      // Focus the splitter Focus widget
+      final focusFinder = find.byType(Focus).first;
+      await tester.tap(focusFinder);
+      await tester.pump();
+
+      // Send ArrowRight
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pumpAndSettle();
+
+      // Total available space is 600 - 1.0 = 599.0
+      // Moving right by 20.0px increases panel 0 fraction
+      expect(controller.fractions[0], greaterThan(0.5));
+
+      // Send ArrowLeft
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pumpAndSettle();
+      expect(controller.fractions[0], closeTo(0.5, 0.01));
+    });
+
+    testWidgets('Keyboard Home and End snap to limits', (tester) async {
+      final controller = JustResizableController(initialFractions: [0.5, 0.5]);
+
+      await tester.pumpWidget(
+        buildTestApp(
+          SizedBox(
+            width: 600.0,
+            height: 400.0,
+            child: JustResizable(
+              controller: controller,
+              children: const [
+                JustResizablePanel(minSize: 100.0, child: Text('Left')),
+                JustResizablePanel(minSize: 100.0, child: Text('Right')),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final focusFinder = find.byType(Focus).first;
+      await tester.tap(focusFinder);
+      await tester.pump();
+
+      // Send Home key -> snaps to min
+      await tester.sendKeyEvent(LogicalKeyboardKey.home);
+      await tester.pumpAndSettle();
+      expect(controller.fractions[0], closeTo(100.0 / 599.0, 0.01));
+
+      // Send End key -> snaps to max
+      await tester.sendKeyEvent(LogicalKeyboardKey.end);
+      await tester.pumpAndSettle();
+      expect(controller.fractions[1], closeTo(100.0 / 599.0, 0.01));
+    });
+
+    testWidgets('Keyboard Enter/Space triggers double-tap collapse toggle', (
+      tester,
+    ) async {
+      final controller = JustResizableController(initialFractions: [0.5, 0.5]);
+
+      await tester.pumpWidget(
+        buildTestApp(
+          SizedBox(
+            width: 600.0,
+            height: 400.0,
+            child: JustResizable(
+              controller: controller,
+              children: const [
+                JustResizablePanel(collapsible: true, child: Text('Left')),
+                JustResizablePanel(child: Text('Right')),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final focusFinder = find.byType(Focus).first;
+      await tester.tap(focusFinder);
+      await tester.pump();
+
+      // Press Enter -> collapse
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(controller.isCollapsed(0), isTrue);
+
+      // Press Space -> expand
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pumpAndSettle();
+      expect(controller.isCollapsed(0), isFalse);
+    });
+
+    testWidgets('Splitter renders with accessibility Semantics slider', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          const SizedBox(
+            width: 600.0,
+            height: 400.0,
+            child: JustResizable(
+              children: [
+                JustResizablePanel(child: Text('Left')),
+                JustResizablePanel(child: Text('Right')),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final semanticsFinder = find.byWidgetPredicate(
+        (widget) =>
+            widget is Semantics &&
+            widget.properties.slider == true &&
+            (widget.properties.label?.contains('Splitter divider') ?? false),
+      );
+      expect(semanticsFinder, findsOneWidget);
+    });
+
+    testWidgets(
+      'Custom handleBuilder renders custom widget with interaction states',
+      (tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            SizedBox(
+              width: 600.0,
+              height: 400.0,
+              child: JustResizable(
+                handleBuilder: (context, index, isDragging, isHovered) {
+                  return Container(
+                    key: const ValueKey('custom_handle'),
+                    color: Colors.red,
+                    child: const Text('CUSTOM'),
+                  );
+                },
+                children: const [
+                  JustResizablePanel(child: Text('Left')),
+                  JustResizablePanel(child: Text('Right')),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        expect(find.byKey(const ValueKey('custom_handle')), findsOneWidget);
+        expect(find.text('CUSTOM'), findsOneWidget);
+      },
+    );
   });
 }

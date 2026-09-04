@@ -39,6 +39,15 @@ class const JustResizableStyle({
 
   /// Custom border radius for the centered grip pill.
   final BorderRadius? gripRadius,
+
+  /// Custom double-tap action for splitters.
+  final JustResizableDoubleTapBehavior? doubleTapBehavior,
+
+  /// Distance in pixels adjusted per standard arrow keypress.
+  final double? keyboardStep,
+
+  /// Distance in pixels adjusted when Shift is held with arrow keypress.
+  final double? keyboardShiftStep,
 }) {
   /// Returns a copy with given fields replaced.
   JustResizableStyle copyWith({
@@ -54,6 +63,9 @@ class const JustResizableStyle({
     Color? activeGripBorderColor,
     Color? gripDotColor,
     BorderRadius? gripRadius,
+    JustResizableDoubleTapBehavior? doubleTapBehavior,
+    double? keyboardStep,
+    double? keyboardShiftStep,
   }) {
     return JustResizableStyle(
       dividerThickness: dividerThickness ?? this.dividerThickness,
@@ -69,6 +81,9 @@ class const JustResizableStyle({
           activeGripBorderColor ?? this.activeGripBorderColor,
       gripDotColor: gripDotColor ?? this.gripDotColor,
       gripRadius: gripRadius ?? this.gripRadius,
+      doubleTapBehavior: doubleTapBehavior ?? this.doubleTapBehavior,
+      keyboardStep: keyboardStep ?? this.keyboardStep,
+      keyboardShiftStep: keyboardShiftStep ?? this.keyboardShiftStep,
     );
   }
 
@@ -83,7 +98,8 @@ class const JustResizableStyle({
     final double? lerpedThickness;
     if (a?.dividerThickness != null && b?.dividerThickness != null) {
       lerpedThickness =
-          a!.dividerThickness! + (b!.dividerThickness! - a.dividerThickness!) * t;
+          a!.dividerThickness! +
+          (b!.dividerThickness! - a.dividerThickness!) * t;
     } else {
       lerpedThickness = t < 0.5 ? a?.dividerThickness : b?.dividerThickness;
     }
@@ -96,20 +112,49 @@ class const JustResizableStyle({
       lerpedHitSize = t < 0.5 ? a?.handleHitSize : b?.handleHitSize;
     }
 
+    final double? lerpedKeyStep;
+    if (a?.keyboardStep != null && b?.keyboardStep != null) {
+      lerpedKeyStep =
+          a!.keyboardStep! + (b!.keyboardStep! - a.keyboardStep!) * t;
+    } else {
+      lerpedKeyStep = t < 0.5 ? a?.keyboardStep : b?.keyboardStep;
+    }
+
+    final double? lerpedKeyShiftStep;
+    if (a?.keyboardShiftStep != null && b?.keyboardShiftStep != null) {
+      lerpedKeyShiftStep =
+          a!.keyboardShiftStep! +
+          (b!.keyboardShiftStep! - a.keyboardShiftStep!) * t;
+    } else {
+      lerpedKeyShiftStep = t < 0.5
+          ? a?.keyboardShiftStep
+          : b?.keyboardShiftStep;
+    }
+
     return JustResizableStyle(
       dividerThickness: lerpedThickness,
       dividerColor: .lerp(a?.dividerColor, b?.dividerColor, t),
-      activeDividerColor: .lerp(a?.activeDividerColor, b?.activeDividerColor, t),
+      activeDividerColor: .lerp(
+        a?.activeDividerColor,
+        b?.activeDividerColor,
+        t,
+      ),
       handleHitSize: lerpedHitSize,
       handleVariant: t < 0.5 ? a?.handleVariant : b?.handleVariant,
       gripSize: .lerp(a?.gripSize, b?.gripSize, t),
       gripColor: .lerp(a?.gripColor, b?.gripColor, t),
       activeGripColor: .lerp(a?.activeGripColor, b?.activeGripColor, t),
       gripBorderColor: .lerp(a?.gripBorderColor, b?.gripBorderColor, t),
-      activeGripBorderColor:
-          .lerp(a?.activeGripBorderColor, b?.activeGripBorderColor, t),
+      activeGripBorderColor: .lerp(
+        a?.activeGripBorderColor,
+        b?.activeGripBorderColor,
+        t,
+      ),
       gripDotColor: .lerp(a?.gripDotColor, b?.gripDotColor, t),
       gripRadius: .lerp(a?.gripRadius, b?.gripRadius, t),
+      doubleTapBehavior: t < 0.5 ? a?.doubleTapBehavior : b?.doubleTapBehavior,
+      keyboardStep: lerpedKeyStep,
+      keyboardShiftStep: lerpedKeyShiftStep,
     );
   }
 
@@ -129,7 +174,10 @@ class const JustResizableStyle({
           gripBorderColor == other.gripBorderColor &&
           activeGripBorderColor == other.activeGripBorderColor &&
           gripDotColor == other.gripDotColor &&
-          gripRadius == other.gripRadius;
+          gripRadius == other.gripRadius &&
+          doubleTapBehavior == other.doubleTapBehavior &&
+          keyboardStep == other.keyboardStep &&
+          keyboardShiftStep == other.keyboardShiftStep;
 
   @override
   int get hashCode => Object.hash(
@@ -145,5 +193,8 @@ class const JustResizableStyle({
     activeGripBorderColor,
     gripDotColor,
     gripRadius,
+    doubleTapBehavior,
+    keyboardStep,
+    keyboardShiftStep,
   );
 }

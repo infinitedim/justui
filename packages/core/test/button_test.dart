@@ -816,7 +816,7 @@ void main() {
         backgroundColor: Color(0xFF112233),
         foregroundColor: Color(0xFF445566),
         borderColor: Color(0xFF778899),
-        borderRadius: BorderRadius.all(Radius.circular(8)),
+        borderRadius: .all(.circular(8)),
         padding: EdgeInsets.all(12),
         textStyle: TextStyle(fontSize: 14),
         elevation: 2.0,
@@ -839,7 +839,7 @@ void main() {
         backgroundColor: Color(0xFF112233),
         foregroundColor: Color(0xFF445566),
         borderColor: Color(0xFF778899),
-        borderRadius: BorderRadius.all(Radius.circular(8)),
+        borderRadius: .all(.circular(8)),
         padding: EdgeInsets.all(12),
         textStyle: TextStyle(fontSize: 14),
         elevation: 2.0,
@@ -869,7 +869,7 @@ void main() {
         backgroundColor: Color(0xFF00FF00),
         foregroundColor: Color(0xFF000000),
         borderColor: Color(0xFFFF0000),
-        borderRadius: BorderRadius.all(Radius.circular(16)),
+        borderRadius: .all(.circular(16)),
         padding: EdgeInsets.symmetric(horizontal: 28),
         elevation: 3.0,
       );
@@ -971,7 +971,7 @@ void main() {
       const themePrimaryStyle = JustButtonStyle(
         backgroundColor: Color(0xFF123456),
         foregroundColor: Color(0xFFFFFFFF),
-        borderRadius: BorderRadius.all(Radius.circular(20)),
+        borderRadius: .all(.circular(20)),
       );
 
       final materialTheme = ThemeData(

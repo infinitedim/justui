@@ -340,7 +340,7 @@ void main() {
         buildSharedTestApp(
           const FocusIndicator(
             isFocused: true,
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            borderRadius: .all(.circular(8.0)),
             child: SizedBox(width: 80, height: 40, child: Text('Focus Box')),
           ),
         ),
@@ -358,7 +358,7 @@ void main() {
           theme: JustThemeData.neobrutalismLight,
           const FocusIndicator(
             isFocused: true,
-            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+            borderRadius: .all(.circular(4.0)),
             child: SizedBox(width: 80, height: 40, child: Text('Neo Focus')),
           ),
         ),
@@ -376,7 +376,7 @@ void main() {
           disableAnimations: true,
           const FocusIndicator(
             isFocused: true,
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            borderRadius: .all(.circular(8.0)),
             child: Text('Instant Focus Box'),
           ),
         ),
