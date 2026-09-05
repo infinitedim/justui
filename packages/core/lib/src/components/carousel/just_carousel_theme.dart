@@ -48,6 +48,33 @@ class const JustCarouselTheme({
 
   /// Default border radius for indicator items.
   final BorderRadius? indicatorRadius,
+
+  /// Default configuration for auto-scrolling progression.
+  final JustCarouselAutoScroll? autoScroll,
+
+  /// Whether tapping indicator dots navigates directly to slides. Defaults to true.
+  final bool interactiveIndicators = true,
+
+  /// Whether pointer wheel / trackpad scrolling navigates slides. Defaults to true.
+  final bool enableMouseWheel = true,
+
+  /// Whether arrow keys and spacebar control navigation and playback. Defaults to true.
+  final bool enableKeyboardNavigation = true,
+
+  /// Whether navigation arrow buttons are displayed. Defaults to false.
+  final bool showArrows = false,
+
+  /// Default background / icon color for navigation arrows.
+  final Color? arrowColor,
+
+  /// Default active / hovered color for navigation arrows.
+  final Color? activeArrowColor,
+
+  /// Default bounding dimension in pixels for navigation arrows. Defaults to 36.0.
+  final double arrowSize = 36.0,
+
+  /// Default border radius applied to navigation arrows.
+  final BorderRadius? arrowRadius,
 }) extends ThemeExtension<JustCarouselTheme> {
   /// Default configuration for the theme.
   static const defaults = JustCarouselTheme();
@@ -61,6 +88,9 @@ class const JustCarouselTheme({
       indicatorColor: colors.borderDefault,
       activeIndicatorColor: colors.borderFocus,
       indicatorRadius: .all(radius.full),
+      arrowColor: colors.background,
+      activeArrowColor: colors.textPrimary,
+      arrowRadius: .all(radius.md),
     );
   }
 
@@ -74,6 +104,10 @@ class const JustCarouselTheme({
       indicatorRadius: .zero,
       indicatorSize: 10.0,
       activeIndicatorSize: 10.0,
+      arrowColor: colors.background,
+      activeArrowColor: colors.textPrimary,
+      arrowRadius: .zero,
+      arrowSize: 36.0,
     );
   }
 
@@ -92,6 +126,15 @@ class const JustCarouselTheme({
     double? activeIndicatorSize,
     double? indicatorSpacing,
     BorderRadius? indicatorRadius,
+    JustCarouselAutoScroll? autoScroll,
+    bool? interactiveIndicators,
+    bool? enableMouseWheel,
+    bool? enableKeyboardNavigation,
+    bool? showArrows,
+    Color? arrowColor,
+    Color? activeArrowColor,
+    double? arrowSize,
+    BorderRadius? arrowRadius,
   }) {
     return JustCarouselTheme(
       style: style ?? this.style,
@@ -107,6 +150,17 @@ class const JustCarouselTheme({
       activeIndicatorSize: activeIndicatorSize ?? this.activeIndicatorSize,
       indicatorSpacing: indicatorSpacing ?? this.indicatorSpacing,
       indicatorRadius: indicatorRadius ?? this.indicatorRadius,
+      autoScroll: autoScroll ?? this.autoScroll,
+      interactiveIndicators:
+          interactiveIndicators ?? this.interactiveIndicators,
+      enableMouseWheel: enableMouseWheel ?? this.enableMouseWheel,
+      enableKeyboardNavigation:
+          enableKeyboardNavigation ?? this.enableKeyboardNavigation,
+      showArrows: showArrows ?? this.showArrows,
+      arrowColor: arrowColor ?? this.arrowColor,
+      activeArrowColor: activeArrowColor ?? this.activeArrowColor,
+      arrowSize: arrowSize ?? this.arrowSize,
+      arrowRadius: arrowRadius ?? this.arrowRadius,
     );
   }
 
@@ -123,6 +177,7 @@ class const JustCarouselTheme({
         (other.activeIndicatorSize - activeIndicatorSize) * t;
     final lerpedSpacing =
         indicatorSpacing + (other.indicatorSpacing - indicatorSpacing) * t;
+    final lerpedArrowSize = arrowSize + (other.arrowSize - arrowSize) * t;
 
     return JustCarouselTheme(
       style: .lerp(style, other.style, t),
@@ -132,8 +187,8 @@ class const JustCarouselTheme({
       indicator: t < 0.5 ? indicator : other.indicator,
       indicatorPosition: t < 0.5 ? indicatorPosition : other.indicatorPosition,
       transition: t < 0.5 ? transition : other.transition,
-      indicatorColor: Color.lerp(indicatorColor, other.indicatorColor, t),
-      activeIndicatorColor: Color.lerp(
+      indicatorColor: .lerp(indicatorColor, other.indicatorColor, t),
+      activeIndicatorColor: .lerp(
         activeIndicatorColor,
         other.activeIndicatorColor,
         t,
@@ -141,11 +196,20 @@ class const JustCarouselTheme({
       indicatorSize: lerpedSize,
       activeIndicatorSize: lerpedActiveSize,
       indicatorSpacing: lerpedSpacing,
-      indicatorRadius: BorderRadius.lerp(
-        indicatorRadius,
-        other.indicatorRadius,
-        t,
-      ),
+      indicatorRadius: .lerp(indicatorRadius, other.indicatorRadius, t),
+      autoScroll: t < 0.5 ? autoScroll : other.autoScroll,
+      interactiveIndicators: t < 0.5
+          ? interactiveIndicators
+          : other.interactiveIndicators,
+      enableMouseWheel: t < 0.5 ? enableMouseWheel : other.enableMouseWheel,
+      enableKeyboardNavigation: t < 0.5
+          ? enableKeyboardNavigation
+          : other.enableKeyboardNavigation,
+      showArrows: t < 0.5 ? showArrows : other.showArrows,
+      arrowColor: .lerp(arrowColor, other.arrowColor, t),
+      activeArrowColor: .lerp(activeArrowColor, other.activeArrowColor, t),
+      arrowSize: lerpedArrowSize,
+      arrowRadius: .lerp(arrowRadius, other.arrowRadius, t),
     );
   }
 
@@ -166,10 +230,19 @@ class const JustCarouselTheme({
           indicatorSize == other.indicatorSize &&
           activeIndicatorSize == other.activeIndicatorSize &&
           indicatorSpacing == other.indicatorSpacing &&
-          indicatorRadius == other.indicatorRadius;
+          indicatorRadius == other.indicatorRadius &&
+          autoScroll == other.autoScroll &&
+          interactiveIndicators == other.interactiveIndicators &&
+          enableMouseWheel == other.enableMouseWheel &&
+          enableKeyboardNavigation == other.enableKeyboardNavigation &&
+          showArrows == other.showArrows &&
+          arrowColor == other.arrowColor &&
+          activeArrowColor == other.activeArrowColor &&
+          arrowSize == other.arrowSize &&
+          arrowRadius == other.arrowRadius;
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     style,
     viewportFraction,
     animationDuration,
@@ -183,5 +256,14 @@ class const JustCarouselTheme({
     activeIndicatorSize,
     indicatorSpacing,
     indicatorRadius,
-  );
+    autoScroll,
+    interactiveIndicators,
+    enableMouseWheel,
+    enableKeyboardNavigation,
+    showArrows,
+    arrowColor,
+    activeArrowColor,
+    arrowSize,
+    arrowRadius,
+  ]);
 }
