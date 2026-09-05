@@ -5,6 +5,7 @@ import '../components/bottom_nav/just_bottom_nav_theme.dart';
 import '../components/breadcrumb/just_breadcrumb_theme.dart';
 import '../components/button/just_button_theme.dart';
 import '../components/card/just_card_theme.dart';
+import '../components/carousel/just_carousel_theme.dart';
 import '../components/checkbox/just_checkbox_theme.dart';
 import '../components/dialog/just_dialog_theme.dart';
 import '../components/input/just_input_theme.dart';
@@ -50,6 +51,7 @@ extension JustThemeDataMaterialExtension on JustThemeData {
         JustBreadcrumbTheme.defaults,
         JustButtonTheme.defaults,
         JustCardTheme.defaults,
+        JustCarouselTheme.defaults,
         JustCheckboxTheme.defaults,
         JustDialogTheme.defaults,
         JustInputTheme.defaults,
