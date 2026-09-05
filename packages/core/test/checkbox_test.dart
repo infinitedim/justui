@@ -395,7 +395,7 @@ void main() {
         activeColor: Color(0xFF112233),
         checkColor: Color(0xFF445566),
         borderColor: Color(0xFF778899),
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderRadius: .all(.circular(10)),
         textStyle: TextStyle(fontSize: 18, color: Color(0xFFAABBCC)),
       );
 
@@ -481,7 +481,7 @@ void main() {
         activeColor: Color(0xFF112233),
         checkColor: Color(0xFF445566),
         borderColor: Color(0xFF778899),
-        borderRadius: BorderRadius.all(Radius.circular(6)),
+        borderRadius: .all(.circular(6)),
         textStyle: TextStyle(fontSize: 16),
       );
 
@@ -497,7 +497,7 @@ void main() {
         activeColor: Color(0xFF112233),
         checkColor: Color(0xFF445566),
         borderColor: Color(0xFF778899),
-        borderRadius: BorderRadius.all(Radius.circular(6)),
+        borderRadius: .all(.circular(6)),
         textStyle: TextStyle(fontSize: 16),
       );
 

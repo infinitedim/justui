@@ -493,7 +493,7 @@ void main() {
         tickMarkColor: Color(0xFFFF00FF),
         trackHeight: 12.0,
         thumbSize: 24.0,
-        borderRadius: BorderRadius.all(Radius.circular(8)),
+        borderRadius: .all(.circular(8)),
       );
 
       await tester.pumpWidget(
