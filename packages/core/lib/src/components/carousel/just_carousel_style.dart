@@ -82,17 +82,14 @@ class const JustCarouselStyle({
     if (b == null) return a;
 
     return JustCarouselStyle(
-      viewportFraction:
-          b.viewportFraction != null && a.viewportFraction != null
-              ? a.viewportFraction! +
-                  (b.viewportFraction! - a.viewportFraction!) * t
-              : (t < 0.5 ? a.viewportFraction : b.viewportFraction),
-      animationDuration:
-          t < 0.5 ? a.animationDuration : b.animationDuration,
+      viewportFraction: b.viewportFraction != null && a.viewportFraction != null
+          ? a.viewportFraction! +
+                (b.viewportFraction! - a.viewportFraction!) * t
+          : (t < 0.5 ? a.viewportFraction : b.viewportFraction),
+      animationDuration: t < 0.5 ? a.animationDuration : b.animationDuration,
       animationCurve: t < 0.5 ? a.animationCurve : b.animationCurve,
       indicator: t < 0.5 ? a.indicator : b.indicator,
-      indicatorPosition:
-          t < 0.5 ? a.indicatorPosition : b.indicatorPosition,
+      indicatorPosition: t < 0.5 ? a.indicatorPosition : b.indicatorPosition,
       transition: t < 0.5 ? a.transition : b.transition,
       indicatorColor: Color.lerp(a.indicatorColor, b.indicatorColor, t),
       activeIndicatorColor: Color.lerp(
@@ -100,20 +97,18 @@ class const JustCarouselStyle({
         b.activeIndicatorColor,
         t,
       ),
-      indicatorSize:
-          b.indicatorSize != null && a.indicatorSize != null
-              ? a.indicatorSize! + (b.indicatorSize! - a.indicatorSize!) * t
-              : (t < 0.5 ? a.indicatorSize : b.indicatorSize),
+      indicatorSize: b.indicatorSize != null && a.indicatorSize != null
+          ? a.indicatorSize! + (b.indicatorSize! - a.indicatorSize!) * t
+          : (t < 0.5 ? a.indicatorSize : b.indicatorSize),
       activeIndicatorSize:
           b.activeIndicatorSize != null && a.activeIndicatorSize != null
-              ? a.activeIndicatorSize! +
-                  (b.activeIndicatorSize! - a.activeIndicatorSize!) * t
-              : (t < 0.5 ? a.activeIndicatorSize : b.activeIndicatorSize),
-      indicatorSpacing:
-          b.indicatorSpacing != null && a.indicatorSpacing != null
-              ? a.indicatorSpacing! +
-                  (b.indicatorSpacing! - a.indicatorSpacing!) * t
-              : (t < 0.5 ? a.indicatorSpacing : b.indicatorSpacing),
+          ? a.activeIndicatorSize! +
+                (b.activeIndicatorSize! - a.activeIndicatorSize!) * t
+          : (t < 0.5 ? a.activeIndicatorSize : b.activeIndicatorSize),
+      indicatorSpacing: b.indicatorSpacing != null && a.indicatorSpacing != null
+          ? a.indicatorSpacing! +
+                (b.indicatorSpacing! - a.indicatorSpacing!) * t
+          : (t < 0.5 ? a.indicatorSpacing : b.indicatorSpacing),
       indicatorRadius: BorderRadius.lerp(
         a.indicatorRadius,
         b.indicatorRadius,

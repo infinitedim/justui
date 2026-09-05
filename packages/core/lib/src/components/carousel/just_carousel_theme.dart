@@ -119,19 +119,18 @@ class const JustCarouselTheme({
     final lerpedSize =
         indicatorSize + (other.indicatorSize - indicatorSize) * t;
     final lerpedActiveSize =
-        activeIndicatorSize + (other.activeIndicatorSize - activeIndicatorSize) * t;
+        activeIndicatorSize +
+        (other.activeIndicatorSize - activeIndicatorSize) * t;
     final lerpedSpacing =
         indicatorSpacing + (other.indicatorSpacing - indicatorSpacing) * t;
 
     return JustCarouselTheme(
       style: .lerp(style, other.style, t),
       viewportFraction: lerpedFraction,
-      animationDuration:
-          t < 0.5 ? animationDuration : other.animationDuration,
+      animationDuration: t < 0.5 ? animationDuration : other.animationDuration,
       animationCurve: t < 0.5 ? animationCurve : other.animationCurve,
       indicator: t < 0.5 ? indicator : other.indicator,
-      indicatorPosition:
-          t < 0.5 ? indicatorPosition : other.indicatorPosition,
+      indicatorPosition: t < 0.5 ? indicatorPosition : other.indicatorPosition,
       transition: t < 0.5 ? transition : other.transition,
       indicatorColor: Color.lerp(indicatorColor, other.indicatorColor, t),
       activeIndicatorColor: Color.lerp(
