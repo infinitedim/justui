@@ -179,7 +179,7 @@ class JustDateRangePicker extends StatelessWidget {
                       },
                       builder: (context, state) {
                         return Container(
-                          width: double.infinity,
+                          width: .infinity,
                           padding: .symmetric(
                             horizontal: spacing.sm,
                             vertical: spacing.xs,

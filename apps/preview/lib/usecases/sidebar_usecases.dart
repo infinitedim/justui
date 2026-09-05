@@ -16,7 +16,7 @@ Widget buildJustSidebarDefaultUseCase(BuildContext context) {
   return Align(
     alignment: Alignment.centerLeft,
     child: SizedBox(
-      height: double.infinity,
+      height: .infinity,
       child: _InteractiveSidebarDemo(variant: variant),
     ),
   );
