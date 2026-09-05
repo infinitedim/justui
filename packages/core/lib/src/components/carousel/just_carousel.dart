@@ -23,7 +23,7 @@ const int _kVirtualLoopMidpoint = 500;
 class JustCarouselController extends ChangeNotifier {
   /// Creates a controller with an optional [initialPage].
   JustCarouselController({int initialPage = 0})
-      : _pageNotifier = ValueNotifier<int>(initialPage);
+    : _pageNotifier = ValueNotifier<int>(initialPage);
 
   _JustCarouselState? _state;
   final ValueNotifier<int> _pageNotifier;
@@ -69,7 +69,11 @@ class JustCarouselController extends ChangeNotifier {
   }
 
   /// Smoothly animates to the specified [page] index with shortest modular geodesic routing.
-  Future<void> animateToPage(int page, {Duration? duration, Curve? curve}) async {
+  Future<void> animateToPage(
+    int page, {
+    Duration? duration,
+    Curve? curve,
+  }) async {
     if (_state == null) return;
     await _state!._handleAnimateToPage(page, duration: duration, curve: curve);
   }
@@ -152,8 +156,9 @@ class _JustCarouselState extends State<JustCarousel> {
 
   JustCarouselController get _effectiveController =>
       widget.controller ??
-      (_internalController ??=
-          JustCarouselController(initialPage: widget.initialPage));
+      (_internalController ??= JustCarouselController(
+        initialPage: widget.initialPage,
+      ));
 
   bool get _isLooping => widget.loop && widget.children.length > 1;
 
@@ -261,13 +266,14 @@ class _JustCarouselState extends State<JustCarousel> {
       return;
     }
 
-    final theme =
-        Theme.of(context).extension<JustCarouselTheme>() ?? .defaults;
-    final animDuration = duration ??
+    final theme = Theme.of(context).extension<JustCarouselTheme>() ?? .defaults;
+    final animDuration =
+        duration ??
         widget.style?.animationDuration ??
         theme.style?.animationDuration ??
         theme.animationDuration;
-    final animCurve = curve ??
+    final animCurve =
+        curve ??
         widget.style?.animationCurve ??
         theme.style?.animationCurve ??
         theme.animationCurve;
@@ -300,13 +306,14 @@ class _JustCarouselState extends State<JustCarousel> {
       return;
     }
 
-    final theme =
-        Theme.of(context).extension<JustCarouselTheme>() ?? .defaults;
-    final animDuration = duration ??
+    final theme = Theme.of(context).extension<JustCarouselTheme>() ?? .defaults;
+    final animDuration =
+        duration ??
         widget.style?.animationDuration ??
         theme.style?.animationDuration ??
         theme.animationDuration;
-    final animCurve = curve ??
+    final animCurve =
+        curve ??
         widget.style?.animationCurve ??
         theme.style?.animationCurve ??
         theme.animationCurve;
@@ -365,13 +372,14 @@ class _JustCarouselState extends State<JustCarousel> {
       return;
     }
 
-    final theme =
-        Theme.of(context).extension<JustCarouselTheme>() ?? .defaults;
-    final animDuration = duration ??
+    final theme = Theme.of(context).extension<JustCarouselTheme>() ?? .defaults;
+    final animDuration =
+        duration ??
         widget.style?.animationDuration ??
         theme.style?.animationDuration ??
         theme.animationDuration;
-    final animCurve = curve ??
+    final animCurve =
+        curve ??
         widget.style?.animationCurve ??
         theme.style?.animationCurve ??
         theme.animationCurve;
