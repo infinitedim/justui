@@ -703,7 +703,7 @@ void main() {
         borderColor: Color(0xFF999999),
         focusedBorderColor: Color(0xFF3333FF),
         errorBorderColor: Color(0xFFFF3333),
-        borderRadius: BorderRadius.all(Radius.circular(20)),
+        borderRadius: .all(.circular(20)),
         contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         textStyle: TextStyle(color: Color(0xFF123456)),
         labelStyle: TextStyle(color: Color(0xFF654321)),

@@ -552,6 +552,103 @@
       ]
     },
     {
+      "name": "resizable",
+      "version": "0.1.0",
+      "description": "Flexible resizable panel layout with isolated fraction drag math, keyboard navigation, and splitter handles.",
+      "category": "layout",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_focus_indicator"
+      ],
+      "pubDependencies": {},
+      "files": {
+        "common": [
+          {
+            "name": "just_resizable_variants.dart",
+            "path": "components/resizable/just_resizable_variants.dart",
+            "checksum": "sha256:a05f3f72aa2903fc697d9500df9c7735b9230cb082ecd6c793ac0359c97d6762"
+          },
+          {
+            "name": "just_resizable_theme.dart",
+            "path": "components/resizable/just_resizable_theme.dart",
+            "checksum": "sha256:1ea43955e9fa3c26be3696abd2d83a739b03112b757774447d134d409c27bf9c"
+          },
+          {
+            "name": "just_resizable_style.dart",
+            "path": "components/resizable/just_resizable_style.dart",
+            "checksum": "sha256:47b0a7a36ae93ddbb9c30001cf5eb9e9d292ec1446bca2547a23229a9f709791"
+          }
+        ],
+        "default": [
+          {
+            "name": "just_resizable.dart",
+            "path": "components/resizable/default/just_resizable.dart",
+            "checksum": "sha256:15d66e51d04d0a4446c9614d9f5f48e3b2e9f457ca74569a4656beef1c5a30e1"
+          }
+        ],
+        "neobrutalism": [
+          {
+            "name": "just_resizable.dart",
+            "path": "components/resizable/neobrutalism/just_resizable.dart",
+            "checksum": "sha256:15d66e51d04d0a4446c9614d9f5f48e3b2e9f457ca74569a4656beef1c5a30e1"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
+    },
+    {
+      "name": "carousel",
+      "version": "0.1.0",
+      "description": "Accessible and performant carousel with infinite looping, auto-scroll, interactive indicators, and smooth transitions.",
+      "category": "layout",
+      "hidden": false,
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
+      "pubDependencies": {},
+      "files": {
+        "common": [
+          {
+            "name": "just_carousel_variants.dart",
+            "path": "components/carousel/just_carousel_variants.dart",
+            "checksum": "sha256:37b39af85172809f14545ebc930ed89ad8a2312d20f93a07d5f66674e0096495"
+          },
+          {
+            "name": "just_carousel_theme.dart",
+            "path": "components/carousel/just_carousel_theme.dart",
+            "checksum": "sha256:d862afd6740850e6b2f27b9a5b6b2b602fbba4146949a33c1368a984d8e2cf4d"
+          },
+          {
+            "name": "just_carousel_style.dart",
+            "path": "components/carousel/just_carousel_style.dart",
+            "checksum": "sha256:9a9f42077462b76d8c388a1bd756d6e983e658c5bcfc35aebca8b78d77f25ac9"
+          }
+        ],
+        "default": [
+          {
+            "name": "just_carousel.dart",
+            "path": "components/carousel/default/just_carousel.dart",
+            "checksum": "sha256:f3bd5fa8fc55e6c5a59ddbc89a3acd45a7a8672e894a54d648b05dc8267c5368"
+          }
+        ],
+        "neobrutalism": [
+          {
+            "name": "just_carousel.dart",
+            "path": "components/carousel/neobrutalism/just_carousel.dart",
+            "checksum": "sha256:f3bd5fa8fc55e6c5a59ddbc89a3acd45a7a8672e894a54d648b05dc8267c5368"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
+    },
+    {
       "name": "_shared_pressable",
       "version": "0.1.0",
       "description": "Internal shared interactive press/hover state tracker.",
