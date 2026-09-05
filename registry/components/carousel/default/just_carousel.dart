@@ -881,8 +881,8 @@ class _JustCarouselState extends State<JustCarousel> {
         final isHovered = state.isHovered;
         final bg = isNeobrutalism
             ? (isPressed
-                ? colors.borderFocus
-                : (isHovered ? colors.elevated : colors.background))
+                  ? colors.borderFocus
+                  : (isHovered ? colors.elevated : colors.background))
             : colors.background.withValues(
                 alpha: isPressed ? 1.0 : (isHovered ? 0.95 : 0.85),
               );
@@ -895,9 +895,7 @@ class _JustCarouselState extends State<JustCarousel> {
             borderRadius: arrowRadius,
             border: .all(
               width: isNeobrutalism ? 2.5 : 1.0,
-              color: isNeobrutalism
-                  ? colors.textPrimary
-                  : colors.borderDefault,
+              color: isNeobrutalism ? colors.textPrimary : colors.borderDefault,
             ),
             boxShadow: isNeobrutalism && !isPressed
                 ? [
