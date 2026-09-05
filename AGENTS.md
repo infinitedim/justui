@@ -164,3 +164,39 @@ Untuk mencegah kebocoran visual/state komponen (barrel leakage) ke lokal copy di
 - Berkas shared internal di package `just_ui_core` tetap menggunakan penamaan ber-prefix `_shared_` (e.g. `_shared_pressable.dart`).
 - Saat CLI (`just_ui_cli`) menyalin file-file shared ini ke proyek user, prefix `_shared_` **wajib di-strip** menjadi `just_` (e.g. `just_pressable.dart`).
 - Logika penggantian nama dan penyesuaian import path ini dikelola secara otomatis oleh `ImportRewriter.normalizeSharedFileName()`, `AddCommand`, `DiffCommand`, dan `UpdateCommand`. Agent tidak boleh mengubah heuristic ini atau membiarkan file dengan nama `_shared_*` tersalin ke folder lokal user.
+
+---
+
+## 9. Code Quality, Engineering Principles & Performance Standards (Sangat Ketat!)
+
+Untuk menjaga basis kode tetap mudah dipelihara (*maintainable*), bersih (*clean*), mudah dibaca (*readable*), dan memiliki performa setingkat sistem (*high-performance*), seluruh kontributor dan AI Agent wajib mematuhi standar rekayasa perangkat lunak berikut:
+
+### 1. Clean Code & Control Flow Flattening (Anti-Nested If-Else)
+* **Wajib Menggunakan Guard Clauses (Early Returns):**
+  - Dilarang membuat blok `if-else` bertingkat yang dalam (*deep nesting*).
+  - Validasi kondisi awal (*preconditions*), *assertions*, dan penanganan kasus batas (*edge cases*) harus diselesaikan di baris-baris awal fungsi menggunakan *guard clauses* (keluar seawal mungkin dengan `return` atau `assert`).
+  - *Dasar Teori Ilmiah:* Menekan **Cyclomatic Complexity** (Thomas J. McCabe, 1976 — *A Complexity Measure*, IEEE Transactions on Software Engineering) agar nilai $V(G) \le 3$ per fungsi, sehingga meminimalkan beban kognitif pembaca kode dan mempermudah cakupan unit test.
+* **Penggantian Rantai Percabangan dengan Table-Driven Lookups & Pattern Matching:**
+  - Hindari rangkaian panjang `if (...) else if (...) else ...`.
+  - Ganti dengan struktur data diskret (`Map`, `Set`) atau fitur bawaan Dart 3 (*switch expressions* dan *pattern matching*).
+  - *Dasar Teori Ilmiah:* Menghilangkan penalti *branch misprediction* pada CPU pipeline (Yeh & Patt, 1991 — *Two-Level Adaptive Training Branch Prediction*). Dart AOT mengompilasi *switch expressions* dan *Map lookups* menjadi *jump tables* $O(1)$ alih-alih evaluasi rantai kondisional linier $O(N)$.
+
+### 2. Penerapan Prinsip SOLID & DRY
+* **Single Responsibility Principle (SRP):** Pisahkan deklarasi data/konfigurasi, logika kalkulasi matematis murni (*pure mathematical functions*), dan widget presenter/listener ke dalam kelas terpisah.
+* **Don't Repeat Yourself (DRY):** Hindari duplikasi logika kalkulasi antar sumbu (misal: horizontal vs vertikal). Gunakan abstraksi orientasi simetris yang dapat menangani kedua dimensi secara seragam.
+* **Open/Closed Principle (OCP):** Sediakan *builder callbacks* (seperti `handleBuilder`, `transitionBuilder`) sebagai *escape hatch* agar komponen terbuka untuk ekstensi kustom tanpa harus memodifikasi kernel komponen utama.
+
+### 3. High-Performance Engineering & Landasan Ilmiah
+Setiap keputusan desain yang menyangkut performa harus didukung oleh prinsip ilmu komputer (*computer science*) atau literatur ilmiah yang valid:
+* **Zero Heap Allocations pada Render & Layout Loops:**
+  - Dilarang mengalokasikan objek sementara (*ephemeral objects*, misal list baru atau closure dinamis) di dalam tick gesture drag, animasi per-frame (60/120 FPS), atau callback `LayoutBuilder`.
+  - *Dasar Teori Ilmiah:* Mengurangi frekuensi pemicuan *Generational Minor GC (Scavenge)* pada Dart VM runtime (Wilson et al., 1995 — *Dynamic Storage Allocation*), menjaga *frame budget* tetap berada di bawah ambang batas $8.33\text{ms}$ (120 FPS) atau $16.6\text{ms}$ (60 FPS) agar bebas *jank*.
+* **Bresenham Remainder Distribution (Anti-Subpixel Drift):**
+  - Pada komponen pembagian ruang kontinu ke dalam piksel diskret (seperti `JustResizable`), akumulasi desimal tidak boleh dibiarkan memicu *subpixel rounding drift* atau overflow.
+  - Sisa desimal mutlak ruang wajib dialokasikan secara eksak ke elemen partisi terakhir:
+    $$P_{N-1} = \max\left(0.0, \text{availableSpace} - \sum_{i=0}^{N-2} P_i\right)$$
+  - *Dasar Teori Ilmiah:* Diadaptasi dari prinsip *Bresenham's Space Partitioning Error Accumulator* (J. E. Bresenham, 1965 — *Algorithm for Computer Control of a Digital Plotter*, IBM Systems Journal).
+* **Virtual Tree State Preservation via Offstaging ($O(1)$ vs $O(M)$ Reconciliation):**
+  - Untuk komponen yang memiliki state lipat/collapse (seperti panel yang disembunyikan), dilarang menghancurkan (*unmounting*) subtree dari pohon widget.
+  - Gunakan `Offstage(offstage: isCollapsed, child: ...)` dengan dimensi nol untuk menjaga kelangsungan `Element` dan `State` anak tanpa menimbulkan beban render di Flutter paint phase ($0$ paint cost).
+
