@@ -19,18 +19,16 @@ Widget buildTestApp(
 
 void main() {
   group('JustCarousel Core Engine & Looping Math', () {
-    testWidgets('Renders items horizontally and displays initial page', (tester) async {
+    testWidgets('Renders items horizontally and displays initial page', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           const SizedBox(
             width: 400.0,
             height: 300.0,
             child: JustCarousel(
-              children: [
-                Text('Slide 0'),
-                Text('Slide 1'),
-                Text('Slide 2'),
-              ],
+              children: [Text('Slide 0'), Text('Slide 1'), Text('Slide 2')],
             ),
           ),
         ),
@@ -40,7 +38,9 @@ void main() {
       expect(find.text('Slide 1'), findsNothing);
     });
 
-    testWidgets('Renders items vertically when orientation is Axis.vertical', (tester) async {
+    testWidgets('Renders items vertically when orientation is Axis.vertical', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           const SizedBox(
@@ -48,10 +48,7 @@ void main() {
             height: 300.0,
             child: JustCarousel(
               orientation: Axis.vertical,
-              children: [
-                Text('Vertical 0'),
-                Text('Vertical 1'),
-              ],
+              children: [Text('Vertical 0'), Text('Vertical 1')],
             ),
           ),
         ),
@@ -66,71 +63,79 @@ void main() {
       expect(find.text('Vertical 1'), findsOneWidget);
     });
 
-    testWidgets('Infinite looping wraps backwards to last slide on left-to-right swipe', (tester) async {
-      final controller = JustCarouselController();
+    testWidgets(
+      'Infinite looping wraps backwards to last slide on left-to-right swipe',
+      (tester) async {
+        final controller = JustCarouselController();
 
-      await tester.pumpWidget(
-        buildTestApp(
-          SizedBox(
-            width: 400.0,
-            height: 300.0,
-            child: JustCarousel(
-              controller: controller,
-              loop: true,
-              children: const [
-                Text('Slide 0'),
-                Text('Slide 1'),
-                Text('Slide 2'),
-              ],
+        await tester.pumpWidget(
+          buildTestApp(
+            SizedBox(
+              width: 400.0,
+              height: 300.0,
+              child: JustCarousel(
+                controller: controller,
+                loop: true,
+                children: const [
+                  Text('Slide 0'),
+                  Text('Slide 1'),
+                  Text('Slide 2'),
+                ],
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(controller.currentIndex, 0);
+        expect(controller.currentIndex, 0);
 
-      // Drag right (swipe backwards from Slide 0 -> wraps to Slide 2)
-      await tester.drag(find.text('Slide 0'), const Offset(400.0, 0.0));
-      await tester.pumpAndSettle();
+        // Drag right (swipe backwards from Slide 0 -> wraps to Slide 2)
+        await tester.drag(find.text('Slide 0'), const Offset(400.0, 0.0));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Slide 2'), findsOneWidget);
-      expect(controller.currentIndex, 2);
-    });
+        expect(find.text('Slide 2'), findsOneWidget);
+        expect(controller.currentIndex, 2);
+      },
+    );
 
-    testWidgets('Infinite looping wraps forwards to first slide on right-to-left swipe', (tester) async {
-      final controller = JustCarouselController(initialPage: 2);
+    testWidgets(
+      'Infinite looping wraps forwards to first slide on right-to-left swipe',
+      (tester) async {
+        final controller = JustCarouselController(initialPage: 2);
 
-      await tester.pumpWidget(
-        buildTestApp(
-          SizedBox(
-            width: 400.0,
-            height: 300.0,
-            child: JustCarousel(
-              controller: controller,
-              initialPage: 2,
-              loop: true,
-              children: const [
-                Text('Slide 0'),
-                Text('Slide 1'),
-                Text('Slide 2'),
-              ],
+        await tester.pumpWidget(
+          buildTestApp(
+            SizedBox(
+              width: 400.0,
+              height: 300.0,
+              child: JustCarousel(
+                controller: controller,
+                initialPage: 2,
+                loop: true,
+                children: const [
+                  Text('Slide 0'),
+                  Text('Slide 1'),
+                  Text('Slide 2'),
+                ],
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Slide 2'), findsOneWidget);
-      expect(controller.currentIndex, 2);
+        expect(find.text('Slide 2'), findsOneWidget);
+        expect(controller.currentIndex, 2);
 
-      // Drag left (swipe forward from Slide 2 -> wraps to Slide 0)
-      await tester.drag(find.text('Slide 2'), const Offset(-400.0, 0.0));
-      await tester.pumpAndSettle();
+        // Drag left (swipe forward from Slide 2 -> wraps to Slide 0)
+        await tester.drag(find.text('Slide 2'), const Offset(-400.0, 0.0));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Slide 0'), findsOneWidget);
-      expect(controller.currentIndex, 0);
-    });
+        expect(find.text('Slide 0'), findsOneWidget);
+        expect(controller.currentIndex, 0);
+      },
+    );
 
-    testWidgets('Single-item carousel disables looping without crashing', (tester) async {
+    testWidgets('Single-item carousel disables looping without crashing', (
+      tester,
+    ) async {
       final controller = JustCarouselController();
 
       await tester.pumpWidget(
@@ -141,9 +146,7 @@ void main() {
             child: JustCarousel(
               controller: controller,
               loop: true, // Should be auto-disabled because length <= 1
-              children: const [
-                Text('Single Item'),
-              ],
+              children: const [Text('Single Item')],
             ),
           ),
         ),
@@ -168,7 +171,9 @@ void main() {
       expect(controller.currentIndex, 0);
     });
 
-    testWidgets('Empty carousel renders safely with SizedBox.shrink', (tester) async {
+    testWidgets('Empty carousel renders safely with SizedBox.shrink', (
+      tester,
+    ) async {
       final controller = JustCarouselController();
 
       await tester.pumpWidget(
@@ -176,10 +181,7 @@ void main() {
           SizedBox(
             width: 400.0,
             height: 300.0,
-            child: JustCarousel(
-              controller: controller,
-              children: const [],
-            ),
+            child: JustCarousel(controller: controller, children: const []),
           ),
         ),
       );
@@ -196,7 +198,9 @@ void main() {
   });
 
   group('JustCarouselController Programmatic Navigation', () {
-    testWidgets('next() and previous() advance and retreat slides', (tester) async {
+    testWidgets('next() and previous() advance and retreat slides', (
+      tester,
+    ) async {
       final controller = JustCarouselController();
 
       await tester.pumpWidget(
@@ -237,42 +241,47 @@ void main() {
       expect(controller.currentIndex, 1);
     });
 
-    testWidgets('pageListenable triggers synchronously without carousel rebuilds', (tester) async {
-      final controller = JustCarouselController();
-      final observedPages = <int>[];
+    testWidgets(
+      'pageListenable triggers synchronously without carousel rebuilds',
+      (tester) async {
+        final controller = JustCarouselController();
+        final observedPages = <int>[];
 
-      controller.pageListenable.addListener(() {
-        observedPages.add(controller.pageListenable.value);
-      });
+        controller.pageListenable.addListener(() {
+          observedPages.add(controller.pageListenable.value);
+        });
 
-      await tester.pumpWidget(
-        buildTestApp(
-          SizedBox(
-            width: 400.0,
-            height: 300.0,
-            child: JustCarousel(
-              controller: controller,
-              children: const [
-                Text('Slide 0'),
-                Text('Slide 1'),
-                Text('Slide 2'),
-              ],
+        await tester.pumpWidget(
+          buildTestApp(
+            SizedBox(
+              width: 400.0,
+              height: 300.0,
+              child: JustCarousel(
+                controller: controller,
+                children: const [
+                  Text('Slide 0'),
+                  Text('Slide 1'),
+                  Text('Slide 2'),
+                ],
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      await controller.next();
-      await tester.pumpAndSettle();
+        await controller.next();
+        await tester.pumpAndSettle();
 
-      await controller.next();
-      await tester.pumpAndSettle();
+        await controller.next();
+        await tester.pumpAndSettle();
 
-      expect(observedPages, contains(1));
-      expect(observedPages, contains(2));
-    });
+        expect(observedPages, contains(1));
+        expect(observedPages, contains(2));
+      },
+    );
 
-    testWidgets('animateToPage uses shortest circular path in loop mode', (tester) async {
+    testWidgets('animateToPage uses shortest circular path in loop mode', (
+      tester,
+    ) async {
       final controller = JustCarouselController();
 
       await tester.pumpWidget(
@@ -312,7 +321,9 @@ void main() {
       expect(controller.currentIndex, 0);
     });
 
-    testWidgets('jumpToPage updates immediately without animation duration', (tester) async {
+    testWidgets('jumpToPage updates immediately without animation duration', (
+      tester,
+    ) async {
       final controller = JustCarouselController();
 
       await tester.pumpWidget(
@@ -339,45 +350,47 @@ void main() {
       expect(controller.currentIndex, 2);
     });
 
-    testWidgets('Non-looping carousel respects boundaries for next and previous', (tester) async {
-      final controller = JustCarouselController();
+    testWidgets(
+      'Non-looping carousel respects boundaries for next and previous',
+      (tester) async {
+        final controller = JustCarouselController();
 
-      await tester.pumpWidget(
-        buildTestApp(
-          SizedBox(
-            width: 400.0,
-            height: 300.0,
-            child: JustCarousel(
-              controller: controller,
-              loop: false,
-              children: const [
-                Text('Slide 0'),
-                Text('Slide 1'),
-              ],
+        await tester.pumpWidget(
+          buildTestApp(
+            SizedBox(
+              width: 400.0,
+              height: 300.0,
+              child: JustCarousel(
+                controller: controller,
+                loop: false,
+                children: const [Text('Slide 0'), Text('Slide 1')],
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      // At start, previous() does nothing
-      await controller.previous();
-      await tester.pumpAndSettle();
-      expect(controller.currentIndex, 0);
+        // At start, previous() does nothing
+        await controller.previous();
+        await tester.pumpAndSettle();
+        expect(controller.currentIndex, 0);
 
-      // Move to end
-      await controller.next();
-      await tester.pumpAndSettle();
-      expect(controller.currentIndex, 1);
+        // Move to end
+        await controller.next();
+        await tester.pumpAndSettle();
+        expect(controller.currentIndex, 1);
 
-      // At end, next() does nothing
-      await controller.next();
-      await tester.pumpAndSettle();
-      expect(controller.currentIndex, 1);
-    });
+        // At end, next() does nothing
+        await controller.next();
+        await tester.pumpAndSettle();
+        expect(controller.currentIndex, 1);
+      },
+    );
   });
 
   group('JustCarousel Dynamic Updates & Lifecycle', () {
-    testWidgets('didUpdateWidget updates safely when children count changes', (tester) async {
+    testWidgets('didUpdateWidget updates safely when children count changes', (
+      tester,
+    ) async {
       final controller = JustCarouselController(initialPage: 2);
 
       await tester.pumpWidget(
@@ -387,11 +400,7 @@ void main() {
             height: 300.0,
             child: JustCarousel(
               controller: controller,
-              children: const [
-                Text('Item 0'),
-                Text('Item 1'),
-                Text('Item 2'),
-              ],
+              children: const [Text('Item 0'), Text('Item 1'), Text('Item 2')],
             ),
           ),
         ),
@@ -407,10 +416,7 @@ void main() {
             height: 300.0,
             child: JustCarousel(
               controller: controller,
-              children: const [
-                Text('Item 0'),
-                Text('Item 1'),
-              ],
+              children: const [Text('Item 0'), Text('Item 1')],
             ),
           ),
         ),
@@ -438,33 +444,57 @@ void main() {
     test('JustCarouselTheme.fromTheme resolves tokens correctly', () {
       final theme = JustCarouselTheme.fromTheme(JustThemeData.light);
       expect(theme.indicatorColor, JustThemeData.light.colors.borderDefault);
-      expect(theme.activeIndicatorColor, JustThemeData.light.colors.borderFocus);
+      expect(
+        theme.activeIndicatorColor,
+        JustThemeData.light.colors.borderFocus,
+      );
       expect(theme.indicator, JustCarouselIndicator.dots);
       expect(theme.indicatorPosition, JustCarouselIndicatorPosition.inside);
       expect(theme.transition, JustCarouselTransition.slide);
     });
 
-    test('JustCarouselTheme.neobrutalism matches high-contrast specifications', () {
-      final theme = JustCarouselTheme.neobrutalism(JustThemeData.light);
-      expect(theme.activeIndicatorColor, JustThemeData.light.colors.textPrimary);
-      expect(theme.indicatorRadius, BorderRadius.zero);
-      expect(theme.indicatorSize, 10.0);
-    });
+    test(
+      'JustCarouselTheme.neobrutalism matches high-contrast specifications',
+      () {
+        final theme = JustCarouselTheme.neobrutalism(JustThemeData.light);
+        expect(
+          theme.activeIndicatorColor,
+          JustThemeData.light.colors.textPrimary,
+        );
+        expect(theme.indicatorRadius, BorderRadius.zero);
+        expect(theme.indicatorSize, 10.0);
+      },
+    );
 
-    test('JustCarouselStyle and JustCarouselTheme support copyWith and lerp', () {
-      const styleA = JustCarouselStyle(viewportFraction: 0.8, indicatorSize: 6.0);
-      const styleB = JustCarouselStyle(viewportFraction: 1.0, indicatorSize: 10.0);
+    test(
+      'JustCarouselStyle and JustCarouselTheme support copyWith and lerp',
+      () {
+        const styleA = JustCarouselStyle(
+          viewportFraction: 0.8,
+          indicatorSize: 6.0,
+        );
+        const styleB = JustCarouselStyle(
+          viewportFraction: 1.0,
+          indicatorSize: 10.0,
+        );
 
-      final lerpedStyle = JustCarouselStyle.lerp(styleA, styleB, 0.5);
-      expect(lerpedStyle?.viewportFraction, closeTo(0.9, 0.001));
-      expect(lerpedStyle?.indicatorSize, closeTo(8.0, 0.001));
+        final lerpedStyle = JustCarouselStyle.lerp(styleA, styleB, 0.5);
+        expect(lerpedStyle?.viewportFraction, closeTo(0.9, 0.001));
+        expect(lerpedStyle?.indicatorSize, closeTo(8.0, 0.001));
 
-      const themeA = JustCarouselTheme(viewportFraction: 0.8, indicatorSize: 6.0);
-      const themeB = JustCarouselTheme(viewportFraction: 1.0, indicatorSize: 10.0);
+        const themeA = JustCarouselTheme(
+          viewportFraction: 0.8,
+          indicatorSize: 6.0,
+        );
+        const themeB = JustCarouselTheme(
+          viewportFraction: 1.0,
+          indicatorSize: 10.0,
+        );
 
-      final lerpedTheme = themeA.lerp(themeB, 0.5);
-      expect(lerpedTheme.viewportFraction, closeTo(0.9, 0.001));
-      expect(lerpedTheme.indicatorSize, closeTo(8.0, 0.001));
-    });
+        final lerpedTheme = themeA.lerp(themeB, 0.5);
+        expect(lerpedTheme.viewportFraction, closeTo(0.9, 0.001));
+        expect(lerpedTheme.indicatorSize, closeTo(8.0, 0.001));
+      },
+    );
   });
 }
