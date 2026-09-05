@@ -39,6 +39,33 @@ class const JustCarouselStyle({
 
   /// Border radius applied to indicator items.
   final BorderRadius? indicatorRadius,
+
+  /// Configuration for automatic slide progression.
+  final JustCarouselAutoScroll? autoScroll,
+
+  /// Whether tapping on an indicator dot navigates directly to that slide.
+  final bool? interactiveIndicators,
+
+  /// Whether pointer wheel or trackpad scroll gestures navigate slides on desktop/web.
+  final bool? enableMouseWheel,
+
+  /// Whether arrow keys navigate slides and spacebar pauses/resumes auto-scrolling.
+  final bool? enableKeyboardNavigation,
+
+  /// Whether visual previous/next arrow buttons are rendered.
+  final bool? showArrows,
+
+  /// Inactive background/icon color for navigation arrows.
+  final Color? arrowColor,
+
+  /// Active / hovered background/icon color for navigation arrows.
+  final Color? activeArrowColor,
+
+  /// Size / bounding dimension in pixels of navigation arrows.
+  final double? arrowSize,
+
+  /// Border radius applied to navigation arrows.
+  final BorderRadius? arrowRadius,
 }) {
   /// Returns a copy with given fields replaced.
   JustCarouselStyle copyWith({
@@ -54,6 +81,15 @@ class const JustCarouselStyle({
     double? activeIndicatorSize,
     double? indicatorSpacing,
     BorderRadius? indicatorRadius,
+    JustCarouselAutoScroll? autoScroll,
+    bool? interactiveIndicators,
+    bool? enableMouseWheel,
+    bool? enableKeyboardNavigation,
+    bool? showArrows,
+    Color? arrowColor,
+    Color? activeArrowColor,
+    double? arrowSize,
+    BorderRadius? arrowRadius,
   }) {
     return JustCarouselStyle(
       viewportFraction: viewportFraction ?? this.viewportFraction,
@@ -68,6 +104,17 @@ class const JustCarouselStyle({
       activeIndicatorSize: activeIndicatorSize ?? this.activeIndicatorSize,
       indicatorSpacing: indicatorSpacing ?? this.indicatorSpacing,
       indicatorRadius: indicatorRadius ?? this.indicatorRadius,
+      autoScroll: autoScroll ?? this.autoScroll,
+      interactiveIndicators:
+          interactiveIndicators ?? this.interactiveIndicators,
+      enableMouseWheel: enableMouseWheel ?? this.enableMouseWheel,
+      enableKeyboardNavigation:
+          enableKeyboardNavigation ?? this.enableKeyboardNavigation,
+      showArrows: showArrows ?? this.showArrows,
+      arrowColor: arrowColor ?? this.arrowColor,
+      activeArrowColor: activeArrowColor ?? this.activeArrowColor,
+      arrowSize: arrowSize ?? this.arrowSize,
+      arrowRadius: arrowRadius ?? this.arrowRadius,
     );
   }
 
@@ -91,8 +138,8 @@ class const JustCarouselStyle({
       indicator: t < 0.5 ? a.indicator : b.indicator,
       indicatorPosition: t < 0.5 ? a.indicatorPosition : b.indicatorPosition,
       transition: t < 0.5 ? a.transition : b.transition,
-      indicatorColor: Color.lerp(a.indicatorColor, b.indicatorColor, t),
-      activeIndicatorColor: Color.lerp(
+      indicatorColor: .lerp(a.indicatorColor, b.indicatorColor, t),
+      activeIndicatorColor: .lerp(
         a.activeIndicatorColor,
         b.activeIndicatorColor,
         t,
@@ -109,11 +156,22 @@ class const JustCarouselStyle({
           ? a.indicatorSpacing! +
                 (b.indicatorSpacing! - a.indicatorSpacing!) * t
           : (t < 0.5 ? a.indicatorSpacing : b.indicatorSpacing),
-      indicatorRadius: BorderRadius.lerp(
-        a.indicatorRadius,
-        b.indicatorRadius,
-        t,
-      ),
+      indicatorRadius: .lerp(a.indicatorRadius, b.indicatorRadius, t),
+      autoScroll: t < 0.5 ? a.autoScroll : b.autoScroll,
+      interactiveIndicators: t < 0.5
+          ? a.interactiveIndicators
+          : b.interactiveIndicators,
+      enableMouseWheel: t < 0.5 ? a.enableMouseWheel : b.enableMouseWheel,
+      enableKeyboardNavigation: t < 0.5
+          ? a.enableKeyboardNavigation
+          : b.enableKeyboardNavigation,
+      showArrows: t < 0.5 ? a.showArrows : b.showArrows,
+      arrowColor: .lerp(a.arrowColor, b.arrowColor, t),
+      activeArrowColor: .lerp(a.activeArrowColor, b.activeArrowColor, t),
+      arrowSize: b.arrowSize != null && a.arrowSize != null
+          ? a.arrowSize! + (b.arrowSize! - a.arrowSize!) * t
+          : (t < 0.5 ? a.arrowSize : b.arrowSize),
+      arrowRadius: .lerp(a.arrowRadius, b.arrowRadius, t),
     );
   }
 
@@ -133,10 +191,19 @@ class const JustCarouselStyle({
           indicatorSize == other.indicatorSize &&
           activeIndicatorSize == other.activeIndicatorSize &&
           indicatorSpacing == other.indicatorSpacing &&
-          indicatorRadius == other.indicatorRadius;
+          indicatorRadius == other.indicatorRadius &&
+          autoScroll == other.autoScroll &&
+          interactiveIndicators == other.interactiveIndicators &&
+          enableMouseWheel == other.enableMouseWheel &&
+          enableKeyboardNavigation == other.enableKeyboardNavigation &&
+          showArrows == other.showArrows &&
+          arrowColor == other.arrowColor &&
+          activeArrowColor == other.activeArrowColor &&
+          arrowSize == other.arrowSize &&
+          arrowRadius == other.arrowRadius;
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     viewportFraction,
     animationDuration,
     animationCurve,
@@ -149,5 +216,14 @@ class const JustCarouselStyle({
     activeIndicatorSize,
     indicatorSpacing,
     indicatorRadius,
-  );
+    autoScroll,
+    interactiveIndicators,
+    enableMouseWheel,
+    enableKeyboardNavigation,
+    showArrows,
+    arrowColor,
+    activeArrowColor,
+    arrowSize,
+    arrowRadius,
+  ]);
 }
