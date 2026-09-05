@@ -184,12 +184,39 @@ abstract final class OklchEngine {
     //   K > 0 → channel increases with C → will hit 1
     //
     // Channel weight rows are the M1 inverse matrix.
-    final double cR = _channelMaxChroma(lVal, l2, l3, kl, km, ks,
-        4.0767416621, -3.3077115913, 0.2309699292);
-    final double cG = _channelMaxChroma(lVal, l2, l3, kl, km, ks,
-        -1.2684380046, 2.6097574011, -0.3413193965);
-    final double cB = _channelMaxChroma(lVal, l2, l3, kl, km, ks,
-        -0.0041960863, -0.7034186147, 1.7076147010);
+    final double cR = _channelMaxChroma(
+      lVal,
+      l2,
+      l3,
+      kl,
+      km,
+      ks,
+      4.0767416621,
+      -3.3077115913,
+      0.2309699292,
+    );
+    final double cG = _channelMaxChroma(
+      lVal,
+      l2,
+      l3,
+      kl,
+      km,
+      ks,
+      -1.2684380046,
+      2.6097574011,
+      -0.3413193965,
+    );
+    final double cB = _channelMaxChroma(
+      lVal,
+      l2,
+      l3,
+      kl,
+      km,
+      ks,
+      -0.0041960863,
+      -0.7034186147,
+      1.7076147010,
+    );
 
     // The gamut limit is the minimum across all 3 channels
     double maxC = cR;
@@ -315,7 +342,7 @@ abstract final class OklchEngine {
   /// Uses a linear initial guess followed by 2 iterations of Halley's method
   /// (cubic convergence: error ∝ errorⁿ³ per iteration).
   ///
-  /// Returns [double.infinity] if the channel is not a binding constraint
+  /// Returns [.infinity] if the channel is not a binding constraint
   /// at this hue (its rate of change is negligible).
   static double _channelMaxChroma(
     double L,
@@ -347,10 +374,10 @@ abstract final class OklchEngine {
       C = (1.0 - l3) / (3.0 * l2 * dK);
     } else {
       // Channel barely changes with chroma — not a binding constraint
-      return double.infinity;
+      return .infinity;
     }
 
-    if (C <= 0.0) return double.infinity;
+    if (C <= 0.0) return .infinity;
 
     // 2 iterations of Halley's method for cubic convergence.
     //
@@ -372,8 +399,7 @@ abstract final class OklchEngine {
       final double f = wl * p2 * p + wm * q2 * q + ws * r2 * r - target;
 
       // f'(C) = 3·Σ(wi·ki·pi²)
-      final double f1 =
-          3.0 * (wl * kl * p2 + wm * km * q2 + ws * ks * r2);
+      final double f1 = 3.0 * (wl * kl * p2 + wm * km * q2 + ws * ks * r2);
 
       // f''(C) = 6·Σ(wi·ki²·pi)
       final double f2 =
@@ -384,10 +410,10 @@ abstract final class OklchEngine {
       if (denom.abs() < 1e-12) break;
 
       C -= 2.0 * f * f1 / denom;
-      if (C < 0.0) return double.infinity;
+      if (C < 0.0) return .infinity;
     }
 
-    return C > 0.0 ? C : double.infinity;
+    return C > 0.0 ? C : .infinity;
   }
 
   // ---------------------------------------------------------------------------

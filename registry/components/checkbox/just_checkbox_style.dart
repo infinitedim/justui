@@ -28,4 +28,57 @@ class const JustCheckboxStyle({
 
   /// Text style of the checkbox label.
   final TextStyle? textStyle,
-});
+}) {
+  /// Returns a copy with given fields replaced.
+  JustCheckboxStyle copyWith({
+    Color? activeColor,
+    Color? checkColor,
+    Color? borderColor,
+    BorderRadius? borderRadius,
+    TextStyle? textStyle,
+  }) {
+    return JustCheckboxStyle(
+      activeColor: activeColor ?? this.activeColor,
+      checkColor: checkColor ?? this.checkColor,
+      borderColor: borderColor ?? this.borderColor,
+      borderRadius: borderRadius ?? this.borderRadius,
+      textStyle: textStyle ?? this.textStyle,
+    );
+  }
+
+  /// Linearly interpolates between two [JustCheckboxStyle]s.
+  static JustCheckboxStyle? lerp(
+    JustCheckboxStyle? a,
+    JustCheckboxStyle? b,
+    double t,
+  ) {
+    if (identical(a, b)) return a;
+    return JustCheckboxStyle(
+      activeColor: .lerp(a?.activeColor, b?.activeColor, t),
+      checkColor: .lerp(a?.checkColor, b?.checkColor, t),
+      borderColor: .lerp(a?.borderColor, b?.borderColor, t),
+      borderRadius: .lerp(a?.borderRadius, b?.borderRadius, t),
+      textStyle: .lerp(a?.textStyle, b?.textStyle, t),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JustCheckboxStyle &&
+          runtimeType == other.runtimeType &&
+          activeColor == other.activeColor &&
+          checkColor == other.checkColor &&
+          borderColor == other.borderColor &&
+          borderRadius == other.borderRadius &&
+          textStyle == other.textStyle;
+
+  @override
+  int get hashCode => Object.hash(
+    activeColor,
+    checkColor,
+    borderColor,
+    borderRadius,
+    textStyle,
+  );
+}

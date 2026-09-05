@@ -372,7 +372,7 @@ Future<_FileResult> _processFile({
   // Poin 1 + 4: hash-based drift check using streamed hashing instead of
   // loading both files fully into memory and comparing bytes.
   bool drifted = false;
-  if (origin == FileOrigin.coreMirrored && destFile.existsSync()) {
+  if (origin == .coreMirrored && destFile.existsSync()) {
     final srcHash = await _hashFile(srcFile);
     final destHash = await _hashFile(destFile);
     if (srcHash != destHash) {
@@ -394,12 +394,12 @@ Future<_FileResult> _processFile({
 
   // Poin 2: pattern matching over the FileOrigin enum decides the action
   // and resulting log line, instead of an inline boolean branch.
-  if (origin == FileOrigin.coreMirrored) {
+  if (origin == .coreMirrored) {
     await srcFile.copy(destFile.path);
   }
   final String logLine = switch (origin) {
-    FileOrigin.coreMirrored => 'Synced: $relPath',
-    FileOrigin.registryNative => 'Registry-native: $relPath',
+    .coreMirrored => 'Synced: $relPath',
+    .registryNative => 'Registry-native: $relPath',
   };
 
   final digest = await _hashFile(destFile);
@@ -427,9 +427,7 @@ ResolvedPaths _resolvePaths({
     p.join(projectRoot, 'packages', 'core', 'lib', 'src', srcRelPath),
   );
   final bool sourcedFromCore = coreFile.existsSync();
-  final origin = sourcedFromCore
-      ? FileOrigin.coreMirrored
-      : FileOrigin.registryNative;
+  final FileOrigin origin = sourcedFromCore ? .coreMirrored : .registryNative;
 
   final File srcFile = sourcedFromCore
       ? coreFile
