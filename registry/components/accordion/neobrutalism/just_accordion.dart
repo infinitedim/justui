@@ -192,7 +192,7 @@ class _JustAccordionState extends State<JustAccordion> {
 
     return Column(
       mainAxisSize: .min,
-      children: List.generate(widget.items.length, (index) {
+      children: .generate(widget.items.length, (index) {
         final item = widget.items[index];
         final isLast = index == widget.items.length - 1;
 

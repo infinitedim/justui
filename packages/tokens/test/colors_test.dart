@@ -616,14 +616,16 @@ void main() {
         expect(
           hueDiff,
           lessThan(2.0),
-          reason: 'Hue drifted ${hueDiff.toStringAsFixed(2)}° for OKLCH(${oklch.l}, ${oklch.c}, ${oklch.h})',
+          reason:
+              'Hue drifted ${hueDiff.toStringAsFixed(2)}° for OKLCH(${oklch.l}, ${oklch.c}, ${oklch.h})',
         );
 
         // Lightness must be preserved within tolerance
         expect(
           roundtrip.l,
           closeTo(oklch.l, 0.02),
-          reason: 'Lightness drifted for OKLCH(${oklch.l}, ${oklch.c}, ${oklch.h})',
+          reason:
+              'Lightness drifted for OKLCH(${oklch.l}, ${oklch.c}, ${oklch.h})',
         );
       }
     });
@@ -710,50 +712,58 @@ void main() {
       );
     });
 
-    test('dampChromaHueAware preserves more chroma than legacy for yellow darks', () {
-      const yellowHue = 90.0;
-      const seedChroma = 0.18;
-      const darkTargetL = 0.15;
+    test(
+      'dampChromaHueAware preserves more chroma than legacy for yellow darks',
+      () {
+        const yellowHue = 90.0;
+        const seedChroma = 0.18;
+        const darkTargetL = 0.15;
 
-      final legacy = OklchEngine.dampChroma(seedChroma, darkTargetL);
-      final hueAware = OklchEngine.dampChromaHueAware(
-        seedChroma,
-        darkTargetL,
-        yellowHue,
-      );
+        final legacy = OklchEngine.dampChroma(seedChroma, darkTargetL);
+        final hueAware = OklchEngine.dampChromaHueAware(
+          seedChroma,
+          darkTargetL,
+          yellowHue,
+        );
 
-      // Hue-aware should preserve more chroma for yellow at dark lightness
-      // because yellow's gamut boundary is wider than the blind heuristic assumes
-      expect(
-        hueAware,
-        greaterThan(legacy),
-        reason: 'Hue-aware damping should preserve more chroma for yellow darks '
-            '(hueAware=$hueAware vs legacy=$legacy)',
-      );
-    });
+        // Hue-aware should preserve more chroma for yellow at dark lightness
+        // because yellow's gamut boundary is wider than the blind heuristic assumes
+        expect(
+          hueAware,
+          greaterThan(legacy),
+          reason:
+              'Hue-aware damping should preserve more chroma for yellow darks '
+              '(hueAware=$hueAware vs legacy=$legacy)',
+        );
+      },
+    );
 
-    test('Yellow seed scale with hue-aware damping produces richer dark shades', () {
-      const yellowSeed = Color(0xFFF59E0B);
-      final scale = JustColorScale.fromSeed(
-        yellowSeed,
-        engine: JustColorSpaceEngine.oklch,
-      );
+    test(
+      'Yellow seed scale with hue-aware damping produces richer dark shades',
+      () {
+        const yellowSeed = Color(0xFFF59E0B);
+        final scale = JustColorScale.fromSeed(
+          yellowSeed,
+          engine: JustColorSpaceEngine.oklch,
+        );
 
-      // c900 and c950 should have meaningful chroma (not grayish)
-      final c900Oklch = OklchEngine.fromColor(scale.c900);
-      final c950Oklch = OklchEngine.fromColor(scale.c950);
+        // c900 and c950 should have meaningful chroma (not grayish)
+        final c900Oklch = OklchEngine.fromColor(scale.c900);
+        final c950Oklch = OklchEngine.fromColor(scale.c950);
 
-      expect(
-        c900Oklch.c,
-        greaterThan(0.01),
-        reason: 'Yellow c900 should be chromatic, not gray (c=${c900Oklch.c})',
-      );
-      expect(
-        c950Oklch.c,
-        greaterThan(0.005),
-        reason: 'Yellow c950 should retain some warmth (c=${c950Oklch.c})',
-      );
-    });
+        expect(
+          c900Oklch.c,
+          greaterThan(0.01),
+          reason:
+              'Yellow c900 should be chromatic, not gray (c=${c900Oklch.c})',
+        );
+        expect(
+          c950Oklch.c,
+          greaterThan(0.005),
+          reason: 'Yellow c950 should retain some warmth (c=${c950Oklch.c})',
+        );
+      },
+    );
 
     // =========================================================
     // --- Tier 3: OKLCH Interpolation Tests ---
@@ -770,7 +780,8 @@ void main() {
       expect(
         midOklch.c,
         greaterThan(0.05),
-        reason: 'OKLCH lerp midpoint between blue and yellow should be vibrant, '
+        reason:
+            'OKLCH lerp midpoint between blue and yellow should be vibrant, '
             'not gray (c=${midOklch.c})',
       );
     });
@@ -808,7 +819,8 @@ void main() {
       expect(
         isNearZero,
         isTrue,
-        reason: 'Shortest-arc hue interpolation: expected hue near 0/360°, '
+        reason:
+            'Shortest-arc hue interpolation: expected hue near 0/360°, '
             'got ${midOklch.h}° (red=${redOklch.h}°, magenta=${magentaOklch.h}°)',
       );
     });
@@ -821,17 +833,20 @@ void main() {
       expect(mid.a, closeTo(0.5, 0.01));
     });
 
-    test('Color.lerpToOklch extension works identically to OklchEngine.lerp', () {
-      const a = Color(0xFF3B82F6);
-      const b = Color(0xFFF59E0B);
+    test(
+      'Color.lerpToOklch extension works identically to OklchEngine.lerp',
+      () {
+        const a = Color(0xFF3B82F6);
+        const b = Color(0xFFF59E0B);
 
-      final viaStatic = OklchEngine.lerp(a, b, 0.5);
-      final viaExtension = a.lerpToOklch(b, 0.5);
+        final viaStatic = OklchEngine.lerp(a, b, 0.5);
+        final viaExtension = a.lerpToOklch(b, 0.5);
 
-      expect(viaExtension.r, equals(viaStatic.r));
-      expect(viaExtension.g, equals(viaStatic.g));
-      expect(viaExtension.b, equals(viaStatic.b));
-    });
+        expect(viaExtension.r, equals(viaStatic.r));
+        expect(viaExtension.g, equals(viaStatic.g));
+        expect(viaExtension.b, equals(viaStatic.b));
+      },
+    );
 
     test('OklchColorTween produces correct interpolation', () {
       final tween = OklchColorTween(
@@ -859,14 +874,14 @@ void main() {
       // The analytical result should be right at the boundary —
       // the maxC color should be in-gamut, but maxC+epsilon should NOT.
       const testPoints = [
-        (l: 0.3, h: 0.0),    // dark red
-        (l: 0.5, h: 90.0),   // mid yellow
-        (l: 0.5, h: 180.0),  // mid cyan
-        (l: 0.5, h: 270.0),  // mid blue
-        (l: 0.7, h: 30.0),   // light orange
-        (l: 0.85, h: 90.0),  // light yellow
-        (l: 0.2, h: 265.0),  // dark blue
-        (l: 0.6, h: 145.0),  // mid green
+        (l: 0.3, h: 0.0), // dark red
+        (l: 0.5, h: 90.0), // mid yellow
+        (l: 0.5, h: 180.0), // mid cyan
+        (l: 0.5, h: 270.0), // mid blue
+        (l: 0.7, h: 30.0), // light orange
+        (l: 0.85, h: 90.0), // light yellow
+        (l: 0.2, h: 265.0), // dark blue
+        (l: 0.6, h: 145.0), // mid green
       ];
 
       for (final tp in testPoints) {
@@ -874,28 +889,42 @@ void main() {
 
         // maxC itself must produce an in-gamut color
         final (rL, gL, bL) = _oklchToLinearRgbForTest(tp.l, maxC, tp.h);
-        final inGamut = rL >= -0.001 && rL <= 1.001 &&
-            gL >= -0.001 && gL <= 1.001 &&
-            bL >= -0.001 && bL <= 1.001;
+        final inGamut =
+            rL >= -0.001 &&
+            rL <= 1.001 &&
+            gL >= -0.001 &&
+            gL <= 1.001 &&
+            bL >= -0.001 &&
+            bL <= 1.001;
 
         expect(
           inGamut,
           isTrue,
-          reason: 'maxChromaForLH(${tp.l}, ${tp.h}) = $maxC should be in-gamut '
+          reason:
+              'maxChromaForLH(${tp.l}, ${tp.h}) = $maxC should be in-gamut '
               '(r=$rL, g=$gL, b=$bL)',
         );
 
         // maxC + small epsilon should be OUT of gamut (proving we're at the boundary)
         if (maxC > 0.001) {
-          final (rO, gO, bO) = _oklchToLinearRgbForTest(tp.l, maxC + 0.005, tp.h);
-          final outOfGamut = rO < -0.001 || rO > 1.001 ||
-              gO < -0.001 || gO > 1.001 ||
-              bO < -0.001 || bO > 1.001;
+          final (rO, gO, bO) = _oklchToLinearRgbForTest(
+            tp.l,
+            maxC + 0.005,
+            tp.h,
+          );
+          final outOfGamut =
+              rO < -0.001 ||
+              rO > 1.001 ||
+              gO < -0.001 ||
+              gO > 1.001 ||
+              bO < -0.001 ||
+              bO > 1.001;
 
           expect(
             outOfGamut,
             isTrue,
-            reason: 'maxChroma + 0.005 at L=${tp.l}, H=${tp.h} should be out-of-gamut '
+            reason:
+                'maxChroma + 0.005 at L=${tp.l}, H=${tp.h} should be out-of-gamut '
                 '(r=$rO, g=$gO, b=$bO)',
           );
         }
@@ -926,7 +955,8 @@ void main() {
           expect(
             midOklch.l,
             closeTo(opaqueOklch.l, 0.15),
-            reason: 'At t=$t, lightness should not drift during fade-out '
+            reason:
+                'At t=$t, lightness should not drift during fade-out '
                 '(expected ~${opaqueOklch.l}, got ${midOklch.l})',
           );
         }
@@ -956,16 +986,176 @@ void main() {
         expect(
           hueDiff,
           lessThan(15.0),
-          reason: 'Gray-to-blue midpoint hue should follow blue hue '
+          reason:
+              'Gray-to-blue midpoint hue should follow blue hue '
               '(mid=${midOklch.h}°, blue=${blueOklch.h}°)',
         );
       }
+    });
+
+    // =========================================================
+    // --- HSLuv Engine Enhancement Tests ---
+    // =========================================================
+
+    test('HSLuv engine high-precision roundtrip with D65 illuminant', () {
+      const testColors = [
+        Color(0xFF3B82F6), // blue
+        Color(0xFFEF4444), // red
+        Color(0xFF22C55E), // green
+        Color(0xFFF59E0B), // amber
+        Color(0xFF8B5CF6), // purple
+        Color(0xFFEC4899), // pink
+        Color(0xFF14B8A6), // teal
+        Color(0xFF000000), // black
+        Color(0xFFFFFFFF), // white
+      ];
+
+      for (final color in testColors) {
+        final hsluv = HsluvEngine.fromColor(color);
+        expect(hsluv.l, inInclusiveRange(0.0, 100.0));
+        expect(hsluv.s, inInclusiveRange(0.0, 100.0));
+        expect(hsluv.h, inInclusiveRange(0.0, 360.0));
+
+        final roundtrip = HsluvEngine.toColor(hsluv);
+        expect(roundtrip.r, closeTo(color.r, 0.02));
+        expect(roundtrip.g, closeTo(color.g, 0.02));
+        expect(roundtrip.b, closeTo(color.b, 0.02));
+      }
+    });
+
+    test(
+      'HSLuv maxChromaForLH returns strictly 0 at extreme lightness boundaries',
+      () {
+        for (double h = 0.0; h < 360.0; h += 45.0) {
+          expect(HsluvEngine.maxChromaForLH(0.0, h), equals(0.0));
+          expect(HsluvEngine.maxChromaForLH(1e-7, h), equals(0.0));
+          expect(HsluvEngine.maxChromaForLH(100.0, h), equals(0.0));
+          expect(HsluvEngine.maxChromaForLH(99.9999999, h), equals(0.0));
+        }
+      },
+    );
+
+    test(
+      'HSLuv maxChromaForLH returns positive finite chroma for mid-lightness',
+      () {
+        for (double h = 0.0; h < 360.0; h += 30.0) {
+          final maxC = HsluvEngine.maxChromaForLH(50.0, h);
+          expect(maxC, greaterThan(1.0));
+          expect(maxC.isFinite, isTrue);
+        }
+      },
+    );
+
+    test('HsluvEngine.lerp edge cases: t=0 returns a, t=1 returns b', () {
+      const a = Color(0xFFFF0000);
+      const b = Color(0xFF0000FF);
+
+      final atZero = HsluvEngine.lerp(a, b, 0.0);
+      final atOne = HsluvEngine.lerp(a, b, 1.0);
+
+      expect(atZero.r, equals(a.r));
+      expect(atZero.g, equals(a.g));
+      expect(atZero.b, equals(a.b));
+
+      expect(atOne.r, equals(b.r));
+      expect(atOne.g, equals(b.g));
+      expect(atOne.b, equals(b.b));
+    });
+
+    test(
+      'HsluvEngine.lerp produces smooth midpoint without wibbly-wobbly jumps',
+      () {
+        const blue = Color(0xFF2563EB);
+        const yellow = Color(0xFFFBBF24);
+
+        final midpoint = HsluvEngine.lerp(blue, yellow, 0.5);
+
+        // Verify midpoint values are valid and in sRGB gamut
+        expect(midpoint.r, inInclusiveRange(0.0, 1.0));
+        expect(midpoint.g, inInclusiveRange(0.0, 1.0));
+        expect(midpoint.b, inInclusiveRange(0.0, 1.0));
+
+        // In CIELUV space, midpoint lightness must be between blue and yellow lightness
+        final luvBlue = HsluvEngine.fromColor(blue);
+        final luvYellow = HsluvEngine.fromColor(yellow);
+        final luvMid = HsluvEngine.fromColor(midpoint);
+
+        final minL = math.min(luvBlue.l, luvYellow.l);
+        final maxL = math.max(luvBlue.l, luvYellow.l);
+        expect(luvMid.l, inInclusiveRange(minL - 5.0, maxL + 5.0));
+      },
+    );
+
+    test('HsluvEngine.lerp premultiplied alpha: no halo during fade-out', () {
+      const opaque = Color(0xFF00BCD4);
+      final transparent = const Color(0xFF00BCD4).withValues(alpha: 0.0);
+
+      for (double t = 0.1; t < 1.0; t += 0.1) {
+        final mid = HsluvEngine.lerp(opaque, transparent, t);
+        expect(mid.a, closeTo(1.0 - t, 0.02));
+
+        if (mid.a > 0.1) {
+          final opaqueHsluv = HsluvEngine.fromColor(opaque);
+          final midHsluv = HsluvEngine.fromColor(mid);
+          expect(
+            midHsluv.l,
+            closeTo(opaqueHsluv.l, 10.0),
+            reason:
+                'At t=$t, lightness should not collapse to dark black/gray during fade-out',
+          );
+        }
+      }
+    });
+
+    test('HsluvEngine.lerp fully transparent returns transparent', () {
+      final a = const Color(0xFFFF0000).withValues(alpha: 0.0);
+      final b = const Color(0xFF0000FF).withValues(alpha: 0.0);
+
+      final mid = HsluvEngine.lerp(a, b, 0.5);
+      expect(mid.a, closeTo(0.0, 0.01));
+    });
+
+    test(
+      'Color.lerpToHsluv extension works identically to HsluvEngine.lerp',
+      () {
+        const a = Color(0xFF3B82F6);
+        const b = Color(0xFFF59E0B);
+
+        final viaStatic = HsluvEngine.lerp(a, b, 0.5);
+        final viaExtension = a.lerpToHsluv(b, 0.5);
+
+        expect(viaExtension.r, equals(viaStatic.r));
+        expect(viaExtension.g, equals(viaStatic.g));
+        expect(viaExtension.b, equals(viaStatic.b));
+        expect(viaExtension.a, equals(viaStatic.a));
+      },
+    );
+
+    test('HsluvColorTween produces correct interpolation', () {
+      final tween = HsluvColorTween(
+        begin: const Color(0xFF2563EB),
+        end: const Color(0xFFFBBF24),
+      );
+
+      final atZero = tween.transform(0.0);
+      final atMid = tween.transform(0.5);
+      final atOne = tween.transform(1.0);
+
+      expect(atZero.r, closeTo(const Color(0xFF2563EB).r, 0.01));
+      expect(atOne.r, closeTo(const Color(0xFFFBBF24).r, 0.01));
+      expect(atMid.r, inInclusiveRange(0.0, 1.0));
+      expect(atMid.g, inInclusiveRange(0.0, 1.0));
+      expect(atMid.b, inInclusiveRange(0.0, 1.0));
     });
   });
 }
 
 /// Test helper: replicates OklchEngine._oklchToLinearRgb for boundary testing.
-(double, double, double) _oklchToLinearRgbForTest(double L, double C, double H) {
+(double, double, double) _oklchToLinearRgbForTest(
+  double L,
+  double C,
+  double H,
+) {
   final double hRad = H * (math.pi / 180.0);
   final double labA = C * math.cos(hRad);
   final double labB = C * math.sin(hRad);
@@ -984,4 +1174,3 @@ void main() {
     -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s,
   );
 }
-

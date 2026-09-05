@@ -235,12 +235,32 @@ class _JustSliderState extends State<JustSlider> {
         ? widget.onRangeChanged != null
         : widget.onChanged != null);
 
+    final double rangeForSemantics = widget.max - widget.min;
+    final double stepForSemantics =
+        (widget.divisions != null && widget.divisions! > 0)
+        ? rangeForSemantics / widget.divisions!
+        : (rangeForSemantics > 0 ? rangeForSemantics / 20.0 : 1.0);
+
+    final String semanticsIncreasedValue = _isRange
+        ? '${_currentStart.toStringAsFixed(1)} - ${(_currentEnd + stepForSemantics).clamp(_currentStart, widget.max).toStringAsFixed(1)}'
+        : (_currentStart + stepForSemantics)
+              .clamp(widget.min, widget.max)
+              .toStringAsFixed(1);
+
+    final String semanticsDecreasedValue = _isRange
+        ? '${(_currentStart - stepForSemantics).clamp(widget.min, _currentEnd).toStringAsFixed(1)} - ${_currentEnd.toStringAsFixed(1)}'
+        : (_currentStart - stepForSemantics)
+              .clamp(widget.min, widget.max)
+              .toStringAsFixed(1);
+
     return Semantics(
       slider: true,
       enabled: isInteractive,
       value: _isRange
           ? '${_currentStart.toStringAsFixed(1)} - ${_currentEnd.toStringAsFixed(1)}'
           : _currentStart.toStringAsFixed(1),
+      increasedValue: isInteractive ? semanticsIncreasedValue : null,
+      decreasedValue: isInteractive ? semanticsDecreasedValue : null,
       onIncrease: isInteractive ? _increaseValue : null,
       onDecrease: isInteractive ? _decreaseValue : null,
       child: LayoutBuilder(
