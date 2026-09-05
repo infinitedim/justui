@@ -11,6 +11,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../../just_ui_core.dart';
 import '../shared/_shared_focus_indicator.dart';
+import '../shared/_shared_pressable.dart';
 import 'just_carousel_style.dart';
 import 'just_carousel_theme.dart';
 import 'just_carousel_variants.dart';
@@ -866,54 +867,57 @@ class _JustCarouselState extends State<JustCarousel> {
               theme.arrowRadius ??
               .circular(arrowSize / 2));
 
-    final iconData = widget.orientation == .horizontal
+    final iconData = widget.orientation == Axis.horizontal
         ? (isNext ? Icons.chevron_right_rounded : Icons.chevron_left_rounded)
         : (isNext
               ? Icons.keyboard_arrow_down_rounded
               : Icons.keyboard_arrow_up_rounded);
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: isNext ? _handleNext : _handlePrevious,
-        behavior: .opaque,
-        child: Semantics(
-          button: true,
-          label: isNext ? 'Next slide' : 'Previous slide',
-          child: Container(
-            width: arrowSize,
-            height: arrowSize,
-            decoration: BoxDecoration(
-              color: colors.background.withValues(
-                alpha: isNeobrutalism ? 1.0 : 0.85,
-              ),
-              borderRadius: arrowRadius,
-              border: .all(
-                width: isNeobrutalism ? 2.5 : 1.0,
-                color: isNeobrutalism
-                    ? colors.textPrimary
-                    : colors.borderDefault,
-              ),
-              boxShadow: isNeobrutalism
-                  ? [
-                      BoxShadow(
-                        color: colors.textPrimary,
-                        offset: const Offset(2.0, 2.0),
-                        blurRadius: 0.0,
-                      ),
-                    ]
-                  : null,
+    return JustPressable(
+      onTap: isNext ? _handleNext : _handlePrevious,
+      semanticLabel: isNext ? 'Next slide' : 'Previous slide',
+      builder: (context, state) {
+        final isPressed = state.isPressed;
+        final isHovered = state.isHovered;
+        final bg = isNeobrutalism
+            ? (isPressed
+                ? colors.borderFocus
+                : (isHovered ? colors.elevated : colors.background))
+            : colors.background.withValues(
+                alpha: isPressed ? 1.0 : (isHovered ? 0.95 : 0.85),
+              );
+
+        return Container(
+          width: arrowSize,
+          height: arrowSize,
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: arrowRadius,
+            border: .all(
+              width: isNeobrutalism ? 2.5 : 1.0,
+              color: isNeobrutalism
+                  ? colors.textPrimary
+                  : colors.borderDefault,
             ),
-            child: Center(
-              child: Icon(
-                iconData,
-                size: arrowSize * 0.55,
-                color: colors.textPrimary,
-              ),
+            boxShadow: isNeobrutalism && !isPressed
+                ? [
+                    BoxShadow(
+                      color: colors.textPrimary,
+                      offset: const Offset(2.0, 2.0),
+                      blurRadius: 0.0,
+                    ),
+                  ]
+                : null,
+          ),
+          child: Center(
+            child: Icon(
+              iconData,
+              size: arrowSize * 0.55,
+              color: colors.textPrimary,
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
