@@ -613,15 +613,15 @@ mod tests {
     fn test_process_release_update_matrix() {
         // 1. Up-to-date version with force=false
         let up_to_date_release = GitHubRelease {
-            tag_name: "v0.10.0".to_string(),
+            tag_name: "v0.11.0".to_string(),
             html_url: "https://example.com/rel".to_string(),
             body: Some("Release notes".to_string()),
             assets: vec![],
         };
-        assert!(process_release_update(&up_to_date_release, "0.10.0", false, false).is_ok());
+        assert!(process_release_update(&up_to_date_release, "0.11.0", false, false).is_ok());
 
         // 1b. Up-to-date version with force=true
-        assert!(process_release_update(&up_to_date_release, "0.10.0", false, true).is_ok());
+        assert!(process_release_update(&up_to_date_release, "0.11.0", false, true).is_ok());
 
         // 2. Newer version check_only = true with long release notes body (>10 lines)
         let long_body = (0..15)
@@ -655,10 +655,10 @@ mod tests {
                 },
             ],
         };
-        assert!(process_release_update(&new_release, "0.10.0", true, false).is_ok());
+        assert!(process_release_update(&new_release, "0.11.0", true, false).is_ok());
 
         // 3. Newer version download flow with matching asset
-        assert!(process_release_update(&new_release, "0.10.0", false, false).is_ok());
+        assert!(process_release_update(&new_release, "0.11.0", false, false).is_ok());
 
         // 4. Newer version without matching asset
         let no_asset_release = GitHubRelease {
@@ -670,7 +670,7 @@ mod tests {
                 browser_download_url: "https://example.com/dl_other".to_string(),
             }],
         };
-        assert!(process_release_update(&no_asset_release, "0.10.0", false, false).is_ok());
+        assert!(process_release_update(&no_asset_release, "0.11.0", false, false).is_ok());
 
         // 5. Invalid semver tag
         let invalid_semver_release = GitHubRelease {
@@ -679,7 +679,7 @@ mod tests {
             body: None,
             assets: vec![],
         };
-        assert!(process_release_update(&invalid_semver_release, "0.10.0", false, false).is_ok());
+        assert!(process_release_update(&invalid_semver_release, "0.11.0", false, false).is_ok());
     }
 
     #[test]
