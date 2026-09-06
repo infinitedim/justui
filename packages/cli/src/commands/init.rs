@@ -42,6 +42,7 @@ pub fn run(
     tokens_dir_arg: Option<String>,
     auto_yes: bool,
     experimental: Option<String>,
+    dart_target_arg: Option<String>,
 ) -> Result<()> {
     if !std::path::Path::new("pubspec.yaml").exists() {
         logger::error(
@@ -175,11 +176,6 @@ pub fn run(
     }
     let hex_code = format!("0xFF{}", clean_hex);
 
-    let enable_auto_detect = experimental
-        .as_deref()
-        .map(|f| f == "auto-detect-flutter-version")
-        .unwrap_or(false);
-
     if let Some(ref feat) = experimental {
         if feat != "auto-detect-flutter-version" {
             logger::warning(&format!(
@@ -189,15 +185,22 @@ pub fn run(
         }
     }
 
-    let dart_target = if enable_auto_detect {
-        let target = crate::utils::env_resolver::resolve_dart_target(std::path::Path::new("."));
-        logger::info(&format!(
-            "[experimental] Auto-detected dart_target: {:?}",
-            target
-        ));
-        target
+    let dart_target = if let Some(dt) = dart_target_arg {
+        match dt.to_lowercase().as_str() {
+            "primary" => crate::utils::env_resolver::DartTarget::Primary,
+            "standard" => crate::utils::env_resolver::DartTarget::Standard,
+            other => {
+                logger::warning(&format!(
+                    "Unknown dart_target: \"{}\". Falling back to auto-detection.",
+                    other
+                ));
+                crate::utils::env_resolver::resolve_dart_target(std::path::Path::new("."))
+            }
+        }
     } else {
-        crate::utils::env_resolver::DartTarget::Standard
+        let target = crate::utils::env_resolver::resolve_dart_target(std::path::Path::new("."));
+        logger::info(&format!("Auto-detected dart_target: {:?}", target));
+        target
     };
 
     let config = JustUIConfig {
@@ -242,13 +245,8 @@ pub fn run(
     };
 
     let theme_content = format!(
-        "import 'package:flutter/material.dart' show Color, ThemeExtension;\n\
+        "import 'package:flutter/material.dart' show Color;\n\
          import '../just_ui_core.dart';\n\
-         \n\
-         /// Component theme extensions registered by JustUI CLI.\n\
-         final List<ThemeExtension<dynamic>> justThemeExtensions = [\n\
-           // CLI:REGISTER_EXTENSIONS\n\
-         ];\n\
          \n\
          /// Dynamically generated light theme from brand seed color.\n\
          final JustThemeData justThemeLight = JustThemeData.fromSeed(\n\
@@ -308,7 +306,7 @@ mod tests {
         let _guard = set_dir(temp_dir.path());
 
         // 1. Without pubspec -> fails cleanly
-        assert!(run(None, None, None, None, true, None).is_ok());
+        assert!(run(None, None, None, None, true, None, None).is_ok());
 
         // 2. With pubspec -> succeeds in auto_yes mode
         std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: test_app").unwrap();
@@ -318,23 +316,28 @@ mod tests {
             None,
             None,
             true,
+            None,
             None
         )
         .is_ok());
 
+        let theme_file =
+            std::fs::read_to_string(temp_dir.path().join("lib/core/theme/just_theme.dart")).unwrap();
+        assert!(!theme_file.contains("justThemeExtensions"));
+
         // 3. Already initialized -> warns and returns Ok
-        assert!(run(None, None, None, None, true, None).is_ok());
+        assert!(run(None, None, None, None, true, None, None).is_ok());
     }
 
     #[test]
-    fn test_init_with_experimental_auto_detect() {
+    fn test_init_default_auto_detect_primary() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
         std::fs::write(
             temp_dir.path().join("pubspec.yaml"),
-            "name: test_app\nenvironment:\n  sdk: '>=3.10.0 <4.0.0'\n",
+            "name: test_app\nenvironment:\n  sdk: '>=3.13.0 <4.0.0'\n",
         )
         .unwrap();
 
@@ -344,7 +347,8 @@ mod tests {
             None,
             None,
             true,
-            Some("auto-detect-flutter-version".to_string()),
+            None,
+            None,
         );
         assert!(result.is_ok());
 
@@ -354,23 +358,52 @@ mod tests {
     }
 
     #[test]
-    fn test_init_without_experimental_defaults_standard() {
+    fn test_init_default_auto_detect_standard_older_sdk() {
         let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
         std::fs::write(
             temp_dir.path().join("pubspec.yaml"),
-            "name: test_app\nenvironment:\n  sdk: '>=3.10.0 <4.0.0'\n",
+            "name: test_app\nenvironment:\n  sdk: '>=3.0.0 <4.0.0'\n",
         )
         .unwrap();
 
-        let result = run(Some("default".to_string()), None, None, None, true, None);
+        let result = run(Some("default".to_string()), None, None, None, true, None, None);
         assert!(result.is_ok());
 
         let config_content =
             std::fs::read_to_string(temp_dir.path().join("justui.config.yaml")).unwrap();
         assert!(config_content.contains("dart_target: standard"));
+    }
+
+    #[test]
+    fn test_init_explicit_dart_target_override() {
+        let _lock = crate::utils::lock_test_mutex();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = set_dir(temp_dir.path());
+
+        // Even with older sdk, --dart-target primary overrides to primary
+        std::fs::write(
+            temp_dir.path().join("pubspec.yaml"),
+            "name: test_app\nenvironment:\n  sdk: '>=3.0.0 <4.0.0'\n",
+        )
+        .unwrap();
+
+        let result = run(
+            Some("default".to_string()),
+            None,
+            None,
+            None,
+            true,
+            None,
+            Some("primary".to_string()),
+        );
+        assert!(result.is_ok());
+
+        let config_content =
+            std::fs::read_to_string(temp_dir.path().join("justui.config.yaml")).unwrap();
+        assert!(config_content.contains("dart_target: primary"));
     }
 
     #[test]
@@ -388,6 +421,7 @@ mod tests {
             None,
             true,
             Some("unknown-feature".to_string()),
+            None,
         );
         assert!(result.is_ok());
 
