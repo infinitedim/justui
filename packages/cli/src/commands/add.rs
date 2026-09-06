@@ -573,17 +573,28 @@ pub fn add_component(
                 final_content.clone()
             };
             if let Some(theme_class) = extract_theme_class_name(&theme_file_content) {
-                let rel_path = target_path
-                    .strip_prefix("lib/")
-                    .unwrap_or(&target_path)
-                    .to_string_lossy();
-                let import_uri = format!("package:{}/{}", pkg_name, rel_path);
+                let normalized_dir = components_dir.replace('\\', "/");
+                let trimmed_dir = normalized_dir.trim_matches('/');
+                let clean_components_dir = if trimmed_dir == "lib" {
+                    ""
+                } else if let Some(rest) = trimmed_dir.strip_prefix("lib/") {
+                    rest.trim_matches('/')
+                } else {
+                    trimmed_dir
+                };
+
+                let import_uri = if clean_components_dir.is_empty() {
+                    format!("package:{}/{}/{}", pkg_name, component.name, local_file_name)
+                } else {
+                    format!(
+                        "package:{}/{}/{}/{}",
+                        pkg_name, clean_components_dir, component.name, local_file_name
+                    )
+                };
 
                 let candidate_theme_files = [
                     std::path::PathBuf::from("lib/core/theme/theme_data_material.dart"),
                     std::path::PathBuf::from("lib/core/theme_data_material.dart"),
-                    std::path::PathBuf::from("lib/core/theme/just_theme.dart"),
-                    std::path::PathBuf::from("lib/core/just_theme.dart"),
                 ];
 
                 for theme_file in &candidate_theme_files {
@@ -1489,24 +1500,19 @@ mod tests {
         // Verify normalized file name just_helper.dart exists in shared_dir
         assert!(std::path::Path::new("lib/widgets/shared/just_helper.dart").exists());
 
-        // Now create alternative theme candidate paths: lib/core/theme/just_theme.dart
+        // Now create alternative theme candidate paths: lib/core/theme/theme_data_material.dart
         std::fs::create_dir_all("lib/core/theme").unwrap();
         std::fs::write(
-            "lib/core/theme/just_theme.dart",
+            "lib/core/theme/theme_data_material.dart",
             "// CLI:REGISTER_EXTENSIONS\n",
         )
         .unwrap();
         std::fs::remove_file("lib/core/theme_data_material.dart").unwrap();
 
-        // Dry run to exercise dry-run theme registration log (line 592)
+        // Dry run to exercise dry-run theme registration log
         assert!(run(vec!["custom".to_string()], true, false, false, false, true).is_ok());
 
-        // Real run to register theme extension in lib/core/theme/just_theme.dart
-        assert!(run(vec!["custom".to_string()], false, false, false, false, true).is_ok());
-
-        // Create candidate path: lib/core/just_theme.dart
-        std::fs::write("lib/core/just_theme.dart", "// CLI:REGISTER_EXTENSIONS\n").unwrap();
-        std::fs::remove_file("lib/core/theme/just_theme.dart").unwrap();
+        // Real run to register theme extension in lib/core/theme/theme_data_material.dart
         assert!(run(vec!["custom".to_string()], false, false, false, false, true).is_ok());
 
         // Test HTTP index error path: invalid registry URL in config

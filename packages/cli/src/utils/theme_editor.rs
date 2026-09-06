@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use std::path::Path;
 
-/// Registers a component's `ThemeExtension` class inside `lib/core/theme/just_theme.dart`.
+/// Registers a component's `ThemeExtension` class inside `lib/core/theme/theme_data_material.dart`.
 pub fn register_theme_extension(
     theme_file_path: &Path,
     _package_name: &str,
@@ -23,40 +23,56 @@ pub fn register_theme_extension(
     }
 
     let reg_marker = "// CLI:REGISTER_EXTENSIONS";
-    let list_search = "final List<ThemeExtension<dynamic>> justThemeExtensions = [";
 
-    if !content.contains(reg_marker) && !content.contains(list_search) {
+    if !content.contains(reg_marker) {
         return Ok(false);
     }
 
     let import_line = format!("import '{}';", component_import_path);
     let mut lines: Vec<String> = content.lines().map(|s| s.to_string()).collect();
 
-    // Insert import statement after the last existing import line
+    // Insert import statement respecting Dart directives_ordering:
+    // package: imports are placed with existing package imports and before relative imports
     if !lines.iter().any(|l| l.contains(component_import_path)) {
+        let mut last_pkg_import_idx = None;
         let mut last_import_idx = 0;
+
         for (idx, line) in lines.iter().enumerate() {
-            if line.trim().starts_with("import ") {
+            let trimmed = line.trim();
+            if trimmed.starts_with("import ") {
                 last_import_idx = idx + 1;
+                if trimmed.starts_with("import 'package:") || trimmed.starts_with("import \"package:") {
+                    last_pkg_import_idx = Some(idx + 1);
+                }
             }
         }
-        lines.insert(last_import_idx, import_line);
+
+        let insert_idx = if component_import_path.starts_with("package:") {
+            last_pkg_import_idx.unwrap_or(last_import_idx)
+        } else {
+            last_import_idx
+        };
+        lines.insert(insert_idx, import_line);
     }
 
     let updated_content = lines.join("\n");
-    let reg_marker = "// CLI:REGISTER_EXTENSIONS";
 
-    let final_content = if updated_content.contains(reg_marker) {
-        let replacement = format!("  {}.defaults,\n  {}", theme_class_name, reg_marker);
-        updated_content.replace(reg_marker, &replacement)
-    } else if updated_content
-        .contains("final List<ThemeExtension<dynamic>> justThemeExtensions = [")
-    {
-        let search = "final List<ThemeExtension<dynamic>> justThemeExtensions = [";
-        let replacement = format!("{}\n  {}.defaults,", search, theme_class_name);
-        updated_content.replace(search, &replacement)
+    let indent = updated_content
+        .lines()
+        .find(|l| l.contains(reg_marker))
+        .map(|l| {
+            l.chars()
+                .take_while(|c| c.is_whitespace())
+                .collect::<String>()
+        })
+        .unwrap_or_else(|| "        ".to_string());
+
+    let search = format!("{}{}", indent, reg_marker);
+    let replacement = format!("{}{}.defaults,\n{}{}", indent, theme_class_name, indent, reg_marker);
+    let final_content = if updated_content.contains(&search) {
+        updated_content.replace(&search, &replacement)
     } else {
-        updated_content
+        updated_content.replace(reg_marker, &replacement)
     };
 
     if final_content != content {
@@ -80,23 +96,25 @@ mod tests {
     #[test]
     fn test_register_theme_extension() {
         let dir = tempdir().unwrap();
-        let theme_path = dir.path().join("just_theme.dart");
+        let theme_path = dir.path().join("theme_data_material.dart");
 
         // 1. Non-existent file
         assert!(!register_theme_extension(
             &theme_path,
             "my_app",
-            "button/just_button.dart",
+            "widgets/button/just_button_theme.dart",
             "JustButtonTheme"
         )
         .unwrap());
 
-        // 2. Initial theme file with marker
+        // 2. Initial theme file with 8-space indented marker
         let initial_code = r#"import 'package:flutter/material.dart';
 
-final List<ThemeExtension<dynamic>> justThemeExtensions = [
-  // CLI:REGISTER_EXTENSIONS
-];
+import 'theme_data.dart';
+
+      extensions: const [
+        // CLI:REGISTER_EXTENSIONS
+      ],
 "#;
         std::fs::write(&theme_path, initial_code).unwrap();
 
@@ -104,49 +122,43 @@ final List<ThemeExtension<dynamic>> justThemeExtensions = [
         let registered = register_theme_extension(
             &theme_path,
             "my_app",
-            "button/just_button.dart",
+            "package:my_app/widgets/button/just_button_theme.dart",
             "JustButtonTheme",
         )
         .unwrap();
         assert!(registered);
 
         let updated = std::fs::read_to_string(&theme_path).unwrap();
-        assert!(updated.contains("import 'button/just_button.dart';"));
-        assert!(updated.contains("JustButtonTheme.defaults,"));
+        assert!(updated.contains("import 'package:my_app/widgets/button/just_button_theme.dart';"));
+        assert!(updated.contains("        JustButtonTheme.defaults,\n        // CLI:REGISTER_EXTENSIONS"));
 
         // 4. Register duplicate extension (should return false)
         let duplicate = register_theme_extension(
             &theme_path,
             "my_app",
-            "button/just_button.dart",
+            "package:my_app/widgets/button/just_button_theme.dart",
             "JustButtonTheme",
         )
         .unwrap();
         assert!(!duplicate);
 
-        // 5. Fallback registration without marker
-        let fallback_path = dir.path().join("fallback_theme.dart");
-        let fallback_code = r#"import 'package:flutter/material.dart';
-
-final List<ThemeExtension<dynamic>> justThemeExtensions = [
-];
-"#;
-        std::fs::write(&fallback_path, fallback_code).unwrap();
-
-        let fallback_registered = register_theme_extension(
-            &fallback_path,
+        // 5. Register second extension
+        let second_registered = register_theme_extension(
+            &theme_path,
             "my_app",
-            "card/just_card.dart",
+            "package:my_app/widgets/card/just_card_theme.dart",
             "JustCardTheme",
         )
         .unwrap();
-        assert!(fallback_registered);
-        let fallback_updated = std::fs::read_to_string(&fallback_path).unwrap();
-        assert!(fallback_updated.contains("JustCardTheme.defaults,"));
+        assert!(second_registered);
+
+        let second_updated = std::fs::read_to_string(&theme_path).unwrap();
+        assert!(second_updated.contains("import 'package:my_app/widgets/card/just_card_theme.dart';"));
+        assert!(second_updated.contains("        JustButtonTheme.defaults,\n        JustCardTheme.defaults,\n        // CLI:REGISTER_EXTENSIONS"));
 
         // 6. Legacy pattern check
         let legacy_path = dir.path().join("legacy_theme.dart");
-        std::fs::write(&legacy_path, "const JustButtonTheme()\n").unwrap();
+        std::fs::write(&legacy_path, "const JustButtonTheme()\n// CLI:REGISTER_EXTENSIONS").unwrap();
         assert!(!register_theme_extension(
             &legacy_path,
             "my_app",
@@ -155,7 +167,7 @@ final List<ThemeExtension<dynamic>> justThemeExtensions = [
         )
         .unwrap());
 
-        // 7. Theme file without extensions list
+        // 7. Theme file without marker
         let no_match_path = dir.path().join("no_match_theme.dart");
         std::fs::write(&no_match_path, "// simple file without theme extensions\n").unwrap();
         assert!(!register_theme_extension(

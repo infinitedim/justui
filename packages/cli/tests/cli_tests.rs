@@ -1439,4 +1439,126 @@ mod cli_integration {
             .assert()
             .success();
     }
+
+    #[test]
+    fn test_init_scaffolds_clean_theme_and_add_registers_extension_with_custom_components_dir() {
+        let temp_dir = tempfile::TempDir::new().unwrap();
+        let pubspec_content = "name: test_app\nenvironment:\n  sdk: '>=3.13.0 <4.0.0'\n";
+        std::fs::write(temp_dir.path().join("pubspec.yaml"), pubspec_content).unwrap();
+
+        // 1. Run justui init with custom components-dir
+        justui()
+            .current_dir(temp_dir.path())
+            .args(["init", "--components-dir", "lib/atoms", "-y"])
+            .assert()
+            .success();
+
+        // Verify config has dart_target: primary
+        let config_file =
+            std::fs::read_to_string(temp_dir.path().join("justui.config.yaml")).unwrap();
+        assert!(config_file.contains("dart_target: primary"));
+        assert!(config_file.contains("components_dir: lib/atoms"));
+
+        // Verify just_theme.dart does NOT contain justThemeExtensions
+        let just_theme =
+            std::fs::read_to_string(temp_dir.path().join("lib/core/theme/just_theme.dart")).unwrap();
+        assert!(!just_theme.contains("justThemeExtensions"));
+
+        // Verify theme_data_material.dart has NO component imports and NO extensions
+        let theme_material = std::fs::read_to_string(
+            temp_dir.path().join("lib/core/theme/theme_data_material.dart"),
+        )
+        .unwrap();
+        assert!(!theme_material.contains("components/"));
+        assert!(!theme_material.contains("Theme.defaults"));
+        assert!(theme_material.contains("// CLI:REGISTER_EXTENSIONS"));
+
+        // 2. Set up a mock registry with button theme
+        let registry_dir = temp_dir.path().join("mock_registry");
+        let btn_dir = registry_dir.join("components/button");
+        std::fs::create_dir_all(&btn_dir).unwrap();
+
+        let btn_src = "class JustButton {}\n";
+        let theme_src = "import 'package:flutter/material.dart';\nclass const JustButtonTheme() extends ThemeExtension<JustButtonTheme> {\n  static const defaults = JustButtonTheme();\n}\n";
+        let btn_hash = justui_cli::commands::add::sha256_hex(btn_src.as_bytes());
+        let theme_hash = justui_cli::commands::add::sha256_hex(theme_src.as_bytes());
+
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "0.1.0",
+                "presets": ["default"],
+                "components": [{
+                    "name": "button",
+                    "version": "0.1.0",
+                    "description": "Button",
+                    "category": "primitives",
+                    "supportedPresets": ["default"],
+                    "registryDependencies": [],
+                    "pubDependencies": {},
+                    "files": {
+                        "default": [
+                            {
+                                "name": "just_button.dart",
+                                "path": "components/button/just_button.dart",
+                                "checksum": format!("sha256:{}", btn_hash)
+                            },
+                            {
+                                "name": "just_button_theme.dart",
+                                "path": "components/button/just_button_theme.dart",
+                                "checksum": format!("sha256:{}", theme_hash)
+                            }
+                        ]
+                    }
+                }]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(btn_dir.join("just_button.dart"), btn_src).unwrap();
+        std::fs::write(btn_dir.join("just_button_theme.dart"), theme_src).unwrap();
+
+        // Update registry_url in config
+        let updated_config = config_file.replace(
+            "https://raw.githubusercontent.com/infinitedim/justui/main/registry",
+            &registry_dir.display().to_string(),
+        );
+        std::fs::write(temp_dir.path().join("justui.config.yaml"), updated_config).unwrap();
+
+        // 3. Run justui add button
+        justui()
+            .current_dir(temp_dir.path())
+            .args(["add", "button", "-y"])
+            .assert()
+            .success();
+
+        // Verify theme_data_material.dart was updated with correct import and extension registration
+        let updated_theme_material = std::fs::read_to_string(
+            temp_dir.path().join("lib/core/theme/theme_data_material.dart"),
+        )
+        .unwrap();
+        assert!(updated_theme_material
+            .contains("import 'package:test_app/atoms/button/just_button_theme.dart';"));
+        assert!(updated_theme_material
+            .contains("        JustButtonTheme.defaults,\n        // CLI:REGISTER_EXTENSIONS"));
+    }
+
+    #[test]
+    fn test_init_dart_target_override_flag() {
+        let temp_dir = tempfile::TempDir::new().unwrap();
+        let pubspec_content = "name: test_app\nenvironment:\n  sdk: '>=3.13.0 <4.0.0'\n";
+        std::fs::write(temp_dir.path().join("pubspec.yaml"), pubspec_content).unwrap();
+
+        // SDK supports primary, but user passes --dart-target standard
+        justui()
+            .current_dir(temp_dir.path())
+            .args(["init", "--dart-target", "standard", "-y"])
+            .assert()
+            .success();
+
+        let config_file =
+            std::fs::read_to_string(temp_dir.path().join("justui.config.yaml")).unwrap();
+        assert!(config_file.contains("dart_target: standard"));
+    }
 }

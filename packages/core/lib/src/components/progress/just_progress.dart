@@ -1,10 +1,9 @@
 import 'dart:math' as math;
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../theme/theme_data.dart';
-import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import '../../theme/preset_tokens.dart';
 import 'just_progress_style.dart';
@@ -123,9 +122,7 @@ class _JustProgressState extends State<JustProgress>
   Widget build(BuildContext context) {
     final customTheme = JustThemeProvider.of(context).theme;
     final presetTokens = customTheme.presetTokens;
-    final progressTheme = customTheme
-        .toThemeData()
-        .extension<JustProgressTheme>();
+    final progressTheme = Theme.of(context).extension<JustProgressTheme>();
     final themeStyle = progressTheme?.style;
 
     final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
@@ -399,8 +396,7 @@ class _JustProgressState extends State<JustProgress>
   }
 
   BorderRadius? themeStyleBorderRadius(BuildContext context) {
-    final theme = JustThemeProvider.of(context).theme;
-    final progressTheme = theme.toThemeData().extension<JustProgressTheme>();
+    final progressTheme = Theme.of(context).extension<JustProgressTheme>();
     return progressTheme?.style?.borderRadius;
   }
 }
