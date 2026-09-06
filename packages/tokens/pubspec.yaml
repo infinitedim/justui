@@ -1,6 +1,6 @@
 name: just_ui_tokens
 description: Design tokens for JustUI — colors, spacing, typography, radius, shadows, and durations.
-version: 0.12.1
+version: 0.12.2
 publish_to: none
 
 environment:

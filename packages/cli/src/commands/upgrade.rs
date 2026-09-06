@@ -57,13 +57,10 @@ fn get_repo_name() -> String {
 }
 
 pub fn parse_tag_from_location(location: &str) -> Option<String> {
-    let after_tag = if let Some(idx) = location.rfind("/tag/") {
-        &location[idx + 5..]
-    } else if let Some(idx) = location.rfind("tag/") {
-        &location[idx + 4..]
-    } else {
-        return None;
-    };
+    let after_tag = location
+        .rfind("/tag/")
+        .map(|idx| &location[idx + 5..])
+        .or_else(|| location.rfind("tag/").map(|idx| &location[idx + 4..]))?;
     let clean = after_tag.split('?').next().unwrap_or(after_tag);
     let clean = clean.split('#').next().unwrap_or(clean);
     let clean = clean.trim_matches('/');
@@ -715,8 +712,8 @@ mod tests {
     #[test]
     fn test_parse_tag_from_location() {
         assert_eq!(
-            parse_tag_from_location("https://github.com/infinitedim/justui/releases/tag/v0.12.1"),
-            Some("v0.12.1".to_string())
+            parse_tag_from_location("https://github.com/infinitedim/justui/releases/tag/v0.12.2"),
+            Some("v0.12.2".to_string())
         );
         assert_eq!(
             parse_tag_from_location("/infinitedim/justui/releases/tag/v1.0.0"),
@@ -928,20 +925,20 @@ mod tests {
     fn test_plan_upgrade_matrix() {
         // 1. Up-to-date version with force=false
         let up_to_date_release = GitHubRelease {
-            tag_name: "v0.12.1".to_string(),
+            tag_name: "v0.12.2".to_string(),
             html_url: "https://example.com/rel".to_string(),
             body: Some("Release notes".to_string()),
             assets: vec![],
         };
-        let action = plan_upgrade("0.12.1", &up_to_date_release, false, false).unwrap();
+        let action = plan_upgrade("0.12.2", &up_to_date_release, false, false).unwrap();
         assert_eq!(action, UpgradeAction::AlreadyUpToDate);
 
         // 1b. Up-to-date version with force=true
-        let action_force = plan_upgrade("0.12.1", &up_to_date_release, false, true).unwrap();
+        let action_force = plan_upgrade("0.12.2", &up_to_date_release, false, true).unwrap();
         assert_eq!(
             action_force,
             UpgradeAction::NoMatchingAsset {
-                target_version: "0.12.1".to_string()
+                target_version: "0.12.2".to_string()
             }
         );
 
@@ -977,7 +974,7 @@ mod tests {
                 },
             ],
         };
-        let action_check = plan_upgrade("0.12.1", &new_release, true, false).unwrap();
+        let action_check = plan_upgrade("0.12.2", &new_release, true, false).unwrap();
         assert_eq!(
             action_check,
             UpgradeAction::CheckOnly {
@@ -986,7 +983,7 @@ mod tests {
         );
 
         // 3. Newer version download flow with matching asset
-        let action_dl = plan_upgrade("0.12.1", &new_release, false, false).unwrap();
+        let action_dl = plan_upgrade("0.12.2", &new_release, false, false).unwrap();
         assert!(matches!(action_dl, UpgradeAction::PerformDownload { .. }));
 
         // 4. Newer version without matching asset
@@ -999,7 +996,7 @@ mod tests {
                 browser_download_url: "https://example.com/dl_other".to_string(),
             }],
         };
-        let action_no_asset = plan_upgrade("0.12.1", &no_asset_release, false, false).unwrap();
+        let action_no_asset = plan_upgrade("0.12.2", &no_asset_release, false, false).unwrap();
         assert_eq!(
             action_no_asset,
             UpgradeAction::NoMatchingAsset {
@@ -1039,7 +1036,7 @@ mod tests {
                 },
             ],
         };
-        let action_checksum = plan_upgrade("0.12.1", &release_with_checksum, false, false).unwrap();
+        let action_checksum = plan_upgrade("0.12.2", &release_with_checksum, false, false).unwrap();
         match action_checksum {
             UpgradeAction::PerformDownload { download_url, .. } => {
                 assert!(
@@ -1057,7 +1054,7 @@ mod tests {
             body: None,
             assets: vec![],
         };
-        let action_invalid = plan_upgrade("0.12.1", &invalid_semver_release, false, false).unwrap();
+        let action_invalid = plan_upgrade("0.12.2", &invalid_semver_release, false, false).unwrap();
         assert_eq!(
             action_invalid,
             UpgradeAction::InvalidVersion {
