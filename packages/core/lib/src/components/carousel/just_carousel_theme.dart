@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' show ThemeExtension;
 import 'package:flutter/widgets.dart';
 
 import 'package:just_ui_core/just_ui_core.dart';
+
 import 'just_carousel_style.dart';
 import 'just_carousel_variants.dart';
 
