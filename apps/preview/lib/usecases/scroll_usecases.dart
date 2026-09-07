@@ -80,7 +80,7 @@ Widget buildJustScrollAreaDefaultUseCase(BuildContext context) {
     (
       iconColor: const Color(0xFFEC4899), // Pink
       badgeText: 'Release',
-      title: 'JustUI Core v0.12.2 Published',
+      title: 'JustUI Core v0.13.1 Published',
       subtitle: 'Added Lenis smooth scroll engine & contrast auditor',
       time: '2h ago',
     ),

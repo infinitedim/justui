@@ -183,10 +183,16 @@ pub fn rewrite(
             }
             if let Some(subpath) = import_path.strip_prefix("package:just_ui_core/") {
                 let clean_subpath = subpath.split('/').next_back().unwrap_or(subpath);
-                return format!("{} 'package:{}/core/{}'{};", kw, package_name, clean_subpath, trailing);
+                return format!(
+                    "{} 'package:{}/core/{}'{};",
+                    kw, package_name, clean_subpath, trailing
+                );
             }
             if import_path == "package:just_ui_core" {
-                return format!("{} 'package:{}/core/just_ui_core.dart'{};", kw, package_name, trailing);
+                return format!(
+                    "{} 'package:{}/core/just_ui_core.dart'{};",
+                    kw, package_name, trailing
+                );
             }
 
             if import_path.starts_with("package:") || import_path.starts_with("dart:") {
@@ -207,7 +213,10 @@ pub fn rewrite(
                     .any(|suffix| resolved_flat_path.ends_with(suffix));
 
             if is_theme_import {
-                return format!("{} 'package:{}/core/just_ui_core.dart'{};", kw, package_name, trailing);
+                return format!(
+                    "{} 'package:{}/core/just_ui_core.dart'{};",
+                    kw, package_name, trailing
+                );
             }
 
             let mut found_comp = None;
@@ -254,13 +263,32 @@ pub fn rewrite(
         })
         .into_owned();
 
+    let core_import_prefix = format!("'package:{}/core/just_ui_core.dart'", package_name);
+    let tokens_import_prefix = format!("'package:{}/tokens/just_ui_tokens.dart'", package_name);
+
+    let raw_lines: Vec<&str> = rewritten.lines().collect();
+    let has_full_core_import = raw_lines.iter().any(|line| {
+        let trimmed = line.trim();
+        trimmed.starts_with("import ")
+            && trimmed.contains(&core_import_prefix)
+            && !trimmed.contains(" show ")
+    });
+
     let mut seen_imports = std::collections::HashSet::new();
     let mut lines = Vec::new();
 
-    for line in rewritten.lines() {
+    for line in raw_lines {
         let trimmed = line.trim();
-        if (trimmed.starts_with("import ") || trimmed.starts_with("export ")) && trimmed.ends_with(';') {
+        if (trimmed.starts_with("import ") || trimmed.starts_with("export "))
+            && trimmed.ends_with(';')
+        {
             if seen_imports.contains(trimmed) {
+                continue;
+            }
+            if has_full_core_import
+                && trimmed.starts_with("import ")
+                && trimmed.contains(&tokens_import_prefix)
+            {
                 continue;
             }
             seen_imports.insert(trimmed.to_string());
@@ -362,11 +390,38 @@ export 'just_carousel_style.dart';
         );
 
         assert!(rewritten.contains("import 'package:my_app/core/just_ui_core.dart';"));
-        assert!(rewritten.contains("import 'package:my_app/tokens/just_ui_tokens.dart';"));
+        // Redundant tokens import is pruned because core/just_ui_core.dart already re-exports it
+        assert!(!rewritten.contains("import 'package:my_app/tokens/just_ui_tokens.dart';"));
         // Trailing clauses preserved
-        assert!(rewritten.contains("import 'package:flutter/widgets.dart' show BuildContext, Widget;"));
+        assert!(
+            rewritten.contains("import 'package:flutter/widgets.dart' show BuildContext, Widget;")
+        );
         assert!(rewritten.contains("import 'package:flutter/math.dart' as math;"));
         // Export preserved
         assert!(rewritten.contains("export 'just_carousel_style.dart';"));
+    }
+
+    #[test]
+    fn test_tokens_retained_when_no_core_import() {
+        let index = RegistryIndex {
+            version: "1.0".to_string(),
+            presets: vec!["default".to_string()],
+            components: vec![],
+        };
+
+        let content = "import 'package:just_ui_tokens/just_ui_tokens.dart';\n";
+        let rewritten = rewrite(
+            content,
+            "components/button/just_button.dart",
+            "button",
+            &index,
+            "lib/widgets",
+            "lib/tokens",
+            "lib/widgets/shared",
+            "default",
+            "my_app",
+        );
+
+        assert!(rewritten.contains("import 'package:my_app/tokens/just_ui_tokens.dart';"));
     }
 }
