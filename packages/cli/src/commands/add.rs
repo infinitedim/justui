@@ -324,7 +324,7 @@ pub fn run(
     }
 
     if !summary_items.is_empty() && !dry_run {
-        logger::success("komponen berhasil ditambahkan");
+        logger::success("Components added successfully");
         logger::summary(
             &format!("{} component(s) added successfully", summary_items.len()),
             &summary_items,
@@ -584,7 +584,10 @@ pub fn add_component(
                 };
 
                 let import_uri = if clean_components_dir.is_empty() {
-                    format!("package:{}/{}/{}", pkg_name, component.name, local_file_name)
+                    format!(
+                        "package:{}/{}/{}",
+                        pkg_name, component.name, local_file_name
+                    )
                 } else {
                     format!(
                         "package:{}/{}/{}/{}",
