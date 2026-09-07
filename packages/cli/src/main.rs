@@ -84,6 +84,12 @@ enum Commands {
         /// Target design tokens directory
         #[arg(long = "tokens-dir")]
         tokens_dir: Option<String>,
+        /// Target Dart constructor syntax override (primary, standard)
+        #[arg(
+            long = "dart-target",
+            value_parser = clap::builder::PossibleValuesParser::new(["primary", "standard"])
+        )]
+        dart_target: Option<String>,
         /// Enable experimental features (e.g. auto-detect-flutter-version)
         #[arg(
             long = "experimental",
@@ -299,6 +305,7 @@ fn main() {
             components_dir,
             tokens_dir,
             experimental,
+            dart_target,
         } => commands::init::run(
             preset,
             color_space,
@@ -306,6 +313,7 @@ fn main() {
             tokens_dir,
             auto_yes,
             experimental,
+            dart_target,
         ),
         Commands::Add {
             components,
