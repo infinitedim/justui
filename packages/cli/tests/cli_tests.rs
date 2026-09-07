@@ -264,7 +264,8 @@ fn test_zero_dep_package_import_rewriting() {
         "default",
         "my_cool_app",
     );
-    assert!(result.contains("import 'package:my_cool_app/tokens/just_ui_tokens.dart';"));
+    // When core/just_ui_core.dart is imported, redundant tokens import is pruned
+    assert!(!result.contains("import 'package:my_cool_app/tokens/just_ui_tokens.dart';"));
     assert!(result.contains("import 'package:my_cool_app/core/just_ui_core.dart';"));
 }
 
@@ -546,7 +547,7 @@ mod cli_integration {
             .args(["add", "button", "--dry-run"])
             .assert()
             .success()
-            .stdout(predicate::str::contains("1 komponen berhasil ditambahkan").not());
+            .stdout(predicate::str::contains("1 component(s) added successfully").not());
     }
 
     #[test]
@@ -951,7 +952,7 @@ mod cli_integration {
             .args(["search", "nonexistent_query_xyz"])
             .assert()
             .success()
-            .stdout(predicates::str::contains("Tidak ditemukan"));
+            .stdout(predicates::str::contains("No components found"));
 
         // 3. Test `view`
         justui()
@@ -1078,8 +1079,8 @@ mod cli_integration {
             .args(["update"])
             .assert()
             .success()
-            .stdout(predicates::str::contains(
-                "Semua komponen sudah menggunakan versi terbaru",
+            .stderr(predicates::str::contains(
+                "All components are up-to-date!",
             ));
 
         // Test `upgrade --check`
@@ -1189,7 +1190,7 @@ mod cli_integration {
             .args(["add", "--all", "--yes"])
             .assert()
             .success()
-            .stderr(predicates::str::contains("komponen berhasil ditambahkan"));
+            .stderr(predicates::str::contains("component(s) added successfully"));
 
         // Verify button and shared pressable were written
         let button_file = dir.path().join("lib/ui/button/just_button.dart");
@@ -1224,7 +1225,7 @@ mod cli_integration {
             .args(["update", "--yes"])
             .assert()
             .success()
-            .stderr(predicates::str::contains("Diperbarui"));
+            .stderr(predicates::str::contains("Updating component"));
     }
 
     #[test]
@@ -1461,12 +1462,15 @@ mod cli_integration {
 
         // Verify just_theme.dart does NOT contain justThemeExtensions
         let just_theme =
-            std::fs::read_to_string(temp_dir.path().join("lib/core/theme/just_theme.dart")).unwrap();
+            std::fs::read_to_string(temp_dir.path().join("lib/core/theme/just_theme.dart"))
+                .unwrap();
         assert!(!just_theme.contains("justThemeExtensions"));
 
         // Verify theme_data_material.dart has NO component imports and NO extensions
         let theme_material = std::fs::read_to_string(
-            temp_dir.path().join("lib/core/theme/theme_data_material.dart"),
+            temp_dir
+                .path()
+                .join("lib/core/theme/theme_data_material.dart"),
         )
         .unwrap();
         assert!(!theme_material.contains("components/"));
@@ -1535,7 +1539,9 @@ mod cli_integration {
 
         // Verify theme_data_material.dart was updated with correct import and extension registration
         let updated_theme_material = std::fs::read_to_string(
-            temp_dir.path().join("lib/core/theme/theme_data_material.dart"),
+            temp_dir
+                .path()
+                .join("lib/core/theme/theme_data_material.dart"),
         )
         .unwrap();
         assert!(updated_theme_material

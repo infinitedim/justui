@@ -322,7 +322,8 @@ mod tests {
         .is_ok());
 
         let theme_file =
-            std::fs::read_to_string(temp_dir.path().join("lib/core/theme/just_theme.dart")).unwrap();
+            std::fs::read_to_string(temp_dir.path().join("lib/core/theme/just_theme.dart"))
+                .unwrap();
         assert!(!theme_file.contains("justThemeExtensions"));
 
         // 3. Already initialized -> warns and returns Ok
@@ -369,7 +370,15 @@ mod tests {
         )
         .unwrap();
 
-        let result = run(Some("default".to_string()), None, None, None, true, None, None);
+        let result = run(
+            Some("default".to_string()),
+            None,
+            None,
+            None,
+            true,
+            None,
+            None,
+        );
         assert!(result.is_ok());
 
         let config_content =
