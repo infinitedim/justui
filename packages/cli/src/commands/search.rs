@@ -54,7 +54,7 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
 
     if results.is_empty() {
         logger::stdout(&format!(
-            "Tidak ditemukan komponen yang cocok dengan \"{}\".",
+            "No components found matching \"{}\".",
             query
         ));
         return Ok(());

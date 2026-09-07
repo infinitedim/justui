@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -137,6 +138,34 @@ void main(List<String> args) async {
       print('  ✔ Updated $pubspecPath');
     } else {
       print('  [dry-run] Would update $pubspecPath');
+    }
+  }
+
+  if (bumpMap.containsKey('just_ui_core')) {
+    final indexFile = File(p.join(projectRoot, 'registry', 'index.json'));
+    if (indexFile.existsSync()) {
+      final indexContent = await indexFile.readAsString();
+      final indexJson = jsonDecode(indexContent) as Map<String, dynamic>;
+      final corePubspec = File(p.join(projectRoot, dartPackages['just_ui_core']!));
+      final coreContent = await corePubspec.readAsString();
+      final coreMatch = RegExp(r'^version:\s*([^\s]+)', multiLine: true).firstMatch(coreContent);
+      if (coreMatch != null) {
+        final coreVer = coreMatch.group(1)!;
+        indexJson['version'] = coreVer;
+        final compList = indexJson['components'] as List<dynamic>? ?? [];
+        for (final dynamic comp in compList) {
+          if (comp is Map<String, dynamic>) {
+            comp['version'] = coreVer;
+          }
+        }
+        if (!isDryRun) {
+          const encoder = JsonEncoder.withIndent('  ');
+          await indexFile.writeAsString('${encoder.convert(indexJson)}\n');
+          print('  ✔ Updated registry/index.json to $coreVer');
+        } else {
+          print('  [dry-run] Would update registry/index.json to $coreVer');
+        }
+      }
     }
   }
 
