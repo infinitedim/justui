@@ -14,7 +14,7 @@ pub enum DartTarget {
 /// Resolves the target Dart constructor syntax for a Flutter project.
 ///
 /// Hierarchy of Truth:
-/// 1. `pubspec.yaml` constraint check (must be >= 3.10.0 for Dart or >= 3.47.0 for Flutter).
+/// 1. `pubspec.yaml` constraint check (must be >= 3.13.0 for Dart or >= 3.47.0 for Flutter).
 /// 2. If FVM local version is present, it can override or boost:
 ///    - If FVM version < 3.47.0, forces `DartTarget::Standard` (safety override).
 ///    - If FVM version >= 3.47.0, boosts to `DartTarget::Primary`.
@@ -50,7 +50,7 @@ mod tests {
     fn test_resolve_dart_target_pubspec_primary_no_fvm() {
         let dir = tempdir().unwrap();
         let pubspec = dir.path().join("pubspec.yaml");
-        std::fs::write(&pubspec, "environment:\n  sdk: '>=3.10.0 <4.0.0'\n").unwrap();
+        std::fs::write(&pubspec, "environment:\n  sdk: '>=3.13.0 <4.0.0'\n").unwrap();
 
         assert_eq!(resolve_dart_target(dir.path()), DartTarget::Primary);
     }
@@ -59,7 +59,7 @@ mod tests {
     fn test_resolve_dart_target_pubspec_primary_with_older_fvm_override() {
         let dir = tempdir().unwrap();
         let pubspec = dir.path().join("pubspec.yaml");
-        std::fs::write(&pubspec, "environment:\n  sdk: '>=3.10.0 <4.0.0'\n").unwrap();
+        std::fs::write(&pubspec, "environment:\n  sdk: '>=3.13.0 <4.0.0'\n").unwrap();
 
         let fvm_dir = dir.path().join(".fvm");
         std::fs::create_dir_all(&fvm_dir).unwrap();

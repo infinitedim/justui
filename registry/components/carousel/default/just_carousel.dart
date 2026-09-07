@@ -10,6 +10,7 @@ import 'package:flutter/services.dart'
 import 'package:flutter/widgets.dart';
 
 import 'package:just_ui_core/just_ui_core.dart';
+
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_carousel_style.dart';

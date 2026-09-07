@@ -66,6 +66,10 @@ pub fn extract_core(target_core_dir: &Path, package_name: &str, tokens_dir: &str
 
             file_content = rewrite_core_internal_imports(&file_content, package_name, tokens_dir);
 
+            if path_str.ends_with("theme_data_material.dart") {
+                file_content = sanitize_theme_data_material(&file_content);
+            }
+
             let rel_path_str = path_str
                 .strip_prefix("src/")
                 .or_else(|| path_str.strip_prefix("src\\"))
@@ -116,6 +120,41 @@ fn rewrite_core_internal_imports(content: &str, package_name: &str, tokens_dir: 
         )
 }
 
+pub fn sanitize_theme_data_material(content: &str) -> String {
+    let mut lines = Vec::new();
+    let mut in_extensions = false;
+
+    for line in content.lines() {
+        let trimmed = line.trim();
+
+        // Strip private component imports
+        if trimmed.starts_with("import ")
+            && (trimmed.contains("/components/") || trimmed.contains("_theme.dart"))
+        {
+            continue;
+        }
+
+        if trimmed == "extensions: const [" || trimmed == "extensions: [" {
+            in_extensions = true;
+            lines.push(line.to_string());
+            lines.push("        // CLI:REGISTER_EXTENSIONS".to_string());
+            continue;
+        }
+
+        if in_extensions {
+            if trimmed.starts_with("],") || trimmed == "]" {
+                in_extensions = false;
+                lines.push(line.to_string());
+            }
+            continue;
+        }
+
+        lines.push(line.to_string());
+    }
+
+    lines.join("\n") + "\n"
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -139,5 +178,22 @@ mod tests {
 
         assert!(extract_tokens(&tok_dir, "my_app").is_ok());
         assert!(extract_core(&core_dir, "my_app", "lib/tokens").is_ok());
+    }
+
+    #[test]
+    fn test_sanitize_theme_data_material() {
+        let dirty = r#"import 'package:flutter/material.dart';
+import '../components/button/just_button_theme.dart';
+import 'theme_data.dart';
+
+      extensions: const [
+        // CLI:REGISTER_EXTENSIONS
+        JustButtonTheme.defaults,
+      ],
+"#;
+        let clean = sanitize_theme_data_material(dirty);
+        assert!(!clean.contains("just_button_theme.dart"));
+        assert!(!clean.contains("JustButtonTheme.defaults"));
+        assert!(clean.contains("// CLI:REGISTER_EXTENSIONS"));
     }
 }
