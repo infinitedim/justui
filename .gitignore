@@ -537,4 +537,6 @@ $RECYCLE.BIN/
 # .pnp.*
 
 .source
+
+apps/showcase
 # End of https://www.toptal.com/developers/gitignore/api/nextjs,vercel,react,sublimetext,visualstudiocode,node,yarn,bower,macos,powershell,windows,linux,vim,dotenv,typings
