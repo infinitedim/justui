@@ -665,8 +665,22 @@ fn resolve_conflict(
 
         if current_local_hash == meta.local_hash {
             if meta.registry_hash == expected_hash {
-                logger::stdout(&format!("  - {} is already up-to-date.", local_file_name));
-                return Ok((false, OperationStatus::UpToDate));
+                if local_clean == rewritten_content {
+                    logger::stdout(&format!("  - {} is already up-to-date.", local_file_name));
+                    return Ok((false, OperationStatus::UpToDate));
+                } else if auto_yes {
+                    logger::stdout(&format!(
+                        "[auto] Overwriting {} (updated content generated)",
+                        local_file_name
+                    ));
+                    return Ok((true, OperationStatus::Overwritten));
+                } else {
+                    logger::info(&format!(
+                        "  - Updating {} to newly generated version.",
+                        local_file_name
+                    ));
+                    return Ok((true, OperationStatus::Overwritten));
+                }
             } else {
                 if auto_yes {
                     logger::stdout(&format!(
@@ -749,7 +763,7 @@ fn resolve_conflict_dry(
     target_path: &std::path::Path,
     local_file_name: &str,
     expected_hash: &str,
-    _rewritten_content: &str,
+    rewritten_content: &str,
     _auto_yes: bool,
 ) -> Result<(bool, bool, String, OperationStatus)> {
     let raw = std::fs::read_to_string(target_path)?;
@@ -761,11 +775,15 @@ fn resolve_conflict_dry(
 
         if current_local_hash == meta.local_hash {
             if meta.registry_hash == expected_hash {
-                logger::stdout(&format!(
-                    "  [dry-run] Already up-to-date: {}",
-                    local_file_name
-                ));
-                Ok((false, false, local_clean, OperationStatus::UpToDate))
+                if local_clean == rewritten_content {
+                    logger::stdout(&format!(
+                        "  [dry-run] Already up-to-date: {}",
+                        local_file_name
+                    ));
+                    Ok((false, false, local_clean, OperationStatus::UpToDate))
+                } else {
+                    Ok((true, false, local_clean, OperationStatus::Overwritten))
+                }
             } else {
                 Ok((true, false, local_clean, OperationStatus::Overwritten))
             }

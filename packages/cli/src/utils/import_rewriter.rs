@@ -5,7 +5,7 @@ use crate::{registry::RegistryIndex, utils::logger};
 
 fn import_regex() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
-    RE.get_or_init(|| Regex::new(r#"import\s+['"]([^'"]+)['"]\s*;"#).unwrap())
+    RE.get_or_init(|| Regex::new(r#"(import|export)\s+['"]([^'"]+)['"]([^;]*);"#).unwrap())
 }
 
 fn meta_regex() -> &'static Regex {
@@ -161,26 +161,32 @@ pub fn rewrite(
         "just_overlay_controller.dart",
         "just_overlay_scope.dart",
         "just_theme.dart",
+        "just_ui_core.dart",
     ];
 
     let current_file_dir = unix_dirname(&current_file_path);
 
     let rewritten = import_regex()
         .replace_all(&clean_content, |caps: &regex::Captures| {
-            let import_path = &caps[1];
+            let kw = &caps[1];
+            let import_path = &caps[2];
+            let trailing = &caps[3];
 
             // Rewrite just_ui_tokens and just_ui_core package imports to local package imports
             if let Some(subpath) = import_path.strip_prefix("package:just_ui_tokens/") {
                 let clean_subpath = subpath.split('/').next_back().unwrap_or(subpath);
                 let tokens_rel = tokens_dir.strip_prefix("lib/").unwrap_or(tokens_dir);
                 return format!(
-                    "import 'package:{}/{}/{}';",
-                    package_name, tokens_rel, clean_subpath
+                    "{} 'package:{}/{}/{}'{};",
+                    kw, package_name, tokens_rel, clean_subpath, trailing
                 );
             }
             if let Some(subpath) = import_path.strip_prefix("package:just_ui_core/") {
                 let clean_subpath = subpath.split('/').next_back().unwrap_or(subpath);
-                return format!("import 'package:{}/core/{}';", package_name, clean_subpath);
+                return format!("{} 'package:{}/core/{}'{};", kw, package_name, clean_subpath, trailing);
+            }
+            if import_path == "package:just_ui_core" {
+                return format!("{} 'package:{}/core/just_ui_core.dart'{};", kw, package_name, trailing);
             }
 
             if import_path.starts_with("package:") || import_path.starts_with("dart:") {
@@ -201,7 +207,7 @@ pub fn rewrite(
                     .any(|suffix| resolved_flat_path.ends_with(suffix));
 
             if is_theme_import {
-                return format!("import 'package:{}/core/just_ui_core.dart';", package_name);
+                return format!("{} 'package:{}/core/just_ui_core.dart'{};", kw, package_name, trailing);
             }
 
             let mut found_comp = None;
@@ -235,14 +241,14 @@ pub fn rewrite(
 
                 let target_file_path = format!("{}/{}", target_dir, local_target_file_name);
                 let relative_import = path_relative_unix(&target_file_path, current_file_dir);
-                return format!("import '{}';", relative_import);
+                return format!("{} '{}'{};", kw, relative_import, trailing);
             }
 
             logger::warning(&format!(
-                "Relative import \"{}\" in component \"{}\" \
+                "Relative {} \"{}\" in component \"{}\" \
                  (source file: \"{}\") could not be resolved in the \
-                 registry. The import will be left as-is and may need manual fixing.",
-                import_path, current_component_name, source_registry_path
+                 registry. The import/export will be left as-is and may need manual fixing.",
+                kw, import_path, current_component_name, source_registry_path
             ));
             caps[0].to_string()
         })
@@ -253,7 +259,7 @@ pub fn rewrite(
 
     for line in rewritten.lines() {
         let trimmed = line.trim();
-        if trimmed.starts_with("import ") && trimmed.ends_with(';') {
+        if (trimmed.starts_with("import ") || trimmed.starts_with("export ")) && trimmed.ends_with(';') {
             if seen_imports.contains(trimmed) {
                 continue;
             }
@@ -325,5 +331,42 @@ mod tests {
             .filter(|l| l.trim() == "import 'unresolved.dart';")
             .count();
         assert_eq!(count, 1);
+    }
+
+    #[test]
+    fn test_export_and_trailing_clauses_and_core_rewriting() {
+        let index = RegistryIndex {
+            version: "1.0".to_string(),
+            presets: vec!["default".to_string()],
+            components: vec![],
+        };
+
+        let content = r#"import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+import 'package:flutter/widgets.dart' show BuildContext, Widget;
+import 'package:flutter/math.dart' as math;
+import '../../../just_ui_core.dart';
+export 'just_carousel_style.dart';
+"#;
+
+        let rewritten = rewrite(
+            content,
+            "components/carousel/default/just_carousel.dart",
+            "carousel",
+            &index,
+            "lib/widgets",
+            "lib/tokens",
+            "lib/widgets/shared",
+            "default",
+            "my_app",
+        );
+
+        assert!(rewritten.contains("import 'package:my_app/core/just_ui_core.dart';"));
+        assert!(rewritten.contains("import 'package:my_app/tokens/just_ui_tokens.dart';"));
+        // Trailing clauses preserved
+        assert!(rewritten.contains("import 'package:flutter/widgets.dart' show BuildContext, Widget;"));
+        assert!(rewritten.contains("import 'package:flutter/math.dart' as math;"));
+        // Export preserved
+        assert!(rewritten.contains("export 'just_carousel_style.dart';"));
     }
 }

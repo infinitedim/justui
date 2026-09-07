@@ -100,13 +100,28 @@ impl RegistryClient {
 
     pub fn fetch_file_content(&self, relative_path: &str) -> Result<String> {
         if self.is_remote() {
+            #[cfg(test)]
+            if std::env::var("JUSTUI_ALLOW_NET_TESTS").is_err() {
+                return Err(anyhow::anyhow!("Network requests disabled in test mode"));
+            }
+            if std::env::var("JUSTUI_OFFLINE").is_ok() {
+                return Err(anyhow::anyhow!("Network requests disabled (JUSTUI_OFFLINE is set)"));
+            }
+
             let clean_base = if self.base_url.ends_with('/') {
                 self.base_url.clone()
             } else {
                 format!("{}/", self.base_url)
             };
             let url = format!("{}{}", clean_base, relative_path);
-            let response = reqwest::blocking::get(&url)
+            let client = reqwest::blocking::Client::builder()
+                .timeout(std::time::Duration::from_secs(3))
+                .connect_timeout(std::time::Duration::from_secs(2))
+                .build()
+                .unwrap_or_default();
+            let response = client
+                .get(&url)
+                .send()
                 .with_context(|| format!("Failed to fetch from registry ({})", url))?;
             if !response.status().is_success() {
                 return Err(anyhow::anyhow!(
