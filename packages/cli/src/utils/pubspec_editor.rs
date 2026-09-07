@@ -117,12 +117,12 @@ pub fn supports_primary_constructors(pubspec_path: &Path) -> Result<bool> {
     };
 
     let mut dart_supported = false;
-    let mut dart_checked = false;
+    let mut checked = false;
 
     if let Some(sdk_str) = env.get("sdk").and_then(|v| v.as_str()) {
-        dart_checked = true;
+        checked = true;
         if let Some(min_sdk) = parse_min_version(sdk_str) {
-            if (min_sdk.major, min_sdk.minor) >= (3, 10) {
+            if (min_sdk.major, min_sdk.minor) >= (3, 13) {
                 dart_supported = true;
             }
         }
@@ -133,10 +133,14 @@ pub fn supports_primary_constructors(pubspec_path: &Path) -> Result<bool> {
             if (min_flutter.major, min_flutter.minor) < (3, 47) {
                 return Ok(false);
             }
+            if env.get("sdk").is_none() {
+                checked = true;
+                dart_supported = true;
+            }
         }
     }
 
-    if dart_checked {
+    if checked {
         Ok(dart_supported)
     } else {
         Ok(false)
@@ -191,45 +195,45 @@ mod tests {
     fn test_supports_primary_constructors_edge_cases() {
         let dir = tempdir().unwrap();
 
-        // 1. Dart >= 3.10.0 (True)
+        // 1. Dart >= 3.13.0 (True)
         let p1 = dir.path().join("p1.yaml");
-        std::fs::write(&p1, "environment:\n  sdk: '>=3.10.0 <4.0.0'\n").unwrap();
+        std::fs::write(&p1, "environment:\n  sdk: '>=3.13.0 <4.0.0'\n").unwrap();
         assert!(supports_primary_constructors(&p1).unwrap());
 
-        // 2. Dart >= 3.0.0 (False)
+        // 2. Dart >= 3.10.0 (False)
         let p2 = dir.path().join("p2.yaml");
-        std::fs::write(&p2, "environment:\n  sdk: '>=3.0.0 <4.0.0'\n").unwrap();
+        std::fs::write(&p2, "environment:\n  sdk: '>=3.10.0 <4.0.0'\n").unwrap();
         assert!(!supports_primary_constructors(&p2).unwrap());
 
-        // 3. Caret ^3.10.0 (True)
+        // 3. Caret ^3.13.0 (True)
         let p3 = dir.path().join("p3.yaml");
-        std::fs::write(&p3, "environment:\n  sdk: '^3.10.0'\n").unwrap();
+        std::fs::write(&p3, "environment:\n  sdk: '^3.13.0'\n").unwrap();
         assert!(supports_primary_constructors(&p3).unwrap());
 
-        // 4. Caret ^3.0.0 (False)
+        // 4. Caret ^3.10.0 (False)
         let p4 = dir.path().join("p4.yaml");
-        std::fs::write(&p4, "environment:\n  sdk: '^3.0.0'\n").unwrap();
+        std::fs::write(&p4, "environment:\n  sdk: '^3.10.0'\n").unwrap();
         assert!(!supports_primary_constructors(&p4).unwrap());
 
-        // 5. Prerelease >=3.10.0-0.0.pre (True)
+        // 5. Prerelease >=3.13.0-0.0.pre (True)
         let p5 = dir.path().join("p5.yaml");
-        std::fs::write(&p5, "environment:\n  sdk: '>=3.10.0-0.0.pre <4.0.0'\n").unwrap();
+        std::fs::write(&p5, "environment:\n  sdk: '>=3.13.0-0.0.pre <4.0.0'\n").unwrap();
         assert!(supports_primary_constructors(&p5).unwrap());
 
         // 6. Flutter >= 3.47.0 (True)
         let p6 = dir.path().join("p6.yaml");
         std::fs::write(
             &p6,
-            "environment:\n  sdk: '>=3.10.0 <4.0.0'\n  flutter: '>=3.47.0'\n",
+            "environment:\n  sdk: '>=3.13.0 <4.0.0'\n  flutter: '>=3.47.0'\n",
         )
         .unwrap();
         assert!(supports_primary_constructors(&p6).unwrap());
 
-        // 7. Dart >= 3.10.0 but Flutter < 3.47.0 (False - Fail Safe)
+        // 7. Dart >= 3.13.0 but Flutter < 3.47.0 (False - Fail Safe)
         let p7 = dir.path().join("p7.yaml");
         std::fs::write(
             &p7,
-            "environment:\n  sdk: '>=3.10.0 <4.0.0'\n  flutter: '>=3.22.0'\n",
+            "environment:\n  sdk: '>=3.13.0 <4.0.0'\n  flutter: '>=3.22.0'\n",
         )
         .unwrap();
         assert!(!supports_primary_constructors(&p7).unwrap());
@@ -247,5 +251,10 @@ mod tests {
         let p10 = dir.path().join("malformed.yaml");
         std::fs::write(&p10, "environment: [invalid yaml").unwrap();
         assert!(!supports_primary_constructors(&p10).unwrap());
+
+        // 11. Flutter >= 3.47.0 without sdk (True)
+        let p11 = dir.path().join("p11.yaml");
+        std::fs::write(&p11, "environment:\n  flutter: '>=3.47.0'\n").unwrap();
+        assert!(supports_primary_constructors(&p11).unwrap());
     }
 }
