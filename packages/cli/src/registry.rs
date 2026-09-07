@@ -105,7 +105,9 @@ impl RegistryClient {
                 return Err(anyhow::anyhow!("Network requests disabled in test mode"));
             }
             if std::env::var("JUSTUI_OFFLINE").is_ok() {
-                return Err(anyhow::anyhow!("Network requests disabled (JUSTUI_OFFLINE is set)"));
+                return Err(anyhow::anyhow!(
+                    "Network requests disabled (JUSTUI_OFFLINE is set)"
+                ));
             }
 
             let clean_base = if self.base_url.ends_with('/') {

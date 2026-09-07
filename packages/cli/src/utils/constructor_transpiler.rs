@@ -1,5 +1,16 @@
 use regex::Regex;
 use std::collections::HashMap;
+use std::sync::OnceLock;
+
+fn field_regex() -> &'static Regex {
+    static RE: OnceLock<Regex> = OnceLock::new();
+    RE.get_or_init(|| {
+        Regex::new(
+            r#"(?m)(?:^|\n)([ \t]*(?:///.*?\r?\n[ \t]*)*(?:@\w+\s+)*)final\s+([^;{}=]+?)\s+([a-zA-Z0-9_]+)\s*(?:=\s*([^;{}]+?))?\s*;"#,
+        )
+        .unwrap()
+    })
+}
 
 /// Finds the index of the matching closing brace `}` for the opening brace at `open_brace_idx`.
 /// Skips braces inside single-line comments, block comments, and string literals.
@@ -227,7 +238,7 @@ struct ClassInfo {
 /// - Places generic type parameters before primary constructor parameters (`class const Dropdown<T>(...)`).
 pub fn transpile_to_primary_constructor(code: &str) -> String {
     let class_header_regex = match Regex::new(
-        r#"(?ms)^[ \t]*((?:(?:abstract|sealed|base|interface|final)\s+)*)class\s+([a-zA-Z_][a-zA-Z0-9_]*)"#,
+        r#"(?ms)^[ \t]*((?:(?:abstract|sealed|base|interface|final|mixin)\s+)*)class\s+(?:const\s+)?([a-zA-Z_][a-zA-Z0-9_]*)"#,
     ) {
         Ok(r) => r,
         Err(_) => return code.to_string(),
@@ -316,7 +327,7 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
             let mut in_block_comment = false;
             let mut in_string = false;
             let mut string_char = ' ';
-            let bytes = class_body[..offset].as_bytes();
+            let bytes = &class_body.as_bytes()[..offset];
             let mut i = 0;
             while i < bytes.len() {
                 let b = bytes[i];
@@ -346,10 +357,8 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
                     string_char = b as char;
                 } else if b == b'{' {
                     depth += 1;
-                } else if b == b'}' {
-                    if depth > 0 {
-                        depth -= 1;
-                    }
+                } else if b == b'}' && depth > 0 {
+                    depth -= 1;
                 }
                 i += 1;
             }
@@ -358,7 +367,7 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
 
         // 1. Scan constructors inside class_body strictly at depth 0
         let ctor_pattern = format!(
-            r#"(?ms)(?:^|\n)([ \t]*(?:///.*?\r?\n[ \t]*)*)(const\s+)?{}(\.[a-zA-Z0-9_]+)?\s*\("#,
+            r#"(?m)(?:^|\n)([ \t]*(?:///.*?\r?\n[ \t]*)*)(const\s+)?{}(\.[a-zA-Z0-9_]+)?\s*\("#,
             regex::escape(&class_info.class_name)
         );
         let ctor_find_regex = match Regex::new(&ctor_pattern) {
@@ -435,10 +444,7 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
                 i += 1;
             }
             match close_idx {
-                Some(idx) => (
-                    class_body[open_paren_idx + 1..idx].to_string(),
-                    idx,
-                ),
+                Some(idx) => (class_body[open_paren_idx + 1..idx].to_string(), idx),
                 None => continue,
             }
         };
@@ -472,16 +478,10 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
         if !inner_params_trimmed.starts_with('{') || !inner_params_trimmed.ends_with('}') {
             continue;
         }
-        let named_params_content =
-            &inner_params_trimmed[1..inner_params_trimmed.len() - 1];
+        let named_params_content = &inner_params_trimmed[1..inner_params_trimmed.len() - 1];
 
         // 2. Discover fields in this class body strictly at depth 0
-        let field_regex = match Regex::new(
-            r#"(?m)(?:^|\n)([ \t]*(?:///.*?\r?\n[ \t]*)*(?:@\w+\s+)*)final\s+([^;{}=]+?)\s+([a-zA-Z0-9_]+)\s*(?:=\s*([^;{}]+?))?\s*;"#,
-        ) {
-            Ok(r) => r,
-            Err(_) => continue,
-        };
+        let field_regex = field_regex();
 
         let mut fields: HashMap<String, FieldInfo> = HashMap::new();
         for field_cap in field_regex.captures_iter(class_body) {
@@ -554,10 +554,7 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
                                 f_info.type_name, p_name, d_val
                             ));
                         } else {
-                            new_params.push(format!(
-                                "  final {} {},",
-                                f_info.type_name, p_name
-                            ));
+                            new_params.push(format!("  final {} {},", f_info.type_name, p_name));
                         }
                         fields_to_remove_spans.push(f_info.span);
                     } else {
@@ -579,6 +576,20 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
         spans_to_remove.push(ctor_full_span);
         for span in fields_to_remove_spans {
             spans_to_remove.push(span);
+        }
+
+        // Fail-safe: ensure no removal spans overlap
+        let mut sorted_spans = spans_to_remove.clone();
+        sorted_spans.sort_by_key(|&(s, _)| s);
+        let mut has_overlap = false;
+        for i in 0..sorted_spans.len().saturating_sub(1) {
+            if sorted_spans[i].1 > sorted_spans[i + 1].0 {
+                has_overlap = true;
+                break;
+            }
+        }
+        if has_overlap {
+            continue;
         }
 
         // Sort descending so removals do not invalidate earlier offsets

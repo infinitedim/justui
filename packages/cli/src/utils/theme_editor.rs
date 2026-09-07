@@ -41,7 +41,9 @@ pub fn register_theme_extension(
             let trimmed = line.trim();
             if trimmed.starts_with("import ") {
                 last_import_idx = idx + 1;
-                if trimmed.starts_with("import 'package:") || trimmed.starts_with("import \"package:") {
+                if trimmed.starts_with("import 'package:")
+                    || trimmed.starts_with("import \"package:")
+                {
                     last_pkg_import_idx = Some(idx + 1);
                 }
             }
@@ -68,7 +70,10 @@ pub fn register_theme_extension(
         .unwrap_or_else(|| "        ".to_string());
 
     let search = format!("{}{}", indent, reg_marker);
-    let replacement = format!("{}{}.defaults,\n{}{}", indent, theme_class_name, indent, reg_marker);
+    let replacement = format!(
+        "{}{}.defaults,\n{}{}",
+        indent, theme_class_name, indent, reg_marker
+    );
     let final_content = if updated_content.contains(&search) {
         updated_content.replace(&search, &replacement)
     } else {
@@ -130,7 +135,8 @@ import 'theme_data.dart';
 
         let updated = std::fs::read_to_string(&theme_path).unwrap();
         assert!(updated.contains("import 'package:my_app/widgets/button/just_button_theme.dart';"));
-        assert!(updated.contains("        JustButtonTheme.defaults,\n        // CLI:REGISTER_EXTENSIONS"));
+        assert!(updated
+            .contains("        JustButtonTheme.defaults,\n        // CLI:REGISTER_EXTENSIONS"));
 
         // 4. Register duplicate extension (should return false)
         let duplicate = register_theme_extension(
@@ -153,12 +159,18 @@ import 'theme_data.dart';
         assert!(second_registered);
 
         let second_updated = std::fs::read_to_string(&theme_path).unwrap();
-        assert!(second_updated.contains("import 'package:my_app/widgets/card/just_card_theme.dart';"));
+        assert!(
+            second_updated.contains("import 'package:my_app/widgets/card/just_card_theme.dart';")
+        );
         assert!(second_updated.contains("        JustButtonTheme.defaults,\n        JustCardTheme.defaults,\n        // CLI:REGISTER_EXTENSIONS"));
 
         // 6. Legacy pattern check
         let legacy_path = dir.path().join("legacy_theme.dart");
-        std::fs::write(&legacy_path, "const JustButtonTheme()\n// CLI:REGISTER_EXTENSIONS").unwrap();
+        std::fs::write(
+            &legacy_path,
+            "const JustButtonTheme()\n// CLI:REGISTER_EXTENSIONS",
+        )
+        .unwrap();
         assert!(!register_theme_extension(
             &legacy_path,
             "my_app",
