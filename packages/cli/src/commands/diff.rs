@@ -234,7 +234,7 @@ pub fn run(
                     continue;
                 }
                 let remote_raw = client.fetch_file_content(&fs.file.path).unwrap_or_default();
-                let remote_rewritten = import_rewriter::rewrite(
+                let mut remote_rewritten = import_rewriter::rewrite(
                     &remote_raw,
                     &fs.file.path,
                     &component_name,
@@ -245,6 +245,12 @@ pub fn run(
                     &config.preset,
                     &pkg_name,
                 );
+                if config.dart_target == crate::utils::env_resolver::DartTarget::Primary {
+                    remote_rewritten =
+                        crate::utils::constructor_transpiler::transpile_to_primary_constructor(
+                            &remote_rewritten,
+                        );
+                }
                 print_line_diff(&fs.file.name, &fs.local_content, &remote_rewritten);
             }
             return Ok(());
@@ -258,7 +264,7 @@ pub fn run(
                 continue;
             }
             let remote_raw = client.fetch_file_content(&fs.file.path).unwrap_or_default();
-            let rr = import_rewriter::rewrite(
+            let mut rr = import_rewriter::rewrite(
                 &remote_raw,
                 &fs.file.path,
                 &component_name,
@@ -269,6 +275,9 @@ pub fn run(
                 &config.preset,
                 &pkg_name,
             );
+            if config.dart_target == crate::utils::env_resolver::DartTarget::Primary {
+                rr = crate::utils::constructor_transpiler::transpile_to_primary_constructor(&rr);
+            }
             remote_rewritten_map.insert(idx, rr);
         }
 

@@ -620,7 +620,7 @@
           {
             "name": "just_carousel_theme.dart",
             "path": "components/carousel/just_carousel_theme.dart",
-            "checksum": "sha256:d862afd6740850e6b2f27b9a5b6b2b602fbba4146949a33c1368a984d8e2cf4d"
+            "checksum": "sha256:e16523aa604129164432463a465e7141b2993688d3566407462c8027b3cbab3c"
           },
           {
             "name": "just_carousel_style.dart",
@@ -632,14 +632,14 @@
           {
             "name": "just_carousel.dart",
             "path": "components/carousel/default/just_carousel.dart",
-            "checksum": "sha256:f3bd5fa8fc55e6c5a59ddbc89a3acd45a7a8672e894a54d648b05dc8267c5368"
+            "checksum": "sha256:304008547a167b747a9fdcd560fd74d015ed1b63f032857cac43a307ad40a472"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_carousel.dart",
             "path": "components/carousel/neobrutalism/just_carousel.dart",
-            "checksum": "sha256:f3bd5fa8fc55e6c5a59ddbc89a3acd45a7a8672e894a54d648b05dc8267c5368"
+            "checksum": "sha256:304008547a167b747a9fdcd560fd74d015ed1b63f032857cac43a307ad40a472"
           }
         ]
       },
@@ -972,6 +972,33 @@
       "supportedPresets": [
         "default",
         "neobrutalism"
+      ]
+    },
+    {
+      "name": "_shared_overlay_transition",
+      "version": "0.1.0",
+      "description": "Internal shared overlay transition animations.",
+      "category": "internal",
+      "internal": true,
+      "hidden": true,
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "just_overlay_transition.dart",
+            "path": "components/shared/default/_shared_overlay_transition.dart",
+            "checksum": "sha256:8c977d96997c11900fdb5c04ac82ada59064cb7d3e9eaf7122b54500abbc518e"
+          },
+          {
+            "name": "_shared_overlay_transition.dart",
+            "path": "components/shared/default/_shared_overlay_transition.dart",
+            "checksum": "sha256:8c977d96997c11900fdb5c04ac82ada59064cb7d3e9eaf7122b54500abbc518e"
+          }
+        ]
+      },
+      "supportedPresets": [
+        "default"
       ]
     },
     {
@@ -1494,7 +1521,8 @@
       "hidden": false,
       "registryDependencies": [
         "_shared_pressable",
-        "_shared_focus_indicator"
+        "_shared_focus_indicator",
+        "_shared_overlay_transition"
       ],
       "pubDependencies": {},
       "files": {
@@ -1592,7 +1620,8 @@
         "button",
         "input",
         "_shared_pressable",
-        "_shared_focus_indicator"
+        "_shared_focus_indicator",
+        "_shared_overlay_transition"
       ],
       "pubDependencies": {},
       "files": {
