@@ -35,13 +35,16 @@ void main(List<String> args) async {
       jsonDecode(content) as Map<String, dynamic>;
   final List<dynamic> components = indexJson['components'] as List<dynamic>;
 
-  final corePubspecFile =
-      File(p.join(projectRoot, 'packages', 'core', 'pubspec.yaml'));
+  final corePubspecFile = File(
+    p.join(projectRoot, 'packages', 'core', 'pubspec.yaml'),
+  );
   String? coreVersion;
   if (corePubspecFile.existsSync()) {
     final pubspecContent = corePubspecFile.readAsStringSync();
-    final versionMatch =
-        RegExp(r'^version:\s*([^\s]+)', multiLine: true).firstMatch(pubspecContent);
+    final versionMatch = RegExp(
+      r'^version:\s*([^\s]+)',
+      multiLine: true,
+    ).firstMatch(pubspecContent);
     if (versionMatch != null) {
       coreVersion = versionMatch.group(1);
     }
@@ -49,7 +52,9 @@ void main(List<String> args) async {
 
   if (coreVersion != null) {
     indexJson['version'] = coreVersion;
-    print('Target registry version: $coreVersion (from packages/core/pubspec.yaml)');
+    print(
+      'Target registry version: $coreVersion (from packages/core/pubspec.yaml)',
+    );
   }
 
   if (isDryRun) {

@@ -146,9 +146,14 @@ void main(List<String> args) async {
     if (indexFile.existsSync()) {
       final indexContent = await indexFile.readAsString();
       final indexJson = jsonDecode(indexContent) as Map<String, dynamic>;
-      final corePubspec = File(p.join(projectRoot, dartPackages['just_ui_core']!));
+      final corePubspec = File(
+        p.join(projectRoot, dartPackages['just_ui_core']!),
+      );
       final coreContent = await corePubspec.readAsString();
-      final coreMatch = RegExp(r'^version:\s*([^\s]+)', multiLine: true).firstMatch(coreContent);
+      final coreMatch = RegExp(
+        r'^version:\s*([^\s]+)',
+        multiLine: true,
+      ).firstMatch(coreContent);
       if (coreMatch != null) {
         final coreVer = coreMatch.group(1)!;
         indexJson['version'] = coreVer;
