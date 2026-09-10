@@ -32,7 +32,7 @@ export function AvatarCircle({
     'border border-[length:var(--just-border-width)] border-border',
     'shadow-[var(--just-shadow-solid)]',
     sizeClassMap[size],
-    className,
+    className
   );
 
   if (src) {
@@ -50,7 +50,10 @@ export function AvatarCircle({
   }
 
   return (
-    <span className={cn(base, 'bg-card font-mono font-medium text-muted')} aria-label={alt}>
+    <span
+      className={cn(base, 'bg-card text-muted font-mono font-medium')}
+      aria-label={alt}
+    >
       {fallback ?? '?'}
     </span>
   );

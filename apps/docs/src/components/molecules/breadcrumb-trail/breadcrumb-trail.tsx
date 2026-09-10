@@ -15,14 +15,19 @@ export function BreadcrumbTrail({ segments, className }: BreadcrumbTrailProps) {
           const isLast = i === segments.length - 1;
 
           return (
-            <li key={`${segment.label}-${i}`} className="flex items-center gap-1.5">
+            <li
+              key={`${segment.label}-${i}`}
+              className="flex items-center gap-1.5"
+            >
               {i > 0 ? (
-                <span className="select-none text-muted" aria-hidden="true">/</span>
+                <span className="text-muted select-none" aria-hidden="true">
+                  /
+                </span>
               ) : null}
               {segment.href && !isLast ? (
                 <Link
                   href={segment.href as Route}
-                  className="text-muted transition-colors hover:text-foreground"
+                  className="text-muted hover:text-foreground transition-colors"
                 >
                   {segment.label}
                 </Link>

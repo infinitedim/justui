@@ -101,24 +101,24 @@ class AccordionAdvancedDemo extends StatelessWidget {
 
 ### JustAccordionItem
 
-| Properti   | Tipe Data | Nilai Default | Deskripsi                                                                          |
-| :--------- | :-------- | :------------ | :--------------------------------------------------------------------------------- |
-| `title`    | `String`  | _Wajib_       | Teks judul utama yang ditampilkan pada tombol header.                              |
-| `content`  | `Widget`  | _Wajib_       | Tatanan widget isi konten yang ditampilkan saat panel dibuka.                      |
-| `subtitle` | `Widget?` | `null`        | Teks deskripsi sekunder atau label di bawah judul header.                          |
-| `leading`  | `Widget?` | `null`        | Widget grafis opsional (biasanya ikon) di sebelah kiri judul.                      |
-| `enabled`  | `bool`    | `true`        | Jika `false`, menonaktifkan interaksi header dan mencegah panel dibuka/ditutup.    |
+| Properti   | Tipe Data | Nilai Default | Deskripsi                                                                       |
+| :--------- | :-------- | :------------ | :------------------------------------------------------------------------------ |
+| `title`    | `String`  | _Wajib_       | Teks judul utama yang ditampilkan pada tombol header.                           |
+| `content`  | `Widget`  | _Wajib_       | Tatanan widget isi konten yang ditampilkan saat panel dibuka.                   |
+| `subtitle` | `Widget?` | `null`        | Teks deskripsi sekunder atau label di bawah judul header.                       |
+| `leading`  | `Widget?` | `null`        | Widget grafis opsional (biasanya ikon) di sebelah kiri judul.                   |
+| `enabled`  | `bool`    | `true`        | Jika `false`, menonaktifkan interaksi header dan mencegah panel dibuka/ditutup. |
 
 ### JustAccordion
 
-| Properti          | Tipe Data                 | Nilai Default                   | Deskripsi                                                                                                            |
-| :---------------- | :------------------------ | :------------------------------ | :------------------------------------------------------------------------------------------------------------------- |
-| `items`           | `List<JustAccordionItem>` | _Wajib_                         | Daftar item accordion yang dapat dibuka/ditutup.                                                                     |
-| `allowMultiple`   | `bool`                    | `false`                         | Jika `true`, beberapa item dapat terbuka bersamaan. Jika `false`, membuka satu item akan menutup yang lain.        |
-| `initialExpanded` | `Set<int>?`               | `null`                          | Kumpulan indeks item yang langsung terbuka saat komponen pertama kali dirender.                                      |
-| `onChanged`       | `ValueChanged<Set<int>>?` | `null`                          | Callback yang dipanggil setiap kali panel dibuka atau ditutup, mengembalikan daftar indeks aktif.                   |
-| `variant`         | `JustAccordionVariant`    | `JustAccordionVariant.default_` | Varian tata letak: `.default_` (kartu ber-border), `.flush` (hanya garis pemisah), `.contained` (kartu kelompok).  |
-| `style`           | `JustAccordionStyle?`     | `null`                          | Penyesuaian gaya langsung per-instans.                                                                               |
+| Properti          | Tipe Data                 | Nilai Default                   | Deskripsi                                                                                                         |
+| :---------------- | :------------------------ | :------------------------------ | :---------------------------------------------------------------------------------------------------------------- |
+| `items`           | `List<JustAccordionItem>` | _Wajib_                         | Daftar item accordion yang dapat dibuka/ditutup.                                                                  |
+| `allowMultiple`   | `bool`                    | `false`                         | Jika `true`, beberapa item dapat terbuka bersamaan. Jika `false`, membuka satu item akan menutup yang lain.       |
+| `initialExpanded` | `Set<int>?`               | `null`                          | Kumpulan indeks item yang langsung terbuka saat komponen pertama kali dirender.                                   |
+| `onChanged`       | `ValueChanged<Set<int>>?` | `null`                          | Callback yang dipanggil setiap kali panel dibuka atau ditutup, mengembalikan daftar indeks aktif.                 |
+| `variant`         | `JustAccordionVariant`    | `JustAccordionVariant.default_` | Varian tata letak: `.default_` (kartu ber-border), `.flush` (hanya garis pemisah), `.contained` (kartu kelompok). |
+| `style`           | `JustAccordionStyle?`     | `null`                          | Penyesuaian gaya langsung per-instans.                                                                            |
 
 ---
 

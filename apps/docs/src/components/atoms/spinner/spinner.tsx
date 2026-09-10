@@ -22,9 +22,9 @@ export function Spinner({
       role="status"
       aria-label={label}
       className={cn(
-        'inline-block animate-spin rounded-full border-accent border-t-transparent',
+        'border-accent inline-block animate-spin rounded-full border-t-transparent',
         sizeClassMap[size],
-        className,
+        className
       )}
       {...rest}
     >
