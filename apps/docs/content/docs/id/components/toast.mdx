@@ -102,28 +102,28 @@ void triggerAdvancedToast(BuildContext context) {
 
 ### JustToastController
 
-| Properti            | Tipe Data       | Nilai Default                | Deskripsi                                                                                                           |
-| :------------------ | :-------------- | :--------------------------- | :------------------------------------------------------------------------------------------------------------------ |
-| `behavior`          | `ToastBehavior` | `ToastBehavior.stacked`      | Menentukan bagaimana beberapa toast bersamaan ditampilkan: `.stacked` (ditumpuk) atau `.queue` (antrean).         |
-| `limit`             | `int?`          | `3`                          | Jumlah maksimum toast bersamaan yang ditampilkan di layar. Toast yang berlebih akan dimasukkan ke dalam antrean.    |
+| Properti            | Tipe Data       | Nilai Default                | Deskripsi                                                                                                               |
+| :------------------ | :-------------- | :--------------------------- | :---------------------------------------------------------------------------------------------------------------------- |
+| `behavior`          | `ToastBehavior` | `ToastBehavior.stacked`      | Menentukan bagaimana beberapa toast bersamaan ditampilkan: `.stacked` (ditumpuk) atau `.queue` (antrean).               |
+| `limit`             | `int?`          | `3`                          | Jumlah maksimum toast bersamaan yang ditampilkan di layar. Toast yang berlebih akan dimasukkan ke dalam antrean.        |
 | `position`          | `ToastPosition` | `ToastPosition.bottomCenter` | Lokasi penjangkaran di viewport: `.topLeft`, `.topCenter`, `.topRight`, `.bottomLeft`, `.bottomCenter`, `.bottomRight`. |
-| `enableDragDismiss` | `bool`          | `true`                       | Mengizinkan pengguna menggeser toast secara horizontal untuk menutupnya.                                            |
+| `enableDragDismiss` | `bool`          | `true`                       | Mengizinkan pengguna menggeser toast secara horizontal untuk menutupnya.                                                |
 
 ### Metode show()
 
 `context.justToast.show(...)` menerima parameter berikut:
 
-| Parameter             | Tipe Data                      | Nilai Default          | Deskripsi                                                                                         |
-| :-------------------- | :----------------------------- | :--------------------- | :------------------------------------------------------------------------------------------------ |
-| `message`             | `String`                       | _Wajib_                | Teks pesan deskriptif yang ditampilkan dalam notifikasi.                                          |
+| Parameter             | Tipe Data                      | Nilai Default          | Deskripsi                                                                                           |
+| :-------------------- | :----------------------------- | :--------------------- | :-------------------------------------------------------------------------------------------------- |
+| `message`             | `String`                       | _Wajib_                | Teks pesan deskriptif yang ditampilkan dalam notifikasi.                                            |
 | `variant`             | `ToastVariant`                 | `ToastVariant.info`    | Varian warna dan status: `.info` (biru), `.success` (hijau), `.warning` (oranye), `.error` (merah). |
-| `duration`            | `Duration`                     | `Duration(seconds: 3)` | Durasi waktu sebelum toast menghilang secara otomatis.                                            |
-| `style`               | `JustToastStyle?`              | `null`                 | Penyesuaian gaya langsung per-instans (padding, garis batas, warna, bayangan).                    |
-| `icon`                | `Widget?`                      | `null`                 | Widget awalan (biasanya ikon status) di sebelah kiri teks pesan.                                  |
-| `action`              | `Widget?`                      | `null`                 | Widget kontrol kustom (biasanya tombol teks) di bagian paling kanan.                              |
-| `onDismissed`         | `VoidCallback?`                | `null`                 | Callback yang dipanggil sesaat setelah toast menyelesaikan transisi keluar.                        |
-| `animationController` | `AnimationController?`         | `null`                 | Mengubah pengontrol garis waktu transisi masuk dan keluar.                                        |
-| `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                 | Transisi animasi tata letak kustom.                                                               |
+| `duration`            | `Duration`                     | `Duration(seconds: 3)` | Durasi waktu sebelum toast menghilang secara otomatis.                                              |
+| `style`               | `JustToastStyle?`              | `null`                 | Penyesuaian gaya langsung per-instans (padding, garis batas, warna, bayangan).                      |
+| `icon`                | `Widget?`                      | `null`                 | Widget awalan (biasanya ikon status) di sebelah kiri teks pesan.                                    |
+| `action`              | `Widget?`                      | `null`                 | Widget kontrol kustom (biasanya tombol teks) di bagian paling kanan.                                |
+| `onDismissed`         | `VoidCallback?`                | `null`                 | Callback yang dipanggil sesaat setelah toast menyelesaikan transisi keluar.                         |
+| `animationController` | `AnimationController?`         | `null`                 | Mengubah pengontrol garis waktu transisi masuk dan keluar.                                          |
+| `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                 | Transisi animasi tata letak kustom.                                                                 |
 
 ---
 

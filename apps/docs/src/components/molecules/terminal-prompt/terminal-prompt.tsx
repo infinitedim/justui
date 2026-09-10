@@ -18,11 +18,11 @@ export function TerminalPrompt({
       className={cn('flex gap-2 font-mono text-xs leading-6', className)}
       {...rest}
     >
-      <span className="shrink-0 select-none text-accent">{prefix}</span>
+      <span className="text-accent shrink-0 select-none">{prefix}</span>
       <span className="text-foreground">{command}</span>
       {cursor ? (
         <span
-          className="inline-block h-4 w-1.5 self-center animate-pulse bg-accent"
+          className="bg-accent inline-block h-4 w-1.5 animate-pulse self-center"
           aria-hidden="true"
         />
       ) : null}

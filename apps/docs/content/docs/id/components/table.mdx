@@ -70,7 +70,7 @@ Widget buildBasicTable(BuildContext context) {
 
 ### Penggunaan Lanjutan
 
-Aktifkan pengurutan kolom, pemilihan baris, tampilan kosong kustom, dan varian tata letak. Bungkus nilai parameter menggunakan *Dart Dot Shorthand* (seperti `.striped` untuk varian):
+Aktifkan pengurutan kolom, pemilihan baris, tampilan kosong kustom, dan varian tata letak. Bungkus nilai parameter menggunakan _Dart Dot Shorthand_ (seperti `.striped` untuk varian):
 
 ```dart
 import 'package:flutter/material.dart';
@@ -160,31 +160,31 @@ class _ProductTableDemoState extends State<ProductTableDemo> {
 
 ### `JustTableColumn<T>`
 
-| Properti    | Tipe Data                | Nilai Default | Deskripsi                                                                                                          |
-| :---------- | :----------------------- | :------------ | :----------------------------------------------------------------------------------------------------------------- |
-| `header`    | `String`                 | _Wajib_       | Teks label header kolom.                                                                                           |
-| `cell`      | `Widget Function(T row)` | _Wajib_       | Pembuat widget yang memetakan data baris `T` ke konten sel.                                                        |
-| `width`     | `double?`                | `null`        | Lebar tetap opsional untuk kolom ini dalam piksel. Jika `null`, kolom mengisi sisa ruang kisi.                     |
-| `sortable`  | `bool`                   | `false`       | Jika `true`, mengaktifkan pemicu pengurutan header interaktif.                                                     |
-| `alignment` | `MainAxisAlignment`      | `.start`      | Penyelarasan horizontal konten header dan sel di dalam area kolom: `.start`, `.end`, `.center`.                    |
+| Properti    | Tipe Data                | Nilai Default | Deskripsi                                                                                       |
+| :---------- | :----------------------- | :------------ | :---------------------------------------------------------------------------------------------- |
+| `header`    | `String`                 | _Wajib_       | Teks label header kolom.                                                                        |
+| `cell`      | `Widget Function(T row)` | _Wajib_       | Pembuat widget yang memetakan data baris `T` ke konten sel.                                     |
+| `width`     | `double?`                | `null`        | Lebar tetap opsional untuk kolom ini dalam piksel. Jika `null`, kolom mengisi sisa ruang kisi.  |
+| `sortable`  | `bool`                   | `false`       | Jika `true`, mengaktifkan pemicu pengurutan header interaktif.                                  |
+| `alignment` | `MainAxisAlignment`      | `.start`      | Penyelarasan horizontal konten header dan sel di dalam area kolom: `.start`, `.end`, `.center`. |
 
 ### `JustTable<T>`
 
-| Properti             | Tipe Data                  | Nilai Default               | Deskripsi                                                                                                  |
-| :------------------- | :------------------------- | :-------------------------- | :--------------------------------------------------------------------------------------------------------- |
-| `columns`            | `List<JustTableColumn<T>>` | _Wajib_                     | Daftar konfigurasi kolom.                                                                                  |
-| `rows`               | `List<T>`                  | _Wajib_                     | Daftar model data baris.                                                                                   |
-| `selectable`         | `bool`                     | `false`                     | Jika `true`, menambahkan kolom checkbox di awal baris untuk memilih beberapa baris.                        |
-| `selectedRows`       | `Set<int>?`                | `null`                      | Kumpulan indeks baris yang mewakili baris yang sedang dipilih saat ini.                                    |
-| `onSelectionChanged` | `ValueChanged<Set<int>>?`  | `null`                      | Callback yang dipanggil saat pilihan baris berubah.                                                        |
-| `sortColumnIndex`    | `int?`                     | `null`                      | Indeks kolom pengurutan yang aktif. Menampilkan panah petunjuk di sebelah label header jika diatur.        |
-| `sortAscending`      | `bool`                     | `true`                      | Arah pengurutan aktif: `true` (naik/ascending), `false` (turun/descending).                                |
-| `onSort`             | `ValueChanged<int>?`       | `null`                      | Callback yang dipanggil saat header kolom yang dapat diurutkan diklik.                                     |
-| `stickyHeader`       | `bool`                     | `true`                      | Jika `true`, mengunci baris header di bagian atas saat konten baris digulirkan secara vertikal.            |
-| `rowHeight`          | `double`                   | `52.0`                      | Tinggi vertikal statis untuk setiap baris tabel dalam piksel.                                              |
+| Properti             | Tipe Data                  | Nilai Default               | Deskripsi                                                                                                     |
+| :------------------- | :------------------------- | :-------------------------- | :------------------------------------------------------------------------------------------------------------ |
+| `columns`            | `List<JustTableColumn<T>>` | _Wajib_                     | Daftar konfigurasi kolom.                                                                                     |
+| `rows`               | `List<T>`                  | _Wajib_                     | Daftar model data baris.                                                                                      |
+| `selectable`         | `bool`                     | `false`                     | Jika `true`, menambahkan kolom checkbox di awal baris untuk memilih beberapa baris.                           |
+| `selectedRows`       | `Set<int>?`                | `null`                      | Kumpulan indeks baris yang mewakili baris yang sedang dipilih saat ini.                                       |
+| `onSelectionChanged` | `ValueChanged<Set<int>>?`  | `null`                      | Callback yang dipanggil saat pilihan baris berubah.                                                           |
+| `sortColumnIndex`    | `int?`                     | `null`                      | Indeks kolom pengurutan yang aktif. Menampilkan panah petunjuk di sebelah label header jika diatur.           |
+| `sortAscending`      | `bool`                     | `true`                      | Arah pengurutan aktif: `true` (naik/ascending), `false` (turun/descending).                                   |
+| `onSort`             | `ValueChanged<int>?`       | `null`                      | Callback yang dipanggil saat header kolom yang dapat diurutkan diklik.                                        |
+| `stickyHeader`       | `bool`                     | `true`                      | Jika `true`, mengunci baris header di bagian atas saat konten baris digulirkan secara vertikal.               |
+| `rowHeight`          | `double`                   | `52.0`                      | Tinggi vertikal statis untuk setiap baris tabel dalam piksel.                                                 |
 | `variant`            | `JustTableVariant`         | `JustTableVariant.default_` | Varian visual: `.default_` (sel ber-border), `.striped` (baris berselang-seling), `.minimal` (hanya pemisah). |
-| `style`              | `JustTableStyle?`          | `null`                      | Penyesuaian gaya langsung per-instans.                                                                     |
-| `emptyState`         | `Widget?`                  | `null`                      | Widget yang ditampilkan saat daftar `rows` kosong.                                                         |
+| `style`              | `JustTableStyle?`          | `null`                      | Penyesuaian gaya langsung per-instans.                                                                        |
+| `emptyState`         | `Widget?`                  | `null`                      | Widget yang ditampilkan saat daftar `rows` kosong.                                                            |
 
 ---
 

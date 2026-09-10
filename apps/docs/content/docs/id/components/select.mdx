@@ -28,7 +28,7 @@ justui add select
 
 ### Penggunaan Dasar
 
-Gunakan `JustSelect` untuk memilih opsi dari daftar. Bungkus nilai parameter menggunakan sintaksis *Dart Dot Shorthand* (seperti `.md` untuk ukuran):
+Gunakan `JustSelect` untuk memilih opsi dari daftar. Bungkus nilai parameter menggunakan sintaksis _Dart Dot Shorthand_ (seperti `.md` untuk ukuran):
 
 ```dart
 import 'package:flutter/material.dart';
@@ -118,32 +118,32 @@ class _SelectAdvancedDemoState extends State<SelectAdvancedDemo> {
 
 ### `JustSelectOption<T>`
 
-| Properti    | Tipe Data | Nilai Default | Deskripsi                                                                               |
-| :---------- | :-------- | :------------ | :-------------------------------------------------------------------------------------- |
-| `value`     | `T?`      | _Wajib_       | Nilai model yang dikembalikan pada `onChanged`. Nilainya `null` untuk item pemisah.     |
-| `label`     | `String`  | _Wajib_       | Teks label yang ditampilkan pada opsi select.                                           |
-| `icon`      | `Widget?` | `null`        | Ikon awalan opsional atau grafis di sebelah kiri label opsi.                            |
-| `enabled`   | `bool`    | `true`        | Jika `false`, opsi menjadi tidak interaktif (rendup dan dilewati fokus).                |
-| `isDivider` | `bool`    | `false`       | Jika `true`, opsi berfungsi sebagai garis pemisah.                                      |
+| Properti    | Tipe Data | Nilai Default | Deskripsi                                                                           |
+| :---------- | :-------- | :------------ | :---------------------------------------------------------------------------------- |
+| `value`     | `T?`      | _Wajib_       | Nilai model yang dikembalikan pada `onChanged`. Nilainya `null` untuk item pemisah. |
+| `label`     | `String`  | _Wajib_       | Teks label yang ditampilkan pada opsi select.                                       |
+| `icon`      | `Widget?` | `null`        | Ikon awalan opsional atau grafis di sebelah kiri label opsi.                        |
+| `enabled`   | `bool`    | `true`        | Jika `false`, opsi menjadi tidak interaktif (rendup dan dilewati fokus).            |
+| `isDivider` | `bool`    | `false`       | Jika `true`, opsi berfungsi sebagai garis pemisah.                                  |
 
 - **Konstruktor Bernama**: `JustSelectOption.divider()` membuat garis pemisah untuk mengelompokkan daftar opsi.
 
 ### `JustSelect<T>`
 
-| Properti            | Tipe Data                   | Nilai Default | Deskripsi                                                                                                            |
-| :------------------ | :-------------------------- | :------------ | :------------------------------------------------------------------------------------------------------------------- |
-| `options`           | `List<JustSelectOption<T>>` | _Wajib_       | Daftar opsi yang dapat dipilih dan pemisah di dalam dropdown.                                                        |
-| `value`             | `T?`                        | _Wajib_       | Nilai opsi yang dipilih saat ini.                                                                                    |
-| `onChanged`         | `ValueChanged<T>?`          | _Wajib_       | Callback yang dipanggil sesaat setelah opsi dipilih.                                                                |
-| `placeholder`       | `String?`                   | `null`        | Teks yang ditampilkan di kotak pemicu saat nilai kosong/null.                                                       |
-| `label`             | `String?`                   | `null`        | Teks label melayang opsional yang dirender di atas pemicu select.                                                    |
-| `errorText`         | `String?`                   | `null`        | Pesan validasi error. Jika diisi, warna garis batas menjadi merah dan memicu peringatan aksesibilitas.               |
-| `enabled`           | `bool`                      | `true`        | Jika `false`, menonaktifkan pemicu input dan meredupkan tampilan.                                                    |
-| `searchable`        | `bool`                      | `false`       | Jika `true`, menampilkan kolom input teks di bagian atas daftar dropdown untuk memfilter opsi.                       |
-| `size`              | `JustSelectSize`            | `.md`         | Skala dimensi ukuran: `.sm` (36px), `.md` (44px), `.lg` (52px).                                                       |
-| `style`             | `JustSelectStyle?`          | `null`        | Penyesuaian gaya langsung per-instans.                                                                               |
-| `prefixIcon`        | `Widget?`                   | `null`        | Widget grafis opsional di sebelah kiri pemicu input select.                                                          |
-| `maxDropdownHeight` | `int`                       | `300`         | Batasan tinggi maksimum untuk panel dropdown yang dapat digulir.                                                     |
+| Properti            | Tipe Data                   | Nilai Default | Deskripsi                                                                                              |
+| :------------------ | :-------------------------- | :------------ | :----------------------------------------------------------------------------------------------------- |
+| `options`           | `List<JustSelectOption<T>>` | _Wajib_       | Daftar opsi yang dapat dipilih dan pemisah di dalam dropdown.                                          |
+| `value`             | `T?`                        | _Wajib_       | Nilai opsi yang dipilih saat ini.                                                                      |
+| `onChanged`         | `ValueChanged<T>?`          | _Wajib_       | Callback yang dipanggil sesaat setelah opsi dipilih.                                                   |
+| `placeholder`       | `String?`                   | `null`        | Teks yang ditampilkan di kotak pemicu saat nilai kosong/null.                                          |
+| `label`             | `String?`                   | `null`        | Teks label melayang opsional yang dirender di atas pemicu select.                                      |
+| `errorText`         | `String?`                   | `null`        | Pesan validasi error. Jika diisi, warna garis batas menjadi merah dan memicu peringatan aksesibilitas. |
+| `enabled`           | `bool`                      | `true`        | Jika `false`, menonaktifkan pemicu input dan meredupkan tampilan.                                      |
+| `searchable`        | `bool`                      | `false`       | Jika `true`, menampilkan kolom input teks di bagian atas daftar dropdown untuk memfilter opsi.         |
+| `size`              | `JustSelectSize`            | `.md`         | Skala dimensi ukuran: `.sm` (36px), `.md` (44px), `.lg` (52px).                                        |
+| `style`             | `JustSelectStyle?`          | `null`        | Penyesuaian gaya langsung per-instans.                                                                 |
+| `prefixIcon`        | `Widget?`                   | `null`        | Widget grafis opsional di sebelah kiri pemicu input select.                                            |
+| `maxDropdownHeight` | `int`                       | `300`         | Batasan tinggi maksimum untuk panel dropdown yang dapat digulir.                                       |
 
 ---
 

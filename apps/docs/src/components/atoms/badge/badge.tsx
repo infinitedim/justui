@@ -29,10 +29,10 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-[var(--just-radius-md)] px-2 py-0.5 font-mono text-[11px] font-medium',
-        'shadow-[var(--just-shadow-solid)]',
+        'inline-flex items-center rounded-(--just-radius-md) px-2 py-0.5 font-mono text-[11px] font-medium',
+        'shadow-solid',
         variantClassMap[variant],
-        className,
+        className
       )}
       {...rest}
     >

@@ -1,5 +1,4 @@
 export interface CategoryFilterPillProps {
-
   /** Category label text. */
   label: string;
   /** Number of components in this category. */

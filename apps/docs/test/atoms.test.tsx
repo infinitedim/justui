@@ -33,7 +33,11 @@ describe('Atoms Components', () => {
     });
 
     it('supports custom tag via as prop', () => {
-      render(<Typography as="span" variant="h2">Span Heading</Typography>);
+      render(
+        <Typography as="span" variant="h2">
+          Span Heading
+        </Typography>
+      );
       const el = screen.getByText('Span Heading');
       expect(el.tagName).toBe('SPAN');
     });
@@ -77,7 +81,9 @@ describe('Atoms Components', () => {
   describe('Icon', () => {
     it('renders icon with label', () => {
       render(<Icon icon={Check} label="Success checkmark" />);
-      expect(screen.getByRole('img', { name: 'Success checkmark' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('img', { name: 'Success checkmark' })
+      ).toBeInTheDocument();
     });
   });
 
@@ -109,7 +115,9 @@ describe('Atoms Components', () => {
   describe('Spinner', () => {
     it('renders status role with label', () => {
       render(<Spinner label="Loading items" />);
-      expect(screen.getByRole('status', { name: 'Loading items' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('status', { name: 'Loading items' })
+      ).toBeInTheDocument();
     });
   });
 
@@ -130,7 +138,15 @@ describe('Atoms Components', () => {
 
   describe('Slider', () => {
     it('renders range slider', () => {
-      render(<Slider min={0} max={100} value={50} label="Volume" onChange={() => {}} />);
+      render(
+        <Slider
+          min={0}
+          max={100}
+          value={50}
+          label="Volume"
+          onChange={() => {}}
+        />
+      );
       const slider = screen.getByRole('slider', { name: 'Volume' });
       expect(slider).toBeInTheDocument();
     });

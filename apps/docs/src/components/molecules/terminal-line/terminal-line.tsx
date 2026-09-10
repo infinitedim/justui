@@ -1,5 +1,8 @@
 import { cn } from '@/lib/cn';
-import type { TerminalLineProps, TerminalLineKind } from './terminal-line.types';
+import type {
+  TerminalLineProps,
+  TerminalLineKind,
+} from './terminal-line.types';
 
 const kindClassMap: Record<TerminalLineKind, string> = {
   output: 'text-secondary',
@@ -25,12 +28,12 @@ export function TerminalLine({
       className={cn(
         'flex gap-2 font-mono text-xs leading-6',
         kindClassMap[kind],
-        className,
+        className
       )}
       {...rest}
     >
       {timestamp ? (
-        <span className="shrink-0 select-none text-muted">{timestamp}</span>
+        <span className="text-muted shrink-0 select-none">{timestamp}</span>
       ) : null}
       <span className="whitespace-pre-wrap">{children}</span>
     </div>

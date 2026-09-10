@@ -13,13 +13,13 @@ export function StatCounter({
 }: StatCounterProps) {
   return (
     <div className={cn('flex flex-col items-center gap-1', className)}>
-      <span className="font-mono text-2xl font-bold text-foreground md:text-3xl">
+      <span className="text-foreground font-mono text-2xl font-bold md:text-3xl">
         {value}
         {unit ? (
-          <span className="ml-0.5 text-sm font-normal text-muted">{unit}</span>
+          <span className="text-muted ml-0.5 text-sm font-normal">{unit}</span>
         ) : null}
       </span>
-      <span className="font-mono text-xs text-muted">{label}</span>
+      <span className="text-muted font-mono text-xs">{label}</span>
     </div>
   );
 }

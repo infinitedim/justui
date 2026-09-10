@@ -56,7 +56,9 @@ describe('Molecules Components', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Toggle preset' })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Toggle preset' })
+        ).toBeInTheDocument();
       });
 
       const btn = screen.getByRole('button', { name: 'Toggle preset' });
@@ -76,7 +78,9 @@ describe('Molecules Components', () => {
     it('renders theme toggle button when mounted', async () => {
       render(<ThemeSwitcher label="Toggle theme" />);
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Toggle theme' })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Toggle theme' })
+        ).toBeInTheDocument();
       });
     });
   });
@@ -103,7 +107,9 @@ describe('Molecules Components', () => {
 
   describe('ColorSwatchItem', () => {
     it('renders label and value', () => {
-      render(<ColorSwatchItem color="#ffffff" label="Background" value="#fff" />);
+      render(
+        <ColorSwatchItem color="#ffffff" label="Background" value="#fff" />
+      );
       expect(screen.getByText('Background')).toBeInTheDocument();
       expect(screen.getByText('#fff')).toBeInTheDocument();
     });
@@ -111,7 +117,11 @@ describe('Molecules Components', () => {
 
   describe('TerminalLine', () => {
     it('renders output with timestamp', () => {
-      render(<TerminalLine kind="success" timestamp="12:00">Task completed</TerminalLine>);
+      render(
+        <TerminalLine kind="success" timestamp="12:00">
+          Task completed
+        </TerminalLine>
+      );
       expect(screen.getByText('Task completed')).toBeInTheDocument();
       expect(screen.getByText('12:00')).toBeInTheDocument();
     });
@@ -129,7 +139,9 @@ describe('Molecules Components', () => {
     it('fires onChange with selected viewport', () => {
       const onChange = vi.fn();
       render(<ViewportSwitch value="mobile" onChange={onChange} />);
-      const tabletRadio = screen.getByRole('radio', { name: 'Tablet viewport' });
+      const tabletRadio = screen.getByRole('radio', {
+        name: 'Tablet viewport',
+      });
       fireEvent.click(tabletRadio);
       expect(onChange).toHaveBeenCalledWith('tablet');
     });
@@ -137,7 +149,9 @@ describe('Molecules Components', () => {
 
   describe('FormulaMathBlock', () => {
     it('renders formula code and caption', () => {
-      render(<FormulaMathBlock formula="V(G) <= 3" caption="Cyclomatic Complexity" />);
+      render(
+        <FormulaMathBlock formula="V(G) <= 3" caption="Cyclomatic Complexity" />
+      );
       expect(screen.getByText('V(G) <= 3')).toBeInTheDocument();
       expect(screen.getByText('Cyclomatic Complexity')).toBeInTheDocument();
     });
@@ -155,13 +169,21 @@ describe('Molecules Components', () => {
         />
       );
       expect(screen.getByText('Home')).toBeInTheDocument();
-      expect(screen.getByText('Button')).toHaveAttribute('aria-current', 'page');
+      expect(screen.getByText('Button')).toHaveAttribute(
+        'aria-current',
+        'page'
+      );
     });
   });
 
   describe('CodeBlockHeader', () => {
     it('renders title and actions slot', () => {
-      render(<CodeBlockHeader title="button.dart" actions={<button type="button">Copy</button>} />);
+      render(
+        <CodeBlockHeader
+          title="button.dart"
+          actions={<button type="button">Copy</button>}
+        />
+      );
       expect(screen.getByText('button.dart')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Copy' })).toBeInTheDocument();
     });
@@ -189,7 +211,9 @@ describe('Molecules Components', () => {
   describe('StateToggle', () => {
     it('toggles switch state on click', () => {
       const onChange = vi.fn();
-      render(<StateToggle value={false} onChange={onChange} label="Disabled" />);
+      render(
+        <StateToggle value={false} onChange={onChange} label="Disabled" />
+      );
       const toggle = screen.getByRole('switch');
       fireEvent.click(toggle);
       expect(onChange).toHaveBeenCalledWith(true);
@@ -208,7 +232,9 @@ describe('Molecules Components', () => {
   describe('LightnessSlider', () => {
     it('renders slider and handles change', () => {
       const onChange = vi.fn();
-      render(<LightnessSlider value={50} onChange={onChange} label="Lightness" />);
+      render(
+        <LightnessSlider value={50} onChange={onChange} label="Lightness" />
+      );
       const slider = screen.getByRole('slider', { name: 'Lightness' });
       fireEvent.change(slider, { target: { value: '70' } });
       expect(onChange).toHaveBeenCalledWith(70);
@@ -217,7 +243,9 @@ describe('Molecules Components', () => {
 
   describe('SearchResultItem', () => {
     it('renders item with label, type and href', () => {
-      render(<SearchResultItem label="Button" type="Component" href="/docs/button" />);
+      render(
+        <SearchResultItem label="Button" type="Component" href="/docs/button" />
+      );
       expect(screen.getByText('Button')).toBeInTheDocument();
       expect(screen.getByText('Component')).toBeInTheDocument();
     });

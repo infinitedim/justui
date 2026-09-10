@@ -74,18 +74,18 @@ Widget buildAdvancedTooltip(BuildContext context) {
 
 ### JustTooltip
 
-| Properti              | Tipe Data                                                   | Nilai Default                 | Deskripsi                                                                                    |
-| :-------------------- | :---------------------------------------------------------- | :---------------------------- | :------------------------------------------------------------------------------------------- |
-| `message`             | `String`                                                    | _Wajib_                       | Konten string teks yang ditampilkan di dalam balon melayang.                                 |
-| `child`               | `Widget`                                                    | _Wajib_                       | Widget target yang memicu overlay tooltip saat di-hover atau ditekan.                        |
-| `position`            | `TooltipPosition`                                           | `TooltipPosition.auto`        | Posisi penyejajaran relatif terhadap target: `.top`, `.bottom`, `.left`, `.right`, `.auto`.  |
-| `triggerOnHover`      | `bool`                                                      | `true`                        | Jika `true`, peristiwa hover kursor tetikus akan memicu penampakan tooltip.                  |
-| `triggerOnLongPress`  | `bool`                                                      | `true`                        | Jika `true`, gestur tekan lama di layar sentuh akan memicu penampakan tooltip.               |
-| `showDelay`           | `Duration`                                                  | `Duration.zero`               | Durasi penundaan sebelum menampilkan balon tooltip saat peristiwa pemicu terdeteksi.       |
-| `hideDelay`           | `Duration`                                                  | `Duration(milliseconds: 150)` | Durasi penundaan sebelum menutup balon tooltip setelah peristiwa pemicu berakhir.            |
-| `style`               | `JustTooltipStyle?`                                         | `null`                        | Penyesuaian gaya langsung per-instans (padding, garis batas, warna, lebar maks, dll.).       |
-| `animationController` | `AnimationController?`                                      | `null`                        | Pengontrol animasi kustom.                                                                   |
-| `animationBuilder`    | `Widget Function(BuildContext, Animation<double>, Widget)?` | `null`                        | Builder widget kustom untuk mendefinisikan animasi transisi masuk dan keluar.                |
+| Properti              | Tipe Data                                                   | Nilai Default                 | Deskripsi                                                                                   |
+| :-------------------- | :---------------------------------------------------------- | :---------------------------- | :------------------------------------------------------------------------------------------ |
+| `message`             | `String`                                                    | _Wajib_                       | Konten string teks yang ditampilkan di dalam balon melayang.                                |
+| `child`               | `Widget`                                                    | _Wajib_                       | Widget target yang memicu overlay tooltip saat di-hover atau ditekan.                       |
+| `position`            | `TooltipPosition`                                           | `TooltipPosition.auto`        | Posisi penyejajaran relatif terhadap target: `.top`, `.bottom`, `.left`, `.right`, `.auto`. |
+| `triggerOnHover`      | `bool`                                                      | `true`                        | Jika `true`, peristiwa hover kursor tetikus akan memicu penampakan tooltip.                 |
+| `triggerOnLongPress`  | `bool`                                                      | `true`                        | Jika `true`, gestur tekan lama di layar sentuh akan memicu penampakan tooltip.              |
+| `showDelay`           | `Duration`                                                  | `Duration.zero`               | Durasi penundaan sebelum menampilkan balon tooltip saat peristiwa pemicu terdeteksi.        |
+| `hideDelay`           | `Duration`                                                  | `Duration(milliseconds: 150)` | Durasi penundaan sebelum menutup balon tooltip setelah peristiwa pemicu berakhir.           |
+| `style`               | `JustTooltipStyle?`                                         | `null`                        | Penyesuaian gaya langsung per-instans (padding, garis batas, warna, lebar maks, dll.).      |
+| `animationController` | `AnimationController?`                                      | `null`                        | Pengontrol animasi kustom.                                                                  |
+| `animationBuilder`    | `Widget Function(BuildContext, Animation<double>, Widget)?` | `null`                        | Builder widget kustom untuk mendefinisikan animasi transisi masuk dan keluar.               |
 
 ---
 

@@ -61,7 +61,7 @@ class _ToggleBasicDemoState extends State<ToggleBasicDemo> {
 
 ### Kelompok Toggle (Seleksi Tunggal dan Ganda)
 
-Kelola sekelompok opsi toggle. Bungkus nilai parameter menggunakan *Dart Dot Shorthand* (seperti `.md` untuk ukuran):
+Kelola sekelompok opsi toggle. Bungkus nilai parameter menggunakan _Dart Dot Shorthand_ (seperti `.md` untuk ukuran):
 
 ```dart
 import 'package:flutter/material.dart';
@@ -136,34 +136,34 @@ class _ToggleGroupDemoState extends State<ToggleGroupDemo> {
 
 ### JustToggle
 
-| Properti    | Tipe Data          | Nilai Default | Deskripsi                                                                                         |
-| :---------- | :----------------- | :------------ | :------------------------------------------------------------------------------------------------ |
-| `selected`  | `bool`             | _Wajib_       | Status aktif tombol toggle. Jika `true`, tombol dirender dalam status dipilih.                    |
-| `onPressed` | `VoidCallback?`    | _Wajib_       | Callback yang dipanggil saat tombol ditekan. Jika `null`, interaksi visual dinonaktifkan.         |
-| `child`     | `Widget`           | _Wajib_       | Widget konten anak (seperti teks atau ikon) di tengah tombol toggle.                              |
-| `enabled`   | `bool`             | `true`        | Jika `false`, meredupkan komponen secara visual dan mencegah peristiwa interaksi pengguna.        |
-| `size`      | `JustToggleSize`   | `.md`         | Skala dimensi ukuran: `.sm` (32px), `.md` (40px), `.lg` (48px).                                   |
-| `style`     | `JustToggleStyle?` | `null`        | Penyesuaian gaya langsung per-instans.                                                            |
+| Properti    | Tipe Data          | Nilai Default | Deskripsi                                                                                  |
+| :---------- | :----------------- | :------------ | :----------------------------------------------------------------------------------------- |
+| `selected`  | `bool`             | _Wajib_       | Status aktif tombol toggle. Jika `true`, tombol dirender dalam status dipilih.             |
+| `onPressed` | `VoidCallback?`    | _Wajib_       | Callback yang dipanggil saat tombol ditekan. Jika `null`, interaksi visual dinonaktifkan.  |
+| `child`     | `Widget`           | _Wajib_       | Widget konten anak (seperti teks atau ikon) di tengah tombol toggle.                       |
+| `enabled`   | `bool`             | `true`        | Jika `false`, meredupkan komponen secara visual dan mencegah peristiwa interaksi pengguna. |
+| `size`      | `JustToggleSize`   | `.md`         | Skala dimensi ukuran: `.sm` (32px), `.md` (40px), `.lg` (48px).                            |
+| `style`     | `JustToggleStyle?` | `null`        | Penyesuaian gaya langsung per-instans.                                                     |
 
 ### JustToggleGroupItem
 
-| Properti  | Tipe Data | Nilai Default | Deskripsi                                                                               |
-| :-------- | :-------- | :------------ | :-------------------------------------------------------------------------------------- |
-| `child`   | `Widget`  | _Wajib_       | Widget konten di tengah tombol toggle kelompok.                                          |
-| `enabled` | `bool`    | `true`        | Jika `false`, menonaktifkan interaksi tekan dan meredupkan item tombol spesifik ini.    |
+| Properti  | Tipe Data | Nilai Default | Deskripsi                                                                            |
+| :-------- | :-------- | :------------ | :----------------------------------------------------------------------------------- |
+| `child`   | `Widget`  | _Wajib_       | Widget konten di tengah tombol toggle kelompok.                                      |
+| `enabled` | `bool`    | `true`        | Jika `false`, menonaktifkan interaksi tekan dan meredupkan item tombol spesifik ini. |
 
 ### JustToggleGroup
 
-| Properti          | Tipe Data                   | Nilai Default       | Deskripsi                                                                                                            |
-| :---------------- | :-------------------------- | :------------------ | :------------------------------------------------------------------------------------------------------------------- |
-| `items`           | `List<JustToggleGroupItem>` | _Wajib_             | Daftar item toggle yang ditampilkan dalam kelompok.                                                                  |
-| `selectedIndices` | `Set<int>`                  | _Wajib_             | Kumpulan yang berisi indeks item yang sedang aktif/dipilih.                                                          |
-| `onChanged`       | `ValueChanged<Set<int>>?`   | _Wajib_             | Callback yang dipanggil saat item toggle ditekan, mengembalikan kumpulan indeks terpilih yang diperbarui.          |
-| `allowMultiple`   | `bool`                      | `false`             | Jika `true`, mengizinkan beberapa item toggle dipilih secara bersamaan.                                              |
-| `nullable`        | `bool`                      | `true`              | Jika `true`, mengizinkan pilihan aktif dibatalkan (kumpulan terpilih bisa menjadi kosong).                           |
-| `size`            | `JustToggleSize`            | `JustToggleSize.md` | Skala dimensi ukuran yang diterapkan pada semua item: `.sm`, `.md`, `.lg`.                                           |
-| `style`           | `JustToggleStyle?`          | `null`              | Penyesuaian gaya langsung per-instans yang diterapkan pada semua item dalam kelompok.                                |
-| `direction`       | `Axis`                      | `Axis.horizontal`   | Arah tata letak susunan item toggle: `Axis.horizontal` atau `Axis.vertical`.                                         |
+| Properti          | Tipe Data                   | Nilai Default       | Deskripsi                                                                                                 |
+| :---------------- | :-------------------------- | :------------------ | :-------------------------------------------------------------------------------------------------------- |
+| `items`           | `List<JustToggleGroupItem>` | _Wajib_             | Daftar item toggle yang ditampilkan dalam kelompok.                                                       |
+| `selectedIndices` | `Set<int>`                  | _Wajib_             | Kumpulan yang berisi indeks item yang sedang aktif/dipilih.                                               |
+| `onChanged`       | `ValueChanged<Set<int>>?`   | _Wajib_             | Callback yang dipanggil saat item toggle ditekan, mengembalikan kumpulan indeks terpilih yang diperbarui. |
+| `allowMultiple`   | `bool`                      | `false`             | Jika `true`, mengizinkan beberapa item toggle dipilih secara bersamaan.                                   |
+| `nullable`        | `bool`                      | `true`              | Jika `true`, mengizinkan pilihan aktif dibatalkan (kumpulan terpilih bisa menjadi kosong).                |
+| `size`            | `JustToggleSize`            | `JustToggleSize.md` | Skala dimensi ukuran yang diterapkan pada semua item: `.sm`, `.md`, `.lg`.                                |
+| `style`           | `JustToggleStyle?`          | `null`              | Penyesuaian gaya langsung per-instans yang diterapkan pada semua item dalam kelompok.                     |
+| `direction`       | `Axis`                      | `Axis.horizontal`   | Arah tata letak susunan item toggle: `Axis.horizontal` atau `Axis.vertical`.                              |
 
 ---
 

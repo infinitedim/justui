@@ -6,7 +6,7 @@ import { Navbar } from '@/components/navbar';
 const mockSetTheme = vi.fn((theme) => {
   console.log('DEBUG: mockSetTheme called with:', theme);
 });
- 
+
 (globalThis as any).mockSetTheme = mockSetTheme;
 
 let mockResolvedTheme = 'dark';
@@ -41,7 +41,6 @@ vi.mock('next/navigation', () => ({
 
 // Mock next/link to render simple anchors
 vi.mock('next/link', () => ({
-   
   default: ({ children, href, className, onClick, ...props }: any) => (
     <a href={href} className={className} onClick={onClick} {...props}>
       {children}
