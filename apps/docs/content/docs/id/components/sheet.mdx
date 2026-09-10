@@ -129,18 +129,18 @@ void showLeftSidebarSheet(BuildContext context) {
 
 `context.justSheet.show<T>(...)` menerima parameter berikut:
 
-| Parameter             | Tipe Data                      | Nilai Default           | Deskripsi                                                                                     |
-| :-------------------- | :----------------------------- | :---------------------- | :-------------------------------------------------------------------------------------------- |
-| `content`             | `Widget`                       | _Wajib_                 | Tatanan widget isi konten sheet.                                                              |
-| `direction`           | `SheetDirection`               | `SheetDirection.bottom` | Tepi asal tempat sheet masuk ke layar: `.bottom`, `.top`, `.left`, `.right`.                  |
-| `barrierDismissable`  | `bool`                         | `true`                  | Jika `true`, mengklik latar belakang transparan akan otomatis menutup sheet.                  |
-| `barrierColor`        | `Color?`                       | `null`                  | Mengubah warna latar belakang transparan (overlay).                                           |
-| `size`                | `double?`                      | `null`                  | Fraksi lebar/tinggi layar yang diambil oleh sheet (misalnya `0.5` untuk separuh layar).       |
-| `maxSize`             | `double?`                      | `null`                  | Fraksi maksimum ukuran layar yang dapat dicapai oleh sheet.                                   |
-| `draggable`           | `bool`                         | `false`                 | Jika `true`, mengaktifkan gestur seret vertikal atau horizontal untuk menutup sheet.          |
-| `style`               | `JustSheetStyle?`              | `null`                  | Penyesuaian gaya langsung (padding, garis batas, warna, bayangan, dll.).                      |
-| `animationController` | `AnimationController?`         | `null`                  | Mengubah pengontrol garis waktu transisi masuk dan keluar.                                    |
-| `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                  | Transisi animasi tata letak kustom.                                                           |
+| Parameter             | Tipe Data                      | Nilai Default           | Deskripsi                                                                               |
+| :-------------------- | :----------------------------- | :---------------------- | :-------------------------------------------------------------------------------------- |
+| `content`             | `Widget`                       | _Wajib_                 | Tatanan widget isi konten sheet.                                                        |
+| `direction`           | `SheetDirection`               | `SheetDirection.bottom` | Tepi asal tempat sheet masuk ke layar: `.bottom`, `.top`, `.left`, `.right`.            |
+| `barrierDismissable`  | `bool`                         | `true`                  | Jika `true`, mengklik latar belakang transparan akan otomatis menutup sheet.            |
+| `barrierColor`        | `Color?`                       | `null`                  | Mengubah warna latar belakang transparan (overlay).                                     |
+| `size`                | `double?`                      | `null`                  | Fraksi lebar/tinggi layar yang diambil oleh sheet (misalnya `0.5` untuk separuh layar). |
+| `maxSize`             | `double?`                      | `null`                  | Fraksi maksimum ukuran layar yang dapat dicapai oleh sheet.                             |
+| `draggable`           | `bool`                         | `false`                 | Jika `true`, mengaktifkan gestur seret vertikal atau horizontal untuk menutup sheet.    |
+| `style`               | `JustSheetStyle?`              | `null`                  | Penyesuaian gaya langsung (padding, garis batas, warna, bayangan, dll.).                |
+| `animationController` | `AnimationController?`         | `null`                  | Mengubah pengontrol garis waktu transisi masuk dan keluar.                              |
+| `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                  | Transisi animasi tata letak kustom.                                                     |
 
 ---
 

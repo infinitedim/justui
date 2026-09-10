@@ -24,8 +24,7 @@ export function DotGrid({
       style={{
         width: w,
         height: h,
-        backgroundImage:
-          `radial-gradient(circle, var(--just-border) ${dotSize}px, transparent ${dotSize}px)`,
+        backgroundImage: `radial-gradient(circle, var(--just-border) ${dotSize}px, transparent ${dotSize}px)`,
         backgroundSize: `${gap}px ${gap}px`,
         backgroundPosition: `${dotSize}px ${dotSize}px`,
         ...style,

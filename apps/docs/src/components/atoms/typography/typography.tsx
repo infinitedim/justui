@@ -1,5 +1,10 @@
 import { cn } from '@/lib/cn';
-import type { TypographyProps, TypographyVariant, TypographyWeight, TypographyColor } from './typography.types';
+import type {
+  TypographyProps,
+  TypographyVariant,
+  TypographyWeight,
+  TypographyColor,
+} from './typography.types';
 import type { ElementType } from 'react';
 
 const variantTagMap: Record<TypographyVariant, ElementType> = {
@@ -69,7 +74,7 @@ export function Typography({
         weight && weightClassMap[weight],
         colorClassMap[color],
         truncate && 'truncate',
-        className,
+        className
       )}
       {...rest}
     >

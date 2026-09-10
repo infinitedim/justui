@@ -11,7 +11,7 @@ import type { SliderProps } from './slider.types';
  */
 export const Slider = forwardRef<HTMLInputElement, SliderProps>(function Slider(
   { value, min = 0, max = 100, step = 1, label, className, ...rest },
-  ref,
+  ref
 ) {
   return (
     <input
@@ -23,10 +23,10 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(function Slider(
       step={step}
       aria-label={label}
       className={cn(
-        'h-2 w-full cursor-pointer appearance-none rounded-full bg-border accent-accent',
-        'focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent',
+        'bg-border accent-accent h-2 w-full cursor-pointer appearance-none rounded-full',
+        'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-4',
         'disabled:pointer-events-none disabled:opacity-50',
-        className,
+        className
       )}
       {...rest}
     />
