@@ -13,9 +13,9 @@ describe('cli-parser', () => {
     const result = parseCommand('justui init --preset neobrutalism');
     expect(result.clearStage).toBe(true);
     expect(result.presetChange).toBe('neobrutalism');
-    expect(
-      result.lines.some((l) => l.text.includes('neobrutalism'))
-    ).toBe(true);
+    expect(result.lines.some((l) => l.text.includes('neobrutalism'))).toBe(
+      true
+    );
   });
 
   it('parses justui add for single component', () => {
@@ -64,9 +64,9 @@ describe('cli-parser', () => {
   it('suggests correction for misspelled subcommand', () => {
     const result = parseCommand('justui ad buton');
     expect(result.lines.some((l) => l.kind === 'error')).toBe(true);
-    expect(result.lines.some((l) => l.text.includes("Did you mean 'add'?"))).toBe(
-      true
-    );
+    expect(
+      result.lines.some((l) => l.text.includes("Did you mean 'add'?"))
+    ).toBe(true);
   });
 
   it('suggests correction for misspelled component name', () => {

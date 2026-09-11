@@ -86,7 +86,9 @@ export function useStageListener<T extends StageBridgeEvent['type']>(
         typeof event.data === 'object' &&
         event.data.type === type
       ) {
-        handlerRef.current(event.data as Extract<StageBridgeEvent, { type: T }>);
+        handlerRef.current(
+          event.data as Extract<StageBridgeEvent, { type: T }>
+        );
       }
     };
     window.addEventListener('message', listener);

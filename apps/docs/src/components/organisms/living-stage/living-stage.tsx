@@ -51,9 +51,7 @@ export function LivingStage({
   const combinedDart =
     widgets.length === 0
       ? '// Run a command in the terminal to see components appear here.'
-      : widgets
-          .map((w) => getComponentDartCode(w.component))
-          .join('\n\n');
+      : widgets.map((w) => getComponentDartCode(w.component)).join('\n\n');
 
   return (
     <div

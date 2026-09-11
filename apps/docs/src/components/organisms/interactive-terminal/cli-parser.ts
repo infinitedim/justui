@@ -396,9 +396,7 @@ export function parseCommand(rawInput: string): ParseResult {
           ],
         };
       }
-      const matches = REGISTRY_COMPONENT_NAMES.filter((c) =>
-        c.includes(query)
-      );
+      const matches = REGISTRY_COMPONENT_NAMES.filter((c) => c.includes(query));
       if (matches.length === 0) {
         return {
           lines: [
@@ -425,7 +423,10 @@ export function parseCommand(rawInput: string): ParseResult {
 
     case 'diff': {
       const component = args[0]?.toLowerCase() || 'all';
-      if (component !== 'all' && !REGISTRY_COMPONENT_NAMES.includes(component)) {
+      if (
+        component !== 'all' &&
+        !REGISTRY_COMPONENT_NAMES.includes(component)
+      ) {
         const match = findClosestMatch(component, REGISTRY_COMPONENT_NAMES);
         return {
           lines: [
