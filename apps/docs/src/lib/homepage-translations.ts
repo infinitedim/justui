@@ -16,7 +16,20 @@ export type HomepageDictionary = {
   togglePreset: string;
   componentsPageTitle: string;
   componentsPageDescription: string;
-  componentsPageCount: string; // We can use string replacement or simple interpolation
+  componentsPageCount: string;
+  terminalTitle: string;
+  terminalChipInit: string;
+  terminalChipAddButton: string;
+  terminalChipAddMulti: string;
+  terminalChipPreset: string;
+  installTabCurl: string;
+  installTabPowershell: string;
+  installTabCargo: string;
+  stageEmptyState: string;
+  stagePreviewTab: string;
+  stageCodeTab: string;
+  presetCleanPrecision: string;
+  presetNeobrutalism: string;
 };
 
 export const homepageTranslations: Readonly<
@@ -27,7 +40,7 @@ export const homepageTranslations: Readonly<
     heroTitle: 'Copy. Paste. Ship.',
     heroDescription:
       'A zero-dependency, copy-paste component library for Flutter. No Material. No boilerplate. Just UI.',
-    getStarted: 'Get started →',
+    getStarted: 'Get started ->',
     browseComponents: 'Browse components',
     componentsHeading: 'Components',
     navHome: 'Home',
@@ -43,13 +56,27 @@ export const homepageTranslations: Readonly<
     componentsPageDescription:
       'All components are ready to use. Copy, paste, and customize directly in your Flutter project.',
     componentsPageCount: 'components available',
+    terminalTitle: 'justui@v0.13.2 ~ /my-flutter-app',
+    terminalChipInit: 'justui init',
+    terminalChipAddButton: 'justui add button',
+    terminalChipAddMulti: 'justui add switch card',
+    terminalChipPreset: 'justui preset apply neobrutalism',
+    installTabCurl: 'macOS / Linux',
+    installTabPowershell: 'Windows',
+    installTabCargo: 'Cargo',
+    stageEmptyState:
+      'Run a command in the terminal to see components appear here.',
+    stagePreviewTab: 'Preview',
+    stageCodeTab: 'Flutter Code',
+    presetCleanPrecision: 'Clean Precision',
+    presetNeobrutalism: 'Neobrutalism',
   },
   id: {
     tagline: 'Komponen Flutter siap salin-tempel',
     heroTitle: 'Salin. Tempel. Rilis.',
     heroDescription:
       'Pustaka komponen Flutter tanpa dependensi tambahan, tinggal salin-tempel. Tanpa Material. Tanpa boilerplate. Hanya UI.',
-    getStarted: 'Mulai →',
+    getStarted: 'Mulai ->',
     browseComponents: 'Jelajahi komponen',
     componentsHeading: 'Komponen',
     navHome: 'Beranda',
@@ -65,6 +92,20 @@ export const homepageTranslations: Readonly<
     componentsPageDescription:
       'Semua komponen siap pakai. Copy, paste, dan sesuaikan langsung di project Flutter kamu.',
     componentsPageCount: 'komponen tersedia',
+    terminalTitle: 'justui@v0.13.2 ~ /my-flutter-app',
+    terminalChipInit: 'justui init',
+    terminalChipAddButton: 'justui add button',
+    terminalChipAddMulti: 'justui add switch card',
+    terminalChipPreset: 'justui preset apply neobrutalism',
+    installTabCurl: 'macOS / Linux',
+    installTabPowershell: 'Windows',
+    installTabCargo: 'Cargo',
+    stageEmptyState:
+      'Jalankan perintah di terminal untuk melihat komponen muncul di sini.',
+    stagePreviewTab: 'Pratinjau',
+    stageCodeTab: 'Kode Flutter',
+    presetCleanPrecision: 'Presisi Bersih',
+    presetNeobrutalism: 'Neobrutalisme',
   },
 } as const;
 
