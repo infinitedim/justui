@@ -36,18 +36,21 @@ const FILES_TO_VERIFY = [
 ];
 
 describe('Strict ASCII Purity Check', () => {
-  it.each(FILES_TO_VERIFY)('file %s contains 100% pure ASCII bytes', (relPath) => {
-    const fullPath = path.resolve(__dirname, '..', relPath);
-    expect(fs.existsSync(fullPath)).toBe(true);
+  it.each(FILES_TO_VERIFY)(
+    'file %s contains 100% pure ASCII bytes',
+    (relPath) => {
+      const fullPath = path.resolve(__dirname, '..', relPath);
+      expect(fs.existsSync(fullPath)).toBe(true);
 
-    const buf = fs.readFileSync(fullPath);
-    for (let i = 0; i < buf.length; i++) {
-      const byte = buf[i];
-      if (byte > 127) {
-        throw new Error(
-          `Non-ASCII byte ${byte} (0x${byte.toString(16)}) found at index ${i} in ${relPath}`
-        );
+      const buf = fs.readFileSync(fullPath);
+      for (let i = 0; i < buf.length; i++) {
+        const byte = buf[i];
+        if (byte > 127) {
+          throw new Error(
+            `Non-ASCII byte ${byte} (0x${byte.toString(16)}) found at index ${i} in ${relPath}`
+          );
+        }
       }
     }
-  });
+  );
 });

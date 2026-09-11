@@ -1,2 +1,5 @@
 export { TerminalLine } from './terminal-line';
-export type { TerminalLineProps, TerminalLineKind } from './terminal-line.types';
+export type {
+  TerminalLineProps,
+  TerminalLineKind,
+} from './terminal-line.types';

@@ -1,6 +1,9 @@
 import type { InputHTMLAttributes } from 'react';
 
-export interface SliderProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
+export interface SliderProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'type' | 'size'
+> {
   /** Current value. */
   value?: number;
   /** Minimum value. Default 0. */

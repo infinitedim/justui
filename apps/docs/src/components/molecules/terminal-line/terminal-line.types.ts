@@ -1,6 +1,7 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
-export type TerminalLineKind = 'output' | 'info' | 'success' | 'error' | 'warning';
+export type TerminalLineKind =
+  'output' | 'info' | 'success' | 'error' | 'warning';
 
 export interface TerminalLineProps extends HTMLAttributes<HTMLDivElement> {
   /** The visual kind of the line which determines its color. */
