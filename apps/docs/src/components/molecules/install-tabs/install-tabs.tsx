@@ -69,11 +69,11 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
                 'border-(length:--just-border-width)',
                 isSelected
                   ? 'border-border bg-accent text-foreground shadow-solid font-medium'
-                  : 'border-transparent text-muted hover:border-border hover:text-foreground'
+                  : 'text-muted hover:border-border hover:text-foreground border-transparent'
               )}
             >
               {getLabel(platform.id, platform.defaultLabel)}
-            </button>  
+            </button>
           );
         })}
       </div>
@@ -82,7 +82,7 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
         id={`install-tabpanel-${activePlatform}`}
         role="tabpanel"
         aria-labelledby={`install-tab-${activePlatform}`}
-        className="border-border bg-card shadow-solid rounded-(--just-radius-md) flex items-center justify-between gap-3 border-(length:--just-border-width) p-3"
+        className="border-border bg-card shadow-solid flex items-center justify-between gap-3 rounded-(--just-radius-md) border-(length:--just-border-width) p-3"
       >
         <code className="text-foreground overflow-x-auto font-mono text-xs whitespace-nowrap select-all sm:text-sm">
           {activeMeta.command}

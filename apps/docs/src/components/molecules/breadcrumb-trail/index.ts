@@ -1,2 +1,5 @@
 export { BreadcrumbTrail } from './breadcrumb-trail';
-export type { BreadcrumbTrailProps, BreadcrumbSegment } from './breadcrumb-trail.types';
+export type {
+  BreadcrumbTrailProps,
+  BreadcrumbSegment,
+} from './breadcrumb-trail.types';

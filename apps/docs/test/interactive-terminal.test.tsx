@@ -74,9 +74,7 @@ describe('InteractiveTerminal', () => {
     fireEvent.change(input, { target: { value: 'justui add button' } });
     fireEvent.keyDown(input, { key: 'Enter' });
 
-    expect(
-      screen.getByText('Downloading button...')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Downloading button...')).toBeInTheDocument();
     expect(handleMount).toHaveBeenCalledWith(['button']);
   });
 
