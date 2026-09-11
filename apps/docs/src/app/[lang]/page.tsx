@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { ComponentCard } from '@/components/component-card';
 import { ShowcaseFrame } from '@/components/showcase-frame';
-import { InstallSnippet } from '@/components/install-snippet';
+import { InstallTabs } from '@/components/molecules/install-tabs';
+import { HeroInteractive } from '@/components/organisms/hero-interactive';
 import { Navbar } from '@/components/navbar';
 import { fetchStarCount } from '@/lib/github';
 import { components } from '@/lib/components-data';
@@ -21,7 +22,7 @@ export default async function HomePage({
       <Navbar starCount={starCount} lang={lang} />
 
       <main>
-        <section className="mx-auto flex max-w-3xl flex-col items-center justify-center px-4 py-20 text-center sm:px-6 lg:px-8 lg:py-24">
+        <section className="mx-auto flex max-w-3xl flex-col items-center justify-center px-4 pt-20 pb-12 text-center sm:px-6 lg:px-8 lg:pt-24">
           <div className="flex max-w-2xl flex-col items-center">
             <p className="text-accent mb-5 font-mono text-sm font-medium">
               {t.tagline}
@@ -48,10 +49,14 @@ export default async function HomePage({
               </Link>
             </div>
 
-            <div className="mt-6 w-full">
-              <InstallSnippet lang={lang} />
+            <div className="mt-8 w-full">
+              <InstallTabs lang={lang} />
             </div>
           </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">
+          <HeroInteractive lang={lang} />
         </section>
 
         <section className="border-border bg-muted/10 w-full border-y py-4">

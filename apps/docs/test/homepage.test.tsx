@@ -11,7 +11,6 @@ vi.mock('next/navigation', () => ({
   usePathname: () => '/en',
 }));
 
-// Mock next/link to render simple anchor tags
 vi.mock('next/link', () => ({
   default: ({
     children,
@@ -56,12 +55,21 @@ describe('HomePage Component', () => {
     ).toHaveAttribute('href', '/en/docs/components');
   });
 
-  it('renders the install command and component grid', async () => {
+  it('renders the install tabs and interactive hero section', async () => {
     const page = await HomePage();
     render(page);
 
     expect(
-      screen.getByText('flutter pub add just_ui_core')
+      screen.getByText('curl -fsSL https://justui.dev/install.sh | bash')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('region', { name: /interactive terminal/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('region', { name: /living widget stage/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('radiogroup', { name: /preset spotlight/i })
     ).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: /components/i })
