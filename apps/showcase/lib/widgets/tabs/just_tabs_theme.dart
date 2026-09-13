@@ -1,0 +1,43 @@
+// justui-meta: registry=cce95434d552ff074d3418cd4dcb2c8c89a87fcc6fba9024299681cec72877dd local=cce95434d552ff074d3418cd4dcb2c8c89a87fcc6fba9024299681cec72877dd
+import 'package:flutter/material.dart' show ThemeExtension;
+
+import 'just_tabs_style.dart';
+
+/// Global theme configuration for tabs, extending Flutter's [ThemeExtension].
+class const JustTabsTheme({
+  /// Default style override for [JustTabVariant.line].
+  final JustTabsStyle? lineStyle,
+
+  /// Default style override for [JustTabVariant.enclosed].
+  final JustTabsStyle? enclosedStyle,
+
+  /// Default style override for [JustTabVariant.pill].
+  final JustTabsStyle? pillStyle,
+
+  /// Default style override for [JustTabVariant.vertical].
+  final JustTabsStyle? verticalStyle,
+}) extends ThemeExtension<JustTabsTheme> {
+  /// Default theme configuration.
+  static const defaults = JustTabsTheme();
+
+  @override
+  JustTabsTheme copyWith({
+    JustTabsStyle? lineStyle,
+    JustTabsStyle? enclosedStyle,
+    JustTabsStyle? pillStyle,
+    JustTabsStyle? verticalStyle,
+  }) {
+    return JustTabsTheme(
+      lineStyle: lineStyle ?? this.lineStyle,
+      enclosedStyle: enclosedStyle ?? this.enclosedStyle,
+      pillStyle: pillStyle ?? this.pillStyle,
+      verticalStyle: verticalStyle ?? this.verticalStyle,
+    );
+  }
+
+  @override
+  JustTabsTheme lerp(ThemeExtension<JustTabsTheme>? other, double t) {
+    if (other is! JustTabsTheme) return this;
+    return t < 0.5 ? this : other;
+  }
+}
