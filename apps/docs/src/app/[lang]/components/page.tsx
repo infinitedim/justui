@@ -1,9 +1,8 @@
-import Link from 'next/link';
-import type { Route } from 'next';
 import { Navbar } from '@/components/navbar';
 import { components } from '@/lib/components-data';
 import { fetchStarCount } from '@/lib/github';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
+import { ComponentsCatalogClient } from './components-catalog-client';
 
 export default async function ComponentsPage({
   params,
@@ -20,7 +19,7 @@ export default async function ComponentsPage({
 
       <main className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
         {/* Header section */}
-        <div className="mb-12">
+        <div className="mb-10">
           <p className="text-accent mb-3 font-mono text-sm">
             {components.length} {t.componentsPageCount}
           </p>
@@ -32,23 +31,12 @@ export default async function ComponentsPage({
           </p>
         </div>
 
-        {/* Grid komponen */}
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-          {components.map((component) => (
-            <Link
-              key={component.slug}
-              href={`/${lang}/docs/components/${component.slug}` as Route}
-              className="group border-border hover:border-accent-dark hover:bg-accent-muted rounded-lg border p-4 transition-colors"
-            >
-              <h2 className="text-foreground text-sm font-medium">
-                {component.name}
-              </h2>
-              <p className="text-muted mt-2 text-xs leading-5">
-                {component.description}
-              </p>
-            </Link>
-          ))}
-        </div>
+        {/* Living Component Catalog with Search, Category Filter, and Micro-Simulators */}
+        <ComponentsCatalogClient
+          components={components}
+          lang={lang}
+          dictionary={t}
+        />
       </main>
     </div>
   );
