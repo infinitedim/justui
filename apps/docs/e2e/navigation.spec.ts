@@ -7,7 +7,10 @@ test.describe('Navigation Flow', () => {
     await expect(
       page.getByRole('heading', { name: /Copy\. Paste\. Ship\./i })
     ).toBeVisible();
-    await expect(page.getByText('flutter pub add just_ui_core')).toBeVisible();
+    await expect(
+      page.getByRole('tablist', { name: /installation platform/i })
+    ).toBeVisible();
+    await expect(page.getByText(/curl -fsSL .*install\.sh/i)).toBeVisible();
 
     const docsButton = page.getByRole('link', { name: /Get started/i }); // CHECK_DOCS
     await expect(docsButton).toHaveAttribute(
