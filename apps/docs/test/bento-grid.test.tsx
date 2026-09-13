@@ -39,8 +39,12 @@ describe('BentoGrid and 5 Engineering Cards', () => {
       expect(screen.getByText('Jejak Nol-Dependensi')).toBeInTheDocument();
       expect(screen.getByText('Auditor Kontras Dinamis')).toBeInTheDocument();
       expect(screen.getByText('Rebuild Berbasis Aspek')).toBeInTheDocument();
-      expect(screen.getByText('Fisika Zero-Drift Neobrutalisme')).toBeInTheDocument();
-      expect(screen.getByText('Pengalaman Pengembang Dart 3')).toBeInTheDocument();
+      expect(
+        screen.getByText('Fisika Zero-Drift Neobrutalisme')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Pengalaman Pengembang Dart 3')
+      ).toBeInTheDocument();
     });
   });
 
@@ -63,9 +67,7 @@ describe('BentoGrid and 5 Engineering Cards', () => {
       });
       fireEvent.click(tradButton);
 
-      expect(
-        screen.getByText('14 packages / 4.2 MB')
-      ).toBeInTheDocument();
+      expect(screen.getByText('14 packages / 4.2 MB')).toBeInTheDocument();
       expect(screen.getByText('HIGH SURFACE (14+)')).toBeInTheDocument();
 
       // Click on a dependency node
@@ -189,9 +191,7 @@ describe('BentoGrid and 5 Engineering Cards', () => {
       });
       fireEvent.click(verboseButton);
 
-      expect(
-        screen.getByText(/Standard Verbose Flutter/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Standard Verbose Flutter/i)).toBeInTheDocument();
 
       // Switch back
       const justuiButton = screen.getByRole('button', {
