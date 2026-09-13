@@ -113,7 +113,7 @@ describe('Navbar & SearchModal Components', () => {
     expect(input.value).toBe('button');
 
     // Click result link to close
-    const resultLink = screen.getByRole('link', { name: /button/i });
+    const resultLink = screen.getByRole('link', { name: /^JustButton/i });
     fireEvent.click(resultLink);
     expect(
       screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
