@@ -56,7 +56,7 @@ export const homepageTranslations: Readonly<
     componentsPageDescription:
       'All components are ready to use. Copy, paste, and customize directly in your Flutter project.',
     componentsPageCount: 'components available',
-    terminalTitle: 'justui@v0.13.2 ~ /my-flutter-app',
+    terminalTitle: 'justui@v0.14.0 ~ /my-flutter-app',
     terminalChipInit: 'justui init',
     terminalChipAddButton: 'justui add button',
     terminalChipAddMulti: 'justui add switch card',
@@ -92,7 +92,7 @@ export const homepageTranslations: Readonly<
     componentsPageDescription:
       'Semua komponen siap pakai. Copy, paste, dan sesuaikan langsung di project Flutter kamu.',
     componentsPageCount: 'komponen tersedia',
-    terminalTitle: 'justui@v0.13.2 ~ /my-flutter-app',
+    terminalTitle: 'justui@v0.14.0 ~ /my-flutter-app',
     terminalChipInit: 'justui init',
     terminalChipAddButton: 'justui add button',
     terminalChipAddMulti: 'justui add switch card',
