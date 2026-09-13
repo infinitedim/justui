@@ -1,18 +1,40 @@
 ---
 title: Instalasi
-description: Langkah-langkah inisialisasi dan integrasi JustUI CLI pada proyek Flutter Anda.
+description: Langkah-langkah instalasi JustUI CLI dan inisialisasi proyek Flutter Anda.
 ---
 
 # Instalasi
 
-JustUI menyediakan alat baris perintah (CLI) untuk menyalin komponen ke dalam proyek Flutter Anda dengan cepat.
+JustUI menyediakan alat baris perintah (CLI) berbasis Rust untuk menyalin komponen ke dalam proyek Flutter Anda dengan cepat.
 
-## Langkah 1: Aktivasi CLI secara Global
+## Langkah 1: Instalasi JustUI CLI
 
-Aktifkan package `just_ui_cli` secara global menggunakan SDK Dart:
+### Melalui Script Instalasi (Direkomendasikan)
+
+Semua binary yang diunduh melalui script instalasi diverifikasi secara kriptografis terhadap checksum SHA-256 yang dipublikasikan sebelum proses instalasi.
 
 ```bash
-dart pub global activate just_ui_cli
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/infinitedim/justui/main/packages/cli/install/install.sh | sh
+
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/infinitedim/justui/main/packages/cli/install/install.ps1 | iex
+```
+
+### Kompilasi dari Source (Zero-Trust)
+
+Bila Anda memilih untuk membangun langsung dari source code:
+
+```bash
+git clone https://github.com/infinitedim/justui.git
+cd justui/packages/cli
+cargo install --path .
+```
+
+Verifikasi hasil instalasi:
+
+```bash
+justui --version
 ```
 
 ## Langkah 2: Inisialisasi Proyek
@@ -20,17 +42,17 @@ dart pub global activate just_ui_cli
 Jalankan perintah berikut di direktori root proyek Flutter Anda:
 
 ```bash
-just_ui init
+justui init
 ```
 
-Perintah ini akan membuat file konfigurasi `just_ui.json` serta mengunduh paket core dan token ke dalam proyek Anda. Anda juga akan ditanya pilihan preset visual utama (seperti `default` atau `neobrutalism`).
+Panduan interaktif akan membuat file konfigurasi `justui.config.yaml` dan menyiapkan file tema di `lib/theme/just_theme.dart`. Anda juga akan ditanya pilihan preset visual utama (`default` atau `neobrutalism`).
 
 ## Langkah 3: Menambahkan Komponen
 
 Untuk menambahkan komponen baru (misalnya tombol), gunakan perintah `add`:
 
 ```bash
-just_ui add button
+justui add button
 ```
 
-Komponen tersebut akan disalin secara otomatis ke direktori komponen proyek Flutter Anda (default: `lib/components/ui/button.dart`).
+Komponen beserta dependensinya akan disalin secara otomatis ke direktori komponen proyek Flutter Anda (default: `lib/ui/button`).

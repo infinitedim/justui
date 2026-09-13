@@ -91,7 +91,36 @@ New-Item -ItemType Directory -Path $Tmp | Out-Null
 
 try {
     Invoke-WebRequest -Uri $Url -OutFile "$Tmp\$Archive" -UseBasicParsing
-    Expand-Archive "$Tmp\$Archive" -DestinationPath $Tmp
+
+    $ManifestUrl = "https://github.com/$Repo/releases/download/$Version/SHA256SUMS"
+    try {
+        Invoke-WebRequest -Uri $ManifestUrl -OutFile "$Tmp\SHA256SUMS" -UseBasicParsing
+    } catch {
+        throw "Error: Failed to download checksum manifest (SHA256SUMS) from $ManifestUrl.`nIntegrity verification cannot be bypassed. Aborting installation."
+    }
+
+    $ManifestContent = Get-Content -Path "$Tmp\SHA256SUMS"
+    $EscapedArchive = [regex]::Escape($Archive)
+    $ExpectedHash = $null
+
+    foreach ($line in $ManifestContent) {
+        if ($line -match "^\s*([0-9a-fA-F]{64})\s+[*]?([.]?[/\\])?$EscapedArchive\s*$") {
+            $ExpectedHash = $matches[1].ToLowerInvariant()
+            break
+        }
+    }
+
+    if (-not $ExpectedHash) {
+        throw "Error: Archive `"$Archive`" not found in SHA256SUMS manifest. Aborting installation."
+    }
+
+    $ActualHash = (Get-FileHash -Path "$Tmp\$Archive" -Algorithm SHA256).Hash.ToLowerInvariant()
+
+    if ($ExpectedHash -ne $ActualHash) {
+        throw "Security check failed: Checksum mismatch for downloaded archive `"$Archive`".`n  Expected: $ExpectedHash`n  Got:      $ActualHash`nThe download might be corrupted or tampered with. Aborting installation."
+    }
+
+    Expand-Archive "$Tmp\$Archive" -DestinationPath $Tmp -Force
 
     New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
     Copy-Item "$Tmp\$BinaryName" "$InstallDir\$BinaryName" -Force

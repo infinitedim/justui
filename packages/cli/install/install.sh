@@ -69,6 +69,44 @@ TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
 curl -fsSL "$URL" -o "$TMP/$ARCHIVE"
+
+MANIFEST_URL="https://github.com/${REPO}/releases/download/${VERSION}/SHA256SUMS"
+if ! curl -fsSL "$MANIFEST_URL" -o "$TMP/SHA256SUMS"; then
+  echo "Error: Failed to download checksum manifest (SHA256SUMS) from $MANIFEST_URL." >&2
+  echo "Integrity verification cannot be bypassed. Aborting installation." >&2
+  exit 1
+fi
+
+EXPECTED_HASH=$(awk -v target="$ARCHIVE" '
+  { gsub(/\r/, "") }
+  $2 == target || $2 == "*"target || $2 == "./"target || $2 == "*./"target { print $1 }
+' "$TMP/SHA256SUMS" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')
+
+if [ -z "$EXPECTED_HASH" ]; then
+  echo "Error: Archive \"$ARCHIVE\" not found in SHA256SUMS manifest. Aborting installation." >&2
+  exit 1
+fi
+
+if command -v sha256sum >/dev/null 2>&1; then
+  ACTUAL_HASH=$(sha256sum "$TMP/$ARCHIVE" | awk '{print $1}')
+elif command -v shasum >/dev/null 2>&1; then
+  ACTUAL_HASH=$(shasum -a 256 "$TMP/$ARCHIVE" | awk '{print $1}')
+elif command -v openssl >/dev/null 2>&1; then
+  ACTUAL_HASH=$(openssl dgst -sha256 "$TMP/$ARCHIVE" | sed -e 's/.*= *//' | awk '{print $1}')
+else
+  echo "Error: No SHA-256 utility found. Please install sha256sum, shasum, or openssl." >&2
+  exit 1
+fi
+ACTUAL_HASH=$(printf '%s' "$ACTUAL_HASH" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')
+
+if [ "$EXPECTED_HASH" != "$ACTUAL_HASH" ]; then
+  echo "Security check failed: Checksum mismatch for downloaded archive \"$ARCHIVE\"." >&2
+  echo "  Expected: $EXPECTED_HASH" >&2
+  echo "  Got:      $ACTUAL_HASH" >&2
+  echo "The download might be corrupted or tampered with. Aborting installation." >&2
+  exit 1
+fi
+
 tar -xzf "$TMP/$ARCHIVE" -C "$TMP"
 
 mkdir -p "$INSTALL_DIR"

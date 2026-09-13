@@ -9,6 +9,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 jobs:
   apply-changesets:
@@ -236,11 +238,34 @@ jobs:
           find dist/ -type f \( -name "*.tar.gz" -o -name "*.zip" \) \
             -exec cp {} release_assets/ \;
 
+      - name: Generate build provenance attestations
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            release_assets/*.tar.gz
+            release_assets/*.zip
+
+      - name: Generate checksums
+        run: |
+          cd release_assets
+          shopt -s nullglob
+          archives=(*.tar.gz *.zip)
+          if [ ${#archives[@]} -eq 0 ]; then
+            echo "Error: No release archives found to checksum." >&2
+            exit 1
+          fi
+          sha256sum "${archives[@]}" | sort -k 2 > SHA256SUMS
+          cp SHA256SUMS checksums.txt
+
       - name: Create Release
         uses: softprops/action-gh-release@v3
         with:
           name: JustUI CLI ${{ github.ref_name }}
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
-          files: release_assets/*
+          files: |
+            release_assets/*.tar.gz
+            release_assets/*.zip
+            release_assets/SHA256SUMS
+            release_assets/checksums.txt
           generate_release_notes: true

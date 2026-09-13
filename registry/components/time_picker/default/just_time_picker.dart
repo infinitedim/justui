@@ -5,8 +5,8 @@ import 'package:just_ui_core/just_ui_core.dart';
 
 import '../button/just_button.dart';
 import '../dialog/just_dialog.dart';
-import '../shared/_shared_overlay_transition.dart';
-import '../shared/_shared_pressable.dart';
+import '../shared/just_overlay_transition.dart';
+import '../shared/just_pressable.dart';
 import '../sheet/just_sheet.dart';
 import '_time_picker_dial.dart';
 import '_time_picker_input.dart';

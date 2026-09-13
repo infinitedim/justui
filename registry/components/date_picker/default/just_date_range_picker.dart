@@ -2,7 +2,7 @@ import 'package:flutter/material.dart' show Colors, DateTimeRange;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 
-import '../shared/_shared_pressable.dart';
+import '../shared/just_pressable.dart';
 import '_date_picker_calendar.dart';
 import 'just_date_picker_style.dart';
 import 'just_date_picker_variants.dart';

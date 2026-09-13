@@ -3,9 +3,9 @@ import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
 
 import '../../theme/theme_provider.dart';
-import '../shared/_shared_focus_indicator.dart';
-import '../shared/_shared_pressable.dart';
-import '../shared/_shared_progress_spinner.dart';
+import '../shared/just_focus_indicator.dart';
+import '../shared/just_pressable.dart';
+import '../shared/just_progress_spinner.dart';
 import 'just_button_style.dart';
 import 'just_button_variants.dart';
 import 'just_button_theme.dart';

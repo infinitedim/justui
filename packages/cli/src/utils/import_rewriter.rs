@@ -1,7 +1,11 @@
 use regex::Regex;
+use std::collections::HashMap;
 use std::sync::OnceLock;
 
-use crate::{registry::RegistryIndex, utils::logger};
+use crate::{
+    registry::{RegistryComponent, RegistryFile, RegistryIndex},
+    utils::logger,
+};
 
 fn import_regex() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
@@ -109,6 +113,85 @@ fn path_relative_unix(target: &str, from_dir: &str) -> String {
     }
 }
 
+/// Canonicalizes a registry relative path into a flat logical path without any preset folder.
+///
+/// Examples:
+/// - "components/accordion/neobrutalism/just_accordion.dart" -> "components/accordion/just_accordion.dart"
+/// - "components/shared/default/_shared_pressable.dart" -> "components/shared/_shared_pressable.dart"
+/// - "components/button/just_button_theme.dart" -> "components/button/just_button_theme.dart"
+pub fn canonicalize_registry_path(path: &str) -> String {
+    let parts: Vec<&str> = path.split('/').filter(|s| !s.is_empty()).collect();
+    if parts.len() == 4 && parts[0] == "components" {
+        format!("{}/{}/{}", parts[0], parts[1], parts[3])
+    } else {
+        path.to_string()
+    }
+}
+
+#[derive(Clone)]
+pub struct ResolvedTarget<'a> {
+    pub comp: &'a RegistryComponent,
+    pub file: RegistryFile,
+}
+
+/// Inverted Index for fast O(1) canonical registry path resolution.
+pub struct CanonicalRegistryResolver<'a> {
+    index_by_logical_path: HashMap<String, ResolvedTarget<'a>>,
+}
+
+impl<'a> CanonicalRegistryResolver<'a> {
+    pub fn new(registry_index: &'a RegistryIndex, active_preset: &str) -> Self {
+        let mut map = HashMap::new();
+        for comp in &registry_index.components {
+            for file in comp.files_for_preset(active_preset) {
+                let canonical = canonicalize_registry_path(&file.path);
+
+                // Primary canonical key
+                map.insert(canonical.clone(), ResolvedTarget { comp, file: file.clone() });
+
+                // Also index normalized alias if internal/shared
+                if comp.internal {
+                    let dir = unix_dirname(&canonical);
+                    let filename = canonical.split('/').next_back().unwrap_or(&canonical);
+                    if let Some(stripped) = filename.strip_prefix("_shared_") {
+                        let just_key = format!("{}/just_{}", dir, stripped);
+                        map.insert(just_key, ResolvedTarget { comp, file: file.clone() });
+                    } else if let Some(stripped) = filename.strip_prefix("just_") {
+                        let shared_key = format!("{}/_shared_{}", dir, stripped);
+                        map.insert(shared_key, ResolvedTarget { comp, file: file.clone() });
+                    }
+                }
+            }
+        }
+        Self {
+            index_by_logical_path: map,
+        }
+    }
+
+    pub fn resolve(&self, resolved_flat_path: &str) -> Option<&ResolvedTarget<'a>> {
+        if let Some(target) = self.index_by_logical_path.get(resolved_flat_path) {
+            return Some(target);
+        }
+
+        // Secondary fallback: check alternate prefix
+        let dir = unix_dirname(resolved_flat_path);
+        let filename = resolved_flat_path.split('/').next_back().unwrap_or(resolved_flat_path);
+        if let Some(stripped) = filename.strip_prefix("_shared_") {
+            let just_key = format!("{}/just_{}", dir, stripped);
+            if let Some(target) = self.index_by_logical_path.get(&just_key) {
+                return Some(target);
+            }
+        } else if let Some(stripped) = filename.strip_prefix("just_") {
+            let shared_key = format!("{}/_shared_{}", dir, stripped);
+            if let Some(target) = self.index_by_logical_path.get(&shared_key) {
+                return Some(target);
+            }
+        }
+
+        None
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 pub fn rewrite(
     content: &str,
@@ -165,6 +248,7 @@ pub fn rewrite(
     ];
 
     let current_file_dir = unix_dirname(&current_file_path);
+    let resolver = CanonicalRegistryResolver::new(registry_index, preset);
 
     let rewritten = import_regex()
         .replace_all(&clean_content, |caps: &regex::Captures| {
@@ -199,8 +283,7 @@ pub fn rewrite(
                 return caps[0].to_string();
             }
 
-            let preset_segment = format!("/{}/", preset);
-            let flat_source_path = source_registry_path.replace(&preset_segment, "/");
+            let flat_source_path = canonicalize_registry_path(source_registry_path);
             let flat_source_dir = unix_dirname(&flat_source_path);
             let joined = unix_join(flat_source_dir, import_path);
             let resolved_flat_path = normalize_unix_path(&joined);
@@ -219,21 +302,10 @@ pub fn rewrite(
                 );
             }
 
-            let mut found_comp = None;
-            let mut found_file = None;
+            if let Some(target) = resolver.resolve(&resolved_flat_path) {
+                let comp = target.comp;
+                let file = &target.file;
 
-            'outer: for comp in &registry_index.components {
-                for file in comp.files_for_preset(preset) {
-                    let flat_file_path = file.path.replace(&preset_segment, "/");
-                    if flat_file_path == resolved_flat_path {
-                        found_comp = Some(comp);
-                        found_file = Some(file);
-                        break 'outer;
-                    }
-                }
-            }
-
-            if let (Some(comp), Some(file)) = (found_comp, found_file) {
                 let target_dir = if comp.category == "tokens" || comp.category == "core" {
                     tokens_dir.to_string()
                 } else if comp.internal {
@@ -423,5 +495,188 @@ export 'just_carousel_style.dart';
         );
 
         assert!(rewritten.contains("import 'package:my_app/tokens/just_ui_tokens.dart';"));
+    }
+
+    #[test]
+    fn test_canonicalize_registry_path() {
+        assert_eq!(
+            canonicalize_registry_path("components/accordion/neobrutalism/just_accordion.dart"),
+            "components/accordion/just_accordion.dart"
+        );
+        assert_eq!(
+            canonicalize_registry_path("components/shared/default/_shared_pressable.dart"),
+            "components/shared/_shared_pressable.dart"
+        );
+        assert_eq!(
+            canonicalize_registry_path("components/button/just_button_theme.dart"),
+            "components/button/just_button_theme.dart"
+        );
+        assert_eq!(
+            canonicalize_registry_path("tokens/color.dart"),
+            "tokens/color.dart"
+        );
+    }
+
+    #[test]
+    fn test_cross_preset_shared_resolution_neobrutalism() {
+        let mut shared_files = HashMap::new();
+        shared_files.insert(
+            "default".to_string(),
+            vec![
+                RegistryFile {
+                    name: "_shared_pressable.dart".to_string(),
+                    path: "components/shared/default/_shared_pressable.dart".to_string(),
+                    checksum: "sha256:111".to_string(),
+                },
+                RegistryFile {
+                    name: "just_pressable.dart".to_string(),
+                    path: "components/shared/default/_shared_pressable.dart".to_string(),
+                    checksum: "sha256:111".to_string(),
+                },
+            ],
+        );
+
+        let shared_comp = RegistryComponent {
+            name: "_shared_pressable".to_string(),
+            version: "0.13.2".to_string(),
+            description: "".to_string(),
+            category: "internal".to_string(),
+            internal: true,
+            supported_presets: vec!["default".to_string()],
+            registry_dependencies: vec![],
+            pub_dependencies: HashMap::new(),
+            files: shared_files,
+        };
+
+        let mut accordion_files = HashMap::new();
+        accordion_files.insert(
+            "neobrutalism".to_string(),
+            vec![RegistryFile {
+                name: "just_accordion.dart".to_string(),
+                path: "components/accordion/neobrutalism/just_accordion.dart".to_string(),
+                checksum: "sha256:222".to_string(),
+            }],
+        );
+
+        let accordion_comp = RegistryComponent {
+            name: "accordion".to_string(),
+            version: "0.13.2".to_string(),
+            description: "".to_string(),
+            category: "primitive".to_string(),
+            internal: false,
+            supported_presets: vec!["default".to_string(), "neobrutalism".to_string()],
+            registry_dependencies: vec!["_shared_pressable".to_string()],
+            pub_dependencies: HashMap::new(),
+            files: accordion_files,
+        };
+
+        let index = RegistryIndex {
+            version: "1.0".to_string(),
+            presets: vec!["default".to_string(), "neobrutalism".to_string()],
+            components: vec![shared_comp, accordion_comp],
+        };
+
+        // Case A: Accordion in neobrutalism imports shared component (legacy prefix)
+        let content_a = "import '../shared/_shared_pressable.dart';\n";
+        let rewritten_a = rewrite(
+            content_a,
+            "components/accordion/neobrutalism/just_accordion.dart",
+            "accordion",
+            &index,
+            "lib/widgets",
+            "lib/tokens",
+            "lib/widgets/shared",
+            "neobrutalism",
+            "showcase",
+        );
+        assert_eq!(
+            rewritten_a.trim(),
+            "import '../shared/just_pressable.dart';"
+        );
+
+        // Case B: Accordion in neobrutalism imports shared component (modern prefix)
+        let content_b = "import '../shared/just_pressable.dart';\n";
+        let rewritten_b = rewrite(
+            content_b,
+            "components/accordion/neobrutalism/just_accordion.dart",
+            "accordion",
+            &index,
+            "lib/widgets",
+            "lib/tokens",
+            "lib/widgets/shared",
+            "neobrutalism",
+            "showcase",
+        );
+        assert_eq!(
+            rewritten_b.trim(),
+            "import '../shared/just_pressable.dart';"
+        );
+    }
+
+    #[test]
+    fn test_shared_tooltip_overlay_reverse_resolution() {
+        let mut tooltip_files = HashMap::new();
+        tooltip_files.insert(
+            "default".to_string(),
+            vec![RegistryFile {
+                name: "just_tooltip.dart".to_string(),
+                path: "components/tooltip/default/just_tooltip.dart".to_string(),
+                checksum: "sha256:333".to_string(),
+            }],
+        );
+
+        let tooltip_comp = RegistryComponent {
+            name: "tooltip".to_string(),
+            version: "0.13.2".to_string(),
+            description: "".to_string(),
+            category: "overlay".to_string(),
+            internal: false,
+            supported_presets: vec!["default".to_string()],
+            registry_dependencies: vec![],
+            pub_dependencies: HashMap::new(),
+            files: tooltip_files,
+        };
+
+        let mut shared_overlay_files = HashMap::new();
+        shared_overlay_files.insert(
+            "default".to_string(),
+            vec![RegistryFile {
+                name: "just_tooltip_overlay.dart".to_string(),
+                path: "components/shared/default/_shared_tooltip_overlay.dart".to_string(),
+                checksum: "sha256:444".to_string(),
+            }],
+        );
+
+        let shared_overlay_comp = RegistryComponent {
+            name: "_shared_tooltip_overlay".to_string(),
+            version: "0.13.2".to_string(),
+            description: "".to_string(),
+            category: "internal".to_string(),
+            internal: true,
+            supported_presets: vec!["default".to_string()],
+            registry_dependencies: vec!["tooltip".to_string()],
+            pub_dependencies: HashMap::new(),
+            files: shared_overlay_files,
+        };
+
+        let index = RegistryIndex {
+            version: "1.0".to_string(),
+            presets: vec!["default".to_string(), "neobrutalism".to_string()],
+            components: vec![tooltip_comp, shared_overlay_comp],
+        };
+
+        let content = "import '../tooltip/just_tooltip.dart';\n";
+        let rewritten = rewrite(
+            content,
+            "components/shared/default/_shared_tooltip_overlay.dart",
+            "_shared_tooltip_overlay",
+            &index,
+            "lib/widgets",
+            "lib/tokens",
+            "lib/widgets/shared",
+            "neobrutalism",
+            "showcase",
+        );
+        assert_eq!(rewritten.trim(), "import '../tooltip/just_tooltip.dart';");
     }
 }

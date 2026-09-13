@@ -67,7 +67,9 @@ curl -fsSL https://raw.githubusercontent.com/infinitedim/justui/main/packages/cl
 irm https://raw.githubusercontent.com/infinitedim/justui/main/packages/cli/install/install.ps1 | iex
 ```
 
-**From source:**
+> **Security Note:** All binaries downloaded via our install scripts are cryptographically verified against published SHA-256 checksums before installation.
+
+**From source (zero-trust):**
 
 ```bash
 git clone https://github.com/infinitedim/justui.git
