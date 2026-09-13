@@ -112,7 +112,7 @@ export function parseCommand(rawInput: string): ParseResult {
         lines: [
           {
             kind: 'output',
-            text: 'justui v0.13.2 (rustc 1.87.0)',
+            text: 'justui v0.14.0 (rustc 1.87.0)',
           },
         ],
       };
