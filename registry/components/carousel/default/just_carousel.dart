@@ -11,8 +11,8 @@ import 'package:flutter/widgets.dart';
 
 import 'package:just_ui_core/just_ui_core.dart';
 
-import '../shared/_shared_focus_indicator.dart';
-import '../shared/_shared_pressable.dart';
+import '../shared/just_focus_indicator.dart';
+import '../shared/just_pressable.dart';
 import 'just_carousel_style.dart';
 import 'just_carousel_theme.dart';
 import 'just_carousel_variants.dart';

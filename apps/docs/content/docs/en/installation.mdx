@@ -1,36 +1,58 @@
 ---
 title: Installation
-description: Step-by-step initialization and integration of the JustUI CLI into your Flutter project.
+description: Step-by-step installation of the JustUI CLI and project initialization.
 ---
 
 # Installation
 
-JustUI provides a command-line tool (CLI) to copy components into your Flutter project quickly.
+JustUI provides a fast, standalone command-line tool (CLI) written in Rust to copy components into your Flutter project quickly.
 
-## Step 1: Activate the CLI Globally
+## Step 1: Install the JustUI CLI
 
-Activate the `just_ui_cli` package globally using the Dart SDK:
+### Via Install Script (Recommended)
+
+All binaries downloaded via our install scripts are cryptographically verified against published SHA-256 checksums before installation.
 
 ```bash
-dart pub global activate just_ui_cli
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/infinitedim/justui/main/packages/cli/install/install.sh | sh
+
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/infinitedim/justui/main/packages/cli/install/install.ps1 | iex
 ```
 
-## Step 2: Initialize the Project
+### Build from Source (Zero-Trust)
+
+If you prefer building directly from source:
+
+```bash
+git clone https://github.com/infinitedim/justui.git
+cd justui/packages/cli
+cargo install --path .
+```
+
+Verify the installation:
+
+```bash
+justui --version
+```
+
+## Step 2: Initialize Your Project
 
 Run the following command in the root directory of your Flutter project:
 
 ```bash
-just_ui init
+justui init
 ```
 
-This command will create a configuration file `just_ui.json` and download the core package and tokens into your project. You will also be asked to choose a main visual preset (such as `default` or `neobrutalism`).
+This wizard will create `justui.config.yaml` and bootstrap your theme file at `lib/theme/just_theme.dart`. You will also be prompted to choose a visual preset (`default` or `neobrutalism`).
 
 ## Step 3: Adding Components
 
 To add a new component (for example, a button), use the `add` command:
 
 ```bash
-just_ui add button
+justui add button
 ```
 
-The component will be automatically copied to your Flutter project's component directory (default: `lib/components/ui/button.dart`).
+The component and its dependencies will be automatically copied to your configured components directory (default: `lib/ui/button`).
