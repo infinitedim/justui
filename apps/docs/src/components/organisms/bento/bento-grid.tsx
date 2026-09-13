@@ -21,9 +21,7 @@ export function BentoGrid({ lang = 'en', className }: BentoGridProps) {
     <section className={cn('relative flex flex-col items-center', className)}>
       {/* Section Header */}
       <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <Badge variant="outline">
-          {t.bentoBadge}
-        </Badge>
+        <Badge variant="outline">{t.bentoBadge}</Badge>
         <h2 className="text-foreground mt-4 font-mono text-3xl font-bold tracking-tight sm:text-4xl">
           {t.bentoHeading}
         </h2>
