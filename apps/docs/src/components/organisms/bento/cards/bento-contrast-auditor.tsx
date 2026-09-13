@@ -81,15 +81,13 @@ export function BentoContrastAuditor({
       className={cn(
         'group relative flex flex-col justify-between overflow-hidden rounded-(--just-radius-lg)',
         'border-border bg-card/80 p-6 backdrop-blur-xs transition-all duration-200',
-        'border-(length:--just-border-width) hover:border-accent/40',
+        'hover:border-accent/40 border-(length:--just-border-width)',
         className
       )}
     >
       <div>
         <div className="flex items-center justify-between gap-4">
-          <Badge variant="outline">
-            ACCESSIBILITY (A11Y)
-          </Badge>
+          <Badge variant="outline">ACCESSIBILITY (A11Y)</Badge>
           <button
             type="button"
             onClick={() => setEnforceAA(!enforceAA)}
@@ -107,13 +105,11 @@ export function BentoContrastAuditor({
         <h3 className="text-foreground mt-4 font-mono text-lg font-bold">
           {title}
         </h3>
-        <p className="text-muted mt-1 text-sm leading-relaxed">
-          {description}
-        </p>
+        <p className="text-muted mt-1 text-sm leading-relaxed">{description}</p>
 
         {/* Live sample preview swatch */}
         <div
-          className="mt-5 flex flex-col items-center justify-center rounded-(--just-radius-md) p-4 transition-colors duration-150 border border-white/20"
+          className="mt-5 flex flex-col items-center justify-center rounded-(--just-radius-md) border border-white/20 p-4 transition-colors duration-150"
           style={{
             backgroundColor: `rgb(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b})`,
           }}
@@ -140,14 +136,15 @@ export function BentoContrastAuditor({
                   : 'bg-rose-500/30 text-rose-200'
               )}
             >
-              Border: {borderContrast.toFixed(2)}:1 {isBorderPass ? 'PASS' : 'FAIL'}
+              Border: {borderContrast.toFixed(2)}:1{' '}
+              {isBorderPass ? 'PASS' : 'FAIL'}
             </span>
           </div>
         </div>
 
         {/* Slider control */}
         <div className="mt-4 flex flex-col gap-1.5">
-          <div className="flex items-center justify-between font-mono text-xs text-muted">
+          <div className="text-muted flex items-center justify-between font-mono text-xs">
             <span>Background Lightness (L)</span>
             <span className="text-foreground font-semibold">
               {effectiveLightness}%
@@ -175,7 +172,7 @@ export function BentoContrastAuditor({
         </div>
       </div>
 
-      <div className="border-border/60 mt-4 flex items-center justify-between border-t pt-3 text-xs font-mono">
+      <div className="border-border/60 mt-4 flex items-center justify-between border-t pt-3 font-mono text-xs">
         <span className="text-muted">Dynamic Runtime Audit</span>
         <span className="text-accent font-bold">100% WCAG COMPLIANT</span>
       </div>
