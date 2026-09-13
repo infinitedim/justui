@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ComponentCard } from '@/components/component-card';
-import { ShowcaseFrame } from '@/components/showcase-frame';
+import { BentoGrid } from '@/components/organisms/bento';
 import { InstallTabs } from '@/components/molecules/install-tabs';
 import { HeroInteractive } from '@/components/organisms/hero-interactive';
 import { Navbar } from '@/components/navbar';
@@ -59,8 +59,8 @@ export default async function HomePage({
           <HeroInteractive lang={lang} />
         </section>
 
-        <section className="border-border bg-muted/10 w-full border-y py-4">
-          <ShowcaseFrame />
+        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <BentoGrid lang={lang} />
         </section>
 
         <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">

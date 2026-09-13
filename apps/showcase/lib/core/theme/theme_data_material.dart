@@ -1,4 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:showcase/widgets/accordion/just_accordion_theme.dart';
+import 'package:showcase/widgets/bottom-nav/just_bottom_nav_theme.dart';
+import 'package:showcase/widgets/breadcrumb/just_breadcrumb_theme.dart';
+import 'package:showcase/widgets/button/just_button_theme.dart';
+import 'package:showcase/widgets/card/just_card_theme.dart';
+import 'package:showcase/widgets/carousel/just_carousel_theme.dart';
+import 'package:showcase/widgets/checkbox/just_checkbox_theme.dart';
+import 'package:showcase/widgets/date-picker/just_date_picker_theme.dart';
+import 'package:showcase/widgets/dialog/just_dialog_theme.dart';
+import 'package:showcase/widgets/input/just_input_theme.dart';
+import 'package:showcase/widgets/progress/just_progress_theme.dart';
+import 'package:showcase/widgets/radio/just_radio_theme.dart';
+import 'package:showcase/widgets/resizable/just_resizable_theme.dart';
+import 'package:showcase/widgets/select/just_select_theme.dart';
+import 'package:showcase/widgets/separator/just_separator_theme.dart';
+import 'package:showcase/widgets/sheet/just_sheet_theme.dart';
+import 'package:showcase/widgets/sidebar/just_sidebar_theme.dart';
+import 'package:showcase/widgets/skeleton/just_skeleton_theme.dart';
+import 'package:showcase/widgets/slider/just_slider_theme.dart';
+import 'package:showcase/widgets/switch/just_switch_theme.dart';
+import 'package:showcase/widgets/table/just_table_theme.dart';
+import 'package:showcase/widgets/tabs/just_tabs_theme.dart';
+import 'package:showcase/widgets/time-picker/just_time_picker_theme.dart';
+import 'package:showcase/widgets/toast/just_toast_theme.dart';
+import 'package:showcase/widgets/toggle/just_toggle_theme.dart';
+import 'package:showcase/widgets/tooltip/just_tooltip_theme.dart';
 
 import 'theme_data.dart';
 
@@ -20,6 +46,32 @@ extension JustThemeDataMaterialExtension on JustThemeData {
       useMaterial3: true,
       brightness: brightness,
       extensions: const [
+        JustAccordionTheme.defaults,
+        JustBottomNavTheme.defaults,
+        JustBreadcrumbTheme.defaults,
+        JustButtonTheme.defaults,
+        JustCardTheme.defaults,
+        JustCarouselTheme.defaults,
+        JustCheckboxTheme.defaults,
+        JustDatePickerTheme.defaults,
+        JustDialogTheme.defaults,
+        JustInputTheme.defaults,
+        JustProgressTheme.defaults,
+        JustRadioTheme.defaults,
+        JustResizableTheme.defaults,
+        JustSelectTheme.defaults,
+        JustSeparatorTheme.defaults,
+        JustSheetTheme.defaults,
+        JustSidebarTheme.defaults,
+        JustSkeletonTheme.defaults,
+        JustSliderTheme.defaults,
+        JustSwitchTheme.defaults,
+        JustTableTheme.defaults,
+        JustTabsTheme.defaults,
+        JustTimePickerTheme.defaults,
+        JustToastTheme.defaults,
+        JustToggleTheme.defaults,
+        JustTooltipTheme.defaults,
         // CLI:REGISTER_EXTENSIONS
       ],
       scaffoldBackgroundColor: colors.background,
