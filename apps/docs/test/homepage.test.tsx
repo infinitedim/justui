@@ -74,6 +74,7 @@ describe('HomePage Component', () => {
     expect(
       screen.getByRole('heading', { name: /components/i })
     ).toBeInTheDocument();
+    expect(screen.getByText('THE ENGINE ROOM')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /JustButton/i })).toHaveAttribute(
       'href',
       '/en/docs/components/button'
