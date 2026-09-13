@@ -44,15 +44,13 @@ export function BentoZeroDependency({
       className={cn(
         'group relative flex flex-col justify-between overflow-hidden rounded-(--just-radius-lg)',
         'border-border bg-card/80 p-6 backdrop-blur-xs transition-all duration-200',
-        'border-(length:--just-border-width) hover:border-accent/40',
+        'hover:border-accent/40 border-(length:--just-border-width)',
         className
       )}
     >
       <div>
         <div className="flex items-center justify-between gap-4">
-          <Badge variant="outline">
-            ARCHITECTURE
-          </Badge>
+          <Badge variant="outline">ARCHITECTURE</Badge>
           <div className="border-border bg-muted/20 inline-flex rounded-(--just-radius-sm) border p-0.5 text-xs">
             <button
               type="button"
@@ -90,9 +88,7 @@ export function BentoZeroDependency({
         <h3 className="text-foreground mt-4 font-mono text-lg font-bold">
           {title}
         </h3>
-        <p className="text-muted mt-1 text-sm leading-relaxed">
-          {description}
-        </p>
+        <p className="text-muted mt-1 text-sm leading-relaxed">{description}</p>
 
         {/* Tree simulation visualizer */}
         <div className="border-border bg-background/60 mt-5 rounded-(--just-radius-md) border p-4">
@@ -110,18 +106,22 @@ export function BentoZeroDependency({
 
           {isJustUI ? (
             <div className="flex flex-col gap-2 py-2 font-mono text-xs">
-              <div className="border-border bg-card flex items-center justify-between rounded px-3 py-2 border">
-                <span className="text-foreground font-semibold">my_flutter_app</span>
+              <div className="border-border bg-card flex items-center justify-between rounded border px-3 py-2">
+                <span className="text-foreground font-semibold">
+                  my_flutter_app
+                </span>
                 <span className="text-muted">workspace</span>
               </div>
-              <div className="border-accent/40 bg-accent/5 ml-4 flex items-center justify-between rounded px-3 py-2 border">
+              <div className="border-accent/40 bg-accent/5 ml-4 flex items-center justify-between rounded border px-3 py-2">
                 <div className="flex items-center gap-2">
                   <span className="text-accent font-bold">|- lib/widgets/</span>
-                  <span className="text-muted text-[11px]">(Copy-Paste Source)</span>
+                  <span className="text-muted text-[11px]">
+                    (Copy-Paste Source)
+                  </span>
                 </div>
                 <Badge variant="success">100% Owned</Badge>
               </div>
-              <div className="border-border/60 bg-muted/10 ml-4 flex items-center justify-between rounded px-3 py-2 border">
+              <div className="border-border/60 bg-muted/10 ml-4 flex items-center justify-between rounded border px-3 py-2">
                 <div className="flex items-center gap-2">
                   <span className="text-foreground">`- flutter</span>
                   <span className="text-muted text-[11px]">(SDK Core)</span>
@@ -137,9 +137,11 @@ export function BentoZeroDependency({
                   <button
                     key={node.name}
                     type="button"
-                    onClick={() => setSelectedNode(isSelected ? null : node.name)}
+                    onClick={() =>
+                      setSelectedNode(isSelected ? null : node.name)
+                    }
                     className={cn(
-                      'flex flex-col items-start rounded p-2 text-left transition-colors border',
+                      'flex flex-col items-start rounded border p-2 text-left transition-colors',
                       isSelected
                         ? 'border-destructive bg-destructive/10 text-destructive'
                         : 'border-border/60 bg-card hover:border-destructive/40 text-foreground'
@@ -157,9 +159,14 @@ export function BentoZeroDependency({
         </div>
       </div>
 
-      <div className="border-border/60 mt-4 flex items-center justify-between border-t pt-3 text-xs font-mono">
+      <div className="border-border/60 mt-4 flex items-center justify-between border-t pt-3 font-mono text-xs">
         <span className="text-muted">Supply Chain Vulnerability</span>
-        <span className={cn('font-bold', isJustUI ? 'text-accent' : 'text-destructive')}>
+        <span
+          className={cn(
+            'font-bold',
+            isJustUI ? 'text-accent' : 'text-destructive'
+          )}
+        >
           {isJustUI ? 'ZERO VECTOR (0)' : 'HIGH SURFACE (14+)'}
         </span>
       </div>
