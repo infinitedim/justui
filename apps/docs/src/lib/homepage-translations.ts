@@ -43,6 +43,14 @@ export type HomepageDictionary = {
   bentoCard4Desc: string;
   bentoCard5Title: string;
   bentoCard5Desc: string;
+  catalogSearchPlaceholder: string;
+  catalogAllCategories: string;
+  catalogNoResults: string;
+  catalogResetFilters: string;
+  catalogCopyCli: string;
+  catalogViewCode: string;
+  catalogViewDocs: string;
+  catalogPresetLabel: string;
 };
 
 export const homepageTranslations: Readonly<
@@ -102,6 +110,14 @@ export const homepageTranslations: Readonly<
     bentoCard5Title: 'Dart 3 Expressive DX',
     bentoCard5Desc:
       'Dot-shorthand and concise constructors save 42% boilerplate code without extra tooling.',
+    catalogSearchPlaceholder: 'Search 33 components... (press "/" to focus)',
+    catalogAllCategories: 'All',
+    catalogNoResults: 'No components found matching your query.',
+    catalogResetFilters: 'Reset filters',
+    catalogCopyCli: 'Copy CLI command',
+    catalogViewCode: 'View Dart code',
+    catalogViewDocs: 'Documentation',
+    catalogPresetLabel: 'Preset',
   },
   id: {
     tagline: 'Komponen Flutter siap salin-tempel',
@@ -157,6 +173,14 @@ export const homepageTranslations: Readonly<
     bentoCard5Title: 'Pengalaman Pengembang Dart 3',
     bentoCard5Desc:
       'Dot-shorthand dan konstruktor ringkas memangkas 42% kode boilerplate tanpa tooling tambahan.',
+    catalogSearchPlaceholder: 'Cari 33 komponen... (tekan "/" untuk fokus)',
+    catalogAllCategories: 'Semua',
+    catalogNoResults: 'Tidak ada komponen yang cocok dengan pencarian Anda.',
+    catalogResetFilters: 'Atur ulang filter',
+    catalogCopyCli: 'Salin perintah CLI',
+    catalogViewCode: 'Lihat kode Dart',
+    catalogViewDocs: 'Dokumentasi',
+    catalogPresetLabel: 'Preset',
   },
 } as const;
 

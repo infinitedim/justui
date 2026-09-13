@@ -21,11 +21,31 @@ interface TreeNode {
 }
 
 const TREE_NODES: TreeNode[] = [
-  { id: 'btn', name: 'JustButton', aspect: 'colors', api: 'context.justColors' },
+  {
+    id: 'btn',
+    name: 'JustButton',
+    aspect: 'colors',
+    api: 'context.justColors',
+  },
   { id: 'card', name: 'JustCard', aspect: 'colors', api: 'context.justColors' },
-  { id: 'h1', name: 'HeadlineText', aspect: 'typography', api: 'context.justTypo' },
-  { id: 'body', name: 'BodyParagraph', aspect: 'typography', api: 'context.justTypo' },
-  { id: 'pad', name: 'PaddingBox', aspect: 'spacing', api: 'context.justSpacing' },
+  {
+    id: 'h1',
+    name: 'HeadlineText',
+    aspect: 'typography',
+    api: 'context.justTypo',
+  },
+  {
+    id: 'body',
+    name: 'BodyParagraph',
+    aspect: 'typography',
+    api: 'context.justTypo',
+  },
+  {
+    id: 'pad',
+    name: 'PaddingBox',
+    aspect: 'spacing',
+    api: 'context.justSpacing',
+  },
   { id: 'ico', name: 'StaticIcon', aspect: 'none', api: 'context.readTheme()' },
 ];
 
@@ -50,15 +70,13 @@ export function BentoAspectRebuild({
       className={cn(
         'group relative flex flex-col justify-between overflow-hidden rounded-(--just-radius-lg)',
         'border-border bg-card/80 p-6 backdrop-blur-xs transition-all duration-200',
-        'border-(length:--just-border-width) hover:border-accent/40',
+        'hover:border-accent/40 border-(length:--just-border-width)',
         className
       )}
     >
       <div>
         <div className="flex items-center justify-between gap-4">
-          <Badge variant="outline">
-            PERFORMANCE
-          </Badge>
+          <Badge variant="outline">PERFORMANCE</Badge>
           <div className="flex gap-1">
             {(['colors', 'typography', 'spacing'] as Aspect[]).map((asp) => (
               <button
@@ -81,9 +99,7 @@ export function BentoAspectRebuild({
         <h3 className="text-foreground mt-4 font-mono text-lg font-bold">
           {title}
         </h3>
-        <p className="text-muted mt-1 text-sm leading-relaxed">
-          {description}
-        </p>
+        <p className="text-muted mt-1 text-sm leading-relaxed">{description}</p>
 
         {/* Tree simulation nodes */}
         <div className="border-border bg-background/60 mt-4 rounded-(--just-radius-md) border p-3">
@@ -101,26 +117,26 @@ export function BentoAspectRebuild({
                 <div
                   key={node.id}
                   className={cn(
-                    'flex flex-col rounded p-2 transition-all duration-300 border',
+                    'flex flex-col rounded border p-2 transition-all duration-300',
                     isDirty
                       ? 'border-amber-500/80 bg-amber-500/10 text-amber-300 ring-1 ring-amber-500/30'
                       : 'border-border/60 bg-card/60 text-muted opacity-60'
                   )}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-[11px]">{node.name}</span>
+                    <span className="text-[11px] font-bold">{node.name}</span>
                     <span
                       className={cn(
-                        'rounded px-1 py-0.2 text-[9px] font-bold',
+                        'py-0.2 rounded px-1 text-[9px] font-bold',
                         isDirty
-                          ? 'bg-amber-500/30 text-amber-200 animate-pulse'
+                          ? 'animate-pulse bg-amber-500/30 text-amber-200'
                           : 'bg-muted/20 text-muted'
                       )}
                     >
                       {isDirty ? 'REBUILD' : 'IDLE'}
                     </span>
                   </div>
-                  <span className="text-[10px] opacity-80 mt-1 truncate">
+                  <span className="mt-1 truncate text-[10px] opacity-80">
                     {node.api}
                   </span>
                 </div>
@@ -130,7 +146,7 @@ export function BentoAspectRebuild({
         </div>
 
         {/* Stats counter */}
-        <div className="mt-4 grid grid-cols-3 gap-2 border-t border-border/60 pt-3">
+        <div className="border-border/60 mt-4 grid grid-cols-3 gap-2 border-t pt-3">
           <StatCounter
             value={`${dirtyCount}/${totalNodes}`}
             label="Dirty Nodes"
@@ -141,15 +157,11 @@ export function BentoAspectRebuild({
             label="CPU Saved"
             unit="reduction"
           />
-          <StatCounter
-            value={`O(K)`}
-            label="Complexity"
-            unit="vs O(N)"
-          />
+          <StatCounter value={`O(K)`} label="Complexity" unit="vs O(N)" />
         </div>
       </div>
 
-      <div className="border-border/60 mt-4 flex items-center justify-between border-t pt-3 text-xs font-mono">
+      <div className="border-border/60 mt-4 flex items-center justify-between border-t pt-3 font-mono text-xs">
         <span className="text-muted">InheritedModel Aspect Scope</span>
         <span className="text-accent font-bold">ZERO UNNECESSARY REBUILDS</span>
       </div>
