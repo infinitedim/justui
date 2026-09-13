@@ -5,8 +5,8 @@ import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../theme/theme_provider.dart';
 import '../../theme/preset_tokens.dart';
-import '../shared/_shared_focus_indicator.dart';
-import '../shared/_shared_pressable.dart';
+import '../shared/just_focus_indicator.dart';
+import '../shared/just_pressable.dart';
 import 'just_switch_style.dart';
 import 'just_switch_theme.dart';
 

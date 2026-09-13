@@ -2,8 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../theme/theme_provider.dart';
-import '../shared/_shared_focus_indicator.dart';
-import '../shared/_shared_pressable.dart';
+import '../shared/just_focus_indicator.dart';
+import '../shared/just_pressable.dart';
 import 'just_avatar_style.dart';
 import 'just_avatar_variants.dart';
 

@@ -4,8 +4,8 @@ import 'package:flutter/services.dart'
 import 'package:flutter/widgets.dart';
 
 import '../../theme/theme_provider.dart';
-import '../shared/_shared_focus_indicator.dart';
-import '../shared/_shared_pressable.dart';
+import '../shared/just_focus_indicator.dart';
+import '../shared/just_pressable.dart';
 import 'just_select_style.dart';
 import 'just_select_theme.dart';
 import 'just_select_variants.dart';

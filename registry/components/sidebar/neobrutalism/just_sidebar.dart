@@ -4,8 +4,8 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:just_ui_tokens/just_ui_tokens.dart' show JustBreakpoints;
 
 import '../../theme/theme_provider.dart';
-import '../shared/_shared_tooltip_overlay.dart';
-import '../shared/_shared_pressable.dart';
+import '../shared/just_tooltip_overlay.dart';
+import '../shared/just_pressable.dart';
 import 'just_sidebar_style.dart';
 import 'just_sidebar_theme.dart';
 import 'just_sidebar_variants.dart';

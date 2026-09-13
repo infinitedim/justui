@@ -3,8 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 
 import '../dialog/just_dialog.dart';
-import '../shared/_shared_overlay_transition.dart';
-import '../shared/_shared_pressable.dart';
+import '../shared/just_overlay_transition.dart';
+import '../shared/just_pressable.dart';
 import '../sheet/just_sheet.dart';
 import '_date_picker_calendar.dart';
 import 'just_date_picker_style.dart';
