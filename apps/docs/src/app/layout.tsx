@@ -24,7 +24,7 @@ export const metadata = {
 /**
  * Root layout renders <html>, <body>, and ThemeProvider exactly once.
  * By keeping ThemeProvider here (not in [lang]/layout), it does NOT re-render
- * when the user switches locales — preventing the React 19 inline-script warning
+ * when the user switches locales -- preventing the React 19 inline-script warning
  * that next-themes triggers on every client re-render of ThemeProvider.
  */
 export default function RootLayout({ children }: { children: ReactNode }) {
