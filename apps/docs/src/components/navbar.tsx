@@ -1,7 +1,7 @@
 'use client';
 
 import { FaGithub } from 'react-icons/fa';
-import { Moon, Sun } from 'lucide-react';
+import { Menu, Moon, Search, Sun, X } from 'lucide-react';
 import Link from 'next/link';
 import type { Route } from 'next';
 import { usePathname } from 'next/navigation';
@@ -37,7 +37,7 @@ function LanguageSwitcher({ lang }: { lang: string }) {
   return (
     <Link
       href={otherPath as Route}
-      className="border-border text-muted hover:text-foreground inline-flex h-7 items-center rounded-full border px-2.5 font-mono text-[11px] transition-colors"
+      className="border-border text-muted hover:text-foreground inline-flex h-8 items-center rounded-full border px-2.5 font-mono text-[11px] transition-colors"
       aria-label={t.changeLanguage}
     >
       {otherLabel}
@@ -58,13 +58,13 @@ function ThemeSwitcher({ lang }: { lang: string }) {
     <button
       type="button"
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-      className="border-border text-muted hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors"
+      className="border-border text-muted hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors"
       aria-label={t.toggleTheme}
     >
       {resolvedTheme === 'dark' ? (
-        <Sun size={13} aria-hidden="true" />
+        <Sun size={14} aria-hidden="true" />
       ) : (
-        <Moon size={13} aria-hidden="true" />
+        <Moon size={14} aria-hidden="true" />
       )}
     </button>
   );
@@ -85,7 +85,7 @@ function PresetSwitcher({ lang }: { lang: string }) {
     <button
       type="button"
       onClick={() => setPreset(isNeo ? 'default' : 'neobrutalism')}
-      className="border-border text-muted hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors"
+      className="border-border text-muted hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors"
       aria-label={t.togglePreset}
       title={
         isNeo ? 'Switch to Default preset' : 'Switch to Neobrutalism preset'
@@ -102,7 +102,11 @@ export function Navbar({ starCount, lang }: NavbarProps) {
   const t = getHomepageDictionary(lang);
   const links = [
     { label: t.navHome, href: `/${lang}`, activeHref: '/' },
-    { label: t.navDocs, href: `/${lang}/docs/introduction`, activeHref: '/docs' },
+    {
+      label: t.navDocs,
+      href: `/${lang}/docs/introduction`,
+      activeHref: '/docs',
+    },
     {
       label: t.navComponents,
       href: `/${lang}/components`,
@@ -112,7 +116,12 @@ export function Navbar({ starCount, lang }: NavbarProps) {
 
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [shortcut, setShortcut] = useState('Ctrl K');
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     const platform = navigator.userAgentData?.platform.toLowerCase();
@@ -175,6 +184,14 @@ export function Navbar({ starCount, lang }: NavbarProps) {
             <ThemeSwitcher lang={lang} />
             <button
               type="button"
+              className="border-border text-muted hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-full border bg-transparent transition-colors sm:hidden"
+              onClick={() => setOpen(true)}
+              aria-label={lang === 'en' ? 'Open search' : 'Buka pencarian'}
+            >
+              <Search size={14} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
               className="border-border text-muted hover:text-foreground hidden items-center gap-3 rounded-full border bg-transparent px-3 py-1.5 font-mono text-xs transition-colors sm:flex"
               onClick={() => setOpen(true)}
               aria-label={lang === 'en' ? 'Open search' : 'Buka pencarian'}
@@ -193,8 +210,55 @@ export function Navbar({ starCount, lang }: NavbarProps) {
               <FaGithub size={14} aria-hidden="true" />
               <span>{formatStars(starCount)}</span>
             </a>
+            <button
+              type="button"
+              className="border-border text-muted hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-full border bg-transparent transition-colors md:hidden"
+              onClick={() => setMobileOpen((prev) => !prev)}
+              aria-label={
+                mobileOpen
+                  ? lang === 'en'
+                    ? 'Close navigation menu'
+                    : 'Tutup menu navigasi'
+                  : lang === 'en'
+                    ? 'Open navigation menu'
+                    : 'Buka menu navigasi'
+              }
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? (
+                <X size={16} aria-hidden="true" />
+              ) : (
+                <Menu size={16} aria-hidden="true" />
+              )}
+            </button>
           </div>
         </div>
+        {mobileOpen ? (
+          <div
+            data-testid="mobile-navigation-drawer"
+            className="border-border bg-background/95 fixed inset-x-0 top-14 z-40 border-b px-4 py-4 shadow-lg backdrop-blur-md md:hidden"
+          >
+            <nav
+              className="flex flex-col gap-2 font-mono text-sm"
+              aria-label="Mobile Navigation"
+            >
+              {links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href as Route}
+                  onClick={() => setMobileOpen(false)}
+                  className={
+                    activeHref === link.activeHref
+                      ? 'bg-accent-muted text-accent-dark dark:text-accent-light rounded-md px-3 py-2.5 font-medium transition-colors'
+                      : 'text-muted hover:text-foreground hover:bg-card rounded-md px-3 py-2.5 transition-colors'
+                  }
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        ) : null}
       </header>
       <SearchModal open={open} onOpenChange={setOpen} lang={lang} />
     </>

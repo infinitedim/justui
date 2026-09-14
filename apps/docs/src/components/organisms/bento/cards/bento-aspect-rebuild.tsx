@@ -119,7 +119,7 @@ export function BentoAspectRebuild({
                   className={cn(
                     'flex flex-col rounded border p-2 transition-all duration-300',
                     isDirty
-                      ? 'border-amber-500/80 bg-amber-500/10 text-amber-300 ring-1 ring-amber-500/30'
+                      ? 'border-amber-500/80 bg-amber-500/10 text-amber-700 ring-1 ring-amber-500/30 dark:text-amber-300'
                       : 'border-border/60 bg-card/60 text-muted opacity-60'
                   )}
                 >
@@ -129,7 +129,7 @@ export function BentoAspectRebuild({
                       className={cn(
                         'py-0.2 rounded px-1 text-[9px] font-bold',
                         isDirty
-                          ? 'animate-pulse bg-amber-500/30 text-amber-200'
+                          ? 'animate-pulse bg-amber-500/30 text-amber-800 dark:text-amber-200'
                           : 'bg-muted/20 text-muted'
                       )}
                     >

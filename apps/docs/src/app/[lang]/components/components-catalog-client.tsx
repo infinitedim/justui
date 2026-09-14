@@ -6,6 +6,7 @@ import type { HomepageDictionary } from '@/lib/homepage-translations';
 import { CatalogFilterBar } from '@/components/molecules/catalog-filter-bar/catalog-filter-bar';
 import { LivingComponentCard } from '@/components/organisms/living-component-card/living-component-card';
 import { SearchX } from 'lucide-react';
+import { usePreset } from '@/lib/preset-context';
 
 export interface ComponentsCatalogClientProps {
   components: ComponentMeta[];
@@ -20,7 +21,7 @@ export function ComponentsCatalogClient({
 }: ComponentsCatalogClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [preset, setPreset] = useState<'default' | 'neobrutalism'>('default');
+  const { preset, setPreset } = usePreset();
 
   // Compute counts per category
   const categoryCounts = useMemo(() => {
@@ -118,7 +119,7 @@ export function ComponentsCatalogClient({
           <button
             type="button"
             onClick={resetFilters}
-            className="bg-accent text-foreground rounded-md px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-90"
+            className="bg-accent rounded-md px-3 py-1.5 text-xs font-semibold text-[#18181b] transition-opacity hover:opacity-90"
           >
             {dictionary.catalogResetFilters}
           </button>

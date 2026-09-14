@@ -73,19 +73,19 @@ Widget buildAdvancedDatePicker(BuildContext context, DateTime? activeDate, Value
 
 ### JustDatePicker
 
-| Properti | Tipe Data | Nilai Default | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `value` | `DateTime?` | `null` | Nilai tanggal yang sedang dipilih. |
-| `onChanged` | `ValueChanged<DateTime>?` | `null` | Callback yang dipanggil saat tanggal baru dipilih. |
-| `firstDate` | `DateTime?` | `null` | Batas awal tanggal kalender yang dapat dipilih. |
-| `lastDate` | `DateTime?` | `null` | Batas akhir tanggal kalender yang dapat dipilih. |
-| `selectableDayPredicate` | `bool Function(DateTime)?` | `null` | Fungsi pemeriksa yang mengembalikan false untuk tanggal yang dinonaktifkan. |
-| `variant` | `JustDatePickerVariant` | `.dropdown` | Varian tampilan (`.inline`, `.modal`, `.dropdown`, `.responsive`). |
-| `initialView` | `JustCalendarView` | `.day` | Tingkat tampilan awal kalender (`.day`, `.month`, `.year`). |
-| `showWeekNumbers` | `bool` | `false` | Menampilkan kolom nomor minggu di sisi kiri kalender. |
-| `firstDayOfWeek` | `int` | `7` | Hari pertama dalam seminggu (1 = Senin, 7 = Minggu). |
-| `placeholder` | `String` | `'Pilih tanggal'` | Teks placeholder saat belum ada tanggal terpilih. |
-| `style` | `JustDatePickerStyle?` | `null` | Kustomisasi visual untuk sel hari, tanggal aktif, dan header. |
+| Properti                 | Tipe Data                  | Nilai Default     | Deskripsi                                                                   |
+| :----------------------- | :------------------------- | :---------------- | :-------------------------------------------------------------------------- |
+| `value`                  | `DateTime?`                | `null`            | Nilai tanggal yang sedang dipilih.                                          |
+| `onChanged`              | `ValueChanged<DateTime>?`  | `null`            | Callback yang dipanggil saat tanggal baru dipilih.                          |
+| `firstDate`              | `DateTime?`                | `null`            | Batas awal tanggal kalender yang dapat dipilih.                             |
+| `lastDate`               | `DateTime?`                | `null`            | Batas akhir tanggal kalender yang dapat dipilih.                            |
+| `selectableDayPredicate` | `bool Function(DateTime)?` | `null`            | Fungsi pemeriksa yang mengembalikan false untuk tanggal yang dinonaktifkan. |
+| `variant`                | `JustDatePickerVariant`    | `.dropdown`       | Varian tampilan (`.inline`, `.modal`, `.dropdown`, `.responsive`).          |
+| `initialView`            | `JustCalendarView`         | `.day`            | Tingkat tampilan awal kalender (`.day`, `.month`, `.year`).                 |
+| `showWeekNumbers`        | `bool`                     | `false`           | Menampilkan kolom nomor minggu di sisi kiri kalender.                       |
+| `firstDayOfWeek`         | `int`                      | `7`               | Hari pertama dalam seminggu (1 = Senin, 7 = Minggu).                        |
+| `placeholder`            | `String`                   | `'Pilih tanggal'` | Teks placeholder saat belum ada tanggal terpilih.                           |
+| `style`                  | `JustDatePickerStyle?`     | `null`            | Kustomisasi visual untuk sel hari, tanggal aktif, dan header.               |
 
 ---
 

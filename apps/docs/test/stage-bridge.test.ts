@@ -27,7 +27,10 @@ describe('stage-bridge', () => {
     dispatchStageEvent(event, mockIframeRef);
 
     expect(windowSpy).toHaveBeenCalledWith(event, window.location.origin);
-    expect(iframePostMessage).toHaveBeenCalledWith(event, window.location.origin);
+    expect(iframePostMessage).toHaveBeenCalledWith(
+      event,
+      window.location.origin
+    );
   });
 
   it('listens for matched stage events through useStageListener hook', () => {

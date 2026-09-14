@@ -87,22 +87,23 @@ Widget buildAdvancedIconButtons(BuildContext context) {
 
 ### JustIconButton
 
-| Properti | Tipe Data | Nilai Default | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `icon` | `Widget` | *wajib* | Widget ikon yang ditampilkan di tengah tombol. |
-| `tooltip` | `String` | *wajib* | Deskripsi aksesibilitas wajib untuk pembaca layar dan tooltip. |
-| `onPressed` | `VoidCallback?` | *wajib* | Callback yang dipanggil saat ditekan. Berikan nilai null untuk menonaktifkan. |
-| `variant` | `JustButtonVariant` | `.ghost` | Varian gaya visual (`.ghost`, `.primary`, `.outline`, `.secondary`, `.destructive`). |
-| `size` | `JustButtonSize` | `.md` | Dimensi fisik tombol (`.xs`, `.sm`, `.md`, `.lg`, `.xl`). |
-| `isLoading` | `bool` | `false` | Menampilkan spinner pemuatan ketika bernilai true. |
-| `isDisabled` | `bool` | `false` | Menonaktifkan interaksi tombol dan menerapkan gaya redup. |
-| `enableHaptic` | `bool?` | `null` | Mengaktifkan getaran haptik saat ditekan. Default mengikuti tema. |
-| `style` | `JustButtonStyle?` | `null` | Kustomisasi gaya visual per-instance. |
+| Properti       | Tipe Data           | Nilai Default | Deskripsi                                                                            |
+| :------------- | :------------------ | :------------ | :----------------------------------------------------------------------------------- |
+| `icon`         | `Widget`            | _wajib_       | Widget ikon yang ditampilkan di tengah tombol.                                       |
+| `tooltip`      | `String`            | _wajib_       | Deskripsi aksesibilitas wajib untuk pembaca layar dan tooltip.                       |
+| `onPressed`    | `VoidCallback?`     | _wajib_       | Callback yang dipanggil saat ditekan. Berikan nilai null untuk menonaktifkan.        |
+| `variant`      | `JustButtonVariant` | `.ghost`      | Varian gaya visual (`.ghost`, `.primary`, `.outline`, `.secondary`, `.destructive`). |
+| `size`         | `JustButtonSize`    | `.md`         | Dimensi fisik tombol (`.xs`, `.sm`, `.md`, `.lg`, `.xl`).                            |
+| `isLoading`    | `bool`              | `false`       | Menampilkan spinner pemuatan ketika bernilai true.                                   |
+| `isDisabled`   | `bool`              | `false`       | Menonaktifkan interaksi tombol dan menerapkan gaya redup.                            |
+| `enableHaptic` | `bool?`             | `null`        | Mengaktifkan getaran haptik saat ditekan. Default mengikuti tema.                    |
+| `style`        | `JustButtonStyle?`  | `null`        | Kustomisasi gaya visual per-instance.                                                |
 
 ---
 
 ## Aksesibilitas
 
 `JustIconButton` memenuhi standar WCAG AA:
+
 - **Tooltip Wajib**: Parameter `tooltip` diwajibkan secara ketat pada konstruktor untuk menjamin fungsionalitas tombol dapat dipahami pengguna pembaca layar.
 - **Target Sentuh Minimum**: Ukuran tombol pada skala default `.md` memenuhi kriteria target sentuh minimum 44x44 points.

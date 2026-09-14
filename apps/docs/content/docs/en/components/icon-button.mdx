@@ -87,22 +87,23 @@ Widget buildAdvancedIconButtons(BuildContext context) {
 
 ### JustIconButton
 
-| Property | Data Type | Default Value | Description |
-| :--- | :--- | :--- | :--- |
-| `icon` | `Widget` | *required* | The icon widget displayed at the center of the button. |
-| `tooltip` | `String` | *required* | Mandatory accessibility description for screen readers and tooltips. |
-| `onPressed` | `VoidCallback?` | *required* | Callback executed when tapped. Pass null to disable. |
-| `variant` | `JustButtonVariant` | `.ghost` | Visual style variant (`.ghost`, `.primary`, `.outline`, `.secondary`, `.destructive`). |
-| `size` | `JustButtonSize` | `.md` | Physical dimensions (`.xs`, `.sm`, `.md`, `.lg`, `.xl`). |
-| `isLoading` | `bool` | `false` | When true, renders a loading spinner instead of the icon. |
-| `isDisabled` | `bool` | `false` | Explicitly disables interactions and applies muted styling. |
-| `enableHaptic` | `bool?` | `null` | Controls haptic vibration on press. Falls back to theme configuration. |
-| `style` | `JustButtonStyle?` | `null` | Per-instance style overrides for custom backgrounds or borders. |
+| Property       | Data Type           | Default Value | Description                                                                            |
+| :------------- | :------------------ | :------------ | :------------------------------------------------------------------------------------- |
+| `icon`         | `Widget`            | _required_    | The icon widget displayed at the center of the button.                                 |
+| `tooltip`      | `String`            | _required_    | Mandatory accessibility description for screen readers and tooltips.                   |
+| `onPressed`    | `VoidCallback?`     | _required_    | Callback executed when tapped. Pass null to disable.                                   |
+| `variant`      | `JustButtonVariant` | `.ghost`      | Visual style variant (`.ghost`, `.primary`, `.outline`, `.secondary`, `.destructive`). |
+| `size`         | `JustButtonSize`    | `.md`         | Physical dimensions (`.xs`, `.sm`, `.md`, `.lg`, `.xl`).                               |
+| `isLoading`    | `bool`              | `false`       | When true, renders a loading spinner instead of the icon.                              |
+| `isDisabled`   | `bool`              | `false`       | Explicitly disables interactions and applies muted styling.                            |
+| `enableHaptic` | `bool?`             | `null`        | Controls haptic vibration on press. Falls back to theme configuration.                 |
+| `style`        | `JustButtonStyle?`  | `null`        | Per-instance style overrides for custom backgrounds or borders.                        |
 
 ---
 
 ## Accessibility
 
 `JustIconButton` complies with WCAG AA guidelines:
+
 - **Mandatory Tooltip**: Unlike standard text buttons, `tooltip` is required to guarantee that screen readers announce the semantic intent of the action.
 - **Minimum Target Size**: With default `.md` sizing, touch dimensions meet or exceed 44x44 points for reliable finger touch interaction.

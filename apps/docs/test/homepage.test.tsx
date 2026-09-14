@@ -9,6 +9,11 @@ vi.mock('@/lib/github', () => ({
 
 vi.mock('next/navigation', () => ({
   usePathname: () => '/en',
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
 }));
 
 vi.mock('next/link', () => ({
