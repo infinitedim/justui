@@ -199,4 +199,13 @@ describe('Navbar & SearchModal Components', () => {
     fireEvent.click(menuBtn);
     expect(menuBtn).toHaveAttribute('aria-expanded', 'false');
   });
+
+  it('renders correct navigation destinations for Docs and Components', () => {
+    render(<Navbar starCount={100} lang="en" />);
+    const docsLink = screen.getByRole('link', { name: 'Docs' });
+    const componentsLink = screen.getByRole('link', { name: 'Components' });
+
+    expect(docsLink).toHaveAttribute('href', '/en/docs/introduction');
+    expect(componentsLink).toHaveAttribute('href', '/en/components');
+  });
 });
