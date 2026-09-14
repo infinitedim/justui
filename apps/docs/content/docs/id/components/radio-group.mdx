@@ -76,22 +76,22 @@ Widget buildAdvancedRadioGroup(BuildContext context, String? selectedMethod, Val
 
 ### `JustRadioGroup<T>`
 
-| Properti | Tipe Data | Nilai Default | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `value` | `T?` | *wajib* | Nilai yang sedang terpilih di dalam kelompok. |
-| `options` | `List<JustRadioOption<T>>` | *wajib* | Daftar opsi radio yang tersedia. |
-| `onChanged` | `ValueChanged<T>?` | *wajib* | Callback yang dipanggil saat suatu opsi dipilih. |
-| `direction` | `Axis` | `Axis.vertical` | Arah tata letak susunan (`Axis.vertical` atau `Axis.horizontal`). |
-| `spacing` | `double?` | `null` | Jarak antar item radio. Default mengikuti spasi tema. |
-| `isDisabled` | `bool` | `false` | Menonaktifkan seluruh opsi di dalam grup dari interaksi. |
+| Properti     | Tipe Data                  | Nilai Default   | Deskripsi                                                         |
+| :----------- | :------------------------- | :-------------- | :---------------------------------------------------------------- |
+| `value`      | `T?`                       | _wajib_         | Nilai yang sedang terpilih di dalam kelompok.                     |
+| `options`    | `List<JustRadioOption<T>>` | _wajib_         | Daftar opsi radio yang tersedia.                                  |
+| `onChanged`  | `ValueChanged<T>?`         | _wajib_         | Callback yang dipanggil saat suatu opsi dipilih.                  |
+| `direction`  | `Axis`                     | `Axis.vertical` | Arah tata letak susunan (`Axis.vertical` atau `Axis.horizontal`). |
+| `spacing`    | `double?`                  | `null`          | Jarak antar item radio. Default mengikuti spasi tema.             |
+| `isDisabled` | `bool`                     | `false`         | Menonaktifkan seluruh opsi di dalam grup dari interaksi.          |
 
 ### `JustRadioOption<T>`
 
-| Properti | Tipe Data | Nilai Default | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `value` | `T` | *wajib* | Nilai pengidentifikasi opsi ini. |
-| `label` | `Widget` | *wajib* | Widget label yang dirender di samping lingkaran radio. |
-| `isDisabled` | `bool` | `false` | Menonaktifkan interaksi khusus untuk opsi ini saja. |
+| Properti     | Tipe Data | Nilai Default | Deskripsi                                              |
+| :----------- | :-------- | :------------ | :----------------------------------------------------- |
+| `value`      | `T`       | _wajib_       | Nilai pengidentifikasi opsi ini.                       |
+| `label`      | `Widget`  | _wajib_       | Widget label yang dirender di samping lingkaran radio. |
+| `isDisabled` | `bool`    | `false`       | Menonaktifkan interaksi khusus untuk opsi ini saja.    |
 
 ---
 
