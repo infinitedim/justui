@@ -58,14 +58,20 @@ export type StageBridgeEvent =
 
 export function dispatchStageEvent(
   event: StageBridgeEvent,
-  iframeRef?: RefObject<HTMLIFrameElement | null>
+  iframeRef?: RefObject<HTMLIFrameElement | null>,
+  targetOrigin?: string
 ): void {
   if (typeof window === 'undefined') {
     return;
   }
-  window.postMessage(event, '*');
+  const resolvedOrigin =
+    targetOrigin ??
+    (window.location.origin && window.location.origin !== 'null'
+      ? window.location.origin
+      : '*');
+  window.postMessage(event, resolvedOrigin);
   if (iframeRef?.current?.contentWindow) {
-    iframeRef.current.contentWindow.postMessage(event, '*');
+    iframeRef.current.contentWindow.postMessage(event, resolvedOrigin);
   }
 }
 
@@ -81,6 +87,16 @@ export function useStageListener<T extends StageBridgeEvent['type']>(
       return;
     }
     const listener = (event: MessageEvent) => {
+      // Security: Validate origin if present
+      if (
+        event.origin &&
+        window.location.origin &&
+        window.location.origin !== 'null' &&
+        event.origin !== window.location.origin
+      ) {
+        return;
+      }
+
       if (
         event.data &&
         typeof event.data === 'object' &&
