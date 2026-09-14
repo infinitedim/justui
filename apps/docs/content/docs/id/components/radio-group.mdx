@@ -1,0 +1,101 @@
+---
+title: Radio Group
+description: Kontainer pengelompokan yang mengoordinasikan pilihan radio eksklusif dalam tata letak vertikal atau horizontal.
+---
+
+# Radio Group
+
+Komponen `JustRadioGroup` menyediakan kontainer terkoordinasi untuk serangkaian opsi pilihan yang saling eksklusif (hanya satu yang dapat dipilih). Komponen ini mempermudah pengelolaan data formulir dengan menyatukan beberapa tombol `JustRadio` ke dalam satu model nilai terpusat.
+
+---
+
+## Deskripsi
+
+- **Keadaan Terkoordinasi**: Mensinkronisasikan status nilai aktif di semua opsi radio bersarang melalui satu callback `onChanged`.
+- **Pengaturan Orientasi**: Menyusun opsi secara vertikal maupun horizontal dengan jarak spasi yang mengikuti token tema.
+- **Dukungan Generik (Type-Safe)**: Mendukung tipe nilai data generik (`String`, `int`, `enum`, atau model kustom).
+- **Penonaktifan Grup**: Menonaktifkan seluruh opsi radio sekaligus hanya dengan satu tanda `isDisabled`.
+
+---
+
+## Penggunaan
+
+### Penggunaan Dasar
+
+Pilihan paket langganan secara vertikal:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicRadioGroup(BuildContext context, String? selectedPlan, ValueChanged<String> onChanged) {
+  return JustRadioGroup<String>(
+    value: selectedPlan,
+    onChanged: onChanged,
+    options: const [
+      JustRadioOption(value: 'starter', label: Text('Paket Starter - Gratis')),
+      JustRadioOption(value: 'pro', label: Text('Paket Pro - Rp 299.000/bln')),
+      JustRadioOption(value: 'enterprise', label: Text('Paket Enterprise - Kustom')),
+    ],
+  );
+}
+```
+
+### Penggunaan Lanjutan
+
+Grup radio horizontal dengan salah satu opsi berstatus dinonaktifkan:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedRadioGroup(BuildContext context, String? selectedMethod, ValueChanged<String> onChanged) {
+  return JustRadioGroup<String>(
+    value: selectedMethod,
+    direction: Axis.horizontal,
+    spacing: context.justSpacing.lg,
+    onChanged: onChanged,
+    options: const [
+      JustRadioOption(value: 'credit_card', label: Text('Kartu Kredit')),
+      JustRadioOption(value: 'qris', label: Text('QRIS')),
+      JustRadioOption(
+        value: 'crypto',
+        label: Text('Kripto (Tidak Tersedia)'),
+        isDisabled: true,
+      ),
+    ],
+  );
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### `JustRadioGroup<T>`
+
+| Properti | Tipe Data | Nilai Default | Deskripsi |
+| :--- | :--- | :--- | :--- |
+| `value` | `T?` | *wajib* | Nilai yang sedang terpilih di dalam kelompok. |
+| `options` | `List<JustRadioOption<T>>` | *wajib* | Daftar opsi radio yang tersedia. |
+| `onChanged` | `ValueChanged<T>?` | *wajib* | Callback yang dipanggil saat suatu opsi dipilih. |
+| `direction` | `Axis` | `Axis.vertical` | Arah tata letak susunan (`Axis.vertical` atau `Axis.horizontal`). |
+| `spacing` | `double?` | `null` | Jarak antar item radio. Default mengikuti spasi tema. |
+| `isDisabled` | `bool` | `false` | Menonaktifkan seluruh opsi di dalam grup dari interaksi. |
+
+### `JustRadioOption<T>`
+
+| Properti | Tipe Data | Nilai Default | Deskripsi |
+| :--- | :--- | :--- | :--- |
+| `value` | `T` | *wajib* | Nilai pengidentifikasi opsi ini. |
+| `label` | `Widget` | *wajib* | Widget label yang dirender di samping lingkaran radio. |
+| `isDisabled` | `bool` | `false` | Menonaktifkan interaksi khusus untuk opsi ini saja. |
+
+---
+
+## Aksesibilitas
+
+- **Semantik Radio Group**: Mengekspos peran semantik `radiogroup` ke alat bantu aksesibilitas sehingga pembaca layar mengumumkan "Pilihan 1 dari 3".
+- **Navigasi Keyboard**: Pengguna keyboard dapat berpindah antar opsi menggunakan tombol panah atas/bawah atau kiri/kanan.

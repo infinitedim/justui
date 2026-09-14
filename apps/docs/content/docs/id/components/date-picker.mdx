@@ -1,0 +1,95 @@
+---
+title: Date Picker
+description: Komponen pemilih tanggal kalender yang mudah diakses dengan dukungan varian tampilan inline, dropdown, modal, dan responsif.
+---
+
+# Date Picker
+
+Komponen `JustDatePicker` memungkinkan pengguna memilih satu tanggal kalender dengan mudah. Dibangun tanpa dependensi eksternal, komponen ini menyediakan navigasi kisi kalender, kolom nomor minggu, filter penonaktifan tanggal kustom, dan berbagai varian presentasi responsif.
+
+---
+
+## Deskripsi
+
+- **Banyak Varian Tampilan**: Mendukung penyematan langsung (`.inline`), popover mengambang (`.dropdown`), dialog terpusat (`.modal`), dan adaptasi otomatis ukuran layar (`.responsive`).
+- **Batasan Tanggal**: Membatasi rentang pilihan melalui `firstDate`, `lastDate`, serta fungsi predikat `selectableDayPredicate`.
+- **Hierarki Tampilan**: Berpindah secara mulus antara tampilan kisi hari, ikhtisar bulan, dan pemilih tahun.
+- **Dukungan Lokalisasi**: Hari pertama dalam seminggu dapat dikonfigurasi (Senin atau Minggu) serta nama bulan dan hari yang terintegrasi.
+
+---
+
+## Penggunaan
+
+### Penggunaan Dasar
+
+Pemilih tanggal dropdown untuk pemesanan jadwal:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicDatePicker(BuildContext context, DateTime? selectedDate, ValueChanged<DateTime> onDateSelected) {
+  return JustDatePicker(
+    value: selectedDate,
+    onChanged: onDateSelected,
+    firstDate: DateTime(2020),
+    lastDate: DateTime(2030),
+    placeholder: 'Pilih tanggal jadwal',
+    variant: .dropdown,
+  );
+}
+```
+
+### Penggunaan Lanjutan
+
+Kalender inline dengan pengecualian akhir pekan dan nomor minggu:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedDatePicker(BuildContext context, DateTime? activeDate, ValueChanged<DateTime> onDateSelected) {
+  return JustDatePicker(
+    value: activeDate,
+    onChanged: onDateSelected,
+    variant: .inline,
+    showWeekNumbers: true,
+    firstDayOfWeek: 1, // Senin
+    firstDate: DateTime.now(),
+    lastDate: DateTime.now().add(const Duration(days: 90)),
+    // Nonaktifkan hari Sabtu dan Minggu
+    selectableDayPredicate: (date) {
+      return date.weekday != DateTime.saturday && date.weekday != DateTime.sunday;
+    },
+  );
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### JustDatePicker
+
+| Properti | Tipe Data | Nilai Default | Deskripsi |
+| :--- | :--- | :--- | :--- |
+| `value` | `DateTime?` | `null` | Nilai tanggal yang sedang dipilih. |
+| `onChanged` | `ValueChanged<DateTime>?` | `null` | Callback yang dipanggil saat tanggal baru dipilih. |
+| `firstDate` | `DateTime?` | `null` | Batas awal tanggal kalender yang dapat dipilih. |
+| `lastDate` | `DateTime?` | `null` | Batas akhir tanggal kalender yang dapat dipilih. |
+| `selectableDayPredicate` | `bool Function(DateTime)?` | `null` | Fungsi pemeriksa yang mengembalikan false untuk tanggal yang dinonaktifkan. |
+| `variant` | `JustDatePickerVariant` | `.dropdown` | Varian tampilan (`.inline`, `.modal`, `.dropdown`, `.responsive`). |
+| `initialView` | `JustCalendarView` | `.day` | Tingkat tampilan awal kalender (`.day`, `.month`, `.year`). |
+| `showWeekNumbers` | `bool` | `false` | Menampilkan kolom nomor minggu di sisi kiri kalender. |
+| `firstDayOfWeek` | `int` | `7` | Hari pertama dalam seminggu (1 = Senin, 7 = Minggu). |
+| `placeholder` | `String` | `'Pilih tanggal'` | Teks placeholder saat belum ada tanggal terpilih. |
+| `style` | `JustDatePickerStyle?` | `null` | Kustomisasi visual untuk sel hari, tanggal aktif, dan header. |
+
+---
+
+## Aksesibilitas
+
+- **Navigasi Keyboard**: Mendukung tombol panah untuk berpindah hari, PageUp/PageDown untuk berpindah bulan, dan Enter untuk memilih.
+- **Focus Trapping**: Pada varian modal, fokus keyboard terisolasi dengan aman di dalam dialog hingga ditutup.

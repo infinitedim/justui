@@ -11,7 +11,7 @@ const withMDX = createMDX();
 
 const isDev = process.env.NODE_ENV === 'development';
 
-// Production CSP — no unsafe-eval (not needed by Next.js in production).
+// Production CSP -- no unsafe-eval (not needed by Next.js in production).
 // 'unsafe-inline' in script-src is retained because next-themes injects an inline
 // script for theme initialisation; remove it only after adopting CSP nonces.
 // img-src is scoped to known domains instead of the broad 'https:' wildcard.
@@ -30,7 +30,7 @@ const cspProduction = `
   upgrade-insecure-requests;
 `;
 
-// Development CSP — looser to allow Turbopack HMR (needs unsafe-eval)
+// Development CSP -- looser to allow Turbopack HMR (needs unsafe-eval)
 // and React DevTools while still applying a baseline policy.
 const cspDevelopment = `
   default-src 'self';
@@ -75,10 +75,10 @@ const nextConfig: NextConfig = {
       permanent: false,
     });
 
-    // Redirect docs root to default locale docs
+    // Redirect docs root to default locale docs introduction
     redirects.push({
       source: '/docs',
-      destination: `/${defaultLocale}/docs`,
+      destination: `/${defaultLocale}/docs/introduction`,
       permanent: false,
     });
 
@@ -86,6 +86,20 @@ const nextConfig: NextConfig = {
     redirects.push({
       source: '/docs/:path*',
       destination: `/${defaultLocale}/docs/:path*`,
+      permanent: false,
+    });
+
+    // Redirect components root to default locale components
+    redirects.push({
+      source: '/components',
+      destination: `/${defaultLocale}/components`,
+      permanent: false,
+    });
+
+    // Redirect all /components/:path* without locale to default locale
+    redirects.push({
+      source: '/components/:path*',
+      destination: `/${defaultLocale}/components/:path*`,
       permanent: false,
     });
 

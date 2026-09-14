@@ -1,0 +1,108 @@
+---
+title: Icon Button
+description: Komponen tombol khusus ikon dengan validasi tooltip aksesibilitas dan animasi sentuh terintegrasi.
+---
+
+# Icon Button
+
+Komponen `JustIconButton` adalah elemen interaktif ringkas yang dirancang khusus untuk tindakan yang direpresentasikan hanya oleh ikon. Komponen ini menerapkan standar aksesibilitas ketat dengan mewajibkan parameter tooltip untuk pembaca layar (screen reader).
+
+---
+
+## Deskripsi
+
+- **Fokus Ikon**: Menampilkan satu ikon di bagian tengah tanpa label teks, menjaga dimensi tetap efisien.
+- **Aksesibilitas Wajib**: Mewajibkan parameter `tooltip` agar setiap tombol berbasis ikon dapat dibaca dengan jelas oleh alat bantu aksesibilitas.
+- **Umpan Balik Interaktif**: Dilengkapi animasi penekanan bawaan, efek hover, serta dukungan umpan balik haptik opsional di perangkat seluler.
+- **Dukungan Varian**: Terintegrasi penuh dengan token desain JustUI, mendukung gaya ghost, primary, outline, secondary, dan destructive.
+
+---
+
+## Penggunaan
+
+### Penggunaan Dasar
+
+Contoh penggunaan sederhana `JustIconButton` dengan tooltip wajib:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicIconButton(BuildContext context) {
+  return JustIconButton(
+    icon: const Icon(Icons.share),
+    tooltip: 'Bagikan dokumen',
+    onPressed: () => print('Tombol bagikan ditekan'),
+  );
+}
+```
+
+### Penggunaan Lanjutan
+
+Tombol ikon dengan variasi ukuran, varian warna, status memuat, dan kustomisasi gaya:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedIconButtons(BuildContext context) {
+  return Row(
+    spacing: context.justSpacing.md,
+    children: [
+      // Varian Primary
+      JustIconButton(
+        icon: const Icon(Icons.download),
+        tooltip: 'Unduh berkas',
+        variant: .primary,
+        size: .lg,
+        onPressed: () => print('Unduh ditekan'),
+      ),
+
+      // Varian Destructive
+      JustIconButton(
+        icon: const Icon(Icons.delete_outline),
+        tooltip: 'Hapus item',
+        variant: .destructive,
+        size: .md,
+        onPressed: () => print('Hapus ditekan'),
+      ),
+
+      // Status Memuat (Loading)
+      JustIconButton(
+        icon: const Icon(Icons.refresh),
+        tooltip: 'Memperbarui data',
+        isLoading: true,
+        onPressed: () {},
+      ),
+    ],
+  );
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### JustIconButton
+
+| Properti | Tipe Data | Nilai Default | Deskripsi |
+| :--- | :--- | :--- | :--- |
+| `icon` | `Widget` | *wajib* | Widget ikon yang ditampilkan di tengah tombol. |
+| `tooltip` | `String` | *wajib* | Deskripsi aksesibilitas wajib untuk pembaca layar dan tooltip. |
+| `onPressed` | `VoidCallback?` | *wajib* | Callback yang dipanggil saat ditekan. Berikan nilai null untuk menonaktifkan. |
+| `variant` | `JustButtonVariant` | `.ghost` | Varian gaya visual (`.ghost`, `.primary`, `.outline`, `.secondary`, `.destructive`). |
+| `size` | `JustButtonSize` | `.md` | Dimensi fisik tombol (`.xs`, `.sm`, `.md`, `.lg`, `.xl`). |
+| `isLoading` | `bool` | `false` | Menampilkan spinner pemuatan ketika bernilai true. |
+| `isDisabled` | `bool` | `false` | Menonaktifkan interaksi tombol dan menerapkan gaya redup. |
+| `enableHaptic` | `bool?` | `null` | Mengaktifkan getaran haptik saat ditekan. Default mengikuti tema. |
+| `style` | `JustButtonStyle?` | `null` | Kustomisasi gaya visual per-instance. |
+
+---
+
+## Aksesibilitas
+
+`JustIconButton` memenuhi standar WCAG AA:
+- **Tooltip Wajib**: Parameter `tooltip` diwajibkan secara ketat pada konstruktor untuk menjamin fungsionalitas tombol dapat dipahami pengguna pembaca layar.
+- **Target Sentuh Minimum**: Ukuran tombol pada skala default `.md` memenuhi kriteria target sentuh minimum 44x44 points.

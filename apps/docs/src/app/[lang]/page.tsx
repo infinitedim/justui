@@ -42,7 +42,7 @@ export default async function HomePage({
                 {t.getStarted}
               </Link>
               <Link
-                href={`/${lang}/docs/components`}
+                href={`/${lang}/components`}
                 className="hover:border-accent-dark hover:bg-accent-muted border-border text-foreground inline-flex h-10 items-center justify-center rounded-md border bg-transparent px-4 text-sm font-medium transition-colors"
               >
                 {t.browseComponents}
