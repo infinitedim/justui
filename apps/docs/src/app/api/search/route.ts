@@ -12,7 +12,7 @@ const { GET: fumadocsSearch } = createFromSource(source);
  *   and mitigate naive DoS / scraping.
  * - For production traffic that requires strict rate limiting, add an
  *   edge middleware or use Vercel's built-in rate-limiting / Upstash Redis.
- * - The endpoint returns only pre-indexed, build-time content — no user
+ * - The endpoint returns only pre-indexed, build-time content -- no user
  *   input is persisted or reflected back without sanitisation by Fumadocs.
  */
 export async function GET(request: NextRequest): Promise<Response> {
