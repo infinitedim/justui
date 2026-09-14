@@ -37,10 +37,10 @@ export function baseOptions(lang: string): BaseLayoutProps {
     },
     githubUrl: 'https://github.com/infinitedim/justui',
     links: [
-      { text: 'Docs', url: `/${lang}/docs`, active: 'nested-url' },
+      { text: 'Docs', url: `/${lang}/docs/introduction`, active: 'nested-url' },
       {
         text: 'Components',
-        url: `/${lang}/docs/components`,
+        url: `/${lang}/components`,
         active: 'nested-url',
       },
     ],

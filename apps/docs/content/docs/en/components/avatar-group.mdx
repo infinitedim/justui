@@ -1,0 +1,109 @@
+---
+title: Avatar Group
+description: Overlapping stack of user avatars with automatic overflow counter and configurable spacing.
+---
+
+# Avatar Group
+
+The `JustAvatarGroup` component renders an overlapping horizontal cluster of user avatars. It neatly arranges team members, project collaborators, or participants, automatically collapsing excess users into an overflow counter badge.
+
+---
+
+## Description
+
+- **Overlapping Cascade**: Arranges `JustAvatar` widgets with consistent negative margins so leading avatars gracefully layer over trailing ones.
+- **Overflow Counter**: Automatically displays a `+N` badge when the total avatars count exceeds `maxDisplay`.
+- **Theme Awareness**: Adapts border cutouts to match background colors across both light and dark themes.
+- **Size Consistency**: Scales uniformly across JustUI avatar size scales (`.xs`, `.sm`, `.md`, `.lg`, `.xl`, `.xxl`).
+
+---
+
+## Usage
+
+### Basic Usage
+
+Simple overlapping team avatars with overflow:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicAvatarGroup(BuildContext context) {
+  return JustAvatarGroup(
+    maxDisplay: 3,
+    avatars: const [
+      JustAvatar(name: 'Sarah Connor'),
+      JustAvatar(name: 'John Doe'),
+      JustAvatar(name: 'Alex Rivera'),
+      JustAvatar(name: 'Devon Miles'),
+      JustAvatar(name: 'Elena Rostova'),
+    ],
+  );
+}
+```
+
+### Advanced Usage
+
+Large avatar group with custom overlap distance:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedAvatarGroup(BuildContext context) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: context.justSpacing.lg,
+    children: [
+      // Large avatars with 12px overlap
+      JustAvatarGroup(
+        size: .lg,
+        overlap: 12.0,
+        maxDisplay: 4,
+        avatars: const [
+          JustAvatar(name: 'Marcus Vance'),
+          JustAvatar(name: 'Chloe Bennett'),
+          JustAvatar(name: 'Liam Chen'),
+          JustAvatar(name: 'Sophia Rossi'),
+          JustAvatar(name: 'Zack Taylor'),
+          JustAvatar(name: 'Aria Stark'),
+        ],
+      ),
+
+      // Compact avatars
+      JustAvatarGroup(
+        size: .sm,
+        overlap: 6.0,
+        maxDisplay: 2,
+        avatars: const [
+          JustAvatar(name: 'Alpha Bot'),
+          JustAvatar(name: 'Beta Runner'),
+          JustAvatar(name: 'Gamma Ray'),
+        ],
+      ),
+    ],
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustAvatarGroup
+
+| Property | Data Type | Default Value | Description |
+| :--- | :--- | :--- | :--- |
+| `avatars` | `List<JustAvatar>` | *required* | The list of `JustAvatar` widgets to display in the group. |
+| `maxDisplay` | `int` | `3` | Maximum number of individual avatars rendered before showing `+N` badge. |
+| `overlap` | `double` | `8.0` | Pixel distance overlapping adjacent avatars. |
+| `size` | `JustAvatarSize` | `.md` | Physical dimensions applied across all avatars in the group. |
+
+---
+
+## Accessibility
+
+- **Group Semantics**: Announces the total count of collaborators and the number of unshown members (e.g. "3 team members shown, 2 more").
+- **Contrast Compliance**: Overflow badges enforce WCAG AA 4.5:1 text-to-background contrast in both light and dark themes.
