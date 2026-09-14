@@ -1,0 +1,105 @@
+---
+title: Carousel
+description: Performant, touch-friendly carousel slider featuring virtual infinite looping, auto-scroll, and customizable indicators.
+---
+
+# Carousel
+
+The `JustCarousel` component offers a touch-optimized slide showcase built directly on top of Flutter layout primitives. It provides virtual infinite looping with zero memory penalty, customizable indicators, and smooth pagination controls.
+
+---
+
+## Description
+
+- **Virtual Looping**: Supports seamless bidirectional infinite wrapping via virtual modulo indexing without cloning widget instances.
+- **Dual Orientation**: Operates in standard horizontal mode or vertical mode for stories and feeds.
+- **Auto-Scroll Engine**: Advances slides automatically with configurable delays, pausing gracefully on mouse hover or touch press.
+- **Customizable Indicators**: Built-in dots, lines, and fraction paginators with interactive tap-to-jump support.
+- **Desktop Enhanced**: Supports mouse wheel scrolling, arrow navigation buttons, and keyboard Left/Right arrow controls.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Simple image or banner carousel with dot indicators:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicCarousel(BuildContext context) {
+  final items = [
+    Container(color: Colors.blueAccent, alignment: Alignment.center, child: const Text('Slide 1')),
+    Container(color: Colors.purpleAccent, alignment: Alignment.center, child: const Text('Slide 2')),
+    Container(color: Colors.orangeAccent, alignment: Alignment.center, child: const Text('Slide 3')),
+  ];
+
+  return SizedBox(
+    height: 200,
+    child: JustCarousel(
+      children: items,
+      loop: true,
+    ),
+  );
+}
+```
+
+### Advanced Usage
+
+Carousel with auto-scroll, arrow navigation, and custom viewport peeking:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedCarousel(BuildContext context) {
+  return SizedBox(
+    height: 260,
+    child: JustCarousel(
+      viewportFraction: 0.88,
+      loop: true,
+      showArrows: true,
+      autoScroll: const Duration(seconds: 4),
+      children: List.generate(
+        5,
+        (index) => Card(
+          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Center(
+            child: Text('Card #${index + 1}', style: const TextStyle(fontSize: 18)),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustCarousel
+
+| Property | Data Type | Default Value | Description |
+| :--- | :--- | :--- | :--- |
+| `children` | `List<Widget>` | *required* | List of slide widgets rendered in the carousel. |
+| `controller` | `JustCarouselController?` | `null` | Controller for programmatic navigation and listening to index updates. |
+| `orientation` | `Axis` | `Axis.horizontal` | Slide movement axis (`Axis.horizontal` or `Axis.vertical`). |
+| `loop` | `bool` | `true` | Whether slides loop indefinitely. Disabled when items count is 1 or fewer. |
+| `viewportFraction` | `double` | `1.0` | Proportion of visible viewport occupied by each item (e.g. 0.85 for peeking). |
+| `initialPage` | `int` | `0` | Initial slide index displayed upon mounting. |
+| `autoScroll` | `Duration?` | `null` | Interval between automatic transitions. Pauses on user interaction. |
+| `showArrows` | `bool?` | `null` | Explicitly displays or hides desktop next/previous navigation buttons. |
+| `onPageChanged` | `ValueChanged<int>?` | `null` | Callback executed whenever the active slide index changes. |
+
+---
+
+## Accessibility
+
+- **Keyboard Focus**: Next/Previous arrow controls receive focus and trigger slides with Enter or Space keys.
+- **Reduced Motion**: Respects system animation settings; transitions snap instantly when reduced motion is requested.
+- **Aria / Semantics**: Announces current slide fraction (e.g. "Slide 2 of 5") to screen readers.

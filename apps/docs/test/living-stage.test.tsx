@@ -101,7 +101,7 @@ describe('LivingStage', () => {
         component: 'card',
         success: true,
       }),
-      '*'
+      window.location.origin
     );
   });
 });

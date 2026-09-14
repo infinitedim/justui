@@ -1,0 +1,88 @@
+---
+title: Time Picker
+description: Time selection component supporting circular dial, scrollable spinner, and numeric input modes in 12h and 24h formats.
+---
+
+# Time Picker
+
+The `JustTimePicker` component offers precise time selection across multiple input paradigms. It supports an interactive circular clock dial, three-column magnetic scroll spinners, and direct numeric text entry, accommodating both 12-hour (AM/PM) and 24-hour military formats.
+
+---
+
+## Description
+
+- **Multiple Interaction Modes**:
+  - **Dial Mode (`.dial`)**: Interactive circular clock face with draggable hour and minute hands.
+  - **Spinner Mode (`.spinner`)**: Three-column vertical scrollable wheels with magnetic snapping.
+  - **Input Mode (`.input`)**: Direct numeric text fields with increment/decrement steppers.
+- **Display Variants**: Available as an inline widget, floating popover dropdown, or modal dialog/sheet.
+- **Time Format Versatility**: Easily toggles between 12-hour AM/PM and 24-hour formats.
+- **Boundary Constraints**: Enforces selectable time bounds via `firstTime`, `lastTime`, and `selectableTimePredicate`.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Dropdown time picker in 12-hour clock format:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicTimePicker(BuildContext context, TimeOfDay? selectedTime, ValueChanged<TimeOfDay> onTimeChanged) {
+  return JustTimePicker(
+    value: selectedTime,
+    onChanged: onTimeChanged,
+    variant: .dropdown,
+    mode: .dial,
+  );
+}
+```
+
+### Advanced Usage
+
+Modal time picker in 24-hour spinner mode with bounds:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedTimePicker(BuildContext context, TimeOfDay? activeTime, ValueChanged<TimeOfDay> onTimeChanged) {
+  return JustTimePicker(
+    value: activeTime,
+    onChanged: onTimeChanged,
+    variant: .modal,
+    mode: .spinner,
+    firstTime: const TimeOfDay(hour: 8, minute: 0),
+    lastTime: const TimeOfDay(hour: 18, minute: 0),
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustTimePicker
+
+| Property | Data Type | Default Value | Description |
+| :--- | :--- | :--- | :--- |
+| `value` | `TimeOfDay?` | `null` | Currently selected time value. |
+| `onChanged` | `ValueChanged<TimeOfDay>?` | `null` | Callback executed when a time value is selected. |
+| `variant` | `JustTimePickerVariant` | `.dropdown` | Presentation variant (`.inline`, `.modal`, `.dropdown`, `.responsive`). |
+| `mode` | `JustTimePickerMode` | `.dial` | Interaction paradigm (`.dial`, `.spinner`, `.input`). |
+| `firstTime` | `TimeOfDay?` | `null` | Earliest selectable time boundary. |
+| `lastTime` | `TimeOfDay?` | `null` | Latest selectable time boundary. |
+| `selectableTimePredicate` | `bool Function(TimeOfDay)?` | `null` | Custom predicate to selectively disable specific times. |
+| `style` | `JustTimePickerStyle?` | `null` | Per-instance visual style overrides for hands, numbers, and wheels. |
+
+---
+
+## Accessibility
+
+- **Direct Keyboard Entry**: In dial and input modes, typing numbers jumps directly to matching hour or minute values.
+- **Screen Reader Announcements**: Time changes are announced promptly as "HH:MM AM/PM" or military notation based on configuration.
