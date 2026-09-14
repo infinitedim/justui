@@ -73,19 +73,19 @@ Widget buildAdvancedDatePicker(BuildContext context, DateTime? activeDate, Value
 
 ### JustDatePicker
 
-| Property | Data Type | Default Value | Description |
-| :--- | :--- | :--- | :--- |
-| `value` | `DateTime?` | `null` | Currently selected date value. |
-| `onChanged` | `ValueChanged<DateTime>?` | `null` | Callback executed when a new date is selected. |
-| `firstDate` | `DateTime?` | `null` | Earliest selectable date boundary. |
-| `lastDate` | `DateTime?` | `null` | Latest selectable date boundary. |
-| `selectableDayPredicate` | `bool Function(DateTime)?` | `null` | Custom predicate returning false for non-selectable dates. |
-| `variant` | `JustDatePickerVariant` | `.dropdown` | Presentation variant (`.inline`, `.modal`, `.dropdown`, `.responsive`). |
-| `initialView` | `JustCalendarView` | `.day` | Initial view level (`.day`, `.month`, `.year`). |
-| `showWeekNumbers` | `bool` | `false` | Whether to display week index numbers in a left column. |
-| `firstDayOfWeek` | `int` | `7` | First day of week (1 = Monday, 7 = Sunday). |
-| `placeholder` | `String` | `'Select date'` | Placeholder text displayed when no date is selected. |
-| `style` | `JustDatePickerStyle?` | `null` | Visual style overrides for days, active selection, and headers. |
+| Property                 | Data Type                  | Default Value   | Description                                                             |
+| :----------------------- | :------------------------- | :-------------- | :---------------------------------------------------------------------- |
+| `value`                  | `DateTime?`                | `null`          | Currently selected date value.                                          |
+| `onChanged`              | `ValueChanged<DateTime>?`  | `null`          | Callback executed when a new date is selected.                          |
+| `firstDate`              | `DateTime?`                | `null`          | Earliest selectable date boundary.                                      |
+| `lastDate`               | `DateTime?`                | `null`          | Latest selectable date boundary.                                        |
+| `selectableDayPredicate` | `bool Function(DateTime)?` | `null`          | Custom predicate returning false for non-selectable dates.              |
+| `variant`                | `JustDatePickerVariant`    | `.dropdown`     | Presentation variant (`.inline`, `.modal`, `.dropdown`, `.responsive`). |
+| `initialView`            | `JustCalendarView`         | `.day`          | Initial view level (`.day`, `.month`, `.year`).                         |
+| `showWeekNumbers`        | `bool`                     | `false`         | Whether to display week index numbers in a left column.                 |
+| `firstDayOfWeek`         | `int`                      | `7`             | First day of week (1 = Monday, 7 = Sunday).                             |
+| `placeholder`            | `String`                   | `'Select date'` | Placeholder text displayed when no date is selected.                    |
+| `style`                  | `JustDatePickerStyle?`     | `null`          | Visual style overrides for days, active selection, and headers.         |
 
 ---
 
