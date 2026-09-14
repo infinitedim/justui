@@ -102,7 +102,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
   const t = getHomepageDictionary(lang);
   const links = [
     { label: t.navHome, href: `/${lang}`, activeHref: '/' },
-    { label: t.navDocs, href: `/${lang}/docs`, activeHref: '/docs' },
+    { label: t.navDocs, href: `/${lang}/docs/introduction`, activeHref: '/docs' },
     {
       label: t.navComponents,
       href: `/${lang}/components`,
@@ -116,7 +116,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
 
   useEffect(() => {
     const platform = navigator.userAgentData?.platform.toLowerCase();
-    setShortcut(platform?.includes('mac') ? '⌘K' : 'Ctrl K');
+    setShortcut(platform?.includes('mac') ? 'Cmd K' : 'Ctrl K');
 
     function onKeyDown(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
