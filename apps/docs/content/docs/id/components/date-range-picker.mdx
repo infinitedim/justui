@@ -1,0 +1,97 @@
+---
+title: Date Range Picker
+description: Komponen pemilih rentang tanggal kalender ganda dengan pintasan preset cepat, validasi batas, dan penyorotan interval kontinu.
+---
+
+# Date Range Picker
+
+Komponen `JustDateRangePicker` menyediakan pengalaman pemilihan rentang tanggal multi-hari yang intuitif. Komponen ini menyorot interval antara tanggal awal dan tanggal akhir secara bersambung lintas baris minggu dan bulan, serta menyediakan tombol pintasan cepat seperti "7 Hari Terakhir" atau "Bulan Ini".
+
+---
+
+## Deskripsi
+
+- **Penyorotan Interval Kontinu**: Menghubungkan tanggal awal dan akhir dengan pita latar belakang warna tema di sepanjang baris kalender.
+- **Pintasan Preset Cepat**: Dilengkapi preset bawaan (seperti Hari Ini, Kemarin, 7 Hari Terakhir, 30 Hari Terakhir, Tahun Ini) untuk mempercepat pengisian data laporan.
+- **Validasi Batas Ganda**: Memastikan tanggal awal tidak melebihi tanggal akhir serta memberikan indikator visual yang jelas saat penentuan tanggal kedua.
+- **Tata Letak Responsif**: Menampilkan dua kalender berdampingan pada layar desktop dan satu kalender bergulir pada layar seluler.
+
+---
+
+## Penggunaan
+
+### Penggunaan Dasar
+
+Pemilih rentang tanggal sederhana dengan batas rentang:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicDateRangePicker(BuildContext context, DateTimeRange? range, ValueChanged<DateTimeRange> onRangeChanged) {
+  return JustDateRangePicker(
+    value: range,
+    onChanged: onRangeChanged,
+    firstDate: DateTime(2023),
+    lastDate: DateTime(2028),
+  );
+}
+```
+
+### Penggunaan Lanjutan
+
+Pemilih rentang tanggal dengan pintasan cepat dan kolom nomor minggu:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedDateRangePicker(BuildContext context, DateTimeRange? range, ValueChanged<DateTimeRange> onRangeChanged) {
+  final now = DateTime.now();
+
+  return JustDateRangePicker(
+    value: range,
+    onChanged: onRangeChanged,
+    firstDate: DateTime(now.year - 1),
+    lastDate: DateTime(now.year + 1),
+    showWeekNumbers: true,
+    presets: [
+      JustDateRangePreset(
+        label: '7 Hari Terakhir',
+        range: DateTimeRange(start: now.subtract(const Duration(days: 7)), end: now),
+      ),
+      JustDateRangePreset(
+        label: 'Bulan Ini',
+        range: DateTimeRange(start: DateTime(now.year, now.month, 1), end: now),
+      ),
+    ],
+  );
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### JustDateRangePicker
+
+| Properti | Tipe Data | Nilai Default | Deskripsi |
+| :--- | :--- | :--- | :--- |
+| `value` | `DateTimeRange?` | `null` | Rentang tanggal awal dan akhir yang sedang aktif. |
+| `onChanged` | `ValueChanged<DateTimeRange>?` | `null` | Callback yang dipanggil saat rentang tanggal valid selesai dipilih. |
+| `firstDate` | `DateTime?` | `null` | Batas awal tanggal kalender yang dapat dipilih. |
+| `lastDate` | `DateTime?` | `null` | Batas akhir tanggal kalender yang dapat dipilih. |
+| `presets` | `List<JustDateRangePreset>?` | `null` | Daftar tombol pintasan cepat yang ditampilkan di atas atau samping kalender. |
+| `showWeekNumbers` | `bool` | `false` | Menampilkan kolom nomor minggu di sisi kiri kalender. |
+| `firstDayOfWeek` | `int` | `7` | Hari pertama dalam seminggu (1 = Senin, 7 = Minggu). |
+| `style` | `JustDatePickerStyle?` | `null` | Kustomisasi visual untuk pita penyorot rentang dan titik ujung tanggal. |
+| `enableHaptic` | `bool?` | `null` | Mengontrol getaran haptik saat memilih batas tanggal. |
+
+---
+
+## Aksesibilitas
+
+- **Umpan Balik Rentang**: Mengumumkan tanggal awal dan tanggal akhir secara terpisah dan jelas kepada pembaca layar saat terpilih.
+- **Navigasi Tombol Panah**: Tombol panah kiri/kanan dan atas/bawah memungkinkan penentuan titik awal dan akhir tanpa memerlukan mouse.
