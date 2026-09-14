@@ -111,27 +111,27 @@ Widget buildAdvancedResizable(BuildContext context) {
 
 ### JustResizable
 
-| Property | Data Type | Default Value | Description |
-| :--- | :--- | :--- | :--- |
-| `children` | `List<JustResizablePanel>` | *required* | Ordered list of panels to arrange and resize. |
-| `direction` | `Axis` | `Axis.horizontal` | Layout direction (`Axis.horizontal` or `Axis.vertical`). |
-| `dividerThickness` | `double` | `3.0` | Thickness of the draggable divider handle in pixels. |
-| `controller` | `JustResizableController?` | `null` | Programmatic controller for resizing or toggling panels. |
-| `keyboardStepRatio` | `double` | `0.02` | Proportional step delta per arrow key press when divider is focused. |
-| `style` | `JustResizableStyle?` | `null` | Visual styling overrides for dividers and active focus borders. |
+| Property            | Data Type                  | Default Value     | Description                                                          |
+| :------------------ | :------------------------- | :---------------- | :------------------------------------------------------------------- |
+| `children`          | `List<JustResizablePanel>` | _required_        | Ordered list of panels to arrange and resize.                        |
+| `direction`         | `Axis`                     | `Axis.horizontal` | Layout direction (`Axis.horizontal` or `Axis.vertical`).             |
+| `dividerThickness`  | `double`                   | `3.0`             | Thickness of the draggable divider handle in pixels.                 |
+| `controller`        | `JustResizableController?` | `null`            | Programmatic controller for resizing or toggling panels.             |
+| `keyboardStepRatio` | `double`                   | `0.02`            | Proportional step delta per arrow key press when divider is focused. |
+| `style`             | `JustResizableStyle?`      | `null`            | Visual styling overrides for dividers and active focus borders.      |
 
 ### JustResizablePanel
 
-| Property | Data Type | Default Value | Description |
-| :--- | :--- | :--- | :--- |
-| `child` | `Widget` | *required* | Widget content displayed within this pane. |
-| `initialSize` | `double?` | `null` | Initial proportional fraction (0.0 to 1.0). Normalized automatically. |
-| `minSize` | `double?` | `null` | Minimum pixel size allowed during drag resize. |
-| `maxSize` | `double?` | `null` | Maximum pixel size allowed during drag resize. |
-| `collapsible` | `bool` | `false` | Whether this panel collapses to 0 when dragged past threshold. |
-| `collapseThreshold` | `double?` | `null` | Pixel threshold triggering complete collapse. Defaults to 50% of minSize. |
-| `snapPoints` | `List<double>?` | `null` | List of target fractions where drag handle magnetically snaps. |
-| `resizable` | `bool` | `true` | When false, locks bounding splitters to prevent user resizing. |
+| Property            | Data Type       | Default Value | Description                                                               |
+| :------------------ | :-------------- | :------------ | :------------------------------------------------------------------------ |
+| `child`             | `Widget`        | _required_    | Widget content displayed within this pane.                                |
+| `initialSize`       | `double?`       | `null`        | Initial proportional fraction (0.0 to 1.0). Normalized automatically.     |
+| `minSize`           | `double?`       | `null`        | Minimum pixel size allowed during drag resize.                            |
+| `maxSize`           | `double?`       | `null`        | Maximum pixel size allowed during drag resize.                            |
+| `collapsible`       | `bool`          | `false`       | Whether this panel collapses to 0 when dragged past threshold.            |
+| `collapseThreshold` | `double?`       | `null`        | Pixel threshold triggering complete collapse. Defaults to 50% of minSize. |
+| `snapPoints`        | `List<double>?` | `null`        | List of target fractions where drag handle magnetically snaps.            |
+| `resizable`         | `bool`          | `true`        | When false, locks bounding splitters to prevent user resizing.            |
 
 ---
 

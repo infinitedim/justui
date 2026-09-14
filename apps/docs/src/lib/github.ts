@@ -9,7 +9,7 @@ export async function fetchStarCount(): Promise<number | null> {
     const headers: Record<string, string> = {
       Accept: 'application/vnd.github+json',
       // Required by GitHub API guidelines for proper attribution and
-      // higher rate limits (60 req/hr → 5000 req/hr with auth).
+      // higher rate limits (60 req/hr -> 5000 req/hr with auth).
       'User-Agent': 'JustUI-Docs/1.0',
     };
 

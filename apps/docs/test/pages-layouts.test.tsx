@@ -23,6 +23,11 @@ const mockRedirect = vi.fn();
 (globalThis as any).mockRedirect = mockRedirect;
 vi.mock('next/navigation', () => ({
   usePathname: () => '/id',
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
   notFound: () => {
     mockNotFound();
     throw new Error('NEXT_NOT_FOUND');
