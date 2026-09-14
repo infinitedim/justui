@@ -3,18 +3,25 @@ import { describe, expect, it } from 'vitest';
 import { ComponentsCatalogClient } from '@/app/[lang]/components/components-catalog-client';
 import { components } from '@/lib/components-data';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
+import { PresetProvider } from '@/lib/preset-context';
 
 describe('Living Component Catalog', () => {
   const dictionary = getHomepageDictionary('en');
 
-  it('renders all 33 components initially', () => {
-    render(
-      <ComponentsCatalogClient
-        components={components}
-        lang="en"
-        dictionary={dictionary}
-      />
+  function renderCatalog() {
+    return render(
+      <PresetProvider>
+        <ComponentsCatalogClient
+          components={components}
+          lang="en"
+          dictionary={dictionary}
+        />
+      </PresetProvider>
     );
+  }
+
+  it('renders all 33 components initially', () => {
+    renderCatalog();
 
     expect(
       screen.getByTestId('components-catalog-container')
@@ -35,13 +42,7 @@ describe('Living Component Catalog', () => {
   });
 
   it('filters components by search query', () => {
-    render(
-      <ComponentsCatalogClient
-        components={components}
-        lang="en"
-        dictionary={dictionary}
-      />
-    );
+    renderCatalog();
 
     const searchInput = screen.getByTestId('catalog-search-input');
     fireEvent.change(searchInput, { target: { value: 'JustSwitch' } });
@@ -56,13 +57,7 @@ describe('Living Component Catalog', () => {
   });
 
   it('filters components by category', () => {
-    render(
-      <ComponentsCatalogClient
-        components={components}
-        lang="en"
-        dictionary={dictionary}
-      />
-    );
+    renderCatalog();
 
     // Selection has 3 components: checkbox, radio, switch
     const selectionPill = screen.getByRole('button', { name: /selection/i });
@@ -84,13 +79,7 @@ describe('Living Component Catalog', () => {
   });
 
   it('shows empty state when no components match search', () => {
-    render(
-      <ComponentsCatalogClient
-        components={components}
-        lang="en"
-        dictionary={dictionary}
-      />
-    );
+    renderCatalog();
 
     const searchInput = screen.getByTestId('catalog-search-input');
     fireEvent.change(searchInput, {
@@ -110,13 +99,7 @@ describe('Living Component Catalog', () => {
   });
 
   it('switches preset between default and neobrutalism', () => {
-    render(
-      <ComponentsCatalogClient
-        components={components}
-        lang="en"
-        dictionary={dictionary}
-      />
-    );
+    renderCatalog();
 
     const neoBtn = screen.getByTestId('preset-btn-neobrutalism');
     fireEvent.click(neoBtn);
@@ -132,14 +115,8 @@ describe('Living Component Catalog', () => {
     expect(buttonHarness).toHaveAttribute('data-preset', 'default');
   });
 
-  it('opens and closes the Dart code modal', () => {
-    render(
-      <ComponentsCatalogClient
-        components={components}
-        lang="en"
-        dictionary={dictionary}
-      />
-    );
+  it('opens and closes the Dart code modal via button, backdrop click, and Escape', () => {
+    renderCatalog();
 
     const buttonCard = screen.getByTestId('living-component-card-button');
     const viewCodeBtn = buttonCard.querySelector(
@@ -151,20 +128,26 @@ describe('Living Component Catalog', () => {
     expect(screen.getByTestId('dart-code-modal')).toBeInTheDocument();
     expect(screen.getByText(/JustButton\(/)).toBeInTheDocument();
 
-    // Close modal
+    // Close modal via close button
     const closeBtn = screen.getByRole('button', { name: 'Close modal' });
     fireEvent.click(closeBtn);
+    expect(screen.queryByTestId('dart-code-modal')).not.toBeInTheDocument();
+
+    // Reopen and close via Escape key
+    fireEvent.click(viewCodeBtn!);
+    expect(screen.getByTestId('dart-code-modal')).toBeInTheDocument();
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByTestId('dart-code-modal')).not.toBeInTheDocument();
+
+    // Reopen and close via backdrop click
+    fireEvent.click(viewCodeBtn!);
+    const modalBackdrop = screen.getByTestId('dart-code-modal');
+    fireEvent.click(modalBackdrop);
     expect(screen.queryByTestId('dart-code-modal')).not.toBeInTheDocument();
   });
 
   it('handles hotkeys "/" and "Escape"', () => {
-    render(
-      <ComponentsCatalogClient
-        components={components}
-        lang="en"
-        dictionary={dictionary}
-      />
-    );
+    renderCatalog();
 
     const searchInput = screen.getByTestId('catalog-search-input');
 

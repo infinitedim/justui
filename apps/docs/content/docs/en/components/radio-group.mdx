@@ -76,22 +76,22 @@ Widget buildAdvancedRadioGroup(BuildContext context, String? selectedMethod, Val
 
 ### `JustRadioGroup<T>`
 
-| Property | Data Type | Default Value | Description |
-| :--- | :--- | :--- | :--- |
-| `value` | `T?` | *required* | The currently selected value in the group. |
-| `options` | `List<JustRadioOption<T>>` | *required* | The list of available radio options. |
-| `onChanged` | `ValueChanged<T>?` | *required* | Callback executed when an option is selected. |
-| `direction` | `Axis` | `Axis.vertical` | Layout orientation (`Axis.vertical` or `Axis.horizontal`). |
-| `spacing` | `double?` | `null` | Distance between adjacent radio items. Defaults to theme spacing. |
-| `isDisabled` | `bool` | `false` | When true, disables the entire group from interaction. |
+| Property     | Data Type                  | Default Value   | Description                                                       |
+| :----------- | :------------------------- | :-------------- | :---------------------------------------------------------------- |
+| `value`      | `T?`                       | _required_      | The currently selected value in the group.                        |
+| `options`    | `List<JustRadioOption<T>>` | _required_      | The list of available radio options.                              |
+| `onChanged`  | `ValueChanged<T>?`         | _required_      | Callback executed when an option is selected.                     |
+| `direction`  | `Axis`                     | `Axis.vertical` | Layout orientation (`Axis.vertical` or `Axis.horizontal`).        |
+| `spacing`    | `double?`                  | `null`          | Distance between adjacent radio items. Defaults to theme spacing. |
+| `isDisabled` | `bool`                     | `false`         | When true, disables the entire group from interaction.            |
 
 ### `JustRadioOption<T>`
 
-| Property | Data Type | Default Value | Description |
-| :--- | :--- | :--- | :--- |
-| `value` | `T` | *required* | The value identifying this option. |
-| `label` | `Widget` | *required* | Label widget rendered alongside the radio circle. |
-| `isDisabled` | `bool` | `false` | When true, disables only this specific option. |
+| Property     | Data Type | Default Value | Description                                       |
+| :----------- | :-------- | :------------ | :------------------------------------------------ |
+| `value`      | `T`       | _required_    | The value identifying this option.                |
+| `label`      | `Widget`  | _required_    | Label widget rendered alongside the radio circle. |
+| `isDisabled` | `bool`    | `false`       | When true, disables only this specific option.    |
 
 ---
 
