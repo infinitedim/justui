@@ -208,4 +208,18 @@ describe('Navbar & SearchModal Components', () => {
     expect(docsLink).toHaveAttribute('href', '/en/docs/introduction');
     expect(componentsLink).toHaveAttribute('href', '/en/components');
   });
+
+  it('toggles mobile navigation drawer', () => {
+    render(<Navbar starCount={100} lang="en" />);
+    const menuBtn = screen.getByRole('button', {
+      name: /open navigation menu/i,
+    });
+    expect(menuBtn).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(menuBtn);
+    expect(menuBtn).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(menuBtn);
+    expect(menuBtn).toHaveAttribute('aria-expanded', 'false');
+  });
 });
