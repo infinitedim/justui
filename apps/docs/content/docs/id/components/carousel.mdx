@@ -1,0 +1,105 @@
+---
+title: Carousel
+description: Komponen carousel interaktif dengan pengguliran virtual tanpa batas, auto-scroll, dan indikator yang dapat dikustomisasi.
+---
+
+# Carousel
+
+Komponen `JustCarousel` menyediakan peragaan slide yang dioptimalkan untuk interaksi sentuh pada perangkat seluler dan desktop. Dibangun langsung di atas primitif tata letak Flutter dengan mekanisme perulangan virtual tanpa batasan memori serta transisi yang sangat halus.
+
+---
+
+## Deskripsi
+
+- **Perulangan Virtual**: Mendukung perulangan tanpa batas dua arah menggunakan pengindeksan modulo tanpa menduplikasi alokasi memori widget.
+- **Dukungan Dua Arah (Dual Orientation)**: Berjalan dalam orientasi horizontal maupun vertikal (cocok untuk format story atau linimasa vertikal).
+- **Mesin Auto-Scroll**: Menggeser slide secara otomatis dengan jeda waktu teratur, dan otomatis berhenti sementara saat disentuh atau disorot kursor mouse.
+- **Indikator Interaktif**: Dilengkapi indikator titik (dots), garis (lines), dan pecahan numerik (fractions) yang dapat ditekan untuk berpindah slide langsung.
+- **Dukungan Desktop**: Mendukung roda mouse (mouse wheel), tombol panah navigasi, dan navigasi keyboard panah kiri/kanan.
+
+---
+
+## Penggunaan
+
+### Penggunaan Dasar
+
+Carousel banner sederhana dengan indikator titik:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicCarousel(BuildContext context) {
+  final items = [
+    Container(color: Colors.blueAccent, alignment: Alignment.center, child: const Text('Slide 1')),
+    Container(color: Colors.purpleAccent, alignment: Alignment.center, child: const Text('Slide 2')),
+    Container(color: Colors.orangeAccent, alignment: Alignment.center, child: const Text('Slide 3')),
+  ];
+
+  return SizedBox(
+    height: 200,
+    child: JustCarousel(
+      children: items,
+      loop: true,
+    ),
+  );
+}
+```
+
+### Penggunaan Lanjutan
+
+Carousel dengan auto-scroll, tombol panah navigasi, dan intipan slide samping:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedCarousel(BuildContext context) {
+  return SizedBox(
+    height: 260,
+    child: JustCarousel(
+      viewportFraction: 0.88,
+      loop: true,
+      showArrows: true,
+      autoScroll: const Duration(seconds: 4),
+      children: List.generate(
+        5,
+        (index) => Card(
+          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Center(
+            child: Text('Kartu #${index + 1}', style: const TextStyle(fontSize: 18)),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### JustCarousel
+
+| Properti | Tipe Data | Nilai Default | Deskripsi |
+| :--- | :--- | :--- | :--- |
+| `children` | `List<Widget>` | *wajib* | Daftar widget slide yang ditampilkan dalam carousel. |
+| `controller` | `JustCarouselController?` | `null` | Pengontrol untuk navigasi terprogram dan mendengarkan perubahan indeks. |
+| `orientation` | `Axis` | `Axis.horizontal` | Arah pergerakan slide (`Axis.horizontal` atau `Axis.vertical`). |
+| `loop` | `bool` | `true` | Menentukan apakah carousel berulang terus-menerus tanpa batas. |
+| `viewportFraction` | `double` | `1.0` | Proporsi lebar/tinggi viewport yang digunakan tiap item (misal 0.85 untuk mengintip). |
+| `initialPage` | `int` | `0` | Indeks awal slide saat pertama kali dimuat. |
+| `autoScroll` | `Duration?` | `null` | Interval durasi pergantian otomatis antar slide. Berhenti saat interaksi pengguna. |
+| `showArrows` | `bool?` | `null` | Menampilkan atau menyembunyikan tombol navigasi panah kiri/kanan. |
+| `onPageChanged` | `ValueChanged<int>?` | `null` | Callback yang dipanggil setiap kali indeks halaman aktif berganti. |
+
+---
+
+## Aksesibilitas
+
+- **Fokus Keyboard**: Tombol navigasi slide dapat menerima fokus melalui keyboard dan diaktifkan dengan tombol Enter atau Spasi.
+- **Peredaman Gerakan (Reduced Motion)**: Mendukung preferensi sistem; animasi geser beralih ke transisi instan jika opsi pengurangan gerakan aktif.
+- **Semantik Pembaca Layar**: Mengumumkan informasi nomor urut slide aktif secara akurat (contoh: "Slide 2 dari 5").

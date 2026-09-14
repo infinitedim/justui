@@ -1,0 +1,88 @@
+---
+title: Time Picker
+description: Komponen pemilih waktu dengan dukungan mode putaran dial, roda gulir spinner, dan input teks angka dalam format 12 jam atau 24 jam.
+---
+
+# Time Picker
+
+Komponen `JustTimePicker` menyediakan mekanisme pemilihan waktu yang presisi melalui berbagai pilihan antarmuka. Komponen ini mendukung tampilan jam bundar interaktif (dial), roda gulir vertikal tiga kolom dengan penahan magnetik (spinner), serta kolom input angka langsung, baik dalam format 12 jam (AM/PM) maupun 24 jam.
+
+---
+
+## Deskripsi
+
+- **Banyak Pilihan Mode Interaksi**:
+  - **Mode Dial (`.dial`)**: Jam bundar interaktif dengan jarum jam dan menit yang dapat diputar secara halus.
+  - **Mode Spinner (`.spinner`)**: Tiga kolom roda penggulir vertikal dengan penguncian magnetik otomatis.
+  - **Mode Input (`.input`)**: Kolom input numerik langsung dengan tombol penambah/pengurang langkah.
+- **Varian Presentasi**: Tersedia sebagai widget yang disematkan langsung (inline), dropdown mengambang, maupun jendela dialog/lembar modal.
+- **Fleksibilitas Format**: Beralih mudah antara format 12 jam dengan indikator AM/PM dan format militer 24 jam.
+- **Batasan Waktu**: Membatasi rentang jam yang dapat dipilih melalui `firstTime`, `lastTime`, dan predikat kustom `selectableTimePredicate`.
+
+---
+
+## Penggunaan
+
+### Penggunaan Dasar
+
+Pemilih waktu dropdown dengan tampilan jarum jam 12 jam:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicTimePicker(BuildContext context, TimeOfDay? selectedTime, ValueChanged<TimeOfDay> onTimeChanged) {
+  return JustTimePicker(
+    value: selectedTime,
+    onChanged: onTimeChanged,
+    variant: .dropdown,
+    mode: .dial,
+  );
+}
+```
+
+### Penggunaan Lanjutan
+
+Pemilih waktu modal dengan spinner 24 jam dan batas rentang operasional:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedTimePicker(BuildContext context, TimeOfDay? activeTime, ValueChanged<TimeOfDay> onTimeChanged) {
+  return JustTimePicker(
+    value: activeTime,
+    onChanged: onTimeChanged,
+    variant: .modal,
+    mode: .spinner,
+    firstTime: const TimeOfDay(hour: 8, minute: 0),
+    lastTime: const TimeOfDay(hour: 18, minute: 0),
+  );
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### JustTimePicker
+
+| Properti | Tipe Data | Nilai Default | Deskripsi |
+| :--- | :--- | :--- | :--- |
+| `value` | `TimeOfDay?` | `null` | Nilai waktu yang sedang aktif. |
+| `onChanged` | `ValueChanged<TimeOfDay>?` | `null` | Callback yang dipanggil saat nilai waktu dipilih. |
+| `variant` | `JustTimePickerVariant` | `.dropdown` | Varian tampilan (`.inline`, `.modal`, `.dropdown`, `.responsive`). |
+| `mode` | `JustTimePickerMode` | `.dial` | Paradigma interaksi (`.dial`, `.spinner`, `.input`). |
+| `firstTime` | `TimeOfDay?` | `null` | Batas awal waktu yang dapat dipilih. |
+| `lastTime` | `TimeOfDay?` | `null` | Batas akhir waktu yang dapat dipilih. |
+| `selectableTimePredicate` | `bool Function(TimeOfDay)?` | `null` | Predikat untuk menonaktifkan jam/menit tertentu. |
+| `style` | `JustTimePickerStyle?` | `null` | Kustomisasi visual untuk jarum jam, angka dial, dan kolom roda putar. |
+
+---
+
+## Aksesibilitas
+
+- **Input Keyboard Langsung**: Pada mode dial dan input, pengetikan angka langsung mengarahkan jarum ke nilai jam atau menit yang sesuai.
+- **Pengumuman Pembaca Layar**: Perubahan waktu diumumkan secara jelas sebagai format jam dan menit dengan penanda AM/PM atau notasi 24 jam.

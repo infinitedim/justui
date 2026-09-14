@@ -1,0 +1,109 @@
+---
+title: Avatar Group
+description: Tumpukan avatar pengguna yang saling bertumpuk dengan penghitung sisa otomatis dan konfigurasi jarak tumpang-tindih.
+---
+
+# Avatar Group
+
+Komponen `JustAvatarGroup` menampilkan sekelompok avatar pengguna yang saling bertumpuk secara horizontal. Sangat ideal untuk menampilkan anggota tim kerja, kontributor proyek, atau peserta percakapan, dengan kemampuan melipat avatar berlebih ke dalam lencana penghitung otomatis.
+
+---
+
+## Deskripsi
+
+- **Penataan Bertumpuk (Overlapping Cascade)**: Menyusun widget `JustAvatar` dengan margin negatif yang terukur sehingga avatar sebelah kiri berada di atas avatar berikutnya.
+- **Lencana Sisa Otomatis**: Secara otomatis menampilkan lencana `+N` jika jumlah total avatar melebihi nilai `maxDisplay`.
+- **Penyesuaian Tema**: Garis batas pembatas secara otomatis mengikuti warna latar belakang sistem baik pada mode terang maupun gelap.
+- **Keseragaman Ukuran**: Menyesuaikan skala ukuran avatar JustUI secara seragam (`.xs`, `.sm`, `.md`, `.lg`, `.xl`, `.xxl`).
+
+---
+
+## Penggunaan
+
+### Penggunaan Dasar
+
+Avatar kelompok tim sederhana dengan pembatasan jumlah tampilan:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicAvatarGroup(BuildContext context) {
+  return JustAvatarGroup(
+    maxDisplay: 3,
+    avatars: const [
+      JustAvatar(name: 'Sarah Connor'),
+      JustAvatar(name: 'John Doe'),
+      JustAvatar(name: 'Alex Rivera'),
+      JustAvatar(name: 'Devon Miles'),
+      JustAvatar(name: 'Elena Rostova'),
+    ],
+  );
+}
+```
+
+### Penggunaan Lanjutan
+
+Kelompok avatar dengan ukuran besar dan kustomisasi jarak tumpukan:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedAvatarGroup(BuildContext context) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: context.justSpacing.lg,
+    children: [
+      // Avatar besar dengan tumpukan 12px
+      JustAvatarGroup(
+        size: .lg,
+        overlap: 12.0,
+        maxDisplay: 4,
+        avatars: const [
+          JustAvatar(name: 'Marcus Vance'),
+          JustAvatar(name: 'Chloe Bennett'),
+          JustAvatar(name: 'Liam Chen'),
+          JustAvatar(name: 'Sophia Rossi'),
+          JustAvatar(name: 'Zack Taylor'),
+          JustAvatar(name: 'Aria Stark'),
+        ],
+      ),
+
+      // Avatar ukuran kecil
+      JustAvatarGroup(
+        size: .sm,
+        overlap: 6.0,
+        maxDisplay: 2,
+        avatars: const [
+          JustAvatar(name: 'Alpha Bot'),
+          JustAvatar(name: 'Beta Runner'),
+          JustAvatar(name: 'Gamma Ray'),
+        ],
+      ),
+    ],
+  );
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### JustAvatarGroup
+
+| Properti | Tipe Data | Nilai Default | Deskripsi |
+| :--- | :--- | :--- | :--- |
+| `avatars` | `List<JustAvatar>` | *wajib* | Daftar widget `JustAvatar` yang akan ditampilkan dalam kelompok. |
+| `maxDisplay` | `int` | `3` | Jumlah maksimum avatar yang dirender sebelum menampilkan lencana `+N`. |
+| `overlap` | `double` | `8.0` | Jarak piksel tumpang tindih antar avatar yang berdekatan. |
+| `size` | `JustAvatarSize` | `.md` | Klasifikasi ukuran yang diterapkan ke seluruh avatar di dalam kelompok. |
+
+---
+
+## Aksesibilitas
+
+- **Semantik Kelompok**: Mengumumkan jumlah total pengguna serta jumlah anggota yang tidak ditampilkan (contoh: "3 anggota tim terlihat, 2 lainnya").
+- **Kepatuhan Kontras**: Lencana penghitung sisa memenuhi rasio kontras teks minimum WCAG AA 4.5:1 pada tema terang dan gelap.
