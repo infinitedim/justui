@@ -165,4 +165,13 @@ describe('Navbar & SearchModal Components', () => {
       screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
     ).not.toBeInTheDocument();
   });
+
+  it('renders correct navigation destinations for Docs and Components', () => {
+    render(<Navbar starCount={100} lang="en" />);
+    const docsLink = screen.getByRole('link', { name: 'Docs' });
+    const componentsLink = screen.getByRole('link', { name: 'Components' });
+
+    expect(docsLink).toHaveAttribute('href', '/en/docs/introduction');
+    expect(componentsLink).toHaveAttribute('href', '/en/components');
+  });
 });
