@@ -17,10 +17,14 @@ export function CopyButton({
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    const id = window.setTimeout(() => setCopied(false), 2000);
-    return () => window.clearTimeout(id);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      const id = window.setTimeout(() => setCopied(false), 2000);
+      return () => window.clearTimeout(id);
+    } catch {
+      // Ignore clipboard permission errors in non-secure or restricted contexts
+    }
   }, [text]);
 
   return (

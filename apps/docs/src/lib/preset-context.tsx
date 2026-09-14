@@ -28,7 +28,7 @@ export function PresetProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Read from localStorage on mount — avoid SSR mismatch
+    // Read from localStorage on mount -- avoid SSR mismatch
     const stored = localStorage.getItem(STORAGE_KEY) as JustUIPreset | null;
     if (stored === 'neobrutalism' || stored === 'default') {
       setPresetState(stored);
