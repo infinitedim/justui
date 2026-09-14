@@ -84,17 +84,17 @@ Widget buildAdvancedCarousel(BuildContext context) {
 
 ### JustCarousel
 
-| Property | Data Type | Default Value | Description |
-| :--- | :--- | :--- | :--- |
-| `children` | `List<Widget>` | *required* | List of slide widgets rendered in the carousel. |
-| `controller` | `JustCarouselController?` | `null` | Controller for programmatic navigation and listening to index updates. |
-| `orientation` | `Axis` | `Axis.horizontal` | Slide movement axis (`Axis.horizontal` or `Axis.vertical`). |
-| `loop` | `bool` | `true` | Whether slides loop indefinitely. Disabled when items count is 1 or fewer. |
-| `viewportFraction` | `double` | `1.0` | Proportion of visible viewport occupied by each item (e.g. 0.85 for peeking). |
-| `initialPage` | `int` | `0` | Initial slide index displayed upon mounting. |
-| `autoScroll` | `Duration?` | `null` | Interval between automatic transitions. Pauses on user interaction. |
-| `showArrows` | `bool?` | `null` | Explicitly displays or hides desktop next/previous navigation buttons. |
-| `onPageChanged` | `ValueChanged<int>?` | `null` | Callback executed whenever the active slide index changes. |
+| Property           | Data Type                 | Default Value     | Description                                                                   |
+| :----------------- | :------------------------ | :---------------- | :---------------------------------------------------------------------------- |
+| `children`         | `List<Widget>`            | _required_        | List of slide widgets rendered in the carousel.                               |
+| `controller`       | `JustCarouselController?` | `null`            | Controller for programmatic navigation and listening to index updates.        |
+| `orientation`      | `Axis`                    | `Axis.horizontal` | Slide movement axis (`Axis.horizontal` or `Axis.vertical`).                   |
+| `loop`             | `bool`                    | `true`            | Whether slides loop indefinitely. Disabled when items count is 1 or fewer.    |
+| `viewportFraction` | `double`                  | `1.0`             | Proportion of visible viewport occupied by each item (e.g. 0.85 for peeking). |
+| `initialPage`      | `int`                     | `0`               | Initial slide index displayed upon mounting.                                  |
+| `autoScroll`       | `Duration?`               | `null`            | Interval between automatic transitions. Pauses on user interaction.           |
+| `showArrows`       | `bool?`                   | `null`            | Explicitly displays or hides desktop next/previous navigation buttons.        |
+| `onPageChanged`    | `ValueChanged<int>?`      | `null`            | Callback executed whenever the active slide index changes.                    |
 
 ---
 

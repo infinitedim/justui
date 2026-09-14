@@ -5,7 +5,7 @@ import type { ButtonProps, ButtonVariant, ButtonSize } from './button.types';
 
 const variantClassMap: Record<ButtonVariant, string> = {
   primary:
-    'bg-accent text-foreground hover:bg-accent-dark active:bg-accent-deep',
+    'bg-accent text-[#18181b] hover:bg-accent-dark active:bg-accent-deep font-semibold',
   secondary:
     'bg-card text-foreground border border-[length:var(--just-border-width)] border-border hover:bg-elevated',
   ghost: 'bg-transparent text-secondary hover:bg-card hover:text-foreground',

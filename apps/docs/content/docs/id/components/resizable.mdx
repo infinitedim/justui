@@ -111,27 +111,27 @@ Widget buildAdvancedResizable(BuildContext context) {
 
 ### JustResizable
 
-| Properti | Tipe Data | Nilai Default | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `children` | `List<JustResizablePanel>` | *wajib* | Daftar panel yang akan disusun dan diubah ukurannya. |
-| `direction` | `Axis` | `Axis.horizontal` | Arah pembagian (`Axis.horizontal` atau `Axis.vertical`). |
-| `dividerThickness` | `double` | `3.0` | Ketebalan tuas pemisah dalam piksel. |
-| `controller` | `JustResizableController?` | `null` | Pengontrol programatik untuk mengatur ukuran atau membuka/menutup panel. |
-| `keyboardStepRatio` | `double` | `0.02` | Nilai perubahan fraksi per penekanan tombol panah keyboard. |
-| `style` | `JustResizableStyle?` | `null` | Kustomisasi visual untuk garis pemisah dan indikator fokus. |
+| Properti            | Tipe Data                  | Nilai Default     | Deskripsi                                                                |
+| :------------------ | :------------------------- | :---------------- | :----------------------------------------------------------------------- |
+| `children`          | `List<JustResizablePanel>` | _wajib_           | Daftar panel yang akan disusun dan diubah ukurannya.                     |
+| `direction`         | `Axis`                     | `Axis.horizontal` | Arah pembagian (`Axis.horizontal` atau `Axis.vertical`).                 |
+| `dividerThickness`  | `double`                   | `3.0`             | Ketebalan tuas pemisah dalam piksel.                                     |
+| `controller`        | `JustResizableController?` | `null`            | Pengontrol programatik untuk mengatur ukuran atau membuka/menutup panel. |
+| `keyboardStepRatio` | `double`                   | `0.02`            | Nilai perubahan fraksi per penekanan tombol panah keyboard.              |
+| `style`             | `JustResizableStyle?`      | `null`            | Kustomisasi visual untuk garis pemisah dan indikator fokus.              |
 
 ### JustResizablePanel
 
-| Properti | Tipe Data | Nilai Default | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| `child` | `Widget` | *wajib* | Konten widget yang dirender di dalam panel. |
-| `initialSize` | `double?` | `null` | Fraksi proporsi awal (0.0 hingga 1.0). Dinormalisasi otomatis. |
-| `minSize` | `double?` | `null` | Batas piksel minimum saat panel digeser. |
-| `maxSize` | `double?` | `null` | Batas piksel maksimum saat panel digeser. |
-| `collapsible` | `bool` | `false` | Menentukan apakah panel dapat dilipat hingga ukuran 0 piksel. |
-| `collapseThreshold` | `double?` | `null` | Ambang piksel untuk memicu pelipatan penuh. Default 50% dari minSize. |
-| `snapPoints` | `List<double>?` | `null` | Daftar fraksi target untuk penguncian magnetik tuas geser. |
-| `resizable` | `bool` | `true` | Jika bernilai false, mengunci tuas geser agar ukuran tidak diubah user. |
+| Properti            | Tipe Data       | Nilai Default | Deskripsi                                                               |
+| :------------------ | :-------------- | :------------ | :---------------------------------------------------------------------- |
+| `child`             | `Widget`        | _wajib_       | Konten widget yang dirender di dalam panel.                             |
+| `initialSize`       | `double?`       | `null`        | Fraksi proporsi awal (0.0 hingga 1.0). Dinormalisasi otomatis.          |
+| `minSize`           | `double?`       | `null`        | Batas piksel minimum saat panel digeser.                                |
+| `maxSize`           | `double?`       | `null`        | Batas piksel maksimum saat panel digeser.                               |
+| `collapsible`       | `bool`          | `false`       | Menentukan apakah panel dapat dilipat hingga ukuran 0 piksel.           |
+| `collapseThreshold` | `double?`       | `null`        | Ambang piksel untuk memicu pelipatan penuh. Default 50% dari minSize.   |
+| `snapPoints`        | `List<double>?` | `null`        | Daftar fraksi target untuk penguncian magnetik tuas geser.              |
+| `resizable`         | `bool`          | `true`        | Jika bernilai false, mengunci tuas geser agar ukuran tidak diubah user. |
 
 ---
 

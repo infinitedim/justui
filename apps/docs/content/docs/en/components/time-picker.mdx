@@ -69,16 +69,16 @@ Widget buildAdvancedTimePicker(BuildContext context, TimeOfDay? activeTime, Valu
 
 ### JustTimePicker
 
-| Property | Data Type | Default Value | Description |
-| :--- | :--- | :--- | :--- |
-| `value` | `TimeOfDay?` | `null` | Currently selected time value. |
-| `onChanged` | `ValueChanged<TimeOfDay>?` | `null` | Callback executed when a time value is selected. |
-| `variant` | `JustTimePickerVariant` | `.dropdown` | Presentation variant (`.inline`, `.modal`, `.dropdown`, `.responsive`). |
-| `mode` | `JustTimePickerMode` | `.dial` | Interaction paradigm (`.dial`, `.spinner`, `.input`). |
-| `firstTime` | `TimeOfDay?` | `null` | Earliest selectable time boundary. |
-| `lastTime` | `TimeOfDay?` | `null` | Latest selectable time boundary. |
-| `selectableTimePredicate` | `bool Function(TimeOfDay)?` | `null` | Custom predicate to selectively disable specific times. |
-| `style` | `JustTimePickerStyle?` | `null` | Per-instance visual style overrides for hands, numbers, and wheels. |
+| Property                  | Data Type                   | Default Value | Description                                                             |
+| :------------------------ | :-------------------------- | :------------ | :---------------------------------------------------------------------- |
+| `value`                   | `TimeOfDay?`                | `null`        | Currently selected time value.                                          |
+| `onChanged`               | `ValueChanged<TimeOfDay>?`  | `null`        | Callback executed when a time value is selected.                        |
+| `variant`                 | `JustTimePickerVariant`     | `.dropdown`   | Presentation variant (`.inline`, `.modal`, `.dropdown`, `.responsive`). |
+| `mode`                    | `JustTimePickerMode`        | `.dial`       | Interaction paradigm (`.dial`, `.spinner`, `.input`).                   |
+| `firstTime`               | `TimeOfDay?`                | `null`        | Earliest selectable time boundary.                                      |
+| `lastTime`                | `TimeOfDay?`                | `null`        | Latest selectable time boundary.                                        |
+| `selectableTimePredicate` | `bool Function(TimeOfDay)?` | `null`        | Custom predicate to selectively disable specific times.                 |
+| `style`                   | `JustTimePickerStyle?`      | `null`        | Per-instance visual style overrides for hands, numbers, and wheels.     |
 
 ---
 
