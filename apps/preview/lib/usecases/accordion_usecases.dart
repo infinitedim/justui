@@ -7,25 +7,26 @@ import 'package:just_ui_core/src/components/accordion/just_accordion_variants.da
 
 @widgetbook.UseCase(name: 'Default Accordion', type: JustAccordion)
 Widget buildJustAccordionDefaultUseCase(BuildContext context) {
-  final allowMultiple = context.knobs.boolean(
+  final bool allowMultiple = context.knobs.boolean(
     label: 'Allow Multiple',
     initialValue: false,
   );
-  final variant = context.knobs.object.dropdown<JustAccordionVariant>(
-    label: 'Variant',
-    options: JustAccordionVariant.values,
-    initialOption: JustAccordionVariant.default_,
-  );
+  final JustAccordionVariant variant = context.knobs.object
+      .dropdown<JustAccordionVariant>(
+        label: 'Variant',
+        options: JustAccordionVariant.values,
+        initialOption: JustAccordionVariant.default_,
+      );
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const .all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 460.0),
         child: JustAccordion(
           allowMultiple: allowMultiple,
           variant: variant,
-          items: const [
+          items: const <JustAccordionItem>[
             JustAccordionItem(
               title: 'Is JustAccordion accessible?',
               content: Text(

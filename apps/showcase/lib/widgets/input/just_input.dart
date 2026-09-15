@@ -877,9 +877,9 @@ class _OtpInputRowState extends State<_OtpInputRow> {
   @override
   void initState() {
     super.initState();
-    _controllers = List.generate(widget.length, (_) => TextEditingController());
-    _focusNodes = List.generate(widget.length, (_) => FocusNode());
-    _keyInterceptFocusNodes = List.generate(
+    _controllers = .generate(widget.length, (_) => TextEditingController());
+    _focusNodes = .generate(widget.length, (_) => FocusNode());
+    _keyInterceptFocusNodes = .generate(
       widget.length,
       (_) => FocusNode(skipTraversal: true),
     );

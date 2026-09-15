@@ -48,8 +48,8 @@ class const JustToggleGroup({
   void _handlePress(int index) {
     if (onChanged == null) return;
 
-    final newSelected = Set<int>.from(selectedIndices);
-    final isSelected = newSelected.contains(index);
+    final Set<int> newSelected = Set<int>.from(selectedIndices);
+    final bool isSelected = newSelected.contains(index);
 
     if (allowMultiple) {
       if (isSelected) {
@@ -75,8 +75,10 @@ class const JustToggleGroup({
 
   @override
   Widget build(BuildContext context) {
-    final children = List<Widget>.generate(items.length, (index) {
-      final item = items[index];
+    final List<Widget> children = List<Widget>.generate(items.length, (
+      int index,
+    ) {
+      final JustToggleGroupItem item = items[index];
 
       return JustToggleGroupInfo(
         index: index,

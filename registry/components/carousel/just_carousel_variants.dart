@@ -59,7 +59,7 @@ class const JustCarouselAutoScroll({
   final bool pauseOnTouch = true,
 }) {
   /// Default configuration for auto-scrolling.
-  static const defaults = JustCarouselAutoScroll();
+  static const JustCarouselAutoScroll defaults = JustCarouselAutoScroll();
 
   /// Returns a copy with given fields replaced.
   JustCarouselAutoScroll copyWith({

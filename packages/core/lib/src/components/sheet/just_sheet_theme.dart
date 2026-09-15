@@ -17,7 +17,7 @@ class const JustSheetTheme({
   final JustSheetStyle? rightStyle,
 }) extends ThemeExtension<JustSheetTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustSheetTheme();
+  static const JustSheetTheme defaults = JustSheetTheme();
 
   @override
   JustSheetTheme copyWith({

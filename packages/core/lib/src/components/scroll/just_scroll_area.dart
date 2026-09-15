@@ -7,6 +7,11 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/preset_tokens.dart';
+import 'package:just_ui_core/src/theme/schemes/shadow_scheme.dart';
+import 'package:just_ui_core/src/theme/schemes/spacing_scheme.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart'
+    show JustColorScheme, JustMotionProfile;
 
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
@@ -178,12 +183,13 @@ class _JustScrollAreaState extends State<JustScrollArea>
   bool get _isSmoothEnabled {
     if (widget.smoothScroll != null) return widget.smoothScroll!;
 
-    final globalTheme = Theme.of(context).extension<JustScrollAreaTheme>();
-    final themeSetting =
+    final JustScrollAreaTheme? globalTheme = Theme.of(context)
+        .extension<JustScrollAreaTheme>();
+    final bool? themeSetting =
         widget.style?.smoothScroll ?? globalTheme?.style?.smoothScroll;
     if (themeSetting != null) return themeSetting;
 
-    final platform = defaultTargetPlatform;
+    final TargetPlatform platform = defaultTargetPlatform;
     return platform == TargetPlatform.macOS ||
         platform == TargetPlatform.windows ||
         platform == TargetPlatform.linux;
@@ -280,14 +286,14 @@ class _JustScrollAreaState extends State<JustScrollArea>
     final double lerp = _effectiveLerp;
     final double alpha = 1.0 - math.pow(1.0 - lerp, 60.0 * clampedDt);
 
-    final maxScroll = _resolvedController.position.maxScrollExtent;
+    final double maxScroll = _resolvedController.position.maxScrollExtent;
 
     // Damped spring tension when target offset is in elastic overscroll zone
     if (_targetOffset < 0.0) {
       _targetOffset += (-_targetOffset * 10.0 * clampedDt);
       if (_targetOffset.abs() < 0.5) _targetOffset = 0.0;
     } else if (_targetOffset > maxScroll) {
-      final overshot = _targetOffset - maxScroll;
+      final double overshot = _targetOffset - maxScroll;
       _targetOffset -= (overshot * 10.0 * clampedDt);
       if ((_targetOffset - maxScroll).abs() < 0.5) _targetOffset = maxScroll;
     }
@@ -322,7 +328,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
     if (event is! PointerScrollEvent) return;
     if (!_resolvedController.hasClients) return;
 
-    final maxScroll = _resolvedController.position.maxScrollExtent;
+    final double maxScroll = _resolvedController.position.maxScrollExtent;
     final DateTime now = .now();
     final double dtMs = _lastPointerEventTime == null
         ? 100.0
@@ -369,14 +375,15 @@ class _JustScrollAreaState extends State<JustScrollArea>
   void _updateScrollMetrics() {
     if (!_resolvedController.hasClients) return;
 
-    final metrics = _resolvedController.position;
-    final offset = metrics.pixels;
-    final maxScroll = metrics.maxScrollExtent;
+    final ScrollPosition metrics = _resolvedController.position;
+    final double offset = metrics.pixels;
+    final double maxScroll = metrics.maxScrollExtent;
 
     // Resolve theme variables
-    final globalTheme = Theme.of(context).extension<JustScrollAreaTheme>();
-    final themeStyle = globalTheme?.style;
-    final resolvedFadeHeight =
+    final JustScrollAreaTheme? globalTheme = Theme.of(context)
+        .extension<JustScrollAreaTheme>();
+    final JustScrollAreaStyle? themeStyle = globalTheme?.style;
+    final double resolvedFadeHeight =
         widget.style?.fadeHeight ?? themeStyle?.fadeHeight ?? 24.0;
 
     // Fade overlay updates
@@ -406,13 +413,13 @@ class _JustScrollAreaState extends State<JustScrollArea>
 
     // Guard: Only trigger when scrolling downwards
     if (notification is ScrollUpdateNotification) {
-      final delta = notification.scrollDelta ?? 0.0;
+      final double delta = notification.scrollDelta ?? 0.0;
       if (delta <= 0) return; // Upwards or stationary scroll
     }
 
-    final metrics = _resolvedController.position;
-    final offset = metrics.pixels;
-    final maxScroll = metrics.maxScrollExtent;
+    final ScrollPosition metrics = _resolvedController.position;
+    final double offset = metrics.pixels;
+    final double maxScroll = metrics.maxScrollExtent;
 
     // Check if within threshold range
     if (maxScroll - offset <= widget.reachBottomThreshold) {
@@ -472,7 +479,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
         : _resolvedController.offset;
 
     double targetOffset = baseOffset;
-    final isVertical = widget.direction == .vertical;
+    final bool isVertical = widget.direction == .vertical;
 
     if (isVertical) {
       if (event.logicalKey == .arrowDown) {
@@ -518,7 +525,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
       _targetOffset = targetOffset;
       _startSmoothing();
     } else {
-      final animations = JustThemeProvider.of(
+      final JustMotionProfile animations = JustThemeProvider.of(
         context,
         aspect: .animations,
       ).theme.animations;
@@ -538,53 +545,59 @@ class _JustScrollAreaState extends State<JustScrollArea>
 
   @override
   Widget build(BuildContext context) {
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final shadows = JustThemeProvider.of(
+    final JustShadowScheme shadows = JustThemeProvider.of(
       context,
       aspect: .shadows,
     ).theme.shadows;
-    final animations = JustThemeProvider.of(
+    final JustMotionProfile animations = JustThemeProvider.of(
       context,
       aspect: .animations,
     ).theme.animations;
 
-    final globalTheme = Theme.of(context).extension<JustScrollAreaTheme>();
-    final themeStyle = globalTheme?.style;
+    final JustScrollAreaTheme? globalTheme = Theme.of(context)
+        .extension<JustScrollAreaTheme>();
+    final JustScrollAreaStyle? themeStyle = globalTheme?.style;
 
     // Resolve spacing/colors configurations
-    final resolvedFadeColor =
+    final Color resolvedFadeColor =
         widget.style?.fadeColor ?? themeStyle?.fadeColor ?? colors.background;
-    final resolvedFadeHeight =
+    final double resolvedFadeHeight =
         widget.style?.fadeHeight ?? themeStyle?.fadeHeight ?? 24.0;
 
-    final scrollbarThumbColor =
+    final Color scrollbarThumbColor =
         widget.style?.scrollbarThumbColor ??
         themeStyle?.scrollbarThumbColor ??
         colors.textSecondary.withValues(alpha: 0.3);
-    final scrollbarTrackColor =
+    final Color scrollbarTrackColor =
         widget.style?.scrollbarTrackColor ??
         themeStyle?.scrollbarTrackColor ??
         const Color(0x00000000);
-    final scrollbarThickness =
+    final double scrollbarThickness =
         widget.style?.scrollbarThickness ??
         themeStyle?.scrollbarThickness ??
         6.0;
-    final presetTokens = JustThemeProvider.of(context).theme.presetTokens;
-    final scrollbarRadius = presetTokens.showsDefaultBorder
+    final JustPresetTokens presetTokens = JustThemeProvider.of(context)
+        .theme
+        .presetTokens;
+    final Radius scrollbarRadius = presetTokens.showsDefaultBorder
         ? Radius.zero
         : (widget.style?.scrollbarRadius ??
               themeStyle?.scrollbarRadius ??
               const .circular(3.0));
 
-    final resolvedScrollbarPadding =
+    final EdgeInsets resolvedScrollbarPadding =
         widget.style?.scrollbarPadding ??
         themeStyle?.scrollbarPadding ??
         EdgeInsets.zero;
-    final resolvedScrollbarMargin =
+    final double resolvedScrollbarMargin =
         widget.style?.scrollbarMargin ?? themeStyle?.scrollbarMargin ?? 0.0;
 
     final bool smoothEnabled = _isSmoothEnabled;
@@ -628,7 +641,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
     if (widget.fadeEdges) {
       if (widget.fadeMode == .overlay) {
         scrollView = Stack(
-          children: [
+          children: <Widget>[
             scrollView,
             // Top/Left boundary fade overlay
             Positioned(
@@ -642,7 +655,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
               height: widget.direction == .vertical ? resolvedFadeHeight : null,
               child: ValueListenableBuilder<double>(
                 valueListenable: _topFadeOpacity,
-                builder: (context, opacity, child) {
+                builder: (BuildContext context, double opacity, Widget? child) {
                   if (opacity == 0.0) return const SizedBox.shrink();
                   return IgnorePointer(
                     child: Opacity(
@@ -656,7 +669,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
                             end: widget.direction == .vertical
                                 ? .bottomCenter
                                 : .centerRight,
-                            colors: [
+                            colors: <Color>[
                               resolvedFadeColor,
                               resolvedFadeColor.withValues(alpha: 0.0),
                             ],
@@ -680,7 +693,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
               height: widget.direction == .vertical ? resolvedFadeHeight : null,
               child: ValueListenableBuilder<double>(
                 valueListenable: _bottomFadeOpacity,
-                builder: (context, opacity, child) {
+                builder: (BuildContext context, double opacity, Widget? child) {
                   if (opacity == 0.0) return const SizedBox.shrink();
                   return IgnorePointer(
                     child: Opacity(
@@ -694,7 +707,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
                             end: widget.direction == .vertical
                                 ? .topCenter
                                 : .centerLeft,
-                            colors: [
+                            colors: <Color>[
                               resolvedFadeColor,
                               resolvedFadeColor.withValues(alpha: 0.0),
                             ],
@@ -711,27 +724,28 @@ class _JustScrollAreaState extends State<JustScrollArea>
       } else {
         // Shader Mask Mode (true alpha masking)
         scrollView = AnimatedBuilder(
-          animation: Listenable.merge([_topFadeOpacity, _bottomFadeOpacity]),
-          builder: (context, child) {
-            final topOpacity = _topFadeOpacity.value;
-            final bottomOpacity = _bottomFadeOpacity.value;
+          animation: Listenable.merge(<Listenable?>[
+            _topFadeOpacity,
+            _bottomFadeOpacity,
+          ]),
+          builder: (BuildContext context, Widget? child) {
+            final double topOpacity = _topFadeOpacity.value;
+            final double bottomOpacity = _bottomFadeOpacity.value;
 
             return ShaderMask(
-              shaderCallback: (bounds) {
+              shaderCallback: (Rect bounds) {
                 if (bounds.height <= 0 || bounds.width <= 0) {
                   return const LinearGradient(
-                    colors: [Color(0xFFFFFFFF), Color(0xFFFFFFFF)],
+                    colors: <Color>[Color(0xFFFFFFFF), Color(0xFFFFFFFF)],
                   ).createShader(bounds);
                 }
 
-                final totalLength = widget.direction == .vertical
+                final double totalLength = widget.direction == .vertical
                     ? bounds.height
                     : bounds.width;
-                final topFraction = (resolvedFadeHeight / totalLength).clamp(
-                  0.0,
-                  0.5,
-                );
-                final bottomFraction =
+                final double topFraction = (resolvedFadeHeight / totalLength)
+                    .clamp(0.0, 0.5);
+                final double bottomFraction =
                     (1.0 - (resolvedFadeHeight / totalLength)).clamp(0.5, 1.0);
 
                 return LinearGradient(
@@ -741,7 +755,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
                   end: widget.direction == .vertical
                       ? .bottomCenter
                       : .centerRight,
-                  colors: [
+                  colors: <Color>[
                     Color.lerp(
                       const Color(0xFFFFFFFF),
                       const Color(0x00FFFFFF),
@@ -755,7 +769,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
                       bottomOpacity,
                     )!,
                   ],
-                  stops: [0.0, topFraction, bottomFraction, 1.0],
+                  stops: <double>[0.0, topFraction, bottomFraction, 1.0],
                 ).createShader(bounds);
               },
               blendMode: .dstIn,
@@ -779,11 +793,11 @@ class _JustScrollAreaState extends State<JustScrollArea>
     // Layer Scroll-to-Top Float Button
     if (widget.scrollToTopButton) {
       result = Stack(
-        children: [
+        children: <Widget>[
           result,
           ValueListenableBuilder<bool>(
             valueListenable: _showScrollToTop,
-            builder: (context, visible, child) {
+            builder: (BuildContext context, bool visible, Widget? child) {
               return Align(
                 alignment: widget.scrollToTopAlignment,
                 child: Padding(
@@ -907,14 +921,14 @@ class const _ChevronUpPainter({
 }) extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
+    final Paint paint = Paint()
       ..color = color
       ..strokeWidth = strokeWidth
       ..style = .stroke
       ..strokeCap = .round
       ..strokeJoin = .round;
 
-    final path = Path();
+    final Path path = Path();
     path.moveTo(size.width * 0.25, size.height * 0.65);
     path.lineTo(size.width * 0.5, size.height * 0.35);
     path.lineTo(size.width * 0.75, size.height * 0.65);

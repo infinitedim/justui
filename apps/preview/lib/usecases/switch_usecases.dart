@@ -7,23 +7,23 @@ import 'package:just_ui_core/src/components/switch/just_switch_style.dart';
 
 @widgetbook.UseCase(name: 'Default Switch', type: JustSwitch)
 Widget buildJustSwitchDefaultUseCase(BuildContext context) {
-  final isDisabled = context.knobs.boolean(
+  final bool isDisabled = context.knobs.boolean(
     label: 'Is Disabled',
     initialValue: false,
   );
-  final size = context.knobs.object.dropdown<JustSwitchSize>(
+  final JustSwitchSize size = context.knobs.object.dropdown<JustSwitchSize>(
     label: 'Size',
     options: JustSwitchSize.values,
     initialOption: JustSwitchSize.md,
   );
-  final hasLabel = context.knobs.boolean(
+  final bool hasLabel = context.knobs.boolean(
     label: 'Has Label',
     initialValue: true,
   );
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       child: _InteractiveSwitchDemo(
         isDisabled: isDisabled,
         size: size,
@@ -57,7 +57,7 @@ class _InteractiveSwitchDemoState extends State<_InteractiveSwitchDemo> {
       value: _value,
       onChanged: widget.isDisabled
           ? null
-          : (val) {
+          : (bool val) {
               setState(() {
                 _value = val;
               });

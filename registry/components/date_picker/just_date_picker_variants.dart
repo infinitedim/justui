@@ -31,7 +31,7 @@ enum JustCalendarView {
 /// Custom locale names provider for date pickers without external dependencies.
 class const JustDatePickerLocale({
   /// Full month names starting from January (index 0).
-  final List<String> monthNames = const [
+  final List<String> monthNames = const <String>[
     'January',
     'February',
     'March',
@@ -47,7 +47,7 @@ class const JustDatePickerLocale({
   ],
 
   /// Short month names starting from Jan (index 0).
-  final List<String> shortMonthNames = const [
+  final List<String> shortMonthNames = const <String>[
     'Jan',
     'Feb',
     'Mar',
@@ -63,7 +63,7 @@ class const JustDatePickerLocale({
   ],
 
   /// Weekday abbreviation headers starting from Monday (index 0).
-  final List<String> weekdayHeaders = const [
+  final List<String> weekdayHeaders = const <String>[
     'Mon',
     'Tue',
     'Wed',

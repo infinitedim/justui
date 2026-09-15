@@ -7,11 +7,12 @@ import 'package:just_ui_core/src/components/bottom_nav/just_bottom_nav_variants.
 
 @widgetbook.UseCase(name: 'Default Bottom Nav', type: JustBottomNav)
 Widget buildJustBottomNavDefaultUseCase(BuildContext context) {
-  final variant = context.knobs.object.dropdown<JustBottomNavVariant>(
-    label: 'Variant',
-    options: JustBottomNavVariant.values,
-    initialOption: JustBottomNavVariant.fixed,
-  );
+  final JustBottomNavVariant variant = context.knobs.object
+      .dropdown<JustBottomNavVariant>(
+        label: 'Variant',
+        options: JustBottomNavVariant.values,
+        initialOption: JustBottomNavVariant.fixed,
+      );
 
   return Align(
     alignment: Alignment.bottomCenter,
@@ -37,12 +38,12 @@ class _InteractiveBottomNavDemoState extends State<_InteractiveBottomNavDemo> {
     return JustBottomNav(
       variant: widget.variant,
       selectedIndex: _selectedIndex,
-      onItemSelected: (index) {
+      onItemSelected: (int index) {
         setState(() {
           _selectedIndex = index;
         });
       },
-      items: const [
+      items: const <JustBottomNavItem>[
         JustBottomNavItem(
           label: 'Home',
           icon: Icon(IconData(0xe318, fontFamily: 'MaterialIcons')),

@@ -20,9 +20,9 @@ void main() {
 
   group('Accessibility & Semantics Tree Audits', () {
     testWidgets('JustButton exposes button semantics and tap actions', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final handle = tester.ensureSemantics();
+      final SemanticsHandle handle = tester.ensureSemantics();
       bool tapped = false;
 
       await tester.pumpWidget(
@@ -49,13 +49,13 @@ void main() {
 
     testWidgets(
       'JustSwitch exposes toggled semantics and screen reader actions',
-      (tester) async {
-        final handle = tester.ensureSemantics();
+      (WidgetTester tester) async {
+        final SemanticsHandle handle = tester.ensureSemantics();
         bool toggled = true;
 
         await tester.pumpWidget(
           buildTestApp(
-            JustSwitch(value: toggled, onChanged: (v) => toggled = v),
+            JustSwitch(value: toggled, onChanged: (bool v) => toggled = v),
           ),
         );
 
@@ -73,14 +73,17 @@ void main() {
     );
 
     testWidgets('JustCheckbox exposes checked semantics and tap actions', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final handle = tester.ensureSemantics();
+      final SemanticsHandle handle = tester.ensureSemantics();
       bool checked = false;
 
       await tester.pumpWidget(
         buildTestApp(
-          JustCheckbox(value: checked, onChanged: (v) => checked = v ?? false),
+          JustCheckbox(
+            value: checked,
+            onChanged: (bool? v) => checked = v ?? false,
+          ),
         ),
       );
 
@@ -94,8 +97,8 @@ void main() {
 
     testWidgets(
       'JustSlider exposes slider semantics with value and increase/decrease actions',
-      (tester) async {
-        final handle = tester.ensureSemantics();
+      (WidgetTester tester) async {
+        final SemanticsHandle handle = tester.ensureSemantics();
         double sliderVal = 30.0;
 
         await tester.pumpWidget(
@@ -104,7 +107,7 @@ void main() {
               value: sliderVal,
               min: 0.0,
               max: 100.0,
-              onChanged: (v) => sliderVal = v,
+              onChanged: (double v) => sliderVal = v,
             ),
           ),
         );
@@ -126,13 +129,12 @@ void main() {
 
   group('WCAG 2.2 AA Contrast Audits', () {
     test('Default Light and Dark theme colors meet WCAG AA contrast ratio (>= 4.5)', () {
-      final lightColors = JustColors.light();
-      final darkColors = JustColors.dark();
+      final JustColorScheme lightColors = JustColors.light();
+      final JustColorScheme darkColors = JustColors.dark();
 
-      final lightBodyContrast = lightColors.textPrimary.contrastRatioWith(
-        lightColors.background,
-      );
-      final darkBodyContrast = darkColors.textPrimary.contrastRatioWith(
+      final double lightBodyContrast = lightColors.textPrimary
+          .contrastRatioWith(lightColors.background);
+      final double darkBodyContrast = darkColors.textPrimary.contrastRatioWith(
         darkColors.background,
       );
 
@@ -141,8 +143,9 @@ void main() {
     });
 
     test('High contrast mode overrides force minimum contrast and accessible borders', () {
-      final baseTheme = JustThemeData.light;
-      final highContrastTheme = baseTheme.applyHighContrastOverrides();
+      final JustThemeData baseTheme = JustThemeData.light;
+      final JustThemeData highContrastTheme = baseTheme
+          .applyHighContrastOverrides();
 
       expect(
         highContrastTheme.colors.background,
@@ -153,9 +156,8 @@ void main() {
         equals(const Color(0xFF000000)),
       );
 
-      final contrast = highContrastTheme.colors.textPrimary.contrastRatioWith(
-        highContrastTheme.colors.background,
-      );
+      final double contrast = highContrastTheme.colors.textPrimary
+          .contrastRatioWith(highContrastTheme.colors.background);
       expect(contrast, greaterThanOrEqualTo(7.0)); // WCAG AAA requirement
     });
   });

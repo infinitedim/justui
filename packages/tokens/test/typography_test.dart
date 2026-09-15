@@ -10,7 +10,7 @@ void main() {
       expect(JustTypo.fontFamily, equals('Inter'));
       expect(
         JustTypo.fontFamilyFallback,
-        equals([
+        equals(<String>[
           'SF Pro Text',
           'Roboto',
           'Segoe UI',
@@ -21,12 +21,12 @@ void main() {
       expect(JustTypo.monoFontFamily, equals('JetBrains Mono'));
       expect(
         JustTypo.monoFontFamilyFallback,
-        equals(['SF Mono', 'Fira Code', 'Consolas', 'monospace']),
+        equals(<String>['SF Mono', 'Fira Code', 'Consolas', 'monospace']),
       );
     });
 
     test('All static TextStyle scales have expected font properties', () {
-      const styles = [
+      const List<TextStyle> styles = <TextStyle>[
         JustTypo.displayLg,
         JustTypo.displayMd,
         JustTypo.displaySm,
@@ -40,7 +40,7 @@ void main() {
         JustTypo.overline,
       ];
 
-      for (final style in styles) {
+      for (final TextStyle style in styles) {
         expect(style.fontFamily, equals('Inter'));
         expect(style.fontSize, isNotNull);
         expect(style.fontWeight, isNotNull);
@@ -54,9 +54,9 @@ void main() {
     testWidgets('Fluid typography extension and adaptive heights', (
       WidgetTester tester,
     ) async {
-      const style = TextStyle(fontSize: 16.0);
+      const TextStyle style = TextStyle(fontSize: 16.0);
 
-      final fluidStyle = style.fluid(
+      final TextStyle fluidStyle = style.fluid(
         screenWidth: 800.0,
         minWidth: 640.0,
         maxWidth: 1024.0,
@@ -80,12 +80,11 @@ void main() {
         MediaQuery(
           data: const MediaQueryData(size: Size(800.0, 600.0)),
           child: Builder(
-            builder: (context) {
+            builder: (BuildContext context) {
               // Test null fontSize fallback in withAdaptiveHeight
-              const nullFontSizeStyle = TextStyle();
-              final adaptiveFallback = nullFontSizeStyle.withAdaptiveHeight(
-                context,
-              );
+              const TextStyle nullFontSizeStyle = TextStyle();
+              final TextStyle adaptiveFallback = nullFontSizeStyle
+                  .withAdaptiveHeight(context);
               expect(adaptiveFallback.height, isNotNull);
 
               // Test all JustFluidTypo static methods

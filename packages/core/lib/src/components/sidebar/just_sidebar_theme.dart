@@ -14,7 +14,7 @@ class const JustSidebarTheme({
   final JustSidebarStyle? insetStyle,
 }) extends ThemeExtension<JustSidebarTheme> {
   /// Default theme configuration.
-  static const defaults = JustSidebarTheme();
+  static const JustSidebarTheme defaults = JustSidebarTheme();
 
   @override
   JustSidebarTheme copyWith({

@@ -8,7 +8,7 @@ class const JustAccordionTheme({
   final JustAccordionStyle? style,
 }) extends ThemeExtension<JustAccordionTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustAccordionTheme();
+  static const JustAccordionTheme defaults = JustAccordionTheme();
 
   @override
   JustAccordionTheme copyWith({JustAccordionStyle? style}) {

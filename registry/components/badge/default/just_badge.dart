@@ -87,7 +87,7 @@ class const JustBadge({
 
     return Stack(
       clipBehavior: .none,
-      children: [
+      children: <Widget>[
         child,
         Positioned(
           top: top,
@@ -102,17 +102,20 @@ class const JustBadge({
 
   @override
   Widget build(BuildContext context) {
-    final theme = JustThemeProvider.of(context).theme;
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final radius = theme.radius;
+    final JustRadiusScheme radius = theme.radius;
 
     // Resolve sizes
     double height;
@@ -159,15 +162,15 @@ class const JustBadge({
     Color fg;
     Color border = const Color(0x00000000);
 
-    final primaryBg = theme.presetTokens.showsDefaultBorder
+    final Color primaryBg = theme.presetTokens.showsDefaultBorder
         ? colors.warning
         : colors.borderFocus;
-    final primaryFg = theme.presetTokens.showsDefaultBorder
+    final Color primaryFg = theme.presetTokens.showsDefaultBorder
         ? colors.textPrimary
         : colors.textInverse;
-    final textPrimary = colors.textPrimary;
-    final textSecondary = colors.textSecondary;
-    final borderDefault = colors.borderDefault;
+    final Color textPrimary = colors.textPrimary;
+    final Color textSecondary = colors.textSecondary;
+    final Color borderDefault = colors.borderDefault;
 
     switch (color) {
       case .primary:
@@ -199,7 +202,7 @@ class const JustBadge({
         break;
 
       case .success:
-        final c = colors.success;
+        final Color c = colors.success;
         if (variant == .solid) {
           bg = c;
           fg = primaryFg;
@@ -214,7 +217,7 @@ class const JustBadge({
         break;
 
       case .warning:
-        final c = colors.warning;
+        final Color c = colors.warning;
         if (variant == .solid) {
           bg = c;
           fg = primaryFg;
@@ -229,7 +232,7 @@ class const JustBadge({
         break;
 
       case .error:
-        final c = colors.error;
+        final Color c = colors.error;
         if (variant == .solid) {
           bg = c;
           fg = primaryFg;
@@ -244,7 +247,7 @@ class const JustBadge({
         break;
 
       case .info:
-        final c = colors.info;
+        final Color c = colors.info;
         if (variant == .solid) {
           bg = c;
           fg = primaryFg;
@@ -274,17 +277,20 @@ class const JustBadge({
     }
 
     // Overrides
-    final finalBg = style?.backgroundColor ?? bg;
-    final finalFg = style?.foregroundColor ?? fg;
-    final finalBorder = style?.borderColor ?? border;
-    final finalRadius = style?.borderRadius ?? defaultRadius;
-    final finalPadding = style?.padding ?? .symmetric(horizontal: paddingH);
-    final finalTextStyle =
+    final Color finalBg = style?.backgroundColor ?? bg;
+    final Color finalFg = style?.foregroundColor ?? fg;
+    final Color finalBorder = style?.borderColor ?? border;
+    final BorderRadius finalRadius = style?.borderRadius ?? defaultRadius;
+    final EdgeInsetsGeometry finalPadding =
+        style?.padding ?? .symmetric(horizontal: paddingH);
+    final TextStyle finalTextStyle =
         style?.textStyle ?? textStyle.copyWith(color: finalFg);
 
     // Dot variant layout
     if (variant == .dot) {
-      final dotColor = finalBg == const Color(0x00000000) ? finalFg : finalBg;
+      final Color dotColor = finalBg == const Color(0x00000000)
+          ? finalFg
+          : finalBg;
       if (pulse) {
         return _JustPulsingDot(
           size: dotSize,
@@ -335,7 +341,7 @@ class const JustBadge({
       );
     }
 
-    final presetTokens = theme.presetTokens;
+    final JustPresetTokens presetTokens = theme.presetTokens;
 
     final Border? resolvedBorder = presetTokens.showsDefaultBorder
         ? .all(color: colors.textPrimary, width: presetTokens.borderWidth)
@@ -359,7 +365,7 @@ class const JustBadge({
       child: Row(
         mainAxisSize: .min,
         crossAxisAlignment: .center,
-        children: [?leadingIcon, labelText, ?dismissIcon],
+        children: <Widget>[?leadingIcon, labelText, ?dismissIcon],
       ),
     );
   }
@@ -401,7 +407,7 @@ class _JustPulsingDotState extends State<_JustPulsingDot>
           controller: _controller,
           pulseScale: widget.pulseScale,
         ),
-        children: [
+        children: <Widget>[
           // Pulse halo (decorative)
           ExcludeSemantics(
             child: Container(

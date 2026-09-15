@@ -75,7 +75,9 @@ class const JustThemeData({
     required bool isPressed,
   }) {
     if (preset == .neobrutalism && isPressed) {
-      return baseShadows.map((s) => s.copyWith(offset: .zero)).toList();
+      return baseShadows
+          .map((BoxShadow s) => s.copyWith(offset: .zero))
+          .toList();
     }
     return baseShadows;
   }
@@ -92,7 +94,7 @@ class const JustThemeData({
     Offset? translationOffset,
   }) {
     if (preset == .neobrutalism) {
-      final offset = translationOffset ?? shadowOffset;
+      final Offset offset = translationOffset ?? shadowOffset;
       return AnimatedContainer(
         duration: animations.instant,
         curve: animations.defaultCurve,
@@ -169,9 +171,12 @@ class const JustThemeData({
     }
 
     // Generate a primary color variant using the configured colorSpace engine.
-    final pc = ColorSpaceOps.toPerceptual(seedColor, colorSpace);
-    final targetLightness = isDark ? 0.6 : 0.5;
-    final primary = ColorSpaceOps.fromPerceptual(
+    final PerceptualColor pc = ColorSpaceOps.toPerceptual(
+      seedColor,
+      colorSpace,
+    );
+    final double targetLightness = isDark ? 0.6 : 0.5;
+    final Color primary = ColorSpaceOps.fromPerceptual(
       PerceptualColor(targetLightness, pc.c, pc.h),
       colorSpace,
     );
@@ -192,45 +197,45 @@ class const JustThemeData({
     }
 
     // Dynamic contrast enforcement for semantic state colors against generated background
-    final successBase = isDark
+    final Color successBase = isDark
         ? JustColorSemanticDark.success
         : JustColorSemanticLight.success;
-    final warningBase = isDark
+    final Color warningBase = isDark
         ? JustColorSemanticDark.warning
         : JustColorSemanticLight.warning;
-    final errorBase = isDark
+    final Color errorBase = isDark
         ? JustColorSemanticDark.error
         : JustColorSemanticLight.error;
-    final infoBase = isDark
+    final Color infoBase = isDark
         ? JustColorSemanticDark.info
         : JustColorSemanticLight.info;
 
-    final successColor = _makeAccessible(
+    final Color successColor = _makeAccessible(
       successBase,
       bg,
       minRatio: 4.5,
       engine: colorSpace,
     );
-    final warningColor = _makeAccessible(
+    final Color warningColor = _makeAccessible(
       warningBase,
       bg,
       minRatio: 3.0,
       engine: colorSpace,
     );
-    final errorColor = _makeAccessible(
+    final Color errorColor = _makeAccessible(
       errorBase,
       bg,
       minRatio: 4.5,
       engine: colorSpace,
     );
-    final infoColor = _makeAccessible(
+    final Color infoColor = _makeAccessible(
       infoBase,
       bg,
       minRatio: 4.5,
       engine: colorSpace,
     );
 
-    final colors = CustomColorScheme.resolveSemantic(
+    final CustomColorScheme colors = CustomColorScheme.resolveSemantic(
       background: bg,
       card: card,
       elevated: elevated,
@@ -277,7 +282,7 @@ class const JustThemeData({
     double minRatio = 3.0,
     JustColorSpaceEngine engine = .hsl,
   }) {
-    final adjusted = color.adjustLightnessForContrast(
+    final Color adjusted = color.adjustLightnessForContrast(
       background: background,
       targetRatio: minRatio,
       engine: engine,
@@ -285,7 +290,7 @@ class const JustThemeData({
     if (adjusted.contrastRatioWith(background) >= minRatio) {
       return adjusted;
     }
-    final isBgDark = background.computeLuminance() < 0.5;
+    final bool isBgDark = background.computeLuminance() < 0.5;
     return isBgDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
   }
 
@@ -294,13 +299,13 @@ class const JustThemeData({
   /// Increases visual accessibility by enforcing high contrast text, borders,
   /// and WCAG contrast ratios against the active background surface.
   JustThemeData applyHighContrastOverrides() {
-    final isBgDark = colors.background.computeLuminance() < 0.5;
-    final highContrastText = isBgDark
+    final bool isBgDark = colors.background.computeLuminance() < 0.5;
+    final Color highContrastText = isBgDark
         ? const Color(0xFFFFFFFF)
         : const Color(0xFF000000);
-    final highContrastBorder = highContrastText;
+    final Color highContrastBorder = highContrastText;
 
-    final updatedColors = CustomColorScheme(
+    final CustomColorScheme updatedColors = CustomColorScheme(
       background: colors.background,
       card: colors.card,
       elevated: colors.elevated,

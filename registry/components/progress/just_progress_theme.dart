@@ -8,7 +8,7 @@ class const JustProgressTheme({
   final JustProgressStyle? style,
 }) extends ThemeExtension<JustProgressTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustProgressTheme();
+  static const JustProgressTheme defaults = JustProgressTheme();
 
   @override
   JustProgressTheme copyWith({JustProgressStyle? style}) {

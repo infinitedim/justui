@@ -19,10 +19,10 @@ void main() {
     });
 
     test('EdgeInsets helper covers all parameters and combinations', () {
-      final all = JustSpacing.insets(all: JustSpacing.md);
+      final EdgeInsets all = JustSpacing.insets(all: JustSpacing.md);
       expect(all, equals(const EdgeInsets.all(12.0)));
 
-      final symmetric = JustSpacing.insets(
+      final EdgeInsets symmetric = JustSpacing.insets(
         h: JustSpacing.lg,
         v: JustSpacing.sm,
       );
@@ -31,7 +31,7 @@ void main() {
         equals(const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0)),
       );
 
-      final zeroInsets = JustSpacing.insets();
+      final EdgeInsets zeroInsets = JustSpacing.insets();
       expect(zeroInsets, equals(EdgeInsets.zero));
     });
 
@@ -42,7 +42,7 @@ void main() {
         Directionality(
           textDirection: TextDirection.ltr,
           child: Column(
-            children: [
+            children: <Widget>[
               JustGap.xxs,
               JustGap.xs,
               JustGap.sm,
@@ -57,7 +57,9 @@ void main() {
         ),
       );
 
-      final gaps = tester.widgetList<SizedBox>(find.byType(SizedBox)).toList();
+      final List<SizedBox> gaps = tester
+          .widgetList<SizedBox>(find.byType(SizedBox))
+          .toList();
       expect(gaps.length, equals(9));
       expect(gaps[0].width, equals(JustSpacing.xxs));
       expect(gaps[1].width, equals(JustSpacing.xs));

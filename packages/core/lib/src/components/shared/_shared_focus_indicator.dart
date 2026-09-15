@@ -1,4 +1,7 @@
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/preset_tokens.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart'
+    show JustColorScheme, JustMotionProfile;
 
 import '../../theme/theme_provider.dart';
 
@@ -11,25 +14,30 @@ class const FocusIndicator({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final animations = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustMotionProfile animations = JustThemeProvider.of(
       context,
       aspect: .animations,
     ).theme.animations;
-    final presetTokens = JustThemeProvider.of(context).theme.presetTokens;
-    final disableAnimations = MediaQuery.of(context).disableAnimations;
+    final JustPresetTokens presetTokens = JustThemeProvider.of(context)
+        .theme
+        .presetTokens;
+    final bool disableAnimations = MediaQuery.of(context).disableAnimations;
 
-    final focusColor = presetTokens.showsDefaultBorder
+    final Color focusColor = presetTokens.showsDefaultBorder
         ? colors.textPrimary
         : colors.borderFocus;
-    final strokeWidth = presetTokens.showsDefaultBorder
+    final double strokeWidth = presetTokens.showsDefaultBorder
         ? presetTokens.borderWidth
         : 2.0;
 
     return TweenAnimationBuilder<double>(
       duration: disableAnimations ? Duration.zero : animations.fast,
       tween: Tween<double>(begin: 0.0, end: isFocused ? 1.0 : 0.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return CustomPaint(
           foregroundPainter: value > 0.001
               ? _FocusRingPainter(
@@ -53,7 +61,7 @@ class const _FocusRingPainter({
 }) extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
+    final Paint paint = Paint()
       ..color = color
       ..style = .stroke
       ..strokeWidth = strokeWidth;

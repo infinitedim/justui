@@ -1,4 +1,7 @@
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/preset_tokens.dart';
+import 'package:just_ui_core/src/theme/theme_data.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart' show JustColorScheme;
 
 import '../../theme/theme_provider.dart';
 import 'just_avatar.dart';
@@ -18,9 +21,12 @@ class const JustAvatarGroup({
       return const SizedBox.shrink();
     }
 
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final customTheme = JustThemeProvider.of(context).theme;
-    final presetTokens = customTheme.presetTokens;
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustPresetTokens presetTokens = customTheme.presetTokens;
 
     final int displayCount = avatars.length > maxDisplay
         ? maxDisplay
@@ -54,7 +60,7 @@ class const JustAvatarGroup({
     final double stepWidth = diameter - overlap;
     final double totalWidth = diameter + (totalItems - 1) * stepWidth;
 
-    final List<Widget> children = [];
+    final List<Widget> children = <Widget>[];
 
     // Build stack items in reverse order so that the first avatar is on top
     for (int i = totalItems - 1; i >= 0; i--) {
@@ -62,7 +68,7 @@ class const JustAvatarGroup({
       Widget item;
 
       if (i < displayCount) {
-        final original = avatars[i];
+        final JustAvatar original = avatars[i];
         item = JustAvatar(
           key: original.key,
           imageUrl: original.imageUrl,
@@ -84,7 +90,7 @@ class const JustAvatarGroup({
         );
       } else {
         item = JustAvatar(
-          key: const ValueKey('remaining_avatar'),
+          key: const ValueKey<String>('remaining_avatar'),
           name: '+$remaining',
           size: size,
           shape: avatars.isNotEmpty ? avatars.first.shape : .circle,

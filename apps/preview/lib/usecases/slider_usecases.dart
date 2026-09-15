@@ -7,11 +7,11 @@ import 'package:just_ui_core/src/components/slider/just_slider_style.dart';
 
 @widgetbook.UseCase(name: 'Default Slider', type: JustSlider)
 Widget buildJustSliderDefaultUseCase(BuildContext context) {
-  final showTooltip = context.knobs.boolean(
+  final bool showTooltip = context.knobs.boolean(
     label: 'Show Tooltip',
     initialValue: true,
   );
-  final size = context.knobs.object.dropdown<JustSliderSize>(
+  final JustSliderSize size = context.knobs.object.dropdown<JustSliderSize>(
     label: 'Size',
     options: JustSliderSize.values,
     initialOption: JustSliderSize.md,
@@ -19,7 +19,7 @@ Widget buildJustSliderDefaultUseCase(BuildContext context) {
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 360.0),
         child: _InteractiveSliderDemo(showTooltip: showTooltip, size: size),
@@ -45,7 +45,7 @@ class _InteractiveSliderDemoState extends State<_InteractiveSliderDemo> {
   Widget build(BuildContext context) {
     return JustSlider(
       value: _value,
-      onChanged: (val) {
+      onChanged: (double val) {
         setState(() {
           _value = val;
         });
@@ -58,11 +58,11 @@ class _InteractiveSliderDemoState extends State<_InteractiveSliderDemo> {
 
 @widgetbook.UseCase(name: 'Range Slider', type: JustSlider)
 Widget buildJustSliderRangeUseCase(BuildContext context) {
-  final showTooltip = context.knobs.boolean(
+  final bool showTooltip = context.knobs.boolean(
     label: 'Show Tooltip',
     initialValue: true,
   );
-  final size = context.knobs.object.dropdown<JustSliderSize>(
+  final JustSliderSize size = context.knobs.object.dropdown<JustSliderSize>(
     label: 'Size',
     options: JustSliderSize.values,
     initialOption: JustSliderSize.md,
@@ -70,7 +70,7 @@ Widget buildJustSliderRangeUseCase(BuildContext context) {
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 360.0),
         child: _InteractiveRangeSliderDemo(
@@ -104,7 +104,7 @@ class _InteractiveRangeSliderDemoState
   Widget build(BuildContext context) {
     return JustSlider.range(
       rangeValues: _values,
-      onRangeChanged: (val) {
+      onRangeChanged: (JustRangeValues val) {
         setState(() {
           _values = val;
         });

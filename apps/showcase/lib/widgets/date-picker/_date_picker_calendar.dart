@@ -466,7 +466,9 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     const int totalItems = 42;
 
     return KeyedSubtree(
-      key: ValueKey('day_view_${_activeDate.year}_${_activeDate.month}'),
+      key: ValueKey<String>(
+        'day_view_${_activeDate.year}_${_activeDate.month}',
+      ),
       child: Column(
         mainAxisSize: .min,
         children: [
@@ -638,7 +640,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     JustPresetTokens presetTokens,
   ) {
     return KeyedSubtree(
-      key: ValueKey('month_view_${_activeDate.year}'),
+      key: ValueKey<String>('month_view_${_activeDate.year}'),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -703,7 +705,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     final startYear = _activeDate.year - 5;
 
     return KeyedSubtree(
-      key: ValueKey('year_view_$startYear'),
+      key: ValueKey<String>('year_view_$startYear'),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
