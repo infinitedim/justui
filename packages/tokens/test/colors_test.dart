@@ -11,7 +11,7 @@ void main() {
     test(
       'Raw palette colors and JustColors static constants are valid ARGB',
       () {
-        const rawColors = [
+        const List<Color> rawColors = <Color>[
           JustColorPalette.white,
           JustColorPalette.black,
           JustColorPalette.neutral50,
@@ -82,7 +82,7 @@ void main() {
           JustColorPalette.info950,
         ];
 
-        for (final color in rawColors) {
+        for (final Color color in rawColors) {
           expect(color.toARGB32(), isNotNull);
           expect(color.toARGB32(), greaterThanOrEqualTo(0x00000000));
           expect(color.toARGB32(), lessThanOrEqualTo(0xFFFFFFFF));
@@ -261,10 +261,10 @@ void main() {
     });
 
     test('JustColors factory methods return correct scheme instances', () {
-      final light = JustColors.light();
-      final dark = JustColors.dark();
-      final neoLight = JustColors.neobrutalismLight();
-      final neoDark = JustColors.neobrutalismDark();
+      final JustColorScheme light = JustColors.light();
+      final JustColorScheme dark = JustColors.dark();
+      final JustColorScheme neoLight = JustColors.neobrutalismLight();
+      final JustColorScheme neoDark = JustColors.neobrutalismDark();
 
       expect(light, equals(JustColors.lightScheme));
       expect(dark, equals(JustColors.darkScheme));
@@ -273,7 +273,7 @@ void main() {
     });
 
     test('CustomColorScheme constructor and resolveSemantic factory', () {
-      const custom = CustomColorScheme(
+      const CustomColorScheme custom = CustomColorScheme(
         background: Color(0xFF111111),
         card: Color(0xFF222222),
         elevated: Color(0xFF333333),
@@ -310,76 +310,80 @@ void main() {
       expect(custom.info, equals(const Color(0xFF000000)));
 
       // resolveSemantic neobrutalism (light & dark)
-      final neoLightResolved = CustomColorScheme.resolveSemantic(
-        background: const Color(0xFFFFF8E7),
-        card: const Color(0xFFFFFFFF),
-        elevated: const Color(0xFFFFFFFF),
-        muted: const Color(0xFFF1F5F9),
-        overlay: const Color(0x99000000),
-        borderFocus: const Color(0xFF000000),
-        success: const Color(0xFF38E54D),
-        warning: const Color(0xFFFFD93D),
-        error: const Color(0xFFFF4B4B),
-        info: const Color(0xFF4D96FF),
-        isDark: false,
-        preset: JustThemePreset.neobrutalism,
-      );
+      final CustomColorScheme neoLightResolved =
+          CustomColorScheme.resolveSemantic(
+            background: const Color(0xFFFFF8E7),
+            card: const Color(0xFFFFFFFF),
+            elevated: const Color(0xFFFFFFFF),
+            muted: const Color(0xFFF1F5F9),
+            overlay: const Color(0x99000000),
+            borderFocus: const Color(0xFF000000),
+            success: const Color(0xFF38E54D),
+            warning: const Color(0xFFFFD93D),
+            error: const Color(0xFFFF4B4B),
+            info: const Color(0xFF4D96FF),
+            isDark: false,
+            preset: JustThemePreset.neobrutalism,
+          );
       expect(neoLightResolved.textPrimary, equals(const Color(0xFF000000)));
       expect(neoLightResolved.textInverse, equals(const Color(0xFFFFFFFF)));
       expect(neoLightResolved.borderDefault, equals(const Color(0xFF000000)));
 
-      final neoDarkResolved = CustomColorScheme.resolveSemantic(
-        background: const Color(0xFF1A1A1A),
-        card: const Color(0xFF262626),
-        elevated: const Color(0xFF333333),
-        muted: const Color(0xFF333333),
-        overlay: const Color(0xCC000000),
-        borderFocus: const Color(0xFFFFFFFF),
-        success: const Color(0xFF4ADE80),
-        warning: const Color(0xFFFFE033),
-        error: const Color(0xFFFF5353),
-        info: const Color(0xFF60A5FA),
-        isDark: true,
-        preset: JustThemePreset.neobrutalism,
-      );
+      final CustomColorScheme neoDarkResolved =
+          CustomColorScheme.resolveSemantic(
+            background: const Color(0xFF1A1A1A),
+            card: const Color(0xFF262626),
+            elevated: const Color(0xFF333333),
+            muted: const Color(0xFF333333),
+            overlay: const Color(0xCC000000),
+            borderFocus: const Color(0xFFFFFFFF),
+            success: const Color(0xFF4ADE80),
+            warning: const Color(0xFFFFE033),
+            error: const Color(0xFFFF5353),
+            info: const Color(0xFF60A5FA),
+            isDark: true,
+            preset: JustThemePreset.neobrutalism,
+          );
       expect(neoDarkResolved.textPrimary, equals(const Color(0xFFFFFFFF)));
       expect(neoDarkResolved.textInverse, equals(const Color(0xFF000000)));
       expect(neoDarkResolved.borderDefault, equals(const Color(0xFFFFFFFF)));
 
       // resolveSemantic default_ (light & dark)
-      final stdLightResolved = CustomColorScheme.resolveSemantic(
-        background: JustColorSemanticLight.background,
-        card: JustColorSemanticLight.card,
-        elevated: JustColorSemanticLight.elevated,
-        muted: JustColorSemanticLight.muted,
-        overlay: JustColorSemanticLight.overlay,
-        borderFocus: JustColorSemanticLight.borderFocus,
-        success: JustColorSemanticLight.success,
-        warning: JustColorSemanticLight.warning,
-        error: JustColorSemanticLight.error,
-        info: JustColorSemanticLight.info,
-        isDark: false,
-        preset: JustThemePreset.default_,
-      );
+      final CustomColorScheme stdLightResolved =
+          CustomColorScheme.resolveSemantic(
+            background: JustColorSemanticLight.background,
+            card: JustColorSemanticLight.card,
+            elevated: JustColorSemanticLight.elevated,
+            muted: JustColorSemanticLight.muted,
+            overlay: JustColorSemanticLight.overlay,
+            borderFocus: JustColorSemanticLight.borderFocus,
+            success: JustColorSemanticLight.success,
+            warning: JustColorSemanticLight.warning,
+            error: JustColorSemanticLight.error,
+            info: JustColorSemanticLight.info,
+            isDark: false,
+            preset: JustThemePreset.default_,
+          );
       expect(
         stdLightResolved.textPrimary,
         equals(JustColorSemanticLight.textPrimary),
       );
 
-      final stdDarkResolved = CustomColorScheme.resolveSemantic(
-        background: JustColorSemanticDark.background,
-        card: JustColorSemanticDark.card,
-        elevated: JustColorSemanticDark.elevated,
-        muted: JustColorSemanticDark.muted,
-        overlay: JustColorSemanticDark.overlay,
-        borderFocus: JustColorSemanticDark.borderFocus,
-        success: JustColorSemanticDark.success,
-        warning: JustColorSemanticDark.warning,
-        error: JustColorSemanticDark.error,
-        info: JustColorSemanticDark.info,
-        isDark: true,
-        preset: JustThemePreset.default_,
-      );
+      final CustomColorScheme stdDarkResolved =
+          CustomColorScheme.resolveSemantic(
+            background: JustColorSemanticDark.background,
+            card: JustColorSemanticDark.card,
+            elevated: JustColorSemanticDark.elevated,
+            muted: JustColorSemanticDark.muted,
+            overlay: JustColorSemanticDark.overlay,
+            borderFocus: JustColorSemanticDark.borderFocus,
+            success: JustColorSemanticDark.success,
+            warning: JustColorSemanticDark.warning,
+            error: JustColorSemanticDark.error,
+            info: JustColorSemanticDark.info,
+            isDark: true,
+            preset: JustThemePreset.default_,
+          );
       expect(
         stdDarkResolved.textPrimary,
         equals(JustColorSemanticDark.textPrimary),
@@ -387,7 +391,7 @@ void main() {
     });
 
     test('JustColorScheme operator == exercises all 16 property inequality branches', () {
-      final base = JustColors.light();
+      final JustColorScheme base = JustColors.light();
       expect(base == base, isTrue);
       expect(base == Object(), isFalse);
 
@@ -429,7 +433,7 @@ void main() {
         );
       }
 
-      const diff = Color(0xFF123456);
+      const Color diff = Color(0xFF123456);
 
       expect(base == createVariant(background: diff), isFalse);
       expect(base == createVariant(card: diff), isFalse);
@@ -452,8 +456,8 @@ void main() {
 
   group('Accessibility Contrast & Dynamic Scaling Validation', () {
     test('Contrast ratio calculation and WCAG AA compliance', () {
-      const black = JustColors.black;
-      const white = JustColors.white;
+      const Color black = JustColors.black;
+      const Color white = JustColors.white;
 
       expect(black.contrastRatioWith(white), closeTo(21.0, 0.01));
       expect(white.contrastRatioWith(black), closeTo(21.0, 0.01));
@@ -462,7 +466,7 @@ void main() {
       expect(black.isAccessibleWith(white, isLargeText: false), isTrue);
       expect(black.isAccessibleWith(white, isLargeText: true), isTrue);
 
-      const lowContrastText = Color(0xFFCCCCCC);
+      const Color lowContrastText = Color(0xFFCCCCCC);
       expect(
         lowContrastText.isAccessibleWith(white, isLargeText: false),
         isFalse,
@@ -470,10 +474,13 @@ void main() {
     });
 
     test('JustColorScale generates complete 11-step scale from seed across engines', () {
-      const seed = Color(0xFF3B82F6);
+      const Color seed = Color(0xFF3B82F6);
 
-      for (final engine in JustColorSpaceEngine.values) {
-        final scale = JustColorScale.fromSeed(seed, engine: engine);
+      for (final JustColorSpaceEngine engine in JustColorSpaceEngine.values) {
+        final JustColorScale scale = JustColorScale.fromSeed(
+          seed,
+          engine: engine,
+        );
 
         expect(scale.c50, isNotNull);
         expect(scale.c100, isNotNull);
@@ -498,56 +505,56 @@ void main() {
     test(
       'OKLCH engine handles conversions, roundtrips, and chroma pre-damping',
       () {
-        const seed = Color(0xFF3B82F6);
-        final oklch = OklchEngine.fromColor(seed);
+        const Color seed = Color(0xFF3B82F6);
+        final OklchColor oklch = OklchEngine.fromColor(seed);
 
         expect(oklch.l, inInclusiveRange(0.0, 1.0));
         expect(oklch.c, greaterThan(0.0));
         expect(oklch.h, inInclusiveRange(0.0, 360.0));
 
-        final roundtrip = OklchEngine.toColor(oklch);
+        final Color roundtrip = OklchEngine.toColor(oklch);
         expect(roundtrip.r, closeTo(seed.r, 0.02));
         expect(roundtrip.g, closeTo(seed.g, 0.02));
         expect(roundtrip.b, closeTo(seed.b, 0.02));
 
-        final dampedC = OklchEngine.dampChroma(oklch.c, 0.05);
+        final double dampedC = OklchEngine.dampChroma(oklch.c, 0.05);
         expect(dampedC, lessThan(oklch.c));
       },
     );
 
     test('HSLuv engine handles conversions, roundtrips, and max chroma', () {
-      const seed = Color(0xFF3B82F6);
-      final hsluv = HsluvEngine.fromColor(seed);
+      const Color seed = Color(0xFF3B82F6);
+      final HsluvColor hsluv = HsluvEngine.fromColor(seed);
 
       expect(hsluv.l, inInclusiveRange(0.0, 100.0));
       expect(hsluv.s, inInclusiveRange(0.0, 100.0));
       expect(hsluv.h, inInclusiveRange(0.0, 360.0));
 
-      final roundtrip = HsluvEngine.toColor(hsluv);
+      final Color roundtrip = HsluvEngine.toColor(hsluv);
       expect(roundtrip.r, closeTo(seed.r, 0.02));
       expect(roundtrip.g, closeTo(seed.g, 0.02));
       expect(roundtrip.b, closeTo(seed.b, 0.02));
     });
 
     test('Yellow seed scale does not produce grayish dark shades in OKLCH', () {
-      const yellowSeed = Color(0xFFF59E0B);
-      final scale = JustColorScale.fromSeed(
+      const Color yellowSeed = Color(0xFFF59E0B);
+      final JustColorScale scale = JustColorScale.fromSeed(
         yellowSeed,
         engine: JustColorSpaceEngine.oklch,
       );
 
       expect(scale.c500, equals(yellowSeed));
-      final c900Oklch = OklchEngine.fromColor(scale.c900);
+      final OklchColor c900Oklch = OklchEngine.fromColor(scale.c900);
       expect(c900Oklch.c, greaterThan(0.005));
     });
 
     test('adjustLightnessForContrast covers early return and dark/light background branches across engines', () {
-      const lightBg = Color(0xFFFFFFFF);
-      const darkBg = Color(0xFF000000);
-      const sufficientText = Color(0xFF000000);
-      const lowContrastGrey = Color(0xFF94A3B8);
+      const Color lightBg = Color(0xFFFFFFFF);
+      const Color darkBg = Color(0xFF000000);
+      const Color sufficientText = Color(0xFF000000);
+      const Color lowContrastGrey = Color(0xFF94A3B8);
 
-      for (final engine in JustColorSpaceEngine.values) {
+      for (final JustColorSpaceEngine engine in JustColorSpaceEngine.values) {
         expect(
           sufficientText.adjustLightnessForContrast(
             background: lightBg,
@@ -557,7 +564,7 @@ void main() {
           equals(sufficientText),
         );
 
-        final darkerResult = lowContrastGrey.adjustLightnessForContrast(
+        final Color darkerResult = lowContrastGrey.adjustLightnessForContrast(
           background: lightBg,
           targetRatio: 4.5,
           engine: engine,
@@ -567,7 +574,7 @@ void main() {
           greaterThanOrEqualTo(4.5),
         );
 
-        final lighterResult = lowContrastGrey.adjustLightnessForContrast(
+        final Color lighterResult = lowContrastGrey.adjustLightnessForContrast(
           background: darkBg,
           targetRatio: 4.5,
           engine: engine,
@@ -580,10 +587,10 @@ void main() {
     });
 
     test('JustDynamicSurfaces.generateDarkSurface produces dark tinted surfaces across engines', () {
-      const seed = Color(0xFF3B82F6);
+      const Color seed = Color(0xFF3B82F6);
 
-      for (final engine in JustColorSpaceEngine.values) {
-        final darkSurface = JustDynamicSurfaces.generateDarkSurface(
+      for (final JustColorSpaceEngine engine in JustColorSpaceEngine.values) {
+        final Color darkSurface = JustDynamicSurfaces.generateDarkSurface(
           seed,
           lightness: 0.05,
           engine: engine,
@@ -599,16 +606,16 @@ void main() {
 
     test('gamutMap preserves hue for out-of-gamut vivid colors', () {
       // Highly saturated OKLCH colors that are outside sRGB gamut
-      const vividColors = [
+      const List<OklchColor> vividColors = <OklchColor>[
         OklchColor(0.7, 0.35, 30.0), // vivid red-orange
         OklchColor(0.7, 0.35, 150.0), // vivid green
         OklchColor(0.5, 0.35, 270.0), // vivid blue-purple
         OklchColor(0.85, 0.30, 90.0), // vivid yellow
       ];
 
-      for (final oklch in vividColors) {
-        final mapped = OklchEngine.gamutMap(oklch);
-        final roundtrip = OklchEngine.fromColor(mapped);
+      for (final OklchColor oklch in vividColors) {
+        final Color mapped = OklchEngine.gamutMap(oklch);
+        final OklchColor roundtrip = OklchEngine.fromColor(mapped);
 
         // Hue must not drift more than 2° after gamut mapping
         double hueDiff = (roundtrip.h - oklch.h).abs();
@@ -631,7 +638,7 @@ void main() {
     });
 
     test('gamutMap returns identical color for in-gamut inputs', () {
-      const inGamutColors = [
+      const List<Color> inGamutColors = <Color>[
         Color(0xFF3B82F6), // blue
         Color(0xFFEF4444), // red
         Color(0xFF22C55E), // green
@@ -641,10 +648,10 @@ void main() {
         Color(0xFF808080), // mid gray
       ];
 
-      for (final color in inGamutColors) {
-        final oklch = OklchEngine.fromColor(color);
-        final gamutMapped = OklchEngine.gamutMap(oklch);
-        final rawMapped = OklchEngine.toRawColor(oklch);
+      for (final Color color in inGamutColors) {
+        final OklchColor oklch = OklchEngine.fromColor(color);
+        final Color gamutMapped = OklchEngine.gamutMap(oklch);
+        final Color rawMapped = OklchEngine.toRawColor(oklch);
 
         expect(gamutMapped.r, closeTo(rawMapped.r, 0.005));
         expect(gamutMapped.g, closeTo(rawMapped.g, 0.005));
@@ -654,9 +661,9 @@ void main() {
 
     test('toColor uses gamutMap (not raw clamping)', () {
       // A color that is clearly out of gamut
-      const outOfGamut = OklchColor(0.7, 0.40, 150.0);
-      final viaToColor = OklchEngine.toColor(outOfGamut);
-      final viaGamutMap = OklchEngine.gamutMap(outOfGamut);
+      const OklchColor outOfGamut = OklchColor(0.7, 0.40, 150.0);
+      final Color viaToColor = OklchEngine.toColor(outOfGamut);
+      final Color viaGamutMap = OklchEngine.gamutMap(outOfGamut);
 
       expect(viaToColor.r, equals(viaGamutMap.r));
       expect(viaToColor.g, equals(viaGamutMap.g));
@@ -664,8 +671,8 @@ void main() {
     });
 
     test('toRawColor preserves backward-compatible clamping behavior', () {
-      const oklch = OklchColor(0.7, 0.35, 150.0);
-      final raw = OklchEngine.toRawColor(oklch);
+      const OklchColor oklch = OklchColor(0.7, 0.35, 150.0);
+      final Color raw = OklchEngine.toRawColor(oklch);
 
       // Raw clamping must produce valid sRGB values
       expect(raw.r, inInclusiveRange(0.0, 1.0));
@@ -680,7 +687,7 @@ void main() {
     test('maxChromaForLH returns positive values for mid-lightness', () {
       // Test across 12 hue angles
       for (double h = 0.0; h < 360.0; h += 30.0) {
-        final maxC = OklchEngine.maxChromaForLH(0.5, h);
+        final double maxC = OklchEngine.maxChromaForLH(0.5, h);
         expect(
           maxC,
           greaterThan(0.01),
@@ -688,7 +695,7 @@ void main() {
         );
 
         // Verify the returned chroma is actually in-gamut
-        final color = OklchEngine.toRawColor(OklchColor(0.5, maxC, h));
+        final Color color = OklchEngine.toRawColor(OklchColor(0.5, maxC, h));
         expect(color.r, inInclusiveRange(0.0, 1.0));
         expect(color.g, inInclusiveRange(0.0, 1.0));
         expect(color.b, inInclusiveRange(0.0, 1.0));
@@ -702,8 +709,8 @@ void main() {
 
     test('maxChromaForLH varies by hue (yellow > blue at high lightness)', () {
       // Yellow (H≈90°) has wider gamut at high lightness than blue (H≈265°)
-      final maxYellow = OklchEngine.maxChromaForLH(0.85, 90.0);
-      final maxBlue = OklchEngine.maxChromaForLH(0.85, 265.0);
+      final double maxYellow = OklchEngine.maxChromaForLH(0.85, 90.0);
+      final double maxBlue = OklchEngine.maxChromaForLH(0.85, 265.0);
 
       expect(
         maxYellow,
@@ -715,12 +722,12 @@ void main() {
     test(
       'dampChromaHueAware preserves more chroma than legacy for yellow darks',
       () {
-        const yellowHue = 90.0;
-        const seedChroma = 0.18;
-        const darkTargetL = 0.15;
+        const double yellowHue = 90.0;
+        const double seedChroma = 0.18;
+        const double darkTargetL = 0.15;
 
-        final legacy = OklchEngine.dampChroma(seedChroma, darkTargetL);
-        final hueAware = OklchEngine.dampChromaHueAware(
+        final double legacy = OklchEngine.dampChroma(seedChroma, darkTargetL);
+        final double hueAware = OklchEngine.dampChromaHueAware(
           seedChroma,
           darkTargetL,
           yellowHue,
@@ -741,15 +748,15 @@ void main() {
     test(
       'Yellow seed scale with hue-aware damping produces richer dark shades',
       () {
-        const yellowSeed = Color(0xFFF59E0B);
-        final scale = JustColorScale.fromSeed(
+        const Color yellowSeed = Color(0xFFF59E0B);
+        final JustColorScale scale = JustColorScale.fromSeed(
           yellowSeed,
           engine: JustColorSpaceEngine.oklch,
         );
 
         // c900 and c950 should have meaningful chroma (not grayish)
-        final c900Oklch = OklchEngine.fromColor(scale.c900);
-        final c950Oklch = OklchEngine.fromColor(scale.c950);
+        final OklchColor c900Oklch = OklchEngine.fromColor(scale.c900);
+        final OklchColor c950Oklch = OklchEngine.fromColor(scale.c950);
 
         expect(
           c900Oklch.c,
@@ -770,11 +777,11 @@ void main() {
     // =========================================================
 
     test('OklchEngine.lerp avoids dead gray zone between blue and yellow', () {
-      const blue = Color(0xFF2563EB);
-      const yellow = Color(0xFFFBBF24);
+      const Color blue = Color(0xFF2563EB);
+      const Color yellow = Color(0xFFFBBF24);
 
-      final midpoint = OklchEngine.lerp(blue, yellow, 0.5);
-      final midOklch = OklchEngine.fromColor(midpoint);
+      final Color midpoint = OklchEngine.lerp(blue, yellow, 0.5);
+      final OklchColor midOklch = OklchEngine.fromColor(midpoint);
 
       // The midpoint must have significant chroma (not gray/muddy)
       expect(
@@ -787,11 +794,11 @@ void main() {
     });
 
     test('OklchEngine.lerp edge cases: t=0 returns a, t=1 returns b', () {
-      const a = Color(0xFFFF0000);
-      const b = Color(0xFF0000FF);
+      const Color a = Color(0xFFFF0000);
+      const Color b = Color(0xFF0000FF);
 
-      final atZero = OklchEngine.lerp(a, b, 0.0);
-      final atOne = OklchEngine.lerp(a, b, 1.0);
+      final Color atZero = OklchEngine.lerp(a, b, 0.0);
+      final Color atOne = OklchEngine.lerp(a, b, 1.0);
 
       expect(atZero.r, equals(a.r));
       expect(atZero.g, equals(a.g));
@@ -804,18 +811,18 @@ void main() {
 
     test('OklchEngine.lerp uses shortest-arc hue interpolation', () {
       // Red (H≈29°) to Magenta (H≈328°): shortest arc goes backward (29→0→328)
-      const red = Color(0xFFFF0000);
-      const magenta = Color(0xFFFF00FF);
+      const Color red = Color(0xFFFF0000);
+      const Color magenta = Color(0xFFFF00FF);
 
-      final redOklch = OklchEngine.fromColor(red);
-      final magentaOklch = OklchEngine.fromColor(magenta);
+      final OklchColor redOklch = OklchEngine.fromColor(red);
+      final OklchColor magentaOklch = OklchEngine.fromColor(magenta);
 
-      final midpoint = OklchEngine.lerp(red, magenta, 0.5);
-      final midOklch = OklchEngine.fromColor(midpoint);
+      final Color midpoint = OklchEngine.lerp(red, magenta, 0.5);
+      final OklchColor midOklch = OklchEngine.fromColor(midpoint);
 
       // The hue should be near 0/360° (passing through red), not near 180° (going through cyan)
       // Since shortest arc crosses 0°, the midpoint hue should be < 30 or > 330
-      final isNearZero = midOklch.h < 40.0 || midOklch.h > 320.0;
+      final bool isNearZero = midOklch.h < 40.0 || midOklch.h > 320.0;
       expect(
         isNearZero,
         isTrue,
@@ -826,21 +833,21 @@ void main() {
     });
 
     test('OklchEngine.lerp interpolates alpha correctly', () {
-      final a = const Color(0xFFFF0000).withValues(alpha: 0.2);
-      final b = const Color(0xFF0000FF).withValues(alpha: 0.8);
+      final Color a = const Color(0xFFFF0000).withValues(alpha: 0.2);
+      final Color b = const Color(0xFF0000FF).withValues(alpha: 0.8);
 
-      final mid = OklchEngine.lerp(a, b, 0.5);
+      final Color mid = OklchEngine.lerp(a, b, 0.5);
       expect(mid.a, closeTo(0.5, 0.01));
     });
 
     test(
       'Color.lerpToOklch extension works identically to OklchEngine.lerp',
       () {
-        const a = Color(0xFF3B82F6);
-        const b = Color(0xFFF59E0B);
+        const Color a = Color(0xFF3B82F6);
+        const Color b = Color(0xFFF59E0B);
 
-        final viaStatic = OklchEngine.lerp(a, b, 0.5);
-        final viaExtension = a.lerpToOklch(b, 0.5);
+        final Color viaStatic = OklchEngine.lerp(a, b, 0.5);
+        final Color viaExtension = a.lerpToOklch(b, 0.5);
 
         expect(viaExtension.r, equals(viaStatic.r));
         expect(viaExtension.g, equals(viaStatic.g));
@@ -849,20 +856,20 @@ void main() {
     );
 
     test('OklchColorTween produces correct interpolation', () {
-      final tween = OklchColorTween(
+      final OklchColorTween tween = OklchColorTween(
         begin: const Color(0xFF2563EB),
         end: const Color(0xFFFBBF24),
       );
 
-      final atZero = tween.transform(0.0);
-      final atMid = tween.transform(0.5);
-      final atOne = tween.transform(1.0);
+      final Color atZero = tween.transform(0.0);
+      final Color atMid = tween.transform(0.5);
+      final Color atOne = tween.transform(1.0);
 
       expect(atZero.r, closeTo(const Color(0xFF2563EB).r, 0.01));
       expect(atOne.r, closeTo(const Color(0xFFFBBF24).r, 0.01));
 
       // Midpoint should be vibrant
-      final midOklch = OklchEngine.fromColor(atMid);
+      final OklchColor midOklch = OklchEngine.fromColor(atMid);
       expect(midOklch.c, greaterThan(0.05));
     });
 
@@ -873,7 +880,7 @@ void main() {
     test('analytical maxChromaForLH produces colors AT the gamut boundary', () {
       // The analytical result should be right at the boundary —
       // the maxC color should be in-gamut, but maxC+epsilon should NOT.
-      const testPoints = [
+      const List<({double h, double l})> testPoints = <({double h, double l})>[
         (l: 0.3, h: 0.0), // dark red
         (l: 0.5, h: 90.0), // mid yellow
         (l: 0.5, h: 180.0), // mid cyan
@@ -884,12 +891,16 @@ void main() {
         (l: 0.6, h: 145.0), // mid green
       ];
 
-      for (final tp in testPoints) {
-        final maxC = OklchEngine.maxChromaForLH(tp.l, tp.h);
+      for (final ({double h, double l}) tp in testPoints) {
+        final double maxC = OklchEngine.maxChromaForLH(tp.l, tp.h);
 
         // maxC itself must produce an in-gamut color
-        final (rL, gL, bL) = _oklchToLinearRgbForTest(tp.l, maxC, tp.h);
-        final inGamut =
+        final (double rL, double gL, double bL) = _oklchToLinearRgbForTest(
+          tp.l,
+          maxC,
+          tp.h,
+        );
+        final bool inGamut =
             rL >= -0.001 &&
             rL <= 1.001 &&
             gL >= -0.001 &&
@@ -907,12 +918,12 @@ void main() {
 
         // maxC + small epsilon should be OUT of gamut (proving we're at the boundary)
         if (maxC > 0.001) {
-          final (rO, gO, bO) = _oklchToLinearRgbForTest(
+          final (double rO, double gO, double bO) = _oklchToLinearRgbForTest(
             tp.l,
             maxC + 0.005,
             tp.h,
           );
-          final outOfGamut =
+          final bool outOfGamut =
               rO < -0.001 ||
               rO > 1.001 ||
               gO < -0.001 ||
@@ -939,18 +950,18 @@ void main() {
 
     test('premultiplied alpha lerp: no halo during fade-out', () {
       // Opaque cyan fading to fully transparent
-      const opaque = Color(0xFF00BCD4);
-      final transparent = const Color(0xFF00BCD4).withValues(alpha: 0.0);
+      const Color opaque = Color(0xFF00BCD4);
+      final Color transparent = const Color(0xFF00BCD4).withValues(alpha: 0.0);
 
       // Sample 10 points along the transition
       for (double t = 0.1; t < 1.0; t += 0.1) {
-        final mid = OklchEngine.lerp(opaque, transparent, t);
-        final midOklch = OklchEngine.fromColor(mid);
+        final Color mid = OklchEngine.lerp(opaque, transparent, t);
+        final OklchColor midOklch = OklchEngine.fromColor(mid);
 
         // With premultiplied alpha, the visible color should stay cyan —
         // NOT drift toward gray/black (which is the "halo" artifact)
         if (mid.a > 0.1) {
-          final opaqueOklch = OklchEngine.fromColor(opaque);
+          final OklchColor opaqueOklch = OklchEngine.fromColor(opaque);
           // Lightness should stay close to the opaque color's lightness
           expect(
             midOklch.l,
@@ -964,20 +975,20 @@ void main() {
     });
 
     test('premultiplied alpha lerp: fully transparent returns transparent', () {
-      final a = const Color(0xFFFF0000).withValues(alpha: 0.0);
-      final b = const Color(0xFF0000FF).withValues(alpha: 0.0);
+      final Color a = const Color(0xFFFF0000).withValues(alpha: 0.0);
+      final Color b = const Color(0xFF0000FF).withValues(alpha: 0.0);
 
-      final mid = OklchEngine.lerp(a, b, 0.5);
+      final Color mid = OklchEngine.lerp(a, b, 0.5);
       expect(mid.a, closeTo(0.0, 0.01));
     });
 
     test('lerp achromatic hue handling: gray to color uses color hue', () {
-      const gray = Color(0xFF808080); // achromatic, c ≈ 0
-      const blue = Color(0xFF2563EB); // chromatic
+      const Color gray = Color(0xFF808080); // achromatic, c ≈ 0
+      const Color blue = Color(0xFF2563EB); // chromatic
 
-      final mid = OklchEngine.lerp(gray, blue, 0.5);
-      final midOklch = OklchEngine.fromColor(mid);
-      final blueOklch = OklchEngine.fromColor(blue);
+      final Color mid = OklchEngine.lerp(gray, blue, 0.5);
+      final OklchColor midOklch = OklchEngine.fromColor(mid);
+      final OklchColor blueOklch = OklchEngine.fromColor(blue);
 
       // The hue of the midpoint should be close to blue's hue (not 0°)
       if (midOklch.c > 0.01) {
@@ -998,7 +1009,7 @@ void main() {
     // =========================================================
 
     test('HSLuv engine high-precision roundtrip with D65 illuminant', () {
-      const testColors = [
+      const List<Color> testColors = <Color>[
         Color(0xFF3B82F6), // blue
         Color(0xFFEF4444), // red
         Color(0xFF22C55E), // green
@@ -1010,13 +1021,13 @@ void main() {
         Color(0xFFFFFFFF), // white
       ];
 
-      for (final color in testColors) {
-        final hsluv = HsluvEngine.fromColor(color);
+      for (final Color color in testColors) {
+        final HsluvColor hsluv = HsluvEngine.fromColor(color);
         expect(hsluv.l, inInclusiveRange(0.0, 100.0));
         expect(hsluv.s, inInclusiveRange(0.0, 100.0));
         expect(hsluv.h, inInclusiveRange(0.0, 360.0));
 
-        final roundtrip = HsluvEngine.toColor(hsluv);
+        final Color roundtrip = HsluvEngine.toColor(hsluv);
         expect(roundtrip.r, closeTo(color.r, 0.02));
         expect(roundtrip.g, closeTo(color.g, 0.02));
         expect(roundtrip.b, closeTo(color.b, 0.02));
@@ -1039,7 +1050,7 @@ void main() {
       'HSLuv maxChromaForLH returns positive finite chroma for mid-lightness',
       () {
         for (double h = 0.0; h < 360.0; h += 30.0) {
-          final maxC = HsluvEngine.maxChromaForLH(50.0, h);
+          final double maxC = HsluvEngine.maxChromaForLH(50.0, h);
           expect(maxC, greaterThan(1.0));
           expect(maxC.isFinite, isTrue);
         }
@@ -1047,11 +1058,11 @@ void main() {
     );
 
     test('HsluvEngine.lerp edge cases: t=0 returns a, t=1 returns b', () {
-      const a = Color(0xFFFF0000);
-      const b = Color(0xFF0000FF);
+      const Color a = Color(0xFFFF0000);
+      const Color b = Color(0xFF0000FF);
 
-      final atZero = HsluvEngine.lerp(a, b, 0.0);
-      final atOne = HsluvEngine.lerp(a, b, 1.0);
+      final Color atZero = HsluvEngine.lerp(a, b, 0.0);
+      final Color atOne = HsluvEngine.lerp(a, b, 1.0);
 
       expect(atZero.r, equals(a.r));
       expect(atZero.g, equals(a.g));
@@ -1065,10 +1076,10 @@ void main() {
     test(
       'HsluvEngine.lerp produces smooth midpoint without wibbly-wobbly jumps',
       () {
-        const blue = Color(0xFF2563EB);
-        const yellow = Color(0xFFFBBF24);
+        const Color blue = Color(0xFF2563EB);
+        const Color yellow = Color(0xFFFBBF24);
 
-        final midpoint = HsluvEngine.lerp(blue, yellow, 0.5);
+        final Color midpoint = HsluvEngine.lerp(blue, yellow, 0.5);
 
         // Verify midpoint values are valid and in sRGB gamut
         expect(midpoint.r, inInclusiveRange(0.0, 1.0));
@@ -1076,27 +1087,27 @@ void main() {
         expect(midpoint.b, inInclusiveRange(0.0, 1.0));
 
         // In CIELUV space, midpoint lightness must be between blue and yellow lightness
-        final luvBlue = HsluvEngine.fromColor(blue);
-        final luvYellow = HsluvEngine.fromColor(yellow);
-        final luvMid = HsluvEngine.fromColor(midpoint);
+        final HsluvColor luvBlue = HsluvEngine.fromColor(blue);
+        final HsluvColor luvYellow = HsluvEngine.fromColor(yellow);
+        final HsluvColor luvMid = HsluvEngine.fromColor(midpoint);
 
-        final minL = math.min(luvBlue.l, luvYellow.l);
-        final maxL = math.max(luvBlue.l, luvYellow.l);
+        final double minL = math.min(luvBlue.l, luvYellow.l);
+        final double maxL = math.max(luvBlue.l, luvYellow.l);
         expect(luvMid.l, inInclusiveRange(minL - 5.0, maxL + 5.0));
       },
     );
 
     test('HsluvEngine.lerp premultiplied alpha: no halo during fade-out', () {
-      const opaque = Color(0xFF00BCD4);
-      final transparent = const Color(0xFF00BCD4).withValues(alpha: 0.0);
+      const Color opaque = Color(0xFF00BCD4);
+      final Color transparent = const Color(0xFF00BCD4).withValues(alpha: 0.0);
 
       for (double t = 0.1; t < 1.0; t += 0.1) {
-        final mid = HsluvEngine.lerp(opaque, transparent, t);
+        final Color mid = HsluvEngine.lerp(opaque, transparent, t);
         expect(mid.a, closeTo(1.0 - t, 0.02));
 
         if (mid.a > 0.1) {
-          final opaqueHsluv = HsluvEngine.fromColor(opaque);
-          final midHsluv = HsluvEngine.fromColor(mid);
+          final HsluvColor opaqueHsluv = HsluvEngine.fromColor(opaque);
+          final HsluvColor midHsluv = HsluvEngine.fromColor(mid);
           expect(
             midHsluv.l,
             closeTo(opaqueHsluv.l, 10.0),
@@ -1108,21 +1119,21 @@ void main() {
     });
 
     test('HsluvEngine.lerp fully transparent returns transparent', () {
-      final a = const Color(0xFFFF0000).withValues(alpha: 0.0);
-      final b = const Color(0xFF0000FF).withValues(alpha: 0.0);
+      final Color a = const Color(0xFFFF0000).withValues(alpha: 0.0);
+      final Color b = const Color(0xFF0000FF).withValues(alpha: 0.0);
 
-      final mid = HsluvEngine.lerp(a, b, 0.5);
+      final Color mid = HsluvEngine.lerp(a, b, 0.5);
       expect(mid.a, closeTo(0.0, 0.01));
     });
 
     test(
       'Color.lerpToHsluv extension works identically to HsluvEngine.lerp',
       () {
-        const a = Color(0xFF3B82F6);
-        const b = Color(0xFFF59E0B);
+        const Color a = Color(0xFF3B82F6);
+        const Color b = Color(0xFFF59E0B);
 
-        final viaStatic = HsluvEngine.lerp(a, b, 0.5);
-        final viaExtension = a.lerpToHsluv(b, 0.5);
+        final Color viaStatic = HsluvEngine.lerp(a, b, 0.5);
+        final Color viaExtension = a.lerpToHsluv(b, 0.5);
 
         expect(viaExtension.r, equals(viaStatic.r));
         expect(viaExtension.g, equals(viaStatic.g));
@@ -1132,14 +1143,14 @@ void main() {
     );
 
     test('HsluvColorTween produces correct interpolation', () {
-      final tween = HsluvColorTween(
+      final HsluvColorTween tween = HsluvColorTween(
         begin: const Color(0xFF2563EB),
         end: const Color(0xFFFBBF24),
       );
 
-      final atZero = tween.transform(0.0);
-      final atMid = tween.transform(0.5);
-      final atOne = tween.transform(1.0);
+      final Color atZero = tween.transform(0.0);
+      final Color atMid = tween.transform(0.5);
+      final Color atOne = tween.transform(1.0);
 
       expect(atZero.r, closeTo(const Color(0xFF2563EB).r, 0.01));
       expect(atOne.r, closeTo(const Color(0xFFFBBF24).r, 0.01));

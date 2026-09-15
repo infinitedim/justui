@@ -534,7 +534,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
                       Text(
                         tab.label,
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: .ellipsis,
                         style: resolvedTextStyle.copyWith(
                           color: isEnabled ? textColor : colors.textDisabled,
                         ),

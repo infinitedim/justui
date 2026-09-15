@@ -5,13 +5,13 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:just_ui_core/src/components/radio/just_radio.dart';
 import 'package:just_ui_core/src/components/radio/just_radio_style.dart';
 
-@widgetbook.UseCase(name: 'Default Radio', type: JustRadio)
+@widgetbook.UseCase(name: 'Default Radio', type: JustRadio<String>)
 Widget buildJustRadioDefaultUseCase(BuildContext context) {
-  final isDisabled = context.knobs.boolean(
+  final bool isDisabled = context.knobs.boolean(
     label: 'Disabled',
     initialValue: false,
   );
-  final size = context.knobs.object.dropdown<JustRadioSize>(
+  final JustRadioSize size = context.knobs.object.dropdown<JustRadioSize>(
     label: 'Size',
     options: JustRadioSize.values,
     initialOption: JustRadioSize.md,
@@ -19,7 +19,7 @@ Widget buildJustRadioDefaultUseCase(BuildContext context) {
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       child: _InteractiveRadioGroupDemo(isDisabled: isDisabled, size: size),
     ),
   );
@@ -48,13 +48,13 @@ class _InteractiveRadioGroupDemoState
     return Column(
       mainAxisSize: .min,
       crossAxisAlignment: .start,
-      children: [
+      children: <Widget>[
         JustRadio<String>(
           value: 'Option 1',
           groupValue: _selectedOption,
           onChanged: widget.isDisabled
               ? null
-              : (val) {
+              : (String val) {
                   setState(() {
                     _selectedOption = val;
                   });
@@ -69,7 +69,7 @@ class _InteractiveRadioGroupDemoState
           groupValue: _selectedOption,
           onChanged: widget.isDisabled
               ? null
-              : (val) {
+              : (String val) {
                   setState(() {
                     _selectedOption = val;
                   });
@@ -84,7 +84,7 @@ class _InteractiveRadioGroupDemoState
           groupValue: _selectedOption,
           onChanged: widget.isDisabled
               ? null
-              : (val) {
+              : (String val) {
                   setState(() {
                     _selectedOption = val;
                   });

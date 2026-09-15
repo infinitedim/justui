@@ -2,7 +2,7 @@ import 'package:flutter/material.dart' show Colors, DateTimeRange;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 
-import '../shared/just_pressable.dart';
+import '../shared/_shared_pressable.dart';
 import '_date_picker_calendar.dart';
 import 'just_date_picker_style.dart';
 import 'just_date_picker_variants.dart';
@@ -78,9 +78,9 @@ class JustDateRangePicker extends StatelessWidget {
   /// Default list of common range presets.
   static List<JustDateRangePreset> defaultPresets() {
     final DateTime now = .now();
-    final today = DateTime(now.year, now.month, now.day);
+    final DateTime today = DateTime(now.year, now.month, now.day);
 
-    return [
+    return <JustDateRangePreset>[
       JustDateRangePreset(
         label: 'Today',
         resolve: () => DateTimeRange(start: today, end: today),
@@ -102,16 +102,16 @@ class JustDateRangePicker extends StatelessWidget {
       JustDateRangePreset(
         label: 'This Month',
         resolve: () {
-          final start = DateTime(today.year, today.month, 1);
-          final end = DateTime(today.year, today.month + 1, 0);
+          final DateTime start = DateTime(today.year, today.month, 1);
+          final DateTime end = DateTime(today.year, today.month + 1, 0);
           return DateTimeRange(start: start, end: end);
         },
       ),
       JustDateRangePreset(
         label: 'This Year',
         resolve: () {
-          final start = DateTime(today.year, 1, 1);
-          final end = DateTime(today.year, 12, 31);
+          final DateTime start = DateTime(today.year, 1, 1);
+          final DateTime end = DateTime(today.year, 12, 31);
           return DateTimeRange(start: start, end: end);
         },
       ),
@@ -120,14 +120,14 @@ class JustDateRangePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
-    final spacing = context.justSpacing;
-    final radius = context.justRadius;
-    final theme = JustThemeProvider.of(context).theme;
-    final presetTokens = theme.presetTokens;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustPresetTokens presetTokens = theme.presetTokens;
 
-    final calendar = DatePickerCalendar(
+    final DatePickerCalendar calendar = DatePickerCalendar(
       selectedRange: value,
       onRangeSelected: onChanged,
       firstDate: firstDate,
@@ -147,10 +147,10 @@ class JustDateRangePicker extends StatelessWidget {
     }
 
     return LayoutBuilder(
-      builder: (context, constraints) {
-        final isMobile = constraints.maxWidth < 500;
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final bool isMobile = constraints.maxWidth < 500;
 
-        final presetsColumn = Container(
+        final Container presetsColumn = Container(
           padding: .all(spacing.sm),
           decoration: BoxDecoration(
             color: colors.card,
@@ -170,35 +170,36 @@ class JustDateRangePicker extends StatelessWidget {
             crossAxisAlignment: .start,
             children: presets!
                 .map(
-                  (preset) => Padding(
+                  (JustDateRangePreset preset) => Padding(
                     padding: .only(bottom: spacing.xs),
                     child: JustPressable(
                       onTap: () {
-                        final range = preset.resolve();
+                        final DateTimeRange<DateTime> range = preset.resolve();
                         onChanged?.call(range);
                       },
-                      builder: (context, state) {
-                        return Container(
-                          width: .infinity,
-                          padding: .symmetric(
-                            horizontal: spacing.sm,
-                            vertical: spacing.xs,
-                          ),
-                          decoration: BoxDecoration(
-                            color: state.isHovered
-                                ? colors.muted
-                                : Colors.transparent,
-                            borderRadius: .all(context.justRadius.sm),
-                          ),
-                          child: Text(
-                            preset.label,
-                            style: typo.bodySm.copyWith(
-                              color: colors.textPrimary,
-                              fontWeight: .w500,
-                            ),
-                          ),
-                        );
-                      },
+                      builder:
+                          (BuildContext context, JustInteractionState state) {
+                            return Container(
+                              width: .infinity,
+                              padding: .symmetric(
+                                horizontal: spacing.sm,
+                                vertical: spacing.xs,
+                              ),
+                              decoration: BoxDecoration(
+                                color: state.isHovered
+                                    ? colors.muted
+                                    : Colors.transparent,
+                                borderRadius: .all(context.justRadius.sm),
+                              ),
+                              child: Text(
+                                preset.label,
+                                style: typo.bodySm.copyWith(
+                                  color: colors.textPrimary,
+                                  fontWeight: .w500,
+                                ),
+                              ),
+                            );
+                          },
                     ),
                   ),
                 )
@@ -209,7 +210,7 @@ class JustDateRangePicker extends StatelessWidget {
         if (isMobile) {
           return Column(
             mainAxisSize: .min,
-            children: [
+            children: <Widget>[
               presetsColumn,
               SizedBox(height: spacing.sm),
               calendar,
@@ -220,7 +221,7 @@ class JustDateRangePicker extends StatelessWidget {
         return Row(
           mainAxisSize: .min,
           crossAxisAlignment: .start,
-          children: [
+          children: <Widget>[
             SizedBox(width: 140.0, child: presetsColumn),
             SizedBox(width: spacing.sm),
             Flexible(child: calendar),

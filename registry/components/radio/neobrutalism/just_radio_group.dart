@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/schemes/spacing_scheme.dart';
 
 import '../../theme/theme_provider.dart';
 import 'just_radio.dart';
@@ -55,16 +56,18 @@ class JustRadioGroup<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeSpacing = JustThemeProvider.of(context).theme.spacing;
-    final resolvedSpacing = spacing ?? themeSpacing.md;
+    final JustSpacingScheme themeSpacing = JustThemeProvider.of(context)
+        .theme
+        .spacing;
+    final double resolvedSpacing = spacing ?? themeSpacing.md;
 
     return Flex(
       direction: direction,
       mainAxisSize: .min,
       crossAxisAlignment: direction == .vertical ? .start : .center,
       spacing: resolvedSpacing,
-      children: [
-        for (final option in options)
+      children: <Widget>[
+        for (final JustRadioOption<T> option in options)
           JustRadio<T>(
             value: option.value,
             groupValue: value,

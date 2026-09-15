@@ -6,7 +6,7 @@ import 'package:just_ui_core/src/components/separator/just_separator.dart';
 
 @widgetbook.UseCase(name: 'Horizontal Separator', type: JustSeparator)
 Widget buildJustSeparatorHorizontalUseCase(BuildContext context) {
-  final label = context.knobs.string(label: 'Label', initialValue: 'OR');
+  final String label = context.knobs.string(label: 'Label', initialValue: 'OR');
 
   return SizedBox(
     width: 300.0,
@@ -20,7 +20,7 @@ Widget buildJustSeparatorVerticalUseCase(BuildContext context) {
     height: 100.0,
     child: Row(
       mainAxisSize: .min,
-      children: [
+      children: <Widget>[
         Text('Left Item'),
         SizedBox(width: 12.0),
         JustSeparator(direction: .vertical),

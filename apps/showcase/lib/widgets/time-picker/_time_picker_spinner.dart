@@ -711,7 +711,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
         squeeze: 1.0,
         onSelectedItemChanged: _onHourChanged,
         childDelegate: ListWheelChildLoopingListDelegate(
-          children: List.generate(hourCount, (i) {
+          children: .generate(hourCount, (i) {
             final displayHour = widget.is24Hour ? i : i + 1;
             final hour24 = widget.is24Hour
                 ? i
@@ -768,7 +768,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
         squeeze: 1.0,
         onSelectedItemChanged: _onMinuteChanged,
         childDelegate: ListWheelChildLoopingListDelegate(
-          children: List.generate(minuteCount, (i) {
+          children: .generate(minuteCount, (i) {
             final minute = i * widget.minuteInterval;
             final isSelected = _currentTime.minute == minute;
             final isAllowed = _isMinuteAllowed(minute);
