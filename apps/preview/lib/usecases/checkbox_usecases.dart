@@ -7,23 +7,23 @@ import 'package:just_ui_core/src/components/checkbox/just_checkbox_style.dart';
 
 @widgetbook.UseCase(name: 'Default Checkbox', type: JustCheckbox)
 Widget buildJustCheckboxDefaultUseCase(BuildContext context) {
-  final isDisabled = context.knobs.boolean(
+  final bool isDisabled = context.knobs.boolean(
     label: 'Disabled',
     initialValue: false,
   );
-  final size = context.knobs.object.dropdown<JustCheckboxSize>(
+  final JustCheckboxSize size = context.knobs.object.dropdown<JustCheckboxSize>(
     label: 'Size',
     options: JustCheckboxSize.values,
     initialOption: JustCheckboxSize.md,
   );
-  final labelText = context.knobs.string(
+  final String labelText = context.knobs.string(
     label: 'Label',
     initialValue: 'Accept terms and conditions',
   );
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       child: _InteractiveCheckboxDemo(
         isDisabled: isDisabled,
         size: size,
@@ -58,7 +58,7 @@ class _InteractiveCheckboxDemoState extends State<_InteractiveCheckboxDemo> {
       value: _value,
       onChanged: widget.isDisabled
           ? null
-          : (val) {
+          : (bool? val) {
               setState(() {
                 _value = val ?? false;
               });
@@ -74,7 +74,7 @@ class _InteractiveCheckboxDemoState extends State<_InteractiveCheckboxDemo> {
 Widget buildJustCheckboxIndeterminateUseCase(BuildContext context) {
   return const Center(
     child: Padding(
-      padding: EdgeInsets.all(24.0),
+      padding: .all(24.0),
       child: _InteractiveIndeterminateCheckboxDemo(),
     ),
   );
@@ -96,7 +96,7 @@ class _InteractiveIndeterminateCheckboxDemoState
   Widget build(BuildContext context) {
     return JustCheckbox(
       value: _value,
-      onChanged: (val) {
+      onChanged: (bool? val) {
         setState(() {
           if (_value == null) {
             _value = true;

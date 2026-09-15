@@ -5,13 +5,13 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:just_ui_core/src/components/select/just_select.dart';
 import 'package:just_ui_core/src/components/select/just_select_variants.dart';
 
-@widgetbook.UseCase(name: 'Default Select', type: JustSelect)
+@widgetbook.UseCase(name: 'Default Select', type: JustSelect<String>)
 Widget buildJustSelectDefaultUseCase(BuildContext context) {
-  final searchable = context.knobs.boolean(
+  final bool searchable = context.knobs.boolean(
     label: 'Searchable',
     initialValue: false,
   );
-  final size = context.knobs.object.dropdown<JustSelectSize>(
+  final JustSelectSize size = context.knobs.object.dropdown<JustSelectSize>(
     label: 'Size',
     options: JustSelectSize.values,
     initialOption: JustSelectSize.md,
@@ -19,7 +19,7 @@ Widget buildJustSelectDefaultUseCase(BuildContext context) {
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const .all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 340.0),
         child: _InteractiveSelectDemo(searchable: searchable, size: size),
@@ -45,7 +45,7 @@ class _InteractiveSelectDemoState extends State<_InteractiveSelectDemo> {
   Widget build(BuildContext context) {
     return JustSelect<String>(
       value: _selectedValue,
-      onChanged: (val) {
+      onChanged: (String val) {
         setState(() {
           _selectedValue = val;
         });
@@ -53,15 +53,15 @@ class _InteractiveSelectDemoState extends State<_InteractiveSelectDemo> {
       searchable: widget.searchable,
       size: widget.size,
       label: 'Framework',
-      options: const [
-        JustSelectOption(value: 'flutter', label: 'Flutter'),
-        JustSelectOption(value: 'react_native', label: 'React Native'),
-        JustSelectOption.divider(),
-        JustSelectOption(
+      options: const <JustSelectOption<String>>[
+        JustSelectOption<String>(value: 'flutter', label: 'Flutter'),
+        JustSelectOption<String>(value: 'react_native', label: 'React Native'),
+        JustSelectOption<String>.divider(),
+        JustSelectOption<String>(
           value: 'kotlin_multiplatform',
           label: 'Kotlin Multiplatform',
         ),
-        JustSelectOption(value: 'swiftui', label: 'SwiftUI'),
+        JustSelectOption<String>(value: 'swiftui', label: 'SwiftUI'),
       ],
     );
   }

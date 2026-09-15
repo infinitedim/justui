@@ -168,8 +168,8 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
   void _onDayTapped(DateTime date) {
     if (!_isDateSelectable(date)) return;
 
-    final theme = context.readTheme();
-    final haptic =
+    final JustThemeData theme = context.readTheme();
+    final bool haptic =
         widget.enableHaptic ?? theme.presetTokens.selectionHapticDefault;
     if (haptic) {
       HapticFeedback.lightImpact();
@@ -187,8 +187,10 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
         });
       } else {
         // Second tap: set range end
-        final start = _rangeStart!.isBefore(date) ? _rangeStart! : date;
-        final end = _rangeStart!.isBefore(date) ? date : _rangeStart!;
+        final DateTime start = _rangeStart!.isBefore(date)
+            ? _rangeStart!
+            : date;
+        final DateTime end = _rangeStart!.isBefore(date) ? date : _rangeStart!;
         setState(() {
           _rangeStart = null;
         });
@@ -251,36 +253,37 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     if (event is! KeyDownEvent) return .ignored;
 
     if (_currentView == .day) {
-      final actions = <LogicalKeyboardKey, VoidCallback>{
-        .arrowLeft: () => _moveFocusedDate(const Duration(days: -1)),
-        .arrowRight: () => _moveFocusedDate(const Duration(days: 1)),
-        .arrowUp: () => _moveFocusedDate(const Duration(days: -7)),
-        .arrowDown: () => _moveFocusedDate(const Duration(days: 7)),
-        .pageUp: _onPrevClicked,
-        .pageDown: _onNextClicked,
-        .home: () {
-          setState(() {
-            _focusedDate = DateTime(_activeDate.year, _activeDate.month, 1);
-          });
-        },
-        .end: () {
-          final daysInMonth = DateUtils.getDaysInMonth(
-            _activeDate.year,
-            _activeDate.month,
-          );
-          setState(() {
-            _focusedDate = DateTime(
-              _activeDate.year,
-              _activeDate.month,
-              daysInMonth,
-            );
-          });
-        },
-        .enter: () => _onDayTapped(_focusedDate),
-        .space: () => _onDayTapped(_focusedDate),
-      };
+      final Map<LogicalKeyboardKey, VoidCallback> actions =
+          <LogicalKeyboardKey, VoidCallback>{
+            .arrowLeft: () => _moveFocusedDate(const Duration(days: -1)),
+            .arrowRight: () => _moveFocusedDate(const Duration(days: 1)),
+            .arrowUp: () => _moveFocusedDate(const Duration(days: -7)),
+            .arrowDown: () => _moveFocusedDate(const Duration(days: 7)),
+            .pageUp: _onPrevClicked,
+            .pageDown: _onNextClicked,
+            .home: () {
+              setState(() {
+                _focusedDate = DateTime(_activeDate.year, _activeDate.month, 1);
+              });
+            },
+            .end: () {
+              final int daysInMonth = DateUtils.getDaysInMonth(
+                _activeDate.year,
+                _activeDate.month,
+              );
+              setState(() {
+                _focusedDate = DateTime(
+                  _activeDate.year,
+                  _activeDate.month,
+                  daysInMonth,
+                );
+              });
+            },
+            .enter: () => _onDayTapped(_focusedDate),
+            .space: () => _onDayTapped(_focusedDate),
+          };
 
-      final action = actions[event.logicalKey];
+      final VoidCallback? action = actions[event.logicalKey];
       if (action != null) {
         action();
         return .handled;
@@ -290,7 +293,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
   }
 
   void _moveFocusedDate(Duration delta) {
-    final next = _focusedDate.add(delta);
+    final DateTime next = _focusedDate.add(delta);
     if (_isDateSelectable(next)) {
       setState(() {
         _focusedDate = next;
@@ -303,36 +306,37 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
-    final spacing = context.justSpacing;
-    final radius = context.justRadius;
-    final theme = JustThemeProvider.of(context).theme;
-    final presetTokens = theme.presetTokens;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustPresetTokens presetTokens = theme.presetTokens;
 
     // Theme & Style overrides
-    final themeExtension = Theme.of(context).extension<JustDatePickerTheme>();
-    final style = widget.style;
+    final JustDatePickerTheme? themeExtension = Theme.of(context)
+        .extension<JustDatePickerTheme>();
+    final JustDatePickerStyle? style = widget.style;
 
-    final bgColor =
+    final Color bgColor =
         style?.backgroundColor ??
         themeExtension?.inlineStyle?.backgroundColor ??
         colors.card;
-    final borderColor =
+    final Color borderColor =
         style?.borderColor ??
         themeExtension?.inlineStyle?.borderColor ??
         (presetTokens.showsDefaultBorder
             ? colors.textPrimary
             : colors.borderDefault);
-    final borderRadius =
+    final BorderRadius borderRadius =
         style?.borderRadius ??
         themeExtension?.inlineStyle?.borderRadius ??
         presetTokens.resolveBorderRadius(radius);
-    final padding =
+    final EdgeInsets padding =
         style?.padding ??
         themeExtension?.inlineStyle?.padding ??
         .all(spacing.md);
-    final borderWidth = presetTokens.borderWidth;
+    final double borderWidth = presetTokens.borderWidth;
 
     return Focus(
       focusNode: _focusNode,
@@ -360,7 +364,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
             : null,
         child: Column(
           mainAxisSize: .min,
-          children: [
+          children: <Widget>[
             // Navigation Header
             widget.headerBuilder != null
                 ? widget.headerBuilder!(
@@ -405,18 +409,18 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
         headerText = '${_activeDate.year}';
         break;
       case .year:
-        final startYear = _activeDate.year - 5;
-        final endYear = _activeDate.year + 6;
+        final int startYear = _activeDate.year - 5;
+        final int endYear = _activeDate.year + 6;
         headerText = '$startYear - $endYear';
         break;
     }
 
     return Row(
       mainAxisAlignment: .spaceBetween,
-      children: [
+      children: <Widget>[
         JustPressable(
           onTap: _onPrevClicked,
-          builder: (context, state) {
+          builder: (BuildContext context, JustInteractionState state) {
             return Container(
               padding: .all(spacing.xs),
               decoration: BoxDecoration(
@@ -433,7 +437,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
         ),
         JustPressable(
           onTap: _toggleViewHeader,
-          builder: (context, state) {
+          builder: (BuildContext context, JustInteractionState state) {
             return Container(
               padding: .symmetric(horizontal: spacing.sm, vertical: spacing.xs),
               decoration: BoxDecoration(
@@ -449,7 +453,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
         ),
         JustPressable(
           onTap: _onNextClicked,
-          builder: (context, state) {
+          builder: (BuildContext context, JustInteractionState state) {
             return Container(
               padding: .all(spacing.xs),
               decoration: BoxDecoration(
@@ -492,8 +496,12 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     JustRadiusScheme radius,
     JustPresetTokens presetTokens,
   ) {
-    final firstDayOfMonth = DateTime(_activeDate.year, _activeDate.month, 1);
-    final daysInMonth = DateUtils.getDaysInMonth(
+    final DateTime firstDayOfMonth = DateTime(
+      _activeDate.year,
+      _activeDate.month,
+      1,
+    );
+    final int daysInMonth = DateUtils.getDaysInMonth(
       _activeDate.year,
       _activeDate.month,
     );
@@ -503,9 +511,10 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     if (firstWeekdayOffset < 0) firstWeekdayOffset += 7;
 
     // Shift weekday headers according to firstDayOfWeek
-    final shiftedWeekdayHeaders = <({String header, bool isSunday})>[];
+    final List<({String header, bool isSunday})> shiftedWeekdayHeaders =
+        <({String header, bool isSunday})>[];
     for (int i = 0; i < 7; i++) {
-      final idx = (widget.firstDayOfWeek - 1 + i) % 7;
+      final int idx = (widget.firstDayOfWeek - 1 + i) % 7;
       shiftedWeekdayHeaders.add((
         header: widget.locale.weekdayHeaders[idx],
         isSunday: idx == 6,
@@ -516,15 +525,17 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     const int totalItems = 42;
 
     return KeyedSubtree(
-      key: ValueKey('day_view_${_activeDate.year}_${_activeDate.month}'),
+      key: ValueKey<String>(
+        'day_view_${_activeDate.year}_${_activeDate.month}',
+      ),
       child: Column(
         mainAxisSize: .min,
-        children: [
+        children: <Widget>[
           // Weekday Header Labels
           Row(
             children: shiftedWeekdayHeaders
                 .map(
-                  (item) => Expanded(
+                  (({String header, bool isSunday}) item) => Expanded(
                     child: Center(
                       child: Text(
                         item.header,
@@ -551,13 +562,17 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
               crossAxisSpacing: 4.0,
             ),
             itemCount: totalItems,
-            itemBuilder: (context, index) {
+            itemBuilder: (BuildContext context, int index) {
               if (index < firstWeekdayOffset ||
                   index >= firstWeekdayOffset + daysInMonth) {
                 return const SizedBox.shrink();
               }
-              final day = index - firstWeekdayOffset + 1;
-              final date = DateTime(_activeDate.year, _activeDate.month, day);
+              final int day = index - firstWeekdayOffset + 1;
+              final DateTime date = DateTime(
+                _activeDate.year,
+                _activeDate.month,
+                day,
+              );
               return _buildDayCell(date, colors, typo, radius, presetTokens);
             },
           ),
@@ -574,12 +589,12 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     JustPresetTokens presetTokens,
   ) {
     final DateTime now = .now();
-    final isToday = DateUtils.isSameDay(date, now);
-    final isSelected =
+    final bool isToday = DateUtils.isSameDay(date, now);
+    final bool isSelected =
         widget.selectedDate != null &&
         DateUtils.isSameDay(date, widget.selectedDate!);
-    final isFocused = DateUtils.isSameDay(date, _focusedDate);
-    final isSelectable = _isDateSelectable(date);
+    final bool isFocused = DateUtils.isSameDay(date, _focusedDate);
+    final bool isSelectable = _isDateSelectable(date);
 
     // Range checking
     bool isRangeStart = false;
@@ -587,8 +602,8 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     bool isInRange = false;
 
     if (widget.selectedRange != null) {
-      final start = widget.selectedRange!.start;
-      final end = widget.selectedRange!.end;
+      final DateTime start = widget.selectedRange!.start;
+      final DateTime end = widget.selectedRange!.end;
       isRangeStart = DateUtils.isSameDay(date, start);
       isRangeEnd = DateUtils.isSameDay(date, end);
       isInRange = date.isAfter(start) && date.isBefore(end);
@@ -604,10 +619,10 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
       );
     }
 
-    final isHighlight = isSelected || isRangeStart || isRangeEnd;
-    final isCircular = presetTokens.datePickerCircularSelection;
+    final bool isHighlight = isSelected || isRangeStart || isRangeEnd;
+    final bool isCircular = presetTokens.datePickerCircularSelection;
 
-    final cellBorderRadius = isCircular
+    final BorderRadius cellBorderRadius = isCircular
         ? presetTokens.resolveBorderRadius(radius, isCircle: true)
         : presetTokens.resolveBorderRadius(radius);
 
@@ -620,7 +635,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
           colors.borderFocus.withValues(alpha: 0.15);
     }
 
-    final isSunday = date.weekday == DateTime.sunday;
+    final bool isSunday = date.weekday == DateTime.sunday;
 
     Color cellTextColor = isSunday
         ? (widget.style?.sundayTextColor ?? colors.error)
@@ -652,7 +667,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
       child: JustPressable(
         enabled: isSelectable,
         onTap: () => _onDayTapped(date),
-        builder: (context, state) {
+        builder: (BuildContext context, JustInteractionState state) {
           return FocusIndicator(
             isFocused: isFocused && state.isFocused,
             borderRadius: cellBorderRadius,
@@ -688,7 +703,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     JustPresetTokens presetTokens,
   ) {
     return KeyedSubtree(
-      key: ValueKey('month_view_${_activeDate.year}'),
+      key: ValueKey<String>('month_view_${_activeDate.year}'),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -699,9 +714,9 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
           childAspectRatio: 1.5,
         ),
         itemCount: 12,
-        itemBuilder: (context, index) {
-          final monthName = widget.locale.shortMonthNames[index];
-          final isSelectedMonth = _activeDate.month == (index + 1);
+        itemBuilder: (BuildContext context, int index) {
+          final String monthName = widget.locale.shortMonthNames[index];
+          final bool isSelectedMonth = _activeDate.month == (index + 1);
 
           return JustPressable(
             onTap: () {
@@ -710,7 +725,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
                 _currentView = .day;
               });
             },
-            builder: (context, state) {
+            builder: (BuildContext context, JustInteractionState state) {
               return Container(
                 decoration: BoxDecoration(
                   color: isSelectedMonth
@@ -750,10 +765,10 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     JustRadiusScheme radius,
     JustPresetTokens presetTokens,
   ) {
-    final startYear = _activeDate.year - 5;
+    final int startYear = _activeDate.year - 5;
 
     return KeyedSubtree(
-      key: ValueKey('year_view_$startYear'),
+      key: ValueKey<String>('year_view_$startYear'),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -764,9 +779,9 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
           childAspectRatio: 1.5,
         ),
         itemCount: 12,
-        itemBuilder: (context, index) {
-          final year = startYear + index;
-          final isSelectedYear = _activeDate.year == year;
+        itemBuilder: (BuildContext context, int index) {
+          final int year = startYear + index;
+          final bool isSelectedYear = _activeDate.year == year;
 
           return JustPressable(
             onTap: () {
@@ -775,7 +790,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
                 _currentView = .month;
               });
             },
-            builder: (context, state) {
+            builder: (BuildContext context, JustInteractionState state) {
               return Container(
                 decoration: BoxDecoration(
                   color: isSelectedYear

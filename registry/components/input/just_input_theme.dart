@@ -8,7 +8,7 @@ class const JustInputTheme({
   final JustInputStyle? inputStyle,
 }) extends ThemeExtension<JustInputTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustInputTheme();
+  static const JustInputTheme defaults = JustInputTheme();
 
   @override
   JustInputTheme copyWith({JustInputStyle? inputStyle}) {
