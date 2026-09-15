@@ -8,7 +8,7 @@ class const JustToggleTheme({
   final JustToggleStyle? style,
 }) extends ThemeExtension<JustToggleTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustToggleTheme();
+  static const JustToggleTheme defaults = JustToggleTheme();
 
   @override
   JustToggleTheme copyWith({JustToggleStyle? style}) {

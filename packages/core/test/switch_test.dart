@@ -2,6 +2,7 @@ import 'dart:ui' show Tristate;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/src/semantics/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/switch/just_switch.dart';
@@ -17,8 +18,8 @@ void main() {
     ThemeData? materialTheme,
     ThemeMode themeMode = ThemeMode.light,
   }) {
-    final effectiveJustTheme = theme ?? JustThemeData.light;
-    final effectiveMaterialTheme =
+    final JustThemeData effectiveJustTheme = theme ?? JustThemeData.light;
+    final ThemeData effectiveMaterialTheme =
         materialTheme ?? effectiveJustTheme.toThemeData();
 
     return MaterialApp(
@@ -33,12 +34,12 @@ void main() {
 
   group('JustSwitch - States, Sizes & Semantics', () {
     testWidgets('Renders active and inactive states with proper semantics', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
           Column(
-            children: [
+            children: <Widget>[
               JustSwitch(value: true, onChanged: (_) {}),
               JustSwitch(value: false, onChanged: (_) {}),
             ],
@@ -48,7 +49,7 @@ void main() {
 
       expect(find.byType(JustSwitch), findsNWidgets(2));
 
-      final activeSemantics = tester.getSemantics(
+      final SemanticsNode activeSemantics = tester.getSemantics(
         find.byType(JustSwitch).at(0),
       );
       expect(
@@ -56,7 +57,7 @@ void main() {
         equals(Tristate.isTrue),
       );
 
-      final inactiveSemantics = tester.getSemantics(
+      final SemanticsNode inactiveSemantics = tester.getSemantics(
         find.byType(JustSwitch).at(1),
       );
       expect(
@@ -67,11 +68,11 @@ void main() {
 
     testWidgets(
       'Renders all size classifications (.sm, .md, .lg) and meets touch target',
-      (tester) async {
+      (WidgetTester tester) async {
         await tester.pumpWidget(
           buildTestApp(
             Column(
-              children: [
+              children: <Widget>[
                 JustSwitch(
                   value: false,
                   size: JustSwitchSize.sm,
@@ -95,28 +96,32 @@ void main() {
         expect(find.byType(JustSwitch), findsNWidgets(3));
 
         // Minimum height constraint 48.0
-        final constrainedBoxes = tester.widgetList<ConstrainedBox>(
-          find.descendant(
-            of: find.byType(JustSwitch),
-            matching: find.byWidgetPredicate(
-              (w) => w is ConstrainedBox && w.constraints.minHeight >= 48.0,
-            ),
-          ),
-        );
+        final Iterable<ConstrainedBox> constrainedBoxes = tester
+            .widgetList<ConstrainedBox>(
+              find.descendant(
+                of: find.byType(JustSwitch),
+                matching: find.byWidgetPredicate(
+                  (Widget w) =>
+                      w is ConstrainedBox && w.constraints.minHeight >= 48.0,
+                ),
+              ),
+            );
         expect(constrainedBoxes.length, equals(3));
       },
     );
 
-    testWidgets('Tapping switch toggles boolean value', (tester) async {
+    testWidgets('Tapping switch toggles boolean value', (
+      WidgetTester tester,
+    ) async {
       bool value = false;
 
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return buildTestApp(
               JustSwitch(
                 value: value,
-                onChanged: (val) => setState(() => value = val),
+                onChanged: (bool val) => setState(() => value = val),
               ),
             );
           },
@@ -133,17 +138,19 @@ void main() {
       expect(value, isFalse);
     });
 
-    testWidgets('Tapping label triggers switch toggle', (tester) async {
+    testWidgets('Tapping label triggers switch toggle', (
+      WidgetTester tester,
+    ) async {
       bool value = false;
 
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return buildTestApp(
               JustSwitch(
                 value: value,
                 label: const Text('Enable Notifications'),
-                onChanged: (val) => setState(() => value = val),
+                onChanged: (bool val) => setState(() => value = val),
               ),
             );
           },
@@ -159,12 +166,12 @@ void main() {
 
   group('JustSwitch - Inner-Layout Thumb Calculations & Alignments', () {
     testWidgets('Default preset track and thumb sizing calculations', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
           Column(
-            children: [
+            children: <Widget>[
               JustSwitch(
                 value: false,
                 size: JustSwitchSize.sm,
@@ -186,34 +193,34 @@ void main() {
       );
 
       // Verify track container sizing for sm: 32x18
-      final smTrackFinder = find.descendant(
+      final Finder smTrackFinder = find.descendant(
         of: find.byType(JustSwitch).at(0),
         matching: find.byWidgetPredicate(
-          (w) => w is Container && w.constraints?.maxWidth == 32.0,
+          (Widget w) => w is Container && w.constraints?.maxWidth == 32.0,
         ),
       );
       expect(smTrackFinder, findsOneWidget);
 
       // Verify track container sizing for md: 40x22
-      final mdTrackFinder = find.descendant(
+      final Finder mdTrackFinder = find.descendant(
         of: find.byType(JustSwitch).at(1),
         matching: find.byWidgetPredicate(
-          (w) => w is Container && w.constraints?.maxWidth == 40.0,
+          (Widget w) => w is Container && w.constraints?.maxWidth == 40.0,
         ),
       );
       expect(mdTrackFinder, findsOneWidget);
 
       // Verify track container sizing for lg: 48x26
-      final lgTrackFinder = find.descendant(
+      final Finder lgTrackFinder = find.descendant(
         of: find.byType(JustSwitch).at(2),
         matching: find.byWidgetPredicate(
-          (w) => w is Container && w.constraints?.maxWidth == 48.0,
+          (Widget w) => w is Container && w.constraints?.maxWidth == 48.0,
         ),
       );
       expect(lgTrackFinder, findsOneWidget);
 
       // Alignment check: Inactive (false) -> Alignment(-1.0, 0.0)
-      final smAlign = tester.widget<Align>(
+      final Align smAlign = tester.widget<Align>(
         find.descendant(
           of: find.byType(JustSwitch).at(0),
           matching: find.byType(Align),
@@ -222,7 +229,7 @@ void main() {
       expect(smAlign.alignment, equals(const Alignment(-1.0, 0.0)));
 
       // Alignment check: Active (true) -> Alignment(1.0, 0.0)
-      final mdAlign = tester.widget<Align>(
+      final Align mdAlign = tester.widget<Align>(
         find.descendant(
           of: find.byType(JustSwitch).at(1),
           matching: find.byType(Align),
@@ -232,7 +239,7 @@ void main() {
     });
 
     testWidgets('Neobrutalism preset inner-layout thumb calculations', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
@@ -244,11 +251,11 @@ void main() {
       expect(find.byType(JustSwitch), findsOneWidget);
 
       // Md size with neobrutalism border: thumbSize = 22 - (2 * 2.5) - (2 * 2) = 13.0
-      final thumbContainer = tester.widget<Container>(
+      final Container thumbContainer = tester.widget<Container>(
         find.descendant(
           of: find.byType(JustSwitch),
           matching: find.byWidgetPredicate(
-            (w) => w is Container && w.constraints?.maxWidth == 13.0,
+            (Widget w) => w is Container && w.constraints?.maxWidth == 13.0,
           ),
         ),
       );
@@ -259,17 +266,17 @@ void main() {
 
   group('JustSwitch - Drag Interactions', () {
     testWidgets('Dragging switch past 50% threshold toggles value', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool value = false;
 
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return buildTestApp(
               JustSwitch(
                 value: value,
-                onChanged: (val) => setState(() => value = val),
+                onChanged: (bool val) => setState(() => value = val),
               ),
             );
           },
@@ -288,17 +295,17 @@ void main() {
     });
 
     testWidgets('Dragging switch and returning back snaps without toggling', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool value = false;
 
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return buildTestApp(
               JustSwitch(
                 value: value,
-                onChanged: (val) => setState(() => value = val),
+                onChanged: (bool val) => setState(() => value = val),
               ),
             );
           },
@@ -306,7 +313,7 @@ void main() {
       );
 
       // Drag right then back left
-      final gesture = await tester.startGesture(
+      final TestGesture gesture = await tester.startGesture(
         tester.getCenter(find.byType(JustSwitch)),
       );
       await gesture.moveBy(const Offset(25.0, 0.0));
@@ -320,7 +327,7 @@ void main() {
     });
 
     testWidgets('Dragging disabled switch does not trigger onChanged', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool changed = false;
 
@@ -347,15 +354,15 @@ void main() {
 
   group('JustSwitch - Thumb Icon & Customizations', () {
     testWidgets('Renders custom thumb icon matching active/inactive states', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
           JustSwitch(
             value: true,
-            thumbIcon: (val) => Icon(
+            thumbIcon: (bool val) => Icon(
               val ? Icons.check : Icons.close,
-              key: const ValueKey('thumb-icon'),
+              key: const ValueKey<String>('thumb-icon'),
               size: 10,
             ),
             onChanged: (_) {},
@@ -363,12 +370,12 @@ void main() {
         ),
       );
 
-      expect(find.byKey(const ValueKey('thumb-icon')), findsOneWidget);
+      expect(find.byKey(const ValueKey<String>('thumb-icon')), findsOneWidget);
       expect(find.byIcon(Icons.check), findsOneWidget);
     });
 
     testWidgets('Direct activeColor parameter overrides track color', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
@@ -386,7 +393,7 @@ void main() {
 
   group('JustSwitch - Disabled State & Keyboard Navigation', () {
     testWidgets('Disabled switch dims opacity and prevents tap', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool tapped = false;
 
@@ -404,7 +411,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(tapped, isFalse);
 
-      final opacity = tester.widget<Opacity>(
+      final Opacity opacity = tester.widget<Opacity>(
         find.descendant(
           of: find.byType(JustSwitch),
           matching: find.byType(Opacity),
@@ -412,7 +419,9 @@ void main() {
       );
       expect(opacity.opacity, equals(0.5));
 
-      final semantics = tester.getSemantics(find.byType(JustSwitch));
+      final SemanticsNode semantics = tester.getSemantics(
+        find.byType(JustSwitch),
+      );
       expect(
         semantics.getSemanticsData().flagsCollection.isEnabled,
         equals(Tristate.isFalse),
@@ -420,13 +429,15 @@ void main() {
     });
 
     testWidgets('Disabled switch via onChanged null disables interactions', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(const JustSwitch(value: true, onChanged: null)),
       );
 
-      final semantics = tester.getSemantics(find.byType(JustSwitch));
+      final SemanticsNode semantics = tester.getSemantics(
+        find.byType(JustSwitch),
+      );
       expect(
         semantics.getSemanticsData().flagsCollection.isEnabled,
         equals(Tristate.isFalse),
@@ -434,20 +445,20 @@ void main() {
     });
 
     testWidgets('Keyboard space and enter keys toggle focused switch', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool value = false;
-      final focusNode = FocusNode();
+      final FocusNode focusNode = FocusNode();
       addTearDown(focusNode.dispose);
 
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return buildTestApp(
               JustSwitch(
                 value: value,
                 focusNode: focusNode,
-                onChanged: (val) => setState(() => value = val),
+                onChanged: (bool val) => setState(() => value = val),
               ),
             );
           },
@@ -474,10 +485,10 @@ void main() {
     });
 
     testWidgets('Keyboard events are ignored when switch is disabled', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool tapped = false;
-      final focusNode = FocusNode();
+      final FocusNode focusNode = FocusNode();
       addTearDown(focusNode.dispose);
 
       await tester.pumpWidget(
@@ -500,10 +511,10 @@ void main() {
     });
 
     testWidgets('External FocusNode update and didUpdateWidget lifecycle', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final focusNode1 = FocusNode();
-      final focusNode2 = FocusNode();
+      final FocusNode focusNode1 = FocusNode();
+      final FocusNode focusNode2 = FocusNode();
       addTearDown(focusNode1.dispose);
       addTearDown(focusNode2.dispose);
 
@@ -526,8 +537,10 @@ void main() {
   });
 
   group('JustSwitch - Theming & Haptics', () {
-    testWidgets('Haptic feedback on switch toggle', (tester) async {
-      final List<String> log = [];
+    testWidgets('Haptic feedback on switch toggle', (
+      WidgetTester tester,
+    ) async {
+      final List<String> log = <String>[];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.platform, (
             MethodCall methodCall,
@@ -551,9 +564,9 @@ void main() {
     });
 
     testWidgets('Per-instance JustSwitchStyle overrides default colors', (
-      tester,
+      WidgetTester tester,
     ) async {
-      const customStyle = JustSwitchStyle(
+      const JustSwitchStyle customStyle = JustSwitchStyle(
         activeTrackColor: Color(0xFF112233),
         inactiveTrackColor: Color(0xFF445566),
         activeThumbColor: Color(0xFF778899),
@@ -576,15 +589,15 @@ void main() {
     });
 
     testWidgets('Global JustSwitchTheme in ThemeData applies to switch', (
-      tester,
+      WidgetTester tester,
     ) async {
-      const themeStyle = JustSwitchStyle(
+      const JustSwitchStyle themeStyle = JustSwitchStyle(
         activeTrackColor: Color(0xFF008800),
         activeThumbColor: Color(0xFFFFFFFF),
       );
 
-      final materialTheme = ThemeData(
-        extensions: const [
+      final ThemeData materialTheme = ThemeData(
+        extensions: const <ThemeExtension<dynamic>>[
           JustSwitchTheme(style: themeStyle, enableHaptic: true),
         ],
       );
@@ -602,7 +615,7 @@ void main() {
 
   group('JustSwitchStyle & JustSwitchTheme Unit Tests', () {
     test('JustSwitchStyle copyWith, lerp, equality, and hashCode', () {
-      const style1 = JustSwitchStyle(
+      const JustSwitchStyle style1 = JustSwitchStyle(
         activeTrackColor: Color(0xFF112233),
         inactiveTrackColor: Color(0xFF445566),
         activeThumbColor: Color(0xFF778899),
@@ -610,7 +623,9 @@ void main() {
         textStyle: TextStyle(fontSize: 14),
       );
 
-      final copied = style1.copyWith(activeTrackColor: const Color(0xFF00FF00));
+      final JustSwitchStyle copied = style1.copyWith(
+        activeTrackColor: const Color(0xFF00FF00),
+      );
 
       expect(copied.activeTrackColor, equals(const Color(0xFF00FF00)));
       expect(copied.inactiveTrackColor, equals(style1.inactiveTrackColor));
@@ -618,7 +633,7 @@ void main() {
       expect(copied.inactiveThumbColor, equals(style1.inactiveThumbColor));
       expect(copied.textStyle, equals(style1.textStyle));
 
-      const styleClone = JustSwitchStyle(
+      const JustSwitchStyle styleClone = JustSwitchStyle(
         activeTrackColor: Color(0xFF112233),
         inactiveTrackColor: Color(0xFF445566),
         activeThumbColor: Color(0xFF778899),
@@ -634,7 +649,7 @@ void main() {
       expect(JustSwitchStyle.lerp(style1, style1, 0.5), equals(style1));
       expect(JustSwitchStyle.lerp(null, null, 0.5), isNull);
 
-      final lerped = JustSwitchStyle.lerp(style1, copied, 0.5);
+      final JustSwitchStyle? lerped = JustSwitchStyle.lerp(style1, copied, 0.5);
       expect(lerped, isNotNull);
       expect(
         lerped!.activeTrackColor,
@@ -647,20 +662,23 @@ void main() {
     test(
       'JustSwitchTheme defaults, copyWith, lerp, equality, and hashCode',
       () {
-        const defaultTheme = JustSwitchTheme.defaults;
+        const JustSwitchTheme defaultTheme = JustSwitchTheme.defaults;
         expect(defaultTheme.enableHaptic, isFalse);
         expect(defaultTheme.style, isNull);
 
-        const customStyle = JustSwitchStyle(
+        const JustSwitchStyle customStyle = JustSwitchStyle(
           activeTrackColor: Color(0xFF336699),
         );
-        const theme1 = JustSwitchTheme(style: customStyle, enableHaptic: true);
+        const JustSwitchTheme theme1 = JustSwitchTheme(
+          style: customStyle,
+          enableHaptic: true,
+        );
 
-        final copied = theme1.copyWith(enableHaptic: false);
+        final JustSwitchTheme copied = theme1.copyWith(enableHaptic: false);
         expect(copied.enableHaptic, isFalse);
         expect(copied.style, equals(customStyle));
 
-        const themeClone = JustSwitchTheme(
+        const JustSwitchTheme themeClone = JustSwitchTheme(
           style: customStyle,
           enableHaptic: true,
         );
@@ -671,9 +689,9 @@ void main() {
 
         // Lerp
         expect(theme1.lerp(null, 0.5), equals(theme1));
-        final lerpedTheme = theme1.lerp(copied, 0.7);
+        final JustSwitchTheme lerpedTheme = theme1.lerp(copied, 0.7);
         expect(lerpedTheme.enableHaptic, isFalse);
-        final lerpedThemeEarly = theme1.lerp(copied, 0.3);
+        final JustSwitchTheme lerpedThemeEarly = theme1.lerp(copied, 0.3);
         expect(lerpedThemeEarly.enableHaptic, isTrue);
 
         // Parity with JustSwitchThemeData typedef

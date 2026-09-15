@@ -8,7 +8,7 @@ class const JustTooltipTheme({
   final JustTooltipStyle? style,
 }) extends ThemeExtension<JustTooltipTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustTooltipTheme();
+  static const JustTooltipTheme defaults = JustTooltipTheme();
 
   @override
   JustTooltipTheme copyWith({JustTooltipStyle? style}) {

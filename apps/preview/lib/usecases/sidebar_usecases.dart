@@ -7,11 +7,12 @@ import 'package:just_ui_core/src/components/sidebar/just_sidebar_variants.dart';
 
 @widgetbook.UseCase(name: 'Default Sidebar', type: JustSidebar)
 Widget buildJustSidebarDefaultUseCase(BuildContext context) {
-  final variant = context.knobs.object.dropdown<JustSidebarVariant>(
-    label: 'Variant',
-    options: JustSidebarVariant.values,
-    initialOption: JustSidebarVariant.default_,
-  );
+  final JustSidebarVariant variant = context.knobs.object
+      .dropdown<JustSidebarVariant>(
+        label: 'Variant',
+        options: JustSidebarVariant.values,
+        initialOption: JustSidebarVariant.default_,
+      );
 
   return Align(
     alignment: Alignment.centerLeft,
@@ -53,13 +54,13 @@ class _InteractiveSidebarDemoState extends State<_InteractiveSidebarDemo> {
         });
       },
       header: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const .symmetric(horizontal: 16.0),
         child: Text(
           _isCollapsed ? 'UI' : 'JustUI Admin',
           style: const TextStyle(fontWeight: .bold, fontSize: 18.0),
         ),
       ),
-      items: const [
+      items: const <JustSidebarItem>[
         JustSidebarItem(
           label: 'Dashboard',
           icon: Icon(IconData(0xe1b0, fontFamily: 'MaterialIcons')),

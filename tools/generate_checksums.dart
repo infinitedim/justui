@@ -19,12 +19,12 @@ enum FileOrigin { coreMirrored, registryNative }
 typedef ResolvedPaths = ({File srcFile, File destFile, FileOrigin origin});
 
 void main(List<String> args) async {
-  final isDryRun = args.contains('--dry-run');
+  final bool isDryRun = args.contains('--dry-run');
 
-  final scriptPath = File(Platform.script.toFilePath()).canonicalPath();
-  final projectRoot = p.dirname(p.dirname(scriptPath));
+  final String scriptPath = File(Platform.script.toFilePath()).canonicalPath();
+  final String projectRoot = p.dirname(p.dirname(scriptPath));
 
-  final indexFile = File(p.join(projectRoot, 'registry', 'index.json'));
+  final File indexFile = File(p.join(projectRoot, 'registry', 'index.json'));
   if (!indexFile.existsSync()) {
     print('Error: registry/index.json not found at ${indexFile.path}');
     exit(1);
@@ -35,13 +35,13 @@ void main(List<String> args) async {
       jsonDecode(content) as Map<String, dynamic>;
   final List<dynamic> components = indexJson['components'] as List<dynamic>;
 
-  final corePubspecFile = File(
+  final File corePubspecFile = File(
     p.join(projectRoot, 'packages', 'core', 'pubspec.yaml'),
   );
   String? coreVersion;
   if (corePubspecFile.existsSync()) {
-    final pubspecContent = corePubspecFile.readAsStringSync();
-    final versionMatch = RegExp(
+    final String pubspecContent = corePubspecFile.readAsStringSync();
+    final RegExpMatch? versionMatch = RegExp(
       r'^version:\s*([^\s]+)',
       multiLine: true,
     ).firstMatch(pubspecContent);
@@ -64,42 +64,45 @@ void main(List<String> args) async {
   }
 
   bool hasErrors = false;
-  final List<String> driftedFiles = [];
+  final List<String> driftedFiles = <String>[];
 
   // Build a set of all file names already registered across all components in index.json
-  final Set<String> registeredFileNames = {};
+  final Set<String> registeredFileNames = <String>{};
   for (final dynamic comp in components) {
-    final compMap = comp as Map<String, dynamic>;
-    final filesMap = compMap['files'] as Map<String, dynamic>? ?? {};
-    for (final preset in filesMap.keys) {
-      final List<dynamic> fileList = filesMap[preset] as List<dynamic>? ?? [];
+    final Map<String, dynamic> compMap = comp as Map<String, dynamic>;
+    final Map<String, dynamic> filesMap =
+        compMap['files'] as Map<String, dynamic>? ?? <String, dynamic>{};
+    for (final String preset in filesMap.keys) {
+      final List<dynamic> fileList =
+          filesMap[preset] as List<dynamic>? ?? <dynamic>[];
       for (final dynamic f in fileList) {
-        final fMap = f as Map<String, dynamic>;
+        final Map<String, dynamic> fMap = f as Map<String, dynamic>;
         registeredFileNames.add(fMap['name'] as String);
       }
     }
   }
 
   for (final dynamic component in components) {
-    final compMap = component as Map<String, dynamic>;
+    final Map<String, dynamic> compMap = component as Map<String, dynamic>;
     if (coreVersion != null) {
       compMap['version'] = coreVersion;
     }
     final Map<String, dynamic> filesMap =
         compMap['files'] as Map<String, dynamic>;
-    final name = compMap['name'] as String;
+    final String name = compMap['name'] as String;
     final bool isInternal = compMap['internal'] == true;
     print('-----------------------------------------');
     print('Component: $name${isInternal ? ' [internal]' : ''}');
 
     // Determine component folder in packages/core/lib/src/components/
     String? compFolder;
-    for (final preset in filesMap.keys) {
-      final fileList = filesMap[preset] as List<dynamic>? ?? [];
-      for (final f in fileList) {
-        final path = (f as Map<String, dynamic>)['path'] as String?;
+    for (final String preset in filesMap.keys) {
+      final List<dynamic> fileList =
+          filesMap[preset] as List<dynamic>? ?? <dynamic>[];
+      for (final dynamic f in fileList) {
+        final String? path = (f as Map<String, dynamic>)['path'] as String?;
         if (path != null && path.startsWith('components/')) {
-          final parts = path.split('/');
+          final List<String> parts = path.split('/');
           if (parts.length > 1) {
             compFolder = parts[1];
             break;
@@ -111,7 +114,7 @@ void main(List<String> args) async {
     compFolder ??= name.replaceAll('-', '_');
 
     // Auto-Discovery: scan packages/core/lib/src/components/<compFolder>
-    final coreCompDir = Directory(
+    final Directory coreCompDir = Directory(
       p.join(
         projectRoot,
         'packages',
@@ -123,10 +126,11 @@ void main(List<String> args) async {
       ),
     );
 
-    final Set<String> existingComponentFileNames = {};
-    for (final preset in filesMap.keys) {
-      final fileList = filesMap[preset] as List<dynamic>? ?? [];
-      for (final f in fileList) {
+    final Set<String> existingComponentFileNames = <String>{};
+    for (final String preset in filesMap.keys) {
+      final List<dynamic> fileList =
+          filesMap[preset] as List<dynamic>? ?? <dynamic>[];
+      for (final dynamic f in fileList) {
         existingComponentFileNames.add(
           (f as Map<String, dynamic>)['name'] as String,
         );
@@ -134,14 +138,15 @@ void main(List<String> args) async {
     }
 
     if (coreCompDir.existsSync()) {
-      final coreFiles = coreCompDir.listSync().whereType<File>().where(
-        (f) => f.path.endsWith('.dart'),
-      );
+      final Iterable<File> coreFiles = coreCompDir
+          .listSync()
+          .whereType<File>()
+          .where((File f) => f.path.endsWith('.dart'));
 
       final String nameSnake = name.replaceAll('-', '_');
 
-      for (final fileEntity in coreFiles) {
-        final fileName = p.basename(fileEntity.path);
+      for (final File fileEntity in coreFiles) {
+        final String fileName = p.basename(fileEntity.path);
         if (existingComponentFileNames.contains(fileName)) continue;
 
         // Check if this auto-discovered file belongs to this component
@@ -170,7 +175,7 @@ void main(List<String> args) async {
           existingComponentFileNames.add(fileName);
           registeredFileNames.add(fileName);
 
-          final newEntry = <String, dynamic>{
+          final Map<String, dynamic> newEntry = <String, dynamic>{
             'name': fileName,
             'path': isCommonFile
                 ? 'components/$compFolder/$fileName'
@@ -178,11 +183,13 @@ void main(List<String> args) async {
           };
 
           if (isCommonFile) {
-            final commonList = (filesMap['common'] as List<dynamic>?) ?? [];
+            final List<dynamic> commonList =
+                (filesMap['common'] as List<dynamic>?) ?? <dynamic>[];
             commonList.add(newEntry);
             filesMap['common'] = commonList;
           } else {
-            final defaultList = (filesMap['default'] as List<dynamic>?) ?? [];
+            final List<dynamic> defaultList =
+                (filesMap['default'] as List<dynamic>?) ?? <dynamic>[];
             defaultList.add(newEntry);
             filesMap['default'] = defaultList;
           }
@@ -191,14 +198,16 @@ void main(List<String> args) async {
     }
 
     // Restructure filesMap to extract common files (_style, _theme, _variants)
-    final Map<String, dynamic> newFilesMap = {};
-    final List<Map<String, dynamic>> commonFiles = [];
-    final Set<String> commonFileNames = {};
+    final Map<String, dynamic> newFilesMap = <String, dynamic>{};
+    final List<Map<String, dynamic>> commonFiles = <Map<String, dynamic>>[];
+    final Set<String> commonFileNames = <String>{};
 
     if (filesMap.containsKey('common')) {
       final List<dynamic> files = filesMap['common'] as List<dynamic>;
       for (final dynamic f in files) {
-        final fileMap = Map<String, dynamic>.from(f as Map<String, dynamic>);
+        final Map<String, dynamic> fileMap = Map<String, dynamic>.from(
+          f as Map<String, dynamic>,
+        );
         final String fileName = fileMap['name'] as String;
         if (!commonFileNames.contains(fileName)) {
           commonFileNames.add(fileName);
@@ -210,10 +219,13 @@ void main(List<String> args) async {
     for (final String preset in filesMap.keys.toList()) {
       if (preset == 'common') continue;
       final List<dynamic> files = filesMap[preset] as List<dynamic>;
-      final List<Map<String, dynamic>> remainingPresetFiles = [];
+      final List<Map<String, dynamic>> remainingPresetFiles =
+          <Map<String, dynamic>>[];
 
       for (final dynamic f in files) {
-        final fileMap = Map<String, dynamic>.from(f as Map<String, dynamic>);
+        final Map<String, dynamic> fileMap = Map<String, dynamic>.from(
+          f as Map<String, dynamic>,
+        );
         final String fileName = fileMap['name'] as String;
 
         final bool isCommon =
@@ -241,12 +253,13 @@ void main(List<String> args) async {
       newFilesMap[preset] = remainingPresetFiles;
     }
 
-    final Map<String, dynamic> orderedFilesMap = {};
+    final Map<String, dynamic> orderedFilesMap = <String, dynamic>{};
     if (commonFiles.isNotEmpty) {
       orderedFilesMap['common'] = commonFiles;
     }
-    for (final key in newFilesMap.keys) {
-      if (newFilesMap[key] != null && (newFilesMap[key] as List).isNotEmpty) {
+    for (final String key in newFilesMap.keys) {
+      if (newFilesMap[key] != null &&
+          (newFilesMap[key] as List<dynamic>).isNotEmpty) {
         orderedFilesMap[key] = newFilesMap[key];
       }
     }
@@ -257,7 +270,7 @@ void main(List<String> args) async {
       final List<dynamic> files = orderedFilesMap[preset] as List<dynamic>;
       print('  Section: $preset');
 
-      final results = await Future.wait(
+      final List<_FileResult> results = await Future.wait(
         files.map(
           (dynamic file) => _processFile(
             fileMap: file as Map<String, dynamic>,
@@ -269,7 +282,7 @@ void main(List<String> args) async {
         ),
       );
 
-      for (final result in results) {
+      for (final _FileResult result in results) {
         if (result.error != null) {
           print('    Error: ${result.error}');
           hasErrors = true;
@@ -299,7 +312,7 @@ void main(List<String> args) async {
 
   if (driftedFiles.isNotEmpty) {
     print('\nDrift summary (${driftedFiles.length} file(s)):');
-    for (final path in driftedFiles) {
+    for (final String path in driftedFiles) {
       print('  - $path');
     }
   }
@@ -313,15 +326,16 @@ void main(List<String> args) async {
     );
   } else {
     // Collect all valid registry file paths from updated indexJson
-    final Set<String> validAbsolutePaths = {};
+    final Set<String> validAbsolutePaths = <String>{};
     for (final dynamic comp in components) {
-      final compMap = comp as Map<String, dynamic>;
-      final filesMap = compMap['files'] as Map<String, dynamic>;
-      for (final preset in filesMap.keys) {
+      final Map<String, dynamic> compMap = comp as Map<String, dynamic>;
+      final Map<String, dynamic> filesMap =
+          compMap['files'] as Map<String, dynamic>;
+      for (final String preset in filesMap.keys) {
         final List<dynamic> fileList = filesMap[preset] as List<dynamic>;
         for (final dynamic f in fileList) {
-          final fileMap = f as Map<String, dynamic>;
-          final relPath = fileMap['path'] as String;
+          final Map<String, dynamic> fileMap = f as Map<String, dynamic>;
+          final String relPath = fileMap['path'] as String;
           validAbsolutePaths.add(
             p.normalize(p.join(projectRoot, 'registry', relPath)),
           );
@@ -330,16 +344,16 @@ void main(List<String> args) async {
     }
 
     // Clean up redundant/obsolete files in registry/components
-    final registryComponentsDir = Directory(
+    final Directory registryComponentsDir = Directory(
       p.join(projectRoot, 'registry', 'components'),
     );
     if (registryComponentsDir.existsSync()) {
       final List<FileSystemEntity> allEntities = registryComponentsDir.listSync(
         recursive: true,
       );
-      for (final entity in allEntities) {
+      for (final FileSystemEntity entity in allEntities) {
         if (entity is File && entity.path.endsWith('.dart')) {
-          final normalizedPath = p.normalize(entity.path);
+          final String normalizedPath = p.normalize(entity.path);
           if (!validAbsolutePaths.contains(normalizedPath)) {
             print(
               '  Removing obsolete file: ${p.relative(normalizedPath, from: projectRoot)}',
@@ -350,7 +364,7 @@ void main(List<String> args) async {
       }
     }
 
-    const encoder = JsonEncoder.withIndent('  ');
+    const JsonEncoder encoder = JsonEncoder.withIndent('  ');
     await indexFile.writeAsString('${encoder.convert(indexJson)}\n');
     print('\nSuccess: Updated registry/index.json and synced all files.');
     if (driftedFiles.isNotEmpty) {
@@ -377,13 +391,13 @@ Future<_FileResult> _processFile({
   required bool isDryRun,
 }) async {
   final String relPath = fileMap['path'] as String;
-  final resolved = _resolvePaths(
+  final ResolvedPaths resolved = _resolvePaths(
     relPath: relPath,
     preset: preset,
     isInternal: isInternal,
     projectRoot: projectRoot,
   );
-  final (:srcFile, :destFile, :origin) = resolved;
+  final (:File srcFile, :File destFile, :FileOrigin origin) = resolved;
 
   if (!srcFile.existsSync()) {
     return (
@@ -398,15 +412,15 @@ Future<_FileResult> _processFile({
   // loading both files fully into memory and comparing bytes.
   bool drifted = false;
   if (origin == .coreMirrored && destFile.existsSync()) {
-    final srcHash = await _hashFile(srcFile);
-    final destHash = await _hashFile(destFile);
+    final Digest srcHash = await _hashFile(srcFile);
+    final Digest destHash = await _hashFile(destFile);
     if (srcHash != destHash) {
       drifted = true;
     }
   }
 
   if (isDryRun) {
-    final digest = await _hashFile(srcFile);
+    final Digest digest = await _hashFile(srcFile);
     return (
       error: null,
       drifted: drifted,
@@ -427,7 +441,7 @@ Future<_FileResult> _processFile({
     .registryNative => 'Registry-native: $relPath',
   };
 
-  final digest = await _hashFile(destFile);
+  final Digest digest = await _hashFile(destFile);
 
   // Poin 5: mutation is isolated to this single call site rather than
   // scattered inline in the main loop.
@@ -448,7 +462,7 @@ ResolvedPaths _resolvePaths({
     RegExp(r'/(default|neobrutalism)/'),
     '/',
   );
-  final coreFile = File(
+  final File coreFile = File(
     p.join(projectRoot, 'packages', 'core', 'lib', 'src', srcRelPath),
   );
   final bool sourcedFromCore = coreFile.existsSync();
@@ -458,7 +472,7 @@ ResolvedPaths _resolvePaths({
       ? coreFile
       : File(p.join(projectRoot, 'registry', relPath));
 
-  final destFile = File(p.join(projectRoot, 'registry', relPath));
+  final File destFile = File(p.join(projectRoot, 'registry', relPath));
 
   return (srcFile: srcFile, destFile: destFile, origin: origin);
 }

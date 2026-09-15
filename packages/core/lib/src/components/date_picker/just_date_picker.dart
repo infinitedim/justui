@@ -217,8 +217,8 @@ class _JustDatePickerState extends State<JustDatePicker> {
   }
 
   String _formatDate(DateTime date) {
-    final dayStr = date.day.toString().padLeft(2, '0');
-    final monthStr = widget.locale.shortMonthNames[date.month - 1];
+    final String dayStr = date.day.toString().padLeft(2, '0');
+    final String monthStr = widget.locale.shortMonthNames[date.month - 1];
     return '$dayStr $monthStr ${date.year}';
   }
 
@@ -266,110 +266,116 @@ class _JustDatePickerState extends State<JustDatePicker> {
   // ---------------------------------------------------------------------------
 
   Widget _buildDropdownVariant(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
-    final spacing = context.justSpacing;
-    final radius = context.justRadius;
-    final themeState = JustThemeProvider.maybeOf(context);
-    final theme = themeState?.theme;
-    final presetTokens = (theme ?? context.justTheme).presetTokens;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustThemeProviderState? themeState = JustThemeProvider.maybeOf(
+      context,
+    );
+    final JustThemeData? theme = themeState?.theme;
+    final JustPresetTokens presetTokens =
+        (theme ?? context.justTheme).presetTokens;
 
-    final displayText = widget.value != null
+    final String displayText = widget.value != null
         ? _formatDate(widget.value!)
         : (widget.placeholder ?? 'Select date');
 
     return OverlayPortal.overlayChildLayoutBuilder(
       controller: _overlayController,
-      overlayChildBuilder: (overlayContext, info) {
-        final targetOffset = MatrixUtils.transformPoint(
-          info.childPaintTransform,
-          .zero,
-        );
-        final triggerHeight = info.childSize.height;
-        final triggerWidth = info.childSize.width;
-        final screenSize = MediaQuery.sizeOf(overlayContext);
-        final screenWidth = screenSize.width;
-        final screenHeight = screenSize.height;
+      overlayChildBuilder:
+          (BuildContext overlayContext, OverlayChildLayoutInfo info) {
+            final Offset targetOffset = MatrixUtils.transformPoint(
+              info.childPaintTransform,
+              .zero,
+            );
+            final double triggerHeight = info.childSize.height;
+            final double triggerWidth = info.childSize.width;
+            final Size screenSize = MediaQuery.sizeOf(overlayContext);
+            final double screenWidth = screenSize.width;
+            final double screenHeight = screenSize.height;
 
-        const margin = 16.0;
-        final double calendarWidth = (screenWidth - margin * 2).clamp(
-          280.0,
-          320.0,
-        );
-        const double estimatedCalendarHeight = 340.0;
+            const double margin = 16.0;
+            final double calendarWidth = (screenWidth - margin * 2).clamp(
+              280.0,
+              320.0,
+            );
+            const double estimatedCalendarHeight = 340.0;
 
-        // Vertical flip logic
-        final bool fitsBelow =
-            targetOffset.dy +
-                triggerHeight +
-                spacing.xs +
-                estimatedCalendarHeight <=
-            screenHeight - margin;
-        final bool fitsAbove =
-            targetOffset.dy - spacing.xs - estimatedCalendarHeight >= margin;
+            // Vertical flip logic
+            final bool fitsBelow =
+                targetOffset.dy +
+                    triggerHeight +
+                    spacing.xs +
+                    estimatedCalendarHeight <=
+                screenHeight - margin;
+            final bool fitsAbove =
+                targetOffset.dy - spacing.xs - estimatedCalendarHeight >=
+                margin;
 
-        final bool showAbove = !fitsBelow && fitsAbove;
+            final bool showAbove = !fitsBelow && fitsAbove;
 
-        final double topPosition;
-        if (fitsBelow || !fitsAbove) {
-          topPosition = targetOffset.dy + triggerHeight + spacing.xs;
-        } else {
-          topPosition = targetOffset.dy - estimatedCalendarHeight - spacing.xs;
-        }
+            final double topPosition;
+            if (fitsBelow || !fitsAbove) {
+              topPosition = targetOffset.dy + triggerHeight + spacing.xs;
+            } else {
+              topPosition =
+                  targetOffset.dy - estimatedCalendarHeight - spacing.xs;
+            }
 
-        // Horizontal positioning logic with screen boundary clamping
-        double leftPosition = targetOffset.dx;
-        if (leftPosition + calendarWidth > screenWidth - margin) {
-          leftPosition = targetOffset.dx + triggerWidth - calendarWidth;
-        }
+            // Horizontal positioning logic with screen boundary clamping
+            double leftPosition = targetOffset.dx;
+            if (leftPosition + calendarWidth > screenWidth - margin) {
+              leftPosition = targetOffset.dx + triggerWidth - calendarWidth;
+            }
 
-        final maxLeft = screenWidth - calendarWidth - margin;
-        if (maxLeft >= margin) {
-          leftPosition = leftPosition.clamp(margin, maxLeft);
-        } else {
-          leftPosition = (screenWidth - calendarWidth) / 2;
-        }
+            final double maxLeft = screenWidth - calendarWidth - margin;
+            if (maxLeft >= margin) {
+              leftPosition = leftPosition.clamp(margin, maxLeft);
+            } else {
+              leftPosition = (screenWidth - calendarWidth) / 2;
+            }
 
-        final calendarWidget = _buildCalendarWidget();
+            final DatePickerCalendar calendarWidget = _buildCalendarWidget();
 
-        final themedCalendar = theme != null
-            ? JustThemeProvider(
-                lightTheme: theme,
-                darkTheme: theme,
-                initialThemeMode: themeState!.themeMode,
-                child: calendarWidget,
-              )
-            : calendarWidget;
+            final StatefulWidget themedCalendar = theme != null
+                ? JustThemeProvider(
+                    lightTheme: theme,
+                    darkTheme: theme,
+                    initialThemeMode: themeState!.themeMode,
+                    child: calendarWidget,
+                  )
+                : calendarWidget;
 
-        return Stack(
-          children: [
-            // Backdrop barrier to dismiss on tap outside
-            Positioned.fill(
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: () {
-                  if (_overlayController.isShowing) {
-                    _overlayController.hide();
-                  }
-                },
-              ),
-            ),
-            // Positioned Dropdown Calendar with entrance animation
-            Positioned(
-              left: leftPosition,
-              top: topPosition,
-              child: SizedBox(
-                width: calendarWidth,
-                child: JustOverlayTransition(
-                  isVisible: true,
-                  scaleAlignment: showAbove ? .bottomCenter : .topCenter,
-                  child: themedCalendar,
+            return Stack(
+              children: <Widget>[
+                // Backdrop barrier to dismiss on tap outside
+                Positioned.fill(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
+                      if (_overlayController.isShowing) {
+                        _overlayController.hide();
+                      }
+                    },
+                  ),
                 ),
-              ),
-            ),
-          ],
-        );
-      },
+                // Positioned Dropdown Calendar with entrance animation
+                Positioned(
+                  left: leftPosition,
+                  top: topPosition,
+                  child: SizedBox(
+                    width: calendarWidth,
+                    child: JustOverlayTransition(
+                      isVisible: true,
+                      scaleAlignment: showAbove ? .bottomCenter : .topCenter,
+                      child: themedCalendar,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
       child: _buildTriggerButton(
         context,
         colors: colors,
@@ -388,7 +394,7 @@ class _JustDatePickerState extends State<JustDatePicker> {
   // ---------------------------------------------------------------------------
 
   Widget _buildResponsiveVariant(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
     if (screenWidth >= JustBreakpoints.sm) {
       return _buildDropdownVariant(context);
     }
@@ -396,15 +402,18 @@ class _JustDatePickerState extends State<JustDatePicker> {
   }
 
   Widget _buildMobileSheetTrigger(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
-    final spacing = context.justSpacing;
-    final radius = context.justRadius;
-    final themeState = JustThemeProvider.maybeOf(context);
-    final theme = themeState?.theme;
-    final presetTokens = (theme ?? context.justTheme).presetTokens;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustThemeProviderState? themeState = JustThemeProvider.maybeOf(
+      context,
+    );
+    final JustThemeData? theme = themeState?.theme;
+    final JustPresetTokens presetTokens =
+        (theme ?? context.justTheme).presetTokens;
 
-    final displayText = widget.value != null
+    final String displayText = widget.value != null
         ? _formatDate(widget.value!)
         : (widget.placeholder ?? 'Select date');
 
@@ -418,11 +427,11 @@ class _JustDatePickerState extends State<JustDatePicker> {
       displayText: displayText,
       showChevron: false,
       onTap: () {
-        final calendarWidget = DatePickerCalendar(
+        final DatePickerCalendar calendarWidget = DatePickerCalendar(
           selectedDate: widget.value,
-          onDateSelected: (date) {
+          onDateSelected: (DateTime date) {
             widget.onChanged?.call(date);
-            final scope = JustSheetScope.maybeOf(context);
+            final JustSheetController? scope = JustSheetScope.maybeOf(context);
             if (scope != null) {
               scope.dismiss();
             } else {
@@ -481,8 +490,8 @@ class _JustDatePickerState extends State<JustDatePicker> {
     return Column(
       crossAxisAlignment: .start,
       mainAxisSize: .min,
-      children: [
-        if (widget.label != null) ...[
+      children: <Widget>[
+        if (widget.label != null) ...<Widget>[
           Text(
             widget.label!,
             style: typo.bodySm.copyWith(
@@ -494,7 +503,7 @@ class _JustDatePickerState extends State<JustDatePicker> {
         ],
         JustPressable(
           onTap: onTap ?? _toggleDropdown,
-          builder: (context, state) {
+          builder: (BuildContext context, JustInteractionState state) {
             return Container(
               padding: .symmetric(horizontal: spacing.md, vertical: spacing.sm),
               decoration: BoxDecoration(
@@ -512,7 +521,7 @@ class _JustDatePickerState extends State<JustDatePicker> {
               ),
               child: Row(
                 mainAxisSize: .min,
-                children: [
+                children: <Widget>[
                   Icon(
                     Icons.calendar_today_rounded,
                     size: 16.0,
@@ -527,7 +536,7 @@ class _JustDatePickerState extends State<JustDatePicker> {
                           : colors.textSecondary,
                     ),
                   ),
-                  if (showChevron) ...[
+                  if (showChevron) ...<Widget>[
                     SizedBox(width: spacing.md),
                     Icon(
                       _overlayController.isShowing
@@ -551,20 +560,20 @@ class _JustDatePickerState extends State<JustDatePicker> {
   // ---------------------------------------------------------------------------
 
   Widget _buildModalTriggerButton(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
-    final spacing = context.justSpacing;
-    final radius = context.justRadius;
-    final theme = JustThemeProvider.of(context).theme;
-    final presetTokens = theme.presetTokens;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustPresetTokens presetTokens = theme.presetTokens;
 
-    final displayText = widget.value != null
+    final String displayText = widget.value != null
         ? _formatDate(widget.value!)
         : (widget.placeholder ?? 'Select date');
 
     return JustPressable(
       onTap: () async {
-        final selected = await showJustDatePicker(
+        final DateTime? selected = await showJustDatePicker(
           context: context,
           initialDate: widget.value,
           firstDate: widget.firstDate,
@@ -577,7 +586,7 @@ class _JustDatePickerState extends State<JustDatePicker> {
           _onDateSelected(selected);
         }
       },
-      builder: (context, state) {
+      builder: (BuildContext context, JustInteractionState state) {
         return Container(
           padding: .symmetric(horizontal: spacing.md, vertical: spacing.sm),
           decoration: BoxDecoration(
@@ -595,7 +604,7 @@ class _JustDatePickerState extends State<JustDatePicker> {
           ),
           child: Row(
             mainAxisSize: .min,
-            children: [
+            children: <Widget>[
               Icon(
                 Icons.calendar_today_rounded,
                 size: 16.0,
@@ -633,8 +642,8 @@ Future<DateTime?> showJustDatePicker({
 }) async {
   DateTime? result;
 
-  final themeState = JustThemeProvider.maybeOf(context);
-  final theme = themeState?.theme;
+  final JustThemeProviderState? themeState = JustThemeProvider.maybeOf(context);
+  final JustThemeData? theme = themeState?.theme;
 
   Widget wrapWithTheme(Widget child) {
     Widget themedChild = child;
@@ -652,7 +661,7 @@ Future<DateTime?> showJustDatePicker({
     );
   }
 
-  final isMobile = MediaQuery.sizeOf(context).width < JustBreakpoints.sm;
+  final bool isMobile = MediaQuery.sizeOf(context).width < JustBreakpoints.sm;
 
   if (isMobile) {
     return showJustBottomSheet<DateTime>(
@@ -668,9 +677,11 @@ Future<DateTime?> showJustDatePicker({
             locale: locale,
             showContainer: false,
             style: style,
-            onChanged: (date) {
+            onChanged: (DateTime date) {
               result = date;
-              final scope = JustSheetScope.maybeOf(context);
+              final JustSheetController? scope = JustSheetScope.maybeOf(
+                context,
+              );
               if (scope != null) {
                 scope.dismiss();
               } else {
@@ -687,7 +698,7 @@ Future<DateTime?> showJustDatePicker({
   if (!context.mounted) return null;
 
   try {
-    final dialogScope = JustDialogScope.of(context);
+    final JustDialogController dialogScope = JustDialogScope.of(context);
     await dialogScope.show<void>(
       content: wrapWithTheme(
         SizedBox(
@@ -699,7 +710,7 @@ Future<DateTime?> showJustDatePicker({
             selectableDayPredicate: selectableDayPredicate,
             locale: locale,
             style: style,
-            onChanged: (date) {
+            onChanged: (DateTime date) {
               result = date;
               dialogScope.dismiss();
             },
@@ -731,7 +742,7 @@ Future<DateTime?> showJustDatePicker({
                     selectableDayPredicate: selectableDayPredicate,
                     locale: locale,
                     style: style,
-                    onChanged: (date) {
+                    onChanged: (DateTime date) {
                       result = date;
                       Navigator.of(dialogContext).pop();
                     },

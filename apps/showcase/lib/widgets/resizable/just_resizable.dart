@@ -341,7 +341,9 @@ class JustResizableController extends ChangeNotifier {
   final List<double> _fractions = [];
   final List<double> _initialFractions = [];
   final Map<int, double> _savedFractions = {};
-  late final List<double> _unmodifiableView = UnmodifiableListView(_fractions);
+  late final List<double> _unmodifiableView = UnmodifiableListView<double>(
+    _fractions,
+  );
 
   /// Creates a [JustResizableController] with optional [initialFractions].
   JustResizableController({List<double>? initialFractions}) {

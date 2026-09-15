@@ -7,7 +7,7 @@ import 'package:just_ui_core/src/components/toggle/just_toggle_variants.dart';
 
 @widgetbook.UseCase(name: 'Default Toggle', type: JustToggle)
 Widget buildJustToggleDefaultUseCase(BuildContext context) {
-  final size = context.knobs.object.dropdown<JustToggleSize>(
+  final JustToggleSize size = context.knobs.object.dropdown<JustToggleSize>(
     label: 'Size',
     options: JustToggleSize.values,
     initialOption: JustToggleSize.md,
@@ -15,7 +15,7 @@ Widget buildJustToggleDefaultUseCase(BuildContext context) {
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       child: _InteractiveToggleDemo(size: size),
     ),
   );
