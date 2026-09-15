@@ -7,18 +7,22 @@ import 'package:just_ui_core/src/components/badge/just_badge_variants.dart';
 
 @widgetbook.UseCase(name: 'Default Badge', type: JustBadge)
 Widget buildJustBadgeDefaultUseCase(BuildContext context) {
-  final label = context.knobs.string(label: 'Label', initialValue: 'Badge');
-  final color = context.knobs.object.dropdown<JustBadgeColor>(
+  final String label = context.knobs.string(
+    label: 'Label',
+    initialValue: 'Badge',
+  );
+  final JustBadgeColor color = context.knobs.object.dropdown<JustBadgeColor>(
     label: 'Color',
     options: JustBadgeColor.values,
     initialOption: JustBadgeColor.primary,
   );
-  final variant = context.knobs.object.dropdown<JustBadgeVariant>(
-    label: 'Variant',
-    options: JustBadgeVariant.values,
-    initialOption: JustBadgeVariant.solid,
-  );
-  final size = context.knobs.object.dropdown<JustBadgeSize>(
+  final JustBadgeVariant variant = context.knobs.object
+      .dropdown<JustBadgeVariant>(
+        label: 'Variant',
+        options: JustBadgeVariant.values,
+        initialOption: JustBadgeVariant.solid,
+      );
+  final JustBadgeSize size = context.knobs.object.dropdown<JustBadgeSize>(
     label: 'Size',
     options: JustBadgeSize.values,
     initialOption: JustBadgeSize.md,
@@ -26,7 +30,7 @@ Widget buildJustBadgeDefaultUseCase(BuildContext context) {
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       child: JustBadge(
         label: label,
         color: color,
@@ -39,8 +43,8 @@ Widget buildJustBadgeDefaultUseCase(BuildContext context) {
 
 @widgetbook.UseCase(name: 'Dot Badge', type: JustBadge)
 Widget buildJustBadgeDotUseCase(BuildContext context) {
-  final pulse = context.knobs.boolean(label: 'Pulse', initialValue: true);
-  final color = context.knobs.object.dropdown<JustBadgeColor>(
+  final bool pulse = context.knobs.boolean(label: 'Pulse', initialValue: true);
+  final JustBadgeColor color = context.knobs.object.dropdown<JustBadgeColor>(
     label: 'Color',
     options: JustBadgeColor.values,
     initialOption: JustBadgeColor.error,
@@ -48,7 +52,7 @@ Widget buildJustBadgeDotUseCase(BuildContext context) {
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       child: JustBadge.dot(pulse: pulse, color: color),
     ),
   );

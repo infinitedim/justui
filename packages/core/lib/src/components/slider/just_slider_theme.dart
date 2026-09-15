@@ -11,7 +11,7 @@ class const JustSliderTheme({
   final bool enableHaptic = true,
 }) extends ThemeExtension<JustSliderTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustSliderTheme();
+  static const JustSliderTheme defaults = JustSliderTheme();
 
   @override
   JustSliderTheme copyWith({JustSliderStyle? style, bool? enableHaptic}) {

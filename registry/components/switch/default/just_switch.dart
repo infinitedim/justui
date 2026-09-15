@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../theme/theme_provider.dart';
 import '../../theme/preset_tokens.dart';
-import '../shared/just_focus_indicator.dart';
-import '../shared/just_pressable.dart';
+import '../shared/_shared_focus_indicator.dart';
+import '../shared/_shared_pressable.dart';
 import 'just_switch_style.dart';
 import 'just_switch_theme.dart';
 
@@ -125,8 +126,9 @@ class _JustSwitchState extends State<JustSwitch>
   }
 
   void _triggerToggle(bool newValue) {
-    final switchTheme = Theme.of(context).extension<JustSwitchTheme>();
-    final finalEnableHaptic =
+    final JustSwitchTheme? switchTheme = Theme.of(context)
+        .extension<JustSwitchTheme>();
+    final bool finalEnableHaptic =
         widget.enableHaptic ??
         switchTheme?.enableHaptic ??
         JustThemeProvider.read(context)
@@ -147,7 +149,7 @@ class _JustSwitchState extends State<JustSwitch>
 
   void _handleDragUpdate(DragUpdateDetails details, double maxTravel) {
     if (!_isDragging) return;
-    final delta = details.primaryDelta ?? 0.0;
+    final double delta = details.primaryDelta ?? 0.0;
     _controller.value = (_controller.value + delta / maxTravel).clamp(0.0, 1.0);
   }
 
@@ -155,7 +157,7 @@ class _JustSwitchState extends State<JustSwitch>
     if (!_isDragging) return;
     _isDragging = false;
 
-    final targetValue = _controller.value >= 0.5;
+    final bool targetValue = _controller.value >= 0.5;
     if (targetValue != widget.value) {
       _triggerToggle(targetValue);
       if (targetValue) {
@@ -170,23 +172,29 @@ class _JustSwitchState extends State<JustSwitch>
 
   @override
   Widget build(BuildContext context) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final switchTheme = Theme.of(context).extension<JustSwitchTheme>();
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustSwitchTheme? switchTheme = Theme.of(context)
+        .extension<JustSwitchTheme>();
 
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
 
-    final isInteractive = !widget.isDisabled && widget.onChanged != null;
+    final bool isInteractive = !widget.isDisabled && widget.onChanged != null;
 
-    final hasBorder = customTheme.presetTokens.showsDefaultBorder;
-    final borderWidth = hasBorder ? customTheme.presetTokens.borderWidth : 0.0;
+    final bool hasBorder = customTheme.presetTokens.showsDefaultBorder;
+    final double borderWidth = hasBorder
+        ? customTheme.presetTokens.borderWidth
+        : 0.0;
 
     // Resolve sizing values
     double trackWidth;
@@ -217,25 +225,25 @@ class _JustSwitchState extends State<JustSwitch>
         : trackHeight - (2 * trackInnerPadding);
 
     // Resolve theme styles
-    final themeStyle = switchTheme?.style;
-    final resolvedActiveTrackColor =
+    final JustSwitchStyle? themeStyle = switchTheme?.style;
+    final Color resolvedActiveTrackColor =
         widget.activeColor ??
         widget.style?.activeTrackColor ??
         themeStyle?.activeTrackColor ??
         (hasBorder ? colors.success : colors.borderFocus);
-    final resolvedInactiveTrackColor =
+    final Color resolvedInactiveTrackColor =
         widget.style?.inactiveTrackColor ??
         themeStyle?.inactiveTrackColor ??
         (hasBorder ? colors.background : colors.borderDefault);
-    final resolvedActiveThumbColor =
+    final Color resolvedActiveThumbColor =
         widget.style?.activeThumbColor ??
         themeStyle?.activeThumbColor ??
         colors.textInverse;
-    final resolvedInactiveThumbColor =
+    final Color resolvedInactiveThumbColor =
         widget.style?.inactiveThumbColor ??
         themeStyle?.inactiveThumbColor ??
         colors.textInverse;
-    final resolvedTextStyle =
+    final TextStyle resolvedTextStyle =
         widget.style?.textStyle ??
         themeStyle?.textStyle ??
         textStyle.copyWith(color: colors.textPrimary);
@@ -262,7 +270,7 @@ class _JustSwitchState extends State<JustSwitch>
               child: Row(
                 mainAxisSize: .min,
                 crossAxisAlignment: .center,
-                children: [
+                children: <Widget>[
                   RepaintBoundary(
                     child: FocusIndicator(
                       isFocused: state.isFocusVisible,
@@ -270,17 +278,19 @@ class _JustSwitchState extends State<JustSwitch>
                       child: GestureDetector(
                         onTap: _handleToggle,
                         onHorizontalDragStart: _handleDragStart,
-                        onHorizontalDragUpdate: (details) =>
+                        onHorizontalDragUpdate: (DragUpdateDetails details) =>
                             _handleDragUpdate(details, maxTravel),
                         onHorizontalDragEnd: _handleDragEnd,
                         child: AnimatedBuilder(
                           animation: _controller,
-                          builder: (context, child) {
-                            final rawProgress = _controller.value;
-                            final curvedCurve = hasBorder
+                          builder: (BuildContext context, Widget? child) {
+                            final double rawProgress = _controller.value;
+                            final Curve curvedCurve = hasBorder
                                 ? Curves.linear
                                 : JustCurves.default_;
-                            final progress = curvedCurve.transform(rawProgress);
+                            final double progress = curvedCurve.transform(
+                              rawProgress,
+                            );
 
                             // LERP track and thumb colors
                             final Color currentTrackColor = .lerp(
@@ -347,7 +357,7 @@ class _JustSwitchState extends State<JustSwitch>
                       ),
                     ),
                   ),
-                  if (widget.label != null) ...[
+                  if (widget.label != null) ...<Widget>[
                     SizedBox(width: spacing.sm),
                     DefaultTextStyle(
                       style: resolvedTextStyle,

@@ -46,7 +46,7 @@ abstract final class JustRadiusScheme {
 
   @override
   int get hashCode {
-    return Object.hashAll([none, xs, sm, md, lg, xl, xxl, full]);
+    return Object.hashAll(<Object?>[none, xs, sm, md, lg, xl, xxl, full]);
   }
 
   /// Resolves the radius scheme for a given screen width. Defaults to returning itself.
@@ -85,9 +85,9 @@ final class FluidRadiusScheme extends JustRadiusScheme {
   Radius _fluid(double minSize, double maxSize) {
     const double minWidth = 640.0;
     const double maxWidth = 1024.0;
-    final clampedWidth = width.clamp(minWidth, maxWidth);
-    final slope = (maxSize - minSize) / (maxWidth - minWidth);
-    final calculatedSize = minSize + slope * (clampedWidth - minWidth);
+    final double clampedWidth = width.clamp(minWidth, maxWidth);
+    final double slope = (maxSize - minSize) / (maxWidth - minWidth);
+    final double calculatedSize = minSize + slope * (clampedWidth - minWidth);
     return .circular(calculatedSize);
   }
 

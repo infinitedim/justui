@@ -8,7 +8,7 @@ class const JustSelectTheme({
   final JustSelectStyle? style,
 }) extends ThemeExtension<JustSelectTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustSelectTheme();
+  static const JustSelectTheme defaults = JustSelectTheme();
 
   @override
   JustSelectTheme copyWith({JustSelectStyle? style}) {

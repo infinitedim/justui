@@ -17,12 +17,13 @@ void main() {
         bool isMounted = true;
         String selectedVal = 'Item A';
         double sliderVal = 40.0;
-        final scrollController = ScrollController();
+        final ScrollController scrollController = ScrollController();
 
-        final options = [
-          const JustSelectOption(value: 'Item A', label: 'Item A'),
-          const JustSelectOption(value: 'Item B', label: 'Item B'),
-        ];
+        final List<JustSelectOption<String>> options =
+            <JustSelectOption<String>>[
+              const JustSelectOption<String>(value: 'Item A', label: 'Item A'),
+              const JustSelectOption<String>(value: 'Item B', label: 'Item B'),
+            ];
 
         Widget buildComplexTree() {
           return MaterialApp(
@@ -30,17 +31,17 @@ void main() {
               lightTheme: currentTheme,
               child: Scaffold(
                 body: StatefulBuilder(
-                  builder: (context, setState) {
+                  builder: (BuildContext context, StateSetter setState) {
                     if (!isMounted) return const SizedBox.shrink();
                     return JustScrollArea(
                       controller: scrollController,
                       smoothScroll: true,
                       child: Column(
-                        children: [
+                        children: <Widget>[
                           JustSelect<String>(
                             value: selectedVal,
                             options: options,
-                            onChanged: (v) {
+                            onChanged: (String v) {
                               setState(() => selectedVal = v);
                             },
                           ),
@@ -48,11 +49,12 @@ void main() {
                             value: sliderVal,
                             min: 0.0,
                             max: 100.0,
-                            onChanged: (v) => setState(() => sliderVal = v),
+                            onChanged: (double v) =>
+                                setState(() => sliderVal = v),
                           ),
                           ....generate(
                             40,
-                            (index) => SizedBox(
+                            (int index) => SizedBox(
                               height: 50.0,
                               child: Text('Row #$index'),
                             ),

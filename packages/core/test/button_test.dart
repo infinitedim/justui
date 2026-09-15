@@ -2,6 +2,7 @@ import 'dart:ui' show PointerDeviceKind, Tristate;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/src/semantics/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/button/just_button.dart';
@@ -20,8 +21,8 @@ void main() {
     ThemeData? materialTheme,
     ThemeMode themeMode = ThemeMode.light,
   }) {
-    final effectiveJustTheme = theme ?? JustThemeData.light;
-    final effectiveMaterialTheme =
+    final JustThemeData effectiveJustTheme = theme ?? JustThemeData.light;
+    final ThemeData effectiveMaterialTheme =
         materialTheme ?? effectiveJustTheme.toThemeData();
 
     return MaterialApp(
@@ -36,7 +37,7 @@ void main() {
 
   group('JustButton - Variants and Constructors', () {
     testWidgets('Renders primary variant with default and named constructors', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool tappedDefault = false;
       bool tappedNamed = false;
@@ -44,7 +45,7 @@ void main() {
       await tester.pumpWidget(
         buildTestApp(
           Column(
-            children: [
+            children: <Widget>[
               JustButton(
                 label: 'Default Primary',
                 onPressed: () => tappedDefault = true,
@@ -73,7 +74,7 @@ void main() {
 
     testWidgets(
       'Renders secondary variant with default and named constructors',
-      (tester) async {
+      (WidgetTester tester) async {
         bool tapped = false;
         await tester.pumpWidget(
           buildTestApp(
@@ -92,7 +93,7 @@ void main() {
     );
 
     testWidgets('Renders ghost variant with default and named constructors', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool tapped = false;
       await tester.pumpWidget(
@@ -112,7 +113,7 @@ void main() {
 
     testWidgets(
       'Renders destructive variant with default and named constructors',
-      (tester) async {
+      (WidgetTester tester) async {
         bool tapped = false;
         await tester.pumpWidget(
           buildTestApp(
@@ -131,7 +132,7 @@ void main() {
     );
 
     testWidgets('Renders link variant with default and named constructors', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool tapped = false;
       await tester.pumpWidget(
@@ -151,12 +152,14 @@ void main() {
   });
 
   group('JustButton - Sizes and Dimensions', () {
-    testWidgets('Renders all size classifications correctly', (tester) async {
+    testWidgets('Renders all size classifications correctly', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           SingleChildScrollView(
             child: Column(
-              children: [
+              children: <Widget>[
                 JustButton(
                   label: 'XS Button',
                   size: JustButtonSize.xs,
@@ -195,7 +198,7 @@ void main() {
       expect(find.text('XL Button'), findsOneWidget);
 
       // Verify minimum touch target constraints (minHeight >= 48.0 for all)
-      final constrainedBox = tester.widget<ConstrainedBox>(
+      final ConstrainedBox constrainedBox = tester.widget<ConstrainedBox>(
         find
             .descendant(
               of: find.byType(JustButton).first,
@@ -207,7 +210,9 @@ void main() {
       expect(constrainedBox.constraints.minWidth, greaterThanOrEqualTo(48.0));
     });
 
-    testWidgets('Full width button expands horizontally', (tester) async {
+    testWidgets('Full width button expands horizontally', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           SizedBox(
@@ -221,53 +226,68 @@ void main() {
         ),
       );
 
-      final buttonFinder = find.descendant(
+      final Finder buttonFinder = find.descendant(
         of: find.byType(JustButton),
         matching: find.byType(ConstrainedBox),
       );
-      final size = tester.getSize(buttonFinder.first);
+      final Size size = tester.getSize(buttonFinder.first);
       expect(size.width, equals(300.0));
     });
   });
 
   group('JustButton - Leading and Trailing Icons', () {
     testWidgets('Renders leading and trailing widgets with icon theme merge', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
           JustButton(
             label: 'With Icons',
-            leading: const Icon(Icons.star, key: ValueKey('leading-star')),
+            leading: const Icon(
+              Icons.star,
+              key: ValueKey<String>('leading-star'),
+            ),
             trailing: const Icon(
               Icons.arrow_forward,
-              key: ValueKey('trailing-arrow'),
+              key: ValueKey<String>('trailing-arrow'),
             ),
             onPressed: () {},
           ),
         ),
       );
 
-      expect(find.byKey(const ValueKey('leading-star')), findsOneWidget);
-      expect(find.byKey(const ValueKey('trailing-arrow')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey<String>('leading-star')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey<String>('trailing-arrow')),
+        findsOneWidget,
+      );
       expect(find.text('With Icons'), findsOneWidget);
     });
 
     testWidgets('Renders leading-only and trailing-only correctly', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
           Column(
-            children: [
+            children: <Widget>[
               JustButton(
                 label: 'Leading Only',
-                leading: const Icon(Icons.add, key: ValueKey('icon-add')),
+                leading: const Icon(
+                  Icons.add,
+                  key: ValueKey<String>('icon-add'),
+                ),
                 onPressed: () {},
               ),
               JustButton(
                 label: 'Trailing Only',
-                trailing: const Icon(Icons.check, key: ValueKey('icon-check')),
+                trailing: const Icon(
+                  Icons.check,
+                  key: ValueKey<String>('icon-check'),
+                ),
                 onPressed: () {},
               ),
             ],
@@ -275,14 +295,14 @@ void main() {
         ),
       );
 
-      expect(find.byKey(const ValueKey('icon-add')), findsOneWidget);
-      expect(find.byKey(const ValueKey('icon-check')), findsOneWidget);
+      expect(find.byKey(const ValueKey<String>('icon-add')), findsOneWidget);
+      expect(find.byKey(const ValueKey<String>('icon-check')), findsOneWidget);
     });
   });
 
   group('JustButton - States & Interactions', () {
     testWidgets('Disabled via isDisabled prevents tap and applies semantics', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool tapped = false;
       await tester.pumpWidget(
@@ -299,19 +319,25 @@ void main() {
       await tester.pumpAndSettle();
       expect(tapped, isFalse);
 
-      final semantics = tester.getSemantics(find.byType(JustButton));
+      final SemanticsNode semantics = tester.getSemantics(
+        find.byType(JustButton),
+      );
       expect(
         semantics.getSemanticsData().flagsCollection.isEnabled,
         equals(Tristate.isFalse),
       );
     });
 
-    testWidgets('Disabled via onPressed null prevents tap', (tester) async {
+    testWidgets('Disabled via onPressed null prevents tap', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(const JustButton(label: 'Null Callback', onPressed: null)),
       );
 
-      final semantics = tester.getSemantics(find.byType(JustButton));
+      final SemanticsNode semantics = tester.getSemantics(
+        find.byType(JustButton),
+      );
       expect(
         semantics.getSemanticsData().flagsCollection.isEnabled,
         equals(Tristate.isFalse),
@@ -319,7 +345,7 @@ void main() {
     });
 
     testWidgets('Loading state renders spinner and disables interactions', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool tapped = false;
       await tester.pumpWidget(
@@ -339,17 +365,19 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
       expect(tapped, isFalse);
 
-      final semantics = tester.getSemantics(find.byType(JustButton));
+      final SemanticsNode semantics = tester.getSemantics(
+        find.byType(JustButton),
+      );
       expect(semantics.label, contains('Loading Submit Order'));
     });
 
     testWidgets('Hover state alters styling and link decoration', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
           Column(
-            children: [
+            children: <Widget>[
               JustButton.primary(label: 'Hover Primary', onPressed: () {}),
               JustButton.secondary(label: 'Hover Secondary', onPressed: () {}),
               JustButton.ghost(label: 'Hover Ghost', onPressed: () {}),
@@ -363,7 +391,9 @@ void main() {
         ),
       );
 
-      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      final TestGesture gesture = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
       await gesture.addPointer(location: Offset.zero);
       addTearDown(gesture.removePointer);
 
@@ -387,18 +417,20 @@ void main() {
       await gesture.moveTo(tester.getCenter(find.text('Hover Link')));
       await tester.pumpAndSettle();
 
-      final linkText = tester.widget<Text>(find.text('Hover Link'));
+      final Text linkText = tester.widget<Text>(find.text('Hover Link'));
       expect(linkText.style?.decoration, equals(TextDecoration.underline));
     });
 
-    testWidgets('Press state triggers press effect animation', (tester) async {
+    testWidgets('Press state triggers press effect animation', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           JustButton.primary(label: 'Press Effect', onPressed: () {}),
         ),
       );
 
-      final gesture = await tester.startGesture(
+      final TestGesture gesture = await tester.startGesture(
         tester.getCenter(find.text('Press Effect')),
       );
       await tester.pump(const Duration(milliseconds: 50));
@@ -410,9 +442,9 @@ void main() {
     });
 
     testWidgets('Haptic feedback is invoked when enableHaptic is true', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final List<String> log = [];
+      final List<String> log = <String>[];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.platform, (
             MethodCall methodCall,
@@ -442,14 +474,14 @@ void main() {
 
   group('JustButton - Neobrutalism Preset', () {
     testWidgets('Neobrutalism preset styles all variants with solid borders', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
           theme: JustThemeData.neobrutalismLight,
           SingleChildScrollView(
             child: Column(
-              children: [
+              children: <Widget>[
                 JustButton.primary(label: 'Neo Primary', onPressed: () {}),
                 JustButton.secondary(label: 'Neo Secondary', onPressed: () {}),
                 JustButton.ghost(label: 'Neo Ghost', onPressed: () {}),
@@ -477,7 +509,7 @@ void main() {
       expect(find.text('Neo Link Disabled'), findsOneWidget);
 
       // Neobrutalism uses AnimatedContainer for translation press effect
-      final gesture = await tester.startGesture(
+      final TestGesture gesture = await tester.startGesture(
         tester.getCenter(find.text('Neo Primary')),
       );
       await tester.pump(const Duration(milliseconds: 20));
@@ -488,7 +520,9 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('Neobrutalism link color in dark mode', (tester) async {
+    testWidgets('Neobrutalism link color in dark mode', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           theme: JustThemeData.neobrutalismDark,
@@ -503,14 +537,14 @@ void main() {
 
   group('JustButtonGroup & JustButtonGroupInfo', () {
     testWidgets('Horizontal attached button group renders connected corners', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
           JustButtonGroup(
             direction: Axis.horizontal,
             attached: true,
-            children: [
+            children: <JustButton>[
               JustButton(label: 'First', onPressed: () {}),
               JustButton(label: 'Middle', onPressed: () {}),
               JustButton(label: 'Last', onPressed: () {}),
@@ -526,14 +560,14 @@ void main() {
     });
 
     testWidgets('Vertical attached button group renders connected corners', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
           JustButtonGroup(
             direction: Axis.vertical,
             attached: true,
-            children: [
+            children: <JustButton>[
               JustButton(label: 'Top', onPressed: () {}),
               JustButton(label: 'Center', onPressed: () {}),
               JustButton(label: 'Bottom', onPressed: () {}),
@@ -548,12 +582,14 @@ void main() {
       expect(find.byType(JustButtonGroupInfo), findsNWidgets(3));
     });
 
-    testWidgets('Non-attached button group uses Flex spacing', (tester) async {
+    testWidgets('Non-attached button group uses Flex spacing', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           JustButtonGroup(
             attached: false,
-            children: [
+            children: <JustButton>[
               JustButton(label: 'Btn 1', onPressed: () {}),
               JustButton(label: 'Btn 2', onPressed: () {}),
             ],
@@ -567,43 +603,43 @@ void main() {
     });
 
     testWidgets('Empty JustButtonGroup returns SizedBox.shrink', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        buildTestApp(const JustButtonGroup(children: [])),
+        buildTestApp(const JustButtonGroup(children: <JustButton>[])),
       );
 
       expect(find.byType(SizedBox), findsWidgets);
     });
 
     testWidgets('JustButtonGroupInfo InheritedWidget updateShouldNotify', (
-      tester,
+      WidgetTester tester,
     ) async {
-      const info1 = JustButtonGroupInfo(
+      const JustButtonGroupInfo info1 = JustButtonGroupInfo(
         index: 0,
         totalCount: 3,
         direction: Axis.horizontal,
         child: SizedBox(),
       );
-      const info2 = JustButtonGroupInfo(
+      const JustButtonGroupInfo info2 = JustButtonGroupInfo(
         index: 1,
         totalCount: 3,
         direction: Axis.horizontal,
         child: SizedBox(),
       );
-      const info3 = JustButtonGroupInfo(
+      const JustButtonGroupInfo info3 = JustButtonGroupInfo(
         index: 0,
         totalCount: 4,
         direction: Axis.horizontal,
         child: SizedBox(),
       );
-      const info4 = JustButtonGroupInfo(
+      const JustButtonGroupInfo info4 = JustButtonGroupInfo(
         index: 0,
         totalCount: 3,
         direction: Axis.vertical,
         child: SizedBox(),
       );
-      const infoSame = JustButtonGroupInfo(
+      const JustButtonGroupInfo infoSame = JustButtonGroupInfo(
         index: 0,
         totalCount: 3,
         direction: Axis.horizontal,
@@ -618,13 +654,15 @@ void main() {
   });
 
   group('JustIconButton Tests', () {
-    testWidgets('Renders all variants and sizes with tooltip', (tester) async {
+    testWidgets('Renders all variants and sizes with tooltip', (
+      WidgetTester tester,
+    ) async {
       bool tapped = false;
       await tester.pumpWidget(
         buildTestApp(
           SingleChildScrollView(
             child: Column(
-              children: [
+              children: <Widget>[
                 JustIconButton(
                   icon: const Icon(Icons.add),
                   tooltip: 'Add Item',
@@ -676,7 +714,7 @@ void main() {
       expect(tapped, isTrue);
 
       // Verify touch target min 48x48 on xs button
-      final xsBox = tester.widget<ConstrainedBox>(
+      final ConstrainedBox xsBox = tester.widget<ConstrainedBox>(
         find
             .descendant(
               of: find.byType(JustIconButton).first,
@@ -688,7 +726,9 @@ void main() {
       expect(xsBox.constraints.minHeight, greaterThanOrEqualTo(48.0));
     });
 
-    testWidgets('Disabled JustIconButton prevents tap', (tester) async {
+    testWidgets('Disabled JustIconButton prevents tap', (
+      WidgetTester tester,
+    ) async {
       bool tapped = false;
       await tester.pumpWidget(
         buildTestApp(
@@ -707,7 +747,7 @@ void main() {
     });
 
     testWidgets('Loading JustIconButton shows spinner and loading hint', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
@@ -725,13 +765,13 @@ void main() {
     });
 
     testWidgets('Neobrutalism JustIconButton handles hover and press', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
           theme: JustThemeData.neobrutalismLight,
           Column(
-            children: [
+            children: <Widget>[
               JustIconButton(
                 icon: const Icon(Icons.star),
                 tooltip: 'Star',
@@ -761,7 +801,9 @@ void main() {
         ),
       );
 
-      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      final TestGesture gesture = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
       await gesture.addPointer(location: Offset.zero);
       addTearDown(gesture.removePointer);
 
@@ -779,9 +821,9 @@ void main() {
     });
 
     testWidgets('Haptic feedback on JustIconButton when enableHaptic is true', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final List<String> log = [];
+      final List<String> log = <String>[];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.platform, (
             MethodCall methodCall,
@@ -812,17 +854,17 @@ void main() {
 
   group('JustButtonStyle Unit Tests', () {
     test('Constructor, copyWith, lerp, equality, and hashCode', () {
-      const style1 = JustButtonStyle(
+      const JustButtonStyle style1 = JustButtonStyle(
         backgroundColor: Color(0xFF112233),
         foregroundColor: Color(0xFF445566),
         borderColor: Color(0xFF778899),
         borderRadius: .all(.circular(8)),
-        padding: EdgeInsets.all(12),
+        padding: .all(12),
         textStyle: TextStyle(fontSize: 14),
         elevation: 2.0,
       );
 
-      final styleCopied = style1.copyWith(
+      final JustButtonStyle styleCopied = style1.copyWith(
         backgroundColor: const Color(0xFF999999),
         elevation: 4.0,
       );
@@ -835,12 +877,12 @@ void main() {
       expect(styleCopied.textStyle, equals(style1.textStyle));
       expect(styleCopied.elevation, equals(4.0));
 
-      const styleClone = JustButtonStyle(
+      const JustButtonStyle styleClone = JustButtonStyle(
         backgroundColor: Color(0xFF112233),
         foregroundColor: Color(0xFF445566),
         borderColor: Color(0xFF778899),
         borderRadius: .all(.circular(8)),
-        padding: EdgeInsets.all(12),
+        padding: .all(12),
         textStyle: TextStyle(fontSize: 14),
         elevation: 2.0,
       );
@@ -853,7 +895,11 @@ void main() {
       expect(JustButtonStyle.lerp(style1, style1, 0.5), equals(style1));
       expect(JustButtonStyle.lerp(null, null, 0.5), isNull);
 
-      final lerped = JustButtonStyle.lerp(style1, styleCopied, 0.5);
+      final JustButtonStyle? lerped = JustButtonStyle.lerp(
+        style1,
+        styleCopied,
+        0.5,
+      );
       expect(lerped, isNotNull);
       expect(lerped!.elevation, equals(3.0));
       expect(
@@ -864,8 +910,10 @@ void main() {
       );
     });
 
-    testWidgets('Custom JustButtonStyle applies to JustButton', (tester) async {
-      const customStyle = JustButtonStyle(
+    testWidgets('Custom JustButtonStyle applies to JustButton', (
+      WidgetTester tester,
+    ) async {
+      const JustButtonStyle customStyle = JustButtonStyle(
         backgroundColor: Color(0xFF00FF00),
         foregroundColor: Color(0xFF000000),
         borderColor: Color(0xFFFF0000),
@@ -886,13 +934,15 @@ void main() {
 
       expect(find.text('Custom Styled'), findsOneWidget);
 
-      final animatedContainer = tester.widget<AnimatedContainer>(
-        find.ancestor(
-          of: find.text('Custom Styled'),
-          matching: find.byType(AnimatedContainer),
-        ),
-      );
-      final decoration = animatedContainer.decoration as BoxDecoration;
+      final AnimatedContainer animatedContainer = tester
+          .widget<AnimatedContainer>(
+            find.ancestor(
+              of: find.text('Custom Styled'),
+              matching: find.byType(AnimatedContainer),
+            ),
+          );
+      final BoxDecoration decoration =
+          animatedContainer.decoration as BoxDecoration;
       expect(decoration.color, equals(const Color(0xFF00FF00)));
       expect(
         decoration.borderRadius,
@@ -909,21 +959,27 @@ void main() {
     test(
       'Theme Extension defaults, copyWith, lerp, equality, and hashCode',
       () {
-        const defaultTheme = JustButtonTheme.defaults;
+        const JustButtonTheme defaultTheme = JustButtonTheme.defaults;
         expect(defaultTheme.enableHaptic, isFalse);
         expect(defaultTheme.primaryStyle, isNull);
 
-        const customPrimary = JustButtonStyle(
+        const JustButtonStyle customPrimary = JustButtonStyle(
           backgroundColor: Color(0xFF123456),
         );
-        const customSecondary = JustButtonStyle(borderColor: Color(0xFF654321));
-        const customGhost = JustButtonStyle(foregroundColor: Color(0xFFABCDEF));
-        const customDestructive = JustButtonStyle(
+        const JustButtonStyle customSecondary = JustButtonStyle(
+          borderColor: Color(0xFF654321),
+        );
+        const JustButtonStyle customGhost = JustButtonStyle(
+          foregroundColor: Color(0xFFABCDEF),
+        );
+        const JustButtonStyle customDestructive = JustButtonStyle(
           backgroundColor: Color(0xFFFF0000),
         );
-        const customLink = JustButtonStyle(foregroundColor: Color(0xFF0000FF));
+        const JustButtonStyle customLink = JustButtonStyle(
+          foregroundColor: Color(0xFF0000FF),
+        );
 
-        const theme1 = JustButtonTheme(
+        const JustButtonTheme theme1 = JustButtonTheme(
           primaryStyle: customPrimary,
           secondaryStyle: customSecondary,
           ghostStyle: customGhost,
@@ -932,7 +988,7 @@ void main() {
           enableHaptic: true,
         );
 
-        final copied = theme1.copyWith(enableHaptic: false);
+        final JustButtonTheme copied = theme1.copyWith(enableHaptic: false);
         expect(copied.enableHaptic, isFalse);
         expect(copied.primaryStyle, equals(customPrimary));
         expect(copied.secondaryStyle, equals(customSecondary));
@@ -940,7 +996,7 @@ void main() {
         expect(copied.destructiveStyle, equals(customDestructive));
         expect(copied.linkStyle, equals(customLink));
 
-        const themeClone = JustButtonTheme(
+        const JustButtonTheme themeClone = JustButtonTheme(
           primaryStyle: customPrimary,
           secondaryStyle: customSecondary,
           ghostStyle: customGhost,
@@ -955,9 +1011,9 @@ void main() {
 
         // Lerp tests
         expect(theme1.lerp(null, 0.5), equals(theme1));
-        final lerpedTheme = theme1.lerp(copied, 0.7);
+        final JustButtonTheme lerpedTheme = theme1.lerp(copied, 0.7);
         expect(lerpedTheme.enableHaptic, isFalse);
-        final lerpedThemeEarly = theme1.lerp(copied, 0.3);
+        final JustButtonTheme lerpedThemeEarly = theme1.lerp(copied, 0.3);
         expect(lerpedThemeEarly.enableHaptic, isTrue);
 
         // Parity with JustButtonThemeData typedef
@@ -966,16 +1022,16 @@ void main() {
     );
 
     testWidgets('Global JustButtonTheme overrides button styles in tree', (
-      tester,
+      WidgetTester tester,
     ) async {
-      const themePrimaryStyle = JustButtonStyle(
+      const JustButtonStyle themePrimaryStyle = JustButtonStyle(
         backgroundColor: Color(0xFF123456),
         foregroundColor: Color(0xFFFFFFFF),
         borderRadius: .all(.circular(20)),
       );
 
-      final materialTheme = ThemeData(
-        extensions: const [
+      final ThemeData materialTheme = ThemeData(
+        extensions: const <ThemeExtension<dynamic>>[
           JustButtonTheme(primaryStyle: themePrimaryStyle, enableHaptic: true),
         ],
       );
@@ -988,13 +1044,13 @@ void main() {
       );
 
       expect(find.text('Themed Button'), findsOneWidget);
-      final container = tester.widget<AnimatedContainer>(
+      final AnimatedContainer container = tester.widget<AnimatedContainer>(
         find.ancestor(
           of: find.text('Themed Button'),
           matching: find.byType(AnimatedContainer),
         ),
       );
-      final decoration = container.decoration as BoxDecoration;
+      final BoxDecoration decoration = container.decoration as BoxDecoration;
       expect(decoration.color, equals(const Color(0xFF123456)));
       expect(
         decoration.borderRadius,

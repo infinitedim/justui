@@ -38,7 +38,8 @@ class _DialogInstance<T> {
 class JustDialogController extends JustOverlayController {
   OverlayState? _overlayState;
   TickerProvider? _vsync;
-  final List<_DialogInstance<dynamic>> _activeDialogs = [];
+  final List<_DialogInstance<dynamic>> _activeDialogs =
+      <_DialogInstance<dynamic>>[];
 
   @override
   bool get isVisible => _activeDialogs.isNotEmpty;
@@ -63,22 +64,22 @@ class JustDialogController extends JustOverlayController {
       'JustDialogController must have a valid TickerProvider from JustDialogScope',
     );
 
-    final completer = Completer<T?>();
-    final id = DateTime.now().microsecondsSinceEpoch.toString();
+    final Completer<T?> completer = Completer<T?>();
+    final String id = DateTime.now().microsecondsSinceEpoch.toString();
 
-    final isLocalController = animationController == null;
-    final animController =
+    final bool isLocalController = animationController == null;
+    final AnimationController animController =
         animationController ??
         AnimationController(vsync: _vsync!, duration: JustDuration.normal);
 
     late final _DialogInstance<T> instance;
 
     // 1. Barrier Entry
-    final barrierEntry = OverlayEntry(
-      builder: (context) {
-        final theme = JustThemeProvider.of(context).theme;
-        final colors = theme.colors;
-        final resolvedBarrierColor =
+    final OverlayEntry barrierEntry = OverlayEntry(
+      builder: (BuildContext context) {
+        final JustThemeData theme = JustThemeProvider.of(context).theme;
+        final JustColorScheme colors = theme.colors;
+        final Color resolvedBarrierColor =
             style?.barrierColor ??
             barrierColor ??
             colors.overlay.withValues(alpha: 0.5);
@@ -99,11 +100,11 @@ class JustDialogController extends JustOverlayController {
     );
 
     // Save current focus to restore it later
-    final previousFocus = FocusManager.instance.primaryFocus;
+    final FocusNode? previousFocus = FocusManager.instance.primaryFocus;
 
     // 2. Content Entry
-    final contentEntry = OverlayEntry(
-      builder: (context) {
+    final OverlayEntry contentEntry = OverlayEntry(
+      builder: (BuildContext context) {
         return _JustDialogWidget(
           instance: instance,
           content: content,
@@ -111,7 +112,7 @@ class JustDialogController extends JustOverlayController {
           style: style,
           animationBuilder: animationBuilder,
           previousFocus: previousFocus,
-          onDismiss: (val) => _dismissDialog(instance, val),
+          onDismiss: (dynamic val) => _dismissDialog(instance, val),
         );
       },
     );
@@ -174,8 +175,9 @@ class JustDialogController extends JustOverlayController {
 
   @override
   void dismiss() {
-    final targets = List<_DialogInstance<dynamic>>.from(_activeDialogs);
-    for (final dialog in targets) {
+    final List<_DialogInstance<dynamic>> targets =
+        List<_DialogInstance<dynamic>>.from(_activeDialogs);
+    for (final _DialogInstance<dynamic> dialog in targets) {
       _dismissDialog(dialog, null);
     }
   }
@@ -191,8 +193,9 @@ class JustDialogController extends JustOverlayController {
   /// app/root [Navigator]'s overlay) would stay inserted indefinitely,
   /// continuing to render stale content after the scope is gone.
   void forceDismissAll() {
-    final targets = List<_DialogInstance<dynamic>>.from(_activeDialogs);
-    for (final instance in targets) {
+    final List<_DialogInstance<dynamic>> targets =
+        List<_DialogInstance<dynamic>>.from(_activeDialogs);
+    for (final _DialogInstance<dynamic> instance in targets) {
       _cleanupDialogInstance(instance, null);
     }
   }
@@ -233,15 +236,16 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = JustThemeProvider.of(context).theme;
-    final colors = theme.colors;
-    final spacing = theme.spacing;
-    final radius = theme.radius;
-    final shadows = theme.shadows;
-    final motion = theme.animations.resolve(context);
-    final typography = theme.typography;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = theme.colors;
+    final JustSpacingScheme spacing = theme.spacing;
+    final JustRadiusScheme radius = theme.radius;
+    final JustShadowScheme shadows = theme.shadows;
+    final JustMotionProfile motion = theme.animations.resolve(context);
+    final JustTypographyScheme typography = theme.typography;
 
-    final globalTheme = Theme.of(context).extension<JustDialogTheme>();
+    final JustDialogTheme? globalTheme = Theme.of(context)
+        .extension<JustDialogTheme>();
 
     JustDialogStyle? positionThemeStyle;
     switch (widget.position) {
@@ -256,21 +260,22 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
         break;
     }
 
-    final entryStyle = widget.style;
+    final JustDialogStyle? entryStyle = widget.style;
 
     // Resolve visual styles
-    final bgColor =
+    final Color bgColor =
         entryStyle?.backgroundColor ??
         positionThemeStyle?.backgroundColor ??
         colors.card;
-    final padding =
+    final EdgeInsets padding =
         entryStyle?.padding ?? positionThemeStyle?.padding ?? .all(spacing.lg);
-    final maxWidth =
+    final double maxWidth =
         entryStyle?.maxWidth ??
         positionThemeStyle?.maxWidth ??
         (widget.position == .center ? 480.0 : .infinity);
-    final maxHeight = entryStyle?.maxHeight ?? positionThemeStyle?.maxHeight;
-    final dialogShadows =
+    final double? maxHeight =
+        entryStyle?.maxHeight ?? positionThemeStyle?.maxHeight;
+    final List<BoxShadow> dialogShadows =
         entryStyle?.shadows ?? positionThemeStyle?.shadows ?? shadows.lg;
 
     final BorderRadius resolvedRadius;
@@ -295,8 +300,8 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
         break;
     }
 
-    final presetTokens = theme.presetTokens;
-    final borderSide = BorderSide(
+    final JustPresetTokens presetTokens = theme.presetTokens;
+    final BorderSide borderSide = BorderSide(
       color: presetTokens.showsDefaultBorder
           ? colors.textPrimary
           : colors.borderDefault,
@@ -336,8 +341,8 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
         child: Column(
           mainAxisSize: .min,
           crossAxisAlignment: .stretch,
-          children: [
-            if (widget.position == .bottom) ...[
+          children: <Widget>[
+            if (widget.position == .bottom) ...<Widget>[
               Center(
                 child: Container(
                   width: 32.0,
@@ -363,7 +368,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
     );
 
     // Apply animation
-    final curvedAnimation = CurvedAnimation(
+    final CurvedAnimation curvedAnimation = CurvedAnimation(
       parent: widget.instance.animationController,
       curve: motion.enter,
       reverseCurve: motion.exit,
@@ -417,14 +422,14 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
         autofocus: true,
         child: KeyboardListener(
           focusNode: _focusNode,
-          onKeyEvent: (event) {
+          onKeyEvent: (KeyEvent event) {
             if (event is KeyDownEvent &&
                 event.logicalKey == LogicalKeyboardKey.escape) {
               widget.onDismiss(null);
             }
           },
           child: Stack(
-            children: [
+            children: <Widget>[
               Align(
                 alignment: alignment,
                 child: Padding(
@@ -461,7 +466,7 @@ class const JustDialogScope({
 }) extends StatefulWidget {
   /// Retrieves the nearest [JustDialogController] from the ancestor scope.
   static JustDialogController of(BuildContext context) {
-    final scope = context
+    final _JustDialogScopeInherited? scope = context
         .dependOnInheritedWidgetOfExactType<_JustDialogScopeInherited>();
     assert(scope != null, 'No JustDialogScope found in context');
     return scope!.controller;

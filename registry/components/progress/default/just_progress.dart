@@ -107,8 +107,8 @@ class _JustProgressState extends State<JustProgress>
 
   double get _fraction {
     if (widget.value == null) return 0.0;
-    final val = widget.value!;
-    final range = widget.max - widget.min;
+    final double val = widget.value!;
+    final double range = widget.max - widget.min;
     if (range <= 0) return 0.0;
     return ((val - widget.min) / range).clamp(0.0, 1.0);
   }
@@ -120,38 +120,42 @@ class _JustProgressState extends State<JustProgress>
 
   @override
   Widget build(BuildContext context) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final presetTokens = customTheme.presetTokens;
-    final progressTheme = Theme.of(context).extension<JustProgressTheme>();
-    final themeStyle = progressTheme?.style;
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustPresetTokens presetTokens = customTheme.presetTokens;
+    final JustProgressTheme? progressTheme = Theme.of(context)
+        .extension<JustProgressTheme>();
+    final JustProgressStyle? themeStyle = progressTheme?.style;
 
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final radius = customTheme.radius;
-    final typography = JustThemeProvider.of(
+    final JustRadiusScheme radius = customTheme.radius;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
 
     // Resolve Style Properties
-    final finalTrackColor =
+    final Color finalTrackColor =
         widget.style?.trackColor ??
         themeStyle?.trackColor ??
         (presetTokens.showsDefaultBorder
             ? const Color(0x00000000)
             : colors.borderDefault.withValues(alpha: 0.3));
 
-    final finalFillColor =
+    final Color finalFillColor =
         widget.style?.fillColor ??
         themeStyle?.fillColor ??
         (presetTokens.showsDefaultBorder
             ? colors.textPrimary
             : colors.borderFocus);
 
-    final finalLabelColor =
+    final Color finalLabelColor =
         widget.style?.labelColor ??
         themeStyle?.labelColor ??
         colors.textPrimary;
@@ -215,7 +219,7 @@ class _JustProgressState extends State<JustProgress>
     final BorderRadius defaultRadius = presetTokens.showsDefaultBorder
         ? .zero
         : .all(radius.full);
-    final finalRadius =
+    final BorderRadius finalRadius =
         widget.style?.borderRadius ??
         themeStyleBorderRadius(context) ??
         defaultRadius;
@@ -231,14 +235,14 @@ class _JustProgressState extends State<JustProgress>
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
-        children: [
+        children: <Widget>[
           if (widget.value != null)
             // Determinate Linear Progress
             TweenAnimationBuilder<double>(
               tween: Tween<double>(begin: 0.0, end: _fraction),
               duration: widget.animationDuration ?? JustDuration.fast,
               curve: Curves.easeOutCubic,
-              builder: (context, value, child) {
+              builder: (BuildContext context, double value, Widget? child) {
                 return FractionallySizedBox(
                   widthFactor: value,
                   child: Container(
@@ -254,10 +258,10 @@ class _JustProgressState extends State<JustProgress>
             // Indeterminate Linear Progress
             AnimatedBuilder(
               animation: _indeterminateController!,
-              builder: (context, child) {
-                final animVal = _indeterminateController!.value;
+              builder: (BuildContext context, Widget? child) {
+                final double animVal = _indeterminateController!.value;
                 // Sliding alignment from -1.5 to 1.5
-                final alignmentX = -1.5 + (animVal * 3.0);
+                final double alignmentX = -1.5 + (animVal * 3.0);
                 return Align(
                   alignment: Alignment(alignmentX, 0.0),
                   child: FractionallySizedBox(
@@ -280,10 +284,10 @@ class _JustProgressState extends State<JustProgress>
       return Column(
         mainAxisSize: .min,
         crossAxisAlignment: .start,
-        children: [
+        children: <Widget>[
           Row(
             mainAxisAlignment: .spaceBetween,
-            children: [
+            children: <Widget>[
               Expanded(child: bar),
               SizedBox(width: spacing.md),
               Text(
@@ -333,7 +337,7 @@ class _JustProgressState extends State<JustProgress>
     }
     defaultStrokeWidth = presetTokens.resolveProgressStrokeWidth(widget.size);
 
-    final strokeWidth = widget.style?.strokeWidth ?? defaultStrokeWidth;
+    final double strokeWidth = widget.style?.strokeWidth ?? defaultStrokeWidth;
 
     Widget indicator;
     if (widget.value != null) {
@@ -342,7 +346,7 @@ class _JustProgressState extends State<JustProgress>
         tween: Tween<double>(begin: 0.0, end: _fraction),
         duration: widget.animationDuration ?? const Duration(milliseconds: 200),
         curve: Curves.easeOutCubic,
-        builder: (context, value, child) {
+        builder: (BuildContext context, double value, Widget? child) {
           return CustomPaint(
             size: Size(diameter, diameter),
             painter: _CircularProgressPainter(
@@ -376,7 +380,7 @@ class _JustProgressState extends State<JustProgress>
         height: diameter,
         child: Stack(
           alignment: Alignment.center,
-          children: [
+          children: <Widget>[
             indicator,
             Text(
               _resolvedLabel,
@@ -396,7 +400,8 @@ class _JustProgressState extends State<JustProgress>
   }
 
   BorderRadius? themeStyleBorderRadius(BuildContext context) {
-    final progressTheme = Theme.of(context).extension<JustProgressTheme>();
+    final JustProgressTheme? progressTheme = Theme.of(context)
+        .extension<JustProgressTheme>();
     return progressTheme?.style?.borderRadius;
   }
 }
@@ -409,12 +414,12 @@ class const _CircularProgressPainter({
 }) extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = (size.width - strokeWidth) / 2;
+    final Offset center = Offset(size.width / 2, size.height / 2);
+    final double radius = (size.width - strokeWidth) / 2;
 
     // Draw track
     if (trackColor.a > 0.0) {
-      final trackPaint = Paint()
+      final Paint trackPaint = Paint()
         ..color = trackColor
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeWidth;
@@ -423,7 +428,7 @@ class const _CircularProgressPainter({
 
     // Draw fill progress arc
     if (fraction > 0) {
-      final fillPaint = Paint()
+      final Paint fillPaint = Paint()
         ..color = fillColor
         ..style = PaintingStyle.stroke
         ..strokeCap = StrokeCap.round

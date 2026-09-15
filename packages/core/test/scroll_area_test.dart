@@ -39,7 +39,9 @@ void main() {
   }) {
     return MaterialApp(
       theme: ThemeData(
-        extensions: [scrollTheme ?? const JustScrollAreaTheme()],
+        extensions: <ThemeExtension<dynamic>>[
+          scrollTheme ?? const JustScrollAreaTheme(),
+        ],
       ),
       home: JustThemeProvider(
         lightTheme: theme ?? JustThemeData.light,
@@ -74,7 +76,7 @@ void main() {
 
   group('JustScrollAreaStyle & JustScrollAreaTheme Unit Tests', () {
     test('JustScrollAreaStyle stores all configured properties', () {
-      const style = JustScrollAreaStyle(
+      const JustScrollAreaStyle style = JustScrollAreaStyle(
         fadeColor: Color(0xFF112233),
         fadeHeight: 32.0,
         scrollbarThumbColor: Color(0xFF445566),
@@ -104,14 +106,16 @@ void main() {
     });
 
     test('JustScrollAreaTheme defaults, copyWith, and lerp', () {
-      const defaults = JustScrollAreaTheme.defaults;
+      const JustScrollAreaTheme defaults = JustScrollAreaTheme.defaults;
       expect(defaults.style, isNull);
 
-      const customStyle = JustScrollAreaStyle(fadeHeight: 40.0);
-      final updated = defaults.copyWith(style: customStyle);
+      const JustScrollAreaStyle customStyle = JustScrollAreaStyle(
+        fadeHeight: 40.0,
+      );
+      final JustScrollAreaTheme updated = defaults.copyWith(style: customStyle);
       expect(updated.style?.fadeHeight, equals(40.0));
 
-      final fallback = updated.copyWith();
+      final JustScrollAreaTheme fallback = updated.copyWith();
       expect(fallback.style?.fadeHeight, equals(40.0));
 
       // lerp
@@ -123,7 +127,10 @@ void main() {
     test('JustScrollFadeMode enum values', () {
       expect(
         JustScrollFadeMode.values,
-        containsAll([JustScrollFadeMode.overlay, JustScrollFadeMode.mask]),
+        containsAll(<dynamic>[
+          JustScrollFadeMode.overlay,
+          JustScrollFadeMode.mask,
+        ]),
       );
     });
   });
@@ -135,9 +142,9 @@ void main() {
       await tester.pumpWidget(
         buildTestScrollArea(
           child: Column(
-            children: List.generate(
+            children: .generate(
               20,
-              (index) => SizedBox(height: 100, child: Text('Item $index')),
+              (int index) => SizedBox(height: 100, child: Text('Item $index')),
             ),
           ),
         ),
@@ -154,9 +161,9 @@ void main() {
         buildTestScrollArea(
           showScrollbar: false,
           child: Column(
-            children: List.generate(
+            children: .generate(
               20,
-              (index) => SizedBox(height: 100, child: Text('Item $index')),
+              (int index) => SizedBox(height: 100, child: Text('Item $index')),
             ),
           ),
         ),
@@ -168,7 +175,7 @@ void main() {
     testWidgets('Applies style and theme overrides to scrollbar', (
       WidgetTester tester,
     ) async {
-      const style = JustScrollAreaStyle(
+      const JustScrollAreaStyle style = JustScrollAreaStyle(
         scrollbarThumbColor: Color(0xFF00FF00),
         scrollbarTrackColor: Color(0xFF0000FF),
         scrollbarThickness: 10.0,
@@ -181,15 +188,17 @@ void main() {
         buildTestScrollArea(
           style: style,
           child: Column(
-            children: List.generate(
+            children: .generate(
               20,
-              (index) => SizedBox(height: 100, child: Text('Item $index')),
+              (int index) => SizedBox(height: 100, child: Text('Item $index')),
             ),
           ),
         ),
       );
 
-      final scrollbar = tester.widget<RawScrollbar>(find.byType(RawScrollbar));
+      final RawScrollbar scrollbar = tester.widget<RawScrollbar>(
+        find.byType(RawScrollbar),
+      );
       expect(scrollbar.thumbColor, equals(const Color(0xFF00FF00)));
       expect(scrollbar.trackColor, equals(const Color(0xFF0000FF)));
       expect(scrollbar.thickness, equals(10.0));
@@ -205,15 +214,17 @@ void main() {
         buildTestScrollArea(
           theme: JustThemeData.neobrutalismLight,
           child: Column(
-            children: List.generate(
+            children: .generate(
               20,
-              (index) => SizedBox(height: 100, child: Text('Item $index')),
+              (int index) => SizedBox(height: 100, child: Text('Item $index')),
             ),
           ),
         ),
       );
 
-      final scrollbar = tester.widget<RawScrollbar>(find.byType(RawScrollbar));
+      final RawScrollbar scrollbar = tester.widget<RawScrollbar>(
+        find.byType(RawScrollbar),
+      );
       expect(scrollbar.radius, equals(Radius.zero));
     });
 
@@ -224,19 +235,18 @@ void main() {
         buildTestScrollArea(
           maxHeight: 250.0,
           child: Column(
-            children: List.generate(
+            children: .generate(
               20,
-              (index) => SizedBox(height: 100, child: Text('Item $index')),
+              (int index) => SizedBox(height: 100, child: Text('Item $index')),
             ),
           ),
         ),
       );
 
-      final constrainedBoxes = tester.widgetList<ConstrainedBox>(
-        find.byType(ConstrainedBox),
-      );
-      final hasMaxHeight = constrainedBoxes.any(
-        (box) => box.constraints.maxHeight == 250.0,
+      final Iterable<ConstrainedBox> constrainedBoxes = tester
+          .widgetList<ConstrainedBox>(find.byType(ConstrainedBox));
+      final bool hasMaxHeight = constrainedBoxes.any(
+        (ConstrainedBox box) => box.constraints.maxHeight == 250.0,
       );
       expect(hasMaxHeight, isTrue);
     });
@@ -244,25 +254,24 @@ void main() {
     testWidgets('Horizontal direction configures horizontal scrolling', (
       WidgetTester tester,
     ) async {
-      final controller = ScrollController();
+      final ScrollController controller = ScrollController();
       await tester.pumpWidget(
         buildTestScrollArea(
           direction: Axis.horizontal,
           controller: controller,
           smoothScroll: false,
           child: Row(
-            children: List.generate(
+            children: .generate(
               30,
-              (index) => SizedBox(width: 150, child: Text('Col $index')),
+              (int index) => SizedBox(width: 150, child: Text('Col $index')),
             ),
           ),
         ),
       );
 
       expect(find.text('Col 0'), findsOneWidget);
-      final singleChild = tester.widget<SingleChildScrollView>(
-        find.byType(SingleChildScrollView),
-      );
+      final SingleChildScrollView singleChild = tester
+          .widget<SingleChildScrollView>(find.byType(SingleChildScrollView));
       expect(singleChild.scrollDirection, equals(Axis.horizontal));
     });
   });
@@ -271,7 +280,7 @@ void main() {
     testWidgets('fadeEdges with overlay mode updates opacities correctly', (
       WidgetTester tester,
     ) async {
-      final controller = ScrollController();
+      final ScrollController controller = ScrollController();
       await tester.pumpWidget(
         buildTestScrollArea(
           controller: controller,
@@ -279,9 +288,9 @@ void main() {
           fadeMode: JustScrollFadeMode.overlay,
           smoothScroll: false,
           child: Column(
-            children: List.generate(
+            children: .generate(
               40,
-              (index) => SizedBox(height: 100, child: Text('Entry $index')),
+              (int index) => SizedBox(height: 100, child: Text('Entry $index')),
             ),
           ),
         ),
@@ -303,7 +312,7 @@ void main() {
     testWidgets(
       'fadeEdges with mask mode renders ShaderMask for vertical & horizontal',
       (WidgetTester tester) async {
-        final controller = ScrollController();
+        final ScrollController controller = ScrollController();
         await tester.pumpWidget(
           buildTestScrollArea(
             controller: controller,
@@ -311,9 +320,10 @@ void main() {
             fadeMode: JustScrollFadeMode.mask,
             smoothScroll: false,
             child: Column(
-              children: List.generate(
+              children: .generate(
                 40,
-                (index) => SizedBox(height: 100, child: Text('Mask $index')),
+                (int index) =>
+                    SizedBox(height: 100, child: Text('Mask $index')),
               ),
             ),
           ),
@@ -331,9 +341,10 @@ void main() {
             fadeMode: JustScrollFadeMode.mask,
             smoothScroll: false,
             child: Row(
-              children: List.generate(
+              children: .generate(
                 40,
-                (index) => SizedBox(width: 100, child: Text('HMask $index')),
+                (int index) =>
+                    SizedBox(width: 100, child: Text('HMask $index')),
               ),
             ),
           ),
@@ -363,7 +374,7 @@ void main() {
     testWidgets(
       'Scroll to top button appears when threshold exceeded and resets scroll',
       (WidgetTester tester) async {
-        final controller = ScrollController();
+        final ScrollController controller = ScrollController();
         await tester.pumpWidget(
           buildTestScrollArea(
             controller: controller,
@@ -372,9 +383,10 @@ void main() {
             scrollToTopThreshold: 300.0,
             scrollToTopOffset: const Offset(16, 16),
             child: Column(
-              children: List.generate(
+              children: .generate(
                 50,
-                (index) => SizedBox(height: 100, child: Text('Item $index')),
+                (int index) =>
+                    SizedBox(height: 100, child: Text('Item $index')),
               ),
             ),
           ),
@@ -400,7 +412,7 @@ void main() {
     testWidgets(
       'Scroll to top button with smoothScroll enabled routes through smooth engine',
       (WidgetTester tester) async {
-        final controller = ScrollController();
+        final ScrollController controller = ScrollController();
         await tester.pumpWidget(
           buildTestScrollArea(
             controller: controller,
@@ -408,9 +420,10 @@ void main() {
             scrollToTopButton: true,
             scrollToTopThreshold: 200.0,
             child: Column(
-              children: List.generate(
+              children: .generate(
                 50,
-                (index) => SizedBox(height: 100, child: Text('Item $index')),
+                (int index) =>
+                    SizedBox(height: 100, child: Text('Item $index')),
               ),
             ),
           ),
@@ -433,7 +446,7 @@ void main() {
       'onReachBottom callback triggers near bottom when scrolling downwards',
       (WidgetTester tester) async {
         int reachBottomCalls = 0;
-        final controller = ScrollController();
+        final ScrollController controller = ScrollController();
 
         await tester.pumpWidget(
           buildTestScrollArea(
@@ -442,9 +455,10 @@ void main() {
             onReachBottom: () => reachBottomCalls++,
             smoothScroll: false,
             child: Column(
-              children: List.generate(
+              children: .generate(
                 30,
-                (index) => SizedBox(height: 100, child: Text('Item $index')),
+                (int index) =>
+                    SizedBox(height: 100, child: Text('Item $index')),
               ),
             ),
           ),
@@ -453,7 +467,7 @@ void main() {
         expect(reachBottomCalls, equals(0));
 
         // Scroll close to the bottom
-        final maxExtent = controller.position.maxScrollExtent;
+        final double maxExtent = controller.position.maxScrollExtent;
         controller.jumpTo(maxExtent - 50.0);
         await tester.pumpAndSettle();
 
@@ -482,9 +496,9 @@ void main() {
           onScrollStart: () => startFired = true,
           onScrollEnd: () => endFired = true,
           child: Column(
-            children: List.generate(
+            children: .generate(
               30,
-              (index) => SizedBox(height: 100, child: Text('Item $index')),
+              (int index) => SizedBox(height: 100, child: Text('Item $index')),
             ),
           ),
         ),
@@ -502,15 +516,16 @@ void main() {
     testWidgets(
       'Responds to PointerScrollEvent and drives smooth scroll offset',
       (WidgetTester tester) async {
-        final controller = ScrollController();
+        final ScrollController controller = ScrollController();
         await tester.pumpWidget(
           buildTestScrollArea(
             controller: controller,
             smoothScroll: true,
             child: Column(
-              children: List.generate(
+              children: List<Widget>.generate(
                 50,
-                (index) => SizedBox(height: 100, child: Text('Item $index')),
+                (int index) =>
+                    SizedBox(height: 100, child: Text('Item $index')),
               ),
             ),
           ),
@@ -539,15 +554,16 @@ void main() {
     testWidgets(
       'Detects trackpad signal profile and uses 1:1 responsive lerp factor',
       (WidgetTester tester) async {
-        final controller = ScrollController();
+        final ScrollController controller = ScrollController();
         await tester.pumpWidget(
           buildTestScrollArea(
             controller: controller,
             smoothScroll: true,
             child: Column(
-              children: List.generate(
+              children: .generate(
                 50,
-                (index) => SizedBox(height: 100, child: Text('Item $index')),
+                (int index) =>
+                    SizedBox(height: 100, child: Text('Item $index')),
               ),
             ),
           ),
@@ -571,16 +587,17 @@ void main() {
     testWidgets(
       'Horizontal PointerScrollEvent drives horizontal smooth scroll',
       (WidgetTester tester) async {
-        final controller = ScrollController();
+        final ScrollController controller = ScrollController();
         await tester.pumpWidget(
           buildTestScrollArea(
             direction: Axis.horizontal,
             controller: controller,
             smoothScroll: true,
             child: Row(
-              children: List.generate(
+              children: .generate(
                 50,
-                (index) => SizedBox(width: 100, child: Text('HItem $index')),
+                (int index) =>
+                    SizedBox(width: 100, child: Text('HItem $index')),
               ),
             ),
           ),
@@ -608,9 +625,9 @@ void main() {
         await tester.pumpWidget(
           buildTestScrollArea(
             child: Column(
-              children: List.generate(
+              children: .generate(
                 10,
-                (index) =>
+                (int index) =>
                     SizedBox(height: 100, child: Text('Platform $index')),
               ),
             ),
@@ -623,9 +640,9 @@ void main() {
         await tester.pumpWidget(
           buildTestScrollArea(
             child: Column(
-              children: List.generate(
+              children: .generate(
                 10,
-                (index) =>
+                (int index) =>
                     SizedBox(height: 100, child: Text('Platform $index')),
               ),
             ),
@@ -641,25 +658,26 @@ void main() {
     testWidgets('Vertical arrow and page keys drive scroll position', (
       WidgetTester tester,
     ) async {
-      final controller = ScrollController();
+      final ScrollController controller = ScrollController();
       await tester.pumpWidget(
         buildTestScrollArea(
           controller: controller,
           smoothScroll: false,
           keyboardScrollStep: 60.0,
           child: Column(
-            children: List.generate(
+            children: .generate(
               50,
-              (index) => SizedBox(height: 100, child: Text('KeyItem $index')),
+              (int index) =>
+                  SizedBox(height: 100, child: Text('KeyItem $index')),
             ),
           ),
         ),
       );
 
       // Focus the scroll area
-      final focusFinder = find.byType(Focus);
+      final Finder focusFinder = find.byType(Focus);
       expect(focusFinder, findsWidgets);
-      final focusWidget = tester.widget<Focus>(focusFinder.first);
+      final Focus focusWidget = tester.widget<Focus>(focusFinder.first);
       focusWidget.focusNode?.requestFocus();
       await tester.pumpAndSettle();
 
@@ -692,7 +710,7 @@ void main() {
     testWidgets('Horizontal arrow and page keys drive scroll position', (
       WidgetTester tester,
     ) async {
-      final controller = ScrollController();
+      final ScrollController controller = ScrollController();
       await tester.pumpWidget(
         buildTestScrollArea(
           direction: Axis.horizontal,
@@ -700,16 +718,16 @@ void main() {
           smoothScroll: false,
           keyboardScrollStep: 80.0,
           child: Row(
-            children: List.generate(
+            children: .generate(
               50,
-              (index) => SizedBox(width: 120, child: Text('HKey $index')),
+              (int index) => SizedBox(width: 120, child: Text('HKey $index')),
             ),
           ),
         ),
       );
 
-      final focusFinder = find.byType(Focus);
-      final focusWidget = tester.widget<Focus>(focusFinder.first);
+      final Finder focusFinder = find.byType(Focus);
+      final Focus focusWidget = tester.widget<Focus>(focusFinder.first);
       focusWidget.focusNode?.requestFocus();
       await tester.pumpAndSettle();
 
@@ -736,23 +754,24 @@ void main() {
     testWidgets('Smooth scroll engine handles keyboard arrow keys', (
       WidgetTester tester,
     ) async {
-      final controller = ScrollController();
+      final ScrollController controller = ScrollController();
       await tester.pumpWidget(
         buildTestScrollArea(
           controller: controller,
           smoothScroll: true,
           keyboardScrollStep: 50.0,
           child: Column(
-            children: List.generate(
+            children: .generate(
               50,
-              (index) => SizedBox(height: 100, child: Text('SmoothKey $index')),
+              (int index) =>
+                  SizedBox(height: 100, child: Text('SmoothKey $index')),
             ),
           ),
         ),
       );
 
-      final focusFinder = find.byType(Focus);
-      final focusWidget = tester.widget<Focus>(focusFinder.first);
+      final Finder focusFinder = find.byType(Focus);
+      final Focus focusWidget = tester.widget<Focus>(focusFinder.first);
       focusWidget.focusNode?.requestFocus();
       await tester.pumpAndSettle();
 

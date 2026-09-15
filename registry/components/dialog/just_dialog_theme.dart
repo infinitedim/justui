@@ -14,7 +14,7 @@ class const JustDialogTheme({
   final JustDialogStyle? topStyle,
 }) extends ThemeExtension<JustDialogTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustDialogTheme();
+  static const JustDialogTheme defaults = JustDialogTheme();
 
   @override
   JustDialogTheme copyWith({

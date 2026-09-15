@@ -14,7 +14,7 @@ class const JustSwitchTheme({
   final bool enableHaptic = false,
 }) extends ThemeExtension<JustSwitchTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustSwitchTheme();
+  static const JustSwitchTheme defaults = JustSwitchTheme();
 
   @override
   JustSwitchTheme copyWith({JustSwitchStyle? style, bool? enableHaptic}) {
