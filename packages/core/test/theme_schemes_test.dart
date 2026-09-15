@@ -55,7 +55,7 @@ void main() {
 
   group('JustRadiusScheme Tests', () {
     test('DefaultRadiusScheme returns token values', () {
-      const scheme = DefaultRadiusScheme();
+      const DefaultRadiusScheme scheme = DefaultRadiusScheme();
       expect(scheme.none, equals(JustRadius.none));
       expect(scheme.xs, equals(JustRadius.xs));
       expect(scheme.sm, equals(JustRadius.sm));
@@ -70,11 +70,15 @@ void main() {
     test(
       'FluidRadiusScheme calculates fluid values across viewport ranges',
       () {
-        const minScheme = FluidRadiusScheme(width: 500.0); // Clamped to 640
-        const midScheme = FluidRadiusScheme(
+        const FluidRadiusScheme minScheme = FluidRadiusScheme(
+          width: 500.0,
+        ); // Clamped to 640
+        const FluidRadiusScheme midScheme = FluidRadiusScheme(
           width: 832.0,
         ); // Midpoint between 640 and 1024
-        const maxScheme = FluidRadiusScheme(width: 1200.0); // Clamped to 1024
+        const FluidRadiusScheme maxScheme = FluidRadiusScheme(
+          width: 1200.0,
+        ); // Clamped to 1024
 
         expect(minScheme.none, equals(Radius.zero));
         expect(minScheme.full, equals(const Radius.circular(9999.0)));
@@ -95,18 +99,18 @@ void main() {
         expect(midScheme.xs.x, greaterThan(minScheme.xs.x));
         expect(midScheme.xs.x, lessThan(maxScheme.xs.x));
 
-        final resolved = minScheme.resolve(1024.0);
+        final JustRadiusScheme resolved = minScheme.resolve(1024.0);
         expect(resolved, isA<FluidRadiusScheme>());
         expect((resolved as FluidRadiusScheme).width, equals(1024.0));
       },
     );
 
     test('JustRadiusScheme equality and hashCode', () {
-      const scheme1 = DefaultRadiusScheme();
-      const scheme2 = DefaultRadiusScheme();
-      const fluid1 = FluidRadiusScheme(width: 800.0);
-      const fluid2 = FluidRadiusScheme(width: 800.0);
-      const fluid3 = FluidRadiusScheme(width: 900.0);
+      const DefaultRadiusScheme scheme1 = DefaultRadiusScheme();
+      const DefaultRadiusScheme scheme2 = DefaultRadiusScheme();
+      const FluidRadiusScheme fluid1 = FluidRadiusScheme(width: 800.0);
+      const FluidRadiusScheme fluid2 = FluidRadiusScheme(width: 800.0);
+      const FluidRadiusScheme fluid3 = FluidRadiusScheme(width: 900.0);
 
       expect(scheme1, equals(scheme2));
       expect(scheme1.hashCode, equals(scheme2.hashCode));
@@ -120,8 +124,8 @@ void main() {
 
   group('JustShadowScheme Tests', () {
     test('DefaultShadowSchemeLight and Dark return token values', () {
-      const light = DefaultShadowSchemeLight();
-      const dark = DefaultShadowSchemeDark();
+      const DefaultShadowSchemeLight light = DefaultShadowSchemeLight();
+      const DefaultShadowSchemeDark dark = DefaultShadowSchemeDark();
 
       expect(light.xs, equals(JustShadows.xs));
       expect(light.sm, equals(JustShadows.sm));
@@ -144,10 +148,19 @@ void main() {
     });
 
     test('TintedShadowScheme generates dynamic tinted shadows', () {
-      const seed = Color(0xFF3B82F6);
-      const tintedLight = TintedShadowScheme(seedColor: seed, isDark: false);
-      const tintedDark = TintedShadowScheme(seedColor: seed, isDark: true);
-      const tintedSame = TintedShadowScheme(seedColor: seed, isDark: false);
+      const Color seed = Color(0xFF3B82F6);
+      const TintedShadowScheme tintedLight = TintedShadowScheme(
+        seedColor: seed,
+        isDark: false,
+      );
+      const TintedShadowScheme tintedDark = TintedShadowScheme(
+        seedColor: seed,
+        isDark: true,
+      );
+      const TintedShadowScheme tintedSame = TintedShadowScheme(
+        seedColor: seed,
+        isDark: false,
+      );
 
       expect(tintedLight.xs.isNotEmpty, isTrue);
       expect(tintedLight.sm.isNotEmpty, isTrue);
@@ -162,9 +175,11 @@ void main() {
     });
 
     test('NeobrutalismShadowScheme produces flat solid offset shadows', () {
-      const neoLight = NeobrutalismShadowScheme();
-      const neoDark = NeobrutalismShadowScheme(shadowColor: Color(0xFFFFFFFF));
-      const neoSame = NeobrutalismShadowScheme();
+      const NeobrutalismShadowScheme neoLight = NeobrutalismShadowScheme();
+      const NeobrutalismShadowScheme neoDark = NeobrutalismShadowScheme(
+        shadowColor: Color(0xFFFFFFFF),
+      );
+      const NeobrutalismShadowScheme neoSame = NeobrutalismShadowScheme();
 
       expect(neoLight.xs.first.blurRadius, equals(0.0));
       expect(neoLight.xs.first.offset, equals(const Offset(2.0, 2.0)));
@@ -182,7 +197,7 @@ void main() {
 
   group('JustSpacingScheme Tests', () {
     test('DefaultSpacingScheme returns token spacing values', () {
-      const scheme = DefaultSpacingScheme();
+      const DefaultSpacingScheme scheme = DefaultSpacingScheme();
       expect(scheme.xxs, equals(JustSpacing.xxs));
       expect(scheme.xs, equals(JustSpacing.xs));
       expect(scheme.sm, equals(JustSpacing.sm));
@@ -196,9 +211,13 @@ void main() {
     });
 
     test('FluidSpacingScheme calculates fluid values smoothly', () {
-      const minScheme = FluidSpacingScheme(width: 600.0); // Clamped to 640
-      const midScheme = FluidSpacingScheme(width: 832.0);
-      const maxScheme = FluidSpacingScheme(width: 1400.0); // Clamped to 1024
+      const FluidSpacingScheme minScheme = FluidSpacingScheme(
+        width: 600.0,
+      ); // Clamped to 640
+      const FluidSpacingScheme midScheme = FluidSpacingScheme(width: 832.0);
+      const FluidSpacingScheme maxScheme = FluidSpacingScheme(
+        width: 1400.0,
+      ); // Clamped to 1024
 
       expect(minScheme.xxs, closeTo(1.5, 0.01));
       expect(minScheme.xs, closeTo(3.0, 0.01));
@@ -223,17 +242,17 @@ void main() {
       expect(midScheme.md, greaterThan(minScheme.md));
       expect(midScheme.md, lessThan(maxScheme.md));
 
-      final resolved = minScheme.resolve(800.0);
+      final JustSpacingScheme resolved = minScheme.resolve(800.0);
       expect(resolved, isA<FluidSpacingScheme>());
       expect((resolved as FluidSpacingScheme).width, equals(800.0));
     });
 
     test('JustSpacingScheme equality and hashCode', () {
-      const scheme1 = DefaultSpacingScheme();
-      const scheme2 = DefaultSpacingScheme();
-      const fluid1 = FluidSpacingScheme(width: 720.0);
-      const fluid2 = FluidSpacingScheme(width: 720.0);
-      const fluid3 = FluidSpacingScheme(width: 900.0);
+      const DefaultSpacingScheme scheme1 = DefaultSpacingScheme();
+      const DefaultSpacingScheme scheme2 = DefaultSpacingScheme();
+      const FluidSpacingScheme fluid1 = FluidSpacingScheme(width: 720.0);
+      const FluidSpacingScheme fluid2 = FluidSpacingScheme(width: 720.0);
+      const FluidSpacingScheme fluid3 = FluidSpacingScheme(width: 900.0);
 
       expect(scheme1, equals(scheme2));
       expect(scheme1.hashCode, equals(scheme2.hashCode));
@@ -247,7 +266,7 @@ void main() {
 
   group('JustTypographyScheme Tests', () {
     test('DefaultTypographyScheme provides complete typography styles', () {
-      const scheme = DefaultTypographyScheme();
+      const DefaultTypographyScheme scheme = DefaultTypographyScheme();
       expect(scheme.displayLg.fontSize, equals(JustTypo.displayLg.fontSize));
       expect(scheme.displayMd.fontSize, equals(JustTypo.displayMd.fontSize));
       expect(scheme.displaySm.fontSize, equals(JustTypo.displaySm.fontSize));
@@ -264,27 +283,32 @@ void main() {
     test(
       'JustTypographyScheme.fromFontFamily creates custom font family scheme',
       () {
-        const customScheme = DefaultTypographyScheme(
+        const DefaultTypographyScheme customScheme = DefaultTypographyScheme(
           fontFamily: 'Inter',
-          fontFamilyFallback: ['Roboto', 'Arial'],
+          fontFamilyFallback: <String>['Roboto', 'Arial'],
           monoFontFamily: 'FiraCode',
-          monoFontFamilyFallback: ['Courier'],
+          monoFontFamilyFallback: <String>['Courier'],
         );
 
         expect(customScheme.fontFamily, equals('Inter'));
-        expect(customScheme.fontFamilyFallback, equals(['Roboto', 'Arial']));
+        expect(
+          customScheme.fontFamilyFallback,
+          equals(<String>['Roboto', 'Arial']),
+        );
         expect(customScheme.monoFontFamily, equals('FiraCode'));
-        expect(customScheme.monoFontFamilyFallback, equals(['Courier']));
+        expect(
+          customScheme.monoFontFamilyFallback,
+          equals(<String>['Courier']),
+        );
 
         expect(customScheme.bodyMd.fontFamily, equals('Inter'));
         expect(
           customScheme.bodyMd.fontFamilyFallback,
-          equals(['Roboto', 'Arial']),
+          equals(<String>['Roboto', 'Arial']),
         );
 
-        const factoryScheme = JustTypographyScheme.fromFontFamily(
-          fontFamily: 'Poppins',
-        );
+        const JustTypographyScheme factoryScheme =
+            JustTypographyScheme.fromFontFamily(fontFamily: 'Poppins');
         expect(factoryScheme, isA<DefaultTypographyScheme>());
         expect(
           (factoryScheme as DefaultTypographyScheme).fontFamily,
@@ -294,19 +318,21 @@ void main() {
     );
 
     test('JustTypographyScheme equality and hashCode', () {
-      const scheme1 = DefaultTypographyScheme();
-      const scheme2 = DefaultTypographyScheme();
-      const custom1 = DefaultTypographyScheme(
+      const DefaultTypographyScheme scheme1 = DefaultTypographyScheme();
+      const DefaultTypographyScheme scheme2 = DefaultTypographyScheme();
+      const DefaultTypographyScheme custom1 = DefaultTypographyScheme(
         fontFamily: 'Inter',
-        fontFamilyFallback: ['Roboto'],
+        fontFamilyFallback: <String>['Roboto'],
       );
-      const custom2 = DefaultTypographyScheme(
+      const DefaultTypographyScheme custom2 = DefaultTypographyScheme(
         fontFamily: 'Inter',
-        fontFamilyFallback: ['Roboto'],
+        fontFamilyFallback: <String>['Roboto'],
       );
-      const custom3 = DefaultTypographyScheme(fontFamily: 'Poppins');
-      const baseCustom1 = _CustomTypographyScheme();
-      const baseCustom2 = _CustomTypographyScheme();
+      const DefaultTypographyScheme custom3 = DefaultTypographyScheme(
+        fontFamily: 'Poppins',
+      );
+      const _CustomTypographyScheme baseCustom1 = _CustomTypographyScheme();
+      const _CustomTypographyScheme baseCustom2 = _CustomTypographyScheme();
 
       expect(scheme1, equals(scheme2));
       expect(scheme1.hashCode, equals(scheme2.hashCode));
@@ -322,9 +348,9 @@ void main() {
 
   group('JustPresetTokens Tests', () {
     test('DefaultPresetTokens properties and token contracts', () {
-      const tokens = DefaultPresetTokens();
-      const radius = DefaultRadiusScheme();
-      const shadows = DefaultShadowSchemeLight();
+      const DefaultPresetTokens tokens = DefaultPresetTokens();
+      const DefaultRadiusScheme radius = DefaultRadiusScheme();
+      const DefaultShadowSchemeLight shadows = DefaultShadowSchemeLight();
 
       expect(tokens.borderWidth, equals(1.0));
       expect(tokens.emphasizedBorderWidth, equals(2.0));
@@ -343,14 +369,14 @@ void main() {
         equals(BorderRadius.all(radius.full)),
       );
 
-      final unpressedShadows = tokens.resolveShadow(
+      final List<BoxShadow> unpressedShadows = tokens.resolveShadow(
         shadows,
         JustShadowLevel.md,
         isPressed: false,
       );
       expect(unpressedShadows, equals(shadows.md));
 
-      final pressedShadows = tokens.resolveShadow(
+      final List<BoxShadow> pressedShadows = tokens.resolveShadow(
         shadows,
         JustShadowLevel.md,
         isPressed: true,
@@ -361,14 +387,14 @@ void main() {
       );
 
       // Test all shadow levels
-      for (final level in JustShadowLevel.values) {
+      for (final JustShadowLevel level in JustShadowLevel.values) {
         expect(
           tokens.resolveShadow(shadows, level, isPressed: false).isNotEmpty,
           isTrue,
         );
       }
 
-      final hoverDeco = tokens.resolveHoverDecoration(
+      final BoxDecoration? hoverDeco = tokens.resolveHoverDecoration(
         JustColors.light(),
         accentColor: Colors.blue,
         borderRadius: BorderRadius.circular(8.0),
@@ -430,9 +456,9 @@ void main() {
     });
 
     test('NeobrutalismPresetTokens properties and token contracts', () {
-      const tokens = NeobrutalismPresetTokens();
-      const radius = DefaultRadiusScheme();
-      const shadows = NeobrutalismShadowScheme();
+      const NeobrutalismPresetTokens tokens = NeobrutalismPresetTokens();
+      const DefaultRadiusScheme radius = DefaultRadiusScheme();
+      const NeobrutalismShadowScheme shadows = NeobrutalismShadowScheme();
 
       expect(tokens.borderWidth, equals(2.5));
       expect(tokens.emphasizedBorderWidth, equals(3.0));
@@ -448,28 +474,28 @@ void main() {
         equals(BorderRadius.all(radius.full)),
       );
 
-      final unpressedShadows = tokens.resolveShadow(
+      final List<BoxShadow> unpressedShadows = tokens.resolveShadow(
         shadows,
         JustShadowLevel.md,
         isPressed: false,
       );
       expect(unpressedShadows, equals(shadows.md));
 
-      final pressedShadows = tokens.resolveShadow(
+      final List<BoxShadow> pressedShadows = tokens.resolveShadow(
         shadows,
         JustShadowLevel.md,
         isPressed: true,
       );
       expect(pressedShadows, isEmpty);
 
-      for (final level in JustShadowLevel.values) {
+      for (final JustShadowLevel level in JustShadowLevel.values) {
         expect(
           tokens.resolveShadow(shadows, level, isPressed: false).isNotEmpty,
           isTrue,
         );
       }
 
-      final hoverDeco = tokens.resolveHoverDecoration(
+      final BoxDecoration? hoverDeco = tokens.resolveHoverDecoration(
         JustColors.light(),
         accentColor: Colors.blue,
         borderRadius: BorderRadius.circular(8.0),
@@ -544,15 +570,15 @@ void main() {
 
     testWidgets(
       'buildPressEffect renders correctly for default and neobrutalism tokens',
-      (tester) async {
-        const defaultTokens = DefaultPresetTokens();
-        const neoTokens = NeobrutalismPresetTokens();
+      (WidgetTester tester) async {
+        const DefaultPresetTokens defaultTokens = DefaultPresetTokens();
+        const NeobrutalismPresetTokens neoTokens = NeobrutalismPresetTokens();
 
         await tester.pumpWidget(
           Directionality(
             textDirection: TextDirection.ltr,
             child: Column(
-              children: [
+              children: <Widget>[
                 defaultTokens.buildPressEffect(
                   isPressed: true,
                   animations: JustMotionProfile.standard,
@@ -578,7 +604,7 @@ void main() {
 
   group('JustOverlayScope and JustOverlayController Tests', () {
     test('JustOverlayController lifecycle and state', () {
-      final controller = _TestOverlayController();
+      final _TestOverlayController controller = _TestOverlayController();
       expect(controller.isVisible, isFalse);
       expect(controller.dismissed, isFalse);
       expect(controller.disposed, isFalse);
@@ -595,10 +621,10 @@ void main() {
     });
 
     testWidgets('JustOverlayScope exposes controller and handles updates', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller1 = _TestOverlayController();
-      final controller2 = _TestOverlayController();
+      final _TestOverlayController controller1 = _TestOverlayController();
+      final _TestOverlayController controller2 = _TestOverlayController();
 
       await tester.pumpWidget(
         Directionality(
@@ -606,10 +632,9 @@ void main() {
           child: JustOverlayScope<_TestOverlayController>(
             controller: controller1,
             child: Builder(
-              builder: (context) {
-                final retrieved = JustOverlayScope.of<_TestOverlayController>(
-                  context,
-                );
+              builder: (BuildContext context) {
+                final _TestOverlayController retrieved =
+                    JustOverlayScope.of<_TestOverlayController>(context);
                 return Text(
                   'Controller matches: ${identical(retrieved, controller1)}',
                 );
@@ -621,29 +646,32 @@ void main() {
 
       expect(find.text('Controller matches: true'), findsOneWidget);
 
-      final scope = JustOverlayScope<_TestOverlayController>(
-        controller: controller1,
-        child: const SizedBox(),
-      );
-      final sameScope = JustOverlayScope<_TestOverlayController>(
-        controller: controller1,
-        child: const SizedBox(),
-      );
-      final differentScope = JustOverlayScope<_TestOverlayController>(
-        controller: controller2,
-        child: const SizedBox(),
-      );
+      final JustOverlayScope<_TestOverlayController> scope =
+          JustOverlayScope<_TestOverlayController>(
+            controller: controller1,
+            child: const SizedBox(),
+          );
+      final JustOverlayScope<_TestOverlayController> sameScope =
+          JustOverlayScope<_TestOverlayController>(
+            controller: controller1,
+            child: const SizedBox(),
+          );
+      final JustOverlayScope<_TestOverlayController> differentScope =
+          JustOverlayScope<_TestOverlayController>(
+            controller: controller2,
+            child: const SizedBox(),
+          );
 
       expect(scope.updateShouldNotify(sameScope), isFalse);
       expect(scope.updateShouldNotify(differentScope), isTrue);
     });
 
     testWidgets('JustOverlayScope.of throws assertion error when not found', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         Builder(
-          builder: (context) {
+          builder: (BuildContext context) {
             expect(
               () => JustOverlayScope.of<_TestOverlayController>(context),
               throwsAssertionError,
@@ -657,10 +685,10 @@ void main() {
 
   group('JustThemeData & Context Extension Tests', () {
     test('Pre-built themes initialization and equality', () {
-      final light = JustThemeData.light;
-      final dark = JustThemeData.dark;
-      final neoLight = JustThemeData.neobrutalismLight;
-      final neoDark = JustThemeData.neobrutalismDark;
+      final JustThemeData light = JustThemeData.light;
+      final JustThemeData dark = JustThemeData.dark;
+      final JustThemeData neoLight = JustThemeData.neobrutalismLight;
+      final JustThemeData neoDark = JustThemeData.neobrutalismDark;
 
       expect(light.preset, equals(JustThemePreset.default_));
       expect(dark.preset, equals(JustThemePreset.default_));
@@ -674,7 +702,9 @@ void main() {
       expect(neoLight.shadowOffset, equals(const Offset(4.0, 4.0)));
 
       // resolveShadows
-      final shadows = [const BoxShadow(offset: Offset(2.0, 2.0))];
+      final List<BoxShadow> shadows = <BoxShadow>[
+        const BoxShadow(offset: Offset(2.0, 2.0)),
+      ];
       expect(light.resolveShadows(shadows, isPressed: true), equals(shadows));
       expect(
         neoLight.resolveShadows(shadows, isPressed: true).first.offset,
@@ -687,16 +717,16 @@ void main() {
     });
 
     test('JustThemeData.copyWith updates all fields properly', () {
-      final base = JustThemeData.light;
-      final customColors = JustColors.dark();
-      const customTypo = _CustomTypographyScheme();
-      const customSpacing = DefaultSpacingScheme();
-      const customRadius = DefaultRadiusScheme();
-      const customShadows = DefaultShadowSchemeDark();
-      const customAnimations = JustMotionProfile.reduced;
-      const customPreset = JustThemePreset.neobrutalism;
+      final JustThemeData base = JustThemeData.light;
+      final JustColorScheme customColors = JustColors.dark();
+      const _CustomTypographyScheme customTypo = _CustomTypographyScheme();
+      const DefaultSpacingScheme customSpacing = DefaultSpacingScheme();
+      const DefaultRadiusScheme customRadius = DefaultRadiusScheme();
+      const DefaultShadowSchemeDark customShadows = DefaultShadowSchemeDark();
+      const JustMotionProfile customAnimations = JustMotionProfile.reduced;
+      const JustThemePreset customPreset = JustThemePreset.neobrutalism;
 
-      final updated = base.copyWith(
+      final JustThemeData updated = base.copyWith(
         colors: customColors,
         typography: customTypo,
         spacing: customSpacing,
@@ -715,7 +745,7 @@ void main() {
       expect(updated.preset, equals(customPreset));
 
       // Equality and hashCode
-      final updated2 = base.copyWith(
+      final JustThemeData updated2 = base.copyWith(
         colors: customColors,
         typography: customTypo,
         spacing: customSpacing,
@@ -730,15 +760,18 @@ void main() {
     });
 
     test('JustThemeData.fromSeed works with different presets and modes', () {
-      const seed = Color(0xFF6366F1); // Indigo
-      final seedLight = JustThemeData.fromSeed(seed, isDark: false);
-      final seedDark = JustThemeData.fromSeed(seed, isDark: true);
-      final seedNeoLight = JustThemeData.fromSeed(
+      const Color seed = Color(0xFF6366F1); // Indigo
+      final JustThemeData seedLight = JustThemeData.fromSeed(
+        seed,
+        isDark: false,
+      );
+      final JustThemeData seedDark = JustThemeData.fromSeed(seed, isDark: true);
+      final JustThemeData seedNeoLight = JustThemeData.fromSeed(
         seed,
         isDark: false,
         preset: JustThemePreset.neobrutalism,
       );
-      final seedNeoDark = JustThemeData.fromSeed(
+      final JustThemeData seedNeoDark = JustThemeData.fromSeed(
         seed,
         isDark: true,
         preset: JustThemePreset.neobrutalism,
@@ -753,9 +786,10 @@ void main() {
     });
 
     test('applyHighContrastOverrides enforces high contrast colors', () {
-      final lightHighContrast = JustThemeData.light
+      final JustThemeData lightHighContrast = JustThemeData.light
           .applyHighContrastOverrides();
-      final darkHighContrast = JustThemeData.dark.applyHighContrastOverrides();
+      final JustThemeData darkHighContrast = JustThemeData.dark
+          .applyHighContrastOverrides();
 
       expect(
         lightHighContrast.colors.textPrimary,
@@ -769,15 +803,15 @@ void main() {
 
     testWidgets(
       'buildPressEffect helper returns interactive animation widgets',
-      (tester) async {
-        final light = JustThemeData.light;
-        final neo = JustThemeData.neobrutalismLight;
+      (WidgetTester tester) async {
+        final JustThemeData light = JustThemeData.light;
+        final JustThemeData neo = JustThemeData.neobrutalismLight;
 
         await tester.pumpWidget(
           Directionality(
             textDirection: TextDirection.ltr,
             child: Column(
-              children: [
+              children: <Widget>[
                 light.buildPressEffect(
                   isPressed: true,
                   child: const Text('Light Effect'),
@@ -798,7 +832,7 @@ void main() {
 
     testWidgets(
       'JustThemeContext extension getters subscribe to correct aspects',
-      (tester) async {
+      (WidgetTester tester) async {
         late JustThemeData theme;
         late JustColorScheme colors;
         late JustTypographyScheme typo;
@@ -816,7 +850,7 @@ void main() {
           JustThemeProvider(
             lightTheme: JustThemeData.light,
             child: Builder(
-              builder: (context) {
+              builder: (BuildContext context) {
                 theme = context.justTheme;
                 colors = context.justColors;
                 typo = context.justTypo;

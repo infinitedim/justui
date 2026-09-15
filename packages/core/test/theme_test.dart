@@ -7,8 +7,8 @@ void main() {
 
   group('JustThemeData Tests', () {
     test('Default light and dark themes generate valid Material ThemeData', () {
-      final lightMaterial = JustThemeData.light.toThemeData();
-      final darkMaterial = JustThemeData.dark.toThemeData();
+      final ThemeData lightMaterial = JustThemeData.light.toThemeData();
+      final ThemeData darkMaterial = JustThemeData.dark.toThemeData();
 
       expect(lightMaterial, isNotNull);
       expect(darkMaterial, isNotNull);
@@ -17,9 +17,9 @@ void main() {
     });
 
     test('ThemeData is lazy-cached and returns identical instance on multiple calls', () {
-      final theme = JustThemeData.light;
-      final first = theme.toThemeData();
-      final second = theme.toThemeData();
+      final JustThemeData theme = JustThemeData.light;
+      final ThemeData first = theme.toThemeData();
+      final ThemeData second = theme.toThemeData();
 
       // Identity check: should be the exact same instance in memory
       expect(identical(first, second), isTrue);
@@ -28,12 +28,12 @@ void main() {
     test(
       'ThemeData cache is cleared/rebuilt when copied with modifications',
       () {
-        final base = JustThemeData.light;
-        final originalMaterial = base.toThemeData();
+        final JustThemeData base = JustThemeData.light;
+        final ThemeData originalMaterial = base.toThemeData();
 
         // Copy with custom colors
-        final modified = base.copyWith(colors: JustColors.dark());
-        final modifiedMaterial = modified.toThemeData();
+        final JustThemeData modified = base.copyWith(colors: JustColors.dark());
+        final ThemeData modifiedMaterial = modified.toThemeData();
 
         expect(identical(originalMaterial, modifiedMaterial), isFalse);
         expect(modifiedMaterial.brightness, equals(Brightness.dark));
@@ -43,20 +43,24 @@ void main() {
     test(
       'fromSeed factory generates dynamic color scheme and respects contrast',
       () {
-        const seedColor = Color(0xFF00FF00); // Super bright green
-        final seededLight = JustThemeData.fromSeed(seedColor, isDark: false);
-        final seededDark = JustThemeData.fromSeed(seedColor, isDark: true);
+        const Color seedColor = Color(0xFF00FF00); // Super bright green
+        final JustThemeData seededLight = JustThemeData.fromSeed(
+          seedColor,
+          isDark: false,
+        );
+        final JustThemeData seededDark = JustThemeData.fromSeed(
+          seedColor,
+          isDark: true,
+        );
 
         expect(seededLight.colors.background, equals(JustColors.neutral50));
         expect(seededDark.colors.background, equals(JustColors.neutral950));
 
         // Contrast audits: focus border must meet WCAG AA large text/component contrast (>= 3.0)
-        final lightContrast = seededLight.colors.borderFocus.contrastRatioWith(
-          seededLight.colors.background,
-        );
-        final darkContrast = seededDark.colors.borderFocus.contrastRatioWith(
-          seededDark.colors.background,
-        );
+        final double lightContrast = seededLight.colors.borderFocus
+            .contrastRatioWith(seededLight.colors.background);
+        final double darkContrast = seededDark.colors.borderFocus
+            .contrastRatioWith(seededDark.colors.background);
 
         expect(lightContrast, greaterThanOrEqualTo(3.0));
         expect(darkContrast, greaterThanOrEqualTo(3.0));
@@ -64,13 +68,13 @@ void main() {
     );
 
     test('ThemeData maps visual tokens to component themes correctly', () {
-      final theme = JustThemeData.light;
-      final materialTheme = theme.toThemeData();
+      final JustThemeData theme = JustThemeData.light;
+      final ThemeData materialTheme = theme.toThemeData();
 
       // CardTheme check
       expect(materialTheme.cardTheme.color, equals(theme.colors.card));
       expect(materialTheme.cardTheme.elevation, equals(0.0));
-      final cardShape =
+      final RoundedRectangleBorder? cardShape =
           materialTheme.cardTheme.shape as RoundedRectangleBorder?;
       expect(
         cardShape?.borderRadius,
@@ -102,17 +106,20 @@ void main() {
         materialTheme.inputDecorationTheme.fillColor,
         equals(theme.colors.background),
       );
-      final border =
+      final OutlineInputBorder? border =
           materialTheme.inputDecorationTheme.focusedBorder
               as OutlineInputBorder?;
       expect(border?.borderSide.color, equals(theme.colors.borderFocus));
     });
 
     test('Dynamic contrast and dark surfaces enforcement in fromSeed', () {
-      const seed = Color(0xFF3B82F6);
+      const Color seed = Color(0xFF3B82F6);
 
       // Light Mode seed checks
-      final lightTheme = JustThemeData.fromSeed(seed, isDark: false);
+      final JustThemeData lightTheme = JustThemeData.fromSeed(
+        seed,
+        isDark: false,
+      );
       expect(
         lightTheme.colors.success.contrastRatioWith(
           lightTheme.colors.background,
@@ -135,7 +142,10 @@ void main() {
       );
 
       // Dark Mode seed checks
-      final darkTheme = JustThemeData.fromSeed(seed, isDark: true);
+      final JustThemeData darkTheme = JustThemeData.fromSeed(
+        seed,
+        isDark: true,
+      );
       expect(
         darkTheme.colors.success.contrastRatioWith(darkTheme.colors.background),
         greaterThanOrEqualTo(4.5),
@@ -150,18 +160,18 @@ void main() {
     });
 
     test('fromSeed with OKLCH and HSLuv engines maintains all WCAG contracts', () {
-      const seed = Color(0xFF3B82F6);
+      const Color seed = Color(0xFF3B82F6);
 
-      for (final engine in [
+      for (final JustColorSpaceEngine engine in <JustColorSpaceEngine>[
         JustColorSpaceEngine.oklch,
         JustColorSpaceEngine.hsluv,
       ]) {
-        final light = JustThemeData.fromSeed(
+        final JustThemeData light = JustThemeData.fromSeed(
           seed,
           isDark: false,
           colorSpace: engine,
         );
-        final dark = JustThemeData.fromSeed(
+        final JustThemeData dark = JustThemeData.fromSeed(
           seed,
           isDark: true,
           colorSpace: engine,
@@ -204,14 +214,18 @@ void main() {
     test(
       'FluidSpacingScheme and FluidRadiusScheme scale based on screen width',
       () {
-        const spacingSmall = FluidSpacingScheme(width: 320.0);
-        const spacingLarge = FluidSpacingScheme(width: 1024.0);
+        const FluidSpacingScheme spacingSmall = FluidSpacingScheme(
+          width: 320.0,
+        );
+        const FluidSpacingScheme spacingLarge = FluidSpacingScheme(
+          width: 1024.0,
+        );
 
         expect(spacingSmall.md, lessThan(spacingLarge.md));
         expect(spacingLarge.md, equals(12.0)); // standard md size is 12
 
-        const radiusSmall = FluidRadiusScheme(width: 320.0);
-        const radiusLarge = FluidRadiusScheme(width: 1024.0);
+        const FluidRadiusScheme radiusSmall = FluidRadiusScheme(width: 320.0);
+        const FluidRadiusScheme radiusLarge = FluidRadiusScheme(width: 1024.0);
 
         expect(radiusSmall.md.x, lessThan(radiusLarge.md.x));
         expect(radiusLarge.md.x, equals(8.0)); // standard md radius is 8
@@ -219,10 +233,13 @@ void main() {
     );
 
     test('TintedShadowScheme generates tinted dual-layer shadows', () {
-      const seed = Color(0xFF3B82F6);
-      const shadowsScheme = TintedShadowScheme(seedColor: seed, isDark: false);
+      const Color seed = Color(0xFF3B82F6);
+      const TintedShadowScheme shadowsScheme = TintedShadowScheme(
+        seedColor: seed,
+        isDark: false,
+      );
 
-      final smShadows = shadowsScheme.sm;
+      final List<BoxShadow> smShadows = shadowsScheme.sm;
       expect(smShadows.length, equals(2));
       expect(
         smShadows[0].color.computeLuminance(),
@@ -243,8 +260,10 @@ void main() {
         JustThemeProvider(
           initialThemeMode: ThemeMode.dark,
           child: Builder(
-            builder: (context) {
-              final state = JustThemeProvider.read(context);
+            builder: (BuildContext context) {
+              final JustThemeProviderState state = JustThemeProvider.read(
+                context,
+              );
               expect(state.themeMode, equals(ThemeMode.dark));
               expect(
                 state.theme.colors.background,
@@ -267,11 +286,11 @@ void main() {
             textDirection: .ltr,
             child: JustThemeProvider(
               initialThemeMode: ThemeMode.light,
-              onThemeChanged: (mode) {
+              onThemeChanged: (ThemeMode mode) {
                 persistedMode = mode;
               },
               child: Builder(
-                builder: (context) {
+                builder: (BuildContext context) {
                   return ElevatedButton(
                     onPressed: () {
                       JustThemeProvider.read(context).toggleTheme();
@@ -322,9 +341,9 @@ void main() {
               radius: const FluidRadiusScheme(),
             ),
             child: Column(
-              children: [
+              children: <Widget>[
                 Builder(
-                  builder: (context) {
+                  builder: (BuildContext context) {
                     // Subscribes to the entire theme
                     context.justTheme;
                     fullRebuildCount++;
@@ -332,7 +351,7 @@ void main() {
                   },
                 ),
                 Builder(
-                  builder: (context) {
+                  builder: (BuildContext context) {
                     // Subscribes *only* to colors
                     context.justColors;
                     colorRebuildCount++;
@@ -340,7 +359,7 @@ void main() {
                   },
                 ),
                 Builder(
-                  builder: (context) {
+                  builder: (BuildContext context) {
                     // Subscribes *only* to spacing
                     context.justSpacing;
                     spacingRebuildCount++;
@@ -348,7 +367,7 @@ void main() {
                   },
                 ),
                 Builder(
-                  builder: (context) {
+                  builder: (BuildContext context) {
                     // Subscribes *only* to radius
                     context.justRadius;
                     radiusRebuildCount++;
@@ -356,7 +375,7 @@ void main() {
                   },
                 ),
                 Builder(
-                  builder: (context) {
+                  builder: (BuildContext context) {
                     // Reads theme without subscription
                     context.readTheme();
                     return ElevatedButton(
@@ -417,16 +436,18 @@ void main() {
     testWidgets('Exposes transition timing and curve parameters', (
       WidgetTester tester,
     ) async {
-      const customDuration = Duration(milliseconds: 500);
-      const customCurve = Curves.bounceInOut;
+      const Duration customDuration = Duration(milliseconds: 500);
+      const Curve customCurve = Curves.bounceInOut;
 
       await tester.pumpWidget(
         JustThemeProvider(
           transitionDuration: customDuration,
           transitionCurve: customCurve,
           child: Builder(
-            builder: (context) {
-              final state = JustThemeProvider.read(context);
+            builder: (BuildContext context) {
+              final JustThemeProviderState state = JustThemeProvider.read(
+                context,
+              );
               expect(state.transitionDuration, equals(customDuration));
               expect(state.transitionCurve, equals(customCurve));
               return const SizedBox.shrink();
@@ -448,8 +469,8 @@ void main() {
             child: JustThemeProvider(
               initialThemeMode: ThemeMode.system,
               child: Builder(
-                builder: (context) {
-                  final isDark =
+                builder: (BuildContext context) {
+                  final bool isDark =
                       context.justTheme.colors.background ==
                       JustColors.neutral950;
                   return Text(isDark ? 'dark' : 'light');
@@ -478,8 +499,8 @@ void main() {
             data: const MediaQueryData(disableAnimations: false),
             child: JustThemeProvider(
               child: Builder(
-                builder: (context) {
-                  final animations = context.justAnimations;
+                builder: (BuildContext context) {
+                  final JustMotionProfile animations = context.justAnimations;
                   expect(animations.normal, equals(JustDuration.normal));
                   expect(animations.defaultCurve, equals(JustCurves.default_));
                   return const SizedBox.shrink();
@@ -494,8 +515,8 @@ void main() {
             data: const MediaQueryData(disableAnimations: true),
             child: JustThemeProvider(
               child: Builder(
-                builder: (context) {
-                  final animations = context.justAnimations;
+                builder: (BuildContext context) {
+                  final JustMotionProfile animations = context.justAnimations;
                   expect(animations.normal, equals(Duration.zero));
                   expect(animations.defaultCurve, equals(Curves.linear));
                   return const SizedBox.shrink();
@@ -512,8 +533,8 @@ void main() {
       (WidgetTester tester) async {
         int spacingRebuildCount = 0;
 
-        final builderWidget = Builder(
-          builder: (context) {
+        final Builder builderWidget = Builder(
+          builder: (BuildContext context) {
             context.justSpacing;
             spacingRebuildCount++;
             return const SizedBox.shrink();
@@ -550,9 +571,9 @@ void main() {
 
     group('JustThemePreset Tests', () {
       test('Value equality works correctly for presets', () {
-        final defaultTheme1 = JustThemeData.light;
-        final defaultTheme2 = JustThemeData.light.copyWith();
-        final neobrutalismTheme = JustThemeData.neobrutalismLight;
+        final JustThemeData defaultTheme1 = JustThemeData.light;
+        final JustThemeData defaultTheme2 = JustThemeData.light.copyWith();
+        final JustThemeData neobrutalismTheme = JustThemeData.neobrutalismLight;
 
         expect(defaultTheme1 == defaultTheme2, isTrue);
         expect(defaultTheme1 == neobrutalismTheme, isFalse);
@@ -562,15 +583,16 @@ void main() {
       testWidgets(
         'Interactive press effects build correctly under each preset',
         (WidgetTester tester) async {
-          final key = GlobalKey();
+          final GlobalKey<State<StatefulWidget>> key = GlobalKey();
 
           // Test default preset (should use AnimatedScale)
           await tester.pumpWidget(
             JustThemeProvider(
               initialThemeMode: ThemeMode.light,
               child: Builder(
-                builder: (context) {
-                  final theme = JustThemeProvider.of(context).theme;
+                builder: (BuildContext context) {
+                  final JustThemeData theme = JustThemeProvider.of(context)
+                      .theme;
                   return theme.buildPressEffect(
                     isPressed: true,
                     child: SizedBox(key: key, width: 100, height: 100),
@@ -591,8 +613,9 @@ void main() {
               initialThemeMode: ThemeMode.light,
               lightTheme: JustThemeData.neobrutalismLight,
               child: Builder(
-                builder: (context) {
-                  final theme = JustThemeProvider.of(context).theme;
+                builder: (BuildContext context) {
+                  final JustThemeData theme = JustThemeProvider.of(context)
+                      .theme;
                   return theme.buildPressEffect(
                     isPressed: true,
                     child: SizedBox(key: key, width: 100, height: 100),
@@ -619,7 +642,7 @@ void main() {
           JustThemeProvider(
             initialThemeMode: ThemeMode.light,
             child: Builder(
-              builder: (context) {
+              builder: (BuildContext context) {
                 providerState = JustThemeProvider.read(context);
                 // Subscribe to shadows aspect (which changes when preset switches)
                 context.justShadows;
@@ -641,8 +664,9 @@ void main() {
     });
 
     group('JustPresetTokens Helpers Tests', () {
-      const defaultTokens = DefaultPresetTokens();
-      const neobrutalismTokens = NeobrutalismPresetTokens();
+      const DefaultPresetTokens defaultTokens = DefaultPresetTokens();
+      const NeobrutalismPresetTokens neobrutalismTokens =
+          NeobrutalismPresetTokens();
 
       test('Slider track height resolution', () {
         expect(
@@ -760,7 +784,7 @@ void main() {
       });
 
       test('Focus transition duration resolution', () {
-        final animations = JustThemeData.light.animations;
+        final JustMotionProfile animations = JustThemeData.light.animations;
         expect(
           defaultTokens.resolveFocusTransitionDuration(animations),
           equals(animations.fast),
@@ -780,7 +804,7 @@ void main() {
       });
 
       test('Dropdown duration resolution', () {
-        final animations = JustThemeData.light.animations;
+        final JustMotionProfile animations = JustThemeData.light.animations;
         expect(
           defaultTokens.resolveDropdownDuration(animations),
           equals(animations.fast),
@@ -802,7 +826,7 @@ void main() {
       });
 
       test('Dropdown curve resolution', () {
-        final animations = JustThemeData.light.animations;
+        final JustMotionProfile animations = JustThemeData.light.animations;
         expect(
           defaultTokens.resolveDropdownCurve(animations),
           equals(animations.defaultCurve),

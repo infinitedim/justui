@@ -76,9 +76,9 @@ void main() {
     testWidgets('JustMotionProfile resolution, equality, and hashCode', (
       WidgetTester tester,
     ) async {
-      const std = JustMotionProfile.standard;
-      const exp = JustMotionProfile.expressive;
-      const red = JustMotionProfile.reduced;
+      const JustMotionProfile std = JustMotionProfile.standard;
+      const JustMotionProfile exp = JustMotionProfile.expressive;
+      const JustMotionProfile red = JustMotionProfile.reduced;
 
       expect(std == std, isTrue);
       expect(std == JustMotionProfile.standard, isTrue);
@@ -122,9 +122,9 @@ void main() {
         );
       }
 
-      const diffDuration = Duration(milliseconds: 999);
-      const diffCurve = Curves.bounceIn;
-      const diffPhysics = SpringDescription(
+      const Duration diffDuration = Duration(milliseconds: 999);
+      const Curve diffCurve = Curves.bounceIn;
+      const SpringDescription diffPhysics = SpringDescription(
         mass: 2.0,
         stiffness: 200,
         damping: 20,
@@ -146,8 +146,8 @@ void main() {
         MediaQuery(
           data: const MediaQueryData(disableAnimations: false),
           child: Builder(
-            builder: (context) {
-              final resolved = std.resolve(context);
+            builder: (BuildContext context) {
+              final JustMotionProfile resolved = std.resolve(context);
               expect(resolved.normal, equals(JustDuration.normal));
               return const SizedBox.shrink();
             },
@@ -159,8 +159,8 @@ void main() {
         MediaQuery(
           data: const MediaQueryData(disableAnimations: true),
           child: Builder(
-            builder: (context) {
-              final resolved = std.resolve(context);
+            builder: (BuildContext context) {
+              final JustMotionProfile resolved = std.resolve(context);
               expect(resolved.normal, equals(Duration.zero));
               return const SizedBox.shrink();
             },

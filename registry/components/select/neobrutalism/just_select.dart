@@ -2,10 +2,13 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart'
     show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/preset_tokens.dart';
+import 'package:just_ui_core/src/theme/theme_data.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart' show JustColorScheme;
 
 import '../../theme/theme_provider.dart';
-import '../shared/just_focus_indicator.dart';
-import '../shared/just_pressable.dart';
+import '../shared/_shared_focus_indicator.dart';
+import '../shared/_shared_pressable.dart';
 import 'just_select_style.dart';
 import 'just_select_theme.dart';
 import 'just_select_variants.dart';
@@ -151,7 +154,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     if (!widget.searchable || _searchQuery.isEmpty) {
       return widget.options;
     }
-    return widget.options.where((option) {
+    return widget.options.where((JustSelectOption<T> option) {
       if (option.isDivider) return true;
       return option.label.toLowerCase().contains(_searchQuery.toLowerCase());
     }).toList();
@@ -198,7 +201,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent) return .ignored;
 
-    final filtered = _filteredOptions;
+    final List<JustSelectOption<T>> filtered = _filteredOptions;
     if (!_overlayController.isShowing) {
       if (event.logicalKey == .enter ||
           event.logicalKey == .space ||
@@ -236,7 +239,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   }
 
   void _moveFocus(int direction) {
-    final filtered = _filteredOptions;
+    final List<JustSelectOption<T>> filtered = _filteredOptions;
     if (filtered.isEmpty) return;
 
     int newIndex = _focusedOptionIndex;
@@ -264,7 +267,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   void _scrollToFocusedOption() {
     if (!_optionScrollController.hasClients || _focusedOptionIndex < 0) return;
     const double itemHeight = 36.0;
-    final targetOffset = _focusedOptionIndex * itemHeight;
+    final double targetOffset = _focusedOptionIndex * itemHeight;
     final double viewportHeight =
         _optionScrollController.position.viewportDimension;
     final double currentScroll = _optionScrollController.offset;
@@ -280,22 +283,26 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final selectTheme = Theme.of(context).extension<JustSelectTheme>();
-    final themeStyle = selectTheme?.style;
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustSelectTheme? selectTheme = Theme.of(context)
+        .extension<JustSelectTheme>();
+    final JustSelectStyle? themeStyle = selectTheme?.style;
 
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final radius = customTheme.radius;
-    final shadows = customTheme.shadows;
-    final typography = JustThemeProvider.of(
+    final JustRadiusScheme radius = customTheme.radius;
+    final JustShadowScheme shadows = customTheme.shadows;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final presetTokens = customTheme.presetTokens;
+    final JustPresetTokens presetTokens = customTheme.presetTokens;
 
     // Resolve Size Properties
     double height;
@@ -321,33 +328,34 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     }
 
     // Style Resolution
-    final finalBg =
+    final Color finalBg =
         widget.style?.triggerBackgroundColor ??
         themeStyle?.triggerBackgroundColor ??
         colors.background;
-    final finalBorderColor =
+    final Color finalBorderColor =
         widget.style?.triggerBorderColor ??
         themeStyle?.triggerBorderColor ??
         colors.borderDefault;
-    final finalTextColor =
+    final Color finalTextColor =
         widget.style?.textColor ?? themeStyle?.textColor ?? colors.textPrimary;
-    final finalPlaceholderColor =
+    final Color finalPlaceholderColor =
         widget.style?.placeholderColor ??
         themeStyle?.placeholderColor ??
         colors.textSecondary;
-    final finalRadius =
+    final BorderRadius finalRadius =
         widget.style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius;
 
-    final selectedOption = widget.options
+    final JustSelectOption<T>? selectedOption = widget.options
         .cast<JustSelectOption<T>?>()
         .firstWhere(
-          (opt) => opt != null && !opt.isDivider && opt.value == widget.value,
+          (JustSelectOption<T>? opt) =>
+              opt != null && !opt.isDivider && opt.value == widget.value,
           orElse: () => null,
         );
 
-    final hasError = widget.errorText != null;
+    final bool hasError = widget.errorText != null;
 
-    final triggerDecoration = BoxDecoration(
+    final BoxDecoration triggerDecoration = BoxDecoration(
       color: widget.enabled ? finalBg : finalBg.withValues(alpha: 0.5),
       border: .all(
         color: hasError
@@ -362,7 +370,8 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
 
     final Widget triggerChild = Focus(
       focusNode: _triggerFocusNode,
-      onKeyEvent: (node, event) => _handleKeyEvent(node, event),
+      onKeyEvent: (FocusNode node, KeyEvent event) =>
+          _handleKeyEvent(node, event),
       child: JustPressable(
         enabled: widget.enabled,
         onTap: _toggleDropdown,
@@ -372,16 +381,16 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
             padding: .symmetric(horizontal: spacing.md),
             decoration: triggerDecoration,
             child: Row(
-              children: [
-                if (widget.prefixIcon != null) ...[
+              children: <Widget>[
+                if (widget.prefixIcon != null) ...<Widget>[
                   widget.prefixIcon!,
                   SizedBox(width: spacing.sm),
                 ],
                 Expanded(
                   child: selectedOption != null
                       ? Row(
-                          children: [
-                            if (selectedOption.icon != null) ...[
+                          children: <Widget>[
+                            if (selectedOption.icon != null) ...<Widget>[
                               selectedOption.icon!,
                               SizedBox(width: spacing.sm),
                             ],
@@ -458,8 +467,8 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       child: Column(
         crossAxisAlignment: .start,
         mainAxisSize: .min,
-        children: [
-          if (widget.label != null) ...[
+        children: <Widget>[
+          if (widget.label != null) ...<Widget>[
             Text(
               widget.label!,
               style: typography.bodySm.copyWith(
@@ -471,14 +480,14 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
           ],
           OverlayPortal.overlayChildLayoutBuilder(
             controller: _overlayController,
-            overlayChildBuilder: (context, info) {
-              final targetOffset = MatrixUtils.transformPoint(
+            overlayChildBuilder: (BuildContext context, OverlayChildLayoutInfo info) {
+              final Offset targetOffset = MatrixUtils.transformPoint(
                 info.childPaintTransform,
                 .zero,
               );
-              final triggerHeight = info.childSize.height;
-              final triggerWidth = info.childSize.width;
-              final screenHeight = MediaQuery.sizeOf(context).height;
+              final double triggerHeight = info.childSize.height;
+              final double triggerWidth = info.childSize.width;
+              final double screenHeight = MediaQuery.sizeOf(context).height;
 
               // Calculate flip logic
               final double dropdownHeight = widget.maxDropdownHeight.toDouble();
@@ -497,14 +506,14 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                 topPosition = targetOffset.dy - dropdownHeight - spacing.xs;
               }
 
-              final filtered = _filteredOptions;
+              final List<JustSelectOption<T>> filtered = _filteredOptions;
 
-              final dropdownContainerBg =
+              final Color dropdownContainerBg =
                   widget.style?.dropdownBackgroundColor ??
                   themeStyle?.dropdownBackgroundColor ??
                   colors.background;
 
-              final dropdownDecoration = BoxDecoration(
+              final BoxDecoration dropdownDecoration = BoxDecoration(
                 color: dropdownContainerBg,
                 border: .all(
                   color: presetTokens.showsDefaultBorder
@@ -516,7 +525,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                     ? .zero
                     : finalRadius,
                 boxShadow: presetTokens.showsDefaultBorder
-                    ? [
+                    ? <BoxShadow>[
                         BoxShadow(
                           color: colors.textPrimary,
                           offset: const Offset(6, 6),
@@ -531,13 +540,13 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                 height: dropdownHeight,
                 decoration: dropdownDecoration,
                 child: Column(
-                  children: [
+                  children: <Widget>[
                     if (widget.searchable)
                       Padding(
                         padding: .all(spacing.sm),
                         child: Focus(
                           focusNode: _searchFocusNode,
-                          onKeyEvent: (node, event) =>
+                          onKeyEvent: (FocusNode node, KeyEvent event) =>
                               _handleKeyEvent(node, event),
                           child: Container(
                             height: 36,
@@ -555,7 +564,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                             ),
                             padding: .symmetric(horizontal: spacing.sm),
                             child: Row(
-                              children: [
+                              children: <Widget>[
                                 Icon(
                                   const IconData(
                                     0xe554,
@@ -600,8 +609,9 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                               controller: _optionScrollController,
                               padding: .zero,
                               itemCount: filtered.length,
-                              itemBuilder: (context, index) {
-                                final option = filtered[index];
+                              itemBuilder: (BuildContext context, int index) {
+                                final JustSelectOption<T> option =
+                                    filtered[index];
 
                                 if (option.isDivider) {
                                   return Container(
@@ -611,11 +621,12 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                   );
                                 }
 
-                                final isSelected = option.value == widget.value;
-                                final isKeyboardFocused =
+                                final bool isSelected =
+                                    option.value == widget.value;
+                                final bool isKeyboardFocused =
                                     index == _focusedOptionIndex;
 
-                                final optionBg = isSelected
+                                final Color optionBg = isSelected
                                     ? (presetTokens.showsDefaultBorder
                                           ? colors.textPrimary
                                           : (widget
@@ -628,7 +639,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                                 )))
                                     : const Color(0x00000000);
 
-                                final optionText = isSelected
+                                final Color optionText = isSelected
                                     ? (presetTokens.showsDefaultBorder
                                           ? colors.textInverse
                                           : (widget.style?.textColor ??
@@ -648,8 +659,8 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                         BuildContext context,
                                         JustInteractionState state,
                                       ) {
-                                        final isHovered = state.isHovered;
-                                        final showHover =
+                                        final bool isHovered = state.isHovered;
+                                        final bool showHover =
                                             isHovered || isKeyboardFocused;
                                         Color itemBg = optionBg;
 
@@ -682,8 +693,9 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                                 : null,
                                           ),
                                           child: Row(
-                                            children: [
-                                              if (option.icon != null) ...[
+                                            children: <Widget>[
+                                              if (option.icon !=
+                                                  null) ...<Widget>[
                                                 option.icon!,
                                                 SizedBox(width: spacing.sm),
                                               ],
@@ -701,7 +713,9 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                                               ),
                                               if (isSelected &&
                                                   !presetTokens
-                                                      .showsDefaultBorder) ...[
+                                                      .showsDefaultBorder) ...<
+                                                Widget
+                                              >[
                                                 SizedBox(width: spacing.sm),
                                                 Icon(
                                                   const IconData(
@@ -725,10 +739,10 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
               );
 
               dropdownContent = TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0.0, end: 1.0),
+                tween: Tween<double>(begin: 0.0, end: 1.0),
                 duration: presetTokens.dropdownOpenDuration,
                 curve: presetTokens.dropdownOpenCurve,
-                builder: (context, val, child) {
+                builder: (BuildContext context, double val, Widget? child) {
                   return Opacity(
                     opacity: val,
                     child: Transform.translate(
@@ -741,7 +755,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
               );
 
               return Stack(
-                children: [
+                children: <Widget>[
                   GestureDetector(
                     behavior: HitTestBehavior.translucent,
                     onTap: _closeDropdown,
@@ -757,7 +771,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
             },
             child: triggerChild,
           ),
-          if (hasError) ...[
+          if (hasError) ...<Widget>[
             SizedBox(height: spacing.xs),
             Text(
               widget.errorText!,

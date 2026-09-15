@@ -49,7 +49,7 @@ class _JustPressableState extends State<JustPressable> {
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_onFocusChanged);
     FocusManager.instance.addHighlightModeListener(_onHighlightModeChanged);
-    _statesListenable = .merge([
+    _statesListenable = .merge(<Listenable?>[
       _isHovered,
       _isPressed,
       _isFocused,
@@ -103,7 +103,7 @@ class _JustPressableState extends State<JustPressable> {
   void _handleTapDown(TapDownDetails details) {
     if (widget.enabled) {
       _isPressed.value = true;
-      final shouldHaptic =
+      final bool shouldHaptic =
           widget.enableHapticFeedback ??
           (defaultTargetPlatform == .iOS || defaultTargetPlatform == .android);
       if (shouldHaptic) {
@@ -144,7 +144,7 @@ class _JustPressableState extends State<JustPressable> {
       canRequestFocus: widget.enabled,
       onKeyEvent:
           widget.onKeyEvent ??
-          (node, event) {
+          (FocusNode node, KeyEvent event) {
             if (!widget.enabled ||
                 widget.onTap == null ||
                 event is! KeyDownEvent) {
@@ -169,7 +169,7 @@ class _JustPressableState extends State<JustPressable> {
           onTap: widget.enabled ? widget.onTap : null,
           child: AnimatedBuilder(
             animation: _statesListenable,
-            builder: (context, _) {
+            builder: (BuildContext context, _) {
               return widget.builder(
                 context,
                 JustInteractionState(

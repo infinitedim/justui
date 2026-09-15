@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/date_picker/_date_picker_calendar.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_picker.dart';
+import 'package:just_ui_core/src/components/date_picker/just_date_picker_variants.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_range_picker.dart';
 
 void main() {
@@ -19,16 +20,16 @@ void main() {
 
   group('JustDatePicker Widget Tests', () {
     testWidgets('Renders inline date picker and selects a date', (
-      tester,
+      WidgetTester tester,
     ) async {
       DateTime? selectedDate;
-      final initialDate = DateTime(2026, 8, 15);
+      final DateTime initialDate = DateTime(2026, 8, 15);
 
       await tester.pumpWidget(
         buildTestApp(
           JustDatePicker.inline(
             value: initialDate,
-            onChanged: (date) => selectedDate = date,
+            onChanged: (DateTime date) => selectedDate = date,
           ),
         ),
       );
@@ -45,12 +46,12 @@ void main() {
     });
 
     testWidgets('Restricts date selection with firstDate and lastDate', (
-      tester,
+      WidgetTester tester,
     ) async {
       DateTime? selectedDate;
-      final initialDate = DateTime(2026, 8, 15);
-      final firstDate = DateTime(2026, 8, 10);
-      final lastDate = DateTime(2026, 8, 25);
+      final DateTime initialDate = DateTime(2026, 8, 15);
+      final DateTime firstDate = DateTime(2026, 8, 10);
+      final DateTime lastDate = DateTime(2026, 8, 25);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -58,7 +59,7 @@ void main() {
             value: initialDate,
             firstDate: firstDate,
             lastDate: lastDate,
-            onChanged: (date) => selectedDate = date,
+            onChanged: (DateTime date) => selectedDate = date,
           ),
         ),
       );
@@ -74,8 +75,10 @@ void main() {
       expect(selectedDate, equals(DateTime(2026, 8, 20)));
     });
 
-    testWidgets('Navigates months using chevron arrows', (tester) async {
-      final initialDate = DateTime(2026, 8, 15);
+    testWidgets('Navigates months using chevron arrows', (
+      WidgetTester tester,
+    ) async {
+      final DateTime initialDate = DateTime(2026, 8, 15);
 
       await tester.pumpWidget(
         buildTestApp(JustDatePicker.inline(value: initialDate)),
@@ -96,15 +99,22 @@ void main() {
       expect(find.text('August 2026'), findsOneWidget);
     });
 
-    testWidgets('Supports custom headerBuilder', (tester) async {
-      final initialDate = DateTime(2026, 8, 15);
+    testWidgets('Supports custom headerBuilder', (WidgetTester tester) async {
+      final DateTime initialDate = DateTime(2026, 8, 15);
 
       await tester.pumpWidget(
         buildTestApp(
           JustDatePicker.inline(
             value: initialDate,
             headerBuilder:
-                (context, activeDate, view, toggleView, onPrev, onNext) {
+                (
+                  BuildContext context,
+                  DateTime activeDate,
+                  JustCalendarView view,
+                  VoidCallback toggleView,
+                  void Function() onPrev,
+                  void Function() onNext,
+                ) {
                   return Text(
                     'Custom Header ${activeDate.month}/${activeDate.year}',
                   );
@@ -117,16 +127,16 @@ void main() {
     });
 
     testWidgets('Renders dropdown variant and toggles popup overlay', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final initialDate = DateTime(2026, 8, 15);
+      final DateTime initialDate = DateTime(2026, 8, 15);
 
       await tester.pumpWidget(
         buildTestApp(
           JustDatePicker.dropdown(
             value: initialDate,
             placeholder: 'Select date',
-            onChanged: (date) {},
+            onChanged: (DateTime date) {},
           ),
         ),
       );
@@ -143,7 +153,7 @@ void main() {
   });
 
   group('JustDateRangePicker Widget Tests', () {
-    testWidgets('Selects date range via two taps', (tester) async {
+    testWidgets('Selects date range via two taps', (WidgetTester tester) async {
       DateTimeRange? selectedRange;
 
       await tester.pumpWidget(
@@ -171,7 +181,9 @@ void main() {
       expect(selectedRange!.end, equals(DateTime(2026, 8, 20)));
     });
 
-    testWidgets('Triggers range preset button selection', (tester) async {
+    testWidgets('Triggers range preset button selection', (
+      WidgetTester tester,
+    ) async {
       DateTimeRange? selectedRange;
 
       await tester.pumpWidget(
@@ -195,7 +207,9 @@ void main() {
   });
 
   group('Neobrutalism Theme Preset Integration', () {
-    testWidgets('Renders DatePicker under Neobrutalism preset', (tester) async {
+    testWidgets('Renders DatePicker under Neobrutalism preset', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           JustDatePicker.inline(value: DateTime(2026, 8, 15)),

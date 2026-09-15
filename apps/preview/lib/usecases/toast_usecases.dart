@@ -8,27 +8,27 @@ import 'package:just_ui_core/src/components/button/just_button.dart';
 
 @widgetbook.UseCase(name: 'Toast Notification Trigger', type: JustToastScope)
 Widget buildJustToastDefaultUseCase(BuildContext context) {
-  final variant = context.knobs.object.dropdown<ToastVariant>(
+  final ToastVariant variant = context.knobs.object.dropdown<ToastVariant>(
     label: 'Variant',
     options: ToastVariant.values,
     initialOption: ToastVariant.success,
   );
-  final message = context.knobs.string(
+  final String message = context.knobs.string(
     label: 'Message',
     initialValue: 'Changes saved successfully!',
   );
-  final limit = context.knobs.int.slider(
+  final int limit = context.knobs.int.slider(
     label: 'Max Toast Limit',
     initialValue: 3,
     min: 1,
     max: 10,
   );
-  final behavior = context.knobs.object.dropdown<ToastBehavior>(
+  final ToastBehavior behavior = context.knobs.object.dropdown<ToastBehavior>(
     label: 'Behavior',
     options: ToastBehavior.values,
     initialOption: ToastBehavior.stacked,
   );
-  final position = context.knobs.object.dropdown<ToastPosition>(
+  final ToastPosition position = context.knobs.object.dropdown<ToastPosition>(
     label: 'Position',
     options: ToastPosition.values,
     initialOption: ToastPosition.bottomCenter,
@@ -61,12 +61,14 @@ class _ToastDemoView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return JustToastScope(
-      key: ValueKey('toast_scope_${limit}_${behavior.name}_${position.name}'),
+      key: ValueKey<String>(
+        'toast_scope_${limit}_${behavior.name}_${position.name}',
+      ),
       limit: limit,
       behavior: behavior,
       position: position,
       child: Builder(
-        builder: (scopeContext) {
+        builder: (BuildContext scopeContext) {
           return Center(
             child: JustButton.primary(
               label: 'Trigger ${variant.name} Toast',
