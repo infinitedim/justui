@@ -22,7 +22,7 @@ Widget buildTestApp(
 void main() {
   group('JustCarousel Core Engine & Looping Math', () {
     testWidgets('Renders items horizontally and displays initial page', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
@@ -30,7 +30,11 @@ void main() {
             width: 400.0,
             height: 300.0,
             child: JustCarousel(
-              children: [Text('Slide 0'), Text('Slide 1'), Text('Slide 2')],
+              children: <Widget>[
+                Text('Slide 0'),
+                Text('Slide 1'),
+                Text('Slide 2'),
+              ],
             ),
           ),
         ),
@@ -41,7 +45,7 @@ void main() {
     });
 
     testWidgets('Renders items vertically when orientation is Axis.vertical', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
@@ -50,7 +54,7 @@ void main() {
             height: 300.0,
             child: JustCarousel(
               orientation: Axis.vertical,
-              children: [Text('Vertical 0'), Text('Vertical 1')],
+              children: <Widget>[Text('Vertical 0'), Text('Vertical 1')],
             ),
           ),
         ),
@@ -67,8 +71,8 @@ void main() {
 
     testWidgets(
       'Infinite looping wraps backwards to last slide on left-to-right swipe',
-      (tester) async {
-        final controller = JustCarouselController();
+      (WidgetTester tester) async {
+        final JustCarouselController controller = JustCarouselController();
 
         await tester.pumpWidget(
           buildTestApp(
@@ -78,7 +82,7 @@ void main() {
               child: JustCarousel(
                 controller: controller,
                 loop: true,
-                children: const [
+                children: const <Widget>[
                   Text('Slide 0'),
                   Text('Slide 1'),
                   Text('Slide 2'),
@@ -101,8 +105,10 @@ void main() {
 
     testWidgets(
       'Infinite looping wraps forwards to first slide on right-to-left swipe',
-      (tester) async {
-        final controller = JustCarouselController(initialPage: 2);
+      (WidgetTester tester) async {
+        final JustCarouselController controller = JustCarouselController(
+          initialPage: 2,
+        );
 
         await tester.pumpWidget(
           buildTestApp(
@@ -113,7 +119,7 @@ void main() {
                 controller: controller,
                 initialPage: 2,
                 loop: true,
-                children: const [
+                children: const <Widget>[
                   Text('Slide 0'),
                   Text('Slide 1'),
                   Text('Slide 2'),
@@ -136,9 +142,9 @@ void main() {
     );
 
     testWidgets('Single-item carousel disables looping without crashing', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = JustCarouselController();
+      final JustCarouselController controller = JustCarouselController();
 
       await tester.pumpWidget(
         buildTestApp(
@@ -148,7 +154,7 @@ void main() {
             child: JustCarousel(
               controller: controller,
               loop: true, // Should be auto-disabled because length <= 1
-              children: const [Text('Single Item')],
+              children: const <Widget>[Text('Single Item')],
             ),
           ),
         ),
@@ -174,16 +180,19 @@ void main() {
     });
 
     testWidgets('Empty carousel renders safely with SizedBox.shrink', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = JustCarouselController();
+      final JustCarouselController controller = JustCarouselController();
 
       await tester.pumpWidget(
         buildTestApp(
           SizedBox(
             width: 400.0,
             height: 300.0,
-            child: JustCarousel(controller: controller, children: const []),
+            child: JustCarousel(
+              controller: controller,
+              children: const <Widget>[],
+            ),
           ),
         ),
       );
@@ -201,9 +210,9 @@ void main() {
 
   group('JustCarouselController Programmatic Navigation', () {
     testWidgets('next() and previous() advance and retreat slides', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = JustCarouselController();
+      final JustCarouselController controller = JustCarouselController();
 
       await tester.pumpWidget(
         buildTestApp(
@@ -212,7 +221,7 @@ void main() {
             height: 300.0,
             child: JustCarousel(
               controller: controller,
-              children: const [
+              children: const <Widget>[
                 Text('Slide 0'),
                 Text('Slide 1'),
                 Text('Slide 2'),
@@ -245,9 +254,9 @@ void main() {
 
     testWidgets(
       'pageListenable triggers synchronously without carousel rebuilds',
-      (tester) async {
-        final controller = JustCarouselController();
-        final observedPages = <int>[];
+      (WidgetTester tester) async {
+        final JustCarouselController controller = JustCarouselController();
+        final List<int> observedPages = <int>[];
 
         controller.pageListenable.addListener(() {
           observedPages.add(controller.pageListenable.value);
@@ -260,7 +269,7 @@ void main() {
               height: 300.0,
               child: JustCarousel(
                 controller: controller,
-                children: const [
+                children: const <Widget>[
                   Text('Slide 0'),
                   Text('Slide 1'),
                   Text('Slide 2'),
@@ -282,9 +291,9 @@ void main() {
     );
 
     testWidgets('animateToPage uses shortest circular path in loop mode', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = JustCarouselController();
+      final JustCarouselController controller = JustCarouselController();
 
       await tester.pumpWidget(
         buildTestApp(
@@ -294,7 +303,7 @@ void main() {
             child: JustCarousel(
               controller: controller,
               loop: true,
-              children: const [
+              children: const <Widget>[
                 Text('Slide 0'),
                 Text('Slide 1'),
                 Text('Slide 2'),
@@ -324,9 +333,9 @@ void main() {
     });
 
     testWidgets('jumpToPage updates immediately without animation duration', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = JustCarouselController();
+      final JustCarouselController controller = JustCarouselController();
 
       await tester.pumpWidget(
         buildTestApp(
@@ -335,7 +344,7 @@ void main() {
             height: 300.0,
             child: JustCarousel(
               controller: controller,
-              children: const [
+              children: const <Widget>[
                 Text('Slide 0'),
                 Text('Slide 1'),
                 Text('Slide 2'),
@@ -354,8 +363,8 @@ void main() {
 
     testWidgets(
       'Non-looping carousel respects boundaries for next and previous',
-      (tester) async {
-        final controller = JustCarouselController();
+      (WidgetTester tester) async {
+        final JustCarouselController controller = JustCarouselController();
 
         await tester.pumpWidget(
           buildTestApp(
@@ -365,7 +374,7 @@ void main() {
               child: JustCarousel(
                 controller: controller,
                 loop: false,
-                children: const [Text('Slide 0'), Text('Slide 1')],
+                children: const <Widget>[Text('Slide 0'), Text('Slide 1')],
               ),
             ),
           ),
@@ -391,9 +400,11 @@ void main() {
 
   group('JustCarousel Dynamic Updates & Lifecycle', () {
     testWidgets('didUpdateWidget updates safely when children count changes', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = JustCarouselController(initialPage: 2);
+      final JustCarouselController controller = JustCarouselController(
+        initialPage: 2,
+      );
 
       await tester.pumpWidget(
         buildTestApp(
@@ -402,7 +413,11 @@ void main() {
             height: 300.0,
             child: JustCarousel(
               controller: controller,
-              children: const [Text('Item 0'), Text('Item 1'), Text('Item 2')],
+              children: const <Widget>[
+                Text('Item 0'),
+                Text('Item 1'),
+                Text('Item 2'),
+              ],
             ),
           ),
         ),
@@ -418,7 +433,7 @@ void main() {
             height: 300.0,
             child: JustCarousel(
               controller: controller,
-              children: const [Text('Item 0'), Text('Item 1')],
+              children: const <Widget>[Text('Item 0'), Text('Item 1')],
             ),
           ),
         ),
@@ -431,7 +446,7 @@ void main() {
     });
 
     test('Detached controller calls do not throw', () async {
-      final controller = JustCarouselController();
+      final JustCarouselController controller = JustCarouselController();
       expect(controller.isAttached, isFalse);
 
       await controller.next();
@@ -444,7 +459,9 @@ void main() {
 
   group('JustCarousel Theme & Style Specifications', () {
     test('JustCarouselTheme.fromTheme resolves tokens correctly', () {
-      final theme = JustCarouselTheme.fromTheme(JustThemeData.light);
+      final JustCarouselTheme theme = JustCarouselTheme.fromTheme(
+        JustThemeData.light,
+      );
       expect(theme.indicatorColor, JustThemeData.light.colors.borderDefault);
       expect(
         theme.activeIndicatorColor,
@@ -458,7 +475,9 @@ void main() {
     test(
       'JustCarouselTheme.neobrutalism matches high-contrast specifications',
       () {
-        final theme = JustCarouselTheme.neobrutalism(JustThemeData.light);
+        final JustCarouselTheme theme = JustCarouselTheme.neobrutalism(
+          JustThemeData.light,
+        );
         expect(
           theme.activeIndicatorColor,
           JustThemeData.light.colors.textPrimary,
@@ -471,29 +490,33 @@ void main() {
     test(
       'JustCarouselStyle and JustCarouselTheme support copyWith and lerp',
       () {
-        const styleA = JustCarouselStyle(
+        const JustCarouselStyle styleA = JustCarouselStyle(
           viewportFraction: 0.8,
           indicatorSize: 6.0,
         );
-        const styleB = JustCarouselStyle(
+        const JustCarouselStyle styleB = JustCarouselStyle(
           viewportFraction: 1.0,
           indicatorSize: 10.0,
         );
 
-        final lerpedStyle = JustCarouselStyle.lerp(styleA, styleB, 0.5);
+        final JustCarouselStyle? lerpedStyle = JustCarouselStyle.lerp(
+          styleA,
+          styleB,
+          0.5,
+        );
         expect(lerpedStyle?.viewportFraction, closeTo(0.9, 0.001));
         expect(lerpedStyle?.indicatorSize, closeTo(8.0, 0.001));
 
-        const themeA = JustCarouselTheme(
+        const JustCarouselTheme themeA = JustCarouselTheme(
           viewportFraction: 0.8,
           indicatorSize: 6.0,
         );
-        const themeB = JustCarouselTheme(
+        const JustCarouselTheme themeB = JustCarouselTheme(
           viewportFraction: 1.0,
           indicatorSize: 10.0,
         );
 
-        final lerpedTheme = themeA.lerp(themeB, 0.5);
+        final JustCarouselTheme lerpedTheme = themeA.lerp(themeB, 0.5);
         expect(lerpedTheme.viewportFraction, closeTo(0.9, 0.001));
         expect(lerpedTheme.indicatorSize, closeTo(8.0, 0.001));
       },
@@ -503,8 +526,8 @@ void main() {
   group('JustCarousel Auto-Scroll Lifecycle', () {
     testWidgets(
       'Auto-scroll timer advances slides automatically after interval',
-      (tester) async {
-        final controller = JustCarouselController();
+      (WidgetTester tester) async {
+        final JustCarouselController controller = JustCarouselController();
 
         await tester.pumpWidget(
           buildTestApp(
@@ -517,7 +540,7 @@ void main() {
                   interval: Duration(seconds: 2),
                   animationDuration: Duration(milliseconds: 200),
                 ),
-                children: const [
+                children: const <Widget>[
                   Text('Slide 0'),
                   Text('Slide 1'),
                   Text('Slide 2'),
@@ -538,8 +561,10 @@ void main() {
       },
     );
 
-    testWidgets('Auto-scroll pauses on mouse hover', (tester) async {
-      final controller = JustCarouselController();
+    testWidgets('Auto-scroll pauses on mouse hover', (
+      WidgetTester tester,
+    ) async {
+      final JustCarouselController controller = JustCarouselController();
 
       await tester.pumpWidget(
         buildTestApp(
@@ -552,7 +577,7 @@ void main() {
                 interval: Duration(seconds: 2),
                 pauseOnHover: true,
               ),
-              children: const [Text('Slide 0'), Text('Slide 1')],
+              children: const <Widget>[Text('Slide 0'), Text('Slide 1')],
             ),
           ),
         ),
@@ -561,7 +586,9 @@ void main() {
       expect(controller.currentIndex, 0);
 
       // Simulate mouse enter
-      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      final TestGesture gesture = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
       await gesture.addPointer(location: Offset.zero);
       await gesture.moveTo(tester.getCenter(find.text('Slide 0')));
       await tester.pump();
@@ -587,8 +614,8 @@ void main() {
 
     testWidgets(
       'Auto-scroll pauses during touch drag and resumes on scroll end',
-      (tester) async {
-        final controller = JustCarouselController();
+      (WidgetTester tester) async {
+        final JustCarouselController controller = JustCarouselController();
 
         await tester.pumpWidget(
           buildTestApp(
@@ -601,7 +628,7 @@ void main() {
                   interval: Duration(seconds: 2),
                   pauseOnTouch: true,
                 ),
-                children: const [
+                children: const <Widget>[
                   Text('Slide 0'),
                   Text('Slide 1'),
                   Text('Slide 2'),
@@ -628,9 +655,11 @@ void main() {
     );
 
     testWidgets('Auto-scroll stops when reaching end of non-looping carousel', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = JustCarouselController(initialPage: 1);
+      final JustCarouselController controller = JustCarouselController(
+        initialPage: 1,
+      );
 
       await tester.pumpWidget(
         buildTestApp(
@@ -644,7 +673,7 @@ void main() {
               autoScroll: const JustCarouselAutoScroll(
                 interval: Duration(seconds: 1),
               ),
-              children: const [Text('Slide 0'), Text('Slide 1')],
+              children: const <Widget>[Text('Slide 0'), Text('Slide 1')],
             ),
           ),
         ),
@@ -663,9 +692,9 @@ void main() {
 
   group('JustCarousel Interactive Indicators', () {
     testWidgets('Tapping dot indicator navigates directly to target slide', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = JustCarouselController();
+      final JustCarouselController controller = JustCarouselController();
 
       await tester.pumpWidget(
         buildTestApp(
@@ -675,7 +704,7 @@ void main() {
             child: JustCarousel(
               controller: controller,
               indicator: JustCarouselIndicator.dots,
-              children: const [
+              children: const <Widget>[
                 Text('Slide 0'),
                 Text('Slide 1'),
                 Text('Slide 2'),
@@ -688,7 +717,7 @@ void main() {
       expect(controller.currentIndex, 0);
 
       // Tap on dot for Slide 2
-      final dotFinder = find.bySemanticsLabel('Slide 3');
+      final Finder dotFinder = find.bySemanticsLabel('Slide 3');
       expect(dotFinder, findsOneWidget);
 
       await tester.tap(dotFinder);
@@ -698,7 +727,9 @@ void main() {
       expect(controller.currentIndex, 2);
     });
 
-    testWidgets('Renders line indicator without throwing', (tester) async {
+    testWidgets('Renders line indicator without throwing', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           const SizedBox(
@@ -706,7 +737,7 @@ void main() {
             height: 300.0,
             child: JustCarousel(
               indicator: JustCarouselIndicator.line,
-              children: [Text('Slide 0'), Text('Slide 1')],
+              children: <Widget>[Text('Slide 0'), Text('Slide 1')],
             ),
           ),
         ),
@@ -717,9 +748,9 @@ void main() {
     });
 
     testWidgets('Renders fraction indicator with formatted text', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = JustCarouselController();
+      final JustCarouselController controller = JustCarouselController();
 
       await tester.pumpWidget(
         buildTestApp(
@@ -729,7 +760,7 @@ void main() {
             child: JustCarousel(
               controller: controller,
               indicator: JustCarouselIndicator.fraction,
-              children: const [
+              children: const <Widget>[
                 Text('Slide 0'),
                 Text('Slide 1'),
                 Text('Slide 2'),
@@ -749,7 +780,7 @@ void main() {
 
     testWidgets(
       'indicatorPosition.outside renders flex layout adjacent to viewport',
-      (tester) async {
+      (WidgetTester tester) async {
         await tester.pumpWidget(
           buildTestApp(
             const SizedBox(
@@ -758,7 +789,7 @@ void main() {
               child: JustCarousel(
                 indicator: JustCarouselIndicator.dots,
                 indicatorPosition: JustCarouselIndicatorPosition.outside,
-                children: [Text('Slide 0'), Text('Slide 1')],
+                children: <Widget>[Text('Slide 0'), Text('Slide 1')],
               ),
             ),
           ),
@@ -772,7 +803,7 @@ void main() {
 
   group('JustCarousel Slide Transitions', () {
     testWidgets('Scale transition applies Transform.scale to slides', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
@@ -781,7 +812,7 @@ void main() {
             height: 300.0,
             child: JustCarousel(
               transition: JustCarouselTransition.scale,
-              children: [Text('Slide 0'), Text('Slide 1')],
+              children: <Widget>[Text('Slide 0'), Text('Slide 1')],
             ),
           ),
         ),
@@ -791,7 +822,9 @@ void main() {
       expect(find.text('Slide 0'), findsOneWidget);
     });
 
-    testWidgets('Fade transition applies Opacity to slides', (tester) async {
+    testWidgets('Fade transition applies Opacity to slides', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           const SizedBox(
@@ -799,7 +832,7 @@ void main() {
             height: 300.0,
             child: JustCarousel(
               transition: JustCarouselTransition.fade,
-              children: [Text('Slide 0'), Text('Slide 1')],
+              children: <Widget>[Text('Slide 0'), Text('Slide 1')],
             ),
           ),
         ),
@@ -811,20 +844,21 @@ void main() {
 
     testWidgets(
       'Custom transitionBuilder transforms child with continuous progress',
-      (tester) async {
+      (WidgetTester tester) async {
         await tester.pumpWidget(
           buildTestApp(
             SizedBox(
               width: 400.0,
               height: 300.0,
               child: JustCarousel(
-                transitionBuilder: (context, child, progress) {
-                  return RotatedBox(
-                    quarterTurns: progress.round(),
-                    child: child,
-                  );
-                },
-                children: const [Text('Slide 0'), Text('Slide 1')],
+                transitionBuilder:
+                    (BuildContext context, Widget child, double progress) {
+                      return RotatedBox(
+                        quarterTurns: progress.round(),
+                        child: child,
+                      );
+                    },
+                children: const <Widget>[Text('Slide 0'), Text('Slide 1')],
               ),
             ),
           ),
@@ -838,9 +872,9 @@ void main() {
 
   group('JustCarousel Desktop Wheel & Keyboard A11y', () {
     testWidgets('PointerScrollEvent navigates to next and previous slide', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = JustCarouselController();
+      final JustCarouselController controller = JustCarouselController();
 
       await tester.pumpWidget(
         buildTestApp(
@@ -850,7 +884,7 @@ void main() {
             child: JustCarousel(
               controller: controller,
               enableMouseWheel: true,
-              children: const [
+              children: const <Widget>[
                 Text('Slide 0'),
                 Text('Slide 1'),
                 Text('Slide 2'),
@@ -863,7 +897,7 @@ void main() {
       expect(controller.currentIndex, 0);
 
       // Send scroll down (positive delta -> next)
-      final center = tester.getCenter(find.text('Slide 0'));
+      final Offset center = tester.getCenter(find.text('Slide 0'));
       await tester.sendEventToBinding(
         PointerScrollEvent(
           position: center,
@@ -878,8 +912,8 @@ void main() {
 
     testWidgets(
       'Keyboard arrow keys navigate slides and spacebar toggles pause',
-      (tester) async {
-        final controller = JustCarouselController();
+      (WidgetTester tester) async {
+        final JustCarouselController controller = JustCarouselController();
 
         await tester.pumpWidget(
           buildTestApp(
@@ -889,7 +923,7 @@ void main() {
               child: JustCarousel(
                 controller: controller,
                 enableKeyboardNavigation: true,
-                children: const [
+                children: const <Widget>[
                   Text('Slide 0'),
                   Text('Slide 1'),
                   Text('Slide 2'),
@@ -900,7 +934,7 @@ void main() {
         );
 
         // Focus carousel
-        final focusFinder = find.byType(Focus).first;
+        final Finder focusFinder = find.byType(Focus).first;
         await tester.tap(focusFinder);
         await tester.pump();
 
@@ -925,8 +959,8 @@ void main() {
   group('JustCarousel Navigation Arrows & Presets', () {
     testWidgets(
       'showArrows renders next and previous buttons and responds to taps',
-      (tester) async {
-        final controller = JustCarouselController();
+      (WidgetTester tester) async {
+        final JustCarouselController controller = JustCarouselController();
 
         await tester.pumpWidget(
           buildTestApp(
@@ -936,7 +970,7 @@ void main() {
               child: JustCarousel(
                 controller: controller,
                 showArrows: true,
-                children: const [
+                children: const <Widget>[
                   Text('Slide 0'),
                   Text('Slide 1'),
                   Text('Slide 2'),
@@ -948,8 +982,8 @@ void main() {
 
         expect(controller.currentIndex, 0);
 
-        final nextArrowFinder = find.bySemanticsLabel('Next slide');
-        final prevArrowFinder = find.bySemanticsLabel('Previous slide');
+        final Finder nextArrowFinder = find.bySemanticsLabel('Next slide');
+        final Finder prevArrowFinder = find.bySemanticsLabel('Previous slide');
 
         expect(nextArrowFinder, findsOneWidget);
         expect(prevArrowFinder, findsOneWidget);
@@ -966,7 +1000,7 @@ void main() {
 
     testWidgets(
       'Neobrutalism preset renders with sharp corners and textPrimary borders',
-      (tester) async {
+      (WidgetTester tester) async {
         await tester.pumpWidget(
           buildTestApp(
             const SizedBox(
@@ -975,7 +1009,7 @@ void main() {
               child: JustCarousel(
                 showArrows: true,
                 indicator: JustCarouselIndicator.fraction,
-                children: [Text('Slide 0'), Text('Slide 1')],
+                children: <Widget>[Text('Slide 0'), Text('Slide 1')],
               ),
             ),
             theme: JustThemeData.neobrutalismLight,

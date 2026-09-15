@@ -19,7 +19,11 @@ void main() {
     JustDialogTheme? dialogTheme,
   }) {
     return MaterialApp(
-      theme: ThemeData(extensions: [dialogTheme ?? const JustDialogTheme()]),
+      theme: ThemeData(
+        extensions: <ThemeExtension<dynamic>>[
+          dialogTheme ?? const JustDialogTheme(),
+        ],
+      ),
       home: JustThemeProvider(
         lightTheme: theme ?? JustThemeData.light,
         child: JustDialogScope(
@@ -32,14 +36,16 @@ void main() {
 
   group('JustDialogStyle & JustDialogTheme Unit Tests', () {
     test('JustDialogStyle holds configured values', () {
-      const style = JustDialogStyle(
+      const JustDialogStyle style = JustDialogStyle(
         backgroundColor: Color(0xFF112233),
         barrierColor: Color(0x88000000),
         borderRadius: .all(.circular(12.0)),
         padding: EdgeInsets.all(24.0),
         maxWidth: 500.0,
         maxHeight: 600.0,
-        shadows: [BoxShadow(color: Color(0xFF000000), blurRadius: 8.0)],
+        shadows: <BoxShadow>[
+          BoxShadow(color: Color(0xFF000000), blurRadius: 8.0),
+        ],
       );
 
       expect(style.backgroundColor, equals(const Color(0xFF112233)));
@@ -55,16 +61,18 @@ void main() {
     });
 
     test('JustDialogTheme defaults and copyWith', () {
-      const defaultTheme = JustDialogTheme.defaults;
+      const JustDialogTheme defaultTheme = JustDialogTheme.defaults;
       expect(defaultTheme.centerStyle, isNull);
       expect(defaultTheme.bottomStyle, isNull);
       expect(defaultTheme.topStyle, isNull);
 
-      const centerStyle = JustDialogStyle(maxWidth: 400.0);
-      const bottomStyle = JustDialogStyle(maxHeight: 300.0);
-      const topStyle = JustDialogStyle(padding: EdgeInsets.all(8.0));
+      const JustDialogStyle centerStyle = JustDialogStyle(maxWidth: 400.0);
+      const JustDialogStyle bottomStyle = JustDialogStyle(maxHeight: 300.0);
+      const JustDialogStyle topStyle = JustDialogStyle(
+        padding: EdgeInsets.all(8.0),
+      );
 
-      final updated = defaultTheme.copyWith(
+      final JustDialogTheme updated = defaultTheme.copyWith(
         centerStyle: centerStyle,
         bottomStyle: bottomStyle,
         topStyle: topStyle,
@@ -75,17 +83,17 @@ void main() {
       expect(updated.topStyle?.padding, equals(const EdgeInsets.all(8.0)));
 
       // Fallback copyWith preserves existing values
-      final partial = updated.copyWith();
+      final JustDialogTheme partial = updated.copyWith();
       expect(partial.centerStyle?.maxWidth, equals(400.0));
       expect(partial.bottomStyle?.maxHeight, equals(300.0));
       expect(partial.topStyle?.padding, equals(const EdgeInsets.all(8.0)));
     });
 
     test('JustDialogTheme lerp behavior', () {
-      const themeA = JustDialogTheme(
+      const JustDialogTheme themeA = JustDialogTheme(
         centerStyle: JustDialogStyle(maxWidth: 300.0),
       );
-      const themeB = JustDialogTheme(
+      const JustDialogTheme themeB = JustDialogTheme(
         centerStyle: JustDialogStyle(maxWidth: 600.0),
       );
 
@@ -102,7 +110,7 @@ void main() {
     test('DialogPosition enum values', () {
       expect(
         DialogPosition.values,
-        containsAll([
+        containsAll(<dynamic>[
           DialogPosition.center,
           DialogPosition.bottom,
           DialogPosition.top,
@@ -115,7 +123,7 @@ void main() {
     test(
       'Unattached controller throws AssertionError when show() is called',
       () {
-        final controller = JustDialogController();
+        final JustDialogController controller = JustDialogController();
         expect(controller.isVisible, isFalse);
         expect(
           () => controller.show<void>(content: const Text('Hello')),
@@ -127,7 +135,7 @@ void main() {
     testWidgets(
       'JustDialogScope.of & context.justDialog return attached controller',
       (WidgetTester tester) async {
-        final controller = JustDialogController();
+        final JustDialogController controller = JustDialogController();
         late JustDialogController fromOf;
         late JustDialogController fromExtension;
 
@@ -135,7 +143,7 @@ void main() {
           buildDialogTestApp(
             controller: controller,
             child: Builder(
-              builder: (context) {
+              builder: (BuildContext context) {
                 fromOf = JustDialogScope.of(context);
                 fromExtension = context.justDialog;
                 return const SizedBox.shrink();
@@ -155,7 +163,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
-            builder: (context) {
+            builder: (BuildContext context) {
               expect(() => JustDialogScope.of(context), throwsAssertionError);
               return const SizedBox.shrink();
             },
@@ -167,8 +175,8 @@ void main() {
     testWidgets('JustDialogScope didUpdateWidget reattaches new controller', (
       WidgetTester tester,
     ) async {
-      final controller1 = JustDialogController();
-      final controller2 = JustDialogController();
+      final JustDialogController controller1 = JustDialogController();
+      final JustDialogController controller2 = JustDialogController();
 
       await tester.pumpWidget(
         buildDialogTestApp(
@@ -211,20 +219,20 @@ void main() {
     testWidgets(
       'Shows center dialog, verifies constraints, semantics, and barrier dismissal',
       (WidgetTester tester) async {
-        final controller = JustDialogController();
+        final JustDialogController controller = JustDialogController();
         bool? dialogResult;
 
         await tester.pumpWidget(
           buildDialogTestApp(
             controller: controller,
             child: Builder(
-              builder: (context) {
+              builder: (BuildContext context) {
                 return ElevatedButton(
                   onPressed: () async {
                     dialogResult = await controller.show<bool>(
                       content: const Column(
                         mainAxisSize: MainAxisSize.min,
-                        children: [
+                        children: <Widget>[
                           Text('Modal Title'),
                           Text('Modal Body Content'),
                         ],
@@ -267,7 +275,7 @@ void main() {
     testWidgets('Shows bottom dialog with handle bar and SafeArea', (
       WidgetTester tester,
     ) async {
-      final controller = JustDialogController();
+      final JustDialogController controller = JustDialogController();
 
       await tester.pumpWidget(
         buildDialogTestApp(
@@ -287,12 +295,12 @@ void main() {
       expect(controller.isVisible, isTrue);
       expect(find.text('Bottom Sheet Content'), findsOneWidget);
 
-      final alignFinder = find.ancestor(
+      final Finder alignFinder = find.ancestor(
         of: find.text('Bottom Sheet Content'),
         matching: find.byType(Align),
       );
       expect(alignFinder, findsWidgets);
-      final align = tester.widget<Align>(alignFinder.first);
+      final Align align = tester.widget<Align>(alignFinder.first);
       expect(align.alignment, equals(Alignment.bottomCenter));
 
       controller.forceDismissAll();
@@ -302,7 +310,7 @@ void main() {
     testWidgets('Shows top dialog with top alignment', (
       WidgetTester tester,
     ) async {
-      final controller = JustDialogController();
+      final JustDialogController controller = JustDialogController();
 
       await tester.pumpWidget(
         buildDialogTestApp(
@@ -322,12 +330,12 @@ void main() {
       expect(controller.isVisible, isTrue);
       expect(find.text('Top Banner Content'), findsOneWidget);
 
-      final alignFinder = find.ancestor(
+      final Finder alignFinder = find.ancestor(
         of: find.text('Top Banner Content'),
         matching: find.byType(Align),
       );
       expect(alignFinder, findsWidgets);
-      final align = tester.widget<Align>(alignFinder.first);
+      final Align align = tester.widget<Align>(alignFinder.first);
       expect(align.alignment, equals(Alignment.topCenter));
 
       controller.dismiss();
@@ -338,7 +346,7 @@ void main() {
     testWidgets('barrierDismissable = false prevents barrier tap dismissal', (
       WidgetTester tester,
     ) async {
-      final controller = JustDialogController();
+      final JustDialogController controller = JustDialogController();
 
       await tester.pumpWidget(
         buildDialogTestApp(
@@ -374,9 +382,9 @@ void main() {
     testWidgets(
       'Applies custom JustDialogStyle overrides and custom barrierColor',
       (WidgetTester tester) async {
-        final controller = JustDialogController();
+        final JustDialogController controller = JustDialogController();
 
-        const customStyle = JustDialogStyle(
+        const JustDialogStyle customStyle = JustDialogStyle(
           backgroundColor: Color(0xFF123456),
           barrierColor: Color(0xAAFF0000),
           borderRadius: .all(.circular(30.0)),
@@ -402,7 +410,7 @@ void main() {
 
         expect(find.text('Styled Dialog'), findsOneWidget);
 
-        final containerFinder = find.ancestor(
+        final Finder containerFinder = find.ancestor(
           of: find.text('Styled Dialog'),
           matching: find.byType(Container),
         );
@@ -416,8 +424,8 @@ void main() {
     testWidgets('Applies global JustDialogTheme position styles', (
       WidgetTester tester,
     ) async {
-      final controller = JustDialogController();
-      const globalDialogTheme = JustDialogTheme(
+      final JustDialogController controller = JustDialogController();
+      const JustDialogTheme globalDialogTheme = JustDialogTheme(
         centerStyle: JustDialogStyle(
           backgroundColor: Color(0xFF223344),
           maxWidth: 420.0,
@@ -450,7 +458,7 @@ void main() {
     testWidgets('Neobrutalism preset renders prominent borders', (
       WidgetTester tester,
     ) async {
-      final controller = JustDialogController();
+      final JustDialogController controller = JustDialogController();
 
       await tester.pumpWidget(
         buildDialogTestApp(
@@ -474,7 +482,7 @@ void main() {
     testWidgets('Custom animationBuilder is rendered', (
       WidgetTester tester,
     ) async {
-      final controller = JustDialogController();
+      final JustDialogController controller = JustDialogController();
 
       await tester.pumpWidget(
         buildDialogTestApp(
@@ -485,9 +493,10 @@ void main() {
 
       unawaited(
         controller.show<void>(
-          animationBuilder: (context, anim, child) {
-            return Opacity(opacity: anim.value, child: child);
-          },
+          animationBuilder:
+              (BuildContext context, Animation<double> anim, Widget child) {
+                return Opacity(opacity: anim.value, child: child);
+              },
           content: const Text('Custom Animated Dialog'),
         ),
       );
@@ -502,8 +511,8 @@ void main() {
     testWidgets(
       'Custom external animationController is used and not disposed by dialog',
       (WidgetTester tester) async {
-        final controller = JustDialogController();
-        final customAnimController = AnimationController(
+        final JustDialogController controller = JustDialogController();
+        final AnimationController customAnimController = AnimationController(
           vsync: const TestVSync(),
           duration: const Duration(milliseconds: 200),
         );
@@ -537,8 +546,8 @@ void main() {
     testWidgets(
       'Keyboard Escape key dismisses dialog and restores previous focus',
       (WidgetTester tester) async {
-        final controller = JustDialogController();
-        final focusNode = FocusNode();
+        final JustDialogController controller = JustDialogController();
+        final FocusNode focusNode = FocusNode();
 
         await tester.pumpWidget(
           buildDialogTestApp(
@@ -584,7 +593,7 @@ void main() {
     testWidgets('Multiple rapid dismiss calls are idempotent', (
       WidgetTester tester,
     ) async {
-      final controller = JustDialogController();
+      final JustDialogController controller = JustDialogController();
 
       await tester.pumpWidget(
         buildDialogTestApp(

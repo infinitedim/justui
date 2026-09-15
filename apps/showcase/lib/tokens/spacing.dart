@@ -35,7 +35,7 @@ abstract final class JustSpacing {
   /// Quick utility to generate [EdgeInsets] using token values.
   ///
   /// Priority:
-  /// 1. If [all] is provided, returns [EdgeInsets.all].
+  /// 1. If [all] is provided, returns [.all].
   /// 2. If [h] or [v] are provided, returns [EdgeInsets.symmetric].
   /// 3. Otherwise returns [EdgeInsets.zero].
   static EdgeInsets insets({double? all, double? h, double? v}) {

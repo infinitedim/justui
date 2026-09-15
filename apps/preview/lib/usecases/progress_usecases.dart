@@ -8,17 +8,17 @@ import 'package:just_ui_core/src/components/shared/_shared_progress_spinner.dart
 
 @widgetbook.UseCase(name: 'Linear Progress', type: JustProgress)
 Widget buildJustProgressLinearUseCase(BuildContext context) {
-  final value = context.knobs.double.slider(
+  final double value = context.knobs.double.slider(
     label: 'Progress Value',
     initialValue: 0.6,
     min: 0.0,
     max: 1.0,
   );
-  final showLabel = context.knobs.boolean(
+  final bool showLabel = context.knobs.boolean(
     label: 'Show Label',
     initialValue: true,
   );
-  final size = context.knobs.object.dropdown<JustProgressSize>(
+  final JustProgressSize size = context.knobs.object.dropdown<JustProgressSize>(
     label: 'Size',
     options: JustProgressSize.values,
     initialOption: JustProgressSize.md,
@@ -26,7 +26,7 @@ Widget buildJustProgressLinearUseCase(BuildContext context) {
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 360.0),
         child: JustProgress(value: value, showLabel: showLabel, size: size),
@@ -37,17 +37,17 @@ Widget buildJustProgressLinearUseCase(BuildContext context) {
 
 @widgetbook.UseCase(name: 'Circular Progress', type: JustProgress)
 Widget buildJustProgressCircularUseCase(BuildContext context) {
-  final value = context.knobs.double.slider(
+  final double value = context.knobs.double.slider(
     label: 'Progress Value',
     initialValue: 0.75,
     min: 0.0,
     max: 1.0,
   );
-  final showLabel = context.knobs.boolean(
+  final bool showLabel = context.knobs.boolean(
     label: 'Show Label',
     initialValue: true,
   );
-  final size = context.knobs.object.dropdown<JustProgressSize>(
+  final JustProgressSize size = context.knobs.object.dropdown<JustProgressSize>(
     label: 'Size',
     options: JustProgressSize.values,
     initialOption: JustProgressSize.md,
@@ -55,7 +55,7 @@ Widget buildJustProgressCircularUseCase(BuildContext context) {
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       child: JustProgress.circular(
         value: value,
         showLabel: showLabel,
@@ -70,20 +70,23 @@ Widget buildJustProgressCircularUseCase(BuildContext context) {
   type: JustProgressSpinner,
 )
 Widget buildJustProgressSpinnerUseCase(BuildContext context) {
-  final size = context.knobs.double.slider(
+  final double size = context.knobs.double.slider(
     label: 'Size',
     initialValue: 24.0,
     min: 12.0,
     max: 64.0,
   );
-  final strokeWidth = context.knobs.double.slider(
+  final double strokeWidth = context.knobs.double.slider(
     label: 'Stroke Width',
     initialValue: 2.5,
     min: 1.0,
     max: 6.0,
   );
 
-  final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
+  final JustColorScheme colors = JustThemeProvider.of(
+    context,
+    aspect: .colors,
+  ).theme.colors;
 
   return Center(
     child: JustProgressSpinner(

@@ -14,21 +14,22 @@ class _SampleRow {
   const _SampleRow(this.id, this.name, this.role, this.status);
 }
 
-@widgetbook.UseCase(name: 'Default Table', type: JustTable)
+@widgetbook.UseCase(name: 'Default Table', type: JustTable<_SampleRow>)
 Widget buildJustTableDefaultUseCase(BuildContext context) {
-  final selectable = context.knobs.boolean(
+  final bool selectable = context.knobs.boolean(
     label: 'Selectable',
     initialValue: true,
   );
-  final variant = context.knobs.object.dropdown<JustTableVariant>(
-    label: 'Variant',
-    options: JustTableVariant.values,
-    initialOption: JustTableVariant.default_,
-  );
+  final JustTableVariant variant = context.knobs.object
+      .dropdown<JustTableVariant>(
+        label: 'Variant',
+        options: JustTableVariant.values,
+        initialOption: JustTableVariant.default_,
+      );
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const .all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 580.0, maxHeight: 360.0),
         child: _InteractiveTableDemo(selectable: selectable, variant: variant),
@@ -51,9 +52,9 @@ class _InteractiveTableDemo extends StatefulWidget {
 }
 
 class _InteractiveTableDemoState extends State<_InteractiveTableDemo> {
-  final Set<int> _selectedRows = {};
+  final Set<int> _selectedRows = <int>{};
 
-  final List<_SampleRow> _rows = const [
+  final List<_SampleRow> _rows = const <_SampleRow>[
     _SampleRow('101', 'Alice Vance', 'Lead Architect', 'Active'),
     _SampleRow('102', 'Bob Smith', 'Senior Developer', 'Active'),
     _SampleRow('103', 'Charlie Brown', 'UI Designer', 'Offline'),
@@ -65,21 +66,31 @@ class _InteractiveTableDemoState extends State<_InteractiveTableDemo> {
       selectable: widget.selectable,
       variant: widget.variant,
       selectedRows: _selectedRows,
-      onSelectionChanged: (selected) {
+      onSelectionChanged: (Set<int> selected) {
         setState(() {
           _selectedRows
             ..clear()
             ..addAll(selected);
         });
       },
-      columns: [
-        JustTableColumn(header: 'ID', width: 80.0, cell: (row) => Text(row.id)),
-        JustTableColumn(header: 'Name', cell: (row) => Text(row.name)),
-        JustTableColumn(header: 'Role', cell: (row) => Text(row.role)),
-        JustTableColumn(
+      columns: <JustTableColumn<_SampleRow>>[
+        JustTableColumn<_SampleRow>(
+          header: 'ID',
+          width: 80.0,
+          cell: (_SampleRow row) => Text(row.id),
+        ),
+        JustTableColumn<_SampleRow>(
+          header: 'Name',
+          cell: (_SampleRow row) => Text(row.name),
+        ),
+        JustTableColumn<_SampleRow>(
+          header: 'Role',
+          cell: (_SampleRow row) => Text(row.role),
+        ),
+        JustTableColumn<_SampleRow>(
           header: 'Status',
           width: 100.0,
-          cell: (row) => Text(row.status),
+          cell: (_SampleRow row) => Text(row.status),
         ),
       ],
       rows: _rows,

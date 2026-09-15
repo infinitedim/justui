@@ -8,7 +8,7 @@ class const JustSkeletonTheme({
   final JustSkeletonStyle? style,
 }) extends ThemeExtension<JustSkeletonTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustSkeletonTheme();
+  static const JustSkeletonTheme defaults = JustSkeletonTheme();
 
   @override
   JustSkeletonTheme copyWith({JustSkeletonStyle? style}) {

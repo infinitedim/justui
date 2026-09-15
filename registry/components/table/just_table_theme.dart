@@ -8,7 +8,7 @@ class const JustTableTheme({
   final JustTableStyle? style,
 }) extends ThemeExtension<JustTableTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustTableTheme();
+  static const JustTableTheme defaults = JustTableTheme();
 
   @override
   JustTableTheme copyWith({JustTableStyle? style}) {

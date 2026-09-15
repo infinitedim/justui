@@ -11,7 +11,7 @@ Widget buildJustDialogDefaultUseCase(BuildContext context) {
   return JustDialogScope(
     controller: _dialogController,
     child: Builder(
-      builder: (scopeContext) {
+      builder: (BuildContext scopeContext) {
         return Center(
           child: JustButton.primary(
             label: 'Show Modal Dialog',
@@ -20,7 +20,7 @@ Widget buildJustDialogDefaultUseCase(BuildContext context) {
                 content: Column(
                   mainAxisSize: .min,
                   crossAxisAlignment: .start,
-                  children: [
+                  children: <Widget>[
                     const Text(
                       'Confirm Action',
                       style: TextStyle(fontWeight: .bold, fontSize: 18.0),
@@ -32,7 +32,7 @@ Widget buildJustDialogDefaultUseCase(BuildContext context) {
                     const SizedBox(height: 20.0),
                     Row(
                       mainAxisAlignment: .end,
-                      children: [
+                      children: <Widget>[
                         JustButton.secondary(
                           label: 'Cancel',
                           onPressed: () => scopeContext.justDialog.dismiss(),

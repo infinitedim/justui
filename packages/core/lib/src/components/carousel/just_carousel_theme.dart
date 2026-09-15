@@ -78,12 +78,12 @@ class const JustCarouselTheme({
   final BorderRadius? arrowRadius,
 }) extends ThemeExtension<JustCarouselTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustCarouselTheme();
+  static const JustCarouselTheme defaults = JustCarouselTheme();
 
   /// Creates a theme resolved from [JustThemeData].
   factory JustCarouselTheme.fromTheme(JustThemeData theme) {
-    final colors = theme.colors;
-    final radius = theme.radius;
+    final JustColorScheme colors = theme.colors;
+    final JustRadiusScheme radius = theme.radius;
 
     return JustCarouselTheme(
       indicatorColor: colors.borderDefault,
@@ -97,7 +97,7 @@ class const JustCarouselTheme({
 
   /// Creates a theme matching the neobrutalism preset specifications.
   factory JustCarouselTheme.neobrutalism(JustThemeData theme) {
-    final colors = theme.colors;
+    final JustColorScheme colors = theme.colors;
 
     return JustCarouselTheme(
       indicatorColor: colors.background,
@@ -169,16 +169,17 @@ class const JustCarouselTheme({
   JustCarouselTheme lerp(ThemeExtension<JustCarouselTheme>? other, double t) {
     if (other is! JustCarouselTheme) return this;
 
-    final lerpedFraction =
+    final double lerpedFraction =
         viewportFraction + (other.viewportFraction - viewportFraction) * t;
-    final lerpedSize =
+    final double lerpedSize =
         indicatorSize + (other.indicatorSize - indicatorSize) * t;
-    final lerpedActiveSize =
+    final double lerpedActiveSize =
         activeIndicatorSize +
         (other.activeIndicatorSize - activeIndicatorSize) * t;
-    final lerpedSpacing =
+    final double lerpedSpacing =
         indicatorSpacing + (other.indicatorSpacing - indicatorSpacing) * t;
-    final lerpedArrowSize = arrowSize + (other.arrowSize - arrowSize) * t;
+    final double lerpedArrowSize =
+        arrowSize + (other.arrowSize - arrowSize) * t;
 
     return JustCarouselTheme(
       style: .lerp(style, other.style, t),
@@ -243,7 +244,7 @@ class const JustCarouselTheme({
           arrowRadius == other.arrowRadius;
 
   @override
-  int get hashCode => Object.hashAll([
+  int get hashCode => Object.hashAll(<Object?>[
     style,
     viewportFraction,
     animationDuration,

@@ -17,7 +17,7 @@ class const JustDatePickerTheme({
   final bool enableHaptic = false,
 }) extends ThemeExtension<JustDatePickerTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustDatePickerTheme();
+  static const JustDatePickerTheme defaults = JustDatePickerTheme();
 
   @override
   JustDatePickerTheme copyWith({

@@ -18,33 +18,40 @@ class WidgetbookApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Widgetbook.material(
       directories: directories,
-      addons: [
+      addons: <WidgetbookAddon<dynamic>>[
         ThemeAddon<JustThemeData>(
-          themes: [
-            WidgetbookTheme(name: 'Light', data: .light),
-            WidgetbookTheme(name: 'Dark', data: .dark),
-            WidgetbookTheme(
+          themes: <WidgetbookTheme<JustThemeData>>[
+            WidgetbookTheme<JustThemeData>(name: 'Light', data: .light),
+            WidgetbookTheme<JustThemeData>(name: 'Dark', data: .dark),
+            WidgetbookTheme<JustThemeData>(
               name: 'Neobrutalism Light',
               data: .neobrutalismLight,
             ),
-            WidgetbookTheme(name: 'Neobrutalism Dark', data: .neobrutalismDark),
+            WidgetbookTheme<JustThemeData>(
+              name: 'Neobrutalism Dark',
+              data: .neobrutalismDark,
+            ),
           ],
-          themeBuilder: (context, theme, child) {
-            return JustThemeProvider(
-              lightTheme: theme,
-              darkTheme: theme,
-              initialThemeMode: .light,
-              child: ColoredBox(
-                color: theme.colors.background,
-                child: Center(
-                  child: Padding(padding: const .all(16.0), child: child),
-                ),
-              ),
-            );
-          },
+          themeBuilder:
+              (BuildContext context, JustThemeData theme, Widget child) {
+                return JustThemeProvider(
+                  lightTheme: theme,
+                  darkTheme: theme,
+                  initialThemeMode: .light,
+                  child: ColoredBox(
+                    color: theme.colors.background,
+                    child: Center(
+                      child: Padding(padding: const .all(16.0), child: child),
+                    ),
+                  ),
+                );
+              },
         ),
         AlignmentAddon(initialAlignment: .center),
-        ViewportAddon([IosViewports.iPhone13, MacosViewports.macbookPro]),
+        ViewportAddon(<ViewportData>[
+          IosViewports.iPhone13,
+          MacosViewports.macbookPro,
+        ]),
       ],
     );
   }

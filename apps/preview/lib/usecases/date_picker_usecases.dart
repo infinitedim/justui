@@ -11,26 +11,27 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 @widgetbook.UseCase(name: 'Inline Date Picker', type: JustDatePicker)
 Widget buildJustDatePickerInlineUseCase(BuildContext context) {
-  final showWeekNumbers = context.knobs.boolean(
+  final bool showWeekNumbers = context.knobs.boolean(
     label: 'Show Week Numbers',
     initialValue: false,
   );
-  final firstDayOfWeek = context.knobs.object.dropdown<int>(
+  final int firstDayOfWeek = context.knobs.object.dropdown<int>(
     label: 'First Day of Week',
-    options: [1, 7],
+    options: <int>[1, 7],
     initialOption: 1,
-    labelBuilder: (day) => day == 1 ? 'Monday (1)' : 'Sunday (7)',
+    labelBuilder: (int day) => day == 1 ? 'Monday (1)' : 'Sunday (7)',
   );
-  final initialView = context.knobs.object.dropdown<JustCalendarView>(
-    label: 'Initial View',
-    options: JustCalendarView.values,
-    initialOption: JustCalendarView.day,
-    labelBuilder: (view) => view.name.toUpperCase(),
-  );
+  final JustCalendarView initialView = context.knobs.object
+      .dropdown<JustCalendarView>(
+        label: 'Initial View',
+        options: JustCalendarView.values,
+        initialOption: JustCalendarView.day,
+        labelBuilder: (JustCalendarView view) => view.name.toUpperCase(),
+      );
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const .all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 340.0),
         child: _InlineDatePickerDemo(
@@ -63,18 +64,18 @@ class _InlineDatePickerDemoState extends State<_InlineDatePickerDemo> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
 
     return Column(
       mainAxisSize: .min,
-      children: [
+      children: <Widget>[
         JustDatePicker.inline(
           value: _selectedDate,
           showWeekNumbers: widget.showWeekNumbers,
           firstDayOfWeek: widget.firstDayOfWeek,
           initialView: widget.initialView,
-          onChanged: (date) {
+          onChanged: (DateTime date) {
             setState(() {
               _selectedDate = date;
             });
@@ -96,18 +97,18 @@ class _InlineDatePickerDemoState extends State<_InlineDatePickerDemo> {
 
 @widgetbook.UseCase(name: 'Dropdown Date Picker', type: JustDatePicker)
 Widget buildJustDatePickerDropdownUseCase(BuildContext context) {
-  final label = context.knobs.string(
+  final String label = context.knobs.string(
     label: 'Label',
     initialValue: 'Birth Date',
   );
-  final placeholder = context.knobs.string(
+  final String placeholder = context.knobs.string(
     label: 'Placeholder',
     initialValue: 'Select a date...',
   );
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const .all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 320.0),
         child: _DropdownDatePickerDemo(label: label, placeholder: placeholder),
@@ -139,7 +140,7 @@ class _DropdownDatePickerDemoState extends State<_DropdownDatePickerDemo> {
       value: _selectedDate,
       label: widget.label,
       placeholder: widget.placeholder,
-      onChanged: (date) {
+      onChanged: (DateTime date) {
         setState(() {
           _selectedDate = date;
         });
@@ -153,10 +154,7 @@ class _DropdownDatePickerDemoState extends State<_DropdownDatePickerDemo> {
 @widgetbook.UseCase(name: 'Modal Dialog Date Picker', type: JustDatePicker)
 Widget buildJustDatePickerModalUseCase(BuildContext context) {
   return const Center(
-    child: Padding(
-      padding: EdgeInsets.all(16.0),
-      child: _ModalDatePickerDemo(),
-    ),
+    child: Padding(padding: .all(16.0), child: _ModalDatePickerDemo()),
   );
 }
 
@@ -172,17 +170,17 @@ class _ModalDatePickerDemoState extends State<_ModalDatePickerDemo> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
 
     return Column(
       mainAxisSize: .min,
-      children: [
+      children: <Widget>[
         JustDatePicker(
           value: _selectedDate,
           variant: .modal,
           placeholder: 'Open Modal Date Picker',
-          onChanged: (date) {
+          onChanged: (DateTime date) {
             setState(() {
               _selectedDate = date;
             });
@@ -204,14 +202,14 @@ class _ModalDatePickerDemoState extends State<_ModalDatePickerDemo> {
 
 @widgetbook.UseCase(name: 'Date Constraints & Predicate', type: JustDatePicker)
 Widget buildJustDatePickerConstraintsUseCase(BuildContext context) {
-  final disableWeekends = context.knobs.boolean(
+  final bool disableWeekends = context.knobs.boolean(
     label: 'Disable Weekends',
     initialValue: true,
   );
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const .all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 340.0),
         child: _ConstraintsDatePickerDemo(disableWeekends: disableWeekends),
@@ -233,25 +231,25 @@ class _ConstraintsDatePickerDemo extends StatefulWidget {
 class _ConstraintsDatePickerDemoState
     extends State<_ConstraintsDatePickerDemo> {
   DateTime? _selectedDate;
-  final _now = DateTime.now();
+  final DateTime _now = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    final firstDate = DateTime(_now.year, _now.month, 5);
-    final lastDate = DateTime(_now.year, _now.month, 25);
+    final DateTime firstDate = DateTime(_now.year, _now.month, 5);
+    final DateTime lastDate = DateTime(_now.year, _now.month, 25);
 
     return JustDatePicker.inline(
       value: _selectedDate,
       firstDate: firstDate,
       lastDate: lastDate,
-      selectableDayPredicate: (date) {
+      selectableDayPredicate: (DateTime date) {
         if (widget.disableWeekends &&
             (date.weekday == 6 || date.weekday == 7)) {
           return false;
         }
         return true;
       },
-      onChanged: (date) {
+      onChanged: (DateTime date) {
         setState(() {
           _selectedDate = date;
         });
@@ -266,7 +264,7 @@ class _ConstraintsDatePickerDemoState
 Widget buildJustDatePickerCustomBuildersUseCase(BuildContext context) {
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const .all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 340.0),
         child: const _CustomBuildersDemo(),
@@ -284,65 +282,75 @@ class _CustomBuildersDemo extends StatefulWidget {
 
 class _CustomBuildersDemoState extends State<_CustomBuildersDemo> {
   DateTime? _selectedDate;
-  final eventDays = {10, 15, 22};
+  final Set<int> eventDays = <int>{10, 15, 22};
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
 
     return JustDatePicker.inline(
       value: _selectedDate,
-      headerBuilder: (context, activeDate, view, toggleView, onPrev, onNext) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-          decoration: BoxDecoration(
-            color: colors.muted,
-            borderRadius: .circular(8.0),
-          ),
-          child: Row(
-            mainAxisAlignment: .spaceBetween,
-            children: [
-              GestureDetector(
-                onTap: onPrev,
-                child: Icon(
-                  Icons.chevron_left_rounded,
-                  size: 20.0,
-                  color: colors.textPrimary,
-                ),
+      headerBuilder:
+          (
+            BuildContext context,
+            DateTime activeDate,
+            JustCalendarView view,
+            VoidCallback toggleView,
+            void Function() onPrev,
+            void Function() onNext,
+          ) {
+            return Container(
+              padding: const .symmetric(horizontal: 12.0, vertical: 8.0),
+              decoration: BoxDecoration(
+                color: colors.muted,
+                borderRadius: .circular(8.0),
               ),
-              GestureDetector(
-                onTap: toggleView,
-                child: Row(
-                  mainAxisSize: .min,
-                  children: [
-                    Icon(
-                      Icons.calendar_month_rounded,
-                      size: 16.0,
-                      color: colors.borderFocus,
+              child: Row(
+                mainAxisAlignment: .spaceBetween,
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: onPrev,
+                    child: Icon(
+                      Icons.chevron_left_rounded,
+                      size: 20.0,
+                      color: colors.textPrimary,
                     ),
-                    const SizedBox(width: 4.0),
-                    Text(
-                      '${activeDate.month}/${activeDate.year}',
-                      style: typo.headingSm.copyWith(color: colors.textPrimary),
+                  ),
+                  GestureDetector(
+                    onTap: toggleView,
+                    child: Row(
+                      mainAxisSize: .min,
+                      children: <Widget>[
+                        Icon(
+                          Icons.calendar_month_rounded,
+                          size: 16.0,
+                          color: colors.borderFocus,
+                        ),
+                        const SizedBox(width: 4.0),
+                        Text(
+                          '${activeDate.month}/${activeDate.year}',
+                          style: typo.headingSm.copyWith(
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  GestureDetector(
+                    onTap: onNext,
+                    child: Icon(
+                      Icons.chevron_right_rounded,
+                      size: 20.0,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                ],
               ),
-              GestureDetector(
-                onTap: onNext,
-                child: Icon(
-                  Icons.chevron_right_rounded,
-                  size: 20.0,
-                  color: colors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-      dayBuilder: (context, date, isSelected) {
-        final hasEvent = eventDays.contains(date.day);
+            );
+          },
+      dayBuilder: (BuildContext context, DateTime date, bool isSelected) {
+        final bool hasEvent = eventDays.contains(date.day);
         return Container(
           decoration: BoxDecoration(
             color: isSelected
@@ -356,7 +364,7 @@ class _CustomBuildersDemoState extends State<_CustomBuildersDemo> {
           child: Center(
             child: Column(
               mainAxisAlignment: .center,
-              children: [
+              children: <Widget>[
                 Text(
                   '${date.day}',
                   style: typo.bodySm.copyWith(
@@ -378,7 +386,7 @@ class _CustomBuildersDemoState extends State<_CustomBuildersDemo> {
           ),
         );
       },
-      onChanged: (date) {
+      onChanged: (DateTime date) {
         setState(() {
           _selectedDate = date;
         });
@@ -391,14 +399,14 @@ class _CustomBuildersDemoState extends State<_CustomBuildersDemo> {
 
 @widgetbook.UseCase(name: 'Date Range Picker', type: JustDateRangePicker)
 Widget buildJustDateRangePickerUseCase(BuildContext context) {
-  final showPresets = context.knobs.boolean(
+  final bool showPresets = context.knobs.boolean(
     label: 'Show Presets Sidebar',
     initialValue: true,
   );
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const .all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 520.0),
         child: _DateRangePickerDemo(showPresets: showPresets),
@@ -421,18 +429,18 @@ class _DateRangePickerDemoState extends State<_DateRangePickerDemo> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
 
     return Column(
       mainAxisSize: .min,
-      children: [
+      children: <Widget>[
         JustDateRangePicker(
           value: _selectedRange,
           presets: widget.showPresets
               ? JustDateRangePicker.defaultPresets()
               : null,
-          onChanged: (range) {
+          onChanged: (DateTimeRange<DateTime> range) {
             setState(() {
               _selectedRange = range;
             });

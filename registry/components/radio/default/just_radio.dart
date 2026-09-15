@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../theme/theme_provider.dart';
 import '../../theme/preset_tokens.dart';
-import '../shared/just_focus_indicator.dart';
-import '../shared/just_pressable.dart';
+import '../shared/_shared_focus_indicator.dart';
+import '../shared/_shared_pressable.dart';
 import 'just_radio_style.dart';
 import 'just_radio_theme.dart';
 
@@ -128,8 +129,9 @@ class _JustRadioState<T> extends State<JustRadio<T>>
   void _handleSelect() {
     if (widget.isDisabled || widget.onChanged == null) return;
     if (!_isSelected) {
-      final radioTheme = Theme.of(context).extension<JustRadioTheme>();
-      final finalEnableHaptic =
+      final JustRadioTheme? radioTheme = Theme.of(context)
+          .extension<JustRadioTheme>();
+      final bool finalEnableHaptic =
           widget.enableHaptic ??
           radioTheme?.enableHaptic ??
           JustThemeProvider.read(context)
@@ -147,19 +149,23 @@ class _JustRadioState<T> extends State<JustRadio<T>>
 
   @override
   Widget build(BuildContext context) {
-    final radioTheme = Theme.of(context).extension<JustRadioTheme>();
+    final JustRadioTheme? radioTheme = Theme.of(context)
+        .extension<JustRadioTheme>();
 
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
 
-    final isInteractive = !widget.isDisabled && widget.onChanged != null;
+    final bool isInteractive = !widget.isDisabled && widget.onChanged != null;
 
     // Resolve sizing values
     double circleSize;
@@ -181,24 +187,24 @@ class _JustRadioState<T> extends State<JustRadio<T>>
     }
 
     // Resolve theme styles
-    final themeStyle = radioTheme?.style;
-    final resolvedActiveColor =
+    final JustRadioStyle? themeStyle = radioTheme?.style;
+    final Color resolvedActiveColor =
         widget.style?.activeColor ??
         themeStyle?.activeColor ??
         colors.borderFocus;
-    final resolvedBorderColor =
+    final Color resolvedBorderColor =
         widget.style?.borderColor ??
         themeStyle?.borderColor ??
         colors.borderDefault;
-    final resolvedDotColor =
+    final Color resolvedDotColor =
         widget.style?.dotColor ?? themeStyle?.dotColor ?? resolvedActiveColor;
-    final resolvedTextStyle =
+    final TextStyle resolvedTextStyle =
         widget.style?.textStyle ??
         themeStyle?.textStyle ??
         textStyle.copyWith(color: colors.textPrimary);
 
-    final customTheme = JustThemeProvider.of(context).theme;
-    final hasBorder = customTheme.presetTokens.showsDefaultBorder;
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final bool hasBorder = customTheme.presetTokens.showsDefaultBorder;
 
     return Semantics(
       checked: _isSelected,
@@ -215,7 +221,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
             child: Row(
               mainAxisSize: .min,
               crossAxisAlignment: .center,
-              children: [
+              children: <Widget>[
                 // Accessibility touch target constraint (minimum 48x48)
                 ConstrainedBox(
                   constraints: const BoxConstraints(
@@ -230,8 +236,8 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                         borderRadius: .all(.circular(circleSize / 2)),
                         child: AnimatedBuilder(
                           animation: _controller,
-                          builder: (context, child) {
-                            final progress = _controller.value;
+                          builder: (BuildContext context, Widget? child) {
+                            final double progress = _controller.value;
 
                             final Color currentBorder = hasBorder
                                 ? colors.textPrimary
@@ -249,9 +255,9 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                                     JustShadowLevel.xs,
                                     isPressed: state.isPressed,
                                   )
-                                : const [];
+                                : const <BoxShadow>[];
 
-                            final radioBox = Container(
+                            final Container radioBox = Container(
                               width: circleSize,
                               height: circleSize,
                               decoration: BoxDecoration(
@@ -287,7 +293,7 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                     ),
                   ),
                 ),
-                if (widget.label != null) ...[
+                if (widget.label != null) ...<Widget>[
                   SizedBox(width: spacing.sm),
                   DefaultTextStyle(
                     style: resolvedTextStyle,
@@ -311,12 +317,12 @@ class const _RadioDotPainter({
   void paint(Canvas canvas, Size size) {
     if (progress <= 0.0) return;
 
-    final paint = Paint()
+    final Paint paint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
 
     // Dot is approximately 50% of the visual outer circle size
-    final radius = (size.width / 2.0) * 0.5 * progress;
+    final double radius = (size.width / 2.0) * 0.5 * progress;
     canvas.drawCircle(size.center(.zero), radius, paint);
   }
 

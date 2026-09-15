@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/preset_tokens.dart';
+import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../overlay/just_overlay_controller.dart';
@@ -88,8 +90,8 @@ class JustToastController extends JustOverlayController {
 
   OverlayState? _overlayState;
   TickerProvider? _vsync;
-  final List<_ToastEntry> _activeToasts = [];
-  final List<_ToastPending> _queue = [];
+  final List<_ToastEntry> _activeToasts = <_ToastEntry>[];
+  final List<_ToastPending> _queue = <_ToastPending>[];
 
   /// Creates a [JustToastController].
   JustToastController({
@@ -124,7 +126,7 @@ class JustToastController extends JustOverlayController {
       'JustToastController must have a valid TickerProvider from JustToastScope',
     );
 
-    final pending = _ToastPending(
+    final _ToastPending pending = _ToastPending(
       message: message,
       variant: variant,
       duration: duration,
@@ -136,7 +138,7 @@ class JustToastController extends JustOverlayController {
       animationBuilder: animationBuilder,
     );
 
-    final effectiveLimit = limit ?? this.limit;
+    final int? effectiveLimit = limit ?? this.limit;
 
     if (behavior == .queue) {
       if (_activeToasts.isNotEmpty) {
@@ -155,8 +157,8 @@ class JustToastController extends JustOverlayController {
     } else {
       if (effectiveLimit != null) {
         // 1. Get non-dismissing active toasts
-        final activeVisible = _activeToasts
-            .where((t) => !t._dismissRequested)
+        final List<_ToastEntry> activeVisible = _activeToasts
+            .where((_ToastEntry t) => !t._dismissRequested)
             .toList();
 
         // 2. If active visible toasts reach limit, dismiss the oldest active one
@@ -167,9 +169,9 @@ class JustToastController extends JustOverlayController {
         // 3. Immediately clean up any toasts that are already reversing/dismissing
         // if total entries exceed effectiveLimit to prevent overlay accumulation during rapid click spam
         while (_activeToasts.length >= effectiveLimit &&
-            _activeToasts.any((t) => t._dismissRequested)) {
-          final oldestDismissing = _activeToasts.firstWhere(
-            (t) => t._dismissRequested,
+            _activeToasts.any((_ToastEntry t) => t._dismissRequested)) {
+          final _ToastEntry oldestDismissing = _activeToasts.firstWhere(
+            (_ToastEntry t) => t._dismissRequested,
           );
           _cleanupToastEntry(oldestDismissing);
         }
@@ -179,23 +181,23 @@ class JustToastController extends JustOverlayController {
   }
 
   void _showToast(_ToastPending pending) {
-    final animController =
+    final AnimationController animController =
         pending.animationController ??
         AnimationController(vsync: _vsync!, duration: JustDuration.normal);
 
     late final _ToastEntry entry;
-    final overlayEntry = OverlayEntry(
-      builder: (context) {
-        final index = _activeToasts.indexOf(entry);
+    final OverlayEntry overlayEntry = OverlayEntry(
+      builder: (BuildContext context) {
+        final int index = _activeToasts.indexOf(entry);
         if (index == -1) return const SizedBox.shrink();
 
-        final theme = JustThemeProvider.of(context).theme;
-        final spacing = theme.spacing;
+        final JustThemeData theme = JustThemeProvider.of(context).theme;
+        final JustSpacingScheme spacing = theme.spacing;
 
         // Approximate toast height + spacing for stack offset calculations
         const double toastHeight = 56.0;
         final double toastSpacing = spacing.sm;
-        final offset =
+        final double offset =
             (_activeToasts.length - 1 - index) * (toastHeight + toastSpacing);
 
         Widget toastCard = RepaintBoundary(
@@ -284,13 +286,14 @@ class JustToastController extends JustOverlayController {
     } catch (_) {}
 
     // Only dispose if it was created locally
-    final wasLocal =
+    final bool wasLocal =
         !_queue.any(
-          (q) => q.animationController == entry.animationController,
+          (_ToastPending q) =>
+              q.animationController == entry.animationController,
         ) &&
         _activeToasts
             .where(
-              (t) =>
+              (_ToastEntry t) =>
                   t != entry &&
                   t.animationController == entry.animationController,
             )
@@ -316,7 +319,7 @@ class JustToastController extends JustOverlayController {
       });
       return;
     }
-    for (final toast in _activeToasts) {
+    for (final _ToastEntry toast in _activeToasts) {
       try {
         if (toast.overlayEntry.mounted) {
           toast.overlayEntry.markNeedsBuild();
@@ -327,8 +330,8 @@ class JustToastController extends JustOverlayController {
 
   @override
   void dismiss() {
-    final targets = List<_ToastEntry>.from(_activeToasts);
-    for (final toast in targets) {
+    final List<_ToastEntry> targets = List<_ToastEntry>.from(_activeToasts);
+    for (final _ToastEntry toast in targets) {
       _dismissToast(toast);
     }
   }
@@ -347,9 +350,9 @@ class JustToastController extends JustOverlayController {
   /// overlay/animation resources yet and can still be shown later if this
   /// controller is re-attached to a new scope.
   void forceDismissAll() {
-    final targets = List<_ToastEntry>.from(_activeToasts);
+    final List<_ToastEntry> targets = List<_ToastEntry>.from(_activeToasts);
     _activeToasts.clear();
-    for (final entry in targets) {
+    for (final _ToastEntry entry in targets) {
       try {
         if (entry.overlayEntry.mounted) {
           entry.overlayEntry.remove();
@@ -359,13 +362,14 @@ class JustToastController extends JustOverlayController {
         entry.overlayEntry.dispose();
       } catch (_) {}
 
-      final wasLocal =
+      final bool wasLocal =
           !_queue.any(
-            (q) => q.animationController == entry.animationController,
+            (_ToastPending q) =>
+                q.animationController == entry.animationController,
           ) &&
           _activeToasts
               .where(
-                (t) =>
+                (_ToastEntry t) =>
                     t != entry &&
                     t.animationController == entry.animationController,
               )
@@ -401,11 +405,11 @@ class const _ToastPositionedWrapper({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final motion = JustThemeProvider.of(
+    final JustMotionProfile motion = JustThemeProvider.of(
       context,
       aspect: .animations,
     ).theme.animations.resolve(context);
@@ -434,7 +438,7 @@ class const _ToastPositionedWrapper({
 
     double? top;
     double? bottom;
-    final isTop =
+    final bool isTop =
         position == .topLeft || position == .topCenter || position == .topRight;
 
     if (isTop) {
@@ -450,11 +454,11 @@ class const _ToastPositionedWrapper({
       positionedChild = Center(child: child);
     }
 
-    final slideTween = isTop
+    final Tween<Offset> slideTween = isTop
         ? Tween<Offset>(begin: const Offset(0, -1), end: .zero)
         : Tween<Offset>(begin: const Offset(0, 1), end: .zero);
 
-    final curvedAnimation = CurvedAnimation(
+    final CurvedAnimation curvedAnimation = CurvedAnimation(
       parent: animation,
       curve: motion.enter,
       reverseCurve: motion.exit,
@@ -540,11 +544,11 @@ class _JustToastWidgetState extends State<_JustToastWidget>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _swipeBackController,
-      builder: (context, child) {
-        final currentX = _swipeBackController.isAnimating
+      builder: (BuildContext context, Widget? child) {
+        final double currentX = _swipeBackController.isAnimating
             ? _swipeBackAnimation.value
             : _dragX;
-        final opacity = (1.0 - (currentX.abs() / 300.0)).clamp(0.0, 1.0);
+        final double opacity = (1.0 - (currentX.abs() / 300.0)).clamp(0.0, 1.0);
         return Transform.translate(
           offset: Offset(currentX, 0.0),
           child: Opacity(
@@ -562,13 +566,14 @@ class _JustToastWidgetState extends State<_JustToastWidget>
   }
 
   Widget _buildCard(BuildContext context) {
-    final theme = JustThemeProvider.of(context).theme;
-    final colors = theme.colors;
-    final spacing = theme.spacing;
-    final radius = theme.radius;
-    final shadows = theme.shadows;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = theme.colors;
+    final JustSpacingScheme spacing = theme.spacing;
+    final JustRadiusScheme radius = theme.radius;
+    final JustShadowScheme shadows = theme.shadows;
 
-    final globalTheme = Theme.of(context).extension<JustToastTheme>();
+    final JustToastTheme? globalTheme = Theme.of(context)
+        .extension<JustToastTheme>();
 
     // Resolve variant style from theme extension
     JustToastStyle? variantThemeStyle;
@@ -587,41 +592,41 @@ class _JustToastWidgetState extends State<_JustToastWidget>
         break;
     }
 
-    final entryStyle = widget.entry.style;
+    final JustToastStyle? entryStyle = widget.entry.style;
 
     // Resolve visual styles
-    final defaultVariantBg = switch (widget.entry.variant) {
+    final Color defaultVariantBg = switch (widget.entry.variant) {
       .success => colors.success.withValues(alpha: 0.1),
       .error => colors.error.withValues(alpha: 0.1),
       .warning => colors.warning.withValues(alpha: 0.1),
       .info => colors.info.withValues(alpha: 0.08),
     };
-    final defaultBg = Color.alphaBlend(defaultVariantBg, colors.card);
-    final bgColor =
+    final Color defaultBg = Color.alphaBlend(defaultVariantBg, colors.card);
+    final Color bgColor =
         entryStyle?.backgroundColor ??
         variantThemeStyle?.backgroundColor ??
         defaultBg;
-    final borderColor =
+    final Color borderColor =
         entryStyle?.borderColor ??
         variantThemeStyle?.borderColor ??
         colors.borderDefault;
-    final borderRadius =
+    final BorderRadius borderRadius =
         entryStyle?.borderRadius ??
         variantThemeStyle?.borderRadius ??
         .all(radius.md);
-    final padding =
+    final EdgeInsets padding =
         entryStyle?.padding ??
         variantThemeStyle?.padding ??
         .symmetric(horizontal: spacing.md, vertical: spacing.sm);
-    final textStyle =
+    final TextStyle textStyle =
         entryStyle?.textStyle ??
         variantThemeStyle?.textStyle ??
         JustFluidTypo.bodySm(context).copyWith(color: colors.textPrimary);
-    final maxWidth =
+    final double maxWidth =
         entryStyle?.maxWidth ?? variantThemeStyle?.maxWidth ?? 360.0;
-    final minWidth =
+    final double minWidth =
         entryStyle?.minWidth ?? variantThemeStyle?.minWidth ?? 280.0;
-    final toastShadows =
+    final List<BoxShadow> toastShadows =
         entryStyle?.shadows ?? variantThemeStyle?.shadows ?? shadows.md;
 
     // Default icons
@@ -653,10 +658,10 @@ class _JustToastWidgetState extends State<_JustToastWidget>
         break;
     }
 
-    final resolvedIcon = widget.entry.icon ?? defaultIcon;
+    final Widget resolvedIcon = widget.entry.icon ?? defaultIcon;
 
-    final presetTokens = theme.presetTokens;
-    final borderSide = BorderSide(
+    final JustPresetTokens presetTokens = theme.presetTokens;
+    final BorderSide borderSide = BorderSide(
       color: presetTokens.showsDefaultBorder ? colors.textPrimary : borderColor,
       width: presetTokens.borderWidth,
     );
@@ -678,14 +683,14 @@ class _JustToastWidgetState extends State<_JustToastWidget>
         padding: padding,
         child: Row(
           mainAxisSize: .min,
-          children: [
+          children: <Widget>[
             resolvedIcon,
             SizedBox(width: spacing.sm),
             Expanded(child: Text(widget.entry.message, style: textStyle)),
-            if (widget.entry.action != null) ...[
+            if (widget.entry.action != null) ...<Widget>[
               SizedBox(width: spacing.sm),
               widget.entry.action!,
-            ] else ...[
+            ] else ...<Widget>[
               SizedBox(width: spacing.sm),
               GestureDetector(
                 onTap: widget.onDismiss,
@@ -728,7 +733,7 @@ class const JustToastScope({
 }) extends StatefulWidget {
   /// Retrieves the nearest [JustToastController] from the ancestor scope.
   static JustToastController of(BuildContext context) {
-    final scope = context
+    final _JustToastScopeInherited? scope = context
         .dependOnInheritedWidgetOfExactType<_JustToastScopeInherited>();
     assert(scope != null, 'No JustToastScope found in context');
     return scope!.controller;
@@ -769,7 +774,8 @@ class _JustToastScopeState extends State<JustToastScope>
   void didUpdateWidget(covariant JustToastScope oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
-      final oldCtrl = oldWidget.controller ?? _internalController;
+      final JustToastController? oldCtrl =
+          oldWidget.controller ?? _internalController;
       oldCtrl?.forceDismissAll();
       oldCtrl?._vsync = null;
       oldCtrl?._overlayState = null;
@@ -783,7 +789,7 @@ class _JustToastScopeState extends State<JustToastScope>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final newOverlay = Overlay.maybeOf(context);
+    final OverlayState? newOverlay = Overlay.maybeOf(context);
     if (_effectiveController._overlayState != null &&
         _effectiveController._overlayState != newOverlay) {
       _effectiveController.forceDismissAll();

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/schemes/spacing_scheme.dart';
+import 'package:just_ui_core/src/theme/schemes/typography_scheme.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../theme/theme_provider.dart';
@@ -78,46 +80,49 @@ class JustSeparator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Resolve theme extension configurations
-    final globalSeparatorTheme = Theme.of(context)
+    final JustSeparatorTheme? globalSeparatorTheme = Theme.of(context)
         .extension<JustSeparatorTheme>();
-    final themeStyle = globalSeparatorTheme?.style;
+    final JustSeparatorStyle? themeStyle = globalSeparatorTheme?.style;
 
     // Aspect-based subscriptions
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typo = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustTypographyScheme typo = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
 
     // Preference hierarchy resolution
-    final resolvedColor =
+    final Color resolvedColor =
         style?.color ?? themeStyle?.color ?? color ?? colors.borderDefault;
-    final resolvedThickness =
+    final double resolvedThickness =
         style?.thickness ??
         themeStyle?.thickness ??
         JustThemeProvider.of(context).theme.presetTokens
             .resolveSeparatorThickness(thickness);
-    final resolvedIndent = style?.indent ?? themeStyle?.indent ?? indent;
-    final resolvedEndIndent =
+    final double resolvedIndent = style?.indent ?? themeStyle?.indent ?? indent;
+    final double resolvedEndIndent =
         style?.endIndent ?? themeStyle?.endIndent ?? endIndent;
 
-    final defaultLabelStyle = typo.caption.copyWith(
+    final TextStyle defaultLabelStyle = typo.caption.copyWith(
       color: colors.textSecondary,
     );
-    final resolvedLabelStyle =
+    final TextStyle resolvedLabelStyle =
         style?.labelStyle ??
         themeStyle?.labelStyle ??
         labelStyle ??
         defaultLabelStyle;
-    final resolvedLabelPadding =
+    final EdgeInsets resolvedLabelPadding =
         style?.labelPadding ?? themeStyle?.labelPadding ?? .all(spacing.sm);
 
     // Resolve direction adaptively if null
-    final resolvedDirection =
+    final Axis resolvedDirection =
         direction ??
         (MediaQuery.sizeOf(context).width < breakpoint
             ? .horizontal
@@ -141,7 +146,7 @@ class JustSeparator extends StatelessWidget {
         child: Row(
           mainAxisSize: .min,
           crossAxisAlignment: .center,
-          children: [
+          children: <Widget>[
             Expanded(
               child: Padding(
                 padding: .only(
@@ -193,7 +198,7 @@ class JustSeparator extends StatelessWidget {
         child: Column(
           mainAxisSize: .min,
           crossAxisAlignment: .center,
-          children: [
+          children: <Widget>[
             Expanded(
               child: Padding(
                 padding: .only(
