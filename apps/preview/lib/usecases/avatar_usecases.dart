@@ -7,29 +7,30 @@ import 'package:just_ui_core/src/components/avatar/just_avatar_variants.dart';
 
 @widgetbook.UseCase(name: 'Default Avatar', type: JustAvatar)
 Widget buildJustAvatarDefaultUseCase(BuildContext context) {
-  final name = context.knobs.string(
+  final String name = context.knobs.string(
     label: 'Name (Initials)',
     initialValue: 'Antigravity AI',
   );
-  final size = context.knobs.object.dropdown<JustAvatarSize>(
+  final JustAvatarSize size = context.knobs.object.dropdown<JustAvatarSize>(
     label: 'Size',
     options: JustAvatarSize.values,
     initialOption: JustAvatarSize.md,
   );
-  final shape = context.knobs.object.dropdown<JustAvatarShape>(
+  final JustAvatarShape shape = context.knobs.object.dropdown<JustAvatarShape>(
     label: 'Shape',
     options: JustAvatarShape.values,
     initialOption: JustAvatarShape.circle,
   );
-  final statusDot = context.knobs.objectOrNull.dropdown<JustAvatarStatus>(
-    label: 'Status Dot',
-    options: JustAvatarStatus.values,
-    initialOption: JustAvatarStatus.online,
-  );
+  final JustAvatarStatus? statusDot = context.knobs.objectOrNull
+      .dropdown<JustAvatarStatus>(
+        label: 'Status Dot',
+        options: JustAvatarStatus.values,
+        initialOption: JustAvatarStatus.online,
+      );
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       child: JustAvatar(
         name: name,
         size: size,

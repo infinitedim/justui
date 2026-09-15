@@ -23,8 +23,10 @@ void main() {
   }
 
   group('JustInput Widget Tests', () {
-    testWidgets('Renders input text and handles user typing', (tester) async {
-      final controller = TextEditingController();
+    testWidgets('Renders input text and handles user typing', (
+      WidgetTester tester,
+    ) async {
+      final TextEditingController controller = TextEditingController();
       await tester.pumpWidget(buildTestApp(JustInput(controller: controller)));
 
       expect(find.byType(TextField), findsOneWidget);
@@ -32,8 +34,12 @@ void main() {
       expect(controller.text, equals('Hello JustUI'));
     });
 
-    testWidgets('Triggers clear button tap to reset text', (tester) async {
-      final controller = TextEditingController(text: 'Initial Text');
+    testWidgets('Triggers clear button tap to reset text', (
+      WidgetTester tester,
+    ) async {
+      final TextEditingController controller = TextEditingController(
+        text: 'Initial Text',
+      );
       await tester.pumpWidget(
         buildTestApp(JustInput(controller: controller, showClearButton: true)),
       );
@@ -45,28 +51,32 @@ void main() {
     });
 
     testWidgets('Applies disabled state and guards interaction', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = TextEditingController(text: 'Disabled');
+      final TextEditingController controller = TextEditingController(
+        text: 'Disabled',
+      );
       await tester.pumpWidget(
         buildTestApp(JustInput(controller: controller, enabled: false)),
       );
 
-      final textField = tester.widget<TextField>(find.byType(TextField));
+      final TextField textField = tester.widget<TextField>(
+        find.byType(TextField),
+      );
       expect(textField.enabled, isFalse);
     });
   });
 
   group('JustSwitch & JustCheckbox Widget Tests', () {
-    testWidgets('JustSwitch toggles value on tap', (tester) async {
+    testWidgets('JustSwitch toggles value on tap', (WidgetTester tester) async {
       bool value = false;
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return buildTestApp(
               JustSwitch(
                 value: value,
-                onChanged: (v) => setState(() => value = v),
+                onChanged: (bool v) => setState(() => value = v),
               ),
             );
           },
@@ -81,15 +91,15 @@ void main() {
 
     testWidgets(
       'JustCheckbox toggles value on tap and meets minimum touch target',
-      (tester) async {
+      (WidgetTester tester) async {
         bool value = false;
         await tester.pumpWidget(
           StatefulBuilder(
-            builder: (context, setState) {
+            builder: (BuildContext context, StateSetter setState) {
               return buildTestApp(
                 JustCheckbox(
                   value: value,
-                  onChanged: (v) => setState(() => value = v ?? false),
+                  onChanged: (bool? v) => setState(() => value = v ?? false),
                 ),
               );
             },
@@ -97,7 +107,7 @@ void main() {
         );
 
         expect(value, isFalse);
-        final size = tester.getSize(find.byType(JustCheckbox));
+        final Size size = tester.getSize(find.byType(JustCheckbox));
         expect(size.width, greaterThanOrEqualTo(44.0));
         expect(size.height, greaterThanOrEqualTo(44.0));
 
@@ -109,17 +119,19 @@ void main() {
   });
 
   group('JustSlider Widget Tests', () {
-    testWidgets('JustSlider clamps value and responds to drag', (tester) async {
+    testWidgets('JustSlider clamps value and responds to drag', (
+      WidgetTester tester,
+    ) async {
       double value = 50.0;
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return buildTestApp(
               JustSlider(
                 value: value,
                 min: 0.0,
                 max: 100.0,
-                onChanged: (v) => setState(() => value = v),
+                onChanged: (double v) => setState(() => value = v),
               ),
             );
           },
@@ -133,18 +145,18 @@ void main() {
     });
 
     testWidgets('JustSlider responds to keyboard arrow key events', (
-      tester,
+      WidgetTester tester,
     ) async {
       double value = 50.0;
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return buildTestApp(
               JustSlider(
                 value: value,
                 min: 0.0,
                 max: 100.0,
-                onChanged: (v) => setState(() => value = v),
+                onChanged: (double v) => setState(() => value = v),
               ),
             );
           },
@@ -162,22 +174,22 @@ void main() {
 
   group('JustSelect & JustDialogScope Widget Tests', () {
     testWidgets('JustSelect opens dropdown overlay and selects option', (
-      tester,
+      WidgetTester tester,
     ) async {
       String selected = 'Option A';
-      final options = [
-        const JustSelectOption(value: 'Option A', label: 'Option A'),
-        const JustSelectOption(value: 'Option B', label: 'Option B'),
+      final List<JustSelectOption<String>> options = <JustSelectOption<String>>[
+        const JustSelectOption<String>(value: 'Option A', label: 'Option A'),
+        const JustSelectOption<String>(value: 'Option B', label: 'Option B'),
       ];
 
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return buildTestApp(
               JustSelect<String>(
                 value: selected,
                 options: options,
-                onChanged: (v) {
+                onChanged: (String v) {
                   setState(() => selected = v);
                 },
               ),
@@ -198,9 +210,9 @@ void main() {
     });
 
     testWidgets('JustDialogController shows and dismisses dialog', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final dialogController = JustDialogController();
+      final JustDialogController dialogController = JustDialogController();
 
       await tester.pumpWidget(
         MaterialApp(
@@ -210,7 +222,7 @@ void main() {
               controller: dialogController,
               child: Scaffold(
                 body: Builder(
-                  builder: (context) {
+                  builder: (BuildContext context) {
                     return ElevatedButton(
                       onPressed: () {
                         context.justDialog.show<void>(

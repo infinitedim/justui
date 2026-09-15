@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/theme_data.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart'
+    show JustColorScheme, JustMotionProfile;
 
 import '../../theme/theme_provider.dart';
 import '../../theme/preset_tokens.dart';
-import '../shared/just_focus_indicator.dart';
-import '../shared/just_pressable.dart';
-import '../shared/just_progress_spinner.dart';
+import '../shared/_shared_focus_indicator.dart';
+import '../shared/_shared_pressable.dart';
+import '../shared/_shared_progress_spinner.dart';
 import 'just_button_style.dart';
 import 'just_button_variants.dart';
 import 'just_button_theme.dart';
@@ -226,9 +229,10 @@ class _JustButtonState extends State<JustButton> {
   Widget build(BuildContext context) {
     // Attempt to read from Flutter Theme Extension
     // Using context.justTheme which resolves InheritedModel aspects properly
-    final customTheme = JustThemeProvider.of(context).theme;
-    final buttonTheme = Theme.of(context).extension<JustButtonTheme>();
-    final presetTokens = customTheme.presetTokens;
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustButtonTheme? buttonTheme = Theme.of(context)
+        .extension<JustButtonTheme>();
+    final JustPresetTokens presetTokens = customTheme.presetTokens;
 
     JustButtonStyle? themeStyle;
     if (buttonTheme != null) {
@@ -250,25 +254,28 @@ class _JustButtonState extends State<JustButton> {
           break;
       }
     }
-    final finalEnableHaptic =
+    final bool finalEnableHaptic =
         widget.enableHaptic ??
         buttonTheme?.enableHaptic ??
         presetTokens.showsDefaultBorder;
 
     // We register dependency to colors aspect
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final radius = customTheme.radius;
-    final animations = customTheme.animations;
+    final JustRadiusScheme radius = customTheme.radius;
+    final JustMotionProfile animations = customTheme.animations;
 
-    final isInteractive =
+    final bool isInteractive =
         widget.onPressed != null && !widget.isDisabled && !widget.isLoading;
 
     // Determine dimensions & paddings based on size
@@ -317,12 +324,12 @@ class _JustButtonState extends State<JustButton> {
     }
 
     // Apply button group attached adjustments if in a group
-    final groupInfo = JustButtonGroupInfo.of(context);
+    final JustButtonGroupInfo? groupInfo = JustButtonGroupInfo.of(context);
     BorderRadius resolvedRadius =
         widget.style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius;
     if (groupInfo != null) {
-      final isFirst = groupInfo.index == 0;
-      final isLast = groupInfo.index == groupInfo.totalCount - 1;
+      final bool isFirst = groupInfo.index == 0;
+      final bool isLast = groupInfo.index == groupInfo.totalCount - 1;
 
       if (groupInfo.direction == .horizontal) {
         if (isFirst) {
@@ -384,8 +391,8 @@ class _JustButtonState extends State<JustButton> {
                     widget.onPressed?.call();
                   },
             builder: (BuildContext context, JustInteractionState state) {
-              final isHovered = state.isHovered;
-              final isPressed = state.isPressed;
+              final bool isHovered = state.isHovered;
+              final bool isPressed = state.isPressed;
 
               // Resolve states colors
               Color bg;
@@ -393,13 +400,13 @@ class _JustButtonState extends State<JustButton> {
               Color border;
 
               // Fallback colors matching semantic rules
-              final primaryBg = presetTokens.showsDefaultBorder
+              final Color primaryBg = presetTokens.showsDefaultBorder
                   ? colors.warning
                   : colors.borderFocus;
-              final primaryFg = presetTokens.showsDefaultBorder
+              final Color primaryFg = presetTokens.showsDefaultBorder
                   ? const Color(0xFF000000)
                   : colors.textInverse;
-              final errorBg = colors.error;
+              final Color errorBg = colors.error;
 
               switch (widget.variant) {
                 case .primary:
@@ -507,33 +514,33 @@ class _JustButtonState extends State<JustButton> {
               }
 
               // Apply theme & manual instance styles if provided
-              final finalBg =
+              final Color finalBg =
                   widget.style?.backgroundColor ??
                   themeStyle?.backgroundColor ??
                   bg;
-              final finalFg =
+              final Color finalFg =
                   widget.style?.foregroundColor ??
                   themeStyle?.foregroundColor ??
                   text;
-              final finalBorder =
+              final Color finalBorder =
                   widget.style?.borderColor ??
                   themeStyle?.borderColor ??
                   border;
-              final finalPadding =
+              final EdgeInsets finalPadding =
                   widget.style?.padding ??
                   themeStyle?.padding ??
                   (widget.variant == .link
                       ? .zero
                       : .symmetric(horizontal: paddingH));
-              final finalTextStyle =
+              final TextStyle finalTextStyle =
                   widget.style?.textStyle ??
                   themeStyle?.textStyle ??
                   textStyle.copyWith(color: finalFg);
 
               // Link decoration
-              final isLinkWithHover = widget.variant == .link && isHovered;
+              final bool isLinkWithHover = widget.variant == .link && isHovered;
 
-              final labelWidget = Text(
+              final Text labelWidget = Text(
                 widget.label,
                 style: isLinkWithHover
                     ? finalTextStyle.copyWith(decoration: .underline)
@@ -548,7 +555,7 @@ class _JustButtonState extends State<JustButton> {
                 content = Row(
                   mainAxisSize: .min,
                   mainAxisAlignment: .center,
-                  children: [
+                  children: <Widget>[
                     JustProgressSpinner(
                       size: iconSize,
                       color: finalFg,
@@ -557,15 +564,15 @@ class _JustButtonState extends State<JustButton> {
                   ],
                 );
               } else {
-                final hasLeading = widget.leading != null;
-                final hasTrailing = widget.trailing != null;
+                final bool hasLeading = widget.leading != null;
+                final bool hasTrailing = widget.trailing != null;
 
                 if (hasLeading || hasTrailing) {
                   content = Row(
                     mainAxisSize: .min,
                     mainAxisAlignment: .center,
-                    children: [
-                      if (hasLeading) ...[
+                    children: <Widget>[
+                      if (hasLeading) ...<Widget>[
                         IconTheme.merge(
                           data: IconThemeData(size: iconSize, color: finalFg),
                           child: widget.leading!,
@@ -573,7 +580,7 @@ class _JustButtonState extends State<JustButton> {
                         SizedBox(width: spacing.sm),
                       ],
                       labelWidget,
-                      if (hasTrailing) ...[
+                      if (hasTrailing) ...<Widget>[
                         SizedBox(width: spacing.sm),
                         IconTheme.merge(
                           data: IconThemeData(size: iconSize, color: finalFg),
@@ -590,12 +597,12 @@ class _JustButtonState extends State<JustButton> {
               // Shadows resolution
               List<BoxShadow> resolvedShadows;
               if (widget.variant == .link || widget.variant == .ghost) {
-                resolvedShadows = const [];
+                resolvedShadows = const <BoxShadow>[];
               } else {
                 final double? styleElevation =
                     widget.style?.elevation ?? themeStyle?.elevation;
 
-                final hasShadow = styleElevation != null
+                final bool hasShadow = styleElevation != null
                     ? styleElevation > 0.0
                     : presetTokens.showsDefaultBorder;
 
@@ -612,7 +619,7 @@ class _JustButtonState extends State<JustButton> {
                     isPressed: isPressed,
                   );
                 } else {
-                  resolvedShadows = const [];
+                  resolvedShadows = const <BoxShadow>[];
                 }
               }
 
@@ -677,7 +684,9 @@ class const JustButtonGroup({
     if (children.isEmpty) return const SizedBox.shrink();
 
     if (!attached) {
-      final spacing = JustThemeProvider.of(context).theme.spacing;
+      final JustSpacingScheme spacing = JustThemeProvider.of(context)
+          .theme
+          .spacing;
       return Flex(
         direction: direction,
         mainAxisSize: .min,
@@ -689,11 +698,11 @@ class const JustButtonGroup({
     return Flex(
       direction: direction,
       mainAxisSize: .min,
-      children: [
-        for (int i = 0; i < children.length; i++) ...[
+      children: <Widget>[
+        for (int i = 0; i < children.length; i++) ...<Widget>[
           // Translate subsequent items to overlap their 1px borders
           Builder(
-            builder: (context) {
+            builder: (BuildContext context) {
               Widget button = JustButtonGroupInfo(
                 index: i,
                 totalCount: children.length,
@@ -701,7 +710,7 @@ class const JustButtonGroup({
                 child: children[i],
               );
               if (i > 0) {
-                final offset = direction == .horizontal
+                final Offset offset = direction == .horizontal
                     ? const Offset(-1.0, 0.0)
                     : const Offset(0.0, -1.0);
                 button = Transform.translate(offset: offset, child: button);

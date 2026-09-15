@@ -31,9 +31,9 @@ void main() {
 
   group('JustRangeValues Unit Tests', () {
     test('Constructs with valid range and verifies equality and hashCode', () {
-      const r1 = JustRangeValues(10.0, 50.0);
-      const r2 = JustRangeValues(10.0, 50.0);
-      const r3 = JustRangeValues(20.0, 60.0);
+      const JustRangeValues r1 = JustRangeValues(10.0, 50.0);
+      const JustRangeValues r2 = JustRangeValues(10.0, 50.0);
+      const JustRangeValues r3 = JustRangeValues(20.0, 60.0);
 
       expect(r1 == r2, isTrue);
       expect(r1 == r3, isFalse);
@@ -44,19 +44,19 @@ void main() {
 
   group('JustSlider - Single Mode Interactions & Drag', () {
     testWidgets('Renders single thumb and responds to pan drag gesture', (
-      tester,
+      WidgetTester tester,
     ) async {
       double value = 25.0;
 
       await tester.pumpWidget(
         buildTestApp(
           StatefulBuilder(
-            builder: (context, setState) {
+            builder: (BuildContext context, StateSetter setState) {
               return JustSlider(
                 value: value,
                 min: 0.0,
                 max: 100.0,
-                onChanged: (val) {
+                onChanged: (double val) {
                   setState(() => value = val);
                 },
               );
@@ -75,18 +75,20 @@ void main() {
       expect(value, greaterThan(25.0));
     });
 
-    testWidgets('Tap on slider track updates value', (tester) async {
+    testWidgets('Tap on slider track updates value', (
+      WidgetTester tester,
+    ) async {
       double value = 0.0;
 
       await tester.pumpWidget(
         buildTestApp(
           StatefulBuilder(
-            builder: (context, setState) {
+            builder: (BuildContext context, StateSetter setState) {
               return JustSlider(
                 value: value,
                 min: 0.0,
                 max: 100.0,
-                onChanged: (val) => setState(() => value = val),
+                onChanged: (double val) => setState(() => value = val),
               );
             },
           ),
@@ -94,7 +96,7 @@ void main() {
       );
 
       // Tap near the right edge of the slider
-      final sliderTopLeft = tester.getTopLeft(find.byType(JustSlider));
+      final Offset sliderTopLeft = tester.getTopLeft(find.byType(JustSlider));
       await tester.tapAt(
         Offset(sliderTopLeft.dx + 250.0, sliderTopLeft.dy + 24.0),
       );
@@ -104,20 +106,20 @@ void main() {
     });
 
     testWidgets('Snaps to discrete divisions and displays tick marks', (
-      tester,
+      WidgetTester tester,
     ) async {
       double value = 0.0;
 
       await tester.pumpWidget(
         buildTestApp(
           StatefulBuilder(
-            builder: (context, setState) {
+            builder: (BuildContext context, StateSetter setState) {
               return JustSlider(
                 value: value,
                 min: 0.0,
                 max: 100.0,
                 divisions: 4, // 0, 25, 50, 75, 100
-                onChanged: (val) => setState(() => value = val),
+                onChanged: (double val) => setState(() => value = val),
               );
             },
           ),
@@ -125,7 +127,7 @@ void main() {
       );
 
       // Drag slightly
-      final sliderTopLeft = tester.getTopLeft(find.byType(JustSlider));
+      final Offset sliderTopLeft = tester.getTopLeft(find.byType(JustSlider));
       await tester.tapAt(
         Offset(sliderTopLeft.dx + 80.0, sliderTopLeft.dy + 24.0),
       );
@@ -137,28 +139,28 @@ void main() {
 
     testWidgets(
       'Tooltip renders during active drag in default and neobrutalism presets',
-      (tester) async {
+      (WidgetTester tester) async {
         double value = 50.0;
 
         // 1. Default preset tooltip
         await tester.pumpWidget(
           buildTestApp(
             StatefulBuilder(
-              builder: (context, setState) {
+              builder: (BuildContext context, StateSetter setState) {
                 return JustSlider(
                   value: value,
                   min: 0.0,
                   max: 100.0,
                   showTooltip: true,
-                  onChanged: (val) => setState(() => value = val),
+                  onChanged: (double val) => setState(() => value = val),
                 );
               },
             ),
           ),
         );
 
-        final center = tester.getCenter(find.byType(JustSlider));
-        final gesture = await tester.startGesture(center);
+        final Offset center = tester.getCenter(find.byType(JustSlider));
+        final TestGesture gesture = await tester.startGesture(center);
         await gesture.moveBy(const Offset(30.0, 0.0));
         await tester.pump();
 
@@ -172,22 +174,22 @@ void main() {
         await tester.pumpWidget(
           buildTestApp(
             StatefulBuilder(
-              builder: (context, setState) {
+              builder: (BuildContext context, StateSetter setState) {
                 return JustSlider(
                   value: value,
                   min: 0.0,
                   max: 100.0,
                   divisions: 10,
                   showTooltip: true,
-                  onChanged: (val) => setState(() => value = val),
+                  onChanged: (double val) => setState(() => value = val),
                 );
               },
             ),
-            theme: JustThemeData.neobrutalismLight,
+            theme: .neobrutalismLight,
           ),
         );
 
-        final gesture2 = await tester.startGesture(center);
+        final TestGesture gesture2 = await tester.startGesture(center);
         await gesture2.moveBy(const Offset(30.0, 0.0));
         await tester.pump();
 
@@ -199,7 +201,7 @@ void main() {
 
     testWidgets(
       'Disabled state disables gestures, keyboard events, and shows forbidden cursor',
-      (tester) async {
+      (WidgetTester tester) async {
         await tester.pumpWidget(
           buildTestApp(
             const JustSlider(
@@ -219,19 +221,21 @@ void main() {
       },
     );
 
-    testWidgets('Keyboard arrow key navigation updates value', (tester) async {
+    testWidgets('Keyboard arrow key navigation updates value', (
+      WidgetTester tester,
+    ) async {
       double value = 50.0;
 
       await tester.pumpWidget(
         buildTestApp(
           StatefulBuilder(
-            builder: (context, setState) {
+            builder: (BuildContext context, StateSetter setState) {
               return JustSlider(
                 value: value,
                 min: 0.0,
                 max: 100.0,
                 divisions: 10,
-                onChanged: (val) => setState(() => value = val),
+                onChanged: (double val) => setState(() => value = val),
               );
             },
           ),
@@ -239,11 +243,13 @@ void main() {
       );
 
       // Focus the slider
-      final sliderFocusFinder = find.descendant(
+      final Finder sliderFocusFinder = find.descendant(
         of: find.byType(JustSlider),
         matching: find.byType(Focus),
       );
-      final focusNode = tester.widget<Focus>(sliderFocusFinder).focusNode;
+      final FocusNode? focusNode = tester
+          .widget<Focus>(sliderFocusFinder)
+          .focusNode;
       focusNode?.requestFocus();
       await tester.pump();
 
@@ -268,14 +274,18 @@ void main() {
       expect(value, equals(50.0));
     });
 
-    testWidgets('Mouse hover state and cursor interaction', (tester) async {
+    testWidgets('Mouse hover state and cursor interaction', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           JustSlider(value: 50.0, min: 0.0, max: 100.0, onChanged: (_) {}),
         ),
       );
 
-      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      final TestGesture gesture = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
       await gesture.addPointer(location: Offset.zero);
       addTearDown(gesture.removePointer);
 
@@ -289,20 +299,20 @@ void main() {
     });
 
     testWidgets('Continuous slider haptic triggering on boundary hits', (
-      tester,
+      WidgetTester tester,
     ) async {
       double value = 95.0;
 
       await tester.pumpWidget(
         buildTestApp(
           StatefulBuilder(
-            builder: (context, setState) {
+            builder: (BuildContext context, StateSetter setState) {
               return JustSlider(
                 value: value,
                 min: 0.0,
                 max: 100.0,
                 enableHaptic: true,
-                onChanged: (val) => setState(() => value = val),
+                onChanged: (double val) => setState(() => value = val),
               );
             },
           ),
@@ -319,18 +329,19 @@ void main() {
   group('JustSlider - Range Mode Interactions & Drag', () {
     testWidgets(
       'Renders dual thumbs and updates range on dragging start thumb',
-      (tester) async {
+      (WidgetTester tester) async {
         JustRangeValues range = const JustRangeValues(20.0, 80.0);
 
         await tester.pumpWidget(
           buildTestApp(
             StatefulBuilder(
-              builder: (context, setState) {
+              builder: (BuildContext context, StateSetter setState) {
                 return JustSlider.range(
                   rangeValues: range,
                   min: 0.0,
                   max: 100.0,
-                  onRangeChanged: (val) => setState(() => range = val),
+                  onRangeChanged: (JustRangeValues val) =>
+                      setState(() => range = val),
                 );
               },
             ),
@@ -339,10 +350,10 @@ void main() {
 
         expect(find.byType(JustSlider), findsOneWidget);
 
-        final sliderTopLeft = tester.getTopLeft(find.byType(JustSlider));
+        final Offset sliderTopLeft = tester.getTopLeft(find.byType(JustSlider));
 
         // Drag from start thumb position (around x = 60) to right
-        final startThumbPos = Offset(
+        final Offset startThumbPos = Offset(
           sliderTopLeft.dx + 56.0,
           sliderTopLeft.dy + 24.0,
         );
@@ -354,28 +365,31 @@ void main() {
       },
     );
 
-    testWidgets('Dragging end thumb clamps above start thumb', (tester) async {
+    testWidgets('Dragging end thumb clamps above start thumb', (
+      WidgetTester tester,
+    ) async {
       JustRangeValues range = const JustRangeValues(30.0, 70.0);
 
       await tester.pumpWidget(
         buildTestApp(
           StatefulBuilder(
-            builder: (context, setState) {
+            builder: (BuildContext context, StateSetter setState) {
               return JustSlider.range(
                 rangeValues: range,
                 min: 0.0,
                 max: 100.0,
-                onRangeChanged: (val) => setState(() => range = val),
+                onRangeChanged: (JustRangeValues val) =>
+                    setState(() => range = val),
               );
             },
           ),
         ),
       );
 
-      final sliderTopLeft = tester.getTopLeft(find.byType(JustSlider));
+      final Offset sliderTopLeft = tester.getTopLeft(find.byType(JustSlider));
 
       // Drag end thumb position (around x = 200) to right
-      final endThumbPos = Offset(
+      final Offset endThumbPos = Offset(
         sliderTopLeft.dx + 200.0,
         sliderTopLeft.dy + 24.0,
       );
@@ -386,20 +400,21 @@ void main() {
     });
 
     testWidgets('Range mode keyboard navigation updates start and end values', (
-      tester,
+      WidgetTester tester,
     ) async {
       JustRangeValues range = const JustRangeValues(30.0, 70.0);
 
       await tester.pumpWidget(
         buildTestApp(
           StatefulBuilder(
-            builder: (context, setState) {
+            builder: (BuildContext context, StateSetter setState) {
               return JustSlider.range(
                 rangeValues: range,
                 min: 0.0,
                 max: 100.0,
                 divisions: 10,
-                onRangeChanged: (val) => setState(() => range = val),
+                onRangeChanged: (JustRangeValues val) =>
+                    setState(() => range = val),
               );
             },
           ),
@@ -407,11 +422,13 @@ void main() {
       );
 
       // Focus slider
-      final sliderFocusFinder = find.descendant(
+      final Finder sliderFocusFinder = find.descendant(
         of: find.byType(JustSlider),
         matching: find.byType(Focus),
       );
-      final focusNode = tester.widget<Focus>(sliderFocusFinder).focusNode;
+      final FocusNode? focusNode = tester
+          .widget<Focus>(sliderFocusFinder)
+          .focusNode;
       focusNode?.requestFocus();
       await tester.pump();
 
@@ -427,30 +444,31 @@ void main() {
     });
 
     testWidgets('Range mode continuous slider haptics on boundary hit', (
-      tester,
+      WidgetTester tester,
     ) async {
       JustRangeValues range = const JustRangeValues(10.0, 90.0);
 
       await tester.pumpWidget(
         buildTestApp(
           StatefulBuilder(
-            builder: (context, setState) {
+            builder: (BuildContext context, StateSetter setState) {
               return JustSlider.range(
                 rangeValues: range,
                 min: 0.0,
                 max: 100.0,
                 enableHaptic: true,
-                onRangeChanged: (val) => setState(() => range = val),
+                onRangeChanged: (JustRangeValues val) =>
+                    setState(() => range = val),
               );
             },
           ),
         ),
       );
 
-      final sliderTopLeft = tester.getTopLeft(find.byType(JustSlider));
+      final Offset sliderTopLeft = tester.getTopLeft(find.byType(JustSlider));
 
       // Drag start thumb far left to 0
-      final startThumbPos = Offset(
+      final Offset startThumbPos = Offset(
         sliderTopLeft.dx + 30.0,
         sliderTopLeft.dy + 24.0,
       );
@@ -462,8 +480,10 @@ void main() {
   });
 
   group('JustSlider - Sizes & Custom Styles', () {
-    testWidgets('Renders all size variants (sm, md, lg)', (tester) async {
-      for (final size in [
+    testWidgets('Renders all size variants (sm, md, lg)', (
+      WidgetTester tester,
+    ) async {
+      for (final JustSliderSize size in <JustSliderSize>[
         JustSliderSize.sm,
         JustSliderSize.md,
         JustSliderSize.lg,
@@ -484,8 +504,10 @@ void main() {
       }
     });
 
-    testWidgets('Applies custom JustSliderStyle overrides', (tester) async {
-      const customStyle = JustSliderStyle(
+    testWidgets('Applies custom JustSliderStyle overrides', (
+      WidgetTester tester,
+    ) async {
+      const JustSliderStyle customStyle = JustSliderStyle(
         activeTrackColor: Color(0xFFFF0000),
         inactiveTrackColor: Color(0xFF00FF00),
         thumbColor: Color(0xFF0000FF),
@@ -514,8 +536,8 @@ void main() {
 
     testWidgets(
       'Inherits global JustSliderTheme from Material ThemeData extension',
-      (tester) async {
-        const globalTheme = JustSliderTheme(
+      (WidgetTester tester) async {
+        const JustSliderTheme globalTheme = JustSliderTheme(
           style: JustSliderStyle(
             activeTrackColor: Color(0xFF123456),
             thumbColor: Color(0xFF654321),
@@ -523,7 +545,9 @@ void main() {
           enableHaptic: false,
         );
 
-        final materialTheme = ThemeData().copyWith(extensions: [globalTheme]);
+        final ThemeData materialTheme = ThemeData().copyWith(
+          extensions: <ThemeExtension<dynamic>>[globalTheme],
+        );
 
         await tester.pumpWidget(
           buildTestApp(
@@ -540,7 +564,7 @@ void main() {
   group('JustSliderTheme & JustSliderStyle Unit Tests', () {
     test('JustSliderStyle instantiation with all properties', () {
       // ignore: prefer_const_constructors
-      final style = JustSliderStyle(
+      final JustSliderStyle style = JustSliderStyle(
         activeTrackColor: const Color(0xFF111111),
         inactiveTrackColor: const Color(0xFF222222),
         thumbColor: const Color(0xFF333333),
@@ -564,38 +588,51 @@ void main() {
       );
 
       // ignore: prefer_const_constructors
-      final emptyStyle = JustSliderStyle();
+      final JustSliderStyle emptyStyle = JustSliderStyle();
       expect(emptyStyle.activeTrackColor, isNull);
     });
 
     test('JustSliderTheme copyWith and lerp tests', () {
-      const style1 = JustSliderStyle(activeTrackColor: Color(0xFF111111));
-      const style2 = JustSliderStyle(activeTrackColor: Color(0xFF222222));
+      const JustSliderStyle style1 = JustSliderStyle(
+        activeTrackColor: Color(0xFF111111),
+      );
+      const JustSliderStyle style2 = JustSliderStyle(
+        activeTrackColor: Color(0xFF222222),
+      );
 
-      const theme1 = JustSliderTheme(style: style1, enableHaptic: true);
-      final copied = theme1.copyWith(style: style2, enableHaptic: false);
+      const JustSliderTheme theme1 = JustSliderTheme(
+        style: style1,
+        enableHaptic: true,
+      );
+      final JustSliderTheme copied = theme1.copyWith(
+        style: style2,
+        enableHaptic: false,
+      );
 
       expect(copied.style, equals(style2));
       expect(copied.enableHaptic, isFalse);
 
-      final copiedNull = theme1.copyWith();
+      final JustSliderTheme copiedNull = theme1.copyWith();
       expect(copiedNull.style, equals(style1));
       expect(copiedNull.enableHaptic, isTrue);
 
-      const theme2 = JustSliderTheme(style: style2, enableHaptic: false);
+      const JustSliderTheme theme2 = JustSliderTheme(
+        style: style2,
+        enableHaptic: false,
+      );
 
       // Lerp t < 0.5
-      final lerpLow = theme1.lerp(theme2, 0.3);
+      final JustSliderTheme lerpLow = theme1.lerp(theme2, 0.3);
       expect(lerpLow.style, equals(style1));
       expect(lerpLow.enableHaptic, isTrue);
 
       // Lerp t >= 0.5
-      final lerpHigh = theme1.lerp(theme2, 0.8);
+      final JustSliderTheme lerpHigh = theme1.lerp(theme2, 0.8);
       expect(lerpHigh.style, equals(style2));
       expect(lerpHigh.enableHaptic, isFalse);
 
       // Lerp with null or incompatible
-      final lerpNull = theme1.lerp(null, 0.5);
+      final JustSliderTheme lerpNull = theme1.lerp(null, 0.5);
       expect(lerpNull, equals(theme1));
 
       expect(JustSliderTheme.defaults.style, isNull);
@@ -605,7 +642,11 @@ void main() {
     test('JustSliderSize enum values check', () {
       expect(
         JustSliderSize.values,
-        containsAll([JustSliderSize.sm, JustSliderSize.md, JustSliderSize.lg]),
+        containsAll(<dynamic>[
+          JustSliderSize.sm,
+          JustSliderSize.md,
+          JustSliderSize.lg,
+        ]),
       );
     });
   });

@@ -395,7 +395,7 @@ class _JustSkeletonState extends State<JustSkeleton>
         return Column(
           crossAxisAlignment: columnAlignment,
           mainAxisSize: .min,
-          children: List.generate(clampedLines, (index) {
+          children: .generate(clampedLines, (index) {
             final isLast = index == clampedLines - 1;
             return Padding(
               padding: .only(bottom: isLast ? 0.0 : 6.0),
@@ -446,7 +446,7 @@ class _JustSkeletonState extends State<JustSkeleton>
         return Column(
           crossAxisAlignment: columnAlignment,
           mainAxisSize: .min,
-          children: List.generate(clampedLines, (index) {
+          children: .generate(clampedLines, (index) {
             final isLast = index == clampedLines - 1;
             return Padding(
               padding: .only(bottom: isLast ? 0.0 : 6.0),

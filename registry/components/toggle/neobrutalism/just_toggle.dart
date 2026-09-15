@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/theme_data.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart' show JustColorScheme;
 
 import '../../theme/theme_provider.dart';
 import '../../theme/preset_tokens.dart';
-import '../shared/just_focus_indicator.dart';
-import '../shared/just_pressable.dart';
+import '../shared/_shared_focus_indicator.dart';
+import '../shared/_shared_pressable.dart';
 import 'just_toggle_style.dart';
 import 'just_toggle_theme.dart';
 import 'just_toggle_variants.dart';
@@ -62,20 +64,24 @@ class const JustToggle({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final toggleTheme = Theme.of(context).extension<JustToggleTheme>();
-    final themeStyle = toggleTheme?.style;
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustToggleTheme? toggleTheme = Theme.of(context)
+        .extension<JustToggleTheme>();
+    final JustToggleStyle? themeStyle = toggleTheme?.style;
 
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final radius = customTheme.radius;
-    final shadows = customTheme.shadows;
-    final typography = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustRadiusScheme radius = customTheme.radius;
+    final JustShadowScheme shadows = customTheme.shadows;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final hasBorder = customTheme.presetTokens.showsDefaultBorder;
+    final bool hasBorder = customTheme.presetTokens.showsDefaultBorder;
 
-    final isInteractive = enabled && onPressed != null;
+    final bool isInteractive = enabled && onPressed != null;
 
     // Resolve Dimensions based on Size
     double height;
@@ -101,15 +107,15 @@ class const JustToggle({
     }
 
     // Resolve BorderRadius with Group Collapse
-    final groupInfo = JustToggleGroupInfo.of(context);
+    final JustToggleGroupInfo? groupInfo = JustToggleGroupInfo.of(context);
     final BorderRadius defaultRadius = customTheme.presetTokens
         .resolveBorderRadius(radius);
     BorderRadius resolvedRadius =
         style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius;
 
     if (groupInfo != null && !hasBorder) {
-      final isFirst = groupInfo.index == 0;
-      final isLast = groupInfo.index == groupInfo.totalCount - 1;
+      final bool isFirst = groupInfo.index == 0;
+      final bool isLast = groupInfo.index == groupInfo.totalCount - 1;
 
       if (groupInfo.direction == Axis.horizontal) {
         if (isFirst) {
@@ -143,34 +149,34 @@ class const JustToggle({
     }
 
     // Resolve Color States
-    final finalSelectedBg =
+    final Color finalSelectedBg =
         style?.selectedBackgroundColor ??
         themeStyle?.selectedBackgroundColor ??
         (hasBorder
             ? colors.textPrimary
             : colors.borderFocus.withValues(alpha: 0.15));
 
-    final finalUnselectedBg =
+    final Color finalUnselectedBg =
         style?.unselectedBackgroundColor ??
         themeStyle?.unselectedBackgroundColor ??
         (hasBorder ? colors.background : const Color(0x00000000));
 
-    final finalSelectedBorder =
+    final Color finalSelectedBorder =
         style?.selectedBorderColor ??
         themeStyle?.selectedBorderColor ??
         (hasBorder ? colors.textPrimary : colors.borderFocus);
 
-    final finalUnselectedBorder =
+    final Color finalUnselectedBorder =
         style?.unselectedBorderColor ??
         themeStyle?.unselectedBorderColor ??
         (hasBorder ? colors.textPrimary : colors.borderDefault);
 
-    final finalSelectedText =
+    final Color finalSelectedText =
         style?.selectedTextColor ??
         themeStyle?.selectedTextColor ??
         (hasBorder ? colors.textInverse : colors.borderFocus);
 
-    final finalUnselectedText =
+    final Color finalUnselectedText =
         style?.unselectedTextColor ??
         themeStyle?.unselectedTextColor ??
         colors.textPrimary;
@@ -183,8 +189,8 @@ class const JustToggle({
         enabled: isInteractive,
         onTap: onPressed,
         builder: (BuildContext context, JustInteractionState state) {
-          final isHovered = state.isHovered;
-          final isPressed = state.isPressed;
+          final bool isHovered = state.isHovered;
+          final bool isPressed = state.isPressed;
           Color bg = selected ? finalSelectedBg : finalUnselectedBg;
           Color text = selected ? finalSelectedText : finalUnselectedText;
           Color border = selected ? finalSelectedBorder : finalUnselectedBorder;

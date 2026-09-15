@@ -10,16 +10,17 @@ final JustSheetController _sheetController = JustSheetController();
 
 @widgetbook.UseCase(name: 'Bottom Sheet Trigger', type: JustSheetScope)
 Widget buildJustSheetDefaultUseCase(BuildContext context) {
-  final direction = context.knobs.object.dropdown<SheetDirection>(
-    label: 'Direction',
-    options: SheetDirection.values,
-    initialOption: SheetDirection.bottom,
-  );
+  final SheetDirection direction = context.knobs.object
+      .dropdown<SheetDirection>(
+        label: 'Direction',
+        options: SheetDirection.values,
+        initialOption: SheetDirection.bottom,
+      );
 
   return JustSheetScope(
     controller: _sheetController,
     child: Builder(
-      builder: (scopeContext) {
+      builder: (BuildContext scopeContext) {
         return Center(
           child: JustButton.primary(
             label: 'Open ${direction.name} Sheet',
@@ -30,7 +31,7 @@ Widget buildJustSheetDefaultUseCase(BuildContext context) {
                 content: Column(
                   mainAxisSize: .min,
                   crossAxisAlignment: .start,
-                  children: [
+                  children: <Widget>[
                     const Text(
                       'Sheet Header',
                       style: TextStyle(fontWeight: .bold, fontSize: 18.0),

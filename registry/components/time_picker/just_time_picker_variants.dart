@@ -103,20 +103,20 @@ extension TimeOfDayBoundary on TimeOfDay {
   /// Snaps minute to the nearest valid interval step.
   TimeOfDay snapMinute(int interval) {
     assert(60 % interval == 0, 'Interval must evenly divide 60');
-    final snapped = ((minute / interval).round() * interval) % 60;
+    final int snapped = ((minute / interval).round() * interval) % 60;
     return replacing(minute: snapped);
   }
 
   /// Returns a copy with the period toggled (AM↔PM).
   TimeOfDay togglePeriod() {
-    final newHour = hour < 12 ? hour + 12 : hour - 12;
+    final int newHour = hour < 12 ? hour + 12 : hour - 12;
     return replacing(hour: newHour);
   }
 
   /// Returns a copy with a specific 12-hour value (1..12) and period.
   TimeOfDay withHour12(int hour12, DayPeriod period) {
     assert(hour12 >= 1 && hour12 <= 12, 'Hour in 12-hour format must be 1..12');
-    final new24 = period == DayPeriod.am
+    final int new24 = period == DayPeriod.am
         ? (hour12 == 12 ? 0 : hour12)
         : (hour12 == 12 ? 12 : hour12 + 12);
     return replacing(hour: new24);
