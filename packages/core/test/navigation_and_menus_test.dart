@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart'
     show Colors, Icons, MaterialApp, Scaffold, ThemeData;
+import 'package:flutter/src/material/theme_data.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
@@ -59,12 +60,12 @@ Widget _buildNavWrapper({
   JustTableTheme? tableTheme,
   JustToggleTheme? toggleTheme,
 }) {
-  final activeTheme = theme ?? JustThemeData.light;
+  final JustThemeData activeTheme = theme ?? JustThemeData.light;
   return JustThemeProvider(
     lightTheme: activeTheme,
     child: MaterialApp(
       theme: ThemeData(
-        extensions: [
+        extensions: <ThemeExtension<dynamic>>[
           ?tabsTheme,
           ?sidebarTheme,
           ?bottomNavTheme,
@@ -91,7 +92,10 @@ void main() {
   // =========================================================================
   group('JustTabs Widget & Theme Tests', () {
     test('JustTabController lifecycle and index management', () {
-      final controller = JustTabController(length: 3, initialIndex: 1);
+      final JustTabController controller = JustTabController(
+        length: 3,
+        initialIndex: 1,
+      );
       expect(controller.length, equals(3));
       expect(controller.index, equals(1));
       expect(controller.animationValue, equals(1.0));
@@ -110,7 +114,7 @@ void main() {
       controller.animateTo(1);
       expect(controller.index, equals(1));
 
-      final emptyController = JustTabController(length: 0);
+      final JustTabController emptyController = JustTabController(length: 0);
       expect(emptyController.index, equals(0));
       emptyController.index = 0;
       emptyController.animateTo(0);
@@ -118,10 +122,10 @@ void main() {
     });
 
     testWidgets('Renders tabs variants and handles tab switching', (
-      tester,
+      WidgetTester tester,
     ) async {
       int activeIndex = 0;
-      final tabs = [
+      final List<JustTab> tabs = <JustTab>[
         const JustTab(label: 'Tab 1', content: Text('Content 1')),
         const JustTab(label: 'Tab 2', content: Text('Content 2')),
         const JustTab(
@@ -134,11 +138,11 @@ void main() {
       await tester.pumpWidget(
         _buildNavWrapper(
           child: Column(
-            children: [
+            children: <Widget>[
               Expanded(
                 child: JustTabs(
                   tabs: tabs,
-                  onChanged: (idx) => activeIndex = idx,
+                  onChanged: (int idx) => activeIndex = idx,
                 ),
               ),
             ],
@@ -160,8 +164,10 @@ void main() {
       expect(activeIndex, equals(1));
     });
 
-    testWidgets('Renders all tab constructor variants', (tester) async {
-      final tabs = [
+    testWidgets('Renders all tab constructor variants', (
+      WidgetTester tester,
+    ) async {
+      final List<JustTab> tabs = <JustTab>[
         const JustTab(label: 'A', content: Text('Page A')),
         const JustTab(label: 'B', content: Text('Page B')),
       ];
@@ -169,7 +175,7 @@ void main() {
       await tester.pumpWidget(
         _buildNavWrapper(
           child: Column(
-            children: [Expanded(child: JustTabs.line(tabs: tabs))],
+            children: <Widget>[Expanded(child: JustTabs.line(tabs: tabs))],
           ),
         ),
       );
@@ -179,7 +185,7 @@ void main() {
       await tester.pumpWidget(
         _buildNavWrapper(
           child: Column(
-            children: [Expanded(child: JustTabs.enclosed(tabs: tabs))],
+            children: <Widget>[Expanded(child: JustTabs.enclosed(tabs: tabs))],
           ),
         ),
       );
@@ -189,7 +195,7 @@ void main() {
       await tester.pumpWidget(
         _buildNavWrapper(
           child: Column(
-            children: [Expanded(child: JustTabs.pill(tabs: tabs))],
+            children: <Widget>[Expanded(child: JustTabs.pill(tabs: tabs))],
           ),
         ),
       );
@@ -199,7 +205,7 @@ void main() {
       await tester.pumpWidget(
         _buildNavWrapper(
           child: Column(
-            children: [Expanded(child: JustTabs.vertical(tabs: tabs))],
+            children: <Widget>[Expanded(child: JustTabs.vertical(tabs: tabs))],
           ),
         ),
       );
@@ -208,14 +214,14 @@ void main() {
     });
 
     test('JustTabsTheme copyWith and lerp', () {
-      const theme1 = JustTabsTheme(
+      const JustTabsTheme theme1 = JustTabsTheme(
         lineStyle: JustTabsStyle(activeColor: Colors.blue),
       );
-      const theme2 = JustTabsTheme(
+      const JustTabsTheme theme2 = JustTabsTheme(
         lineStyle: JustTabsStyle(activeColor: Colors.red),
       );
 
-      final copied = theme1.copyWith(
+      final JustTabsTheme copied = theme1.copyWith(
         pillStyle: const JustTabsStyle(activeColor: Colors.green),
       );
       expect(copied.lineStyle?.activeColor, equals(Colors.blue));
@@ -234,16 +240,16 @@ void main() {
   group('JustSidebar Widget & Theme Tests', () {
     testWidgets(
       'Renders sidebar navigation items and handles selection and collapse',
-      (tester) async {
+      (WidgetTester tester) async {
         int selectedIdx = 0;
         bool collapsed = false;
 
-        final items = [
+        final List<JustSidebarItem> items = <JustSidebarItem>[
           const JustSidebarItem(label: 'Home', icon: Icon(Icons.home)),
           const JustSidebarItem(
             label: 'Projects',
             icon: Icon(Icons.folder),
-            children: [
+            children: <JustSidebarItem>[
               JustSidebarItem(label: 'Project 1', icon: Icon(Icons.file_copy)),
             ],
           ),
@@ -257,9 +263,9 @@ void main() {
               header: const Text('Sidebar Header'),
               footer: const Text('Sidebar Footer'),
               selectedIndex: selectedIdx,
-              onItemSelected: (idx) => selectedIdx = idx,
+              onItemSelected: (int idx) => selectedIdx = idx,
               isCollapsed: collapsed,
-              onCollapsedChanged: (val) => collapsed = val,
+              onCollapsedChanged: (bool val) => collapsed = val,
             ),
           ),
         );
@@ -282,14 +288,14 @@ void main() {
     );
 
     test('JustSidebarTheme copyWith and lerp', () {
-      const theme1 = JustSidebarTheme(
+      const JustSidebarTheme theme1 = JustSidebarTheme(
         defaultStyle: JustSidebarStyle(backgroundColor: Colors.white),
       );
-      const theme2 = JustSidebarTheme(
+      const JustSidebarTheme theme2 = JustSidebarTheme(
         defaultStyle: JustSidebarStyle(backgroundColor: Colors.black),
       );
 
-      final copied = theme1.copyWith(
+      final JustSidebarTheme copied = theme1.copyWith(
         floatingStyle: const JustSidebarStyle(backgroundColor: Colors.grey),
       );
       expect(copied.defaultStyle?.backgroundColor, equals(Colors.white));
@@ -308,9 +314,9 @@ void main() {
   group('JustBottomNav Widget & Theme Tests', () {
     testWidgets(
       'Renders bottom navigation destinations and handles selection',
-      (tester) async {
+      (WidgetTester tester) async {
         int selectedIdx = 0;
-        const items = [
+        const List<JustBottomNavItem> items = <JustBottomNavItem>[
           JustBottomNavItem(label: 'Home', icon: Icon(Icons.home)),
           JustBottomNavItem(label: 'Search', icon: Icon(Icons.search)),
           JustBottomNavItem(label: 'Profile', icon: Icon(Icons.person)),
@@ -323,7 +329,7 @@ void main() {
               child: JustBottomNav(
                 items: items,
                 selectedIndex: selectedIdx,
-                onItemSelected: (idx) => selectedIdx = idx,
+                onItemSelected: (int idx) => selectedIdx = idx,
                 variant: JustBottomNavVariant.fixed,
               ),
             ),
@@ -341,14 +347,14 @@ void main() {
     );
 
     test('JustBottomNavTheme copyWith and lerp', () {
-      const theme1 = JustBottomNavTheme(
+      const JustBottomNavTheme theme1 = JustBottomNavTheme(
         fixedStyle: JustBottomNavStyle(backgroundColor: Colors.white),
       );
-      const theme2 = JustBottomNavTheme(
+      const JustBottomNavTheme theme2 = JustBottomNavTheme(
         fixedStyle: JustBottomNavStyle(backgroundColor: Colors.black),
       );
 
-      final copied = theme1.copyWith(
+      final JustBottomNavTheme copied = theme1.copyWith(
         floatingStyle: const JustBottomNavStyle(backgroundColor: Colors.blue),
       );
       expect(copied.fixedStyle?.backgroundColor, equals(Colors.white));
@@ -367,9 +373,9 @@ void main() {
   group('JustBreadcrumb Widget & Theme Tests', () {
     testWidgets(
       'Renders breadcrumb trail and handles clicks and auto-collapsing',
-      (tester) async {
+      (WidgetTester tester) async {
         int tappedIndex = -1;
-        final items = [
+        final List<JustBreadcrumbItem> items = <JustBreadcrumbItem>[
           JustBreadcrumbItem(label: 'Home', onTap: () => tappedIndex = 0),
           JustBreadcrumbItem(label: 'Category', onTap: () => tappedIndex = 1),
           JustBreadcrumbItem(
@@ -382,8 +388,8 @@ void main() {
         await tester.pumpWidget(
           _buildNavWrapper(
             child: Column(
-              children: [
-                const JustBreadcrumb(items: []),
+              children: <Widget>[
+                const JustBreadcrumb(items: <JustBreadcrumbItem>[]),
                 JustBreadcrumb(items: items),
                 JustBreadcrumb(items: items, maxItems: 3),
               ],
@@ -403,14 +409,14 @@ void main() {
     );
 
     test('JustBreadcrumbTheme copyWith and lerp', () {
-      const theme1 = JustBreadcrumbTheme(
+      const JustBreadcrumbTheme theme1 = JustBreadcrumbTheme(
         style: JustBreadcrumbStyle(activeColor: Colors.blue),
       );
-      const theme2 = JustBreadcrumbTheme(
+      const JustBreadcrumbTheme theme2 = JustBreadcrumbTheme(
         style: JustBreadcrumbStyle(activeColor: Colors.red),
       );
 
-      final copied = theme1.copyWith(
+      final JustBreadcrumbTheme copied = theme1.copyWith(
         style: const JustBreadcrumbStyle(activeColor: Colors.green),
       );
       expect(copied.style?.activeColor, equals(Colors.green));
@@ -428,15 +434,15 @@ void main() {
   group('JustSheet Widget & Theme Tests', () {
     testWidgets(
       'JustSheetScope and JustSheetController show and dismiss sheets',
-      (tester) async {
-        final sheetController = JustSheetController();
+      (WidgetTester tester) async {
+        final JustSheetController sheetController = JustSheetController();
 
         await tester.pumpWidget(
           _buildNavWrapper(
             child: JustSheetScope(
               controller: sheetController,
               child: Builder(
-                builder: (context) {
+                builder: (BuildContext context) {
                   return Center(
                     child: GestureDetector(
                       onTap: () {
@@ -469,14 +475,14 @@ void main() {
     );
 
     test('JustSheetTheme copyWith and lerp', () {
-      const theme1 = JustSheetTheme(
+      const JustSheetTheme theme1 = JustSheetTheme(
         bottomStyle: JustSheetStyle(backgroundColor: Colors.white),
       );
-      const theme2 = JustSheetTheme(
+      const JustSheetTheme theme2 = JustSheetTheme(
         bottomStyle: JustSheetStyle(backgroundColor: Colors.black),
       );
 
-      final copied = theme1.copyWith(
+      final JustSheetTheme copied = theme1.copyWith(
         topStyle: const JustSheetStyle(backgroundColor: Colors.grey),
       );
       expect(copied.bottomStyle?.backgroundColor, equals(Colors.white));
@@ -495,15 +501,15 @@ void main() {
   group('JustToast Widget & Theme Tests', () {
     testWidgets(
       'JustToastScope and JustToastController show and dismiss toasts',
-      (tester) async {
-        final toastController = JustToastController();
+      (WidgetTester tester) async {
+        final JustToastController toastController = JustToastController();
 
         await tester.pumpWidget(
           _buildNavWrapper(
             child: JustToastScope(
               controller: toastController,
               child: Builder(
-                builder: (context) {
+                builder: (BuildContext context) {
                   return Center(
                     child: GestureDetector(
                       onTap: () {
@@ -537,14 +543,14 @@ void main() {
     );
 
     test('JustToastTheme copyWith and lerp', () {
-      const theme1 = JustToastTheme(
+      const JustToastTheme theme1 = JustToastTheme(
         infoStyle: JustToastStyle(backgroundColor: Colors.blue),
       );
-      const theme2 = JustToastTheme(
+      const JustToastTheme theme2 = JustToastTheme(
         infoStyle: JustToastStyle(backgroundColor: Colors.indigo),
       );
 
-      final copied = theme1.copyWith(
+      final JustToastTheme copied = theme1.copyWith(
         successStyle: const JustToastStyle(backgroundColor: Colors.green),
       );
       expect(copied.infoStyle?.backgroundColor, equals(Colors.blue));
@@ -562,9 +568,9 @@ void main() {
   // =========================================================================
   group('JustTooltip Widget & Theme Tests', () {
     testWidgets('JustTooltip renders child and responds to hover/tap overlay', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = OverlayPortalController();
+      final OverlayPortalController controller = OverlayPortalController();
 
       await tester.pumpWidget(
         _buildNavWrapper(
@@ -587,14 +593,14 @@ void main() {
     });
 
     test('JustTooltipTheme copyWith and lerp', () {
-      const theme1 = JustTooltipTheme(
+      const JustTooltipTheme theme1 = JustTooltipTheme(
         style: JustTooltipStyle(backgroundColor: Colors.black87),
       );
-      const theme2 = JustTooltipTheme(
+      const JustTooltipTheme theme2 = JustTooltipTheme(
         style: JustTooltipStyle(backgroundColor: Colors.black),
       );
 
-      final copied = theme1.copyWith(
+      final JustTooltipTheme copied = theme1.copyWith(
         style: const JustTooltipStyle(backgroundColor: Colors.blueGrey),
       );
       expect(copied.style?.backgroundColor, equals(Colors.blueGrey));
@@ -611,10 +617,10 @@ void main() {
   // =========================================================================
   group('JustAccordion Widget & Theme Tests', () {
     testWidgets('Renders single and multi-expansion accordion items', (
-      tester,
+      WidgetTester tester,
     ) async {
-      Set<int> expanded = {};
-      final items = [
+      Set<int> expanded = <int>{};
+      final List<JustAccordionItem> items = <JustAccordionItem>[
         const JustAccordionItem(
           title: 'Section 1',
           content: Text('Section 1 Content Body'),
@@ -634,11 +640,11 @@ void main() {
       await tester.pumpWidget(
         _buildNavWrapper(
           child: Column(
-            children: [
+            children: <Widget>[
               JustAccordion(
                 items: items,
-                initialExpanded: const {0},
-                onChanged: (indices) => expanded = indices,
+                initialExpanded: const <int>{0},
+                onChanged: (Set<int> indices) => expanded = indices,
               ),
             ],
           ),
@@ -660,14 +666,14 @@ void main() {
     });
 
     test('JustAccordionTheme copyWith and lerp', () {
-      const theme1 = JustAccordionTheme(
+      const JustAccordionTheme theme1 = JustAccordionTheme(
         style: JustAccordionStyle(borderColor: Colors.grey),
       );
-      const theme2 = JustAccordionTheme(
+      const JustAccordionTheme theme2 = JustAccordionTheme(
         style: JustAccordionStyle(borderColor: Colors.black),
       );
 
-      final copied = theme1.copyWith(
+      final JustAccordionTheme copied = theme1.copyWith(
         style: const JustAccordionStyle(borderColor: Colors.blue),
       );
       expect(copied.style?.borderColor, equals(Colors.blue));
@@ -684,23 +690,24 @@ void main() {
   // =========================================================================
   group('JustRadio & JustRadioGroup Tests', () {
     testWidgets('JustRadio renders all sizes and handles selection', (
-      tester,
+      WidgetTester tester,
     ) async {
       String? selectedVal = 'A';
 
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return _buildNavWrapper(
               child: Column(
-                children: [
-                  for (final size in JustRadioSize.values)
+                children: <Widget>[
+                  for (final JustRadioSize size in JustRadioSize.values)
                     JustRadio<String>(
                       value: size.name,
                       groupValue: selectedVal,
                       size: size,
                       label: Text('Radio ${size.name}'),
-                      onChanged: (val) => setState(() => selectedVal = val),
+                      onChanged: (String val) =>
+                          setState(() => selectedVal = val),
                     ),
                   const JustRadio<String>(
                     value: 'disabled',
@@ -726,13 +733,13 @@ void main() {
     });
 
     testWidgets('JustRadioGroup lays out options vertically and horizontally', (
-      tester,
+      WidgetTester tester,
     ) async {
       int? selectedNum = 1;
-      final options = [
-        const JustRadioOption(value: 1, label: Text('Option 1')),
-        const JustRadioOption(value: 2, label: Text('Option 2')),
-        const JustRadioOption(
+      final List<JustRadioOption<int>> options = <JustRadioOption<int>>[
+        const JustRadioOption<int>(value: 1, label: Text('Option 1')),
+        const JustRadioOption<int>(value: 2, label: Text('Option 2')),
+        const JustRadioOption<int>(
           value: 3,
           label: Text('Option 3'),
           isDisabled: true,
@@ -741,12 +748,12 @@ void main() {
 
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return _buildNavWrapper(
               child: JustRadioGroup<int>(
                 value: selectedNum,
                 options: options,
-                onChanged: (val) => setState(() => selectedNum = val),
+                onChanged: (int val) => setState(() => selectedNum = val),
               ),
             );
           },
@@ -762,16 +769,16 @@ void main() {
     });
 
     test('JustRadioTheme copyWith and lerp', () {
-      const theme1 = JustRadioTheme(
+      const JustRadioTheme theme1 = JustRadioTheme(
         style: JustRadioStyle(activeColor: Colors.blue),
         enableHaptic: false,
       );
-      const theme2 = JustRadioTheme(
+      const JustRadioTheme theme2 = JustRadioTheme(
         style: JustRadioStyle(activeColor: Colors.green),
         enableHaptic: true,
       );
 
-      final copied = theme1.copyWith(
+      final JustRadioTheme copied = theme1.copyWith(
         style: const JustRadioStyle(activeColor: Colors.purple),
         enableHaptic: true,
       );
@@ -791,31 +798,32 @@ void main() {
   group('JustTable Widget & Theme Tests', () {
     testWidgets(
       'Renders table columns, rows, sortable headers, and selectable rows',
-      (tester) async {
-        Set<int> selected = {};
+      (WidgetTester tester) async {
+        Set<int> selected = <int>{};
         int? sortedCol;
 
-        final columns = [
-          JustTableColumn<Map<String, String>>(
-            header: 'Name',
-            sortable: true,
-            cell: (row) => Text(row['name']!),
-          ),
-          JustTableColumn<Map<String, String>>(
-            header: 'Role',
-            cell: (row) => Text(row['role']!),
-          ),
-        ];
+        final List<JustTableColumn<Map<String, String>>> columns =
+            <JustTableColumn<Map<String, String>>>[
+              JustTableColumn<Map<String, String>>(
+                header: 'Name',
+                sortable: true,
+                cell: (Map<String, String> row) => Text(row['name']!),
+              ),
+              JustTableColumn<Map<String, String>>(
+                header: 'Role',
+                cell: (Map<String, String> row) => Text(row['role']!),
+              ),
+            ];
 
-        final rows = [
-          {'name': 'Alice', 'role': 'Admin'},
-          {'name': 'Bob', 'role': 'User'},
+        final List<Map<String, String>> rows = <Map<String, String>>[
+          <String, String>{'name': 'Alice', 'role': 'Admin'},
+          <String, String>{'name': 'Bob', 'role': 'User'},
         ];
 
         await tester.pumpWidget(
           _buildNavWrapper(
             child: Column(
-              children: [
+              children: <Widget>[
                 SizedBox(
                   height: 300,
                   child: JustTable<Map<String, String>>(
@@ -823,16 +831,16 @@ void main() {
                     rows: rows,
                     selectable: true,
                     selectedRows: selected,
-                    onSelectionChanged: (newSel) => selected = newSel,
-                    onSort: (colIdx) => sortedCol = colIdx,
+                    onSelectionChanged: (Set<int> newSel) => selected = newSel,
+                    onSort: (int colIdx) => sortedCol = colIdx,
                     variant: JustTableVariant.striped,
                   ),
                 ),
                 const SizedBox(
                   height: 100,
                   child: JustTable<Map<String, String>>(
-                    columns: [],
-                    rows: [],
+                    columns: <JustTableColumn<Map<String, String>>>[],
+                    rows: <Map<String, String>>[],
                     emptyState: Text('No Records Found'),
                   ),
                 ),
@@ -853,14 +861,14 @@ void main() {
     );
 
     test('JustTableTheme copyWith and lerp', () {
-      const theme1 = JustTableTheme(
+      const JustTableTheme theme1 = JustTableTheme(
         style: JustTableStyle(headerBackgroundColor: Colors.grey),
       );
-      const theme2 = JustTableTheme(
+      const JustTableTheme theme2 = JustTableTheme(
         style: JustTableStyle(headerBackgroundColor: Colors.black),
       );
 
-      final copied = theme1.copyWith(
+      final JustTableTheme copied = theme1.copyWith(
         style: const JustTableStyle(headerBackgroundColor: Colors.blue),
       );
       expect(copied.style?.headerBackgroundColor, equals(Colors.blue));
@@ -878,16 +886,16 @@ void main() {
   group('JustToggle & JustToggleGroup Tests', () {
     testWidgets(
       'JustToggle renders selected and unselected states across sizes',
-      (tester) async {
+      (WidgetTester tester) async {
         bool isSelected = false;
 
         await tester.pumpWidget(
           StatefulBuilder(
-            builder: (context, setState) {
+            builder: (BuildContext context, StateSetter setState) {
               return _buildNavWrapper(
                 child: Column(
-                  children: [
-                    for (final size in JustToggleSize.values)
+                  children: <Widget>[
+                    for (final JustToggleSize size in JustToggleSize.values)
                       JustToggle(
                         selected: isSelected,
                         size: size,
@@ -916,10 +924,10 @@ void main() {
     );
 
     testWidgets('JustToggleGroup single and multi select behavior', (
-      tester,
+      WidgetTester tester,
     ) async {
-      Set<int> selectedSet = {0};
-      final items = [
+      Set<int> selectedSet = <int>{0};
+      final List<JustToggleGroupItem> items = <JustToggleGroupItem>[
         const JustToggleGroupItem(child: Text('Bold')),
         const JustToggleGroupItem(child: Text('Italic')),
         const JustToggleGroupItem(child: Text('Underline')),
@@ -927,13 +935,14 @@ void main() {
 
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return _buildNavWrapper(
               child: JustToggleGroup(
                 items: items,
                 selectedIndices: selectedSet,
                 allowMultiple: true,
-                onChanged: (newSel) => setState(() => selectedSet = newSel),
+                onChanged: (Set<int> newSel) =>
+                    setState(() => selectedSet = newSel),
               ),
             );
           },
@@ -945,18 +954,18 @@ void main() {
 
       await tester.tap(find.text('Italic'));
       await tester.pumpAndSettle();
-      expect(selectedSet, containsAll([0, 1]));
+      expect(selectedSet, containsAll(<dynamic>[0, 1]));
     });
 
     test('JustToggleTheme copyWith and lerp', () {
-      const theme1 = JustToggleTheme(
+      const JustToggleTheme theme1 = JustToggleTheme(
         style: JustToggleStyle(selectedBackgroundColor: Colors.blue),
       );
-      const theme2 = JustToggleTheme(
+      const JustToggleTheme theme2 = JustToggleTheme(
         style: JustToggleStyle(selectedBackgroundColor: Colors.green),
       );
 
-      final copied = theme1.copyWith(
+      final JustToggleTheme copied = theme1.copyWith(
         style: const JustToggleStyle(selectedBackgroundColor: Colors.amber),
       );
       expect(copied.style?.selectedBackgroundColor, equals(Colors.amber));

@@ -28,7 +28,7 @@ class const JustThemeProvider({
     BuildContext context, {
     JustThemeAspect? aspect,
   }) {
-    final model = InheritedModel.inheritFrom<_JustThemeModel>(
+    final _JustThemeModel? model = InheritedModel.inheritFrom<_JustThemeModel>(
       context,
       aspect: aspect,
     );
@@ -42,7 +42,7 @@ class const JustThemeProvider({
     BuildContext context, {
     JustThemeAspect? aspect,
   }) {
-    final state = maybeOf(context, aspect: aspect);
+    final JustThemeProviderState? state = maybeOf(context, aspect: aspect);
     if (state == null) {
       throw FlutterError('JustThemeProvider was not found in the widget tree.');
     }
@@ -51,7 +51,7 @@ class const JustThemeProvider({
 
   /// Retrieves the active state without registering a rebuild dependency, or null if not found.
   static JustThemeProviderState? maybeRead(BuildContext context) {
-    final element = context
+    final InheritedElement? element = context
         .getElementForInheritedWidgetOfExactType<_JustThemeModel>();
     return (element?.widget as _JustThemeModel?)?.state;
   }
@@ -60,7 +60,7 @@ class const JustThemeProvider({
   ///
   /// Ideal for callbacks, event handlers, or initialization.
   static JustThemeProviderState read(BuildContext context) {
-    final state = maybeRead(context);
+    final JustThemeProviderState? state = maybeRead(context);
     if (state == null) {
       throw FlutterError('JustThemeProvider was not found in the widget tree.');
     }
@@ -95,13 +95,13 @@ class JustThemeProviderState extends State<JustThemeProvider>
         baseTheme = _darkTheme;
         break;
       case .system:
-        final brightness =
+        final Brightness brightness =
             WidgetsBinding.instance.platformDispatcher.platformBrightness;
         baseTheme = brightness == .dark ? _darkTheme : _lightTheme;
         break;
     }
 
-    final isHighContrast =
+    final bool isHighContrast =
         WidgetsBinding
             .instance
             .platformDispatcher
@@ -109,12 +109,13 @@ class JustThemeProviderState extends State<JustThemeProvider>
             .highContrast ||
         (MediaQuery.maybeHighContrastOf(context) ?? false);
 
-    final resolvedTheme = isHighContrast
+    final JustThemeData resolvedTheme = isHighContrast
         ? baseTheme.applyHighContrastOverrides()
         : baseTheme;
 
     final double width = MediaQuery.maybeSizeOf(context)?.width ?? 1024.0;
-    final resolvedAnimations = resolvedTheme.animations.resolve(context);
+    final JustMotionProfile resolvedAnimations = resolvedTheme.animations
+        .resolve(context);
 
     return resolvedTheme.copyWith(
       spacing: resolvedTheme.spacing.resolve(width),

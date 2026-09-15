@@ -30,7 +30,7 @@ class const JustResizableTheme({
   final double keyboardShiftStep = 4.0,
 }) extends ThemeExtension<JustResizableTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustResizableTheme();
+  static const JustResizableTheme defaults = JustResizableTheme();
 
   @override
   JustResizableTheme copyWith({
@@ -56,13 +56,13 @@ class const JustResizableTheme({
   @override
   JustResizableTheme lerp(ThemeExtension<JustResizableTheme>? other, double t) {
     if (other is! JustResizableTheme) return this;
-    final lerpedThickness =
+    final double lerpedThickness =
         dividerThickness + (other.dividerThickness - dividerThickness) * t;
-    final lerpedHitSize =
+    final double lerpedHitSize =
         handleHitSize + (other.handleHitSize - handleHitSize) * t;
-    final lerpedKeyStep =
+    final double lerpedKeyStep =
         keyboardStep + (other.keyboardStep - keyboardStep) * t;
-    final lerpedKeyShiftStep =
+    final double lerpedKeyShiftStep =
         keyboardShiftStep + (other.keyboardShiftStep - keyboardShiftStep) * t;
 
     return JustResizableTheme(

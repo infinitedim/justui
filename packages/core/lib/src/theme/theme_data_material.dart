@@ -13,13 +13,13 @@ extension JustThemeDataMaterialExtension on JustThemeData {
   }
 
   ThemeData _buildMaterialTheme() {
-    final isDark = colors.background.computeLuminance() < 0.5;
+    final bool isDark = colors.background.computeLuminance() < 0.5;
     final Brightness brightness = isDark ? .dark : .light;
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      extensions: const [
+      extensions: const <ThemeExtension<dynamic>>[
         // CLI:REGISTER_EXTENSIONS
       ],
       scaffoldBackgroundColor: colors.background,

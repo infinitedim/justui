@@ -20,7 +20,7 @@ class const JustToastTheme({
   final bool enableHaptic = false,
 }) extends ThemeExtension<JustToastTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustToastTheme();
+  static const JustToastTheme defaults = JustToastTheme();
 
   @override
   JustToastTheme copyWith({

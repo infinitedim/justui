@@ -7,7 +7,7 @@ import 'package:just_ui_core/src/components/tabs/just_tabs_variants.dart';
 
 @widgetbook.UseCase(name: 'Default Tabs', type: JustTabs)
 Widget buildJustTabsDefaultUseCase(BuildContext context) {
-  final variant = context.knobs.object.dropdown<JustTabVariant>(
+  final JustTabVariant variant = context.knobs.object.dropdown<JustTabVariant>(
     label: 'Variant',
     options: JustTabVariant.values,
     initialOption: JustTabVariant.line,
@@ -15,12 +15,12 @@ Widget buildJustTabsDefaultUseCase(BuildContext context) {
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const .all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 500.0, maxHeight: 360.0),
         child: JustTabs(
           variant: variant,
-          tabs: const [
+          tabs: const <JustTab>[
             JustTab(
               label: 'Account',
               content: Center(child: Text('Account Settings Content')),

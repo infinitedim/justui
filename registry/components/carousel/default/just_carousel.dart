@@ -6,13 +6,13 @@ import 'package:flutter/gestures.dart'
     show PointerScrollEvent, PointerSignalEvent;
 import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/services.dart'
-    show KeyDownEvent, KeyEvent, KeyRepeatEvent;
+    show KeyDownEvent, KeyEvent, KeyRepeatEvent, LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 
 import 'package:just_ui_core/just_ui_core.dart';
 
-import '../shared/just_focus_indicator.dart';
-import '../shared/just_pressable.dart';
+import '../shared/_shared_focus_indicator.dart';
+import '../shared/_shared_pressable.dart';
 import 'just_carousel_style.dart';
 import 'just_carousel_theme.dart';
 import 'just_carousel_variants.dart';
@@ -236,11 +236,11 @@ class _JustCarouselState extends State<JustCarousel> {
   }
 
   void _initPageController() {
-    final effectiveFraction =
+    final double effectiveFraction =
         widget.style?.viewportFraction ??
         _theme.style?.viewportFraction ??
         widget.viewportFraction;
-    final initialVirtual = _calculateVirtualPage(widget.initialPage);
+    final int initialVirtual = _calculateVirtualPage(widget.initialPage);
     _pageController = PageController(
       initialPage: initialVirtual,
       viewportFraction: effectiveFraction,
@@ -277,13 +277,14 @@ class _JustCarouselState extends State<JustCarousel> {
       _effectiveController._attach(this);
     }
 
-    final oldFraction =
+    final double oldFraction =
         oldWidget.style?.viewportFraction ?? oldWidget.viewportFraction;
-    final newFraction =
+    final double newFraction =
         widget.style?.viewportFraction ?? widget.viewportFraction;
-    final lengthChanged = oldWidget.children.length != widget.children.length;
-    final loopChanged = oldWidget.loop != widget.loop;
-    final fractionChanged = oldFraction != newFraction;
+    final bool lengthChanged =
+        oldWidget.children.length != widget.children.length;
+    final bool loopChanged = oldWidget.loop != widget.loop;
+    final bool fractionChanged = oldFraction != newFraction;
 
     if (lengthChanged || loopChanged || fractionChanged) {
       _recreatePageController();
@@ -299,16 +300,16 @@ class _JustCarouselState extends State<JustCarousel> {
     _pageController.removeListener(_onPageScroll);
     _pageController.dispose();
 
-    final currentIndex = _effectiveController.currentIndex;
-    final effectiveIndex = widget.children.isEmpty
+    final int currentIndex = _effectiveController.currentIndex;
+    final int effectiveIndex = widget.children.isEmpty
         ? 0
         : currentIndex.clamp(0, widget.children.length - 1);
 
-    final effectiveFraction =
+    final double effectiveFraction =
         widget.style?.viewportFraction ??
         _theme.style?.viewportFraction ??
         widget.viewportFraction;
-    final initialVirtual = _calculateVirtualPage(effectiveIndex);
+    final int initialVirtual = _calculateVirtualPage(effectiveIndex);
 
     _pageController = PageController(
       initialPage: initialVirtual,
@@ -332,7 +333,7 @@ class _JustCarouselState extends State<JustCarousel> {
 
   void _startAutoScroll() {
     _stopAutoScroll();
-    final config = _resolvedAutoScroll;
+    final JustCarouselAutoScroll? config = _resolvedAutoScroll;
     if (config == null || widget.children.length <= 1) return;
 
     _autoScrollTimer = .periodic(config.interval, (_) {
@@ -357,7 +358,7 @@ class _JustCarouselState extends State<JustCarousel> {
   }
 
   void _onAutoScrollTick() {
-    final config = _resolvedAutoScroll;
+    final JustCarouselAutoScroll? config = _resolvedAutoScroll;
     if (config == null || !mounted) return;
     if (_isHovered && config.pauseOnHover) return;
     if (_isInteracting && config.pauseOnTouch) return;
@@ -380,11 +381,11 @@ class _JustCarouselState extends State<JustCarousel> {
         !_pageController.position.hasContentDimensions) {
       return;
     }
-    final page = _pageController.page;
+    final double? page = _pageController.page;
     if (page == null) return;
 
-    final rounded = page.round();
-    final realIndex = _isLooping
+    final int rounded = page.round();
+    final int realIndex = _isLooping
         ? rounded % widget.children.length
         : rounded.clamp(0, widget.children.length - 1);
 
@@ -401,20 +402,20 @@ class _JustCarouselState extends State<JustCarousel> {
       return;
     }
 
-    final theme = _theme;
-    final animDuration =
+    final JustCarouselTheme theme = _theme;
+    final Duration animDuration =
         duration ??
         widget.style?.animationDuration ??
         theme.style?.animationDuration ??
         theme.animationDuration;
-    final animCurve =
+    final Curve animCurve =
         curve ??
         widget.style?.animationCurve ??
         theme.style?.animationCurve ??
         theme.animationCurve;
 
     if (_isLooping) {
-      final currentV =
+      final int currentV =
           _pageController.page?.round() ?? _pageController.initialPage;
       await _pageController.animateToPage(
         currentV + 1,
@@ -424,7 +425,7 @@ class _JustCarouselState extends State<JustCarousel> {
       return;
     }
 
-    final currentReal = _effectiveController.currentIndex;
+    final int currentReal = _effectiveController.currentIndex;
     if (currentReal < widget.children.length - 1) {
       await _pageController.animateToPage(
         currentReal + 1,
@@ -441,20 +442,20 @@ class _JustCarouselState extends State<JustCarousel> {
       return;
     }
 
-    final theme = _theme;
-    final animDuration =
+    final JustCarouselTheme theme = _theme;
+    final Duration animDuration =
         duration ??
         widget.style?.animationDuration ??
         theme.style?.animationDuration ??
         theme.animationDuration;
-    final animCurve =
+    final Curve animCurve =
         curve ??
         widget.style?.animationCurve ??
         theme.style?.animationCurve ??
         theme.animationCurve;
 
     if (_isLooping) {
-      final currentV =
+      final int currentV =
           _pageController.page?.round() ?? _pageController.initialPage;
       await _pageController.animateToPage(
         currentV - 1,
@@ -464,7 +465,7 @@ class _JustCarouselState extends State<JustCarousel> {
       return;
     }
 
-    final currentReal = _effectiveController.currentIndex;
+    final int currentReal = _effectiveController.currentIndex;
     if (currentReal > 0) {
       await _pageController.animateToPage(
         currentReal - 1,
@@ -475,18 +476,18 @@ class _JustCarouselState extends State<JustCarousel> {
   }
 
   int _calculateTargetVirtualPage(int targetRealPage) {
-    final length = widget.children.length;
+    final int length = widget.children.length;
     if (!_isLooping || length <= 1) {
       return targetRealPage.clamp(0, math.max(0, length - 1));
     }
 
-    final targetNormalized = targetRealPage % length;
-    final currentV =
+    final int targetNormalized = targetRealPage % length;
+    final int currentV =
         _pageController.page?.round() ?? _pageController.initialPage;
-    final currentR = currentV % length;
+    final int currentR = currentV % length;
 
-    var diff = targetNormalized - currentR;
-    final half = length / 2;
+    int diff = targetNormalized - currentR;
+    final double half = length / 2;
     if (diff > half) {
       diff -= length;
     } else if (diff < -half) {
@@ -507,19 +508,19 @@ class _JustCarouselState extends State<JustCarousel> {
       return;
     }
 
-    final theme = _theme;
-    final animDuration =
+    final JustCarouselTheme theme = _theme;
+    final Duration animDuration =
         duration ??
         widget.style?.animationDuration ??
         theme.style?.animationDuration ??
         theme.animationDuration;
-    final animCurve =
+    final Curve animCurve =
         curve ??
         widget.style?.animationCurve ??
         theme.style?.animationCurve ??
         theme.animationCurve;
 
-    final targetV = _calculateTargetVirtualPage(page);
+    final int targetV = _calculateTargetVirtualPage(page);
     await _pageController.animateToPage(
       targetV,
       duration: animDuration,
@@ -534,12 +535,12 @@ class _JustCarouselState extends State<JustCarousel> {
       return;
     }
 
-    final targetV = _calculateTargetVirtualPage(page);
+    final int targetV = _calculateTargetVirtualPage(page);
     _pageController.jumpToPage(targetV);
   }
 
   void _handlePointerSignal(PointerSignalEvent event) {
-    final effectiveMouseWheel =
+    final bool effectiveMouseWheel =
         widget.enableMouseWheel ??
         widget.style?.enableMouseWheel ??
         _theme.style?.enableMouseWheel ??
@@ -547,14 +548,14 @@ class _JustCarouselState extends State<JustCarousel> {
     if (!effectiveMouseWheel) return;
     if (event is! PointerScrollEvent) return;
 
-    final delta = widget.orientation == .horizontal
+    final double delta = widget.orientation == .horizontal
         ? (event.scrollDelta.dx != 0
               ? event.scrollDelta.dx
               : event.scrollDelta.dy)
         : event.scrollDelta.dy;
     if (delta.abs() < 10.0) return;
 
-    final now = DateTime.now().millisecondsSinceEpoch;
+    final int now = DateTime.now().millisecondsSinceEpoch;
     if (now - _lastWheelTime < 250) return;
     _lastWheelTime = now;
 
@@ -566,7 +567,7 @@ class _JustCarouselState extends State<JustCarousel> {
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    final effectiveKeyboard =
+    final bool effectiveKeyboard =
         widget.enableKeyboardNavigation ??
         widget.style?.enableKeyboardNavigation ??
         _theme.style?.enableKeyboardNavigation ??
@@ -576,7 +577,7 @@ class _JustCarouselState extends State<JustCarousel> {
       return .ignored;
     }
 
-    final key = event.logicalKey;
+    final LogicalKeyboardKey key = event.logicalKey;
     if (key == .space) {
       _toggleAutoScrollPause();
       return .handled;
@@ -610,13 +611,13 @@ class _JustCarouselState extends State<JustCarousel> {
     double progress,
     JustCarouselTransition transition,
   ) {
-    final absProgress = progress.abs().clamp(0.0, 1.0);
+    final double absProgress = progress.abs().clamp(0.0, 1.0);
     switch (transition) {
       case .scale:
-        final scale = 0.85 + (0.15 * (1.0 - absProgress));
+        final double scale = 0.85 + (0.15 * (1.0 - absProgress));
         return Transform.scale(scale: scale, child: child);
       case .fade:
-        final opacity = 0.4 + (0.6 * (1.0 - absProgress));
+        final double opacity = 0.4 + (0.6 * (1.0 - absProgress));
         return Opacity(opacity: opacity, child: child);
       case .slide:
       case .none:
@@ -625,7 +626,7 @@ class _JustCarouselState extends State<JustCarousel> {
   }
 
   Widget _buildIndicators(JustCarouselTheme theme) {
-    final effectiveIndicator =
+    final JustCarouselIndicator effectiveIndicator =
         widget.indicator ??
         widget.style?.indicator ??
         theme.style?.indicator ??
@@ -648,28 +649,28 @@ class _JustCarouselState extends State<JustCarousel> {
   }
 
   Widget _buildDotsIndicator(JustCarouselTheme theme) {
-    final colors = context.justColors;
-    final isNeobrutalism = context.justPreset == .neobrutalism;
+    final JustColorScheme colors = context.justColors;
+    final bool isNeobrutalism = context.justPreset == .neobrutalism;
 
-    final inactiveColor =
+    final Color inactiveColor =
         widget.style?.indicatorColor ??
         theme.style?.indicatorColor ??
         theme.indicatorColor ??
         (isNeobrutalism ? colors.background : colors.borderDefault);
-    final activeColor =
+    final Color activeColor =
         widget.style?.activeIndicatorColor ??
         theme.style?.activeIndicatorColor ??
         theme.activeIndicatorColor ??
         (isNeobrutalism ? colors.textPrimary : colors.borderFocus);
-    final indicatorSize =
+    final double indicatorSize =
         widget.style?.indicatorSize ??
         theme.style?.indicatorSize ??
         theme.indicatorSize;
-    final activeIndicatorSize =
+    final double activeIndicatorSize =
         widget.style?.activeIndicatorSize ??
         theme.style?.activeIndicatorSize ??
         theme.activeIndicatorSize;
-    final spacing =
+    final double spacing =
         widget.style?.indicatorSpacing ??
         theme.style?.indicatorSpacing ??
         theme.indicatorSpacing;
@@ -679,7 +680,7 @@ class _JustCarouselState extends State<JustCarousel> {
               theme.style?.indicatorRadius ??
               theme.indicatorRadius ??
               .circular(indicatorSize / 2));
-    final isInteractive =
+    final bool isInteractive =
         widget.interactiveIndicators ??
         widget.style?.interactiveIndicators ??
         theme.style?.interactiveIndicators ??
@@ -687,12 +688,12 @@ class _JustCarouselState extends State<JustCarousel> {
 
     return ValueListenableBuilder<int>(
       valueListenable: _effectiveController.pageListenable,
-      builder: (context, activeIndex, _) {
-        final dotWidgets = <Widget>[];
-        for (var i = 0; i < widget.children.length; i++) {
-          final isActive = i == activeIndex;
-          final width = isActive ? activeIndicatorSize : indicatorSize;
-          final height = indicatorSize;
+      builder: (BuildContext context, int activeIndex, _) {
+        final List<Widget> dotWidgets = <Widget>[];
+        for (int i = 0; i < widget.children.length; i++) {
+          final bool isActive = i == activeIndex;
+          final double width = isActive ? activeIndicatorSize : indicatorSize;
+          final double height = indicatorSize;
 
           Widget dot = AnimatedContainer(
             duration: isNeobrutalism
@@ -744,24 +745,24 @@ class _JustCarouselState extends State<JustCarousel> {
   }
 
   Widget _buildLineIndicator(JustCarouselTheme theme) {
-    final colors = context.justColors;
-    final isNeobrutalism = context.justPreset == .neobrutalism;
+    final JustColorScheme colors = context.justColors;
+    final bool isNeobrutalism = context.justPreset == .neobrutalism;
 
-    final inactiveColor =
+    final Color inactiveColor =
         widget.style?.indicatorColor ??
         theme.style?.indicatorColor ??
         theme.indicatorColor ??
         (isNeobrutalism ? colors.background : colors.borderDefault);
-    final activeColor =
+    final Color activeColor =
         widget.style?.activeIndicatorColor ??
         theme.style?.activeIndicatorColor ??
         theme.activeIndicatorColor ??
         (isNeobrutalism ? colors.textPrimary : colors.borderFocus);
-    final spacing =
+    final double spacing =
         widget.style?.indicatorSpacing ??
         theme.style?.indicatorSpacing ??
         theme.indicatorSpacing;
-    final isInteractive =
+    final bool isInteractive =
         widget.interactiveIndicators ??
         widget.style?.interactiveIndicators ??
         theme.style?.interactiveIndicators ??
@@ -769,10 +770,10 @@ class _JustCarouselState extends State<JustCarousel> {
 
     return ValueListenableBuilder<int>(
       valueListenable: _effectiveController.pageListenable,
-      builder: (context, activeIndex, _) {
-        final segments = <Widget>[];
-        for (var i = 0; i < widget.children.length; i++) {
-          final isActive = i == activeIndex;
+      builder: (BuildContext context, int activeIndex, _) {
+        final List<Widget> segments = <Widget>[];
+        for (int i = 0; i < widget.children.length; i++) {
+          final bool isActive = i == activeIndex;
           Widget segment = AnimatedContainer(
             duration: isNeobrutalism
                 ? Duration.zero
@@ -822,13 +823,13 @@ class _JustCarouselState extends State<JustCarousel> {
   }
 
   Widget _buildFractionIndicator(JustCarouselTheme theme) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
-    final isNeobrutalism = context.justPreset == .neobrutalism;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
+    final bool isNeobrutalism = context.justPreset == .neobrutalism;
 
     return ValueListenableBuilder<int>(
       valueListenable: _effectiveController.pageListenable,
-      builder: (context, activeIndex, _) {
+      builder: (BuildContext context, int activeIndex, _) {
         return Container(
           padding: const .symmetric(horizontal: 10.0, vertical: 4.0),
           decoration: BoxDecoration(
@@ -857,9 +858,9 @@ class _JustCarouselState extends State<JustCarousel> {
     required bool isNext,
     required JustCarouselTheme theme,
   }) {
-    final colors = context.justColors;
-    final isNeobrutalism = context.justPreset == .neobrutalism;
-    final arrowSize =
+    final JustColorScheme colors = context.justColors;
+    final bool isNeobrutalism = context.justPreset == .neobrutalism;
+    final double arrowSize =
         widget.style?.arrowSize ?? theme.style?.arrowSize ?? theme.arrowSize;
     final BorderRadius arrowRadius = isNeobrutalism
         ? .zero
@@ -868,7 +869,7 @@ class _JustCarouselState extends State<JustCarousel> {
               theme.arrowRadius ??
               .circular(arrowSize / 2));
 
-    final iconData = widget.orientation == Axis.horizontal
+    final IconData iconData = widget.orientation == Axis.horizontal
         ? (isNext ? Icons.chevron_right_rounded : Icons.chevron_left_rounded)
         : (isNext
               ? Icons.keyboard_arrow_down_rounded
@@ -877,10 +878,10 @@ class _JustCarouselState extends State<JustCarousel> {
     return JustPressable(
       onTap: isNext ? _handleNext : _handlePrevious,
       semanticLabel: isNext ? 'Next slide' : 'Previous slide',
-      builder: (context, state) {
-        final isPressed = state.isPressed;
-        final isHovered = state.isHovered;
-        final bg = isNeobrutalism
+      builder: (BuildContext context, JustInteractionState state) {
+        final bool isPressed = state.isPressed;
+        final bool isHovered = state.isHovered;
+        final Color bg = isNeobrutalism
             ? (isPressed
                   ? colors.borderFocus
                   : (isHovered ? colors.elevated : colors.background))
@@ -899,7 +900,7 @@ class _JustCarouselState extends State<JustCarousel> {
               color: isNeobrutalism ? colors.textPrimary : colors.borderDefault,
             ),
             boxShadow: isNeobrutalism && !isPressed
-                ? [
+                ? <BoxShadow>[
                     BoxShadow(
                       color: colors.textPrimary,
                       offset: const Offset(2.0, 2.0),
@@ -926,24 +927,24 @@ class _JustCarouselState extends State<JustCarousel> {
       return const SizedBox.shrink();
     }
 
-    final theme = _theme;
-    final effectiveTransition =
+    final JustCarouselTheme theme = _theme;
+    final JustCarouselTransition effectiveTransition =
         widget.transition ??
         widget.style?.transition ??
         theme.style?.transition ??
         theme.transition;
-    final effectiveIndicatorPosition =
+    final JustCarouselIndicatorPosition effectiveIndicatorPosition =
         widget.indicatorPosition ??
         widget.style?.indicatorPosition ??
         theme.style?.indicatorPosition ??
         theme.indicatorPosition;
-    final effectiveShowArrows =
+    final bool effectiveShowArrows =
         widget.showArrows ??
         widget.style?.showArrows ??
         theme.style?.showArrows ??
         theme.showArrows;
 
-    final itemCount = _isLooping
+    final int itemCount = _isLooping
         ? widget.children.length * _kVirtualLoopMultiplier
         : widget.children.length;
 
@@ -954,11 +955,11 @@ class _JustCarouselState extends State<JustCarousel> {
       physics: widget.physics,
       clipBehavior: widget.clipBehavior,
       itemCount: itemCount,
-      itemBuilder: (context, virtualIndex) {
-        final realIndex = _isLooping
+      itemBuilder: (BuildContext context, int virtualIndex) {
+        final int realIndex = _isLooping
             ? virtualIndex % widget.children.length
             : virtualIndex;
-        final child = widget.children[realIndex];
+        final Widget child = widget.children[realIndex];
 
         if (effectiveTransition == .none && widget.transitionBuilder == null) {
           return child;
@@ -966,11 +967,11 @@ class _JustCarouselState extends State<JustCarousel> {
 
         return AnimatedBuilder(
           animation: _pageController,
-          builder: (context, _) {
+          builder: (BuildContext context, _) {
             double progress = 0.0;
             if (_pageController.hasClients &&
                 _pageController.position.hasContentDimensions) {
-              final page =
+              final double page =
                   _pageController.page ??
                   _calculateVirtualPage(widget.initialPage).toDouble();
               progress = page - virtualIndex;
@@ -992,7 +993,7 @@ class _JustCarouselState extends State<JustCarousel> {
 
     final Widget viewportStack = Stack(
       alignment: Alignment.center,
-      children: [
+      children: <Widget>[
         Positioned.fill(child: pageView),
         if (effectiveIndicatorPosition == .inside)
           Positioned(
@@ -1002,7 +1003,7 @@ class _JustCarouselState extends State<JustCarousel> {
             top: widget.orientation == .vertical ? 0.0 : null,
             child: Center(child: _buildIndicators(theme)),
           ),
-        if (effectiveShowArrows && widget.children.length > 1) ...[
+        if (effectiveShowArrows && widget.children.length > 1) ...<Widget>[
           Positioned(
             left: widget.orientation == .horizontal ? 8.0 : 0.0,
             right: widget.orientation == .horizontal ? null : 0.0,
@@ -1025,10 +1026,10 @@ class _JustCarouselState extends State<JustCarousel> {
 
     Widget content;
     if (effectiveIndicatorPosition == .outside) {
-      final isHorizontal = widget.orientation == .horizontal;
+      final bool isHorizontal = widget.orientation == .horizontal;
       content = Flex(
         direction: isHorizontal ? .vertical : .horizontal,
-        children: [
+        children: <Widget>[
           Expanded(child: viewportStack),
           Padding(
             padding: const .all(8.0),
@@ -1041,7 +1042,7 @@ class _JustCarouselState extends State<JustCarousel> {
     }
 
     return NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
+      onNotification: (ScrollNotification notification) {
         if (notification is ScrollStartNotification) {
           _isInteracting = true;
         } else if (notification is ScrollEndNotification) {

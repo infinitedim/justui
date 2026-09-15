@@ -9,7 +9,7 @@ import 'package:just_ui_core/src/components/button/just_button.dart';
 
 @widgetbook.UseCase(name: 'Structure-Aware Skeleton', type: JustSkeleton)
 Widget buildJustSkeletonDefaultUseCase(BuildContext context) {
-  final loading = context.knobs.boolean(
+  final bool loading = context.knobs.boolean(
     label: 'Loading State',
     initialValue: true,
   );
@@ -21,12 +21,12 @@ Widget buildJustSkeletonDefaultUseCase(BuildContext context) {
       child: JustCard(
         header: const JustCardHeader(
           child: Row(
-            children: [
+            children: <Widget>[
               JustAvatar(name: 'Jane Doe'),
               SizedBox(width: 12.0),
               Column(
                 crossAxisAlignment: .start,
-                children: [
+                children: <Widget>[
                   Text('Jane Doe', style: TextStyle(fontWeight: .bold)),
                   Text('Software Engineer'),
                 ],
@@ -37,7 +37,7 @@ Widget buildJustSkeletonDefaultUseCase(BuildContext context) {
         footer: JustCardFooter(
           child: Row(
             mainAxisAlignment: .end,
-            children: [
+            children: <Widget>[
               JustButton.primary(label: 'View Profile', onPressed: () {}),
             ],
           ),
@@ -55,7 +55,7 @@ Widget buildJustSkeletonManualUseCase(BuildContext context) {
   return const Column(
     mainAxisSize: .min,
     crossAxisAlignment: .start,
-    children: [
+    children: <Widget>[
       JustSkeleton.circle(size: 48.0),
       SizedBox(height: 12.0),
       JustSkeleton.text(width: 200.0, height: 16.0),

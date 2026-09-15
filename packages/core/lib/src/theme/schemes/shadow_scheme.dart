@@ -136,7 +136,7 @@ final class const NeobrutalismShadowScheme({
   final Color shadowColor = const Color(0xFF000000),
 }) extends JustShadowScheme {
   @override
-  List<BoxShadow> get xs => [
+  List<BoxShadow> get xs => <BoxShadow>[
     BoxShadow(
       color: shadowColor,
       offset: const Offset(2.0, 2.0),
@@ -144,7 +144,7 @@ final class const NeobrutalismShadowScheme({
     ),
   ];
   @override
-  List<BoxShadow> get sm => [
+  List<BoxShadow> get sm => <BoxShadow>[
     BoxShadow(
       color: shadowColor,
       offset: const Offset(4.0, 4.0),
@@ -152,7 +152,7 @@ final class const NeobrutalismShadowScheme({
     ),
   ];
   @override
-  List<BoxShadow> get md => [
+  List<BoxShadow> get md => <BoxShadow>[
     BoxShadow(
       color: shadowColor,
       offset: const Offset(6.0, 6.0),
@@ -160,7 +160,7 @@ final class const NeobrutalismShadowScheme({
     ),
   ];
   @override
-  List<BoxShadow> get lg => [
+  List<BoxShadow> get lg => <BoxShadow>[
     BoxShadow(
       color: shadowColor,
       offset: const Offset(8.0, 8.0),
@@ -168,7 +168,7 @@ final class const NeobrutalismShadowScheme({
     ),
   ];
   @override
-  List<BoxShadow> get xl => [
+  List<BoxShadow> get xl => <BoxShadow>[
     BoxShadow(
       color: shadowColor,
       offset: const Offset(10.0, 10.0),
@@ -176,7 +176,7 @@ final class const NeobrutalismShadowScheme({
     ),
   ];
   @override
-  List<BoxShadow> get xxl => [
+  List<BoxShadow> get xxl => <BoxShadow>[
     BoxShadow(
       color: shadowColor,
       offset: const Offset(12.0, 12.0),

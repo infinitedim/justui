@@ -91,7 +91,7 @@ abstract final class HsluvEngine {
 
   /// Converts a Flutter [Color] (sRGB) to [HsluvColor].
   static HsluvColor fromColor(Color color) {
-    final (l, u, v) = _colorToLuv(color);
+    final (double l, double u, double v) = _colorToLuv(color);
 
     if (l <= 1e-6) {
       return const HsluvColor(0.0, 0.0, 0.0);
@@ -176,8 +176,8 @@ abstract final class HsluvEngine {
     if (t <= 0.0) return a;
     if (t >= 1.0) return b;
 
-    final (lA, uA, vA) = _colorToLuv(a);
-    final (lB, uB, vB) = _colorToLuv(b);
+    final (double lA, double uA, double vA) = _colorToLuv(a);
+    final (double lB, double uB, double vB) = _colorToLuv(b);
     final double alphaA = a.a;
     final double alphaB = b.a;
 

@@ -203,7 +203,7 @@ class const JustCarouselStyle({
           arrowRadius == other.arrowRadius;
 
   @override
-  int get hashCode => Object.hashAll([
+  int get hashCode => Object.hashAll(<Object?>[
     viewportFraction,
     animationDuration,
     animationCurve,

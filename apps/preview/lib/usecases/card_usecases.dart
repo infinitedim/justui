@@ -8,19 +8,20 @@ import 'package:just_ui_core/src/components/button/just_button.dart';
 
 @widgetbook.UseCase(name: 'Default Card', type: JustCard)
 Widget buildJustCardDefaultUseCase(BuildContext context) {
-  final variant = context.knobs.object.dropdown<JustCardVariant>(
-    label: 'Variant',
-    options: JustCardVariant.values,
-    initialOption: JustCardVariant.elevated,
-  );
-  final isInteractive = context.knobs.boolean(
+  final JustCardVariant variant = context.knobs.object
+      .dropdown<JustCardVariant>(
+        label: 'Variant',
+        options: JustCardVariant.values,
+        initialOption: JustCardVariant.elevated,
+      );
+  final bool isInteractive = context.knobs.boolean(
     label: 'Interactive (onTap)',
     initialValue: true,
   );
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const .all(16.0),
       child: JustCard(
         variant: variant,
         width: 340.0,
@@ -28,7 +29,7 @@ Widget buildJustCardDefaultUseCase(BuildContext context) {
         header: const JustCardHeader(
           child: Column(
             crossAxisAlignment: .start,
-            children: [
+            children: <Widget>[
               JustCardTitle(child: Text('Card Title')),
               JustCardDescription(
                 child: Text('This is a description of the card.'),
@@ -39,7 +40,7 @@ Widget buildJustCardDefaultUseCase(BuildContext context) {
         footer: JustCardFooter(
           child: Row(
             mainAxisAlignment: .end,
-            children: [
+            children: <Widget>[
               JustButton.ghost(label: 'Cancel', onPressed: () {}),
               const SizedBox(width: 8.0),
               JustButton.primary(label: 'Confirm', onPressed: () {}),

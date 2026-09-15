@@ -8,7 +8,7 @@ class const JustSeparatorTheme({
   final JustSeparatorStyle? style,
 }) extends ThemeExtension<JustSeparatorTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustSeparatorTheme();
+  static const JustSeparatorTheme defaults = JustSeparatorTheme();
 
   @override
   JustSeparatorTheme copyWith({JustSeparatorStyle? style}) {

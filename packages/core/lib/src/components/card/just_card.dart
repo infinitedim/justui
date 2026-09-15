@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/preset_tokens.dart';
+import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../theme/theme_provider.dart';
@@ -136,18 +138,19 @@ class const JustCard({
   @override
   Widget build(BuildContext context) {
     // Resolve theme extension values
-    final globalCardTheme = Theme.of(context).extension<JustCardTheme>();
-    final themeStyle = globalCardTheme?.style;
+    final JustCardTheme? globalCardTheme = Theme.of(context)
+        .extension<JustCardTheme>();
+    final JustCardStyle? themeStyle = globalCardTheme?.style;
 
     // Aspect-based subscriptions for optimal rebuild performance
-    final theme = JustThemeProvider.of(context).theme;
-    final colors = theme.colors;
-    final spacing = theme.spacing;
-    final radius = theme.radius;
-    final shadows = theme.shadows;
-    final presetTokens = theme.presetTokens;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = theme.colors;
+    final JustSpacingScheme spacing = theme.spacing;
+    final JustRadiusScheme radius = theme.radius;
+    final JustShadowScheme shadows = theme.shadows;
+    final JustPresetTokens presetTokens = theme.presetTokens;
 
-    final isInteractive = onTap != null;
+    final bool isInteractive = onTap != null;
 
     // Resolve base colors and shadows depending on the card variant
     Color defaultBg;
@@ -170,7 +173,7 @@ class const JustCard({
         defaultBg = colors.card;
         defaultBorderColor = colors.borderDefault;
         defaultBorderWidth = presetTokens.borderWidth;
-        defaultShadows = const [];
+        defaultShadows = const <BoxShadow>[];
         break;
       case .filled:
         defaultBg = colors.muted;
@@ -180,44 +183,45 @@ class const JustCard({
         defaultBorderWidth = presetTokens.showsDefaultBorder
             ? presetTokens.borderWidth
             : 0.0;
-        defaultShadows = const [];
+        defaultShadows = const <BoxShadow>[];
         break;
     }
 
     // Resolve structural values with preference order: widget parameter -> theme extension -> default
-    final resolvedBgColor =
+    final Color resolvedBgColor =
         style?.backgroundColor ?? themeStyle?.backgroundColor ?? defaultBg;
-    final resolvedBorderColor =
+    final Color resolvedBorderColor =
         style?.borderColor ?? themeStyle?.borderColor ?? defaultBorderColor;
-    final resolvedBorderWidth =
+    final double resolvedBorderWidth =
         style?.borderWidth ?? themeStyle?.borderWidth ?? defaultBorderWidth;
-    final resolvedBorderRadius =
+    final BorderRadius resolvedBorderRadius =
         style?.borderRadius ??
         themeStyle?.borderRadius ??
         presetTokens.resolveBorderRadius(radius);
-    final resolvedPadding =
+    final EdgeInsets resolvedPadding =
         style?.padding ?? themeStyle?.padding ?? .all(spacing.lg);
-    final resolvedMargin = style?.margin ?? themeStyle?.margin ?? .zero;
+    final EdgeInsets resolvedMargin =
+        style?.margin ?? themeStyle?.margin ?? .zero;
 
-    final resolvedHeaderPadding =
+    final EdgeInsets resolvedHeaderPadding =
         style?.headerPadding ??
         themeStyle?.headerPadding ??
         .symmetric(horizontal: spacing.lg, vertical: spacing.md);
-    final resolvedFooterPadding =
+    final EdgeInsets resolvedFooterPadding =
         style?.footerPadding ??
         themeStyle?.footerPadding ??
         .symmetric(horizontal: spacing.lg, vertical: spacing.md);
-    final resolvedHeaderDividerColor =
+    final Color resolvedHeaderDividerColor =
         style?.headerDividerColor ??
         themeStyle?.headerDividerColor ??
         colors.borderDefault;
-    final resolvedFooterDividerColor =
+    final Color resolvedFooterDividerColor =
         style?.footerDividerColor ??
         themeStyle?.footerDividerColor ??
         colors.borderDefault;
 
     Widget buildCardContent(bool isHovered, bool isPressed, bool isFocused) {
-      final typography = JustThemeProvider.of(
+      final JustTypographyScheme typography = JustThemeProvider.of(
         context,
         aspect: .typography,
       ).theme.typography;
@@ -244,11 +248,11 @@ class const JustCard({
       if (style?.shadows != null || themeStyle?.shadows != null) {
         if (isPressed) {
           if (presetTokens.showsDefaultBorder) {
-            resolvedShadows = const [];
+            resolvedShadows = const <BoxShadow>[];
           } else {
             resolvedShadows = currentShadows
                 .map(
-                  (s) => s.copyWith(
+                  (BoxShadow s) => s.copyWith(
                     blurRadius: s.blurRadius * 0.6,
                     offset: s.offset * 0.5,
                   ),
@@ -266,7 +270,7 @@ class const JustCard({
             isPressed: isPressed,
           );
         } else {
-          resolvedShadows = const [];
+          resolvedShadows = const <BoxShadow>[];
         }
       }
 
@@ -274,11 +278,11 @@ class const JustCard({
           ? BorderSide(color: currentBorderColor, width: currentBorderWidth)
           : .none;
 
-      final dividerHeight = presetTokens.borderWidth > 0.0
+      final double dividerHeight = presetTokens.borderWidth > 0.0
           ? presetTokens.borderWidth
           : 1.0;
 
-      final cardLayout = Container(
+      final Container cardLayout = Container(
         width: width,
         height: height,
         margin: resolvedMargin,
@@ -295,8 +299,8 @@ class const JustCard({
             child: Column(
               mainAxisSize: .min,
               crossAxisAlignment: .stretch,
-              children: [
-                if (header != null) ...[
+              children: <Widget>[
+                if (header != null) ...<Widget>[
                   JustCardHeader(
                     padding: resolvedHeaderPadding,
                     child: header!,
@@ -307,7 +311,7 @@ class const JustCard({
                   ),
                 ],
                 Padding(padding: resolvedPadding, child: child),
-                if (footer != null) ...[
+                if (footer != null) ...<Widget>[
                   Container(
                     height: dividerHeight,
                     color: resolvedFooterDividerColor,
@@ -324,7 +328,7 @@ class const JustCard({
       );
 
       if (isInteractive) {
-        final scaleFactor =
+        final double scaleFactor =
             style?.scaleOnPress ?? themeStyle?.scaleOnPress ?? 0.99;
         return presetTokens.buildPressEffect(
           child: cardLayout,
@@ -376,14 +380,15 @@ class const JustCardHeader({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final globalCardTheme = Theme.of(context).extension<JustCardTheme>();
-    final themeStyle = globalCardTheme?.style;
+    final JustCardTheme? globalCardTheme = Theme.of(context)
+        .extension<JustCardTheme>();
+    final JustCardStyle? themeStyle = globalCardTheme?.style;
 
-    final resolvedPadding =
+    final EdgeInsets resolvedPadding =
         padding ??
         themeStyle?.headerPadding ??
         .symmetric(horizontal: spacing.lg, vertical: spacing.md);
@@ -393,7 +398,7 @@ class const JustCardHeader({
       child: Column(
         mainAxisSize: .min,
         crossAxisAlignment: .start,
-        children: [child],
+        children: <Widget>[child],
       ),
     );
   }
@@ -412,8 +417,11 @@ class const JustCardTitle({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final defaultStyle = JustFluidTypo.headingMd(context)
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final TextStyle defaultStyle = JustFluidTypo.headingMd(context)
         .copyWith(color: colors.textPrimary, fontWeight: .w600);
 
     return DefaultTextStyle(style: defaultStyle.merge(style), child: child);
@@ -433,8 +441,11 @@ class const JustCardDescription({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final defaultStyle = JustFluidTypo.bodySm(context)
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final TextStyle defaultStyle = JustFluidTypo.bodySm(context)
         .copyWith(color: colors.textSecondary);
 
     return DefaultTextStyle(style: defaultStyle.merge(style), child: child);
@@ -454,14 +465,16 @@ class const JustCardContent({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final globalCardTheme = Theme.of(context).extension<JustCardTheme>();
-    final themeStyle = globalCardTheme?.style;
+    final JustCardTheme? globalCardTheme = Theme.of(context)
+        .extension<JustCardTheme>();
+    final JustCardStyle? themeStyle = globalCardTheme?.style;
 
-    final resolvedPadding = padding ?? themeStyle?.padding ?? .all(spacing.lg);
+    final EdgeInsets resolvedPadding =
+        padding ?? themeStyle?.padding ?? .all(spacing.lg);
 
     return Padding(padding: resolvedPadding, child: child);
   }
@@ -480,14 +493,15 @@ class const JustCardFooter({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final globalCardTheme = Theme.of(context).extension<JustCardTheme>();
-    final themeStyle = globalCardTheme?.style;
+    final JustCardTheme? globalCardTheme = Theme.of(context)
+        .extension<JustCardTheme>();
+    final JustCardStyle? themeStyle = globalCardTheme?.style;
 
-    final resolvedPadding =
+    final EdgeInsets resolvedPadding =
         padding ??
         themeStyle?.footerPadding ??
         .symmetric(horizontal: spacing.lg, vertical: spacing.md);

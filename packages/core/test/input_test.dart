@@ -31,9 +31,9 @@ void main() {
 
   group('JustInput - Text Variant & Core Interactions', () {
     testWidgets('Renders label, hint, and accepts user text input', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = TextEditingController();
+      final TextEditingController controller = TextEditingController();
       String changedValue = '';
 
       await tester.pumpWidget(
@@ -42,7 +42,7 @@ void main() {
             controller: controller,
             label: 'Username',
             hint: 'Enter your username',
-            onChanged: (val) => changedValue = val,
+            onChanged: (String val) => changedValue = val,
           ),
         ),
       );
@@ -57,11 +57,13 @@ void main() {
       expect(changedValue, equals('john_doe'));
     });
 
-    testWidgets('Handles onSubmitted callback', (tester) async {
+    testWidgets('Handles onSubmitted callback', (WidgetTester tester) async {
       String submittedValue = '';
 
       await tester.pumpWidget(
-        buildTestApp(JustInput(onSubmitted: (val) => submittedValue = val)),
+        buildTestApp(
+          JustInput(onSubmitted: (String val) => submittedValue = val),
+        ),
       );
 
       await tester.enterText(find.byType(EditableText), 'Submit text');
@@ -72,9 +74,9 @@ void main() {
     });
 
     testWidgets('Focus handling: updates focus state and border color', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final focusNode = FocusNode();
+      final FocusNode focusNode = FocusNode();
 
       await tester.pumpWidget(
         buildTestApp(JustInput(focusNode: focusNode, label: 'Focused Input')),
@@ -95,7 +97,7 @@ void main() {
 
     testWidgets(
       'Error state displays errorText, error border, and announces semantics',
-      (tester) async {
+      (WidgetTester tester) async {
         await tester.pumpWidget(
           buildTestApp(
             const JustInput(label: 'Email', errorText: 'Invalid email address'),
@@ -108,7 +110,7 @@ void main() {
     );
 
     testWidgets('Success state displays successText and success styling', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
@@ -120,9 +122,11 @@ void main() {
     });
 
     testWidgets('Helper text and character counter display correctly', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = TextEditingController(text: 'Hello');
+      final TextEditingController controller = TextEditingController(
+        text: 'Hello',
+      );
 
       await tester.pumpWidget(
         buildTestApp(
@@ -143,15 +147,19 @@ void main() {
     });
 
     testWidgets('Disabled state disables EditableText and ignores taps', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = TextEditingController(text: 'Disabled text');
+      final TextEditingController controller = TextEditingController(
+        text: 'Disabled text',
+      );
 
       await tester.pumpWidget(
         buildTestApp(JustInput(controller: controller, enabled: false)),
       );
 
-      final editable = tester.widget<EditableText>(find.byType(EditableText));
+      final EditableText editable = tester.widget<EditableText>(
+        find.byType(EditableText),
+      );
       expect(
         editable.readOnly,
         isFalse,
@@ -159,15 +167,19 @@ void main() {
       expect(find.byType(EditableText), findsOneWidget);
     });
 
-    testWidgets('ReadOnly state sets readOnly on EditableText', (tester) async {
+    testWidgets('ReadOnly state sets readOnly on EditableText', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(buildTestApp(const JustInput(readOnly: true)));
 
-      final editable = tester.widget<EditableText>(find.byType(EditableText));
+      final EditableText editable = tester.widget<EditableText>(
+        find.byType(EditableText),
+      );
       expect(editable.readOnly, isTrue);
     });
 
     testWidgets('Prefix and Suffix icons and custom widgets render properly', (
-      tester,
+      WidgetTester tester,
     ) async {
       // 1. PrefixIcon and SuffixIcon
       await tester.pumpWidget(
@@ -198,8 +210,10 @@ void main() {
 
     testWidgets(
       'ShowClearButton displays clear icon when text is entered and clears text on tap',
-      (tester) async {
-        final controller = TextEditingController(text: 'Clear me');
+      (WidgetTester tester) async {
+        final TextEditingController controller = TextEditingController(
+          text: 'Clear me',
+        );
         String changed = 'Clear me';
 
         await tester.pumpWidget(
@@ -208,7 +222,7 @@ void main() {
               controller: controller,
               showClearButton: true,
               suffixIcon: Icons.info_outline,
-              onChanged: (val) => changed = val,
+              onChanged: (String val) => changed = val,
             ),
           ),
         );
@@ -230,8 +244,10 @@ void main() {
 
     testWidgets(
       'ShowClearButton displays custom suffix when empty and clear button when filled',
-      (tester) async {
-        final controller = TextEditingController(text: '');
+      (WidgetTester tester) async {
+        final TextEditingController controller = TextEditingController(
+          text: '',
+        );
 
         await tester.pumpWidget(
           buildTestApp(
@@ -255,8 +271,10 @@ void main() {
 
     testWidgets(
       'ShowClearButton with no suffix displays SizedBox.shrink when empty',
-      (tester) async {
-        final controller = TextEditingController(text: '');
+      (WidgetTester tester) async {
+        final TextEditingController controller = TextEditingController(
+          text: '',
+        );
 
         await tester.pumpWidget(
           buildTestApp(
@@ -269,9 +287,11 @@ void main() {
     );
 
     testWidgets('ShowClearButton does not clear text when enabled is false', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = TextEditingController(text: 'Cannot clear');
+      final TextEditingController controller = TextEditingController(
+        text: 'Cannot clear',
+      );
 
       await tester.pumpWidget(
         buildTestApp(
@@ -292,8 +312,8 @@ void main() {
 
     testWidgets(
       'Size variants render with corresponding dimensions (sm, md, lg)',
-      (tester) async {
-        for (final size in [
+      (WidgetTester tester) async {
+        for (final JustInputSize size in <JustInputSize>[
           JustInputSize.sm,
           JustInputSize.md,
           JustInputSize.lg,
@@ -309,11 +329,15 @@ void main() {
 
     testWidgets(
       'didUpdateWidget correctly handles controller and focusNode changes',
-      (tester) async {
-        final controller1 = TextEditingController(text: 'First');
-        final controller2 = TextEditingController(text: 'Second');
-        final node1 = FocusNode();
-        final node2 = FocusNode();
+      (WidgetTester tester) async {
+        final TextEditingController controller1 = TextEditingController(
+          text: 'First',
+        );
+        final TextEditingController controller2 = TextEditingController(
+          text: 'Second',
+        );
+        final FocusNode node1 = FocusNode();
+        final FocusNode node2 = FocusNode();
 
         await tester.pumpWidget(
           buildTestApp(JustInput(controller: controller1, focusNode: node1)),
@@ -341,9 +365,11 @@ void main() {
 
   group('JustInput - Password Variant', () {
     testWidgets('Toggles password visibility on eye icon click', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = TextEditingController(text: 'secret123');
+      final TextEditingController controller = TextEditingController(
+        text: 'secret123',
+      );
 
       await tester.pumpWidget(
         buildTestApp(
@@ -351,7 +377,9 @@ void main() {
         ),
       );
 
-      final editable1 = tester.widget<EditableText>(find.byType(EditableText));
+      final EditableText editable1 = tester.widget<EditableText>(
+        find.byType(EditableText),
+      );
       expect(editable1.obscureText, isTrue);
       expect(find.byIcon(Icons.visibility_off_rounded), findsOneWidget);
 
@@ -359,7 +387,9 @@ void main() {
       await tester.tap(find.byIcon(Icons.visibility_off_rounded));
       await tester.pump();
 
-      final editable2 = tester.widget<EditableText>(find.byType(EditableText));
+      final EditableText editable2 = tester.widget<EditableText>(
+        find.byType(EditableText),
+      );
       expect(editable2.obscureText, isFalse);
       expect(find.byIcon(Icons.visibility_rounded), findsOneWidget);
 
@@ -367,12 +397,14 @@ void main() {
       await tester.tap(find.byIcon(Icons.visibility_rounded));
       await tester.pump();
 
-      final editable3 = tester.widget<EditableText>(find.byType(EditableText));
+      final EditableText editable3 = tester.widget<EditableText>(
+        find.byType(EditableText),
+      );
       expect(editable3.obscureText, isTrue);
     });
 
     testWidgets('Disabled password input does not toggle visibility', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(const JustInput.password(enabled: false)),
@@ -387,8 +419,10 @@ void main() {
   });
 
   group('JustInput - Search Variant', () {
-    testWidgets('Renders search icon prefix and clear button', (tester) async {
-      final controller = TextEditingController(text: '');
+    testWidgets('Renders search icon prefix and clear button', (
+      WidgetTester tester,
+    ) async {
+      final TextEditingController controller = TextEditingController(text: '');
 
       await tester.pumpWidget(
         buildTestApp(JustInput.search(controller: controller)),
@@ -410,16 +444,16 @@ void main() {
 
   group('JustInput - Number Variant', () {
     testWidgets('Increments and decrements integer and float values', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final controller = TextEditingController(text: '5');
+      final TextEditingController controller = TextEditingController(text: '5');
       String changed = '5';
 
       await tester.pumpWidget(
         buildTestApp(
           JustInput.number(
             controller: controller,
-            onChanged: (val) => changed = val,
+            onChanged: (String val) => changed = val,
           ),
         ),
       );
@@ -464,8 +498,10 @@ void main() {
 
     testWidgets(
       'Disabled and ReadOnly number input ignores increment and decrement',
-      (tester) async {
-        final controller = TextEditingController(text: '10');
+      (WidgetTester tester) async {
+        final TextEditingController controller = TextEditingController(
+          text: '10',
+        );
 
         // Disabled
         await tester.pumpWidget(
@@ -494,7 +530,7 @@ void main() {
 
   group('JustInput - Textarea Variant', () {
     testWidgets('Renders multi-line textarea with custom lines', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
@@ -506,7 +542,9 @@ void main() {
         ),
       );
 
-      final editable = tester.widget<EditableText>(find.byType(EditableText));
+      final EditableText editable = tester.widget<EditableText>(
+        find.byType(EditableText),
+      );
       expect(editable.maxLines, equals(5));
       expect(editable.minLines, equals(3));
       expect(editable.keyboardType, equals(TextInputType.multiline));
@@ -516,8 +554,8 @@ void main() {
   group('JustInput - OTP Variant', () {
     testWidgets(
       'Renders segmented OTP inputs, auto advances focus, handles paste and backspace',
-      (tester) async {
-        final controller = TextEditingController();
+      (WidgetTester tester) async {
+        final TextEditingController controller = TextEditingController();
         String otpValue = '';
 
         await tester.pumpWidget(
@@ -525,7 +563,7 @@ void main() {
             JustInput.otp(
               length: 4,
               controller: controller,
-              onChanged: (val) => otpValue = val,
+              onChanged: (String val) => otpValue = val,
               errorText: 'Invalid code',
             ),
           ),
@@ -559,8 +597,10 @@ void main() {
 
     testWidgets(
       'OTP renders pre-filled initial controller text and successText',
-      (tester) async {
-        final controller = TextEditingController(text: '9876');
+      (WidgetTester tester) async {
+        final TextEditingController controller = TextEditingController(
+          text: '9876',
+        );
 
         await tester.pumpWidget(
           buildTestApp(
@@ -583,10 +623,12 @@ void main() {
 
   group('JustFormInput Tests', () {
     testWidgets('Integrates with Flutter Form and FormField validation', (
-      tester,
+      WidgetTester tester,
     ) async {
-      final formKey = GlobalKey<FormState>();
-      final formController = TextEditingController(text: 'Init');
+      final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+      final TextEditingController formController = TextEditingController(
+        text: 'Init',
+      );
       String? savedValue;
 
       await tester.pumpWidget(
@@ -597,7 +639,7 @@ void main() {
               label: 'Form Input',
               controller: formController,
               initialValue: 'Init',
-              validator: (val) {
+              validator: (String? val) {
                 if (formController.text.isEmpty) {
                   return 'Field cannot be empty';
                 }
@@ -606,7 +648,7 @@ void main() {
                 }
                 return null;
               },
-              onSaved: (val) => savedValue = formController.text,
+              onSaved: (String? val) => savedValue = formController.text,
             ),
           ),
         ),
@@ -637,7 +679,7 @@ void main() {
 
   group('JustInput - Neobrutalism & Preset Tests', () {
     testWidgets('Renders with Neobrutalism light and dark presets', (
-      tester,
+      WidgetTester tester,
     ) async {
       // Light Neobrutalism
       await tester.pumpWidget(
@@ -665,7 +707,7 @@ void main() {
   group('JustInputStyle & JustInputTheme Unit Tests', () {
     test('JustInputStyle instantiation with all properties', () {
       // ignore: prefer_const_constructors
-      final style = JustInputStyle(
+      final JustInputStyle style = JustInputStyle(
         borderColor: const Color(0xFF111111),
         focusedBorderColor: const Color(0xFF222222),
         errorBorderColor: const Color(0xFF333333),
@@ -691,14 +733,14 @@ void main() {
       expect(style.helperStyle?.fontSize, equals(12));
 
       // ignore: prefer_const_constructors
-      final emptyStyle = JustInputStyle();
+      final JustInputStyle emptyStyle = JustInputStyle();
       expect(emptyStyle.borderColor, isNull);
     });
 
     testWidgets('Custom JustInputStyle applies overrides to JustInput widget', (
-      tester,
+      WidgetTester tester,
     ) async {
-      const customStyle = JustInputStyle(
+      const JustInputStyle customStyle = JustInputStyle(
         backgroundColor: Color(0xFFEFEFEF),
         borderColor: Color(0xFF999999),
         focusedBorderColor: Color(0xFF3333FF),
@@ -725,28 +767,32 @@ void main() {
     });
 
     test('JustInputTheme copyWith and lerp unit tests', () {
-      const style1 = JustInputStyle(borderColor: Color(0xFF111111));
-      const style2 = JustInputStyle(borderColor: Color(0xFF222222));
+      const JustInputStyle style1 = JustInputStyle(
+        borderColor: Color(0xFF111111),
+      );
+      const JustInputStyle style2 = JustInputStyle(
+        borderColor: Color(0xFF222222),
+      );
 
-      const theme1 = JustInputTheme(inputStyle: style1);
-      final copied = theme1.copyWith(inputStyle: style2);
+      const JustInputTheme theme1 = JustInputTheme(inputStyle: style1);
+      final JustInputTheme copied = theme1.copyWith(inputStyle: style2);
       expect(copied.inputStyle, equals(style2));
 
-      final copiedNull = theme1.copyWith();
+      final JustInputTheme copiedNull = theme1.copyWith();
       expect(copiedNull.inputStyle, equals(style1));
 
-      const theme2 = JustInputTheme(inputStyle: style2);
+      const JustInputTheme theme2 = JustInputTheme(inputStyle: style2);
 
       // Lerp t < 0.5 returns theme1
-      final lerpLow = theme1.lerp(theme2, 0.2);
+      final JustInputTheme lerpLow = theme1.lerp(theme2, 0.2);
       expect(lerpLow.inputStyle, equals(style1));
 
       // Lerp t >= 0.5 returns theme2
-      final lerpHigh = theme1.lerp(theme2, 0.7);
+      final JustInputTheme lerpHigh = theme1.lerp(theme2, 0.7);
       expect(lerpHigh.inputStyle, equals(style2));
 
       // Lerp with incompatible other returns this
-      final lerpNull = theme1.lerp(null, 0.5);
+      final JustInputTheme lerpNull = theme1.lerp(null, 0.5);
       expect(lerpNull, equals(theme1));
 
       expect(JustInputTheme.defaults.inputStyle, isNull);
@@ -755,7 +801,7 @@ void main() {
     test('JustInputVariant and JustInputSize enum values', () {
       expect(
         JustInputVariant.values,
-        containsAll([
+        containsAll(<dynamic>[
           JustInputVariant.text,
           JustInputVariant.password,
           JustInputVariant.search,
@@ -767,7 +813,11 @@ void main() {
 
       expect(
         JustInputSize.values,
-        containsAll([JustInputSize.sm, JustInputSize.md, JustInputSize.lg]),
+        containsAll(<dynamic>[
+          JustInputSize.sm,
+          JustInputSize.md,
+          JustInputSize.lg,
+        ]),
       );
     });
   });

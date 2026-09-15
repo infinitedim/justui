@@ -14,7 +14,7 @@ class const JustBottomNavTheme({
   final JustBottomNavStyle? floatingStyle,
 }) extends ThemeExtension<JustBottomNavTheme> {
   /// Default theme configuration.
-  static const defaults = JustBottomNavTheme();
+  static const JustBottomNavTheme defaults = JustBottomNavTheme();
 
   @override
   JustBottomNavTheme copyWith({
