@@ -28,6 +28,7 @@ vi.mock('next-themes', () => ({
 // Mock next/navigation
 let mockPathname = '/id';
 const mockPush = vi.fn();
+const mockPush = vi.fn();
 Object.defineProperty(globalThis, 'mockPathname', {
   get: () => mockPathname,
   set: (val) => {
@@ -38,6 +39,11 @@ Object.defineProperty(globalThis, 'mockPathname', {
 
 vi.mock('next/navigation', () => ({
   usePathname: () => mockPathname,
+  useRouter: () => ({
+    push: mockPush,
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
   useRouter: () => ({
     push: mockPush,
     replace: vi.fn(),
@@ -108,6 +114,9 @@ describe('Navbar & SearchModal Components', () => {
     const searchBtn = screen.getAllByRole('button', {
       name: /open search/i,
     })[0];
+    const searchBtn = screen.getAllByRole('button', {
+      name: /open search/i,
+    })[0];
     fireEvent.click(searchBtn);
 
     // Search modal should be open
@@ -121,6 +130,7 @@ describe('Navbar & SearchModal Components', () => {
     expect(input.value).toBe('button');
 
     // Click result link to close
+    const resultLink = screen.getByRole('link', { name: /^JustButton/i });
     const resultLink = screen.getByRole('link', { name: /^JustButton/i });
     fireEvent.click(resultLink);
     expect(
@@ -151,6 +161,7 @@ describe('Navbar & SearchModal Components', () => {
 
     // Click overlay background to close
     const overlay = screen.getByTestId('search-overlay');
+    const overlay = screen.getByTestId('search-overlay');
     fireEvent.click(overlay);
     expect(
       screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
@@ -158,12 +169,16 @@ describe('Navbar & SearchModal Components', () => {
   });
 
   it('closes search modal via close button and handles keyboard navigation', () => {
+  it('closes search modal via close button and handles keyboard navigation', () => {
     render(<Navbar starCount={100} lang="en" />);
     fireEvent.keyDown(document, { ctrlKey: true, key: 'k' });
 
     const closeBtn = screen.getByRole('button', {
       name: /close search/i,
+    const closeBtn = screen.getByRole('button', {
+      name: /close search/i,
     });
+    fireEvent.click(closeBtn);
     fireEvent.click(closeBtn);
     expect(
       screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
