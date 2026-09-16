@@ -1,202 +1,394 @@
 # JustUI — Agent Onboarding & Codebase Manual
 
-Selamat datang! Berkas ini dibuat sebagai **single source of truth** bagi AI Agent untuk memahami arsitektur, struktur proyek, dan batasan lingkungan pengembangan (constraints) JustUI tanpa perlu menganalisis seluruh codebase dari awal.
+Welcome! This document serves as the **single source of truth** for AI Agents to understand JustUI's polyglot architecture, project structure, conventions, and development environment constraints without needing to re-analyze the codebase from scratch.
 
 ---
 
-## 1. Project Overview & Philosophy
+## 1. Project Overview & Polyglot Architecture
 
-**JustUI** adalah Flutter UI component library dengan filosofi **copy-paste model** (terinspirasi dari shadcn/ui).
-* User **tidak menginstall** library ini sebagai package pub.dev pihak ketiga.
-* User menggunakan CLI tool (`just_ui_cli`) untuk menyalin kode sumber komponen secara langsung ke dalam direktori proyek mereka sendiri.
-* Desain arsitektur diutamakan pada **Zero-dependency footprint** (tidak memakai library eksternal pub.dev selain bawaan Flutter) dan **Visual & Performance Excellence**.
+**JustUI** is a production-grade Flutter UI component library built around a **copy-paste distribution model** (inspired by shadcn/ui).
+* **Copy-Paste Philosophy:** Users **do not install** this library as a monolithic third-party `pub.dev` dependency. Instead, they use the native JustUI CLI (`justui`) to copy component source code directly into their own project repositories.
+* **Zero External Runtime Footprint:** All Flutter components (`packages/core` and `packages/tokens`) have zero third-party pub dependencies; they rely strictly on Flutter built-ins and internal design tokens.
+* **Polyglot Monorepo:** The repository is partitioned into three specialized engineering pillars:
+  1. **Flutter / Dart:** Core theming engine, tokens, visual components, Widgetbook preview, and web showcase.
+  2. **Rust:** High-performance distribution CLI (`justui`) providing AST transpilation, diffing, interactive terminal UI (TUI), and dependency management.
+  3. **TypeScript / Next.js:** Interactive documentation portal and registry preview hosted on Vercel.
+* **Core Tenet:** **Visual & Performance Excellence** — 120 FPS jank-free rendering, zero heap allocations in layout/paint loops, strict WCAG AA contrast enforcement, and agency-grade design aesthetics.
 
 ---
 
-## 2. Monorepo Structure
+## 2. Monorepo Topography & Workspace Mapping
+
+JustUI is structured as a polyglot monorepo coordinated by three package managers: **Melos** (Dart/Flutter), **Cargo** (Rust), and **Bun** (Node/TypeScript).
 
 ```
 justui/
 ├── packages/
-│   ├── just_ui_tokens/     # Design system tokens (colors, spacing, typography, dll.)
-│   ├── just_ui_core/       # Theming engine, context extensions, & optimisasi rebuild
-│   └── just_ui_cli/        # Command-Line Interface (scaffolding & copy-paste workflow)
-├── docs/                   # Spesifikasi desain & fungsionalitas per fase
-├── melos.yaml
-└── pubspec.yaml
+│   ├── tokens/             # [Dart: just_ui_tokens] Visual primitives, perceptual color engines, typography & a11y
+│   ├── core/               # [Dart: just_ui_core] Theming engine, InheritedModel aspect kernel, & 30+ visual components
+│   └── cli/                # [Rust: justui / justui_cli] Native CLI tool (clap, ratatui, syntect, serde, similar)
+├── apps/
+│   ├── docs/               # [Next.js 16 + React 19] Fumadocs documentation site & interactive registry portal
+│   ├── preview/            # [Flutter] Widgetbook 3 interactive component workbench (28 use cases)
+│   └── showcase/           # [Flutter Web WASM] Exportable showcase application embedded into apps/docs
+├── registry/               # Generated component distribution definitions & mirrored component files
+├── tools/                  # Polyglot release scripts, checksum generators, & changeset automations
+├── .changeset/             # Multi-package changelog & versioning definitions
+├── melos.yaml              # Dart workspace configuration
+├── Cargo.toml              # Rust workspace configuration
+└── package.json            # Bun workspace configuration (apps/docs)
+```
+
+### Workspace Management Matrix
+
+| Pillar | Sub-Directory | Package Manager | Manifest File | Primary Commands |
+|---|---|---|---|---|
+| **Flutter Tokens** | `packages/tokens` | Melos / Flutter SDK | `pubspec.yaml` | `melos bootstrap`, `dart analyze packages/tokens` |
+| **Flutter Core** | `packages/core` | Melos / Flutter SDK | `pubspec.yaml` | `dart analyze packages/core` |
+| **Rust CLI** | `packages/cli` | Cargo | `Cargo.toml` | `cargo check --workspace`, `cargo test --workspace` |
+| **Documentation** | `apps/docs` | Bun | `package.json` | `bun run dev`, `bun run build`, `bun run test` |
+| **Component Preview**| `apps/preview` | Flutter SDK | `pubspec.yaml` | `dart run build_runner build --delete-conflicting-outputs` |
+| **Showcase WASM** | `apps/showcase` | Flutter SDK | `pubspec.yaml` | `flutter build web --wasm --release --base-href /showcase/` |
+
+---
+
+## 3. Flutter & Dart Core Engine (`packages/core` & `packages/tokens`)
+
+### 3.1 Aspect-Based Rebuilds (`InheritedModel`)
+To minimize widget tree rebuild overhead when theme properties change, `packages/core` provides `JustThemeProvider` backed by an `InheritedModel<JustThemeAspect>`:
+* Widgets listening to a specific aspect only re-render when that exact aspect mutates.
+* **Consumption Rule inside `build()`**:
+  * `context.justColors` $ightarrow$ Re-renders only when color palette changes (e.g., dark/light toggle).
+  * `context.justTypo` $ightarrow$ Re-renders only when typography scale changes.
+  * `context.justSpacing` $ightarrow$ Re-renders only when spacing changes.
+  * `context.justTheme` $ightarrow$ Avoid inside small child widgets; listening to the whole theme causes rebuilds on *any* aspect mutation.
+* **Non-Registering Reads in Callbacks**:
+  * Use `context.readTheme()` inside `onPressed`, `onTap`, or gesture callbacks to obtain theme data without subscribing the widget context to rebuilds.
+
+### 3.2 Expando Lazy-Cached Material `ThemeData`
+Converting a `JustThemeData` instance into a Material `ThemeData` can be expensive. JustUI uses an internal `Expando` cache: repeated calls to `themeData.toThemeData()` return the identical cached `ThemeData` reference, eliminating object allocations across build loops.
+
+### 3.3 Component Architecture Convention (4-File Standard)
+Each component inside `packages/core/lib/src/components/<name>/` strictly follows this 4-file structure:
+1. `just_<name>.dart` — The presenter widget implementing state and layout.
+2. `just_<name>_style.dart` — Instance configuration class controlling geometry, borders, and colors.
+3. `just_<name>_variants.dart` — Size, intent, and variant enums.
+4. `just_<name>_theme.dart` — Component-specific `ThemeExtension<Just<Name>Theme>` for global design tokens.
+
+### 3.4 Critical Invariant: `// CLI:REGISTER_EXTENSIONS` Anchor
+In `packages/core/lib/src/theme/theme_data_material.dart` (inside `ThemeData.extensions`), there is a strict marker:
+```dart
+      extensions: const [
+        // CLI:REGISTER_EXTENSIONS
+      ],
+```
+> [!IMPORTANT]
+> **Never remove, rename, or reformat the `// CLI:REGISTER_EXTENSIONS` comment.**
+> The Rust CLI (`packages/cli/src/utils/theme_editor.rs`) uses this exact string as an AST anchor to inject newly added component theme defaults into user projects. Removing it breaks the CLI component installation workflow.
+
+### 3.5 Perceptual Color & Design Tokens Engine (`packages/tokens`)
+* **Perceptual Color Spaces:** Provides native engines for OKLCH (`oklch_engine.dart`) and HSLuv (`hsluv_engine.dart`) with smooth mathematical tweens (`oklch_color_tween.dart`, `hsluv_color_tween.dart`).
+* **WCAG AA Contrast Auditor (`colors_accessibility.dart`):** Extension methods `color.contrastRatioWith(bg)` and `color.isAccessibleWith(bg)`. Enforces $\ge 4.5:1$ for body text and $\ge 3.0:1$ for large components/borders.
+* **Fluid Typography (`typography_fluid.dart`):** Viewport-clamped dynamic font scaling for multi-device support.
+* **Responsive Breakpoints (`breakpoints.dart`):**
+  * Mobile: $< 640	ext{px}$
+  * Tablet: $640	ext{px} - 1024	ext{px}$
+  * Desktop: $> 1024	ext{px}$
+* **Reduced Motion Profile (`motion.dart`):** `JustMotionProfile.resolve(context)` automatically detects OS-level accessibility reduce-motion settings and clamps duration to zero.
+
+---
+
+## 4. Rust CLI Architecture (`packages/cli` — `justui`)
+
+The JustUI CLI is a high-performance native binary compiled from Rust 2021 edition (`packages/cli`), leveraging `clap 4`, `ratatui 0.30` (TUI), `syntect 5.2` (syntax highlighting), `similar 3` (diffing), `serde`, and `inquire`.
+
+### 4.1 Subcommands Matrix
+
+| Command | Arguments / Flags | Purpose & Behavior |
+|---|---|---|
+| `init` | `--preset <name>`, `--color-space <space>`, `--dart-target <mode>` | Initializes `justui.config.yaml` and scaffolds local theme kernel. |
+| `add` | `<component...>`, `--diff`, `-y`, `--dry-run` | Resolves dependencies, injects pub dependencies via `pubspec_editor.rs`, transpiles AST, and registers theme extensions. |
+| `diff` | `<component>` | Interactive visual diff (powered by `similar` & `syntect`) comparing local component files against registry source. |
+| `update` | `<component...>`, `--all`, `--force` | Synchronizes local component code with upstream registry without wiping local modifications. |
+| `preset` | `list`, `apply <name>`, `info <name>` | Inspects and switches active design system presets in a user project. |
+| `create` | `<name>` | Scaffolds standard 4-file boilerplate for authoring new components locally. |
+| `doctor` | N/A | Diagnostics: Flutter/Dart SDK, pubspec context, FVM, and registry availability. |
+| `list` / `search` | `[query]` | Lists or queries components available in the remote/local registry. |
+| `view` / `info` | `<component>` | Displays component metadata, variants, and dependency requirements. |
+| `upgrade` | N/A | Self-updates the `justui` binary to the latest release. |
+
+### 4.2 Configuration Schema (`justui.config.yaml`)
+```yaml
+components_dir: lib/widgets
+tokens_dir: lib/tokens
+shared_dir: lib/widgets/shared
+registry_url: https://raw.githubusercontent.com/infinitedim/justui/main/registry
+preset: default          # 'default' | 'neobrutalism'
+color_space: hsl         # 'hsl' | 'oklch' | 'hsluv'
+dart_target: standard    # 'standard' | 'primary' (primary-constructors experiment)
+```
+
+### 4.3 AST Transpilation & Safety Invariants
+* **Primary Constructor Transpilation (`constructor_transpiler.rs`):** Core components use Dart's `primary-constructors` language experiment internally. When `dart_target: standard` is configured, the CLI transpiles primary constructors back into conventional Dart constructors during component installation so user projects do not require experimental SDK flags.
+* **Integrity Headers:** Distributed files carry metadata headers:
+  `// justui-meta: registry=<sha256> local=<sha256>`
+  The `update` and `diff` commands parse these hashes to safely detect upstream updates vs. local user edits.
+* **Backup Protection:** `pubspec_editor.rs` creates `pubspec.yaml.bak` before modifying user dependencies.
+* **Cargo Audit Compliance:** `.cargo/audit.toml` intentionally ignores `RUSTSEC-2025-0141` (an unmaintained transitive dependency in `bincode`, code-justified for static templates).
+
+---
+
+## 5. Web Documentation Portal (`apps/docs`)
+
+`apps/docs` is a Next.js 16.3 + React 19 application built with Fumadocs UI/Core and Tailwind CSS 4, deployed on Vercel.
+
+### 5.1 Active Locales & i18n Rules
+* **Strict Active Locales:** Currently, documentation is authored and maintained **strictly in two active languages**:
+  1. English: `apps/docs/content/docs/en/` (Default)
+  2. Indonesian: `apps/docs/content/docs/id/`
+* **Inactive Stubs (`cn`):** The `apps/docs/content/docs/cn/` directory is an unactivated placeholder containing only `.gitkeep`. `next.config.ts` explicitly hardcodes `_supportedLocales = ['en', 'id']`. **Do not author or enforce `cn` files** until Chinese localization is officially activated.
+* **Routing & Proxies:** Redirections and locale resolution are governed by `next.config.ts` rewrite rules, not deprecated middleware.
+
+### 5.2 Stage Bridge Telemetry Protocol (`stage-bridge.ts`)
+Interactive component showcases in the documentation portal communicate with the embedded Flutter canvas iframe via a typed bidirectional PostMessage protocol ([`apps/docs/src/lib/stage-bridge.ts`](file:///home/yourblooo/development/justui/apps/docs/src/lib/stage-bridge.ts)):
+
+```typescript
+export type StageBridgeEvent =
+  | StageReadyEvent       // 'justui-ready': Flutter stage initialized
+  | StageMountEvent       // 'justui-mount': Mount component with specific props
+  | StageThemeEvent       // 'justui-theme': Switch theme preset & light/dark mode
+  | StageTokensEvent      // 'justui-tokens': Live-override design tokens
+  | StageInteractEvent    // 'justui-interact': Dispatch user interaction events
+  | StageMountedEvent     // 'justui-mounted': Flutter stage confirms component mount
+  | StageClearEvent       // 'justui-clear': Dismount current component
+  | StageTelemetryEvent;  // 'justui-event': General interaction telemetry
+```
+
+### 5.3 Vercel Deployment Invariants
+* Configured in `apps/docs/vercel.json`: Singapore region (`sin1`), build command `bun run build`, install command `bun install`.
+* Strict Content Security Policy (CSP) and Cache-Control headers are declared in `next.config.ts`.
+
+---
+
+## 6. Interactive Workbenches (`apps/preview` & `apps/showcase`)
+
+### 6.1 `apps/preview` (Widgetbook 3 Workbench)
+* Primary visual testing and interactive sandbox for Flutter components.
+* Contains 28 use-case files under `apps/preview/lib/usecases/`.
+* Pre-configured with 4 themes: `Light`, `Dark`, `Neobrutalism Light`, and `Neobrutalism Dark`.
+* **Code Generation Command:**
+  ```bash
+  cd apps/preview && dart run build_runner build --delete-conflicting-outputs
+  ```
+
+### 6.2 `apps/showcase` (Web WASM Build)
+* Standalone Flutter Web showcase compiled to WebAssembly (WASM).
+* Deployed as static assets inside `apps/docs/public/showcase/`.
+* **Compilation Command:**
+  ```bash
+  cd apps/docs && bun run build:showcase
+  # Compiles: flutter build web --wasm --release --base-href /showcase/
+  # Copies: build/web -> apps/docs/public/showcase
+  ```
+
+---
+
+## 7. Registry Architecture & Checksum Synchronization
+
+The `registry/` directory stores pre-packaged component definitions consumed by the CLI.
+
+### 7.1 `registry/index.json` Schema
+```json
+{
+  "name": "button",
+  "version": "0.13.2",
+  "category": "components",
+  "internal": false,
+  "hidden": false,
+  "files": ["just_button.dart", "just_button_style.dart", "just_button_variants.dart", "just_button_theme.dart"],
+  "registryDependencies": ["_shared_pressable"],
+  "pubDependencies": []
+}
+```
+
+### 7.2 Component Placement & Routing Heuristics
+When installing components, the CLI routes files according to strict precedence:
+1. `category == "tokens"` or `"core"` $ightarrow$ `config.tokens_dir`
+2. `name == "_shared_theme_provider"` $ightarrow$ `lib/theme`
+3. `internal: true` $ightarrow$ `config.shared_dir`
+4. All standard components $ightarrow$ `{config.components_dir}/{component.name}`
+
+### 7.3 Checksum Synchronization Tool (`tools/generate_checksums.dart`)
+When components in `packages/core` are added or updated, their registry definitions and SHA-256 hashes must be synchronized:
+```bash
+# Dry-run inspection:
+export HOME=/home/yourblooo/development/justui/.home && dart run tools/generate_checksums.dart --dry-run
+
+# Live write and update registry:
+export HOME=/home/yourblooo/development/justui/.home && dart run tools/generate_checksums.dart
 ```
 
 ---
 
-## 3. Architecture & Key Features (Milestone I & II)
+## 8. Coding Standards & Syntax Rules per Language
 
-### packages/just_ui_tokens
-* **Visual Primitives**: Menyediakan konstanta compile-time (`const`) untuk `Colors`, `Spacing`, `Typography`, `Radius`, `Shadows`, dan `Animation` (Duration & Curves).
-* **Accessibility Contrast Auditor (`colors_accessibility.dart`)**:
-  * Menyediakan extension method pada `Color`: `contrastRatioWith` dan `isAccessibleWith`.
-  * Memenuhi standar WCAG AA (kontras $\ge$ 4.5:1 untuk teks normal, $\ge$ 3.0:1 untuk komponen/teks besar).
-
-### packages/just_ui_core
-* **Aspect-Based Rebuilds (`InheritedModel`)**:
-  * Menggunakan `JustThemeProvider` dengan `InheritedModel<JustThemeAspect>`.
-  * Mengurangi overhead rebuild widget tree dengan memastikan perubahan aspek spesifik (misal: warna ketika toggle tema) hanya merender ulang widget yang mendengarkan aspek tersebut (`context.justColors`).
-* **Lazy-Cached Material `ThemeData`**:
-  * Nilai Flutter `ThemeData` diterjemahkan secara malas (*lazily*) dan disimpan di memori. Pemanggilan `.toThemeData()` berulang kali mengembalikan instance yang identik, menghilangkan overhead kalkulasi di setiap build.
-* **Seeding & Contrast Enforcement (`JustThemeData.fromSeed`)**:
-  * Memungkinkan inisialisasi tema kustom dari satu warna seed via HSL color scale.
-  * Menjamin kontras warna primer (`borderFocus`) dinamis tetap memenuhi rasio kontras $\ge$ 3.0:1 terhadap background dengan memanipulasi nilai lightness warna secara otomatis di runtime.
-* **Transition TIMING & Curves**:
-  * `JustThemeProvider` mengekspos `transitionDuration` (default: `JustDuration.normal`) dan `transitionCurve` (default: `JustCurves.default_`).
-
-### Best Practices for Theme Consumption (Penting!)
-Untuk mempertahankan performa render yang optimal, AI Agent wajib menggunakan extension method dari `BuildContext` dengan aspek yang tepat ketika membangun widget/komponen baru:
-* **Gunakan aspek spesifik** saat mengambil token di dalam metode `build`:
-  * `context.justColors` untuk warna (misal: `context.justColors.background`) -> Hanya merender ulang widget jika warna berubah.
-  * `context.justTypo` untuk teks (misal: `context.justTypo.bodyMd`) -> Hanya merender ulang widget jika typography berubah.
-  * `context.justSpacing` untuk spacing (misal: `context.justSpacing.md`) -> Hanya merender ulang widget jika spacing berubah.
-* **Hindari** penggunaan `context.justTheme` di dalam widget kecil, kecuali jika widget tersebut memang membutuhkan banyak aspek sekaligus. Memanggil `context.justTheme` akan meregistrasikan listener ke *seluruh* aspek tema, sehingga widget akan dibangun ulang saat aspek apa pun berubah.
-* **Gunakan API non-registering** di dalam callback (seperti `onPressed`, `onTap`, dll.):
-  * `context.readTheme()` -> Mengambil data tema secara langsung tanpa mendaftarkan listener rebuild ke context.
-
----
-
-## 4. Coding Style & Syntax Rules (Penting!)
-
-Semua agent wajib mematuhi aturan gaya penulisan kode berikut agar konsisten dengan codebase yang sudah ada:
-
-1. **Patuhi Gaya Penulisan Kode yang Ada:** Jangan mengubah gaya penulisan, struktur indentasi, formatting, atau pengorganisasian kode yang sudah terbentuk di dalam repositori ini.
-2. **Penggunaan Dart Dot Shorthand (Constructor Shorthands):**
-   * Repositori ini memanfaatkan fitur **dot shorthand** (tersedia pada Dart 3.10 ke atas) untuk mempersingkat pemanggilan konstruktor static/factory bawaan Flutter ketika tipe datanya sudah dideklarasikan secara statis oleh parameter (misalnya `BorderRadius`, `EdgeInsets`, dll.).
-   * Contoh penulisan shorthand:
+### 8.1 Dart & Flutter Conventions
+1. **Mandatory Dot Shorthands (Dart 3.10+):**
+   * Static constructors must use leading dot syntax when types are inferrable:
      ```dart
-     borderRadius: .all(radius.lg)  // JANGAN UBAH ke BorderRadius.all!
-     padding: .symmetric(horizontal: spacing.md)  // JANGAN UBAH ke EdgeInsets.symmetric!
+     borderRadius: .all(radius.lg)               // NEVER expand to BorderRadius.all!
+     padding: .symmetric(horizontal: spacing.md) // NEVER expand to EdgeInsets.symmetric!
+     fontWeight: .w600                           // NEVER expand to FontWeight.w600!
      ```
-   * **Aturan Mutlak:** Jika Anda melihat sintaksis shorthand yang berawalan titik seperti `.all(...)` atau `.symmetric(...)`, **jangan sekali-kali memodifikasinya atau mengembalikannya ke bentuk panjang (verbose)**.
+   * **Absolute Rule:** Never expand leading dot shorthand syntax back to its verbose form.
+2. **Modern Color Alpha:** Use `color.withValues(alpha: 0.5)` instead of the deprecated `color.withOpacity(0.5)`.
+3. **Restrictive Material Imports:** Always use `show` clauses when importing Material in `packages/core` to prevent namespace pollution:
+   ```dart
+   import 'package:flutter/material.dart' show Theme, ThemeData, ThemeExtension;
+   ```
+4. **Enforce `const`:** All immutable widgets, styles, and token constants must be declared `const`.
+5. **No Barrel Leakage:** Never export component files in `packages/core/lib/just_ui_core.dart`.
+
+### 8.2 Rust Conventions
+1. **Zero Unwrapped Panics:** Never use `.unwrap()` or `.expect()` in production CLI code; use `anyhow::Context` or `?` error propagation.
+2. **Strict Clippy Compliance:** Code must pass `cargo clippy --workspace -- -D warnings`.
+3. **Graceful User Experience:** Use `inquire` for interactive prompts and `indicatif` spinners for network operations.
+
+### 8.3 TypeScript Conventions
+1. **Strict Type Safety:** Zero `any` in business logic; use `unknown` with Zod schema parsing.
+2. **ESLint & Prettier:** Flat config compliance with `eslint-plugin-react-compiler`.
 
 ---
 
-## 5. Development & Sandbox Constraints (Sangat Penting!)
+## 9. Development & Sandbox Constraints (Crucial!)
 
-Ketika bekerja di sandbox ini, harap perhatikan aturan lingkungan berikut:
+When executing tools in this environment, AI Agents must strictly adhere to the following operational constraints:
 
-1. **Offline Environment (No Internet)**:
-   * Sandbox tidak memiliki koneksi internet, sehingga `dart pub get` atau `flutter pub get` standar akan gagal karena tidak bisa mengakses pub.dev.
-   * **Penyelesaian**: Dependensi antar package lokal sudah dikonfigurasi secara offline di `.dart_tool/package_config.json`. **Jangan pernah menghapus atau menimpa folder `.dart_tool` secara ceroboh.**
-2. **Dart Telemetry & Read-Only filesystem**:
-   * Menjalankan tool Dart/Flutter dapat memicu error penulisan file telemetri di direktori HOME bawaan system.
-   * **Solusi**: Selalu override `HOME` ke folder project lokal (`~/development/justui/.home`) saat menjalankan tool CLI Dart.
-3. **Static Analysis & Lint Checks**:
-   * Gunakan perintah berikut dari root proyek untuk memverifikasi kebersihan kode:
+1. **Offline Environment (No Internet):**
+   * The container cannot reach `pub.dev` or external package registries.
+   * Local package inter-dependencies are pre-configured in `.dart_tool/package_config.json`. **Never delete or regenerate `.dart_tool` carelessly.**
+2. **Dart Telemetry & Read-Only HOME:**
+   * Dart CLI commands fail if telemetry writes to the default root home directory.
+   * **Required Solution:** Always prefix Dart commands with `HOME=/home/yourblooo/development/justui/.home`.
+3. **Verified Static Analysis & Quality Commands:**
+   ```bash
+   # Core Packages (Always verify before completing Dart tasks):
+   export HOME=/home/yourblooo/development/justui/.home && dart analyze packages/core
+   export HOME=/home/yourblooo/development/justui/.home && dart analyze packages/tokens
+
+   # Rust CLI Workspace:
+   cargo check --workspace
+   cargo test --workspace
+
+   # Documentation Portal:
+   cd apps/docs && bun run type-check && bun run lint
+   ```
+4. **Running Tests:**
+   * Due to container sandbox graphics and socket limitations, full Flutter widget tests must be executed in CI or on the host machine.
+   * When unit testing is possible, run:
      ```bash
-     export HOME=/home/yourblooo/development/justui/.home && dart analyze packages/just_ui_core
-     export HOME=/home/yourblooo/development/justui/.home && dart analyze packages/just_ui_tokens
-     ```
-4. **Running Tests**:
-   * Karena tidak adanya Flutter SDK lengkap di sandbox, perintah `flutter test` atau `dart test` langsung akan mengalami socket error/crash kompilasi FFI.
-   * Unit test di [theme_test.dart](file:///home/yourblooo/development/justui/packages/just_ui_core/test/theme_test.dart) dan [tokens_test.dart](file:///home/yourblooo/development/justui/packages/just_ui_tokens/test/tokens_test.dart) telah ditulis dengan lengkap dan bersih. Pengujian harus dilakukan di environment lokal user (user-land) yang memiliki Flutter SDK terpasang:
-     ```bash
-     flutter test packages/just_ui_tokens
-     flutter test packages/just_ui_core
+     melos exec --dir-exists="test" -- "flutter test"
      ```
 
 ---
 
-## 6. Style Presets & Neobrutalism Guidelines
+## 10. Design Presets & Neobrutalism Guidelines
 
-Ketika mengimplementasikan atau memodifikasi visual style preset kustom (seperti `neobrutalism`), AI Agent wajib mematuhi aturan berikut:
+JustUI features first-class preset support. When creating or modifying presets (such as `neobrutalism`), follow these strict rules:
 
-1. **Perhitungan Inner-Layout & Border Overlap**:
-   * Karena `BoxDecoration` menggambarkan border ke bagian dalam (`BorderAlign.inside`), komponen dengan layout internal ketat (seperti track dan thumb pada `JustSwitch`) harus menyesuaikan dimensinya. 
-   * Kurangi ukuran thumb secara dinamis sebesar `2 * borderWidth` di bawah preset `neobrutalism` dan offset peletakannya di stack (`Positioned(top: padding + borderWidth, left: padding + borderWidth)`) agar tidak melebihi batas border track.
-
-2. **Mencegah Visual Drift (Jitter) Animasi Tekan**:
-   * Untuk mencocokkan pergerakan posisi (translate) elemen dengan hilangnya bayangan solid (shadow offset collapsing) ketika ditekan, set durasi `AnimatedContainer` ke `animations.instant` (bukan `animations.fast`). Hal ini menjaga sinkronisasi pergerakan visual agar tidak terjadi pergeseran (drift).
-
-3. **Pemberlakuan Kontras Dinamis & Warna Border**:
-   * Di bawah preset `neobrutalism`, pertahankan kekhasan estetika dengan memaksa warna border tombol/input/container menjadi `colors.textPrimary` (hitam pekat di light mode, putih pekat di dark mode) di semua state (normal, hover, focused, error). Jangan biarkan warna border bertransisi ke warna primer/tinted.
-   * Tebal border standar untuk komponen dan container (seperti Button, Card, Input, Sidebar, BottomNav, Breadcrumb dropdown) ditetapkan sebesar `2.5` (menggantikan rancangan awal `3.0` demi proporsi visual yang lebih seimbang).
-   * Lewati (*bypass*) penyesuaian kontras HSL dinamis (`_makeAccessible`) khusus untuk default/focus border di preset `neobrutalism`.
-
-4. **Kompatibilitas CLI**:
-   * Ketika menambah preset baru, perbarui `init_command.dart` di `just_ui_cli` untuk mendukung pilihan preset via opsi `--preset` dan scaffold file `just_theme.dart` dengan preset yang sesuai.
-   * Pastikan preset baru juga terdaftar di perbandingan `operator ==`, `hashCode`, dan metode `copyWith` pada `JustThemeData`.
+1. **Inner-Layout Calculation & Inward Borders:**
+   * Flutter paints borders inward (`BorderAlign.inside`). In tight containers (such as `JustSwitch`), dynamic borders can clip internal child widgets.
+   * Under `neobrutalism`, reduce the switch thumb size by `2 * borderWidth` and offset placement:
+     `Positioned(top: padding + borderWidth, left: padding + borderWidth)`.
+2. **Preventing Press Animation Visual Drift (Jitter):**
+   * Synchronize position translation with the collapsing solid shadow: set `AnimatedContainer` duration to `animations.instant` (not `animations.fast`) to eliminate visual jitter.
+3. **Solid Contrast & Border Width:**
+   * Standard container/component border width is `2.5` (sidebar active border: `3.0`).
+   * Enforce border colors to `colors.textPrimary` (solid black in light mode, solid white in dark mode) across all states (normal, hover, focused, error). Never transition border colors to primary or tinted hues.
+   * Bypass dynamic HSL contrast adjustments (`_makeAccessible`) for default/focus borders in `neobrutalism`.
+4. **CLI Preset Registration:** Update `init_command.rs` in `packages/cli` when adding new presets and ensure the preset is registered in `operator ==`, `hashCode`, and `copyWith` on `JustThemeData`.
 
 ---
 
-## 7. Registry Shared Component Convention
+## 11. Testing Matrix & Quality Assurance Protocols
 
-### Pola Lama (DEPRECATED — jangan gunakan)
-Komponen internal yang dipakai lintas komponen dulunya menggunakan prefix `_shared_*` pada nama dan diinstall ke folder terpisah per-komponen:
-- nama: `_shared_pressable`
-- dipasang ke: `lib/widgets/_shared_pressable/just_pressable.dart`
+| Layer | Framework & Tooling | Location | Verification Command |
+|---|---|---|---|
+| **Tokens Unit Tests** | Flutter Test (7 modular files) | `packages/tokens/test/*_test.dart` | `flutter test packages/tokens` |
+| **Theming Engine Tests** | Flutter Test | `packages/core/test/theme_test.dart` | `flutter test packages/core` |
+| **Rust CLI Integration** | `assert_cmd`, `predicates` | `packages/cli/tests/` | `cargo test --workspace` |
+| **Docs Unit Tests** | Vitest 5 + JSDOM (`bun-preload.ts`) | `apps/docs/src/**/__tests__/` | `cd apps/docs && bun run test` |
+| **Docs E2E Tests** | Playwright 1.63 | `apps/docs/e2e/` | `cd apps/docs && bun run test:e2e` |
 
-**Jangan buat komponen registry dengan prefix `_shared_*` — konvensi ini sudah dihapus.**
+---
 
-### Pola Baru (GUNAKAN INI)
-Shared components kini dideteksi secara otomatis oleh CLI (`RegistryIndex.computeSharedComponents()`) berdasarkan jumlah dependent:
+## 12. Versioning, Changesets & CI/CD Release Pipeline
 
-- **Kriteria shared**: komponen yang menjadi `registryDependencies` dari ≥ 2 komponen berbeda
-- **Penempatan**: semua file komponen shared diletakkan **flat** di dalam `sharedDir`
-- **Naming**: tanpa prefix khusus — nama komponen reguler (contoh: `pressable`, `base`)
-- **Config**: `sharedDir` di `justui.config.yaml`, default `{componentsDir}/shared`
+JustUI coordinates multi-runtime versioning using **Changesets** paired with custom polyglot automation scripts.
 
-**Contoh hasil di project user:**
+### 12.1 Authoring Changesets
+When making user-facing changes to packages, create a changeset markdown file under `.changeset/<name>.md`:
+```markdown
+---
+"just_ui_core": minor
+"just_ui_tokens": minor
+"justui_cli": minor
+"docs": patch
+---
+
+Detailed description of changes following Conventional Commits.
 ```
-lib/widgets/
-├── button/just_button.dart       # import '../shared/just_pressable.dart'
-├── input/just_input.dart         # import '../shared/just_pressable.dart'
-└── shared/
-    └── just_pressable.dart       # dipakai oleh button + input → shared
+
+### 12.2 Release Script Execution
+```bash
+# Update Dart package versions (packages/tokens & packages/core):
+export HOME=/home/yourblooo/development/justui/.home && dart run tools/apply_changesets.dart
+
+# Update Rust CLI version (packages/cli/Cargo.toml):
+bash tools/apply_changesets_cargo.sh
+
+# Update Markdown changelogs:
+bun changeset version
 ```
 
----
-
-## 8. Barrel Export & Shared File Rename Policy
-
-### Theming Kernel Barrel Isolation
-Untuk mencegah kebocoran visual/state komponen (barrel leakage) ke lokal copy di project user:
-- Berkas `packages/just_ui_core/lib/just_ui_core.dart` **hanya boleh mengekspos core theming kernel** (seperti `JustThemeProvider`, `JustThemeData`, `JustThemeAspect`, dll.).
-- **Dilarang keras mengekspos berkas komponen** (e.g. `JustButton`, `JustCard`, dll.) atau berkas private components barrel di dalam public barrel ini.
-- Berkas `packages/just_ui_core/lib/src/components/components.dart` telah dihapus sepenuhnya. Semua test package internal dan file core internal harus mengimport berkas komponen secara langsung dari direktori source masing-masing (e.g. `import 'src/components/button/just_button.dart'`).
-
-### CLI Shared File Copy-Renaming
-- Berkas shared internal di package `just_ui_core` tetap menggunakan penamaan ber-prefix `_shared_` (e.g. `_shared_pressable.dart`).
-- Saat CLI (`just_ui_cli`) menyalin file-file shared ini ke proyek user, prefix `_shared_` **wajib di-strip** menjadi `just_` (e.g. `just_pressable.dart`).
-- Logika penggantian nama dan penyesuaian import path ini dikelola secara otomatis oleh `ImportRewriter.normalizeSharedFileName()`, `AddCommand`, `DiffCommand`, dan `UpdateCommand`. Agent tidak boleh mengubah heuristic ini atau membiarkan file dengan nama `_shared_*` tersalin ke folder lokal user.
+### 12.3 GitHub Actions CI/CD Architecture
+* `.github/workflows/ci.yaml`: Runs 3 parallel matrix pipelines on pull requests:
+  1. `dart-flutter-ci`: Format check, `dart analyze`, and `flutter test`.
+  2. `nextjs-ci`: Bun install, linting, type-checking, and Vitest suite.
+  3. `cli-check`: `cargo clippy`, `cargo audit`, and integration test matrix.
+* `.github/workflows/release.yaml`: Automatically builds release binaries across Linux (`x86_64`, `aarch64`), macOS (`x86_64`, `aarch64`), and Windows (`x86_64`) with cryptographic SLSA provenance attestations.
 
 ---
 
-## 9. Code Quality, Engineering Principles & Performance Standards (Sangat Ketat!)
+## 13. Known Documentation Gaps & Deprecation Warnings
 
-Untuk menjaga basis kode tetap mudah dipelihara (*maintainable*), bersih (*clean*), mudah dibaca (*readable*), dan memiliki performa setingkat sistem (*high-performance*), seluruh kontributor dan AI Agent wajib mematuhi standar rekayasa perangkat lunak berikut:
+1. **Undocumented Components Gap:**
+   * `packages/core` contains 30 component directories, but `apps/docs` currently only documents 25 components.
+   * **4 components are currently missing MDX documentation:** `carousel`, `date-picker`, `resizable`, and `time-picker`.
+   * When modifying or finalizing these components, author new MDX files under both `apps/docs/content/docs/en/components/` and `apps/docs/content/docs/id/components/`.
+2. **Conflicting Documentation in `CONTRIBUTING.md`:**
+   * [`CONTRIBUTING.md:264-266`](file:///home/yourblooo/development/justui/CONTRIBUTING.md#L264-L266) instructs contributors to *"Add your component to the barrel export at packages/core/lib/just_ui_core.dart"*.
+   * **DO NOT FOLLOW THIS STEP.** To prevent barrel leakage into user projects, components must never be exported in the public kernel barrel. Follow the rule established in Section 3 and Section 8.1.
+3. **`apps/showcase` Placeholder Notice:**
+   * `apps/showcase/lib/main.dart` is currently a placeholder counter app. The pre-compiled WASM bundle in `apps/docs/public/showcase/` is the active asset. Do not touch `apps/showcase` unless explicitly tasked with modernizing the showcase app.
 
-### 1. Clean Code & Control Flow Flattening (Anti-Nested If-Else)
-* **Wajib Menggunakan Guard Clauses (Early Returns):**
-  - Dilarang membuat blok `if-else` bertingkat yang dalam (*deep nesting*).
-  - Validasi kondisi awal (*preconditions*), *assertions*, dan penanganan kasus batas (*edge cases*) harus diselesaikan di baris-baris awal fungsi menggunakan *guard clauses* (keluar seawal mungkin dengan `return` atau `assert`).
-  - *Dasar Teori Ilmiah:* Menekan **Cyclomatic Complexity** (Thomas J. McCabe, 1976 — *A Complexity Measure*, IEEE Transactions on Software Engineering) agar nilai $V(G) \le 3$ per fungsi, sehingga meminimalkan beban kognitif pembaca kode dan mempermudah cakupan unit test.
-* **Penggantian Rantai Percabangan dengan Table-Driven Lookups & Pattern Matching:**
-  - Hindari rangkaian panjang `if (...) else if (...) else ...`.
-  - Ganti dengan struktur data diskret (`Map`, `Set`) atau fitur bawaan Dart 3 (*switch expressions* dan *pattern matching*).
-  - *Dasar Teori Ilmiah:* Menghilangkan penalti *branch misprediction* pada CPU pipeline (Yeh & Patt, 1991 — *Two-Level Adaptive Training Branch Prediction*). Dart AOT mengompilasi *switch expressions* dan *Map lookups* menjadi *jump tables* $O(1)$ alih-alih evaluasi rantai kondisional linier $O(N)$.
+---
 
-### 2. Penerapan Prinsip SOLID & DRY
-* **Single Responsibility Principle (SRP):** Pisahkan deklarasi data/konfigurasi, logika kalkulasi matematis murni (*pure mathematical functions*), dan widget presenter/listener ke dalam kelas terpisah.
-* **Don't Repeat Yourself (DRY):** Hindari duplikasi logika kalkulasi antar sumbu (misal: horizontal vs vertikal). Gunakan abstraksi orientasi simetris yang dapat menangani kedua dimensi secara seragam.
-* **Open/Closed Principle (OCP):** Sediakan *builder callbacks* (seperti `handleBuilder`, `transitionBuilder`) sebagai *escape hatch* agar komponen terbuka untuk ekstensi kustom tanpa harus memodifikasi kernel komponen utama.
+## 14. Mandatory Skill Matching & Execution Protocol (Strict!)
 
-### 3. High-Performance Engineering & Landasan Ilmiah
-Setiap keputusan desain yang menyangkut performa harus didukung oleh prinsip ilmu komputer (*computer science*) atau literatur ilmiah yang valid:
-* **Zero Heap Allocations pada Render & Layout Loops:**
-  - Dilarang mengalokasikan objek sementara (*ephemeral objects*, misal list baru atau closure dinamis) di dalam tick gesture drag, animasi per-frame (60/120 FPS), atau callback `LayoutBuilder`.
-  - *Dasar Teori Ilmiah:* Mengurangi frekuensi pemicuan *Generational Minor GC (Scavenge)* pada Dart VM runtime (Wilson et al., 1995 — *Dynamic Storage Allocation*), menjaga *frame budget* tetap berada di bawah ambang batas $8.33\text{ms}$ (120 FPS) atau $16.6\text{ms}$ (60 FPS) agar bebas *jank*.
-* **Bresenham Remainder Distribution (Anti-Subpixel Drift):**
-  - Pada komponen pembagian ruang kontinu ke dalam piksel diskret (seperti `JustResizable`), akumulasi desimal tidak boleh dibiarkan memicu *subpixel rounding drift* atau overflow.
-  - Sisa desimal mutlak ruang wajib dialokasikan secara eksak ke elemen partisi terakhir:
-    $$P_{N-1} = \max\left(0.0, \text{availableSpace} - \sum_{i=0}^{N-2} P_i\right)$$
-  - *Dasar Teori Ilmiah:* Diadaptasi dari prinsip *Bresenham's Space Partitioning Error Accumulator* (J. E. Bresenham, 1965 — *Algorithm for Computer Control of a Digital Plotter*, IBM Systems Journal).
-* **Virtual Tree State Preservation via Offstaging ($O(1)$ vs $O(M)$ Reconciliation):**
-  - Untuk komponen yang memiliki state lipat/collapse (seperti panel yang disembunyikan), dilarang menghancurkan (*unmounting*) subtree dari pohon widget.
-  - Gunakan `Offstage(offstage: isCollapsed, child: ...)` dengan dimensi nol untuk menjaga kelangsungan `Element` dan `State` anak tanpa menimbulkan beban render di Flutter paint phase ($0$ paint cost).
+To ensure optimal engineering quality, prevent hallucinatory patterns, and enforce domain-specific excellence across all areas of this monorepo:
 
+1. **Mandatory Skill Identification on Every Prompt:**
+   * For **every prompt and user task**, AI Agents **must proactively analyze and determine** which specialized skill(s) in `.agents/skills` (or active workspace skills) correspond to the request.
+   * Agents are strictly prohibited from answering or executing tasks in a generic manner when a dedicated skill exists for the target domain.
+
+2. **Mandatory Skill Utilization & Directive Compliance:**
+   * Once the matching skill is identified, the agent **must strictly follow its instructions, rules, and quality standards**:
+     * **Flutter / Dart UI (`packages/core`, `packages/tokens`, `apps/showcase`):** Must follow `flutter-expert`, `ui-a11y` (WCAG AA compliance), and `ux-audit`.
+     * **Rust CLI (`packages/cli`):** Must follow `rust-pro` (idiomatic Rust, memory safety, clap, ratatui, async/error handling).
+     * **Web Docs (`apps/docs`):** Must follow `typescript-expert` and `senior-frontend` (Next.js 16, React 19, Tailwind CSS 4, Fumadocs).
+     * **Design Systems & Presets:** Must follow `brutalist-skill` (neobrutalism preset), `minimalist-skill`, and `soft-skill` / `taste-skill` (anti-slop visual standards).
+     * **Code Generation:** Must strictly adhere to `output-skill` (never produce truncated code, placeholders like `// TODO`, or incomplete implementations).
+     * **Monorepo & Releases:** Must follow `monorepo-architect` and `changelog-generator` (Conventional Commits, SemVer).
+     * **Defensive AppSec & Code Review:** Must follow `cc-skill-security-review`, `security-scanning-security-dependencies`, and `security-scanning-security-sast`.
+   - **Cross-Domain Tasks:** If a task spans multiple layers (e.g., implementing a new Flutter component, adding CLI scaffolding support in Rust, and writing MDX docs in Next.js), the agent must coordinate and apply all corresponding skills harmoniously without skipping any.
