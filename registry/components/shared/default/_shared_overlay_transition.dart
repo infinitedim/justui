@@ -97,13 +97,15 @@ class _JustOverlayTransitionState extends State<JustOverlayTransition>
     super.didChangeDependencies();
     if (!_motionResolved) {
       _motionResolved = true;
-      final themeState = JustThemeProvider.maybeOf(
+      final JustThemeProviderState? themeState = JustThemeProvider.maybeOf(
         context,
         aspect: .animations,
       );
       if (themeState != null) {
-        final motion = themeState.theme.animations.resolve(context);
-        final resolvedDuration = widget.duration ?? motion.fast;
+        final JustMotionProfile motion = themeState.theme.animations.resolve(
+          context,
+        );
+        final Duration resolvedDuration = widget.duration ?? motion.fast;
         _controller.duration = resolvedDuration;
         _setupAnimations(motion.enter, motion.exit);
       }

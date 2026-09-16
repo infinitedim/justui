@@ -1,0 +1,97 @@
+---
+title: Date Range Picker
+description: Dual-calendar date range selection component with quick presets, boundary checks, and continuous interval highlighting.
+---
+
+# Date Range Picker
+
+The `JustDateRangePicker` component provides an intuitive multi-day selection experience. It highlights the interval between start and end dates continuously across weeks and months while offering quick preset options like "Last 7 Days" or "This Month".
+
+---
+
+## Description
+
+- **Interval Highlighting**: Connects start and end dates with a solid range band across calendar rows.
+- **Quick Range Presets**: Built-in preset shortcuts (e.g. Today, Yesterday, Last 7 Days, Last 30 Days, Year to Date) for rapid selection.
+- **Dual Boundary Validation**: Ensures start date never succeeds end date and provides visual cues during drag or sequential taps.
+- **Responsive Layout**: Renders side-by-side dual calendars on desktop and a single scrollable calendar on mobile screens.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Simple date range picker with custom preset shortcuts:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicDateRangePicker(BuildContext context, DateTimeRange? range, ValueChanged<DateTimeRange> onRangeChanged) {
+  return JustDateRangePicker(
+    value: range,
+    onChanged: onRangeChanged,
+    firstDate: DateTime(2023),
+    lastDate: DateTime(2028),
+  );
+}
+```
+
+### Advanced Usage
+
+Date range picker with quick presets and week numbers:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedDateRangePicker(BuildContext context, DateTimeRange? range, ValueChanged<DateTimeRange> onRangeChanged) {
+  final now = DateTime.now();
+
+  return JustDateRangePicker(
+    value: range,
+    onChanged: onRangeChanged,
+    firstDate: DateTime(now.year - 1),
+    lastDate: DateTime(now.year + 1),
+    showWeekNumbers: true,
+    presets: [
+      JustDateRangePreset(
+        label: 'Last 7 Days',
+        range: DateTimeRange(start: now.subtract(const Duration(days: 7)), end: now),
+      ),
+      JustDateRangePreset(
+        label: 'This Month',
+        range: DateTimeRange(start: DateTime(now.year, now.month, 1), end: now),
+      ),
+    ],
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustDateRangePicker
+
+| Property          | Data Type                      | Default Value | Description                                                               |
+| :---------------- | :----------------------------- | :------------ | :------------------------------------------------------------------------ |
+| `value`           | `DateTimeRange?`               | `null`        | Currently selected start and end date range.                              |
+| `onChanged`       | `ValueChanged<DateTimeRange>?` | `null`        | Callback executed when a valid range is selected.                         |
+| `firstDate`       | `DateTime?`                    | `null`        | Earliest selectable date boundary.                                        |
+| `lastDate`        | `DateTime?`                    | `null`        | Latest selectable date boundary.                                          |
+| `presets`         | `List<JustDateRangePreset>?`   | `null`        | List of quick selection shortcuts displayed above or beside the calendar. |
+| `showWeekNumbers` | `bool`                         | `false`       | Whether to render week numbers column.                                    |
+| `firstDayOfWeek`  | `int`                          | `7`           | First day of week (1 = Monday, 7 = Sunday).                               |
+| `style`           | `JustDatePickerStyle?`         | `null`        | Visual styling overrides for range highlight fills and endpoints.         |
+| `enableHaptic`    | `bool?`                        | `null`        | Controls haptic feedback on boundary selection.                           |
+
+---
+
+## Accessibility
+
+- **Range Feedback**: Announces both the start and end dates distinctly to assistive technologies when chosen.
+- **Keyboard Traversal**: Left/Right and Up/Down arrow keys allow choosing start and end points via keyboard without mouse interaction.

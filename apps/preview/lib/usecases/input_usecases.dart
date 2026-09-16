@@ -9,7 +9,7 @@ import 'package:just_ui_core/src/components/input/just_input_variants.dart';
 Widget buildJustInputDefaultUseCase(BuildContext context) {
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const .all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 380.0),
         child: JustInput(
@@ -53,7 +53,7 @@ Widget buildJustInputDefaultUseCase(BuildContext context) {
 Widget buildJustInputPasswordUseCase(BuildContext context) {
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const .all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 380.0),
         child: JustInput.password(
@@ -78,7 +78,7 @@ Widget buildJustInputPasswordUseCase(BuildContext context) {
 Widget buildJustInputSearchUseCase(BuildContext context) {
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const .all(16.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 380.0),
         child: JustInput.search(

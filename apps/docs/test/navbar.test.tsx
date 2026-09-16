@@ -27,6 +27,8 @@ vi.mock('next-themes', () => ({
 
 // Mock next/navigation
 let mockPathname = '/id';
+const mockPush = vi.fn();
+const mockPush = vi.fn();
 Object.defineProperty(globalThis, 'mockPathname', {
   get: () => mockPathname,
   set: (val) => {
@@ -37,6 +39,16 @@ Object.defineProperty(globalThis, 'mockPathname', {
 
 vi.mock('next/navigation', () => ({
   usePathname: () => mockPathname,
+  useRouter: () => ({
+    push: mockPush,
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+  useRouter: () => ({
+    push: mockPush,
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
 }));
 
 // Mock next/link to render simple anchors
@@ -99,7 +111,12 @@ describe('Navbar & SearchModal Components', () => {
     ).not.toBeInTheDocument();
 
     // Click search button to open
-    const searchBtn = screen.getByRole('button', { name: /open search/i });
+    const searchBtn = screen.getAllByRole('button', {
+      name: /open search/i,
+    })[0];
+    const searchBtn = screen.getAllByRole('button', {
+      name: /open search/i,
+    })[0];
     fireEvent.click(searchBtn);
 
     // Search modal should be open
@@ -113,7 +130,8 @@ describe('Navbar & SearchModal Components', () => {
     expect(input.value).toBe('button');
 
     // Click result link to close
-    const resultLink = screen.getByRole('link', { name: /button/i });
+    const resultLink = screen.getByRole('link', { name: /^JustButton/i });
+    const resultLink = screen.getByRole('link', { name: /^JustButton/i });
     fireEvent.click(resultLink);
     expect(
       screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
@@ -142,27 +160,81 @@ describe('Navbar & SearchModal Components', () => {
     ).toBeInTheDocument();
 
     // Click overlay background to close
-    const overlay = screen.getByRole('button', {
-      name: /close search overlay/i,
-    });
+    const overlay = screen.getByTestId('search-overlay');
+    const overlay = screen.getByTestId('search-overlay');
     fireEvent.click(overlay);
     expect(
       screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
     ).not.toBeInTheDocument();
   });
 
-  it('closes search modal via Space/Enter keys on overlay role target', () => {
+  it('closes search modal via close button and handles keyboard navigation', () => {
+  it('closes search modal via close button and handles keyboard navigation', () => {
     render(<Navbar starCount={100} lang="en" />);
     fireEvent.keyDown(document, { ctrlKey: true, key: 'k' });
 
-    const overlay = screen.getByRole('button', {
-      name: /close search overlay/i,
+    const closeBtn = screen.getByRole('button', {
+      name: /close search/i,
+    const closeBtn = screen.getByRole('button', {
+      name: /close search/i,
     });
-
-    // Test Space key on non-overlay click target (ignored)
-    fireEvent.keyDown(overlay, { key: ' ' });
+    fireEvent.click(closeBtn);
+    fireEvent.click(closeBtn);
     expect(
       screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
     ).not.toBeInTheDocument();
+
+    // Re-open and test keyboard navigation
+    fireEvent.keyDown(document, { ctrlKey: true, key: 'k' });
+    const input = screen.getByPlaceholderText(/Search components, docs\.\.\./i);
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(mockPush).toHaveBeenCalled();
+  });
+
+  it('renders correct navigation destinations for Docs and Components', () => {
+    render(<Navbar starCount={100} lang="en" />);
+    const docsLink = screen.getByRole('link', { name: 'Docs' });
+    const componentsLink = screen.getByRole('link', { name: 'Components' });
+
+    expect(docsLink).toHaveAttribute('href', '/en/docs/introduction');
+    expect(componentsLink).toHaveAttribute('href', '/en/components');
+  });
+
+  it('toggles mobile navigation drawer', () => {
+    render(<Navbar starCount={100} lang="en" />);
+    const menuBtn = screen.getByRole('button', {
+      name: /open navigation menu/i,
+    });
+    expect(menuBtn).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(menuBtn);
+    expect(menuBtn).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(menuBtn);
+    expect(menuBtn).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('renders correct navigation destinations for Docs and Components', () => {
+    render(<Navbar starCount={100} lang="en" />);
+    const docsLink = screen.getByRole('link', { name: 'Docs' });
+    const componentsLink = screen.getByRole('link', { name: 'Components' });
+
+    expect(docsLink).toHaveAttribute('href', '/en/docs/introduction');
+    expect(componentsLink).toHaveAttribute('href', '/en/components');
+  });
+
+  it('toggles mobile navigation drawer', () => {
+    render(<Navbar starCount={100} lang="en" />);
+    const menuBtn = screen.getByRole('button', {
+      name: /open navigation menu/i,
+    });
+    expect(menuBtn).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(menuBtn);
+    expect(menuBtn).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(menuBtn);
+    expect(menuBtn).toHaveAttribute('aria-expanded', 'false');
   });
 });

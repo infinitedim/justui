@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/preset_tokens.dart';
+import 'package:just_ui_core/src/theme/theme_data.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart'
+    show JustColorScheme, JustMotionProfile;
 
 import '../../theme/theme_provider.dart';
-import '../shared/just_focus_indicator.dart';
-import '../shared/just_pressable.dart';
-import '../shared/just_progress_spinner.dart';
+import '../shared/_shared_focus_indicator.dart';
+import '../shared/_shared_pressable.dart';
+import '../shared/_shared_progress_spinner.dart';
 import 'just_button_style.dart';
 import 'just_button_variants.dart';
 import 'just_button_theme.dart';
@@ -64,8 +68,9 @@ class JustIconButton extends StatefulWidget {
 class _JustIconButtonState extends State<JustIconButton> {
   @override
   Widget build(BuildContext context) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final buttonTheme = Theme.of(context).extension<JustButtonTheme>();
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustButtonTheme? buttonTheme = Theme.of(context)
+        .extension<JustButtonTheme>();
     JustButtonStyle? themeStyle;
     if (buttonTheme != null) {
       switch (widget.variant) {
@@ -86,16 +91,19 @@ class _JustIconButtonState extends State<JustIconButton> {
           break;
       }
     }
-    final finalEnableHaptic =
+    final bool finalEnableHaptic =
         widget.enableHaptic ??
         buttonTheme?.enableHaptic ??
         customTheme.presetTokens.showsDefaultBorder;
 
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final radius = customTheme.radius;
-    final animations = customTheme.animations;
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustRadiusScheme radius = customTheme.radius;
+    final JustMotionProfile animations = customTheme.animations;
 
-    final isInteractive =
+    final bool isInteractive =
         widget.onPressed != null && !widget.isDisabled && !widget.isLoading;
 
     // Resolve dimension (width = height) based on size
@@ -157,20 +165,20 @@ class _JustIconButtonState extends State<JustIconButton> {
                     widget.onPressed?.call();
                   },
             builder: (BuildContext context, JustInteractionState state) {
-              final isHovered = state.isHovered;
-              final isPressed = state.isPressed;
-              final presetTokens = customTheme.presetTokens;
+              final bool isHovered = state.isHovered;
+              final bool isPressed = state.isPressed;
+              final JustPresetTokens presetTokens = customTheme.presetTokens;
               Color bg;
               Color text;
               Color border;
 
-              final primaryBg = presetTokens.showsDefaultBorder
+              final Color primaryBg = presetTokens.showsDefaultBorder
                   ? colors.warning
                   : colors.borderFocus;
-              final primaryFg = presetTokens.showsDefaultBorder
+              final Color primaryFg = presetTokens.showsDefaultBorder
                   ? const Color(0xFF000000)
                   : colors.textInverse;
-              final errorBg = colors.error;
+              final Color errorBg = colors.error;
 
               switch (widget.variant) {
                 case .primary:
@@ -277,19 +285,19 @@ class _JustIconButtonState extends State<JustIconButton> {
                   break;
               }
 
-              final finalBg =
+              final Color finalBg =
                   widget.style?.backgroundColor ??
                   themeStyle?.backgroundColor ??
                   bg;
-              final finalFg =
+              final Color finalFg =
                   widget.style?.foregroundColor ??
                   themeStyle?.foregroundColor ??
                   text;
-              final finalBorder =
+              final Color finalBorder =
                   widget.style?.borderColor ??
                   themeStyle?.borderColor ??
                   border;
-              final resolvedRadius =
+              final BorderRadius resolvedRadius =
                   widget.style?.borderRadius ??
                   themeStyle?.borderRadius ??
                   defaultRadius;
@@ -319,7 +327,7 @@ class _JustIconButtonState extends State<JustIconButton> {
                     ? customTheme.shadows.xs
                     : customTheme.shadows.sm;
               } else {
-                defaultShadows = const [];
+                defaultShadows = const <BoxShadow>[];
               }
 
               final double? styleElevation =
@@ -330,7 +338,7 @@ class _JustIconButtonState extends State<JustIconButton> {
                     ? (styleElevation <= 1.5
                           ? customTheme.shadows.xs
                           : customTheme.shadows.sm)
-                    : const [];
+                    : const <BoxShadow>[];
               } else {
                 resolvedShadows = defaultShadows;
               }

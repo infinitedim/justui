@@ -18,12 +18,23 @@ vi.mock('next-themes', () => ({
 
 // Mock next/navigation
 const mockNotFound = vi.fn();
+const mockRedirect = vi.fn();
 (globalThis as any).mockNotFound = mockNotFound;
+(globalThis as any).mockRedirect = mockRedirect;
 vi.mock('next/navigation', () => ({
   usePathname: () => '/id',
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
   notFound: () => {
     mockNotFound();
     throw new Error('NEXT_NOT_FOUND');
+  },
+  redirect: (url: string) => {
+    mockRedirect(url);
+    throw new Error(`NEXT_REDIRECT:${url}`);
   },
 }));
 
@@ -189,6 +200,22 @@ describe('App Router Pages and Layouts', () => {
         })
       ).rejects.toThrow('NEXT_NOT_FOUND');
       expect(mockNotFound).toHaveBeenCalled();
+    });
+
+    it('redirects to introduction when slug is empty or undefined', async () => {
+      await expect(
+        Page({
+          params: Promise.resolve({ lang: 'en', slug: [] }),
+        })
+      ).rejects.toThrow('NEXT_REDIRECT:/en/docs/introduction');
+      expect(mockRedirect).toHaveBeenCalledWith('/en/docs/introduction');
+
+      await expect(
+        Page({
+          params: Promise.resolve({ lang: 'id', slug: undefined }),
+        })
+      ).rejects.toThrow('NEXT_REDIRECT:/id/docs/introduction');
+      expect(mockRedirect).toHaveBeenCalledWith('/id/docs/introduction');
     });
 
     it('returns static params from source generator', async () => {

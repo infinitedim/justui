@@ -1,9 +1,9 @@
 {
-  "version": "0.13.2",
+  "version": "0.14.0",
   "components": [
     {
       "name": "button",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Versatile interactive button with dynamic variant and scale-down state animations.",
       "category": "primitive",
       "hidden": false,
@@ -18,7 +18,7 @@
           {
             "name": "just_button_theme.dart",
             "path": "components/button/just_button_theme.dart",
-            "checksum": "sha256:7e0cf594a98c4faa68c247a239c470405393f582765e93ce786d37b4c39426dc"
+            "checksum": "sha256:beb44e2c8636e9a8100c019f6f34789ec9de7147694e8e21cb734739eae11a5e"
           },
           {
             "name": "just_button_variants.dart",
@@ -35,19 +35,19 @@
           {
             "name": "just_button.dart",
             "path": "components/button/default/just_button.dart",
-            "checksum": "sha256:11da194fecd9b56756eff31e99d0b459918c3be9a68f0a7a7cc4eee90cb747f6"
+            "checksum": "sha256:addfd31f8fcfec36f1066512585b7f7c6ee57009c6d3f6b07ee6c4af8c7069f9"
           },
           {
             "name": "just_icon_button.dart",
             "path": "components/button/default/just_icon_button.dart",
-            "checksum": "sha256:903b54082a4b535e5bb0a864fac76b68c5e70ea7a19710098a20987b85b311c6"
+            "checksum": "sha256:0ee80039133c0c170c85420362083d45d4d255e9c825d46ae5490856a4ba2683"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_button.dart",
             "path": "components/button/neobrutalism/just_button.dart",
-            "checksum": "sha256:11da194fecd9b56756eff31e99d0b459918c3be9a68f0a7a7cc4eee90cb747f6"
+            "checksum": "sha256:addfd31f8fcfec36f1066512585b7f7c6ee57009c6d3f6b07ee6c4af8c7069f9"
           }
         ]
       },
@@ -58,7 +58,7 @@
     },
     {
       "name": "icon-button",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Premium icon button with tooltip assertions and press interactions. Requires base button component.",
       "category": "composite",
       "hidden": false,
@@ -74,14 +74,14 @@
           {
             "name": "just_icon_button.dart",
             "path": "components/button/default/just_icon_button.dart",
-            "checksum": "sha256:903b54082a4b535e5bb0a864fac76b68c5e70ea7a19710098a20987b85b311c6"
+            "checksum": "sha256:0ee80039133c0c170c85420362083d45d4d255e9c825d46ae5490856a4ba2683"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_icon_button.dart",
             "path": "components/button/neobrutalism/just_icon_button.dart",
-            "checksum": "sha256:903b54082a4b535e5bb0a864fac76b68c5e70ea7a19710098a20987b85b311c6"
+            "checksum": "sha256:0ee80039133c0c170c85420362083d45d4d255e9c825d46ae5490856a4ba2683"
           }
         ]
       },
@@ -92,7 +92,7 @@
     },
     {
       "name": "input",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Interactive text field component with dynamic label animations and form state bindings.",
       "category": "primitive",
       "hidden": false,
@@ -108,7 +108,7 @@
           {
             "name": "just_input_theme.dart",
             "path": "components/input/just_input_theme.dart",
-            "checksum": "sha256:40110dd2a5f17746637b76cc083584f3ade97e6553fdc24e8ffefb6636ecc7ee"
+            "checksum": "sha256:5a9c5dd087220e465584cbfd251d4836740a37d8738e7ea2afd7ada8326653be"
           },
           {
             "name": "just_input_style.dart",
@@ -120,14 +120,14 @@
           {
             "name": "just_input.dart",
             "path": "components/input/default/just_input.dart",
-            "checksum": "sha256:02b3bb849c490616f9b1b189650e36e5d0dfbc83cde43e1ee58899441e4145a4"
+            "checksum": "sha256:8b8c8abe383ba669ef7ea02b4e7f9c0be14eb8ce9780ba33fb4b95360bd99605"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_input.dart",
             "path": "components/input/neobrutalism/just_input.dart",
-            "checksum": "sha256:02b3bb849c490616f9b1b189650e36e5d0dfbc83cde43e1ee58899441e4145a4"
+            "checksum": "sha256:8b8c8abe383ba669ef7ea02b4e7f9c0be14eb8ce9780ba33fb4b95360bd99605"
           }
         ]
       },
@@ -138,7 +138,7 @@
     },
     {
       "name": "badge",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Tag indicator widget supporting outline states and animated pulsing dot halos.",
       "category": "primitive",
       "hidden": false,
@@ -161,14 +161,14 @@
           {
             "name": "just_badge.dart",
             "path": "components/badge/default/just_badge.dart",
-            "checksum": "sha256:78568290abd210897818d7ab3d91be4e807a031b035ae6c4216da8550f4a7fa3"
+            "checksum": "sha256:d6ba9b973d4dfdc26faf7b53adc049fda6f8797914d8593aba8034623774b915"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_badge.dart",
             "path": "components/badge/neobrutalism/just_badge.dart",
-            "checksum": "sha256:78568290abd210897818d7ab3d91be4e807a031b035ae6c4216da8550f4a7fa3"
+            "checksum": "sha256:d6ba9b973d4dfdc26faf7b53adc049fda6f8797914d8593aba8034623774b915"
           }
         ]
       },
@@ -179,7 +179,7 @@
     },
     {
       "name": "avatar",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Image avatar with fallback initials generator and presence status indicators.",
       "category": "primitive",
       "hidden": false,
@@ -202,19 +202,19 @@
           {
             "name": "just_avatar.dart",
             "path": "components/avatar/default/just_avatar.dart",
-            "checksum": "sha256:1ae36112b797c3a7d6a3fcc817bb821ef90be4c46335b105a2bcb8478b14ce77"
+            "checksum": "sha256:34fc1aedcc40aa394d508a1a9668296a1573efcdb67c6a7d7eb70fa4011206bd"
           },
           {
             "name": "just_avatar_group.dart",
             "path": "components/avatar/default/just_avatar_group.dart",
-            "checksum": "sha256:17d79b14fa95b73e42b349e0fa72b57ed838d5696f408bd93b2aafe45f36f66a"
+            "checksum": "sha256:f8cc37503bc15df57d800a4abee7531f9926dbe958d883bcf81f47ea23fc8fa7"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_avatar.dart",
             "path": "components/avatar/neobrutalism/just_avatar.dart",
-            "checksum": "sha256:1ae36112b797c3a7d6a3fcc817bb821ef90be4c46335b105a2bcb8478b14ce77"
+            "checksum": "sha256:34fc1aedcc40aa394d508a1a9668296a1573efcdb67c6a7d7eb70fa4011206bd"
           }
         ]
       },
@@ -225,7 +225,7 @@
     },
     {
       "name": "avatar-group",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Avatar stack container displaying overlapping avatars with remainder counts. Requires base avatar component.",
       "category": "composite",
       "hidden": false,
@@ -238,14 +238,14 @@
           {
             "name": "just_avatar_group.dart",
             "path": "components/avatar/default/just_avatar_group.dart",
-            "checksum": "sha256:17d79b14fa95b73e42b349e0fa72b57ed838d5696f408bd93b2aafe45f36f66a"
+            "checksum": "sha256:f8cc37503bc15df57d800a4abee7531f9926dbe958d883bcf81f47ea23fc8fa7"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_avatar_group.dart",
             "path": "components/avatar/neobrutalism/just_avatar_group.dart",
-            "checksum": "sha256:17d79b14fa95b73e42b349e0fa72b57ed838d5696f408bd93b2aafe45f36f66a"
+            "checksum": "sha256:f8cc37503bc15df57d800a4abee7531f9926dbe958d883bcf81f47ea23fc8fa7"
           }
         ]
       },
@@ -256,7 +256,7 @@
     },
     {
       "name": "checkbox",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "High-performance checkbox selection primitive supporting checked, unchecked, and mixed states.",
       "category": "selection",
       "hidden": false,
@@ -275,21 +275,21 @@
           {
             "name": "just_checkbox_theme.dart",
             "path": "components/checkbox/just_checkbox_theme.dart",
-            "checksum": "sha256:dcb82b367c1af41f79a6f413c68642b06d990625eb11d216e00ffb94b7581027"
+            "checksum": "sha256:d420060a7b3b30cc503e2708efa1c7743464ca1b95ab0b02a2e106eebae74088"
           }
         ],
         "default": [
           {
             "name": "just_checkbox.dart",
             "path": "components/checkbox/default/just_checkbox.dart",
-            "checksum": "sha256:c1380f3a6f37b5c7805741569e36906a8f0802fa4b1f284c50af5d510185322f"
+            "checksum": "sha256:c583f09b961dc6819db5778913d40fa8a2415cfe0c2c59425307c260f1d498a1"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_checkbox.dart",
             "path": "components/checkbox/neobrutalism/just_checkbox.dart",
-            "checksum": "sha256:c1380f3a6f37b5c7805741569e36906a8f0802fa4b1f284c50af5d510185322f"
+            "checksum": "sha256:c583f09b961dc6819db5778913d40fa8a2415cfe0c2c59425307c260f1d498a1"
           }
         ]
       },
@@ -300,7 +300,7 @@
     },
     {
       "name": "radio",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "High-performance radio button selection primitive with custom paint animations.",
       "category": "selection",
       "hidden": false,
@@ -314,7 +314,7 @@
           {
             "name": "just_radio_theme.dart",
             "path": "components/radio/just_radio_theme.dart",
-            "checksum": "sha256:15c2c225aa0f9dd5171a6561f8827a386425c43e56a1e50ac0427e0d8cec3b7b"
+            "checksum": "sha256:142ea9bc77e2bd39236a089a439f51aa22ec9ba962ecf7fbcae6e81b9042d301"
           },
           {
             "name": "just_radio_style.dart",
@@ -326,19 +326,19 @@
           {
             "name": "just_radio.dart",
             "path": "components/radio/default/just_radio.dart",
-            "checksum": "sha256:ce2e2b18e19f4196e01d2cefd22b54efd58e563ee70886f1cd8963bcb8744cee"
+            "checksum": "sha256:3342c365adf93a202307a44bde6e3f6d449ac353bdab720cd09cfd568c00703c"
           },
           {
             "name": "just_radio_group.dart",
             "path": "components/radio/default/just_radio_group.dart",
-            "checksum": "sha256:a50c6eaeb87f9a15c84bca1f3025b074e32d4a9d0d61dadb8d3e2f28c9aa021c"
+            "checksum": "sha256:379b38b4d42a89d5d9258fe5eac352ceca2d403366c5e2f00738023a4ac02d94"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_radio.dart",
             "path": "components/radio/neobrutalism/just_radio.dart",
-            "checksum": "sha256:ce2e2b18e19f4196e01d2cefd22b54efd58e563ee70886f1cd8963bcb8744cee"
+            "checksum": "sha256:3342c365adf93a202307a44bde6e3f6d449ac353bdab720cd09cfd568c00703c"
           }
         ]
       },
@@ -349,7 +349,7 @@
     },
     {
       "name": "radio-group",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Radio button container laying out radio options in horizontal or vertical lists. Requires base radio component.",
       "category": "composite",
       "hidden": false,
@@ -362,14 +362,14 @@
           {
             "name": "just_radio_group.dart",
             "path": "components/radio/default/just_radio_group.dart",
-            "checksum": "sha256:a50c6eaeb87f9a15c84bca1f3025b074e32d4a9d0d61dadb8d3e2f28c9aa021c"
+            "checksum": "sha256:379b38b4d42a89d5d9258fe5eac352ceca2d403366c5e2f00738023a4ac02d94"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_radio_group.dart",
             "path": "components/radio/neobrutalism/just_radio_group.dart",
-            "checksum": "sha256:a50c6eaeb87f9a15c84bca1f3025b074e32d4a9d0d61dadb8d3e2f28c9aa021c"
+            "checksum": "sha256:379b38b4d42a89d5d9258fe5eac352ceca2d403366c5e2f00738023a4ac02d94"
           }
         ]
       },
@@ -380,7 +380,7 @@
     },
     {
       "name": "switch",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Premium animated toggle switch component with tap and horizontal drag gestures.",
       "category": "selection",
       "hidden": false,
@@ -399,21 +399,21 @@
           {
             "name": "just_switch_theme.dart",
             "path": "components/switch/just_switch_theme.dart",
-            "checksum": "sha256:b25bd07bac76690ab6ad7c9a1f7202d810eab2caba5f543385bc53028a730b18"
+            "checksum": "sha256:fe8e5270f6f1999ece4c111923f2a998dc9fbeb99cb432b14c55ea9fc88e0354"
           }
         ],
         "default": [
           {
             "name": "just_switch.dart",
             "path": "components/switch/default/just_switch.dart",
-            "checksum": "sha256:e57bf0483582d4bfaec10717389d98359c7bc52a0972cc14ed1aed5ff614afb8"
+            "checksum": "sha256:06af8d1aa9264876ba11390dfa2c04d060479a732fcd05dad85d087f24019e7e"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_switch.dart",
             "path": "components/switch/neobrutalism/just_switch.dart",
-            "checksum": "sha256:e57bf0483582d4bfaec10717389d98359c7bc52a0972cc14ed1aed5ff614afb8"
+            "checksum": "sha256:06af8d1aa9264876ba11390dfa2c04d060479a732fcd05dad85d087f24019e7e"
           }
         ]
       },
@@ -424,7 +424,7 @@
     },
     {
       "name": "card",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Customizable content card supporting elevated, outlined, and filled states.",
       "category": "layout",
       "hidden": false,
@@ -443,21 +443,21 @@
           {
             "name": "just_card_theme.dart",
             "path": "components/card/just_card_theme.dart",
-            "checksum": "sha256:e635d9c8dc3d5b3254b268e6372363f09e22656eca300b6aa3f845eb1e6cdee7"
+            "checksum": "sha256:72713e2987f3b9487c7a994bf5c7f5db58e65f084df5034c155f4f20868e968b"
           }
         ],
         "default": [
           {
             "name": "just_card.dart",
             "path": "components/card/default/just_card.dart",
-            "checksum": "sha256:10cf9b65a59738f31026df0ff156bffe7f96d7a6e867ebc40b16fd59c104d112"
+            "checksum": "sha256:3b2d7f4d26e33a7dcdfc2b2ae1a2a5af51d0b4df79c6419caac6dc119cd2707d"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_card.dart",
             "path": "components/card/neobrutalism/just_card.dart",
-            "checksum": "sha256:10cf9b65a59738f31026df0ff156bffe7f96d7a6e867ebc40b16fd59c104d112"
+            "checksum": "sha256:3b2d7f4d26e33a7dcdfc2b2ae1a2a5af51d0b4df79c6419caac6dc119cd2707d"
           }
         ]
       },
@@ -468,7 +468,7 @@
     },
     {
       "name": "separator",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Visual divider widget supporting horizontal and vertical directions and centered text labels.",
       "category": "layout",
       "hidden": false,
@@ -484,21 +484,21 @@
           {
             "name": "just_separator_theme.dart",
             "path": "components/separator/just_separator_theme.dart",
-            "checksum": "sha256:9d40ec1154f69dc69eb34dfc0d5b34b95f8bd5c5dcd122c47a236fb718f42b24"
+            "checksum": "sha256:794bf56a7cd3f52f9ad250843c36d88248474b5a24a54260a4b1e1f613bc94ea"
           }
         ],
         "default": [
           {
             "name": "just_separator.dart",
             "path": "components/separator/default/just_separator.dart",
-            "checksum": "sha256:e497653a822b469836ed6545c6dd4bcaedd711bc8b04a6a693f4c1d84a7d1e22"
+            "checksum": "sha256:f41ebe55b7f934ca4f6501fb0b23bd6c1fb5a58e9c16e6a7d829cd990723b252"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_separator.dart",
             "path": "components/separator/neobrutalism/just_separator.dart",
-            "checksum": "sha256:e497653a822b469836ed6545c6dd4bcaedd711bc8b04a6a693f4c1d84a7d1e22"
+            "checksum": "sha256:f41ebe55b7f934ca4f6501fb0b23bd6c1fb5a58e9c16e6a7d829cd990723b252"
           }
         ]
       },
@@ -509,7 +509,7 @@
     },
     {
       "name": "scroll-area",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Performance-optimized scroll viewport with custom scrollbars, fade edges, and scroll-to-top overlays.",
       "category": "layout",
       "hidden": false,
@@ -523,7 +523,7 @@
           {
             "name": "just_scroll_area_theme.dart",
             "path": "components/scroll/just_scroll_area_theme.dart",
-            "checksum": "sha256:4669942cd7d1326107bae771bbac077bafb442b9c30faef41669faee8b331195"
+            "checksum": "sha256:2043b211a79b74045ae3bb2f293424b5039e264e1738366bfee49b359d143a13"
           },
           {
             "name": "just_scroll_area_style.dart",
@@ -535,14 +535,14 @@
           {
             "name": "just_scroll_area.dart",
             "path": "components/scroll/default/just_scroll_area.dart",
-            "checksum": "sha256:505f2c578b5a03f361096c716a68e65cb3a5dd710bb4d8e3f5805e36a434ba3e"
+            "checksum": "sha256:d0a3e7fc3144eb101eff318ffc1ef11cd413823a3db07055d0216ed90a866558"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_scroll_area.dart",
             "path": "components/scroll/neobrutalism/just_scroll_area.dart",
-            "checksum": "sha256:505f2c578b5a03f361096c716a68e65cb3a5dd710bb4d8e3f5805e36a434ba3e"
+            "checksum": "sha256:d0a3e7fc3144eb101eff318ffc1ef11cd413823a3db07055d0216ed90a866558"
           }
         ]
       },
@@ -553,7 +553,7 @@
     },
     {
       "name": "resizable",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Flexible resizable panel layout with isolated fraction drag math, keyboard navigation, and splitter handles.",
       "category": "layout",
       "hidden": false,
@@ -571,7 +571,7 @@
           {
             "name": "just_resizable_theme.dart",
             "path": "components/resizable/just_resizable_theme.dart",
-            "checksum": "sha256:1ea43955e9fa3c26be3696abd2d83a739b03112b757774447d134d409c27bf9c"
+            "checksum": "sha256:d40a11d74e8db83c3f8449732ab203157803409cc31e1c7b3fd6714c31155bc3"
           },
           {
             "name": "just_resizable_style.dart",
@@ -583,14 +583,14 @@
           {
             "name": "just_resizable.dart",
             "path": "components/resizable/default/just_resizable.dart",
-            "checksum": "sha256:bbbe8e83b2fa03464c127d93bda98914861b54f23837c6129aa2242d5128474e"
+            "checksum": "sha256:bad869e9122f29593e8d4cfcea9e8e540369fbaab75013524b1dcabc7cca4070"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_resizable.dart",
             "path": "components/resizable/neobrutalism/just_resizable.dart",
-            "checksum": "sha256:bbbe8e83b2fa03464c127d93bda98914861b54f23837c6129aa2242d5128474e"
+            "checksum": "sha256:bad869e9122f29593e8d4cfcea9e8e540369fbaab75013524b1dcabc7cca4070"
           }
         ]
       },
@@ -601,7 +601,7 @@
     },
     {
       "name": "carousel",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Accessible and performant carousel with infinite looping, auto-scroll, interactive indicators, and smooth transitions.",
       "category": "layout",
       "hidden": false,
@@ -615,31 +615,31 @@
           {
             "name": "just_carousel_variants.dart",
             "path": "components/carousel/just_carousel_variants.dart",
-            "checksum": "sha256:37b39af85172809f14545ebc930ed89ad8a2312d20f93a07d5f66674e0096495"
+            "checksum": "sha256:c9111e1bda45eb535163e8711846bd8625e957ba552b7b5cff63bda1bdaac7d8"
           },
           {
             "name": "just_carousel_theme.dart",
             "path": "components/carousel/just_carousel_theme.dart",
-            "checksum": "sha256:7a13825ea2a491c8f0522181649391a9f673fdf7592c07287799d8e5542d2d08"
+            "checksum": "sha256:f3ff20c5e9cef00c8d5d6eb4b8b978d1206a2e5bbd404263770063d062a670b7"
           },
           {
             "name": "just_carousel_style.dart",
             "path": "components/carousel/just_carousel_style.dart",
-            "checksum": "sha256:9a9f42077462b76d8c388a1bd756d6e983e658c5bcfc35aebca8b78d77f25ac9"
+            "checksum": "sha256:9bde14f7d9b67fedcf8b6394e6cf70de963a01e00910008d6de08417ca688dc2"
           }
         ],
         "default": [
           {
             "name": "just_carousel.dart",
             "path": "components/carousel/default/just_carousel.dart",
-            "checksum": "sha256:460b34158e3e3fa2f64154e9f939decfa1e1f19544fbc3d3e68ccf2e871cd8f1"
+            "checksum": "sha256:0c6e507a1e17c952e315ffd281212d2d248e02b08f5cb41c6f20623f28548f8e"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_carousel.dart",
             "path": "components/carousel/neobrutalism/just_carousel.dart",
-            "checksum": "sha256:460b34158e3e3fa2f64154e9f939decfa1e1f19544fbc3d3e68ccf2e871cd8f1"
+            "checksum": "sha256:0c6e507a1e17c952e315ffd281212d2d248e02b08f5cb41c6f20623f28548f8e"
           }
         ]
       },
@@ -650,7 +650,7 @@
     },
     {
       "name": "_shared_pressable",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Internal shared interactive press/hover state tracker.",
       "category": "internal",
       "internal": true,
@@ -667,7 +667,7 @@
           {
             "name": "_shared_pressable.dart",
             "path": "components/shared/default/_shared_pressable.dart",
-            "checksum": "sha256:0a91c217e0111fa24d406c7b570518b723c4280821d591f6133d129cc9b38db9"
+            "checksum": "sha256:c1670f23e3b6a67d3b52ea22932bf970cf7b96ea72638b0d41f393b7c73437b5"
           }
         ]
       },
@@ -677,7 +677,7 @@
     },
     {
       "name": "_shared_focus_indicator",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Internal shared focus outline indicator ring overlay.",
       "category": "internal",
       "internal": true,
@@ -694,7 +694,7 @@
           {
             "name": "_shared_focus_indicator.dart",
             "path": "components/shared/default/_shared_focus_indicator.dart",
-            "checksum": "sha256:ea7aa851710455caaaec043e15cbc50d2773d5a757fa12a5cfd8c22bdcc90f19"
+            "checksum": "sha256:a8f67914d14cc52293dd5857099377fdd4a0aa271750b08dea7b15bd2a0fd85f"
           }
         ]
       },
@@ -704,7 +704,7 @@
     },
     {
       "name": "skeleton",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Structure-aware skeleton loading placeholder with recursive transformation and custom manual shape named constructors.",
       "category": "layout",
       "hidden": false,
@@ -727,21 +727,21 @@
           {
             "name": "just_skeleton_theme.dart",
             "path": "components/skeleton/just_skeleton_theme.dart",
-            "checksum": "sha256:89d6056d064cf2f6a7c630ab7b703702ddd40a16d9f8d106944a8f845cffbeae"
+            "checksum": "sha256:f84f6e7fc1fdbfa607555590bf6c423bd2c86291ecf88f2625c8c14510df7a43"
           }
         ],
         "default": [
           {
             "name": "just_skeleton.dart",
             "path": "components/skeleton/default/just_skeleton.dart",
-            "checksum": "sha256:5daf84edd49b11f33201e7a3699a425b273d87d9aac0ce986eb279c9ac4456f0"
+            "checksum": "sha256:a9b5a92d7832136ce69efc63850fe09f7d7f21cc603b33259b0b729cbe3c0b1c"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_skeleton.dart",
             "path": "components/skeleton/neobrutalism/just_skeleton.dart",
-            "checksum": "sha256:5daf84edd49b11f33201e7a3699a425b273d87d9aac0ce986eb279c9ac4456f0"
+            "checksum": "sha256:a9b5a92d7832136ce69efc63850fe09f7d7f21cc603b33259b0b729cbe3c0b1c"
           }
         ]
       },
@@ -752,7 +752,7 @@
     },
     {
       "name": "slider",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Accessible and performant slider component for single value and range selection.",
       "category": "forms",
       "hidden": false,
@@ -765,7 +765,7 @@
           {
             "name": "just_slider_theme.dart",
             "path": "components/slider/just_slider_theme.dart",
-            "checksum": "sha256:d52cab130b0710e6b4e5e846b842679cf324d65532b797b4ad488ca4c7ffa8c9"
+            "checksum": "sha256:a5867baaa5fde9fb8d9fc58246b3e724fd399fe3938c98b490b309ce9c1702ce"
           },
           {
             "name": "just_slider_style.dart",
@@ -777,14 +777,14 @@
           {
             "name": "just_slider.dart",
             "path": "components/slider/default/just_slider.dart",
-            "checksum": "sha256:a7ab3ebcb9c5861128b8688653b3b96ecfc4e3c01a3031d6759eb92afc7bdc49"
+            "checksum": "sha256:f7236cfb5edc123e99b406ffa26ebaf4573264b678853f30b5b5beec69c75bd0"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_slider.dart",
             "path": "components/slider/neobrutalism/just_slider.dart",
-            "checksum": "sha256:a7ab3ebcb9c5861128b8688653b3b96ecfc4e3c01a3031d6759eb92afc7bdc49"
+            "checksum": "sha256:f7236cfb5edc123e99b406ffa26ebaf4573264b678853f30b5b5beec69c75bd0"
           }
         ]
       },
@@ -795,7 +795,7 @@
     },
     {
       "name": "_shared_progress_spinner",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Internal shared rotatory loading progress spinner.",
       "category": "internal",
       "internal": true,
@@ -812,7 +812,7 @@
           {
             "name": "_shared_progress_spinner.dart",
             "path": "components/shared/default/_shared_progress_spinner.dart",
-            "checksum": "sha256:ad4b188a0380721b8d6354b01b05444e033402fb2a65a05c94f9d23d0b88eb9b"
+            "checksum": "sha256:9dd731b42752f06dc1450a74a852922170375f698372bb53400e4bc6a3aaf316"
           }
         ]
       },
@@ -822,7 +822,7 @@
     },
     {
       "name": "breadcrumb",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Premium text link layout breadcrumbs with collapsible middle items and custom overlay dropdown.",
       "category": "navigation",
       "hidden": false,
@@ -835,7 +835,7 @@
           {
             "name": "just_breadcrumb_theme.dart",
             "path": "components/breadcrumb/just_breadcrumb_theme.dart",
-            "checksum": "sha256:0f744f75a31ec7a971c8f66c4fd72d1ac26670638b8fdcf76d1017f44f3eb8cf"
+            "checksum": "sha256:82e949293ba5753cc01cde989b943856b1e340666c5bb69a12a1271784655563"
           },
           {
             "name": "just_breadcrumb_style.dart",
@@ -852,14 +852,14 @@
           {
             "name": "just_breadcrumb.dart",
             "path": "components/breadcrumb/default/just_breadcrumb.dart",
-            "checksum": "sha256:78591de761d1201ed8242271f15968ea525f961b456d7cfd8a39807e1249a068"
+            "checksum": "sha256:3596463be912a1530fd10b795220ab847c0f97ce4c19b763c28a9c6ea82f3b16"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_breadcrumb.dart",
             "path": "components/breadcrumb/neobrutalism/just_breadcrumb.dart",
-            "checksum": "sha256:78591de761d1201ed8242271f15968ea525f961b456d7cfd8a39807e1249a068"
+            "checksum": "sha256:3596463be912a1530fd10b795220ab847c0f97ce4c19b763c28a9c6ea82f3b16"
           }
         ]
       },
@@ -870,7 +870,7 @@
     },
     {
       "name": "tabs",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Tabs component supporting line, enclosed, pill, and vertical variants with lazy loading and keyboard navigation.",
       "category": "navigation",
       "hidden": false,
@@ -893,31 +893,31 @@
           {
             "name": "just_tabs_theme.dart",
             "path": "components/tabs/just_tabs_theme.dart",
-            "checksum": "sha256:cce95434d552ff074d3418cd4dcb2c8c89a87fcc6fba9024299681cec72877dd"
+            "checksum": "sha256:20b5d947aec7b64037bbc3b43ead5efbf4cd08c66454a445ba36890c7bbae848"
           }
         ],
         "default": [
           {
             "name": "just_tabs.dart",
             "path": "components/tabs/default/just_tabs.dart",
-            "checksum": "sha256:fbad4b4db643f359dc09b098e8ccf252c1ac621b76092ab65af05dd515ee2fb1"
+            "checksum": "sha256:2f9addd45983d5d42ff643ccd9c8a00961e265b494a9e2eb5b916cdc181277c2"
           },
           {
             "name": "just_tab_indicator.dart",
             "path": "components/tabs/default/just_tab_indicator.dart",
-            "checksum": "sha256:0d763bd94b2059491df20cd662841a7ef3be3c2f9f20eeb125dddcc01e6eef8a"
+            "checksum": "sha256:3dbbecf80a3fbb69e0f0277ec404d1ea0c456a6f90d617a0a483d5509b0553bd"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_tabs.dart",
             "path": "components/tabs/neobrutalism/just_tabs.dart",
-            "checksum": "sha256:fbad4b4db643f359dc09b098e8ccf252c1ac621b76092ab65af05dd515ee2fb1"
+            "checksum": "sha256:2f9addd45983d5d42ff643ccd9c8a00961e265b494a9e2eb5b916cdc181277c2"
           },
           {
             "name": "just_tab_indicator.dart",
             "path": "components/tabs/neobrutalism/just_tab_indicator.dart",
-            "checksum": "sha256:0d763bd94b2059491df20cd662841a7ef3be3c2f9f20eeb125dddcc01e6eef8a"
+            "checksum": "sha256:3dbbecf80a3fbb69e0f0277ec404d1ea0c456a6f90d617a0a483d5509b0553bd"
           }
         ]
       },
@@ -928,7 +928,7 @@
     },
     {
       "name": "bottom-nav",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Navigation bar component supporting fixed, shifting, and floating layout structures.",
       "category": "navigation",
       "hidden": false,
@@ -941,7 +941,7 @@
           {
             "name": "just_bottom_nav_theme.dart",
             "path": "components/bottom_nav/just_bottom_nav_theme.dart",
-            "checksum": "sha256:bb4d3c347a2ea9e3ec6c84875b9745a51feb20e6e6afe22438ca91650ab1e4a1"
+            "checksum": "sha256:e899c9ab266748e128c91bd087029b0f3d59972f5b465f993e2cbb6847bb8cb3"
           },
           {
             "name": "just_bottom_nav_variants.dart",
@@ -958,14 +958,14 @@
           {
             "name": "just_bottom_nav.dart",
             "path": "components/bottom_nav/default/just_bottom_nav.dart",
-            "checksum": "sha256:0f5c77aea5fe081861318b74c0eefe8bee91200e693073e5478a6ab4f8cd2dbc"
+            "checksum": "sha256:4658bd43ba48bd3ddc4613224ddaee94f81d1ff44d9062decd8f7890333bc5ba"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_bottom_nav.dart",
             "path": "components/bottom_nav/neobrutalism/just_bottom_nav.dart",
-            "checksum": "sha256:0f5c77aea5fe081861318b74c0eefe8bee91200e693073e5478a6ab4f8cd2dbc"
+            "checksum": "sha256:4658bd43ba48bd3ddc4613224ddaee94f81d1ff44d9062decd8f7890333bc5ba"
           }
         ]
       },
@@ -976,7 +976,7 @@
     },
     {
       "name": "_shared_overlay_transition",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Internal shared overlay transition animations.",
       "category": "internal",
       "internal": true,
@@ -993,7 +993,7 @@
           {
             "name": "_shared_overlay_transition.dart",
             "path": "components/shared/default/_shared_overlay_transition.dart",
-            "checksum": "sha256:8c977d96997c11900fdb5c04ac82ada59064cb7d3e9eaf7122b54500abbc518e"
+            "checksum": "sha256:549ec5176eb7f04488c89de4e00104c10fae0cc39ce79d5448268522f893f1af"
           }
         ]
       },
@@ -1003,7 +1003,7 @@
     },
     {
       "name": "_shared_tooltip_overlay",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Internal shared layout-phase tooltip overlay portal.",
       "category": "internal",
       "internal": true,
@@ -1030,7 +1030,7 @@
     },
     {
       "name": "sidebar",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Collapsible navigation sidebar supporting recursive folder sub-menus and hover tooltips.",
       "category": "navigation",
       "hidden": false,
@@ -1054,21 +1054,21 @@
           {
             "name": "just_sidebar_theme.dart",
             "path": "components/sidebar/just_sidebar_theme.dart",
-            "checksum": "sha256:d92ae611a7ddd3540c70d6fb61f4277a788590c38d52371593493205ea691640"
+            "checksum": "sha256:ddea63de6efd336c12972cf2f69d06a11eef3c39a6133293d3e26fdcc0ab1eed"
           }
         ],
         "default": [
           {
             "name": "just_sidebar.dart",
             "path": "components/sidebar/default/just_sidebar.dart",
-            "checksum": "sha256:aab00af0b65df330109e99691ecae70d4ffd441581371685d5667e6ff0d33155"
+            "checksum": "sha256:59ab3cf9e9a969e1cbe204067906cf40a6daf68a5f915c512200892689d7d7ba"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_sidebar.dart",
             "path": "components/sidebar/neobrutalism/just_sidebar.dart",
-            "checksum": "sha256:aab00af0b65df330109e99691ecae70d4ffd441581371685d5667e6ff0d33155"
+            "checksum": "sha256:59ab3cf9e9a969e1cbe204067906cf40a6daf68a5f915c512200892689d7d7ba"
           }
         ]
       },
@@ -1079,7 +1079,7 @@
     },
     {
       "name": "toast",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Stacked/queued notification toasts with auto-dismiss, swipe-to-dismiss, and variant icons.",
       "category": "overlay",
       "hidden": false,
@@ -1090,7 +1090,7 @@
           {
             "name": "just_toast_theme.dart",
             "path": "components/toast/just_toast_theme.dart",
-            "checksum": "sha256:790636410ca043e519c1df34bea547490c447ff7a12659c1cf2b018e96d3bea7"
+            "checksum": "sha256:f0d9b6d5f0496f85b7b6d51a3fb5fa90064efd4db232420a472c989a29dbee19"
           },
           {
             "name": "just_toast_style.dart",
@@ -1107,14 +1107,14 @@
           {
             "name": "just_toast.dart",
             "path": "components/toast/default/just_toast.dart",
-            "checksum": "sha256:c62de53602cf42bf9f21f0d2110ed33841e9de51279a2e47537c0d82bca26139"
+            "checksum": "sha256:461bcb41c4f02cbdf75335366f1d7ef1ae063863f427eedacd35cdf7ae54926d"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_toast.dart",
             "path": "components/toast/neobrutalism/just_toast.dart",
-            "checksum": "sha256:c62de53602cf42bf9f21f0d2110ed33841e9de51279a2e47537c0d82bca26139"
+            "checksum": "sha256:461bcb41c4f02cbdf75335366f1d7ef1ae063863f427eedacd35cdf7ae54926d"
           }
         ]
       },
@@ -1125,7 +1125,7 @@
     },
     {
       "name": "dialog",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Modal dialog overlay with barrier, focus trapping, and position-aware animations.",
       "category": "overlay",
       "hidden": false,
@@ -1141,7 +1141,7 @@
           {
             "name": "just_dialog_theme.dart",
             "path": "components/dialog/just_dialog_theme.dart",
-            "checksum": "sha256:bbbb6c55417059722b4715e2d5f2896912127252873e748f40bd7f31b6cbca1c"
+            "checksum": "sha256:fcd48ec1e9657846a661521136884c5500c73b85822f8604f6d976738d97ccea"
           },
           {
             "name": "just_dialog_style.dart",
@@ -1153,14 +1153,14 @@
           {
             "name": "just_dialog.dart",
             "path": "components/dialog/default/just_dialog.dart",
-            "checksum": "sha256:f525bbcf37d031f03a4cdbbb86b2cd21d86416d63063acf389929ef3476fbe0f"
+            "checksum": "sha256:58bea2c349f146ca5a9f44212bec2d3e226e66b4e5136c813d41646c7074c7d2"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_dialog.dart",
             "path": "components/dialog/neobrutalism/just_dialog.dart",
-            "checksum": "sha256:f525bbcf37d031f03a4cdbbb86b2cd21d86416d63063acf389929ef3476fbe0f"
+            "checksum": "sha256:58bea2c349f146ca5a9f44212bec2d3e226e66b4e5136c813d41646c7074c7d2"
           }
         ]
       },
@@ -1171,7 +1171,7 @@
     },
     {
       "name": "sheet",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Slide-in sheet overlay with drag-to-dismiss, directional animations, and barrier support.",
       "category": "overlay",
       "hidden": false,
@@ -1192,21 +1192,21 @@
           {
             "name": "just_sheet_theme.dart",
             "path": "components/sheet/just_sheet_theme.dart",
-            "checksum": "sha256:8da5b9ab2265851a900cdc7c807a99678854ff2a1f32ac9d3c4bb3229fc7092d"
+            "checksum": "sha256:a325b9404fa49183d8cbc51dde1da6258cda9973d7f04a67dce2684c4dd49651"
           }
         ],
         "default": [
           {
             "name": "just_sheet.dart",
             "path": "components/sheet/default/just_sheet.dart",
-            "checksum": "sha256:047139904991700eade0b85e2485169434e6de74f77564229664c8679ec958a9"
+            "checksum": "sha256:ca3d6cc7c80c32e94dc0373396c620d61e26d18fd932e4fdf0e8a0c1cc5e311e"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_sheet.dart",
             "path": "components/sheet/neobrutalism/just_sheet.dart",
-            "checksum": "sha256:047139904991700eade0b85e2485169434e6de74f77564229664c8679ec958a9"
+            "checksum": "sha256:ca3d6cc7c80c32e94dc0373396c620d61e26d18fd932e4fdf0e8a0c1cc5e311e"
           }
         ]
       },
@@ -1217,7 +1217,7 @@
     },
     {
       "name": "tooltip",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Declarative tooltip widget with auto-positioning, hover/long-press triggers, and delay controls.",
       "category": "overlay",
       "hidden": false,
@@ -1228,7 +1228,7 @@
           {
             "name": "just_tooltip_theme.dart",
             "path": "components/tooltip/just_tooltip_theme.dart",
-            "checksum": "sha256:32f9c401d33484293d7b8d93a208a88841289d752ffb24021ab9cf321f09ebf2"
+            "checksum": "sha256:b605291f0db7999ae15a9fc4a46bce506326b2dc10c36ed8828c25bdd83e75d0"
           },
           {
             "name": "just_tooltip_style.dart",
@@ -1245,14 +1245,14 @@
           {
             "name": "just_tooltip.dart",
             "path": "components/tooltip/default/just_tooltip.dart",
-            "checksum": "sha256:50fc7bb36c595672bffa7543c2708cd0fddd5acaf0e9f68a8ab90197f2e7fa5a"
+            "checksum": "sha256:8d0f459efd4b41a2adea3bd9736fdffbebb2c0948f4783945dfcfdd24d4dec1d"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_tooltip.dart",
             "path": "components/tooltip/neobrutalism/just_tooltip.dart",
-            "checksum": "sha256:50fc7bb36c595672bffa7543c2708cd0fddd5acaf0e9f68a8ab90197f2e7fa5a"
+            "checksum": "sha256:8d0f459efd4b41a2adea3bd9736fdffbebb2c0948f4783945dfcfdd24d4dec1d"
           }
         ]
       },
@@ -1263,7 +1263,7 @@
     },
     {
       "name": "select",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Dropdown select component with customizable overlay positioning and optional search filter.",
       "category": "primitive",
       "hidden": false,
@@ -1277,7 +1277,7 @@
           {
             "name": "just_select_theme.dart",
             "path": "components/select/just_select_theme.dart",
-            "checksum": "sha256:2c30deb981e5eabdd4f4d25fcf243e117c4b11ec14685010eb8859693a7a44f8"
+            "checksum": "sha256:262e2b9eb3361467268330565dfa7ec4dfc6ee1fc999afe867261a79663710d7"
           },
           {
             "name": "just_select_style.dart",
@@ -1294,14 +1294,14 @@
           {
             "name": "just_select.dart",
             "path": "components/select/default/just_select.dart",
-            "checksum": "sha256:556e6838f0819a43a8dae1aab57d43712681d0d209c1ddfc383d02d50ad8e2b1"
+            "checksum": "sha256:27dfaecdb1a1e34437d023ff4f6fe785734c5271bec69f54bb5cf26fe5f12911"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_select.dart",
             "path": "components/select/neobrutalism/just_select.dart",
-            "checksum": "sha256:556e6838f0819a43a8dae1aab57d43712681d0d209c1ddfc383d02d50ad8e2b1"
+            "checksum": "sha256:27dfaecdb1a1e34437d023ff4f6fe785734c5271bec69f54bb5cf26fe5f12911"
           }
         ]
       },
@@ -1312,7 +1312,7 @@
     },
     {
       "name": "progress",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Linear progress bar and circular progress indicator supporting both determinate and indeterminate states.",
       "category": "primitive",
       "hidden": false,
@@ -1333,21 +1333,21 @@
           {
             "name": "just_progress_theme.dart",
             "path": "components/progress/just_progress_theme.dart",
-            "checksum": "sha256:b0daccf2155b281df42a47bda1ddec5817e0c3fd844a8d07f94a1665c1cba334"
+            "checksum": "sha256:6c20b28590d5a532d92194b95e2965ef6c8ea4f29483c62581901693e4568d30"
           }
         ],
         "default": [
           {
             "name": "just_progress.dart",
             "path": "components/progress/default/just_progress.dart",
-            "checksum": "sha256:f71ed51a537b9f69499cf49018fd58937f9b53feb863001a9036677837783f53"
+            "checksum": "sha256:923d07a5b0361a666be96c662b93df53f7915b71e6117c1c556a7b405d2b7428"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_progress.dart",
             "path": "components/progress/neobrutalism/just_progress.dart",
-            "checksum": "sha256:f71ed51a537b9f69499cf49018fd58937f9b53feb863001a9036677837783f53"
+            "checksum": "sha256:923d07a5b0361a666be96c662b93df53f7915b71e6117c1c556a7b405d2b7428"
           }
         ]
       },
@@ -1358,7 +1358,7 @@
     },
     {
       "name": "accordion",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Expandable panel accordion with single-expand or multi-expand modes.",
       "category": "primitive",
       "hidden": false,
@@ -1377,7 +1377,7 @@
           {
             "name": "just_accordion_theme.dart",
             "path": "components/accordion/just_accordion_theme.dart",
-            "checksum": "sha256:156d53cd594c214967ca9294dfe65ca9952d392c6011b9ad86a8b4295a5c89ee"
+            "checksum": "sha256:c0df579127a6c1ceb4245e89db4c09078c58fc5a783c21371b32b8876d39c311"
           },
           {
             "name": "just_accordion_variants.dart",
@@ -1389,14 +1389,14 @@
           {
             "name": "just_accordion.dart",
             "path": "components/accordion/default/just_accordion.dart",
-            "checksum": "sha256:da9f6684dc35448ef8dbf58c29ad83aecbe5595d07b54514fb367bb9893218ff"
+            "checksum": "sha256:094b184d63cf355becae63591fc3e2ee330645f35565223c75b9effc6d0181fa"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_accordion.dart",
             "path": "components/accordion/neobrutalism/just_accordion.dart",
-            "checksum": "sha256:da9f6684dc35448ef8dbf58c29ad83aecbe5595d07b54514fb367bb9893218ff"
+            "checksum": "sha256:094b184d63cf355becae63591fc3e2ee330645f35565223c75b9effc6d0181fa"
           }
         ]
       },
@@ -1407,7 +1407,7 @@
     },
     {
       "name": "toggle",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Single toggle button and toggle groups for radio or checkbox behaviors.",
       "category": "primitive",
       "hidden": false,
@@ -1421,7 +1421,7 @@
           {
             "name": "just_toggle_theme.dart",
             "path": "components/toggle/just_toggle_theme.dart",
-            "checksum": "sha256:831e62bcd5a658526132133b7103cf704e4affd64838bbe34a7bace20432c84b"
+            "checksum": "sha256:e15e4eec2e0737a8ca4f8cd9df8010c277860eb3b560fec3e073459ba08b1b7c"
           },
           {
             "name": "just_toggle_variants.dart",
@@ -1438,24 +1438,24 @@
           {
             "name": "just_toggle.dart",
             "path": "components/toggle/default/just_toggle.dart",
-            "checksum": "sha256:06765d88c13a2d359849b53a2bad92b152279c31094353cfd636c35951e7b91c"
+            "checksum": "sha256:fc009f8be3d2aabaa5b1272aa65b72eb45f6f2b4fc492600ad29362e35158776"
           },
           {
             "name": "just_toggle_group.dart",
             "path": "components/toggle/default/just_toggle_group.dart",
-            "checksum": "sha256:0504c9bd09063f49605fb8d3f503e95443fade54c12fc9f5de4b6dd79425aae2"
+            "checksum": "sha256:21a17fb617a3462b62e09cb59e44445412eb5832b1d7eabaa607d7fc2b599eca"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_toggle.dart",
             "path": "components/toggle/neobrutalism/just_toggle.dart",
-            "checksum": "sha256:06765d88c13a2d359849b53a2bad92b152279c31094353cfd636c35951e7b91c"
+            "checksum": "sha256:fc009f8be3d2aabaa5b1272aa65b72eb45f6f2b4fc492600ad29362e35158776"
           },
           {
             "name": "just_toggle_group.dart",
             "path": "components/toggle/neobrutalism/just_toggle_group.dart",
-            "checksum": "sha256:0504c9bd09063f49605fb8d3f503e95443fade54c12fc9f5de4b6dd79425aae2"
+            "checksum": "sha256:21a17fb617a3462b62e09cb59e44445412eb5832b1d7eabaa607d7fc2b599eca"
           }
         ]
       },
@@ -1466,7 +1466,7 @@
     },
     {
       "name": "table",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Data table supporting sorting, selection, and sticky header.",
       "category": "primitive",
       "hidden": false,
@@ -1485,7 +1485,7 @@
           {
             "name": "just_table_theme.dart",
             "path": "components/table/just_table_theme.dart",
-            "checksum": "sha256:46dab696d696d2550c9096743646964288bda6dfbe42699f80ef3db0b15264d5"
+            "checksum": "sha256:0bfb5051be3f7f12a2f16148f4ebde71929a19b9376c94a5f5d7a89d81229284"
           },
           {
             "name": "just_table_style.dart",
@@ -1497,14 +1497,14 @@
           {
             "name": "just_table.dart",
             "path": "components/table/default/just_table.dart",
-            "checksum": "sha256:ee2975495e1aea051e3f3983210c29d78835087736cd8f7bf38bb76e67c2d0b4"
+            "checksum": "sha256:62394129d54ebe4f198c5eb5ef6acb2bf3618bfe57d33f509552f3c36633b971"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_table.dart",
             "path": "components/table/neobrutalism/just_table.dart",
-            "checksum": "sha256:ee2975495e1aea051e3f3983210c29d78835087736cd8f7bf38bb76e67c2d0b4"
+            "checksum": "sha256:62394129d54ebe4f198c5eb5ef6acb2bf3618bfe57d33f509552f3c36633b971"
           }
         ]
       },
@@ -1515,7 +1515,7 @@
     },
     {
       "name": "date-picker",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Full-featured calendar date picker with inline, modal, and dropdown variants.",
       "category": "composite",
       "hidden": false,
@@ -1530,7 +1530,7 @@
           {
             "name": "just_date_picker_variants.dart",
             "path": "components/date_picker/just_date_picker_variants.dart",
-            "checksum": "sha256:ee2d2134b878450af3cd505a02a972ef62c075e06d8c84ec678b0ea34c1b96e6"
+            "checksum": "sha256:033f977fbeb91050e785b6c4d4b429d8e03b6b650f797a955422dbd618121f5f"
           },
           {
             "name": "just_date_picker_style.dart",
@@ -1540,31 +1540,31 @@
           {
             "name": "just_date_picker_theme.dart",
             "path": "components/date_picker/just_date_picker_theme.dart",
-            "checksum": "sha256:41fb50d6ee295d49a16fb4bf0db5c004ca6aff510e984d1c0c8bd10e1bdfbd9c"
+            "checksum": "sha256:e0f593c07da11119ae79ab275ae42ba06a786e6886895353cb0f649e61271b3d"
           }
         ],
         "default": [
           {
             "name": "just_date_picker.dart",
             "path": "components/date_picker/default/just_date_picker.dart",
-            "checksum": "sha256:798af8fd24f37ddda331b6bf8a8f6de890935e6ff195662de65cc23521e7b16d"
+            "checksum": "sha256:d534e059113cf69003f0a990a35d3c592ffe9d7c685b8a606fab923936b363da"
           },
           {
             "name": "_date_picker_calendar.dart",
             "path": "components/date_picker/default/_date_picker_calendar.dart",
-            "checksum": "sha256:93a6d42941862a707cbcd0117073599a5f241f67b70e33fea687ec588d4d26be"
+            "checksum": "sha256:c1d5fc5f03307d5a102e578b7006b701da5c57650441abf47fb23f1df588cfb1"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_date_picker.dart",
             "path": "components/date_picker/neobrutalism/just_date_picker.dart",
-            "checksum": "sha256:798af8fd24f37ddda331b6bf8a8f6de890935e6ff195662de65cc23521e7b16d"
+            "checksum": "sha256:d534e059113cf69003f0a990a35d3c592ffe9d7c685b8a606fab923936b363da"
           },
           {
             "name": "_date_picker_calendar.dart",
             "path": "components/date_picker/neobrutalism/_date_picker_calendar.dart",
-            "checksum": "sha256:93a6d42941862a707cbcd0117073599a5f241f67b70e33fea687ec588d4d26be"
+            "checksum": "sha256:c1d5fc5f03307d5a102e578b7006b701da5c57650441abf47fb23f1df588cfb1"
           }
         ]
       },
@@ -1575,7 +1575,7 @@
     },
     {
       "name": "date-range-picker",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Date range selection picker with quick presets (Today, Last 7 Days, etc.).",
       "category": "composite",
       "hidden": false,
@@ -1590,14 +1590,14 @@
           {
             "name": "just_date_range_picker.dart",
             "path": "components/date_picker/default/just_date_range_picker.dart",
-            "checksum": "sha256:60c8c82238d1476d493c66736f768c9ba544a57b1e0d993546410d4337fd0516"
+            "checksum": "sha256:c5a1904e7914ff5d1d639a3a5f3239779e985c003ebf46e5f167b5f364886593"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_date_range_picker.dart",
             "path": "components/date_picker/neobrutalism/just_date_range_picker.dart",
-            "checksum": "sha256:60c8c82238d1476d493c66736f768c9ba544a57b1e0d993546410d4337fd0516"
+            "checksum": "sha256:c5a1904e7914ff5d1d639a3a5f3239779e985c003ebf46e5f167b5f364886593"
           }
         ]
       },
@@ -1608,7 +1608,7 @@
     },
     {
       "name": "time-picker",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "description": "Full-featured clock time picker with dial, spinner, and direct numeric input modes.",
       "category": "composite",
       "hidden": false,
@@ -1629,7 +1629,7 @@
           {
             "name": "just_time_picker_variants.dart",
             "path": "components/time_picker/just_time_picker_variants.dart",
-            "checksum": "sha256:7548b8e50d221ceecb38540a1ac2cba9e56d09d6a70aa7aa2ec0d67a2342872e"
+            "checksum": "sha256:9a60cbc296ca494bf76daaf52493d31e712ce879f32cd89369cb5d9e8b038702"
           },
           {
             "name": "just_time_picker_style.dart",
@@ -1639,51 +1639,51 @@
           {
             "name": "just_time_picker_theme.dart",
             "path": "components/time_picker/just_time_picker_theme.dart",
-            "checksum": "sha256:62061e838b622c991abf35eec2d1fe58d6cc6675355c9558459a14e6bfb7190c"
+            "checksum": "sha256:8bce76196570eeff315b98c0ce9c702fc0e4adec7bd471bc6fd4856bb78c52e5"
           }
         ],
         "default": [
           {
             "name": "just_time_picker.dart",
             "path": "components/time_picker/default/just_time_picker.dart",
-            "checksum": "sha256:cea5caf0a2b1ee8537d6b69fe0860758c572b2c7b3212414a5791ca7c40ea2a1"
+            "checksum": "sha256:a89b060e233004040ce1a637a4b5450e4b84883338779636c6533aa99239613a"
           },
           {
             "name": "_time_picker_dial.dart",
             "path": "components/time_picker/default/_time_picker_dial.dart",
-            "checksum": "sha256:21eeec9cfcfd1db8a1b3fbf0ad159a5bcf566761ba55a7c2b1397aff86155029"
+            "checksum": "sha256:4190957650f770ded05ece53aa6526cc72f32ac22564c7e719f8f493901cd9e3"
           },
           {
             "name": "_time_picker_spinner.dart",
             "path": "components/time_picker/default/_time_picker_spinner.dart",
-            "checksum": "sha256:9ff636f3458d9e1462210f5f9c38182f683b2e053dc2df96bc932ba80f1f51e6"
+            "checksum": "sha256:6e858d95edc45a41609cb5958fcca9100485d6c9026b640b636cad35dc3ea5db"
           },
           {
             "name": "_time_picker_input.dart",
             "path": "components/time_picker/default/_time_picker_input.dart",
-            "checksum": "sha256:2a20085eecf20f90d9ed8b1d11fd9cfcd17eb9bd5cc96d8317d8e4de8fb3a616"
+            "checksum": "sha256:46d7d77ada93e462bc549fce668de0cbb31b801c1f7e5f74810dacd32039aee2"
           }
         ],
         "neobrutalism": [
           {
             "name": "just_time_picker.dart",
             "path": "components/time_picker/neobrutalism/just_time_picker.dart",
-            "checksum": "sha256:cea5caf0a2b1ee8537d6b69fe0860758c572b2c7b3212414a5791ca7c40ea2a1"
+            "checksum": "sha256:a89b060e233004040ce1a637a4b5450e4b84883338779636c6533aa99239613a"
           },
           {
             "name": "_time_picker_dial.dart",
             "path": "components/time_picker/neobrutalism/_time_picker_dial.dart",
-            "checksum": "sha256:21eeec9cfcfd1db8a1b3fbf0ad159a5bcf566761ba55a7c2b1397aff86155029"
+            "checksum": "sha256:4190957650f770ded05ece53aa6526cc72f32ac22564c7e719f8f493901cd9e3"
           },
           {
             "name": "_time_picker_spinner.dart",
             "path": "components/time_picker/neobrutalism/_time_picker_spinner.dart",
-            "checksum": "sha256:9ff636f3458d9e1462210f5f9c38182f683b2e053dc2df96bc932ba80f1f51e6"
+            "checksum": "sha256:6e858d95edc45a41609cb5958fcca9100485d6c9026b640b636cad35dc3ea5db"
           },
           {
             "name": "_time_picker_input.dart",
             "path": "components/time_picker/neobrutalism/_time_picker_input.dart",
-            "checksum": "sha256:2a20085eecf20f90d9ed8b1d11fd9cfcd17eb9bd5cc96d8317d8e4de8fb3a616"
+            "checksum": "sha256:46d7d77ada93e462bc549fce668de0cbb31b801c1f7e5f74810dacd32039aee2"
           }
         ]
       },

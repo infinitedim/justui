@@ -41,12 +41,12 @@ class _JustProgressSpinnerState extends State<JustProgressSpinner>
 
   @override
   Widget build(BuildContext context) {
-    final disableAnimations = MediaQuery.of(context).disableAnimations;
+    final bool disableAnimations = MediaQuery.of(context).disableAnimations;
 
     Widget spinner = RepaintBoundary(
       child: AnimatedBuilder(
         animation: _controller,
-        builder: (context, child) {
+        builder: (BuildContext context, Widget? child) {
           final double value = disableAnimations ? 0.5 : _controller.value;
           // Variable arc sweep oscillation (M3 style: expands & contracts)
           final double headValue = CurvedAnimation(
@@ -112,14 +112,14 @@ class const _SpinnerPainter({
     final Rect rect = .fromLTWH(0.0, 0.0, size.width, size.height);
 
     if (trackColor != null) {
-      final trackPaint = Paint()
+      final Paint trackPaint = Paint()
         ..color = trackColor!
         ..style = .stroke
         ..strokeWidth = strokeWidth;
       canvas.drawArc(rect, 0.0, math.pi * 2.0, false, trackPaint);
     }
 
-    final paint = Paint()
+    final Paint paint = Paint()
       ..color = color
       ..style = .stroke
       ..strokeWidth = strokeWidth

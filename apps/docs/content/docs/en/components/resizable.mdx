@@ -1,0 +1,141 @@
+---
+title: Resizable
+description: Split-view container with interactive draggable divider handles, keyboard accessibility, and collapse snapping.
+---
+
+# Resizable
+
+The `JustResizable` component divides a viewport into proportional resizable panes separated by interactive splitters. Built on continuous pixel partition algorithms, it avoids subpixel rounding drift while supporting magnetic snap points and collapsible panes.
+
+---
+
+## Description
+
+- **Dual-Axis Layout**: Supports both horizontal (side-by-side columns) and vertical (stacked rows) orientation.
+- **Magnetic Snap Points**: Panes can smoothly snap to target proportions (e.g. 25%, 50%, 75%) within configurable thresholds.
+- **Collapsible Panes**: Automatically snaps panes to zero dimensions when dragged past a designated collapse threshold.
+- **Anti-Subpixel Drift**: Implements discrete Bresenham remainder allocation to guarantee total pane sizes always sum exactly to available space without rounding errors.
+- **Keyboard Navigation**: Splitters support keyboard focus with Arrow key incremental sizing.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Horizontal two-pane layout with equal distribution:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicResizable(BuildContext context) {
+  return SizedBox(
+    height: 320,
+    child: JustResizable(
+      direction: Axis.horizontal,
+      children: [
+        JustResizablePanel(
+          initialSize: 0.3,
+          minSize: 150,
+          child: Container(
+            color: context.justColors.background,
+            alignment: Alignment.center,
+            child: const Text('Sidebar (30%)'),
+          ),
+        ),
+        JustResizablePanel(
+          initialSize: 0.7,
+          minSize: 200,
+          child: Container(
+            color: context.justColors.card,
+            alignment: Alignment.center,
+            child: const Text('Main Content (70%)'),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+```
+
+### Advanced Usage
+
+Three-panel workspace layout with collapsible left panel and magnetic snap points:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedResizable(BuildContext context) {
+  return SizedBox(
+    height: 480,
+    child: JustResizable(
+      direction: Axis.horizontal,
+      dividerThickness: 4.0,
+      children: [
+        // Collapsible Left Navigation
+        JustResizablePanel(
+          initialSize: 0.25,
+          minSize: 180,
+          collapsible: true,
+          collapseThreshold: 80,
+          child: const Center(child: Text('Navigation')),
+        ),
+
+        // Editor Area
+        JustResizablePanel(
+          initialSize: 0.50,
+          minSize: 250,
+          snapPoints: const [0.50],
+          child: const Center(child: Text('Editor Area')),
+        ),
+
+        // Preview Inspector
+        JustResizablePanel(
+          initialSize: 0.25,
+          minSize: 160,
+          child: const Center(child: Text('Inspector')),
+        ),
+      ],
+    ),
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustResizable
+
+| Property            | Data Type                  | Default Value     | Description                                                          |
+| :------------------ | :------------------------- | :---------------- | :------------------------------------------------------------------- |
+| `children`          | `List<JustResizablePanel>` | _required_        | Ordered list of panels to arrange and resize.                        |
+| `direction`         | `Axis`                     | `Axis.horizontal` | Layout direction (`Axis.horizontal` or `Axis.vertical`).             |
+| `dividerThickness`  | `double`                   | `3.0`             | Thickness of the draggable divider handle in pixels.                 |
+| `controller`        | `JustResizableController?` | `null`            | Programmatic controller for resizing or toggling panels.             |
+| `keyboardStepRatio` | `double`                   | `0.02`            | Proportional step delta per arrow key press when divider is focused. |
+| `style`             | `JustResizableStyle?`      | `null`            | Visual styling overrides for dividers and active focus borders.      |
+
+### JustResizablePanel
+
+| Property            | Data Type       | Default Value | Description                                                               |
+| :------------------ | :-------------- | :------------ | :------------------------------------------------------------------------ |
+| `child`             | `Widget`        | _required_    | Widget content displayed within this pane.                                |
+| `initialSize`       | `double?`       | `null`        | Initial proportional fraction (0.0 to 1.0). Normalized automatically.     |
+| `minSize`           | `double?`       | `null`        | Minimum pixel size allowed during drag resize.                            |
+| `maxSize`           | `double?`       | `null`        | Maximum pixel size allowed during drag resize.                            |
+| `collapsible`       | `bool`          | `false`       | Whether this panel collapses to 0 when dragged past threshold.            |
+| `collapseThreshold` | `double?`       | `null`        | Pixel threshold triggering complete collapse. Defaults to 50% of minSize. |
+| `snapPoints`        | `List<double>?` | `null`        | List of target fractions where drag handle magnetically snaps.            |
+| `resizable`         | `bool`          | `true`        | When false, locks bounding splitters to prevent user resizing.            |
+
+---
+
+## Accessibility
+
+- **Keyboard Control**: Dividers receive focus on Tab and can be resized incrementally via Left/Right or Up/Down arrows.
+- **Screen Reader Semantics**: Splitter handles expose slider-like semantics indicating orientation and current relative bounds.

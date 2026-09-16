@@ -11,7 +11,7 @@ class const JustOverlayScope<T extends JustOverlayController>({
 }) extends InheritedWidget {
   /// Retrieves the controller of type [T] from the nearest ancestor [JustOverlayScope].
   static T of<T extends JustOverlayController>(BuildContext context) {
-    final scope = context
+    final JustOverlayScope<T>? scope = context
         .dependOnInheritedWidgetOfExactType<JustOverlayScope<T>>();
     assert(scope != null, 'No JustOverlayScope<$T> found in context');
     return scope!.controller;

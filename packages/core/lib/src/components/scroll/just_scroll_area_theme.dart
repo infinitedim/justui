@@ -8,7 +8,7 @@ class const JustScrollAreaTheme({
   final JustScrollAreaStyle? style,
 }) extends ThemeExtension<JustScrollAreaTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustScrollAreaTheme();
+  static const JustScrollAreaTheme defaults = JustScrollAreaTheme();
 
   @override
   JustScrollAreaTheme copyWith({JustScrollAreaStyle? style}) {

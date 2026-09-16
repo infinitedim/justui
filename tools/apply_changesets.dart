@@ -6,27 +6,29 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 /// Mapping: changeset package name → path ke pubspec.yaml
-const Map<String, String> dartPackages = {
+const Map<String, String> dartPackages = <String, String>{
   'just_ui_tokens': 'packages/tokens/pubspec.yaml',
   'just_ui_core': 'packages/core/pubspec.yaml',
 };
 
 void main(List<String> args) async {
-  final isDryRun = args.contains('--dry-run');
-  final scriptPath = File(Platform.script.toFilePath()).absolute.path;
-  final projectRoot = p.dirname(p.dirname(scriptPath));
+  final bool isDryRun = args.contains('--dry-run');
+  final String scriptPath = File(Platform.script.toFilePath()).absolute.path;
+  final String projectRoot = p.dirname(p.dirname(scriptPath));
 
-  final changesetDir = Directory(p.join(projectRoot, '.changeset'));
+  final Directory changesetDir = Directory(p.join(projectRoot, '.changeset'));
   if (!changesetDir.existsSync()) {
     print('No .changeset directory found. Nothing to do.');
     return;
   }
 
   // Kumpulkan semua changeset files (kecuali config.json)
-  final changesetFiles = changesetDir
+  final List<File> changesetFiles = changesetDir
       .listSync()
       .whereType<File>()
-      .where((f) => f.path.endsWith('.md') && !f.path.endsWith('README.md'))
+      .where(
+        (File f) => f.path.endsWith('.md') && !f.path.endsWith('README.md'),
+      )
       .toList();
 
   if (changesetFiles.isEmpty) {
@@ -42,15 +44,15 @@ void main(List<String> args) async {
   // ---
   // Description of the change
   final Map<String, String> bumpMap =
-      {}; // package → bump type (patch/minor/major)
+      <String, String>{}; // package → bump type (patch/minor/major)
 
-  for (final file in changesetFiles) {
-    final content = await file.readAsString();
-    final lines = content.split('\n');
+  for (final File file in changesetFiles) {
+    final String content = await file.readAsString();
+    final List<String> lines = content.split('\n');
     bool inFrontmatter = false;
     int dashCount = 0;
 
-    for (final line in lines) {
+    for (final String line in lines) {
       if (line.trim() == '---') {
         dashCount++;
         inFrontmatter = dashCount == 1;
@@ -60,11 +62,11 @@ void main(List<String> args) async {
       if (!inFrontmatter) continue;
 
       // Parse: "package_name": bump_type
-      final match = RegExp(r'"([^"]+)":\s*(patch|minor|major)')
+      final RegExpMatch? match = RegExp(r'"([^"]+)":\s*(patch|minor|major)')
           .firstMatch(line);
       if (match != null) {
-        final pkgName = match.group(1)!;
-        final bumpType = match.group(2)!;
+        final String pkgName = match.group(1)!;
+        final String bumpType = match.group(2)!;
         // Ambil bump tertinggi jika package muncul di multiple changesets
         bumpMap[pkgName] = _highestBump(bumpMap[pkgName], bumpType);
       }
@@ -77,28 +79,28 @@ void main(List<String> args) async {
   }
 
   print('Changesets parsed. Bumps to apply:');
-  for (final entry in bumpMap.entries) {
+  for (final MapEntry<String, String> entry in bumpMap.entries) {
     print('  ${entry.key}: ${entry.value}');
   }
   print('');
 
   // Apply bumps ke pubspec.yaml
-  for (final entry in bumpMap.entries) {
-    final pkgName = entry.key;
-    final bumpType = entry.value;
+  for (final MapEntry<String, String> entry in bumpMap.entries) {
+    final String pkgName = entry.key;
+    final String bumpType = entry.value;
 
     if (!dartPackages.containsKey(pkgName)) continue;
 
-    final pubspecPath = p.join(projectRoot, dartPackages[pkgName]!);
-    final pubspecFile = File(pubspecPath);
+    final String pubspecPath = p.join(projectRoot, dartPackages[pkgName]!);
+    final File pubspecFile = File(pubspecPath);
 
     if (!pubspecFile.existsSync()) {
       print('Warning: pubspec.yaml not found at $pubspecPath, skipping.');
       continue;
     }
 
-    final content = await pubspecFile.readAsString();
-    final versionMatch = RegExp(
+    final String content = await pubspecFile.readAsString();
+    final RegExpMatch? versionMatch = RegExp(
       r'^version:\s*(\d+)\.(\d+)\.(\d+)',
       multiLine: true,
     ).firstMatch(content);
@@ -111,7 +113,7 @@ void main(List<String> args) async {
     int major = int.parse(versionMatch.group(1)!);
     int minor = int.parse(versionMatch.group(2)!);
     int patch = int.parse(versionMatch.group(3)!);
-    final oldVersion = '$major.$minor.$patch';
+    final String oldVersion = '$major.$minor.$patch';
 
     switch (bumpType) {
       case 'major':
@@ -125,8 +127,8 @@ void main(List<String> args) async {
         patch++;
     }
 
-    final newVersion = '$major.$minor.$patch';
-    final newContent = content.replaceFirst(
+    final String newVersion = '$major.$minor.$patch';
+    final String newContent = content.replaceFirst(
       RegExp(r'^version:\s*\d+\.\d+\.\d+', multiLine: true),
       'version: $newVersion',
     );
@@ -142,29 +144,31 @@ void main(List<String> args) async {
   }
 
   if (bumpMap.containsKey('just_ui_core')) {
-    final indexFile = File(p.join(projectRoot, 'registry', 'index.json'));
+    final File indexFile = File(p.join(projectRoot, 'registry', 'index.json'));
     if (indexFile.existsSync()) {
-      final indexContent = await indexFile.readAsString();
-      final indexJson = jsonDecode(indexContent) as Map<String, dynamic>;
-      final corePubspec = File(
+      final String indexContent = await indexFile.readAsString();
+      final Map<String, dynamic> indexJson =
+          jsonDecode(indexContent) as Map<String, dynamic>;
+      final File corePubspec = File(
         p.join(projectRoot, dartPackages['just_ui_core']!),
       );
-      final coreContent = await corePubspec.readAsString();
-      final coreMatch = RegExp(
+      final String coreContent = await corePubspec.readAsString();
+      final RegExpMatch? coreMatch = RegExp(
         r'^version:\s*([^\s]+)',
         multiLine: true,
       ).firstMatch(coreContent);
       if (coreMatch != null) {
-        final coreVer = coreMatch.group(1)!;
+        final String coreVer = coreMatch.group(1)!;
         indexJson['version'] = coreVer;
-        final compList = indexJson['components'] as List<dynamic>? ?? [];
+        final List<dynamic> compList =
+            indexJson['components'] as List<dynamic>? ?? <dynamic>[];
         for (final dynamic comp in compList) {
           if (comp is Map<String, dynamic>) {
             comp['version'] = coreVer;
           }
         }
         if (!isDryRun) {
-          const encoder = JsonEncoder.withIndent('  ');
+          const JsonEncoder encoder = JsonEncoder.withIndent('  ');
           await indexFile.writeAsString('${encoder.convert(indexJson)}\n');
           print('  ✔ Updated registry/index.json to $coreVer');
         } else {
@@ -182,7 +186,7 @@ void main(List<String> args) async {
 }
 
 String _highestBump(String? existing, String incoming) {
-  const order = ['patch', 'minor', 'major'];
+  const List<String> order = <String>['patch', 'minor', 'major'];
   if (existing == null) return incoming;
   return order.indexOf(incoming) > order.indexOf(existing)
       ? incoming

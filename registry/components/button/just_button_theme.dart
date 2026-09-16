@@ -26,7 +26,7 @@ class const JustButtonTheme({
   final bool enableHaptic = false,
 }) extends ThemeExtension<JustButtonTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustButtonTheme();
+  static const JustButtonTheme defaults = JustButtonTheme();
 
   @override
   JustButtonTheme copyWith({

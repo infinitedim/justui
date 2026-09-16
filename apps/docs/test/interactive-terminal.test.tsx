@@ -14,7 +14,7 @@ describe('InteractiveTerminal', () => {
     expect(yellow).toBeInTheDocument();
     expect(green).toBeInTheDocument();
     expect(
-      screen.getByText('justui@v0.13.2 ~ /my-flutter-app')
+      screen.getByText('justui@v0.14.0 ~ /my-flutter-app')
     ).toBeInTheDocument();
   });
 

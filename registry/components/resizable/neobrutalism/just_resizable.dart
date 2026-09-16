@@ -8,12 +8,13 @@ import 'package:flutter/services.dart'
         KeyDownEvent,
         KeyEvent,
         KeyRepeatEvent,
+        LogicalKeyboardKey,
         PointerEnterEvent,
         PointerExitEvent;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 
-import '../shared/just_focus_indicator.dart';
+import '../shared/_shared_focus_indicator.dart';
 import 'just_resizable_style.dart';
 import 'just_resizable_theme.dart';
 import 'just_resizable_variants.dart';
@@ -73,27 +74,29 @@ abstract final class JustResizableEngine {
     if (count <= 0) return const <double>[];
     if (count == 1) return const <double>[1.0];
 
-    final hasNonNull = initialSizes.any((s) => s != null && s > 0.0);
+    final bool hasNonNull = initialSizes.any(
+      (double? s) => s != null && s > 0.0,
+    );
     if (!hasNonNull) {
-      final equalShare = 1.0 / count;
+      final double equalShare = 1.0 / count;
       return List<double>.filled(count, equalShare);
     }
 
     double totalSum = 0.0;
-    final parsed = List<double>.filled(count, 0.0);
+    final List<double> parsed = List<double>.filled(count, 0.0);
     for (int i = 0; i < count; i++) {
-      final val = (i < initialSizes.length) ? initialSizes[i] : null;
-      final resolved = (val != null && val > 0.0) ? val : (1.0 / count);
+      final double? val = (i < initialSizes.length) ? initialSizes[i] : null;
+      final double resolved = (val != null && val > 0.0) ? val : (1.0 / count);
       parsed[i] = resolved;
       totalSum += resolved;
     }
 
     if (totalSum <= 0.0) {
-      final equalShare = 1.0 / count;
+      final double equalShare = 1.0 / count;
       return List<double>.filled(count, equalShare);
     }
 
-    return [for (final p in parsed) p / totalSum];
+    return <double>[for (final double p in parsed) p / totalSum];
   }
 
   /// Computes the net space available for panels after subtracting divider line thicknesses.
@@ -104,7 +107,7 @@ abstract final class JustResizableEngine {
   ) {
     if (!totalSize.isFinite || totalSize <= 0.0 || panelCount <= 0) return 0.0;
     if (panelCount == 1) return totalSize;
-    final totalDividerSpace = (panelCount - 1) * dividerThickness;
+    final double totalDividerSpace = (panelCount - 1) * dividerThickness;
     return math.max(0.0, totalSize - totalDividerSpace);
   }
 
@@ -119,7 +122,7 @@ abstract final class JustResizableEngine {
     required List<JustResizablePanel> panels,
     required List<double> output,
   }) {
-    final count = panels.length;
+    final int count = panels.length;
     if (count == 0 || output.isEmpty) return;
     if (availableSpace <= 0.0) {
       for (int i = 0; i < output.length; i++) {
@@ -135,19 +138,19 @@ abstract final class JustResizableEngine {
     }
 
     double allocatedSum = 0.0;
-    final limit = math.min(count - 1, fractions.length - 1);
+    final int limit = math.min(count - 1, fractions.length - 1);
     for (int i = 0; i < limit; i++) {
       if (fractions[i] <= 0.0) {
         output[i] = 0.0;
         continue;
       }
       double size = availableSpace * fractions[i];
-      final minSize = panels[i].minSize;
-      final maxSize = panels[i].maxSize;
+      final double? minSize = panels[i].minSize;
+      final double? maxSize = panels[i].maxSize;
       if (minSize != null && size < minSize) size = minSize;
       if (maxSize != null && size > maxSize) size = maxSize;
 
-      final remaining = math.max(0.0, availableSpace - allocatedSum);
+      final double remaining = math.max(0.0, availableSpace - allocatedSum);
       if (size > remaining) {
         size = remaining;
       }
@@ -155,7 +158,7 @@ abstract final class JustResizableEngine {
       allocatedSum += size;
     }
 
-    final lastIndex = count - 1;
+    final int lastIndex = count - 1;
     if (lastIndex < fractions.length && fractions[lastIndex] <= 0.0) {
       output[lastIndex] = 0.0;
     } else {
@@ -175,7 +178,10 @@ abstract final class JustResizableEngine {
     required List<double> outputFractions,
   }) {
     if (!identical(outputFractions, currentFractions)) {
-      final copyLen = math.min(currentFractions.length, outputFractions.length);
+      final int copyLen = math.min(
+        currentFractions.length,
+        outputFractions.length,
+      );
       for (int i = 0; i < copyLen; i++) {
         outputFractions[i] = currentFractions[i];
       }
@@ -185,35 +191,35 @@ abstract final class JustResizableEngine {
     if (splitterIndex < 0 || splitterIndex >= panels.length - 1) return;
     if (splitterIndex >= currentFractions.length - 1) return;
 
-    final panelA = panels[splitterIndex];
-    final panelB = panels[splitterIndex + 1];
+    final JustResizablePanel panelA = panels[splitterIndex];
+    final JustResizablePanel panelB = panels[splitterIndex + 1];
     if (!panelA.resizable || !panelB.resizable) return;
 
-    final combined =
+    final double combined =
         currentFractions[splitterIndex] + currentFractions[splitterIndex + 1];
     if (combined <= 0.0) return;
 
-    final deltaF = deltaPixels / availableSpace;
-    final targetA = (currentFractions[splitterIndex] + deltaF).clamp(
+    final double deltaF = deltaPixels / availableSpace;
+    final double targetA = (currentFractions[splitterIndex] + deltaF).clamp(
       0.0,
       combined,
     );
 
-    final minFA = panelA.minSize != null
+    final double minFA = panelA.minSize != null
         ? panelA.minSize! / availableSpace
         : 0.0;
-    final maxFA = panelA.maxSize != null
+    final double maxFA = panelA.maxSize != null
         ? panelA.maxSize! / availableSpace
         : 1.0;
-    final threshA = _resolveThreshold(panelA, minFA, availableSpace);
+    final double threshA = _resolveThreshold(panelA, minFA, availableSpace);
 
-    final minFB = panelB.minSize != null
+    final double minFB = panelB.minSize != null
         ? panelB.minSize! / availableSpace
         : 0.0;
-    final maxFB = panelB.maxSize != null
+    final double maxFB = panelB.maxSize != null
         ? panelB.maxSize! / availableSpace
         : 1.0;
-    final threshB = _resolveThreshold(panelB, minFB, availableSpace);
+    final double threshB = _resolveThreshold(panelB, minFB, availableSpace);
 
     double finalA = _constrainPair(
       targetA: targetA,
@@ -248,7 +254,7 @@ abstract final class JustResizableEngine {
     double minFraction,
     double availableSpace,
   ) {
-    final explicit = panel.collapseThreshold;
+    final double? explicit = panel.collapseThreshold;
     if (explicit == null) return minFraction * 0.5;
     if (explicit <= 0.0) return 0.0;
     if (explicit <= 1.0) return explicit;
@@ -271,13 +277,13 @@ abstract final class JustResizableEngine {
       return 0.0;
     }
 
-    final targetB = combined - targetA;
+    final double targetB = combined - targetA;
     if (panelB.collapsible && targetB < threshB && combined <= maxFA) {
       return combined;
     }
 
-    final effectiveMinA = math.max(minFA, combined - maxFB);
-    final effectiveMaxA = math.min(maxFA, combined - minFB);
+    final double effectiveMinA = math.max(minFA, combined - maxFB);
+    final double effectiveMaxA = math.min(maxFA, combined - minFB);
 
     if (effectiveMinA > effectiveMaxA) {
       return (effectiveMinA + effectiveMaxA) / 2.0;
@@ -297,13 +303,13 @@ abstract final class JustResizableEngine {
     required double maxFB,
   }) {
     if (panelA.snapPoints != null) {
-      for (final snap in panelA.snapPoints!) {
+      for (final double snap in panelA.snapPoints!) {
         if ((finalA - snap).abs() <= panelA.snapThreshold) {
-          final candB = combined - snap;
-          final validA =
+          final double candB = combined - snap;
+          final bool validA =
               (panelA.collapsible && snap == 0.0) ||
               (snap >= minFA && snap <= maxFA);
-          final validB =
+          final bool validB =
               (panelB.collapsible && candB == 0.0) ||
               (candB >= minFB && candB <= maxFB);
           if (validA && validB) {
@@ -314,14 +320,14 @@ abstract final class JustResizableEngine {
     }
 
     if (panelB.snapPoints != null) {
-      final currentB = combined - finalA;
-      for (final snap in panelB.snapPoints!) {
+      final double currentB = combined - finalA;
+      for (final double snap in panelB.snapPoints!) {
         if ((currentB - snap).abs() <= panelB.snapThreshold) {
-          final candA = combined - snap;
-          final validB =
+          final double candA = combined - snap;
+          final bool validB =
               (panelB.collapsible && snap == 0.0) ||
               (snap >= minFB && snap <= maxFB);
-          final validA =
+          final bool validA =
               (panelA.collapsible && candA == 0.0) ||
               (candA >= minFA && candA <= maxFA);
           if (validA && validB) {
@@ -337,10 +343,12 @@ abstract final class JustResizableEngine {
 
 /// Controller that coordinates panel resizing, collapsing, and fraction persistence for [JustResizable].
 class JustResizableController extends ChangeNotifier {
-  final List<double> _fractions = [];
-  final List<double> _initialFractions = [];
-  final Map<int, double> _savedFractions = {};
-  late final List<double> _unmodifiableView = UnmodifiableListView(_fractions);
+  final List<double> _fractions = <double>[];
+  final List<double> _initialFractions = <double>[];
+  final Map<int, double> _savedFractions = <int, double>{};
+  late final List<double> _unmodifiableView = UnmodifiableListView<double>(
+    _fractions,
+  );
 
   /// Creates a [JustResizableController] with optional [initialFractions].
   JustResizableController({List<double>? initialFractions}) {
@@ -350,7 +358,7 @@ class JustResizableController extends ChangeNotifier {
   }
 
   void _setInitialFractions(List<double> initial) {
-    final norm = JustResizableEngine.normalizeFractions(
+    final List<double> norm = JustResizableEngine.normalizeFractions(
       initial,
       initial.length,
     );
@@ -365,7 +373,9 @@ class JustResizableController extends ChangeNotifier {
 
   void _initFromPanels(List<JustResizablePanel> panels) {
     if (_fractions.length == panels.length && _fractions.isNotEmpty) return;
-    final initialSizes = [for (final p in panels) p.initialSize];
+    final List<double?> initialSizes = <double?>[
+      for (final JustResizablePanel p in panels) p.initialSize,
+    ];
     _setInitialFractions(
       JustResizableEngine.normalizeFractions(initialSizes, panels.length),
     );
@@ -386,7 +396,7 @@ class JustResizableController extends ChangeNotifier {
   /// Sets panel fractions directly. Normalizes values to sum to 1.0.
   void setFractions(List<double> newFractions) {
     if (newFractions.isEmpty) return;
-    final norm = JustResizableEngine.normalizeFractions(
+    final List<double> norm = JustResizableEngine.normalizeFractions(
       newFractions,
       newFractions.length,
     );
@@ -419,10 +429,10 @@ class JustResizableController extends ChangeNotifier {
     if (_fractions[index] <= 0.0) return;
     if (_fractions.length <= 1) return;
 
-    final targetIndex = _findActiveNeighbor(index);
+    final int targetIndex = _findActiveNeighbor(index);
     if (targetIndex == -1) return;
 
-    final currentFraction = _fractions[index];
+    final double currentFraction = _fractions[index];
     _savedFractions[index] = currentFraction;
     _fractions[index] = 0.0;
     _fractions[targetIndex] += currentFraction;
@@ -435,17 +445,17 @@ class JustResizableController extends ChangeNotifier {
     if (_fractions[index] > 0.0) return;
     if (_fractions.length <= 1) return;
 
-    final targetIndex = _findActiveNeighbor(index);
+    final int targetIndex = _findActiveNeighbor(index);
     if (targetIndex == -1) return;
 
-    final saved = _savedFractions[index];
-    final initial = _initialFractions.isNotEmpty
+    final double? saved = _savedFractions[index];
+    final double initial = _initialFractions.isNotEmpty
         ? _initialFractions[index]
         : (1.0 / _fractions.length);
-    final restore = (saved != null && saved > 0.0) ? saved : initial;
+    final double restore = (saved != null && saved > 0.0) ? saved : initial;
 
-    final available = _fractions[targetIndex];
-    final take = math.min(restore, available);
+    final double available = _fractions[targetIndex];
+    final double take = math.min(restore, available);
     if (take <= 0.0) return;
 
     _fractions[targetIndex] -= take;
@@ -550,8 +560,8 @@ class const JustResizable({
 
 class _JustResizableState extends State<JustResizable> {
   JustResizableController? _internalController;
-  final List<double> _pixelSizes = [];
-  final List<Widget> _flexChildren = [];
+  final List<double> _pixelSizes = <double>[];
+  final List<Widget> _flexChildren = <Widget>[];
   double _lastAvailableSpace = 0.0;
 
   JustResizableController get _effectiveController =>
@@ -623,9 +633,9 @@ class _JustResizableState extends State<JustResizable> {
   }
 
   void _onSplitterDoubleTap(int index) {
-    final theme =
+    final JustResizableTheme theme =
         Theme.of(context).extension<JustResizableTheme>() ?? .defaults;
-    final behavior =
+    final JustResizableDoubleTapBehavior behavior =
         widget.doubleTapBehavior ??
         widget.style?.doubleTapBehavior ??
         theme.style?.doubleTapBehavior ??
@@ -646,8 +656,8 @@ class _JustResizableState extends State<JustResizable> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) {
-        final totalSize = widget.direction == .horizontal
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final double totalSize = widget.direction == .horizontal
             ? constraints.maxWidth
             : constraints.maxHeight;
 
@@ -661,36 +671,36 @@ class _JustResizableState extends State<JustResizable> {
           return const SizedBox.shrink();
         }
 
-        final theme =
+        final JustResizableTheme theme =
             Theme.of(context).extension<JustResizableTheme>() ?? .defaults;
-        final isNeobrutalism = context.justPreset == .neobrutalism;
-        final defaultThickness = isNeobrutalism ? 2.5 : 1.0;
-        final thickness =
+        final bool isNeobrutalism = context.justPreset == .neobrutalism;
+        final double defaultThickness = isNeobrutalism ? 2.5 : 1.0;
+        final double thickness =
             widget.dividerThickness ??
             widget.style?.dividerThickness ??
             theme.style?.dividerThickness ??
             (theme.dividerThickness > 0.0
                 ? theme.dividerThickness
                 : defaultThickness);
-        final hitSize = widget.handleHitSize;
-        final variant =
+        final double hitSize = widget.handleHitSize;
+        final JustResizableHandleVariant variant =
             widget.handleVariant ??
             widget.style?.handleVariant ??
             theme.style?.handleVariant ??
             theme.handleVariant;
 
-        final keyboardStep =
+        final double keyboardStep =
             widget.keyboardStep ??
             widget.style?.keyboardStep ??
             theme.style?.keyboardStep ??
             theme.keyboardStep;
-        final keyboardShiftStep =
+        final double keyboardShiftStep =
             widget.keyboardShiftStep ??
             widget.style?.keyboardShiftStep ??
             theme.style?.keyboardShiftStep ??
             theme.keyboardShiftStep;
 
-        final availableSpace = JustResizableEngine.computeAvailableSpace(
+        final double availableSpace = JustResizableEngine.computeAvailableSpace(
           totalSize,
           widget.children.length,
           thickness,
@@ -708,9 +718,9 @@ class _JustResizableState extends State<JustResizable> {
 
         _flexChildren.clear();
         for (int i = 0; i < widget.children.length; i++) {
-          final panel = widget.children[i];
-          final size = _pixelSizes[i];
-          final isCollapsed = _effectiveController.isCollapsed(i);
+          final JustResizablePanel panel = widget.children[i];
+          final double size = _pixelSizes[i];
+          final bool isCollapsed = _effectiveController.isCollapsed(i);
 
           _flexChildren.add(
             SizedBox(
@@ -728,9 +738,9 @@ class _JustResizableState extends State<JustResizable> {
           );
 
           if (i < widget.children.length - 1) {
-            final isLocked =
+            final bool isLocked =
                 !panel.resizable || !widget.children[i + 1].resizable;
-            final fraction = _effectiveController.fractions.length > i
+            final double fraction = _effectiveController.fractions.length > i
                 ? _effectiveController.fractions[i]
                 : 0.0;
             _flexChildren.add(
@@ -850,13 +860,17 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
     }
     if (!widget.resizable) return .ignored;
 
-    final isShift = HardwareKeyboard.instance.isShiftPressed;
-    final step = isShift ? widget.keyboardShiftStep : widget.keyboardStep;
-    final isHorizontal = widget.direction == .horizontal;
-    final key = event.logicalKey;
+    final bool isShift = HardwareKeyboard.instance.isShiftPressed;
+    final double step = isShift
+        ? widget.keyboardShiftStep
+        : widget.keyboardStep;
+    final bool isHorizontal = widget.direction == .horizontal;
+    final LogicalKeyboardKey key = event.logicalKey;
 
-    final isNegative = isHorizontal ? (key == .arrowLeft) : (key == .arrowUp);
-    final isPositive = isHorizontal
+    final bool isNegative = isHorizontal
+        ? (key == .arrowLeft)
+        : (key == .arrowUp);
+    final bool isPositive = isHorizontal
         ? (key == .arrowRight)
         : (key == .arrowDown);
 
@@ -934,31 +948,32 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
     required BorderRadius gripRadius,
     required Widget line,
   }) {
-    final gripW = widget.style?.gripSize?.width ?? (isHorizontal ? 12.0 : 22.0);
-    final gripH =
+    final double gripW =
+        widget.style?.gripSize?.width ?? (isHorizontal ? 12.0 : 22.0);
+    final double gripH =
         widget.style?.gripSize?.height ?? (isHorizontal ? 22.0 : 12.0);
 
-    final dot = Container(
+    final Container dot = Container(
       width: 2.5,
       height: 2.5,
       decoration: BoxDecoration(color: dotColor, shape: .circle),
     );
 
-    final dots = isHorizontal
+    final Flex dots = isHorizontal
         ? Column(
             mainAxisSize: .min,
             mainAxisAlignment: .center,
-            children: [dot, const SizedBox(height: 3.0), dot],
+            children: <Widget>[dot, const SizedBox(height: 3.0), dot],
           )
         : Row(
             mainAxisSize: .min,
             mainAxisAlignment: .center,
-            children: [dot, const SizedBox(width: 3.0), dot],
+            children: <Widget>[dot, const SizedBox(width: 3.0), dot],
           );
 
     return Stack(
       alignment: .center,
-      children: [
+      children: <Widget>[
         Center(child: line),
         Container(
           width: gripW,
@@ -976,21 +991,24 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.justColors;
-    final isNeobrutalism = context.justPreset == .neobrutalism;
+    final JustColorScheme colors = context.justColors;
+    final bool isNeobrutalism = context.justPreset == .neobrutalism;
 
-    final baseDividerColor =
+    final Color baseDividerColor =
         widget.style?.dividerColor ??
         (isNeobrutalism ? colors.textPrimary : colors.borderDefault);
-    final activeDividerColor =
+    final Color activeDividerColor =
         widget.style?.activeDividerColor ??
         (isNeobrutalism ? colors.textPrimary : colors.borderFocus);
-    final effectiveLineColor = (_isHovered || _isDragging || _isFocused)
+    final Color effectiveLineColor = (_isHovered || _isDragging || _isFocused)
         ? activeDividerColor
         : baseDividerColor;
 
-    final isHorizontal = widget.direction == .horizontal;
-    final halfDiff = math.max(0.0, (widget.hitSize - widget.thickness) / 2.0);
+    final bool isHorizontal = widget.direction == .horizontal;
+    final double halfDiff = math.max(
+      0.0,
+      (widget.hitSize - widget.thickness) / 2.0,
+    );
 
     Widget handleContent;
     if (widget.handleBuilder != null) {
@@ -1003,7 +1021,7 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
     } else if (widget.variant == .none) {
       handleContent = const SizedBox.shrink();
     } else {
-      final line = Container(
+      final Container line = Container(
         width: isHorizontal ? widget.thickness : .infinity,
         height: isHorizontal ? .infinity : widget.thickness,
         color: effectiveLineColor,
@@ -1012,19 +1030,19 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
       if (widget.variant == .line) {
         handleContent = Center(child: line);
       } else {
-        final gripBg =
+        final Color gripBg =
             widget.style?.gripColor ??
             (isNeobrutalism ? colors.card : colors.elevated);
-        final gripBorder = (_isHovered || _isDragging || _isFocused)
+        final Color gripBorder = (_isHovered || _isDragging || _isFocused)
             ? (widget.style?.activeGripBorderColor ?? activeDividerColor)
             : (widget.style?.gripBorderColor ?? baseDividerColor);
-        final dotColor =
+        final Color dotColor =
             widget.style?.gripDotColor ??
             ((_isHovered || _isDragging || _isFocused)
                 ? (isNeobrutalism ? colors.textPrimary : colors.borderFocus)
                 : (isNeobrutalism ? colors.textPrimary : colors.textSecondary));
-        final gripBorderWidth = isNeobrutalism ? 2.5 : 1.0;
-        final gripRadius =
+        final double gripBorderWidth = isNeobrutalism ? 2.5 : 1.0;
+        final BorderRadius gripRadius =
             widget.style?.gripRadius ??
             (isNeobrutalism ? .zero : const .all(.circular(3.0)));
 
@@ -1040,18 +1058,18 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
       }
     }
 
-    final focusRadius = widget.variant == .grip
+    final BorderRadius focusRadius = widget.variant == .grip
         ? (widget.style?.gripRadius ??
               (isNeobrutalism ? .zero : const .all(.circular(3.0))))
         : BorderRadius.zero;
 
-    final indicatorWrapped = FocusIndicator(
+    final FocusIndicator indicatorWrapped = FocusIndicator(
       isFocused: _isFocused,
       borderRadius: focusRadius,
       child: handleContent,
     );
 
-    final isCustomHandle = widget.handleBuilder != null;
+    final bool isCustomHandle = widget.handleBuilder != null;
 
     return Semantics(
       slider: true,
@@ -1078,7 +1096,7 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
           child: Stack(
             clipBehavior: Clip.none,
             alignment: .center,
-            children: [
+            children: <Widget>[
               if (isCustomHandle)
                 indicatorWrapped
               else

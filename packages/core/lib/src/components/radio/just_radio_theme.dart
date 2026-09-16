@@ -11,7 +11,7 @@ class const JustRadioTheme({
   final bool enableHaptic = false,
 }) extends ThemeExtension<JustRadioTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustRadioTheme();
+  static const JustRadioTheme defaults = JustRadioTheme();
 
   @override
   JustRadioTheme copyWith({JustRadioStyle? style, bool? enableHaptic}) {

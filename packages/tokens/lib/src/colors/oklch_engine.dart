@@ -111,7 +111,11 @@ abstract final class OklchEngine {
   /// Faster than [toColor] but may cause hue shifts for out-of-gamut colors.
   /// Use when performance is critical and the input is known to be in-gamut.
   static Color toRawColor(OklchColor oklch, {double alpha = 1.0}) {
-    final (rL, gL, bL) = _oklchToLinearRgb(oklch.l, oklch.c, oklch.h);
+    final (double rL, double gL, double bL) = _oklchToLinearRgb(
+      oklch.l,
+      oklch.c,
+      oklch.h,
+    );
     return _linearRgbToColor(rL, gL, bL, alpha);
   }
 
@@ -132,14 +136,22 @@ abstract final class OklchEngine {
     }
 
     // Check if already in gamut (skip analytical solve)
-    final (rL, gL, bL) = _oklchToLinearRgb(oklch.l, oklch.c, oklch.h);
+    final (double rL, double gL, double bL) = _oklchToLinearRgb(
+      oklch.l,
+      oklch.c,
+      oklch.h,
+    );
     if (_isLinearRgbInGamut(rL, gL, bL)) {
       return _linearRgbToColor(rL, gL, bL, alpha);
     }
 
     // Analytically find the maximum in-gamut chroma at this L and H
     final double maxC = maxChromaForLH(oklch.l, oklch.h);
-    final (rF, gF, bF) = _oklchToLinearRgb(oklch.l, maxC, oklch.h);
+    final (double rF, double gF, double bF) = _oklchToLinearRgb(
+      oklch.l,
+      maxC,
+      oklch.h,
+    );
     return _linearRgbToColor(rF, gF, bF, alpha);
   }
 
@@ -278,8 +290,8 @@ abstract final class OklchEngine {
     if (t <= 0.0) return a;
     if (t >= 1.0) return b;
 
-    final oklchA = fromColor(a);
-    final oklchB = fromColor(b);
+    final OklchColor oklchA = fromColor(a);
+    final OklchColor oklchB = fromColor(b);
     final double alphaA = a.a;
     final double alphaB = b.a;
 

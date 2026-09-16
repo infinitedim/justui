@@ -2,6 +2,7 @@ import 'dart:ui' show CheckedState, Tristate;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/src/semantics/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/checkbox/just_checkbox.dart';
@@ -17,8 +18,8 @@ void main() {
     ThemeData? materialTheme,
     ThemeMode themeMode = ThemeMode.light,
   }) {
-    final effectiveJustTheme = theme ?? JustThemeData.light;
-    final effectiveMaterialTheme =
+    final JustThemeData effectiveJustTheme = theme ?? JustThemeData.light;
+    final ThemeData effectiveMaterialTheme =
         materialTheme ?? effectiveJustTheme.toThemeData();
 
     return MaterialApp(
@@ -33,12 +34,12 @@ void main() {
 
   group('JustCheckbox - States & Sizing', () {
     testWidgets('Renders checked, unchecked, and indeterminate states', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
           Column(
-            children: [
+            children: <Widget>[
               JustCheckbox(value: true, onChanged: (_) {}),
               JustCheckbox(value: false, onChanged: (_) {}),
               JustCheckbox(value: null, onChanged: (_) {}),
@@ -50,7 +51,7 @@ void main() {
       expect(find.byType(JustCheckbox), findsNWidgets(3));
 
       // Checked semantics
-      final checkedSemantics = tester.getSemantics(
+      final SemanticsNode checkedSemantics = tester.getSemantics(
         find.byType(JustCheckbox).at(0),
       );
       expect(
@@ -59,7 +60,7 @@ void main() {
       );
 
       // Unchecked semantics
-      final uncheckedSemantics = tester.getSemantics(
+      final SemanticsNode uncheckedSemantics = tester.getSemantics(
         find.byType(JustCheckbox).at(1),
       );
       expect(
@@ -68,7 +69,7 @@ void main() {
       );
 
       // Indeterminate semantics
-      final indeterminateSemantics = tester.getSemantics(
+      final SemanticsNode indeterminateSemantics = tester.getSemantics(
         find.byType(JustCheckbox).at(2),
       );
       expect(
@@ -78,12 +79,12 @@ void main() {
     });
 
     testWidgets('Renders all size classifications (.sm, .md, .lg)', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(
           Column(
-            children: [
+            children: <Widget>[
               JustCheckbox(
                 value: true,
                 size: JustCheckboxSize.sm,
@@ -107,10 +108,10 @@ void main() {
       expect(find.byType(JustCheckbox), findsNWidgets(3));
 
       // Minimum touch target 48x48
-      final touchTargetFinders = find.descendant(
+      final Finder touchTargetFinders = find.descendant(
         of: find.byType(JustCheckbox),
         matching: find.byWidgetPredicate(
-          (w) =>
+          (Widget w) =>
               w is ConstrainedBox &&
               w.constraints.minWidth >= 48.0 &&
               w.constraints.minHeight >= 48.0,
@@ -120,17 +121,17 @@ void main() {
     });
 
     testWidgets('Tapping checkbox toggles boolean values accurately', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool? stateValue = false;
 
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return buildTestApp(
               JustCheckbox(
                 value: stateValue,
-                onChanged: (val) {
+                onChanged: (bool? val) {
                   setState(() => stateValue = val);
                 },
               ),
@@ -153,11 +154,11 @@ void main() {
       stateValue = null;
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return buildTestApp(
               JustCheckbox(
                 value: stateValue,
-                onChanged: (val) {
+                onChanged: (bool? val) {
                   setState(() => stateValue = val);
                 },
               ),
@@ -171,17 +172,19 @@ void main() {
       expect(stateValue, isTrue);
     });
 
-    testWidgets('Tapping label triggers checkbox state change', (tester) async {
+    testWidgets('Tapping label triggers checkbox state change', (
+      WidgetTester tester,
+    ) async {
       bool value = false;
 
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return buildTestApp(
               JustCheckbox(
                 value: value,
                 label: const Text('Accept Terms and Conditions'),
-                onChanged: (val) {
+                onChanged: (bool? val) {
                   setState(() => value = val ?? false);
                 },
               ),
@@ -200,7 +203,7 @@ void main() {
   group('JustCheckbox - Disabled State & Keyboard Navigation', () {
     testWidgets(
       'Disabled checkbox via isDisabled prevents tap and dims opacity',
-      (tester) async {
+      (WidgetTester tester) async {
         bool tapped = false;
 
         await tester.pumpWidget(
@@ -217,7 +220,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(tapped, isFalse);
 
-        final opacity = tester.widget<Opacity>(
+        final Opacity opacity = tester.widget<Opacity>(
           find.descendant(
             of: find.byType(JustCheckbox),
             matching: find.byType(Opacity),
@@ -225,7 +228,9 @@ void main() {
         );
         expect(opacity.opacity, equals(0.5));
 
-        final semantics = tester.getSemantics(find.byType(JustCheckbox));
+        final SemanticsNode semantics = tester.getSemantics(
+          find.byType(JustCheckbox),
+        );
         expect(
           semantics.getSemanticsData().flagsCollection.isEnabled,
           equals(Tristate.isFalse),
@@ -234,13 +239,15 @@ void main() {
     );
 
     testWidgets('Disabled checkbox via onChanged null prevents interactions', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         buildTestApp(const JustCheckbox(value: true, onChanged: null)),
       );
 
-      final semantics = tester.getSemantics(find.byType(JustCheckbox));
+      final SemanticsNode semantics = tester.getSemantics(
+        find.byType(JustCheckbox),
+      );
       expect(
         semantics.getSemanticsData().flagsCollection.isEnabled,
         equals(Tristate.isFalse),
@@ -248,20 +255,20 @@ void main() {
     });
 
     testWidgets('Keyboard space and enter keys toggle focused checkbox', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool value = false;
-      final focusNode = FocusNode();
+      final FocusNode focusNode = FocusNode();
       addTearDown(focusNode.dispose);
 
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return buildTestApp(
               JustCheckbox(
                 value: value,
                 focusNode: focusNode,
-                onChanged: (val) => setState(() => value = val ?? false),
+                onChanged: (bool? val) => setState(() => value = val ?? false),
               ),
             );
           },
@@ -288,10 +295,10 @@ void main() {
     });
 
     testWidgets('Keyboard events are ignored when checkbox is disabled', (
-      tester,
+      WidgetTester tester,
     ) async {
       bool tapped = false;
-      final focusNode = FocusNode();
+      final FocusNode focusNode = FocusNode();
       addTearDown(focusNode.dispose);
 
       await tester.pumpWidget(
@@ -313,9 +320,11 @@ void main() {
       expect(tapped, isFalse);
     });
 
-    testWidgets('External FocusNode update in didUpdateWidget', (tester) async {
-      final focusNode1 = FocusNode();
-      final focusNode2 = FocusNode();
+    testWidgets('External FocusNode update in didUpdateWidget', (
+      WidgetTester tester,
+    ) async {
+      final FocusNode focusNode1 = FocusNode();
+      final FocusNode focusNode2 = FocusNode();
       addTearDown(focusNode1.dispose);
       addTearDown(focusNode2.dispose);
 
@@ -340,7 +349,7 @@ void main() {
   group('JustCheckbox - Neobrutalism Preset & Theming', () {
     testWidgets(
       'Neobrutalism preset styles checkbox with solid border and press translation',
-      (tester) async {
+      (WidgetTester tester) async {
         const bool value = true;
 
         await tester.pumpWidget(
@@ -352,7 +361,7 @@ void main() {
 
         expect(find.byType(JustCheckbox), findsOneWidget);
 
-        final gesture = await tester.startGesture(
+        final TestGesture gesture = await tester.startGesture(
           tester.getCenter(find.byType(JustCheckbox)),
         );
         await tester.pump(const Duration(milliseconds: 20));
@@ -364,8 +373,10 @@ void main() {
       },
     );
 
-    testWidgets('Haptic feedback is triggered on state toggle', (tester) async {
-      final List<String> log = [];
+    testWidgets('Haptic feedback is triggered on state toggle', (
+      WidgetTester tester,
+    ) async {
+      final List<String> log = <String>[];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.platform, (
             MethodCall methodCall,
@@ -389,9 +400,9 @@ void main() {
     });
 
     testWidgets('Per-instance JustCheckboxStyle overrides theme', (
-      tester,
+      WidgetTester tester,
     ) async {
-      const customStyle = JustCheckboxStyle(
+      const JustCheckboxStyle customStyle = JustCheckboxStyle(
         activeColor: Color(0xFF112233),
         checkColor: Color(0xFF445566),
         borderColor: Color(0xFF778899),
@@ -414,15 +425,15 @@ void main() {
     });
 
     testWidgets('Global JustCheckboxTheme applies to JustCheckbox', (
-      tester,
+      WidgetTester tester,
     ) async {
-      const themeStyle = JustCheckboxStyle(
+      const JustCheckboxStyle themeStyle = JustCheckboxStyle(
         activeColor: Color(0xFF990000),
         checkColor: Color(0xFFFFFFFF),
       );
 
-      final materialTheme = ThemeData(
-        extensions: const [
+      final ThemeData materialTheme = ThemeData(
+        extensions: const <ThemeExtension<dynamic>>[
           JustCheckboxTheme(style: themeStyle, enableHaptic: true),
         ],
       );
@@ -441,7 +452,7 @@ void main() {
   group('JustCheckbox - Painters Unit Tests', () {
     testWidgets(
       'Checkmark and Indeterminate CustomPainter painting and shouldRepaint',
-      (tester) async {
+      (WidgetTester tester) async {
         // Test widget animating value from false to true to pump all frames
         bool value = false;
         late StateSetter stateSetter;
@@ -449,7 +460,7 @@ void main() {
         await tester.pumpWidget(
           buildTestApp(
             StatefulBuilder(
-              builder: (context, setState) {
+              builder: (BuildContext context, StateSetter setState) {
                 stateSetter = setState;
                 return JustCheckbox(value: value, onChanged: (_) {});
               },
@@ -477,7 +488,7 @@ void main() {
 
   group('JustCheckboxStyle & JustCheckboxTheme Unit Tests', () {
     test('JustCheckboxStyle copyWith, lerp, equality, and hashCode', () {
-      const style1 = JustCheckboxStyle(
+      const JustCheckboxStyle style1 = JustCheckboxStyle(
         activeColor: Color(0xFF112233),
         checkColor: Color(0xFF445566),
         borderColor: Color(0xFF778899),
@@ -485,7 +496,9 @@ void main() {
         textStyle: TextStyle(fontSize: 16),
       );
 
-      final copied = style1.copyWith(activeColor: const Color(0xFF00FF00));
+      final JustCheckboxStyle copied = style1.copyWith(
+        activeColor: const Color(0xFF00FF00),
+      );
 
       expect(copied.activeColor, equals(const Color(0xFF00FF00)));
       expect(copied.checkColor, equals(style1.checkColor));
@@ -493,7 +506,7 @@ void main() {
       expect(copied.borderRadius, equals(style1.borderRadius));
       expect(copied.textStyle, equals(style1.textStyle));
 
-      const styleClone = JustCheckboxStyle(
+      const JustCheckboxStyle styleClone = JustCheckboxStyle(
         activeColor: Color(0xFF112233),
         checkColor: Color(0xFF445566),
         borderColor: Color(0xFF778899),
@@ -509,7 +522,11 @@ void main() {
       expect(JustCheckboxStyle.lerp(style1, style1, 0.5), equals(style1));
       expect(JustCheckboxStyle.lerp(null, null, 0.5), isNull);
 
-      final lerped = JustCheckboxStyle.lerp(style1, copied, 0.5);
+      final JustCheckboxStyle? lerped = JustCheckboxStyle.lerp(
+        style1,
+        copied,
+        0.5,
+      );
       expect(lerped, isNotNull);
       expect(
         lerped!.activeColor,
@@ -522,21 +539,23 @@ void main() {
     test(
       'JustCheckboxTheme defaults, copyWith, lerp, equality, and hashCode',
       () {
-        const defaultTheme = JustCheckboxTheme.defaults;
+        const JustCheckboxTheme defaultTheme = JustCheckboxTheme.defaults;
         expect(defaultTheme.enableHaptic, isFalse);
         expect(defaultTheme.style, isNull);
 
-        const customStyle = JustCheckboxStyle(activeColor: Color(0xFF990000));
-        const theme1 = JustCheckboxTheme(
+        const JustCheckboxStyle customStyle = JustCheckboxStyle(
+          activeColor: Color(0xFF990000),
+        );
+        const JustCheckboxTheme theme1 = JustCheckboxTheme(
           style: customStyle,
           enableHaptic: true,
         );
 
-        final copied = theme1.copyWith(enableHaptic: false);
+        final JustCheckboxTheme copied = theme1.copyWith(enableHaptic: false);
         expect(copied.enableHaptic, isFalse);
         expect(copied.style, equals(customStyle));
 
-        const themeClone = JustCheckboxTheme(
+        const JustCheckboxTheme themeClone = JustCheckboxTheme(
           style: customStyle,
           enableHaptic: true,
         );
@@ -547,9 +566,9 @@ void main() {
 
         // Lerp
         expect(theme1.lerp(null, 0.5), equals(theme1));
-        final lerpedTheme = theme1.lerp(copied, 0.7);
+        final JustCheckboxTheme lerpedTheme = theme1.lerp(copied, 0.7);
         expect(lerpedTheme.enableHaptic, isFalse);
-        final lerpedThemeEarly = theme1.lerp(copied, 0.3);
+        final JustCheckboxTheme lerpedThemeEarly = theme1.lerp(copied, 0.3);
         expect(lerpedThemeEarly.enableHaptic, isTrue);
 
         // Parity with JustCheckboxThemeData typedef

@@ -1,0 +1,141 @@
+---
+title: Resizable
+description: Kontainer split-view dengan tuas pemisah interaktif yang dapat digeser, aksesibilitas keyboard, dan fitur snap lipat.
+---
+
+# Resizable
+
+Komponen `JustResizable` membagi viewport menjadi beberapa panel fleksibel dengan proporsi yang dapat diubah menggunakan tuas geser interaktif. Dirancang dengan algoritma partisi piksel diskret untuk mencegah pergeseran desimal (subpixel drift) serta mendukung titik magnetik (magnetic snap) dan panel yang dapat dilipat.
+
+---
+
+## Deskripsi
+
+- **Tata Letak Dual-Axis**: Mendukung orientasi horizontal (kolom berdampingan) dan vertikal (baris bertumpuk).
+- **Magnetic Snap Points**: Panel dapat mengunci secara mulus pada rasio target tertentu (misal 25%, 50%, 75%) dalam batas toleransi dinamis.
+- **Panel Lipat (Collapsible)**: Secara otomatis melipat panel ke ukuran 0 piksel ketika ditarik melebihi ambang batas lipat yang ditentukan.
+- **Anti-Subpixel Drift**: Menerapkan alokasi sisa Bresenham untuk memastikan total ukuran panel selalu tepat setara ruang kontainer tanpa kesalahan pembulatan desimal.
+- **Navigasi Keyboard**: Tuas pemisah dapat difokuskan dengan keyboard dan digeser langkah demi langkah menggunakan tombol panah.
+
+---
+
+## Penggunaan
+
+### Penggunaan Dasar
+
+Tata letak dua panel horizontal dengan pembagian proporsi:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicResizable(BuildContext context) {
+  return SizedBox(
+    height: 320,
+    child: JustResizable(
+      direction: Axis.horizontal,
+      children: [
+        JustResizablePanel(
+          initialSize: 0.3,
+          minSize: 150,
+          child: Container(
+            color: context.justColors.background,
+            alignment: Alignment.center,
+            child: const Text('Sidebar (30%)'),
+          ),
+        ),
+        JustResizablePanel(
+          initialSize: 0.7,
+          minSize: 200,
+          child: Container(
+            color: context.justColors.card,
+            alignment: Alignment.center,
+            child: const Text('Konten Utama (70%)'),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+```
+
+### Penggunaan Lanjutan
+
+Tata letak tiga panel dengan sidebar kiri yang dapat dilipat dan snap points:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedResizable(BuildContext context) {
+  return SizedBox(
+    height: 480,
+    child: JustResizable(
+      direction: Axis.horizontal,
+      dividerThickness: 4.0,
+      children: [
+        // Navigasi kiri yang dapat dilipat
+        JustResizablePanel(
+          initialSize: 0.25,
+          minSize: 180,
+          collapsible: true,
+          collapseThreshold: 80,
+          child: const Center(child: Text('Navigasi')),
+        ),
+
+        // Area Editor dengan magnet snap
+        JustResizablePanel(
+          initialSize: 0.50,
+          minSize: 250,
+          snapPoints: const [0.50],
+          child: const Center(child: Text('Area Editor')),
+        ),
+
+        // Inspektur Properti
+        JustResizablePanel(
+          initialSize: 0.25,
+          minSize: 160,
+          child: const Center(child: Text('Inspektur')),
+        ),
+      ],
+    ),
+  );
+}
+```
+
+---
+
+## Referensi API (Props)
+
+### JustResizable
+
+| Properti            | Tipe Data                  | Nilai Default     | Deskripsi                                                                |
+| :------------------ | :------------------------- | :---------------- | :----------------------------------------------------------------------- |
+| `children`          | `List<JustResizablePanel>` | _wajib_           | Daftar panel yang akan disusun dan diubah ukurannya.                     |
+| `direction`         | `Axis`                     | `Axis.horizontal` | Arah pembagian (`Axis.horizontal` atau `Axis.vertical`).                 |
+| `dividerThickness`  | `double`                   | `3.0`             | Ketebalan tuas pemisah dalam piksel.                                     |
+| `controller`        | `JustResizableController?` | `null`            | Pengontrol programatik untuk mengatur ukuran atau membuka/menutup panel. |
+| `keyboardStepRatio` | `double`                   | `0.02`            | Nilai perubahan fraksi per penekanan tombol panah keyboard.              |
+| `style`             | `JustResizableStyle?`      | `null`            | Kustomisasi visual untuk garis pemisah dan indikator fokus.              |
+
+### JustResizablePanel
+
+| Properti            | Tipe Data       | Nilai Default | Deskripsi                                                               |
+| :------------------ | :-------------- | :------------ | :---------------------------------------------------------------------- |
+| `child`             | `Widget`        | _wajib_       | Konten widget yang dirender di dalam panel.                             |
+| `initialSize`       | `double?`       | `null`        | Fraksi proporsi awal (0.0 hingga 1.0). Dinormalisasi otomatis.          |
+| `minSize`           | `double?`       | `null`        | Batas piksel minimum saat panel digeser.                                |
+| `maxSize`           | `double?`       | `null`        | Batas piksel maksimum saat panel digeser.                               |
+| `collapsible`       | `bool`          | `false`       | Menentukan apakah panel dapat dilipat hingga ukuran 0 piksel.           |
+| `collapseThreshold` | `double?`       | `null`        | Ambang piksel untuk memicu pelipatan penuh. Default 50% dari minSize.   |
+| `snapPoints`        | `List<double>?` | `null`        | Daftar fraksi target untuk penguncian magnetik tuas geser.              |
+| `resizable`         | `bool`          | `true`        | Jika bernilai false, mengunci tuas geser agar ukuran tidak diubah user. |
+
+---
+
+## Aksesibilitas
+
+- **Kendali Keyboard**: Pemisah antar panel dapat menerima fokus melalui tombol Tab dan dapat disesuaikan ukurannya secara presisi dengan tombol panah.
+- **Semantik Pembaca Layar**: Tuas pemisah mengekspos semantik slider yang mengumumkan persentase pembagian ruang secara dinamis.

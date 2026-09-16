@@ -1,0 +1,95 @@
+---
+title: Date Picker
+description: Accessible calendar date picker component supporting inline, dropdown, modal, and responsive presentation modes.
+---
+
+# Date Picker
+
+The `JustDatePicker` component allows users to select a single calendar date. Designed with zero external dependencies, it provides calendar grid navigation, week number toggling, disabled date predicates, and responsive display variants.
+
+---
+
+## Description
+
+- **Multiple Presentation Variants**: Supports inline embedding (`.inline`), popover dropdowns (`.dropdown`), centered dialogs (`.modal`), and adaptive screen-size switching (`.responsive`).
+- **Date Constraints**: Restricts selection using `firstDate`, `lastDate`, and custom `selectableDayPredicate` validation functions.
+- **View Hierarchy**: Switches between day grid, month overview, and year selector views.
+- **Internationalization**: Configurable first day of week (Monday or Sunday) and localized month and day names.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Dropdown date picker for booking appointments:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicDatePicker(BuildContext context, DateTime? selectedDate, ValueChanged<DateTime> onDateSelected) {
+  return JustDatePicker(
+    value: selectedDate,
+    onChanged: onDateSelected,
+    firstDate: DateTime(2020),
+    lastDate: DateTime(2030),
+    placeholder: 'Select appointment date',
+    variant: .dropdown,
+  );
+}
+```
+
+### Advanced Usage
+
+Inline calendar with weekend exclusion and custom day builder:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedDatePicker(BuildContext context, DateTime? activeDate, ValueChanged<DateTime> onDateSelected) {
+  return JustDatePicker(
+    value: activeDate,
+    onChanged: onDateSelected,
+    variant: .inline,
+    showWeekNumbers: true,
+    firstDayOfWeek: 1, // Monday
+    firstDate: DateTime.now(),
+    lastDate: DateTime.now().add(const Duration(days: 90)),
+    // Exclude weekends
+    selectableDayPredicate: (date) {
+      return date.weekday != DateTime.saturday && date.weekday != DateTime.sunday;
+    },
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### JustDatePicker
+
+| Property                 | Data Type                  | Default Value   | Description                                                             |
+| :----------------------- | :------------------------- | :-------------- | :---------------------------------------------------------------------- |
+| `value`                  | `DateTime?`                | `null`          | Currently selected date value.                                          |
+| `onChanged`              | `ValueChanged<DateTime>?`  | `null`          | Callback executed when a new date is selected.                          |
+| `firstDate`              | `DateTime?`                | `null`          | Earliest selectable date boundary.                                      |
+| `lastDate`               | `DateTime?`                | `null`          | Latest selectable date boundary.                                        |
+| `selectableDayPredicate` | `bool Function(DateTime)?` | `null`          | Custom predicate returning false for non-selectable dates.              |
+| `variant`                | `JustDatePickerVariant`    | `.dropdown`     | Presentation variant (`.inline`, `.modal`, `.dropdown`, `.responsive`). |
+| `initialView`            | `JustCalendarView`         | `.day`          | Initial view level (`.day`, `.month`, `.year`).                         |
+| `showWeekNumbers`        | `bool`                     | `false`         | Whether to display week index numbers in a left column.                 |
+| `firstDayOfWeek`         | `int`                      | `7`             | First day of week (1 = Monday, 7 = Sunday).                             |
+| `placeholder`            | `String`                   | `'Select date'` | Placeholder text displayed when no date is selected.                    |
+| `style`                  | `JustDatePickerStyle?`     | `null`          | Visual style overrides for days, active selection, and headers.         |
+
+---
+
+## Accessibility
+
+- **Keyboard Navigation**: Supports Arrow keys to move between days, PageUp/PageDown to switch months, and Enter to select.
+- **Focus Trap**: In modal variant, focus is securely trapped within the dialog until dismissed.

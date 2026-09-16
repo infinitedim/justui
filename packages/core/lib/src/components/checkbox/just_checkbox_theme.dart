@@ -14,7 +14,7 @@ class const JustCheckboxTheme({
   final bool enableHaptic = false,
 }) extends ThemeExtension<JustCheckboxTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustCheckboxTheme();
+  static const JustCheckboxTheme defaults = JustCheckboxTheme();
 
   @override
   JustCheckboxTheme copyWith({JustCheckboxStyle? style, bool? enableHaptic}) {

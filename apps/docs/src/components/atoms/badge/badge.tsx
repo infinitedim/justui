@@ -5,7 +5,7 @@ const variantClassMap: Record<BadgeVariant, string> = {
   default:
     'bg-card text-secondary border border-[length:var(--just-border-width)] border-border',
   accent:
-    'bg-accent-muted text-accent-deep border border-[length:var(--just-border-width)] border-accent',
+    'bg-accent-muted text-accent-dark dark:text-accent-light border border-[length:var(--just-border-width)] border-accent',
   success:
     'bg-success/10 text-success border border-[length:var(--just-border-width)] border-success/30',
   warning:

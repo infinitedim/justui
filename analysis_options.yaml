@@ -29,3 +29,6 @@ linter:
     use_super_parameters: true
     prefer_final_locals: true
     avoid_unnecessary_containers: true
+    always_specify_types: true
+    always_declare_return_types: true
+    type_annotate_public_apis: true

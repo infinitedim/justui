@@ -7,7 +7,7 @@ void main() {
 
   group('Shadows Tokens Validation', () {
     test('Static shadow lists are correctly formatted', () {
-      final shadowLists = [
+      final List<List<BoxShadow>> shadowLists = <List<BoxShadow>>[
         JustShadows.xs,
         JustShadows.sm,
         JustShadows.md,
@@ -22,9 +22,9 @@ void main() {
         JustShadows.xxlDark,
       ];
 
-      for (final list in shadowLists) {
+      for (final List<BoxShadow> list in shadowLists) {
         expect(list, isNotEmpty);
-        for (final shadow in list) {
+        for (final BoxShadow shadow in list) {
           expect(shadow.color, isNotNull);
           expect(shadow.blurRadius, greaterThanOrEqualTo(0.0));
         }
@@ -32,15 +32,15 @@ void main() {
     });
 
     test('JustShadows.generate covers all 5 elevation interval branches across light and dark modes', () {
-      const seed = Color(0xFF3B82F6);
+      const Color seed = Color(0xFF3B82F6);
 
       // elevation <= 1 branch (light & dark)
-      final elev1Light = JustShadows.generate(
+      final List<BoxShadow> elev1Light = JustShadows.generate(
         seedColor: seed,
         elevation: 1,
         isDark: false,
       );
-      final elev1Dark = JustShadows.generate(
+      final List<BoxShadow> elev1Dark = JustShadows.generate(
         seedColor: seed,
         elevation: 1,
         isDark: true,
@@ -49,12 +49,12 @@ void main() {
       expect(elev1Dark.length, equals(2));
 
       // elevation <= 2 branch (light & dark)
-      final elev2Light = JustShadows.generate(
+      final List<BoxShadow> elev2Light = JustShadows.generate(
         seedColor: seed,
         elevation: 2,
         isDark: false,
       );
-      final elev2Dark = JustShadows.generate(
+      final List<BoxShadow> elev2Dark = JustShadows.generate(
         seedColor: seed,
         elevation: 2,
         isDark: true,
@@ -63,12 +63,12 @@ void main() {
       expect(elev2Dark.length, equals(2));
 
       // elevation <= 4 branch (light & dark)
-      final elev4Light = JustShadows.generate(
+      final List<BoxShadow> elev4Light = JustShadows.generate(
         seedColor: seed,
         elevation: 4,
         isDark: false,
       );
-      final elev4Dark = JustShadows.generate(
+      final List<BoxShadow> elev4Dark = JustShadows.generate(
         seedColor: seed,
         elevation: 4,
         isDark: true,
@@ -77,12 +77,12 @@ void main() {
       expect(elev4Dark.length, equals(2));
 
       // elevation <= 8 branch (light & dark)
-      final elev6Light = JustShadows.generate(
+      final List<BoxShadow> elev6Light = JustShadows.generate(
         seedColor: seed,
         elevation: 6,
         isDark: false,
       );
-      final elev6Dark = JustShadows.generate(
+      final List<BoxShadow> elev6Dark = JustShadows.generate(
         seedColor: seed,
         elevation: 6,
         isDark: true,
@@ -91,12 +91,12 @@ void main() {
       expect(elev6Dark.length, equals(2));
 
       // elevation <= 16 branch (light & dark)
-      final elev12Light = JustShadows.generate(
+      final List<BoxShadow> elev12Light = JustShadows.generate(
         seedColor: seed,
         elevation: 12,
         isDark: false,
       );
-      final elev12Dark = JustShadows.generate(
+      final List<BoxShadow> elev12Dark = JustShadows.generate(
         seedColor: seed,
         elevation: 12,
         isDark: true,
@@ -105,12 +105,12 @@ void main() {
       expect(elev12Dark.length, equals(2));
 
       // elevation > 16 branch (light & dark)
-      final elev24Light = JustShadows.generate(
+      final List<BoxShadow> elev24Light = JustShadows.generate(
         seedColor: seed,
         elevation: 24,
         isDark: false,
       );
-      final elev24Dark = JustShadows.generate(
+      final List<BoxShadow> elev24Dark = JustShadows.generate(
         seedColor: seed,
         elevation: 24,
         isDark: true,

@@ -21,7 +21,7 @@ class const JustTimePickerTheme({
   final bool enableHaptic = false,
 }) extends ThemeExtension<JustTimePickerTheme> {
   /// Default configuration for the theme.
-  static const defaults = JustTimePickerTheme();
+  static const JustTimePickerTheme defaults = JustTimePickerTheme();
 
   @override
   JustTimePickerTheme copyWith({

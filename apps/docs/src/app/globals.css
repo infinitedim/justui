@@ -12,6 +12,8 @@
   --color-muted: var(--just-text-muted);
   --color-border: var(--just-border);
   --color-card: var(--just-card-bg);
+  --color-surface: var(--just-card-bg);
+  --color-surface-muted: var(--just-accent-muted);
   --color-elevated: var(--just-elevated-bg);
   --color-accent: var(--just-accent);
   --color-accent-light: var(--just-accent-light);
@@ -21,6 +23,7 @@
   --color-success: var(--just-success);
   --color-warning: var(--just-warning);
   --color-error: var(--just-error);
+  --color-destructive: var(--just-error);
   --color-info: var(--just-info);
 
   /* Spacing */

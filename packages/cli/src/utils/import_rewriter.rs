@@ -147,7 +147,13 @@ impl<'a> CanonicalRegistryResolver<'a> {
                 let canonical = canonicalize_registry_path(&file.path);
 
                 // Primary canonical key
-                map.insert(canonical.clone(), ResolvedTarget { comp, file: file.clone() });
+                map.insert(
+                    canonical.clone(),
+                    ResolvedTarget {
+                        comp,
+                        file: file.clone(),
+                    },
+                );
 
                 // Also index normalized alias if internal/shared
                 if comp.internal {
@@ -155,10 +161,22 @@ impl<'a> CanonicalRegistryResolver<'a> {
                     let filename = canonical.split('/').next_back().unwrap_or(&canonical);
                     if let Some(stripped) = filename.strip_prefix("_shared_") {
                         let just_key = format!("{}/just_{}", dir, stripped);
-                        map.insert(just_key, ResolvedTarget { comp, file: file.clone() });
+                        map.insert(
+                            just_key,
+                            ResolvedTarget {
+                                comp,
+                                file: file.clone(),
+                            },
+                        );
                     } else if let Some(stripped) = filename.strip_prefix("just_") {
                         let shared_key = format!("{}/_shared_{}", dir, stripped);
-                        map.insert(shared_key, ResolvedTarget { comp, file: file.clone() });
+                        map.insert(
+                            shared_key,
+                            ResolvedTarget {
+                                comp,
+                                file: file.clone(),
+                            },
+                        );
                     }
                 }
             }
@@ -175,7 +193,10 @@ impl<'a> CanonicalRegistryResolver<'a> {
 
         // Secondary fallback: check alternate prefix
         let dir = unix_dirname(resolved_flat_path);
-        let filename = resolved_flat_path.split('/').next_back().unwrap_or(resolved_flat_path);
+        let filename = resolved_flat_path
+            .split('/')
+            .next_back()
+            .unwrap_or(resolved_flat_path);
         if let Some(stripped) = filename.strip_prefix("_shared_") {
             let just_key = format!("{}/just_{}", dir, stripped);
             if let Some(target) = self.index_by_logical_path.get(&just_key) {
@@ -538,7 +559,7 @@ export 'just_carousel_style.dart';
 
         let shared_comp = RegistryComponent {
             name: "_shared_pressable".to_string(),
-            version: "0.13.2".to_string(),
+            version: "0.14.0".to_string(),
             description: "".to_string(),
             category: "internal".to_string(),
             internal: true,
@@ -560,7 +581,7 @@ export 'just_carousel_style.dart';
 
         let accordion_comp = RegistryComponent {
             name: "accordion".to_string(),
-            version: "0.13.2".to_string(),
+            version: "0.14.0".to_string(),
             description: "".to_string(),
             category: "primitive".to_string(),
             internal: false,
@@ -627,7 +648,7 @@ export 'just_carousel_style.dart';
 
         let tooltip_comp = RegistryComponent {
             name: "tooltip".to_string(),
-            version: "0.13.2".to_string(),
+            version: "0.14.0".to_string(),
             description: "".to_string(),
             category: "overlay".to_string(),
             internal: false,
@@ -649,7 +670,7 @@ export 'just_carousel_style.dart';
 
         let shared_overlay_comp = RegistryComponent {
             name: "_shared_tooltip_overlay".to_string(),
-            version: "0.13.2".to_string(),
+            version: "0.14.0".to_string(),
             description: "".to_string(),
             category: "internal".to_string(),
             internal: true,

@@ -53,7 +53,7 @@ describe('cli-parser', () => {
 
   it('parses justui version', () => {
     const result = parseCommand('justui version');
-    expect(result.lines.some((l) => l.text.includes('v0.13.2'))).toBe(true);
+    expect(result.lines.some((l) => l.text.includes('v0.14.0'))).toBe(true);
   });
 
   it('parses justui help', () => {
