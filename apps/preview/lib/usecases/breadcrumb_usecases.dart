@@ -6,16 +6,16 @@ import 'package:just_ui_core/src/components/breadcrumb/just_breadcrumb.dart';
 
 @widgetbook.UseCase(name: 'Default Breadcrumb', type: JustBreadcrumb)
 Widget buildJustBreadcrumbDefaultUseCase(BuildContext context) {
-  final maxItems = context.knobs.double
+  final int maxItems = context.knobs.double
       .slider(label: 'Max Items (0 = All)', initialValue: 0, min: 0, max: 5)
       .toInt();
 
   return Center(
     child: Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       child: JustBreadcrumb(
         maxItems: maxItems > 0 ? maxItems : null,
-        items: [
+        items: <JustBreadcrumbItem>[
           JustBreadcrumbItem(label: 'Home', onTap: () {}),
           JustBreadcrumbItem(label: 'Components', onTap: () {}),
           JustBreadcrumbItem(label: 'Navigation', onTap: () {}),

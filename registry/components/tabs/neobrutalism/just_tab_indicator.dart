@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../theme/theme_data.dart';
@@ -32,18 +33,19 @@ class const JustTabIndicator({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final presetTokens = theme.presetTokens;
+    final JustPresetTokens presetTokens = theme.presetTokens;
     // Resolve styling colors and shapes
-    final activeColor =
+    final Color activeColor =
         style?.indicatorColor ?? style?.activeColor ?? colors.borderFocus;
     final BorderRadius defaultIndicatorRadius = variant == .pill
         ? .all(radius.full)
         : .all(radius.md);
-    final indicatorRadius = style?.indicatorRadius ?? defaultIndicatorRadius;
+    final BorderRadius indicatorRadius =
+        style?.indicatorRadius ?? defaultIndicatorRadius;
 
     switch (variant) {
       case .line:
-        final thickness = presetTokens.resolveTabIndicatorThickness(
+        final double thickness = presetTokens.resolveTabIndicatorThickness(
           style?.indicatorThickness,
         );
         if (orientation == .horizontal) {
@@ -63,7 +65,7 @@ class const JustTabIndicator({
           );
         } else {
           // Vertical layout: line on the starting edge (respecting Directionality)
-          final isRtl = Directionality.of(context) == .rtl;
+          final bool isRtl = Directionality.of(context) == .rtl;
           return Align(
             alignment: isRtl ? .centerRight : .centerLeft,
             child: Container(
@@ -113,10 +115,10 @@ class const JustTabIndicator({
 
       case .vertical:
         // Fallback for vertical: line by default, or similar to line
-        final thickness = presetTokens.resolveTabIndicatorThickness(
+        final double thickness = presetTokens.resolveTabIndicatorThickness(
           style?.indicatorThickness,
         );
-        final isRtl = Directionality.of(context) == .rtl;
+        final bool isRtl = Directionality.of(context) == .rtl;
         return Align(
           alignment: isRtl ? .centerRight : .centerLeft,
           child: Container(

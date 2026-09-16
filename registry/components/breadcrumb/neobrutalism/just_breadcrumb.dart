@@ -1,7 +1,10 @@
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/preset_tokens.dart';
+import 'package:just_ui_core/src/theme/theme_data.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart' show JustColorScheme;
 
 import '../../theme/theme_provider.dart';
-import '../shared/just_pressable.dart';
+import '../shared/_shared_pressable.dart';
 import 'just_breadcrumb_style.dart';
 
 /// Represents an individual navigation link within a [JustBreadcrumb].
@@ -52,20 +55,25 @@ class const JustBreadcrumb({
   Widget build(BuildContext context) {
     if (items.isEmpty) return const SizedBox.shrink();
 
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
 
-    final presetTokens = JustThemeProvider.of(context).theme.presetTokens;
+    final JustPresetTokens presetTokens = JustThemeProvider.of(context)
+        .theme
+        .presetTokens;
 
     // Resolve separator widget
-    final resolvedSeparator =
+    final Widget resolvedSeparator =
         separator ??
         Text(
           '/',
@@ -79,19 +87,20 @@ class const JustBreadcrumb({
         );
 
     // Resolve collapsed widget
-    final resolvedCollapsed =
+    final Widget resolvedCollapsed =
         collapsed ?? const Text('...', style: TextStyle(fontWeight: .w600));
 
-    final finalPadding = style?.padding ?? .symmetric(vertical: spacing.sm);
+    final EdgeInsets finalPadding =
+        style?.padding ?? .symmetric(vertical: spacing.sm);
 
     // Generate list of items to render
-    final List<Widget> children = [];
-    final hasCollapse =
+    final List<Widget> children = <Widget>[];
+    final bool hasCollapse =
         maxItems != null && items.length > maxItems! && maxItems! >= 2;
 
     if (!hasCollapse) {
       for (int i = 0; i < items.length; i++) {
-        final isLast = i == items.length - 1;
+        final bool isLast = i == items.length - 1;
         children.add(_buildItem(context, items[i], isLast));
         if (!isLast) {
           children.add(
@@ -113,7 +122,10 @@ class const JustBreadcrumb({
       );
 
       // Group middle collapsed items
-      final collapsedItems = items.sublist(1, items.length - 1);
+      final List<JustBreadcrumbItem> collapsedItems = items.sublist(
+        1,
+        items.length - 1,
+      );
       children.add(
         _JustBreadcrumbCollapsed(
           collapsedItems: collapsedItems,
@@ -146,17 +158,17 @@ class const JustBreadcrumb({
     JustBreadcrumbItem item,
     bool isLast,
   ) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final colors = customTheme.colors;
-    final typography = customTheme.typography;
-    final spacing = customTheme.spacing;
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = customTheme.colors;
+    final JustTypographyScheme typography = customTheme.typography;
+    final JustSpacingScheme spacing = customTheme.spacing;
 
-    final isClickable = item.onTap != null;
+    final bool isClickable = item.onTap != null;
 
-    final normalColor =
+    final Color normalColor =
         style?.color ?? (isLast ? colors.textPrimary : colors.textSecondary);
-    final activeColor = style?.activeColor ?? colors.borderFocus;
-    final baseTextStyle = isLast
+    final Color activeColor = style?.activeColor ?? colors.borderFocus;
+    final TextStyle baseTextStyle = isLast
         ? (style?.activeTextStyle ??
               typography.bodyMd.copyWith(fontWeight: .w600))
         : (style?.textStyle ?? typography.bodyMd);
@@ -168,8 +180,8 @@ class const JustBreadcrumb({
           padding: style?.itemPadding ?? .symmetric(horizontal: spacing.xs),
           child: Row(
             mainAxisSize: .min,
-            children: [
-              if (item.icon != null) ...[
+            children: <Widget>[
+              if (item.icon != null) ...<Widget>[
                 IconTheme.merge(
                   data: IconThemeData(size: 16.0, color: normalColor),
                   child: item.icon!,
@@ -189,9 +201,9 @@ class const JustBreadcrumb({
     return JustPressable(
       onTap: item.onTap,
       builder: (BuildContext context, JustInteractionState state) {
-        final isHovered = state.isHovered;
-        final isPressed = state.isPressed;
-        final itemColor = isPressed
+        final bool isHovered = state.isHovered;
+        final bool isPressed = state.isPressed;
+        final Color itemColor = isPressed
             ? activeColor.withValues(alpha: 0.8)
             : (isHovered ? activeColor : normalColor);
 
@@ -202,8 +214,8 @@ class const JustBreadcrumb({
             padding: style?.itemPadding ?? .symmetric(horizontal: spacing.xs),
             child: Row(
               mainAxisSize: .min,
-              children: [
-                if (item.icon != null) ...[
+              children: <Widget>[
+                if (item.icon != null) ...<Widget>[
                   IconTheme.merge(
                     data: IconThemeData(size: 16.0, color: itemColor),
                     child: item.icon!,
@@ -253,24 +265,24 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
 
   @override
   Widget build(BuildContext context) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final colors = customTheme.colors;
-    final typography = customTheme.typography;
-    final spacing = customTheme.spacing;
-    final radius = customTheme.radius;
-    final presetTokens = customTheme.presetTokens;
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = customTheme.colors;
+    final JustTypographyScheme typography = customTheme.typography;
+    final JustSpacingScheme spacing = customTheme.spacing;
+    final JustRadiusScheme radius = customTheme.radius;
+    final JustPresetTokens presetTokens = customTheme.presetTokens;
 
     return OverlayPortal.overlayChildLayoutBuilder(
       controller: _controller,
-      overlayChildBuilder: (BuildContext context, info) {
+      overlayChildBuilder: (BuildContext context, OverlayChildLayoutInfo info) {
         // targetOffset represents the top-left coordinate of the child widget
-        final targetOffset = MatrixUtils.transformPoint(
+        final Offset targetOffset = MatrixUtils.transformPoint(
           info.childPaintTransform,
           .zero,
         );
 
         return Stack(
-          children: [
+          children: <Widget>[
             GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () => _controller.hide(),
@@ -302,7 +314,9 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
                     child: Column(
                       mainAxisSize: .min,
                       crossAxisAlignment: .stretch,
-                      children: widget.collapsedItems.map((item) {
+                      children: widget.collapsedItems.map((
+                        JustBreadcrumbItem item,
+                      ) {
                         return JustPressable(
                           onTap: () {
                             _controller.hide();
@@ -313,16 +327,16 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
                                 BuildContext context,
                                 JustInteractionState state,
                               ) {
-                                final isHovered = state.isHovered;
-                                final isPressed = state.isPressed;
-                                final itemBg = isPressed
+                                final bool isHovered = state.isHovered;
+                                final bool isPressed = state.isPressed;
+                                final Color itemBg = isPressed
                                     ? colors.borderFocus.withValues(alpha: 0.15)
                                     : (isHovered
                                           ? colors.borderFocus.withValues(
                                               alpha: 0.08,
                                             )
                                           : const Color(0x00000000));
-                                final itemFg = item.onTap != null
+                                final Color itemFg = item.onTap != null
                                     ? (isHovered || isPressed
                                           ? colors.borderFocus
                                           : colors.textPrimary)
@@ -335,8 +349,8 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
                                     vertical: spacing.sm,
                                   ),
                                   child: Row(
-                                    children: [
-                                      if (item.icon != null) ...[
+                                    children: <Widget>[
+                                      if (item.icon != null) ...<Widget>[
                                         IconTheme.merge(
                                           data: IconThemeData(
                                             size: 16.0,
@@ -378,10 +392,10 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
         focusNode: _focusNode,
         onTap: () => _controller.toggle(),
         builder: (BuildContext context, JustInteractionState state) {
-          final isHovered = state.isHovered;
-          final isPressed = state.isPressed;
-          final customTheme = JustThemeProvider.of(context).theme;
-          final presetTokens = customTheme.presetTokens;
+          final bool isHovered = state.isHovered;
+          final bool isPressed = state.isPressed;
+          final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+          final JustPresetTokens presetTokens = customTheme.presetTokens;
           final Widget collapsedIndicatorWidget = Container(
             padding:
                 widget.style?.itemPadding ?? .symmetric(horizontal: spacing.xs),

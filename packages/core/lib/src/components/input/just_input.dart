@@ -2,6 +2,8 @@ import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/preset_tokens.dart';
+import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../theme/theme_provider.dart';
@@ -386,7 +388,7 @@ class _JustInputState extends State<JustInput> {
   void _handleIncrement() {
     if (!widget.enabled || widget.readOnly) return;
     final double val = .tryParse(_controller.text) ?? 0.0;
-    final updated = val + 1.0;
+    final double updated = val + 1.0;
     // Format appropriately
     _controller.text = updated % 1 == 0
         ? updated.toInt().toString()
@@ -397,7 +399,7 @@ class _JustInputState extends State<JustInput> {
   void _handleDecrement() {
     if (!widget.enabled || widget.readOnly) return;
     final double val = .tryParse(_controller.text) ?? 0.0;
-    final updated = val - 1.0;
+    final double updated = val - 1.0;
     _controller.text = updated % 1 == 0
         ? updated.toInt().toString()
         : updated.toString();
@@ -420,17 +422,20 @@ class _JustInputState extends State<JustInput> {
       );
     }
 
-    final theme = JustThemeProvider.of(context).theme;
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final animations = theme.animations;
+    final JustMotionProfile animations = theme.animations;
 
     // Dimensions based on size
     double fieldHeight;
@@ -468,33 +473,34 @@ class _JustInputState extends State<JustInput> {
     }
 
     // Custom styles
-    final finalBg =
+    final Color finalBg =
         widget.style?.backgroundColor ??
         (widget.readOnly
             ? colors.background.withValues(alpha: 0.5)
             : colors.background);
-    final finalRadius = widget.style?.borderRadius ?? defaultRadius;
-    final finalTextStyle =
+    final BorderRadius finalRadius =
+        widget.style?.borderRadius ?? defaultRadius;
+    final TextStyle finalTextStyle =
         widget.style?.textStyle ??
         typography.bodyMd.copyWith(
           fontSize: fontSize,
           color: colors.textPrimary,
         );
-    final finalLabelStyle =
+    final TextStyle finalLabelStyle =
         widget.style?.labelStyle ??
         typography.bodySm.copyWith(color: colors.textSecondary);
-    final finalHelperStyle =
+    final TextStyle finalHelperStyle =
         widget.style?.helperStyle ??
         typography.caption.copyWith(color: colors.textSecondary);
-    final finalPadding =
+    final EdgeInsetsGeometry finalPadding =
         widget.style?.contentPadding ??
         .symmetric(horizontal: paddingH, vertical: paddingV);
 
     // Resolve state colors
-    final defaultBorder = colors.borderDefault;
-    final focusedBorder = colors.borderFocus;
-    final errorBorder = colors.borderError;
-    final successBorder = colors.success;
+    final Color defaultBorder = colors.borderDefault;
+    final Color focusedBorder = colors.borderFocus;
+    final Color errorBorder = colors.borderError;
+    final Color successBorder = colors.success;
 
     // Accessibility targets
     final bool needsMinTargetSize =
@@ -519,12 +525,12 @@ class _JustInputState extends State<JustInput> {
       enabled: widget.enabled,
       child: ValueListenableBuilder<bool>(
         valueListenable: _isFocused,
-        builder: (context, isFocused, _) {
+        builder: (BuildContext context, bool isFocused, _) {
           return Column(
             crossAxisAlignment: .start,
             mainAxisSize: .min,
-            children: [
-              if (widget.label != null) ...[
+            children: <Widget>[
+              if (widget.label != null) ...<Widget>[
                 Padding(
                   padding: .only(bottom: spacing.xs),
                   child: Text(
@@ -545,7 +551,7 @@ class _JustInputState extends State<JustInput> {
                 ),
                 child: ValueListenableBuilder<bool>(
                   valueListenable: _isFilled,
-                  builder: (context, isFilled, _) {
+                  builder: (BuildContext context, bool isFilled, _) {
                     Color border = widget.style?.borderColor ?? defaultBorder;
                     if (widget.errorText != null) {
                       border = widget.style?.errorBorderColor ?? errorBorder;
@@ -588,7 +594,7 @@ class _JustInputState extends State<JustInput> {
                     if (widget.variant == .password) {
                       trailingWidget = ValueListenableBuilder<bool>(
                         valueListenable: _isPasswordObscured,
-                        builder: (context, obscured, _) {
+                        builder: (BuildContext context, bool obscured, _) {
                           return GestureDetector(
                             onTap: () {
                               if (widget.enabled) {
@@ -611,7 +617,7 @@ class _JustInputState extends State<JustInput> {
                     } else if (widget.variant == .number) {
                       trailingWidget = Row(
                         mainAxisSize: .min,
-                        children: [
+                        children: <Widget>[
                           GestureDetector(
                             onTap: _handleDecrement,
                             child: Padding(
@@ -639,7 +645,7 @@ class _JustInputState extends State<JustInput> {
                     } else if (widget.showClearButton) {
                       trailingWidget = ValueListenableBuilder<bool>(
                         valueListenable: _isFilled,
-                        builder: (context, filled, _) {
+                        builder: (BuildContext context, bool filled, _) {
                           if (!filled) {
                             if (widget.suffixIcon != null) {
                               return Padding(
@@ -697,7 +703,7 @@ class _JustInputState extends State<JustInput> {
                     if (widget.variant == .password) {
                       textInput = ValueListenableBuilder<bool>(
                         valueListenable: _isPasswordObscured,
-                        builder: (context, obscured, _) {
+                        builder: (BuildContext context, bool obscured, _) {
                           return _buildNativeTextField(
                             obscured,
                             finalTextStyle,
@@ -713,19 +719,19 @@ class _JustInputState extends State<JustInput> {
                       );
                     }
 
-                    final fieldContent = Row(
+                    final Row fieldContent = Row(
                       crossAxisAlignment:
                           widget.maxLines != null && widget.maxLines! > 1
                           ? .start
                           : .center,
-                      children: [
+                      children: <Widget>[
                         ?leadingWidget,
                         Expanded(child: textInput),
                         ?trailingWidget,
                       ],
                     );
 
-                    final presetTokens = theme.presetTokens;
+                    final JustPresetTokens presetTokens = theme.presetTokens;
                     final double borderWidth = presetTokens.showsDefaultBorder
                         ? presetTokens.borderWidth
                         : (isFocused ? 2.0 : 1.0);
@@ -758,16 +764,16 @@ class _JustInputState extends State<JustInput> {
                 ),
               ),
               // Sub-elements (Error, Success, Helper texts & Character Counter)
-              if (hasSubElements || hasCounter) ...[
+              if (hasSubElements || hasCounter) ...<Widget>[
                 SizedBox(height: spacing.xs),
                 Row(
                   mainAxisAlignment: .spaceBetween,
                   crossAxisAlignment: .start,
-                  children: [
+                  children: <Widget>[
                     if (hasSubElements)
                       Expanded(
                         child: Builder(
-                          builder: (context) {
+                          builder: (BuildContext context) {
                             String text;
                             Color textColor;
                             if (widget.errorText != null) {
@@ -796,14 +802,19 @@ class _JustInputState extends State<JustInput> {
                         padding: .only(left: spacing.sm),
                         child: ValueListenableBuilder<TextEditingValue>(
                           valueListenable: _controller,
-                          builder: (context, value, _) {
-                            return Text(
-                              '${value.text.length} / ${widget.maxLength}',
-                              style: finalHelperStyle.copyWith(
-                                color: colors.textSecondary,
-                              ),
-                            );
-                          },
+                          builder:
+                              (
+                                BuildContext context,
+                                TextEditingValue value,
+                                _,
+                              ) {
+                                return Text(
+                                  '${value.text.length} / ${widget.maxLength}',
+                                  style: finalHelperStyle.copyWith(
+                                    color: colors.textSecondary,
+                                  ),
+                                );
+                              },
                         ),
                       ),
                   ],
@@ -821,7 +832,7 @@ class _JustInputState extends State<JustInput> {
     TextStyle textStyle,
     double fontSize,
   ) {
-    final theme = JustThemeProvider.of(context).theme;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
     return EditableText(
       controller: _controller,
       focusNode: _focusNode,
@@ -876,15 +887,15 @@ class _OtpInputRowState extends State<_OtpInputRow> {
   @override
   void initState() {
     super.initState();
-    _controllers = List.generate(widget.length, (_) => TextEditingController());
-    _focusNodes = List.generate(widget.length, (_) => FocusNode());
-    _keyInterceptFocusNodes = List.generate(
+    _controllers = .generate(widget.length, (_) => TextEditingController());
+    _focusNodes = .generate(widget.length, (_) => FocusNode());
+    _keyInterceptFocusNodes = .generate(
       widget.length,
       (_) => FocusNode(skipTraversal: true),
     );
 
     // Initialize values from controller if pre-populated
-    final initial = widget.controller.text;
+    final String initial = widget.controller.text;
     for (int i = 0; i < widget.length; i++) {
       if (i < initial.length) {
         _controllers[i].text = initial[i];
@@ -894,26 +905,28 @@ class _OtpInputRowState extends State<_OtpInputRow> {
 
   @override
   void dispose() {
-    for (var c in _controllers) {
+    for (TextEditingController c in _controllers) {
       c.dispose();
     }
-    for (var f in _focusNodes) {
+    for (FocusNode f in _focusNodes) {
       f.dispose();
     }
-    for (var f in _keyInterceptFocusNodes) {
+    for (FocusNode f in _keyInterceptFocusNodes) {
       f.dispose();
     }
     super.dispose();
   }
 
   void _updateValue() {
-    final code = _controllers.map((c) => c.text).join();
+    final String code = _controllers
+        .map((TextEditingController c) => c.text)
+        .join();
     widget.controller.text = code;
     widget.onChanged?.call(code);
   }
 
   void _handlePaste(String text, int startIndex) {
-    final cleanText = text.replaceAll(RegExp(r'\D'), ''); // Numbers only
+    final String cleanText = text.replaceAll(RegExp(r'\D'), ''); // Numbers only
     int fillIndex = startIndex;
     for (int i = 0; i < cleanText.length; i++) {
       if (fillIndex < widget.length) {
@@ -922,7 +935,7 @@ class _OtpInputRowState extends State<_OtpInputRow> {
       }
     }
     _updateValue();
-    final targetFocus = fillIndex < widget.length
+    final int targetFocus = fillIndex < widget.length
         ? fillIndex
         : widget.length - 1;
     _focusNodes[targetFocus].requestFocus();
@@ -930,22 +943,22 @@ class _OtpInputRowState extends State<_OtpInputRow> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = JustThemeProvider.of(context).theme;
-    final spacing = theme.spacing;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustSpacingScheme spacing = theme.spacing;
 
     return Column(
       crossAxisAlignment: .start,
       mainAxisSize: .min,
-      children: [
+      children: <Widget>[
         Row(
           mainAxisAlignment: .spaceBetween,
-          children: [
-            for (int i = 0; i < widget.length; i++) ...[
+          children: <Widget>[
+            for (int i = 0; i < widget.length; i++) ...<Widget>[
               if (i > 0) SizedBox(width: spacing.sm),
               Expanded(
                 child: KeyboardListener(
                   focusNode: _keyInterceptFocusNodes[i], // Intermediate node to intercept backspace keys
-                  onKeyEvent: (event) {
+                  onKeyEvent: (KeyEvent event) {
                     if (event is KeyDownEvent &&
                         event.logicalKey == LogicalKeyboardKey.backspace) {
                       if (_controllers[i].text.isEmpty && i > 0) {
@@ -956,7 +969,7 @@ class _OtpInputRowState extends State<_OtpInputRow> {
                     }
                   },
                   child: Focus(
-                    onKeyEvent: (node, event) {
+                    onKeyEvent: (FocusNode node, KeyEvent event) {
                       return KeyEventResult.ignored;
                     },
                     child: JustInput(
@@ -972,7 +985,7 @@ class _OtpInputRowState extends State<_OtpInputRow> {
                           ? ''
                           : null, // Color red but no text label
                       successText: widget.successText != null ? '' : null,
-                      onChanged: (val) {
+                      onChanged: (String val) {
                         if (val.length > 1) {
                           // Handle Paste
                           _handlePaste(val, i);
@@ -992,7 +1005,7 @@ class _OtpInputRowState extends State<_OtpInputRow> {
             ],
           ],
         ),
-        if (widget.errorText != null || widget.successText != null) ...[
+        if (widget.errorText != null || widget.successText != null) ...<Widget>[
           SizedBox(height: spacing.xs),
           Text(
             widget.errorText ?? widget.successText!,

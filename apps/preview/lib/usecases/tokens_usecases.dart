@@ -16,9 +16,14 @@ abstract final class JustTokensShowcase {}
   type: JustTokensShowcase,
 )
 Widget buildColorTokensUseCase(BuildContext context) {
-  final schemeType = context.knobs.object.dropdown<String>(
+  final String schemeType = context.knobs.object.dropdown<String>(
     label: 'Color Scheme',
-    options: ['Light', 'Dark', 'Neobrutalism Light', 'Neobrutalism Dark'],
+    options: <String>[
+      'Light',
+      'Dark',
+      'Neobrutalism Light',
+      'Neobrutalism Dark',
+    ],
     initialOption: 'Light',
   );
 
@@ -40,11 +45,11 @@ Widget buildColorTokensUseCase(BuildContext context) {
 
   return Container(
     color: scheme.background,
-    padding: const EdgeInsets.all(24.0),
+    padding: const .all(24.0),
     child: SingleChildScrollView(
       child: Column(
         crossAxisAlignment: .start,
-        children: [
+        children: <Widget>[
           Text(
             'Semantic Color Tokens ($schemeType)',
             style: TextStyle(
@@ -57,7 +62,7 @@ Widget buildColorTokensUseCase(BuildContext context) {
           Wrap(
             spacing: 12,
             runSpacing: 12,
-            children: [
+            children: <Widget>[
               _buildSwatch('Background', scheme.background, scheme.textPrimary),
               _buildSwatch('Card', scheme.card, scheme.textPrimary),
               _buildSwatch('Elevated', scheme.elevated, scheme.textPrimary),
@@ -100,7 +105,7 @@ Widget buildColorTokensUseCase(BuildContext context) {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: [
+            children: <Widget>[
               _buildMiniSwatch('N50', JustColors.neutral50),
               _buildMiniSwatch('N100', JustColors.neutral100),
               _buildMiniSwatch('N300', JustColors.neutral300),
@@ -122,13 +127,13 @@ Widget buildColorTokensUseCase(BuildContext context) {
 }
 
 Widget _buildSwatch(String label, Color color, Color textColor) {
-  final contrast = color.contrastRatioWith(textColor).toStringAsFixed(2);
-  final isAA = color.isAccessibleWith(textColor);
+  final String contrast = color.contrastRatioWith(textColor).toStringAsFixed(2);
+  final bool isAA = color.isAccessibleWith(textColor);
 
   return Container(
     width: 140,
     height: 90,
-    padding: const EdgeInsets.all(10),
+    padding: const .all(10),
     decoration: BoxDecoration(
       color: color,
       borderRadius: .circular(8),
@@ -137,14 +142,14 @@ Widget _buildSwatch(String label, Color color, Color textColor) {
     child: Column(
       crossAxisAlignment: .start,
       mainAxisAlignment: .spaceBetween,
-      children: [
+      children: <Widget>[
         Text(
           label,
           style: TextStyle(fontSize: 12, fontWeight: .bold, color: textColor),
         ),
         Row(
           mainAxisAlignment: .spaceBetween,
-          children: [
+          children: <Widget>[
             Text(
               '$contrast:1',
               style: TextStyle(fontSize: 11, color: textColor),
@@ -166,7 +171,7 @@ Widget _buildSwatch(String label, Color color, Color textColor) {
 
 Widget _buildMiniSwatch(String label, Color color) {
   return Column(
-    children: [
+    children: <Widget>[
       Container(
         width: 44,
         height: 32,
@@ -188,11 +193,11 @@ Widget _buildMiniSwatch(String label, Color color) {
 @widgetbook.UseCase(name: 'Typography Scale', type: JustTokensShowcase)
 Widget buildTypographyTokensUseCase(BuildContext context) {
   return Container(
-    padding: const EdgeInsets.all(24.0),
+    padding: const .all(24.0),
     child: const SingleChildScrollView(
       child: Column(
         crossAxisAlignment: .start,
-        children: [
+        children: <Widget>[
           Text('Display Large (48px)', style: JustTypo.displayLg),
           SizedBox(height: 12),
           Text('Display Medium (36px)', style: JustTypo.displayMd),
@@ -237,7 +242,7 @@ Widget buildTypographyTokensUseCase(BuildContext context) {
 // =============================================================================
 @widgetbook.UseCase(name: 'Spacing Grid & Gaps', type: JustTokensShowcase)
 Widget buildSpacingTokensUseCase(BuildContext context) {
-  final spacings = <String, double>{
+  final Map<String, double> spacings = <String, double>{
     'xxs (2px)': JustSpacing.xxs,
     'xs (4px)': JustSpacing.xs,
     'sm (8px)': JustSpacing.sm,
@@ -250,15 +255,15 @@ Widget buildSpacingTokensUseCase(BuildContext context) {
   };
 
   return Container(
-    padding: const EdgeInsets.all(24.0),
+    padding: const .all(24.0),
     child: SingleChildScrollView(
       child: Column(
         crossAxisAlignment: .start,
-        children: spacings.entries.map((e) {
+        children: spacings.entries.map((MapEntry<String, double> e) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            padding: const .symmetric(vertical: 8.0),
             child: Row(
-              children: [
+              children: <Widget>[
                 SizedBox(
                   width: 110,
                   child: Text(
@@ -296,7 +301,7 @@ Widget buildSpacingTokensUseCase(BuildContext context) {
 // =============================================================================
 @widgetbook.UseCase(name: 'Border Radius Tokens', type: JustTokensShowcase)
 Widget buildRadiusTokensUseCase(BuildContext context) {
-  final radii = <String, BorderRadius>{
+  final Map<String, BorderRadius> radii = <String, BorderRadius>{
     'none (0px)': JustBorderRadius.none,
     'xs (2px)': JustBorderRadius.xs,
     'sm (4px)': JustBorderRadius.sm,
@@ -308,14 +313,14 @@ Widget buildRadiusTokensUseCase(BuildContext context) {
   };
 
   return Container(
-    padding: const EdgeInsets.all(24.0),
+    padding: const .all(24.0),
     child: SingleChildScrollView(
       child: Wrap(
         spacing: 16,
         runSpacing: 16,
-        children: radii.entries.map((e) {
+        children: radii.entries.map((MapEntry<String, BorderRadius> e) {
           return Column(
-            children: [
+            children: <Widget>[
               Container(
                 width: 90,
                 height: 90,
@@ -342,7 +347,7 @@ Widget buildRadiusTokensUseCase(BuildContext context) {
 // =============================================================================
 @widgetbook.UseCase(name: 'Shadow Multi-Layer Depths', type: JustTokensShowcase)
 Widget buildShadowsTokensUseCase(BuildContext context) {
-  final shadowMap = <String, List<BoxShadow>>{
+  final Map<String, List<BoxShadow>> shadowMap = <String, List<BoxShadow>>{
     'xs': JustShadows.xs,
     'sm': JustShadows.sm,
     'md': JustShadows.md,
@@ -352,12 +357,12 @@ Widget buildShadowsTokensUseCase(BuildContext context) {
   };
 
   return Container(
-    padding: const EdgeInsets.all(32.0),
+    padding: const .all(32.0),
     child: SingleChildScrollView(
       child: Wrap(
         spacing: 24,
         runSpacing: 24,
-        children: shadowMap.entries.map((e) {
+        children: shadowMap.entries.map((MapEntry<String, List<BoxShadow>> e) {
           return Container(
             width: 110,
             height: 100,
@@ -407,10 +412,10 @@ class _MotionDemoWidgetState extends State<_MotionDemoWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       child: Column(
         crossAxisAlignment: .start,
-        children: [
+        children: <Widget>[
           GestureDetector(
             onTap: () {
               setState(() {
@@ -418,7 +423,7 @@ class _MotionDemoWidgetState extends State<_MotionDemoWidget> {
               });
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const .symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: const Color(0xFF007AFF),
                 borderRadius: .circular(8),
@@ -453,17 +458,17 @@ class _MotionDemoWidgetState extends State<_MotionDemoWidget> {
 
   Widget _buildMotionRow(String label, Duration duration, Curve curve) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      padding: const .symmetric(vertical: 12.0),
       child: Column(
         crossAxisAlignment: .start,
-        children: [
+        children: <Widget>[
           Text(label, style: const TextStyle(fontWeight: .bold, fontSize: 13)),
           const SizedBox(height: 6),
           SizedBox(
             width: 300,
             height: 36,
             child: Stack(
-              children: [
+              children: <Widget>[
                 AnimatedPositioned(
                   duration: duration,
                   curve: curve,

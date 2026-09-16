@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart'
     show Colors, Icons, MaterialApp, Scaffold, ThemeData;
+import 'package:flutter/src/material/theme_data.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
@@ -31,12 +32,12 @@ Widget _buildWrapper({
   JustSkeletonTheme? skeletonTheme,
   JustProgressTheme? progressTheme,
 }) {
-  final activeTheme = theme ?? JustThemeData.light;
+  final JustThemeData activeTheme = theme ?? JustThemeData.light;
   return JustThemeProvider(
     lightTheme: activeTheme,
     child: MaterialApp(
       theme: ThemeData(
-        extensions: [
+        extensions: <ThemeExtension<dynamic>>[
           ?cardTheme,
           ?separatorTheme,
           ?skeletonTheme,
@@ -56,12 +57,12 @@ void main() {
   // =========================================================================
   group('JustCard Widget & Theme Tests', () {
     testWidgets('Renders elevated, outlined, and filled card variants', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         _buildWrapper(
           child: const Column(
-            children: [
+            children: <Widget>[
               JustCard(child: Text('Default Elevated')),
               JustCard.elevated(child: Text('Elevated Named')),
               JustCard.outlined(child: Text('Outlined Card')),
@@ -79,13 +80,13 @@ void main() {
 
     testWidgets(
       'Renders card header, footer, dividers, and composable sub-widgets',
-      (tester) async {
+      (WidgetTester tester) async {
         await tester.pumpWidget(
           _buildWrapper(
             child: const JustCard(
               header: JustCardHeader(
                 child: Column(
-                  children: [
+                  children: <Widget>[
                     JustCardTitle(child: Text('Card Title')),
                     JustCardDescription(child: Text('Card Description')),
                   ],
@@ -106,7 +107,7 @@ void main() {
 
     testWidgets(
       'Interactive card handles onTap, hover, focus, and press interactions',
-      (tester) async {
+      (WidgetTester tester) async {
         int tapCount = 0;
         await tester.pumpWidget(
           _buildWrapper(
@@ -130,7 +131,7 @@ void main() {
 
     testWidgets(
       'JustCard respects per-instance style overrides and neobrutalism theme',
-      (tester) async {
+      (WidgetTester tester) async {
         await tester.pumpWidget(
           _buildWrapper(
             theme: JustThemeData.neobrutalismLight,
@@ -140,8 +141,8 @@ void main() {
                 borderColor: Colors.black,
                 borderWidth: 3.0,
                 borderRadius: .all(.circular(12.0)),
-                padding: EdgeInsets.all(24.0),
-                margin: EdgeInsets.all(16.0),
+                padding: .all(24.0),
+                margin: .all(16.0),
               ),
               child: Text('Styled Neo Card'),
             ),
@@ -153,14 +154,14 @@ void main() {
     );
 
     test('JustCardTheme copyWith and lerp', () {
-      const theme1 = JustCardTheme(
+      const JustCardTheme theme1 = JustCardTheme(
         style: JustCardStyle(backgroundColor: Colors.red),
       );
-      const theme2 = JustCardTheme(
+      const JustCardTheme theme2 = JustCardTheme(
         style: JustCardStyle(backgroundColor: Colors.blue),
       );
 
-      final copied = theme1.copyWith(
+      final JustCardTheme copied = theme1.copyWith(
         style: const JustCardStyle(backgroundColor: Colors.green),
       );
       expect(copied.style?.backgroundColor, equals(Colors.green));
@@ -178,11 +179,11 @@ void main() {
   group('JustSeparator Widget & Theme Tests', () {
     testWidgets(
       'Renders horizontal and vertical separators with and without labels',
-      (tester) async {
+      (WidgetTester tester) async {
         await tester.pumpWidget(
           _buildWrapper(
             child: const Column(
-              children: [
+              children: <Widget>[
                 JustSeparator(),
                 JustSeparator(label: 'OR'),
                 SizedBox(
@@ -207,7 +208,7 @@ void main() {
 
     testWidgets(
       'Responsive separator switches orientation based on screen width',
-      (tester) async {
+      (WidgetTester tester) async {
         tester.view.physicalSize = const Size(
           500,
           800,
@@ -229,7 +230,7 @@ void main() {
     );
 
     testWidgets('JustSeparator respects style overrides and theme data', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         _buildWrapper(
@@ -251,14 +252,14 @@ void main() {
     });
 
     test('JustSeparatorTheme copyWith and lerp', () {
-      const theme1 = JustSeparatorTheme(
+      const JustSeparatorTheme theme1 = JustSeparatorTheme(
         style: JustSeparatorStyle(thickness: 1.0),
       );
-      const theme2 = JustSeparatorTheme(
+      const JustSeparatorTheme theme2 = JustSeparatorTheme(
         style: JustSeparatorStyle(thickness: 3.0),
       );
 
-      final copied = theme1.copyWith(
+      final JustSeparatorTheme copied = theme1.copyWith(
         style: const JustSeparatorStyle(thickness: 2.0),
       );
       expect(copied.style?.thickness, equals(2.0));
@@ -275,13 +276,13 @@ void main() {
   // =========================================================================
   group('JustBadge Widget Tests', () {
     testWidgets('Renders all badge visual variants and color categories', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         _buildWrapper(
           child: Column(
-            children: [
-              for (final color in JustBadgeColor.values)
+            children: <Widget>[
+              for (final JustBadgeColor color in JustBadgeColor.values)
                 JustBadge(
                   label: 'Badge ${color.name}',
                   color: color,
@@ -306,12 +307,12 @@ void main() {
 
     testWidgets(
       'Badge leading icon, sizes, maxWidth truncation, and onDismiss button',
-      (tester) async {
+      (WidgetTester tester) async {
         int dismissedCount = 0;
         await tester.pumpWidget(
           _buildWrapper(
             child: Column(
-              children: [
+              children: <Widget>[
                 const JustBadge(
                   label: 'Small Badge',
                   size: JustBadgeSize.sm,
@@ -343,12 +344,12 @@ void main() {
 
     testWidgets(
       'JustBadge.overlay positions badge at various corner alignments',
-      (tester) async {
+      (WidgetTester tester) async {
         await tester.pumpWidget(
           _buildWrapper(
             child: Column(
-              children: [
-                for (final pos in BadgePosition.values)
+              children: <Widget>[
+                for (final BadgePosition pos in BadgePosition.values)
                   JustBadge.overlay(
                     position: pos,
                     badge: const JustBadge.dot(),
@@ -366,7 +367,9 @@ void main() {
       },
     );
 
-    testWidgets('JustBadge respects custom style overrides', (tester) async {
+    testWidgets('JustBadge respects custom style overrides', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         _buildWrapper(
           child: const JustBadge(
@@ -391,12 +394,12 @@ void main() {
   // =========================================================================
   group('JustAvatar & JustAvatarGroup Widget Tests', () {
     testWidgets('Renders name initials, fallback icon, and image avatar', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         _buildWrapper(
           child: const Column(
-            children: [
+            children: <Widget>[
               JustAvatar(name: 'John Doe'),
               JustAvatar(name: 'SingleName'),
               JustAvatar(name: ''),
@@ -413,13 +416,13 @@ void main() {
     });
 
     testWidgets('Renders all avatar sizes, shapes, and status dots', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         _buildWrapper(
           child: Column(
-            children: [
-              for (final size in JustAvatarSize.values)
+            children: <Widget>[
+              for (final JustAvatarSize size in JustAvatarSize.values)
                 JustAvatar(
                   name: 'Alice Brown',
                   size: size,
@@ -446,7 +449,9 @@ void main() {
       expect(find.text('AB'), findsNWidgets(JustAvatarSize.values.length));
     });
 
-    testWidgets('Avatar is interactive when onTap is provided', (tester) async {
+    testWidgets('Avatar is interactive when onTap is provided', (
+      WidgetTester tester,
+    ) async {
       int avatarTaps = 0;
       await tester.pumpWidget(
         _buildWrapper(
@@ -471,15 +476,15 @@ void main() {
 
     testWidgets(
       'JustAvatarGroup renders stacked avatars with max display limit',
-      (tester) async {
+      (WidgetTester tester) async {
         await tester.pumpWidget(
           _buildWrapper(
             child: const Column(
-              children: [
-                JustAvatarGroup(avatars: []),
+              children: <Widget>[
+                JustAvatarGroup(avatars: <JustAvatar>[]),
                 JustAvatarGroup(
                   maxDisplay: 2,
-                  avatars: [
+                  avatars: <JustAvatar>[
                     JustAvatar(name: 'Alice Alpha'),
                     JustAvatar(name: 'Bob Beta'),
                     JustAvatar(name: 'Charlie Charlie'),
@@ -493,14 +498,19 @@ void main() {
 
         expect(find.text('AA'), findsOneWidget);
         expect(find.text('BB'), findsOneWidget);
-        expect(find.byKey(const ValueKey('remaining_avatar')), findsOneWidget);
+        expect(
+          find.byKey(const ValueKey<String>('remaining_avatar')),
+          findsOneWidget,
+        );
       },
     );
 
     test('PersonFallbackPainter shouldRepaint logic', () {
-      const p1 = PersonFallbackPainter(color: Colors.red);
-      const p2 = PersonFallbackPainter(color: Colors.red);
-      const p3 = PersonFallbackPainter(color: Colors.blue);
+      const PersonFallbackPainter p1 = PersonFallbackPainter(color: Colors.red);
+      const PersonFallbackPainter p2 = PersonFallbackPainter(color: Colors.red);
+      const PersonFallbackPainter p3 = PersonFallbackPainter(
+        color: Colors.blue,
+      );
 
       expect(p1.shouldRepaint(p2), isFalse);
       expect(p1.shouldRepaint(p3), isTrue);
@@ -513,13 +523,13 @@ void main() {
   group('JustSkeleton Widget & Theme Tests', () {
     testWidgets(
       'Structure-aware skeleton replaces leaf widgets when loading is true',
-      (tester) async {
+      (WidgetTester tester) async {
         await tester.pumpWidget(
           _buildWrapper(
             child: const JustSkeleton(
               loading: true,
               child: Column(
-                children: [
+                children: <Widget>[
                   Text('Real Heading'),
                   Text('Real Body Paragraph Description'),
                   SizedBox(
@@ -550,12 +560,12 @@ void main() {
     );
 
     testWidgets('Manual skeleton constructors: text, circle, rect', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         _buildWrapper(
           child: const Column(
-            children: [
+            children: <Widget>[
               JustSkeleton.text(width: 120, height: 16),
               JustSkeleton.circle(size: 48),
               JustSkeleton.rect(width: 200, height: 80),
@@ -568,14 +578,14 @@ void main() {
     });
 
     testWidgets('JustSkeletonIgnore and JustSkeletonAtomic escape hatches', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         _buildWrapper(
           child: const JustSkeleton(
             loading: true,
             child: Column(
-              children: [
+              children: <Widget>[
                 JustSkeletonIgnore(child: Text('Ignored Always Visible')),
                 JustSkeletonAtomic(
                   width: 150,
@@ -592,7 +602,7 @@ void main() {
     });
 
     testWidgets('JustSkeleton respects style overrides and theme data', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         _buildWrapper(
@@ -611,14 +621,14 @@ void main() {
     });
 
     test('JustSkeletonTheme copyWith and lerp', () {
-      const theme1 = JustSkeletonTheme(
+      const JustSkeletonTheme theme1 = JustSkeletonTheme(
         style: JustSkeletonStyle(backgroundColor: Colors.black12),
       );
-      const theme2 = JustSkeletonTheme(
+      const JustSkeletonTheme theme2 = JustSkeletonTheme(
         style: JustSkeletonStyle(backgroundColor: Colors.black26),
       );
 
-      final copied = theme1.copyWith(
+      final JustSkeletonTheme copied = theme1.copyWith(
         style: const JustSkeletonStyle(backgroundColor: Colors.black38),
       );
       expect(copied.style?.backgroundColor, equals(Colors.black38));
@@ -636,11 +646,11 @@ void main() {
   group('JustProgress Widget & Theme Tests', () {
     testWidgets(
       'Renders determinate and indeterminate linear and circular progress',
-      (tester) async {
+      (WidgetTester tester) async {
         await tester.pumpWidget(
           _buildWrapper(
             child: const Column(
-              children: [
+              children: <Widget>[
                 JustProgress(value: 0.6, showLabel: true),
                 JustProgress.circular(
                   value: 0.75,
@@ -661,7 +671,7 @@ void main() {
     );
 
     testWidgets('Renders all progress sizes and respects style overrides', (
-      tester,
+      WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         _buildWrapper(
@@ -674,8 +684,9 @@ void main() {
             ),
           ),
           child: Column(
-            children: [
-              for (final size in JustProgressSize.values) ...[
+            children: <Widget>[
+              for (final JustProgressSize size
+                  in JustProgressSize.values) ...<Widget>[
                 JustProgress(value: 0.5, size: size),
                 JustProgress.circular(value: 0.5, size: size),
               ],
@@ -690,14 +701,16 @@ void main() {
       );
     });
 
-    testWidgets('Progress updates value dynamically', (tester) async {
+    testWidgets('Progress updates value dynamically', (
+      WidgetTester tester,
+    ) async {
       double currentVal = 0.2;
       await tester.pumpWidget(
         StatefulBuilder(
-          builder: (context, setState) {
+          builder: (BuildContext context, StateSetter setState) {
             return _buildWrapper(
               child: Column(
-                children: [
+                children: <Widget>[
                   JustProgress(value: currentVal, showLabel: true),
                   GestureDetector(
                     onTap: () => setState(() => currentVal = 0.8),
@@ -717,14 +730,14 @@ void main() {
     });
 
     test('JustProgressTheme copyWith and lerp', () {
-      const theme1 = JustProgressTheme(
+      const JustProgressTheme theme1 = JustProgressTheme(
         style: JustProgressStyle(fillColor: Colors.blue),
       );
-      const theme2 = JustProgressTheme(
+      const JustProgressTheme theme2 = JustProgressTheme(
         style: JustProgressStyle(fillColor: Colors.purple),
       );
 
-      final copied = theme1.copyWith(
+      final JustProgressTheme copied = theme1.copyWith(
         style: const JustProgressStyle(fillColor: Colors.amber),
       );
       expect(copied.style?.fillColor, equals(Colors.amber));

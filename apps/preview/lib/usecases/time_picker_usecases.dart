@@ -12,23 +12,25 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 /// Widgetbook use case for interactive inline dial time picker.
 @widgetbook.UseCase(name: 'Inline Dial', type: JustTimePicker)
 Widget buildJustTimePickerInlineDialUseCase(BuildContext context) {
-  final timeFormat = context.knobs.object.dropdown<JustTimeFormat>(
-    label: 'Time Format',
-    options: JustTimeFormat.values,
-    initialOption: .twelveHour,
-    labelBuilder: (f) => f == .twelveHour ? '12-Hour (AM/PM)' : '24-Hour',
-  );
-  final minuteInterval = context.knobs.object.dropdown<int>(
+  final JustTimeFormat timeFormat = context.knobs.object
+      .dropdown<JustTimeFormat>(
+        label: 'Time Format',
+        options: JustTimeFormat.values,
+        initialOption: .twelveHour,
+        labelBuilder: (JustTimeFormat f) =>
+            f == .twelveHour ? '12-Hour (AM/PM)' : '24-Hour',
+      );
+  final int minuteInterval = context.knobs.object.dropdown<int>(
     label: 'Minute Interval',
-    options: const [1, 5, 10, 15, 30],
+    options: const <int>[1, 5, 10, 15, 30],
     initialOption: 5,
-    labelBuilder: (i) => '$i min step',
+    labelBuilder: (int i) => '$i min step',
   );
-  final allowModeSwitch = context.knobs.boolean(
+  final bool allowModeSwitch = context.knobs.boolean(
     label: 'Allow Mode Switch',
     initialValue: true,
   );
-  final enableHaptic = context.knobs.boolean(
+  final bool enableHaptic = context.knobs.boolean(
     label: 'Enable Haptic Feedback',
     initialValue: false,
   );
@@ -72,13 +74,13 @@ class _InlineDialTimePickerDemoState extends State<_InlineDialTimePickerDemo> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
 
     return Column(
       mainAxisSize: .min,
       crossAxisAlignment: .center,
-      children: [
+      children: <Widget>[
         JustTimePicker.inline(
           value: _selectedTime,
           mode: .dial,
@@ -86,7 +88,7 @@ class _InlineDialTimePickerDemoState extends State<_InlineDialTimePickerDemo> {
           minuteInterval: widget.minuteInterval,
           allowModeSwitch: widget.allowModeSwitch,
           enableHaptic: widget.enableHaptic,
-          onChanged: (time) {
+          onChanged: (TimeOfDay time) {
             setState(() {
               _selectedTime = time;
             });
@@ -112,23 +114,25 @@ class _InlineDialTimePickerDemoState extends State<_InlineDialTimePickerDemo> {
 /// Widgetbook use case for 3-column scrollable wheel time picker.
 @widgetbook.UseCase(name: 'Inline Spinner', type: JustTimePicker)
 Widget buildJustTimePickerInlineSpinnerUseCase(BuildContext context) {
-  final timeFormat = context.knobs.object.dropdown<JustTimeFormat>(
-    label: 'Time Format',
-    options: JustTimeFormat.values,
-    initialOption: .twelveHour,
-    labelBuilder: (f) => f == .twelveHour ? '12-Hour (AM/PM)' : '24-Hour',
-  );
-  final minuteInterval = context.knobs.object.dropdown<int>(
+  final JustTimeFormat timeFormat = context.knobs.object
+      .dropdown<JustTimeFormat>(
+        label: 'Time Format',
+        options: JustTimeFormat.values,
+        initialOption: .twelveHour,
+        labelBuilder: (JustTimeFormat f) =>
+            f == .twelveHour ? '12-Hour (AM/PM)' : '24-Hour',
+      );
+  final int minuteInterval = context.knobs.object.dropdown<int>(
     label: 'Minute Interval',
-    options: const [1, 5, 10, 15, 30],
+    options: const <int>[1, 5, 10, 15, 30],
     initialOption: 15,
-    labelBuilder: (i) => '$i min step',
+    labelBuilder: (int i) => '$i min step',
   );
-  final allowModeSwitch = context.knobs.boolean(
+  final bool allowModeSwitch = context.knobs.boolean(
     label: 'Allow Mode Switch',
     initialValue: true,
   );
-  final enableHaptic = context.knobs.boolean(
+  final bool enableHaptic = context.knobs.boolean(
     label: 'Enable Haptic Feedback',
     initialValue: false,
   );
@@ -173,13 +177,13 @@ class _InlineSpinnerTimePickerDemoState
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
 
     return Column(
       mainAxisSize: .min,
       crossAxisAlignment: .center,
-      children: [
+      children: <Widget>[
         JustTimePicker.inline(
           value: _selectedTime,
           mode: .spinner,
@@ -187,7 +191,7 @@ class _InlineSpinnerTimePickerDemoState
           minuteInterval: widget.minuteInterval,
           allowModeSwitch: widget.allowModeSwitch,
           enableHaptic: widget.enableHaptic,
-          onChanged: (time) {
+          onChanged: (TimeOfDay time) {
             setState(() {
               _selectedTime = time;
             });
@@ -213,19 +217,21 @@ class _InlineSpinnerTimePickerDemoState
 /// Widgetbook use case for direct numeric keyboard time input.
 @widgetbook.UseCase(name: 'Inline Input', type: JustTimePicker)
 Widget buildJustTimePickerInlineInputUseCase(BuildContext context) {
-  final timeFormat = context.knobs.object.dropdown<JustTimeFormat>(
-    label: 'Time Format',
-    options: JustTimeFormat.values,
-    initialOption: .twelveHour,
-    labelBuilder: (f) => f == .twelveHour ? '12-Hour (AM/PM)' : '24-Hour',
-  );
-  final minuteInterval = context.knobs.object.dropdown<int>(
+  final JustTimeFormat timeFormat = context.knobs.object
+      .dropdown<JustTimeFormat>(
+        label: 'Time Format',
+        options: JustTimeFormat.values,
+        initialOption: .twelveHour,
+        labelBuilder: (JustTimeFormat f) =>
+            f == .twelveHour ? '12-Hour (AM/PM)' : '24-Hour',
+      );
+  final int minuteInterval = context.knobs.object.dropdown<int>(
     label: 'Minute Interval',
-    options: const [1, 5, 10, 15, 30],
+    options: const <int>[1, 5, 10, 15, 30],
     initialOption: 1,
-    labelBuilder: (i) => '$i min step',
+    labelBuilder: (int i) => '$i min step',
   );
-  final allowModeSwitch = context.knobs.boolean(
+  final bool allowModeSwitch = context.knobs.boolean(
     label: 'Allow Mode Switch',
     initialValue: true,
   );
@@ -267,20 +273,20 @@ class _InlineInputTimePickerDemoState
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
 
     return Column(
       mainAxisSize: .min,
       crossAxisAlignment: .center,
-      children: [
+      children: <Widget>[
         JustTimePicker.inline(
           value: _selectedTime,
           mode: .input,
           timeFormat: widget.timeFormat,
           minuteInterval: widget.minuteInterval,
           allowModeSwitch: widget.allowModeSwitch,
-          onChanged: (time) {
+          onChanged: (TimeOfDay time) {
             setState(() {
               _selectedTime = time;
             });
@@ -306,31 +312,34 @@ class _InlineInputTimePickerDemoState
 /// Widgetbook use case for trigger button with anchored dropdown popover.
 @widgetbook.UseCase(name: 'Dropdown popover', type: JustTimePicker)
 Widget buildJustTimePickerDropdownUseCase(BuildContext context) {
-  final label = context.knobs.string(
+  final String label = context.knobs.string(
     label: 'Label',
     initialValue: 'Appointment Time',
   );
-  final placeholder = context.knobs.string(
+  final String placeholder = context.knobs.string(
     label: 'Placeholder',
     initialValue: 'Select a time...',
   );
-  final mode = context.knobs.object.dropdown<JustTimePickerMode>(
-    label: 'Picker Mode',
-    options: JustTimePickerMode.values,
-    initialOption: .dial,
-    labelBuilder: (m) => m.name.toUpperCase(),
-  );
-  final timeFormat = context.knobs.object.dropdown<JustTimeFormat>(
-    label: 'Time Format',
-    options: JustTimeFormat.values,
-    initialOption: .twelveHour,
-    labelBuilder: (f) => f == .twelveHour ? '12-Hour (AM/PM)' : '24-Hour',
-  );
-  final minuteInterval = context.knobs.object.dropdown<int>(
+  final JustTimePickerMode mode = context.knobs.object
+      .dropdown<JustTimePickerMode>(
+        label: 'Picker Mode',
+        options: JustTimePickerMode.values,
+        initialOption: .dial,
+        labelBuilder: (JustTimePickerMode m) => m.name.toUpperCase(),
+      );
+  final JustTimeFormat timeFormat = context.knobs.object
+      .dropdown<JustTimeFormat>(
+        label: 'Time Format',
+        options: JustTimeFormat.values,
+        initialOption: .twelveHour,
+        labelBuilder: (JustTimeFormat f) =>
+            f == .twelveHour ? '12-Hour (AM/PM)' : '24-Hour',
+      );
+  final int minuteInterval = context.knobs.object.dropdown<int>(
     label: 'Minute Interval',
-    options: const [1, 5, 10, 15, 30],
+    options: const <int>[1, 5, 10, 15, 30],
     initialOption: 5,
-    labelBuilder: (i) => '$i min step',
+    labelBuilder: (int i) => '$i min step',
   );
 
   return Center(
@@ -382,7 +391,7 @@ class _DropdownTimePickerDemoState extends State<_DropdownTimePickerDemo> {
       mode: widget.mode,
       timeFormat: widget.timeFormat,
       minuteInterval: widget.minuteInterval,
-      onChanged: (time) {
+      onChanged: (TimeOfDay time) {
         setState(() {
           _selectedTime = time;
         });
@@ -396,23 +405,26 @@ class _DropdownTimePickerDemoState extends State<_DropdownTimePickerDemo> {
 /// Widgetbook use case for modal dialog time picker trigger.
 @widgetbook.UseCase(name: 'Modal Dialog', type: JustTimePicker)
 Widget buildJustTimePickerModalUseCase(BuildContext context) {
-  final mode = context.knobs.object.dropdown<JustTimePickerMode>(
-    label: 'Picker Mode',
-    options: JustTimePickerMode.values,
-    initialOption: .dial,
-    labelBuilder: (m) => m.name.toUpperCase(),
-  );
-  final timeFormat = context.knobs.object.dropdown<JustTimeFormat>(
-    label: 'Time Format',
-    options: JustTimeFormat.values,
-    initialOption: .twelveHour,
-    labelBuilder: (f) => f == .twelveHour ? '12-Hour (AM/PM)' : '24-Hour',
-  );
-  final minuteInterval = context.knobs.object.dropdown<int>(
+  final JustTimePickerMode mode = context.knobs.object
+      .dropdown<JustTimePickerMode>(
+        label: 'Picker Mode',
+        options: JustTimePickerMode.values,
+        initialOption: .dial,
+        labelBuilder: (JustTimePickerMode m) => m.name.toUpperCase(),
+      );
+  final JustTimeFormat timeFormat = context.knobs.object
+      .dropdown<JustTimeFormat>(
+        label: 'Time Format',
+        options: JustTimeFormat.values,
+        initialOption: .twelveHour,
+        labelBuilder: (JustTimeFormat f) =>
+            f == .twelveHour ? '12-Hour (AM/PM)' : '24-Hour',
+      );
+  final int minuteInterval = context.knobs.object.dropdown<int>(
     label: 'Minute Interval',
-    options: const [1, 5, 10, 15, 30],
+    options: const <int>[1, 5, 10, 15, 30],
     initialOption: 1,
-    labelBuilder: (i) => '$i min step',
+    labelBuilder: (int i) => '$i min step',
   );
 
   return Center(
@@ -448,22 +460,22 @@ class _ModalTimePickerDemoState extends State<_ModalTimePickerDemo> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
 
     return JustDialogScope(
       controller: _dialogController,
       child: Column(
         mainAxisSize: .min,
         crossAxisAlignment: .center,
-        children: [
+        children: <Widget>[
           JustTimePicker.modal(
             value: _selectedTime,
             placeholder: 'Open Modal Time Picker',
             mode: widget.mode,
             timeFormat: widget.timeFormat,
             minuteInterval: widget.minuteInterval,
-            onChanged: (time) {
+            onChanged: (TimeOfDay time) {
               setState(() {
                 _selectedTime = time;
               });
@@ -489,14 +501,14 @@ class _ModalTimePickerDemoState extends State<_ModalTimePickerDemo> {
 
 String _formatTime(TimeOfDay time, JustTimeFormat format) {
   if (format == .twentyFourHour) {
-    final hourStr = time.hour.toString().padLeft(2, '0');
-    final minuteStr = time.minute.toString().padLeft(2, '0');
+    final String hourStr = time.hour.toString().padLeft(2, '0');
+    final String minuteStr = time.minute.toString().padLeft(2, '0');
     return '$hourStr:$minuteStr';
   } else {
-    final hourOfPeriod = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
-    final hourStr = hourOfPeriod.toString().padLeft(2, '0');
-    final minuteStr = time.minute.toString().padLeft(2, '0');
-    final periodStr = time.period == DayPeriod.am ? 'AM' : 'PM';
+    final int hourOfPeriod = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final String hourStr = hourOfPeriod.toString().padLeft(2, '0');
+    final String minuteStr = time.minute.toString().padLeft(2, '0');
+    final String periodStr = time.period == DayPeriod.am ? 'AM' : 'PM';
     return '$hourStr:$minuteStr $periodStr';
   }
 }

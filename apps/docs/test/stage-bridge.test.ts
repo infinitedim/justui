@@ -26,8 +26,11 @@ describe('stage-bridge', () => {
 
     dispatchStageEvent(event, mockIframeRef);
 
-    expect(windowSpy).toHaveBeenCalledWith(event, '*');
-    expect(iframePostMessage).toHaveBeenCalledWith(event, '*');
+    expect(windowSpy).toHaveBeenCalledWith(event, window.location.origin);
+    expect(iframePostMessage).toHaveBeenCalledWith(
+      event,
+      window.location.origin
+    );
   });
 
   it('listens for matched stage events through useStageListener hook', () => {
@@ -82,7 +85,7 @@ describe('stage-bridge', () => {
         name: 'canvas-render',
         payload: { fps: 60 },
       },
-      '*'
+      window.location.origin
     );
   });
 
@@ -118,6 +121,25 @@ describe('stage-bridge', () => {
         new MessageEvent('message', {
           data: {
             type: 'unrelated-event',
+          },
+        })
+      );
+    });
+
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('rejects messages from untrusted origins in useStageListener', () => {
+    const handler = vi.fn();
+    renderHook(() => useStageListener('justui-mount', handler));
+
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          origin: 'https://malicious-attacker.com',
+          data: {
+            type: 'justui-mount',
+            component: 'card',
           },
         })
       );

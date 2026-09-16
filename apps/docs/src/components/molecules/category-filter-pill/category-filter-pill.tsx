@@ -24,7 +24,7 @@ export function CategoryFilterPill({
         'border-(length:--just-border-width)',
         'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2',
         active
-          ? 'border-accent bg-accent-muted text-accent-deep shadow-solid'
+          ? 'border-accent bg-accent-muted text-accent-dark dark:text-accent-light shadow-solid'
           : 'border-border text-muted hover:text-foreground bg-transparent',
         className
       )}
@@ -34,7 +34,9 @@ export function CategoryFilterPill({
         <span
           className={cn(
             'inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px]',
-            active ? 'bg-accent text-foreground' : 'bg-border text-secondary'
+            active
+              ? 'bg-accent font-semibold text-[#18181b]'
+              : 'bg-border text-secondary'
           )}
         >
           {count}
