@@ -5,7 +5,7 @@ import {
   DocsTitle,
   DocsDescription,
 } from 'fumadocs-ui/page';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 export default async function Page({
   params,
@@ -13,6 +13,9 @@ export default async function Page({
   params: Promise<{ lang: string; slug?: string[] }>;
 }) {
   const { lang, slug } = await params;
+  if (!slug || slug.length === 0) {
+    redirect(`/${lang}/docs/introduction`);
+  }
   const page = source.getPage(slug, lang);
 
   if (!page) {

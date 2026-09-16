@@ -1,0 +1,101 @@
+---
+title: Radio Group
+description: Group container managing mutually exclusive radio selections across vertical or horizontal layouts.
+---
+
+# Radio Group
+
+The `JustRadioGroup` component provides a cohesive container that coordinates selection state across a set of mutually exclusive options. It simplifies managing form data by grouping individual `JustRadio` buttons under a single selected value model.
+
+---
+
+## Description
+
+- **Coordinated State**: Synchronizes active values across all nested radio options with a single `onChanged` handler.
+- **Orientation Control**: Arranges options vertically or horizontally with theme-aware spacing.
+- **Type-Safe Generics**: Supports generic option value types (`String`, `int`, `enum`, or custom domain objects).
+- **Group Disabling**: Disables all contained radio options simultaneously via a single `isDisabled` flag.
+
+---
+
+## Usage
+
+### Basic Usage
+
+Vertical subscription plan selection:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildBasicRadioGroup(BuildContext context, String? selectedPlan, ValueChanged<String> onChanged) {
+  return JustRadioGroup<String>(
+    value: selectedPlan,
+    onChanged: onChanged,
+    options: const [
+      JustRadioOption(value: 'starter', label: Text('Starter Plan - Free')),
+      JustRadioOption(value: 'pro', label: Text('Pro Plan - $29/mo')),
+      JustRadioOption(value: 'enterprise', label: Text('Enterprise - Custom')),
+    ],
+  );
+}
+```
+
+### Advanced Usage
+
+Horizontal radio group with individual disabled option:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart';
+
+Widget buildAdvancedRadioGroup(BuildContext context, String? selectedMethod, ValueChanged<String> onChanged) {
+  return JustRadioGroup<String>(
+    value: selectedMethod,
+    direction: Axis.horizontal,
+    spacing: context.justSpacing.lg,
+    onChanged: onChanged,
+    options: const [
+      JustRadioOption(value: 'credit_card', label: Text('Credit Card')),
+      JustRadioOption(value: 'paypal', label: Text('PayPal')),
+      JustRadioOption(
+        value: 'crypto',
+        label: Text('Crypto (Offline)'),
+        isDisabled: true,
+      ),
+    ],
+  );
+}
+```
+
+---
+
+## API Reference (Props)
+
+### `JustRadioGroup<T>`
+
+| Property     | Data Type                  | Default Value   | Description                                                       |
+| :----------- | :------------------------- | :-------------- | :---------------------------------------------------------------- |
+| `value`      | `T?`                       | _required_      | The currently selected value in the group.                        |
+| `options`    | `List<JustRadioOption<T>>` | _required_      | The list of available radio options.                              |
+| `onChanged`  | `ValueChanged<T>?`         | _required_      | Callback executed when an option is selected.                     |
+| `direction`  | `Axis`                     | `Axis.vertical` | Layout orientation (`Axis.vertical` or `Axis.horizontal`).        |
+| `spacing`    | `double?`                  | `null`          | Distance between adjacent radio items. Defaults to theme spacing. |
+| `isDisabled` | `bool`                     | `false`         | When true, disables the entire group from interaction.            |
+
+### `JustRadioOption<T>`
+
+| Property     | Data Type | Default Value | Description                                       |
+| :----------- | :-------- | :------------ | :------------------------------------------------ |
+| `value`      | `T`       | _required_    | The value identifying this option.                |
+| `label`      | `Widget`  | _required_    | Label widget rendered alongside the radio circle. |
+| `isDisabled` | `bool`    | `false`       | When true, disables only this specific option.    |
+
+---
+
+## Accessibility
+
+- **Radio Group Semantics**: Exposes `radiogroup` role to assistive technologies so screen readers announce "1 of 3 options".
+- **Keyboard Traversal**: Allows keyboard users to cycle through options using Up/Down or Left/Right arrow keys.

@@ -8,24 +8,25 @@ import 'package:just_ui_core/src/components/button/just_button.dart';
 
 @widgetbook.UseCase(name: 'Default Tooltip', type: JustTooltip)
 Widget buildJustTooltipDefaultUseCase(BuildContext context) {
-  final message = context.knobs.string(
+  final String message = context.knobs.string(
     label: 'Message',
     initialValue: 'Save changes to cloud',
   );
-  final position = context.knobs.object.dropdown<TooltipPosition>(
-    label: 'Preferred Position',
-    options: TooltipPosition.values,
-    initialOption: TooltipPosition.top,
-  );
-  final showArrow = context.knobs.boolean(
+  final TooltipPosition position = context.knobs.object
+      .dropdown<TooltipPosition>(
+        label: 'Preferred Position',
+        options: TooltipPosition.values,
+        initialOption: TooltipPosition.top,
+      );
+  final bool showArrow = context.knobs.boolean(
     label: 'Show Arrow',
     initialValue: false,
   );
-  final triggerOnHover = context.knobs.boolean(
+  final bool triggerOnHover = context.knobs.boolean(
     label: 'Trigger on Hover',
     initialValue: true,
   );
-  final triggerOnLongPress = context.knobs.boolean(
+  final bool triggerOnLongPress = context.knobs.boolean(
     label: 'Trigger on Long Press',
     initialValue: true,
   );

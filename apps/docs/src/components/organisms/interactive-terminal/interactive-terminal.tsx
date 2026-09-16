@@ -308,7 +308,7 @@ export function InteractiveTerminal({
           />
         </div>
         <span className="text-muted font-mono text-xs select-none">
-          {t.terminalTitle || 'justui@v0.13.2 ~ /my-flutter-app'}
+          {t.terminalTitle || 'justui@v0.14.0 ~ /my-flutter-app'}
         </span>
         <div className="w-11" aria-hidden="true" />
       </div>

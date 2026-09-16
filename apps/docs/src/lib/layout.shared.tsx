@@ -29,7 +29,7 @@ export function baseOptions(lang: string): BaseLayoutProps {
     nav: {
       title: (
         <span className="font-mono text-sm font-medium">
-          <span className="text-white">just</span>
+          <span className="text-foreground">just</span>
           <span className="text-accent">ui</span>
         </span>
       ),
@@ -37,10 +37,10 @@ export function baseOptions(lang: string): BaseLayoutProps {
     },
     githubUrl: 'https://github.com/infinitedim/justui',
     links: [
-      { text: 'Docs', url: `/${lang}/docs`, active: 'nested-url' },
+      { text: 'Docs', url: `/${lang}/docs/introduction`, active: 'nested-url' },
       {
         text: 'Components',
-        url: `/${lang}/docs/components`,
+        url: `/${lang}/components`,
         active: 'nested-url',
       },
     ],

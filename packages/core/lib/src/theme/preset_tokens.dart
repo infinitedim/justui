@@ -190,7 +190,7 @@ class DefaultPresetTokens extends JustPresetTokens {
     JustShadowLevel level, {
     required bool isPressed,
   }) {
-    final base = switch (level) {
+    final List<BoxShadow> base = switch (level) {
       .xs => shadows.xs,
       .sm => shadows.sm,
       .md => shadows.md,
@@ -203,7 +203,7 @@ class DefaultPresetTokens extends JustPresetTokens {
       // than fully collapsing the shadow.
       return base
           .map(
-            (s) => s.copyWith(
+            (BoxShadow s) => s.copyWith(
               blurRadius: s.blurRadius * 0.6,
               offset: s.offset * 0.5,
             ),
@@ -296,9 +296,9 @@ class NeobrutalismPresetTokens extends JustPresetTokens {
     if (isPressed) {
       // Neobrutalism: pressed state fully collapses the offset shadow
       // to simulate the element being "pushed into" the surface.
-      return const [];
+      return const <BoxShadow>[];
     }
-    final base = switch (level) {
+    final List<BoxShadow> base = switch (level) {
       .xs => shadows.xs,
       .sm => shadows.sm,
       .md => shadows.md,
@@ -317,7 +317,7 @@ class NeobrutalismPresetTokens extends JustPresetTokens {
     Offset? customOffset,
     double? customScale,
   }) {
-    final offset = customOffset ?? const Offset(4.0, 4.0);
+    final Offset offset = customOffset ?? const Offset(4.0, 4.0);
     return AnimatedContainer(
       duration: animations.instant,
       curve: animations.defaultCurve,

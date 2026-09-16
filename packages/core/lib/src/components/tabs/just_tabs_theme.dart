@@ -17,7 +17,7 @@ class const JustTabsTheme({
   final JustTabsStyle? verticalStyle,
 }) extends ThemeExtension<JustTabsTheme> {
   /// Default theme configuration.
-  static const defaults = JustTabsTheme();
+  static const JustTabsTheme defaults = JustTabsTheme();
 
   @override
   JustTabsTheme copyWith({

@@ -8,7 +8,7 @@ class const JustBreadcrumbTheme({
   final JustBreadcrumbStyle? style,
 }) extends ThemeExtension<JustBreadcrumbTheme> {
   /// Default theme configuration.
-  static const defaults = JustBreadcrumbTheme();
+  static const JustBreadcrumbTheme defaults = JustBreadcrumbTheme();
 
   @override
   JustBreadcrumbTheme copyWith({JustBreadcrumbStyle? style}) {

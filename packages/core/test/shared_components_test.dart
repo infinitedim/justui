@@ -30,8 +30,14 @@ void main() {
 
   group('JustInteractionState Unit Tests', () {
     test('Stores and exposes interaction state values', () {
-      final node = FocusNode();
-      final state = JustInteractionState(true, true, true, true, node);
+      final FocusNode node = FocusNode();
+      final JustInteractionState state = JustInteractionState(
+        true,
+        true,
+        true,
+        true,
+        node,
+      );
 
       expect(state.isHovered, isTrue);
       expect(state.isPressed, isTrue);
@@ -51,7 +57,7 @@ void main() {
       await tester.pumpWidget(
         buildSharedTestApp(
           JustPressable(
-            builder: (context, state) {
+            builder: (BuildContext context, JustInteractionState state) {
               capturedState = state;
               return const Text('Pressable Item');
             },
@@ -74,7 +80,7 @@ void main() {
       await tester.pumpWidget(
         buildSharedTestApp(
           JustPressable(
-            builder: (context, state) {
+            builder: (BuildContext context, JustInteractionState state) {
               capturedState = state;
               return Container(
                 width: 100,
@@ -87,7 +93,9 @@ void main() {
         ),
       );
 
-      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      final TestGesture gesture = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
       await gesture.addPointer(location: Offset.zero);
       await tester.pump();
 
@@ -114,7 +122,7 @@ void main() {
         buildSharedTestApp(
           JustPressable(
             onTap: () => tapped = true,
-            builder: (context, state) {
+            builder: (BuildContext context, JustInteractionState state) {
               capturedState = state;
               return const SizedBox(
                 width: 100,
@@ -126,7 +134,7 @@ void main() {
         ),
       );
 
-      final gesture = await tester.startGesture(
+      final TestGesture gesture = await tester.startGesture(
         tester.getCenter(find.text('Tap Target')),
       );
       await tester.pump();
@@ -138,7 +146,7 @@ void main() {
       expect(tapped, isTrue);
 
       // Test cancel
-      final gestureCancel = await tester.startGesture(
+      final TestGesture gestureCancel = await tester.startGesture(
         tester.getCenter(find.text('Tap Target')),
       );
       await tester.pump();
@@ -153,14 +161,15 @@ void main() {
       WidgetTester tester,
     ) async {
       int tapCount = 0;
-      final focusNode = FocusNode();
+      final FocusNode focusNode = FocusNode();
 
       await tester.pumpWidget(
         buildSharedTestApp(
           JustPressable(
             focusNode: focusNode,
             onTap: () => tapCount++,
-            builder: (context, state) => const Text('Key Target'),
+            builder: (BuildContext context, JustInteractionState state) =>
+                const Text('Key Target'),
           ),
         ),
       );
@@ -190,13 +199,13 @@ void main() {
       WidgetTester tester,
     ) async {
       bool customKeyHandled = false;
-      final focusNode = FocusNode();
+      final FocusNode focusNode = FocusNode();
 
       await tester.pumpWidget(
         buildSharedTestApp(
           JustPressable(
             focusNode: focusNode,
-            onKeyEvent: (node, event) {
+            onKeyEvent: (FocusNode node, KeyEvent event) {
               if (event.logicalKey == LogicalKeyboardKey.keyK) {
                 customKeyHandled = true;
                 return KeyEventResult.handled;
@@ -204,7 +213,8 @@ void main() {
               return KeyEventResult.ignored;
             },
             onTap: () {},
-            builder: (context, state) => const Text('Custom Key'),
+            builder: (BuildContext context, JustInteractionState state) =>
+                const Text('Custom Key'),
           ),
         ),
       );
@@ -230,7 +240,7 @@ void main() {
           JustPressable(
             enabled: false,
             onTap: () => tapped = true,
-            builder: (context, state) {
+            builder: (BuildContext context, JustInteractionState state) {
               capturedState = state;
               return const SizedBox(
                 width: 100,
@@ -249,7 +259,9 @@ void main() {
       expect(capturedState.isPressed, isFalse);
       expect(capturedState.isFocused, isFalse);
 
-      final mouseRegion = tester.widget<MouseRegion>(find.byType(MouseRegion));
+      final MouseRegion mouseRegion = tester.widget<MouseRegion>(
+        find.byType(MouseRegion),
+      );
       expect(mouseRegion.cursor, equals(SystemMouseCursors.basic));
     });
 
@@ -263,7 +275,8 @@ void main() {
             JustPressable(
               enableHapticFeedback: true,
               onTap: () {},
-              builder: (context, state) => const Text('Haptic Button'),
+              builder: (BuildContext context, JustInteractionState state) =>
+                  const Text('Haptic Button'),
             ),
           ),
         );
@@ -278,14 +291,15 @@ void main() {
     testWidgets('semanticLabel wraps widget with accessible Semantics', (
       WidgetTester tester,
     ) async {
-      final handle = tester.ensureSemantics();
+      final SemanticsHandle handle = tester.ensureSemantics();
 
       await tester.pumpWidget(
         buildSharedTestApp(
           JustPressable(
             semanticLabel: 'Action Label',
             onTap: () {},
-            builder: (context, state) => const Text('Inner Text'),
+            builder: (BuildContext context, JustInteractionState state) =>
+                const Text('Inner Text'),
           ),
         ),
       );
@@ -306,14 +320,15 @@ void main() {
     testWidgets('didUpdateWidget properly handles focusNode changes', (
       WidgetTester tester,
     ) async {
-      final nodeA = FocusNode();
-      final nodeB = FocusNode();
+      final FocusNode nodeA = FocusNode();
+      final FocusNode nodeB = FocusNode();
 
       await tester.pumpWidget(
         buildSharedTestApp(
           JustPressable(
             focusNode: nodeA,
-            builder: (context, state) => const Text('Focus Node Swap'),
+            builder: (BuildContext context, JustInteractionState state) =>
+                const Text('Focus Node Swap'),
           ),
         ),
       );
@@ -322,7 +337,8 @@ void main() {
         buildSharedTestApp(
           JustPressable(
             focusNode: nodeB,
-            builder: (context, state) => const Text('Focus Node Swap'),
+            builder: (BuildContext context, JustInteractionState state) =>
+                const Text('Focus Node Swap'),
           ),
         ),
       );
@@ -391,7 +407,7 @@ void main() {
     testWidgets(
       'Renders JustProgressSpinner with custom size, color, trackColor, semantics',
       (WidgetTester tester) async {
-        final handle = tester.ensureSemantics();
+        final SemanticsHandle handle = tester.ensureSemantics();
 
         await tester.pumpWidget(
           buildSharedTestApp(
@@ -422,7 +438,7 @@ void main() {
     testWidgets('JustProgressSpinner excludeSemantics removes semantics node', (
       WidgetTester tester,
     ) async {
-      final handle = tester.ensureSemantics();
+      final SemanticsHandle handle = tester.ensureSemantics();
 
       await tester.pumpWidget(
         buildSharedTestApp(
@@ -471,7 +487,7 @@ void main() {
         expect(find.text('Helper Information'), findsNothing);
 
         // Mouse hover over target
-        final gesture = await tester.createGesture(
+        final TestGesture gesture = await tester.createGesture(
           kind: PointerDeviceKind.mouse,
         );
         await gesture.addPointer(location: Offset.zero);
@@ -494,7 +510,7 @@ void main() {
     testWidgets('JustTooltipOverlay with explicit OverlayPortalController', (
       WidgetTester tester,
     ) async {
-      final controller = OverlayPortalController();
+      final OverlayPortalController controller = OverlayPortalController();
 
       await tester.pumpWidget(
         buildSharedTestApp(

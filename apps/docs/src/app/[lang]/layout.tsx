@@ -18,7 +18,7 @@ export default async function LangLayout({
       {/* Update <html lang> on the client whenever the locale changes */}
       <HtmlLang lang={lang} />
       {/*
-       * theme={{ enabled: false }} — ThemeProvider is already mounted in the
+       * theme={{ enabled: false }} -- ThemeProvider is already mounted in the
        * root layout. Disabling it here prevents a second (re-rendering) ThemeProvider
        * from being created on every locale navigation, which is what caused the
        * React 19 "Encountered a script tag" warning.

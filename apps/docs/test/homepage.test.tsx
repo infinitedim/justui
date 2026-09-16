@@ -9,6 +9,11 @@ vi.mock('@/lib/github', () => ({
 
 vi.mock('next/navigation', () => ({
   usePathname: () => '/en',
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
 }));
 
 vi.mock('next/link', () => ({
@@ -52,7 +57,7 @@ describe('HomePage Component', () => {
     );
     expect(
       screen.getByRole('link', { name: /browse components/i })
-    ).toHaveAttribute('href', '/en/docs/components');
+    ).toHaveAttribute('href', '/en/components');
   });
 
   it('renders the install tabs and interactive hero section', async () => {
@@ -74,6 +79,7 @@ describe('HomePage Component', () => {
     expect(
       screen.getByRole('heading', { name: /components/i })
     ).toBeInTheDocument();
+    expect(screen.getByText('THE ENGINE ROOM')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /JustButton/i })).toHaveAttribute(
       'href',
       '/en/docs/components/button'
