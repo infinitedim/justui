@@ -17,6 +17,7 @@ allowed-tools:
 # Technical SEO Audit
 
 ## When to Use
+
 - Use when the user wants a technical SEO review focused on crawlability, indexability, performance, or rendering.
 - Use when auditing robots.txt, canonicalization, JavaScript SEO, Core Web Vitals, or AI crawler access.
 - Use when the task is infrastructure- and implementation-oriented rather than content-focused.
@@ -24,6 +25,7 @@ allowed-tools:
 ## Categories
 
 ### 1. Crawlability
+
 - robots.txt: exists, valid, not blocking important resources
 - XML sitemap: exists, referenced in robots.txt, valid format
 - Noindex tags: intentional vs accidental
@@ -37,22 +39,24 @@ As of 2025-2026, AI companies actively crawl the web to train models and power A
 
 **Known AI crawlers:**
 
-| Crawler | Company | robots.txt token | Purpose |
-|---------|---------|-----------------|---------|
-| GPTBot | OpenAI | `GPTBot` | Model training |
-| ChatGPT-User | OpenAI | `ChatGPT-User` | Real-time browsing |
-| ClaudeBot | Anthropic | `ClaudeBot` | Model training |
-| PerplexityBot | Perplexity | `PerplexityBot` | Search index + training |
-| Bytespider | ByteDance | `Bytespider` | Model training |
-| Google-Extended | Google | `Google-Extended` | Gemini training (NOT search) |
-| CCBot | Common Crawl | `CCBot` | Open dataset |
+| Crawler         | Company      | robots.txt token  | Purpose                      |
+| --------------- | ------------ | ----------------- | ---------------------------- |
+| GPTBot          | OpenAI       | `GPTBot`          | Model training               |
+| ChatGPT-User    | OpenAI       | `ChatGPT-User`    | Real-time browsing           |
+| ClaudeBot       | Anthropic    | `ClaudeBot`       | Model training               |
+| PerplexityBot   | Perplexity   | `PerplexityBot`   | Search index + training      |
+| Bytespider      | ByteDance    | `Bytespider`      | Model training               |
+| Google-Extended | Google       | `Google-Extended` | Gemini training (NOT search) |
+| CCBot           | Common Crawl | `CCBot`           | Open dataset                 |
 
 **Key distinctions:**
+
 - Blocking `Google-Extended` prevents Gemini training use but does NOT affect Google Search indexing or AI Overviews (those use `Googlebot`)
 - Blocking `GPTBot` prevents OpenAI training but does NOT prevent ChatGPT from citing your content via browsing (`ChatGPT-User`)
 - ~3-5% of websites now use AI-specific robots.txt rules
 
 **Example, selective AI crawler blocking:**
+
 ```
 # Allow search indexing, block AI training crawlers
 User-agent: GPTBot
@@ -72,6 +76,7 @@ Allow: /
 **Recommendation:** Consider your AI visibility strategy before blocking. Being cited by AI systems drives brand awareness and referral traffic. Cross-reference the `seo-geo` skill for full AI visibility optimization.
 
 ### 2. Indexability
+
 - Canonical tags: self-referencing, no conflicts with noindex
 - Duplicate content: near-duplicates, parameter URLs, www vs non-www
 - Thin content: pages below minimum word counts per type
@@ -80,6 +85,7 @@ Allow: /
 - Index bloat: unnecessary pages consuming crawl budget
 
 ### 3. Security
+
 - HTTPS: enforced, valid SSL certificate, no mixed content
 - Security headers:
   - Content-Security-Policy (CSP)
@@ -90,6 +96,7 @@ Allow: /
 - HSTS preload: check preload list inclusion for high-security sites
 
 ### 4. URL Structure
+
 - Clean URLs: descriptive, hyphenated, no query parameters for content
 - Hierarchy: logical folder structure reflecting site architecture
 - Redirects: no chains (max 1 hop), 301 for permanent moves
@@ -97,6 +104,7 @@ Allow: /
 - Trailing slashes: consistent usage
 
 ### 5. Mobile Optimization
+
 - Responsive design: viewport meta tag, responsive CSS
 - Touch targets: minimum 48x48px with 8px spacing
 - Font size: minimum 16px base
@@ -104,6 +112,7 @@ Allow: /
 - Mobile-first indexing: Google indexes mobile version. **Mobile-first indexing is 100% complete as of July 5, 2024.** Google now crawls and indexes ALL websites exclusively with the mobile Googlebot user-agent.
 
 ### 6. Core Web Vitals
+
 - **LCP** (Largest Contentful Paint): target <2.5s
 - **INP** (Interaction to Next Paint): target <200ms
   - INP replaced FID on March 12, 2024. FID was fully removed from all Chrome tools (CrUX API, PageSpeed Insights, Lighthouse) on September 9, 2024. Do NOT reference FID anywhere.
@@ -112,11 +121,13 @@ Allow: /
 - Use PageSpeed Insights API or CrUX data if MCP available
 
 ### 7. Structured Data
+
 - Detection: JSON-LD (preferred), Microdata, RDFa
 - Validation against Google's supported types
 - See seo-schema skill for full analysis
 
 ### 8. JavaScript Rendering
+
 - Check if content visible in initial HTML vs requires JS
 - Identify client-side rendered (CSR) vs server-side rendered (SSR)
 - Flag SPA frameworks (React, Vue, Angular) that may cause indexing issues
@@ -134,6 +145,7 @@ Google updated its JavaScript SEO documentation in December 2025 with critical c
 **Best practice:** Serve critical SEO elements (canonical, meta robots, structured data, title, meta description) in the initial server-rendered HTML rather than relying on JavaScript injection.
 
 ### 9. IndexNow Protocol
+
 - Check if site supports IndexNow for Bing, Yandex, Naver
 - Supported by search engines other than Google
 - Recommend implementation for faster indexing on non-Google engines
@@ -143,21 +155,25 @@ Google updated its JavaScript SEO documentation in December 2025 with critical c
 ### Technical Score: XX/100
 
 ### Category Breakdown
-| Category | Status | Score |
-|----------|--------|-------|
-| Crawlability | pass/warn/fail | XX/100 |
-| Indexability | pass/warn/fail | XX/100 |
-| Security | pass/warn/fail | XX/100 |
-| URL Structure | pass/warn/fail | XX/100 |
-| Mobile | pass/warn/fail | XX/100 |
+
+| Category        | Status         | Score  |
+| --------------- | -------------- | ------ |
+| Crawlability    | pass/warn/fail | XX/100 |
+| Indexability    | pass/warn/fail | XX/100 |
+| Security        | pass/warn/fail | XX/100 |
+| URL Structure   | pass/warn/fail | XX/100 |
+| Mobile          | pass/warn/fail | XX/100 |
 | Core Web Vitals | pass/warn/fail | XX/100 |
 | Structured Data | pass/warn/fail | XX/100 |
-| JS Rendering | pass/warn/fail | XX/100 |
-| IndexNow | pass/warn/fail | XX/100 |
+| JS Rendering    | pass/warn/fail | XX/100 |
+| IndexNow        | pass/warn/fail | XX/100 |
 
 ### Critical Issues (fix immediately)
+
 ### High Priority (fix within 1 week)
+
 ### Medium Priority (fix within 1 month)
+
 ### Low Priority (backlog)
 
 ## DataForSEO Integration (Optional)
@@ -166,14 +182,15 @@ If DataForSEO MCP tools are available, use `on_page_instant_pages` for real page
 
 ## Error Handling
 
-| Scenario | Action |
-|----------|--------|
-| URL unreachable | Report connection error with status code. Suggest verifying URL, checking DNS resolution, and confirming the site is publicly accessible. |
-| robots.txt not found | Note that no robots.txt was detected at the root domain. Recommend creating one with appropriate directives. Continue audit on remaining categories. |
-| HTTPS not configured | Flag as a critical issue. Report whether HTTP is served without redirect, mixed content exists, or SSL certificate is missing/expired. |
+| Scenario                         | Action                                                                                                                                                                |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| URL unreachable                  | Report connection error with status code. Suggest verifying URL, checking DNS resolution, and confirming the site is publicly accessible.                             |
+| robots.txt not found             | Note that no robots.txt was detected at the root domain. Recommend creating one with appropriate directives. Continue audit on remaining categories.                  |
+| HTTPS not configured             | Flag as a critical issue. Report whether HTTP is served without redirect, mixed content exists, or SSL certificate is missing/expired.                                |
 | Core Web Vitals data unavailable | Note that CrUX data is not available (common for low-traffic sites). Suggest using Lighthouse lab data as a proxy and recommend increasing traffic before re-testing. |
 
 ## Limitations
+
 - Use this skill only when the task clearly matches the scope described above.
 - Do not treat the output as a substitute for environment-specific validation, testing, or expert review.
 - Stop and ask for clarification if required inputs, permissions, safety boundaries, or success criteria are missing.

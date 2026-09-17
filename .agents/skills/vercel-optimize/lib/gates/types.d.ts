@@ -1,10 +1,10 @@
-export type CandidateScope = 'route' | 'file' | 'account';
+export type CandidateScope = "route" | "file" | "account";
 
 export interface GateMetadata {
   id: string;
   threshold: string;
   billingDimension: string;
-  scope: CandidateScope | 'mixed';
+  scope: CandidateScope | "mixed";
   sourceCitation?: string;
   description?: string;
 }

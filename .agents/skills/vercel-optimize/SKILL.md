@@ -19,6 +19,7 @@ Core doctrine: read [references/doctrine.md](references/doctrine.md) if any rule
 - Customer copy. Read [references/voice.md](references/voice.md) before writing report text or chat output.
 
 ## When to Use
+
 - Use this skill when the task matches this description: Audit deployed Vercel apps for cost and performance issues using metrics, project config, code scans, and version-aware recommendations.
 
 ## Prerequisites
@@ -35,14 +36,14 @@ Never put auth tokens in shell commands. Do not type `VERCEL_TOKEN=...`, `--toke
 
 The preflight reads `package.json` and sets expectations before metric fan-out.
 
-| Framework | Status | Notes |
-|---|---|---|
-| Next.js App Router | supported | strongest route mapping, scanners, playbooks, citations |
-| Next.js Pages Router | supported | scoped to Pages Router idioms when detected |
-| SvelteKit | supported | route mapping for `src/routes` files and SvelteKit scanner |
-| Nuxt | supported | route mapping plus generic/platform checks; fewer framework-specific recs |
-| Astro | limited | route mapping plus generic checks; fewer framework-specific recs |
-| Hono / Remix / unknown | blocked by default | continue only if the user accepts a limited platform/code-only audit |
+| Framework              | Status             | Notes                                                                     |
+| ---------------------- | ------------------ | ------------------------------------------------------------------------- |
+| Next.js App Router     | supported          | strongest route mapping, scanners, playbooks, citations                   |
+| Next.js Pages Router   | supported          | scoped to Pages Router idioms when detected                               |
+| SvelteKit              | supported          | route mapping for `src/routes` files and SvelteKit scanner                |
+| Nuxt                   | supported          | route mapping plus generic/platform checks; fewer framework-specific recs |
+| Astro                  | limited            | route mapping plus generic checks; fewer framework-specific recs          |
+| Hono / Remix / unknown | blocked by default | continue only if the user accepts a limited platform/code-only audit      |
 
 If unsupported, stop and ask before scanning or gating:
 
@@ -326,6 +327,7 @@ Use these messages without adding sales copy or process detail.
 > The route inventory matched fewer than half of the routes we saw in observability. This is common in monorepos with custom routing. I've surfaced what I can match; the rest appear in the "Not investigated in this run" section.
 
 ## Limitations
+
 - Use this skill only when the task clearly matches the scope described above.
 - Do not treat the output as a substitute for environment-specific validation, testing, or expert review.
 - Stop and ask for clarification if required inputs, permissions, safety boundaries, or success criteria are missing.

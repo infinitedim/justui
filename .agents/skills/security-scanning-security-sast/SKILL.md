@@ -1,14 +1,15 @@
 ---
 name: security-scanning-security-sast
-description: 'Static Application Security Testing (SAST) for code vulnerability
+description: "Static Application Security Testing (SAST) for code vulnerability
 
   analysis across multiple languages and frameworks
 
-  '
+  "
 risk: unknown
 source: community
-date_added: '2026-02-27'
+date_added: "2026-02-27"
 ---
+
 # SAST Security Plugin
 
 Static Application Security Testing (SAST) for comprehensive code vulnerability detection across multiple languages, frameworks, and security patterns.
@@ -57,9 +58,28 @@ bandit -r . -ll -ii -f json  # High/Critical only
 ```
 
 **Configuration**: `.bandit`
+
 ```yaml
-exclude_dirs: ['/tests/', '/venv/', '/.tox/', '/build/']
-tests: [B201, B301, B302, B303, B304, B305, B307, B308, B312, B323, B324, B501, B502, B506, B602, B608]
+exclude_dirs: ["/tests/", "/venv/", "/.tox/", "/build/"]
+tests:
+  [
+    B201,
+    B301,
+    B302,
+    B303,
+    B304,
+    B305,
+    B307,
+    B308,
+    B312,
+    B323,
+    B324,
+    B501,
+    B502,
+    B506,
+    B602,
+    B608,
+  ]
 skips: [B101]
 ```
 
@@ -71,6 +91,7 @@ eslint . --ext .js,.jsx,.ts,.tsx --format json > eslint-security.json
 ```
 
 **Configuration**: `.eslintrc-security.json`
+
 ```json
 {
   "plugins": ["@eslint/plugin-security", "eslint-plugin-no-secrets"],
@@ -96,6 +117,7 @@ semgrep ci --config=auto  # CI mode
 ```
 
 **Custom Rules**: `.semgrep.yml`
+
 ```yaml
 rules:
   - id: sql-injection-format-string
@@ -167,6 +189,7 @@ rules:
 **VULNERABLE**: String formatting/concatenation with user input in SQL queries
 
 **SECURE**:
+
 ```python
 # Parameterized queries
 cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
@@ -178,15 +201,16 @@ User.objects.filter(id=user_id)  # ORM
 **VULNERABLE**: Direct HTML manipulation with unsanitized user input (innerHTML, outerHTML, document.write)
 
 **SECURE**:
+
 ```javascript
 // Use textContent for plain text
 element.textContent = userInput;
 
 // React auto-escapes
-<div>{userInput}</div>
+<div>{userInput}</div>;
 
 // Sanitize when HTML required
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 element.innerHTML = DOMPurify.sanitize(userInput);
 ```
 
@@ -195,6 +219,7 @@ element.innerHTML = DOMPurify.sanitize(userInput);
 **VULNERABLE**: Hardcoded API keys, passwords, tokens in source code
 
 **SECURE**:
+
 ```python
 import os
 API_KEY = os.environ.get('API_KEY')
@@ -206,6 +231,7 @@ PASSWORD = os.getenv('DB_PASSWORD')
 **VULNERABLE**: Opening files using unsanitized user input
 
 **SECURE**:
+
 ```python
 import os
 ALLOWED_DIR = '/var/www/uploads'
@@ -223,6 +249,7 @@ with open(file_path, 'r') as f:
 **VULNERABLE**: pickle.loads(), yaml.load() with untrusted data
 
 **SECURE**:
+
 ```python
 import json
 data = json.loads(user_input)  # SECURE
@@ -235,6 +262,7 @@ config = yaml.safe_load(user_input)  # SECURE
 **VULNERABLE**: os.system() or subprocess with shell=True and user input
 
 **SECURE**:
+
 ```python
 subprocess.run(['ping', '-c', '4', user_input])  # Array args
 import shlex
@@ -246,6 +274,7 @@ safe_input = shlex.quote(user_input)  # Input validation
 **VULNERABLE**: random module for security-critical operations
 
 **SECURE**:
+
 ```python
 import secrets
 token = secrets.token_hex(16)
@@ -259,6 +288,7 @@ session_id = secrets.token_urlsafe(32)
 **VULNERABLE**: @csrf_exempt, DEBUG=True, weak SECRET_KEY, missing security middleware
 
 **SECURE**:
+
 ```python
 # settings.py
 DEBUG = False
@@ -281,6 +311,7 @@ X_FRAME_OPTIONS = 'DENY'
 **VULNERABLE**: debug=True, weak secret_key, CORS wildcard
 
 **SECURE**:
+
 ```python
 import os
 from flask_talisman import Talisman
@@ -295,12 +326,13 @@ CORS(app, origins=['https://example.com'])
 **VULNERABLE**: Missing helmet, CORS wildcard, no rate limiting
 
 **SECURE**:
+
 ```javascript
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
 app.use(helmet());
-app.use(cors({ origin: 'https://example.com' }));
+app.use(cors({ origin: "https://example.com" }));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 ```
 
@@ -439,7 +471,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install tools
         run: |
@@ -496,6 +528,7 @@ sast:
 - **security-scan.md** - Comprehensive security scanning
 
 ## Limitations
+
 - Use this skill only when the task clearly matches the scope described above.
 - Do not treat the output as a substitute for environment-specific validation, testing, or expert review.
 - Stop and ask for clarification if required inputs, permissions, safety boundaries, or success criteria are missing.

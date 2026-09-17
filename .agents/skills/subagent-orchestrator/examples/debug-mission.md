@@ -1,6 +1,7 @@
 # Example: Repair Mission for a Broken Build
 
 ## Scenario
+
 User: "My Vercel deploy is failing. Build error: Cannot find module '@/components/ProposalResult'"
 
 This is a targeted repair — minimum agents, minimum quota.
@@ -61,11 +62,11 @@ Step 4: Report what was changed and why — one sentence each
 
 ## Quota Log
 
-| Event | Impact |
-|-------|--------|
-| 1 Flash agent | LOW |
-| 2–3 files read | LOW |
-| 1–2 files written | LOW |
+| Event               | Impact          |
+| ------------------- | --------------- |
+| 1 Flash agent       | LOW             |
+| 2–3 files read      | LOW             |
+| 1–2 files written   | LOW             |
 | **Total estimated** | **< 5% sprint** |
 
 > Repair missions should almost never exceed 10% sprint quota.

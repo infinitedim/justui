@@ -30,7 +30,7 @@ async function ProductsPage() {
 
   return (
     <div className="grid grid-cols-3 gap-4">
-      {products.map(product => (
+      {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </div>
@@ -41,15 +41,16 @@ async function ProductsPage() {
 ### Client Components
 
 Use `'use client'` only when you need:
+
 - Event handlers (onClick, onChange)
 - State (useState, useReducer)
 - Effects (useEffect)
 - Browser APIs (window, document)
 
 ```tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 function AddToCartButton({ productId }: { productId: string }) {
   const [isAdding, setIsAdding] = useState(false);
@@ -62,7 +63,7 @@ function AddToCartButton({ productId }: { productId: string }) {
 
   return (
     <button onClick={handleClick} disabled={isAdding}>
-      {isAdding ? 'Adding...' : 'Add to Cart'}
+      {isAdding ? "Adding..." : "Add to Cart"}
     </button>
   );
 }
@@ -95,16 +96,16 @@ async function ProductPage({ params }: { params: { id: string } }) {
 
 ```tsx
 // Force static generation at build time
-export const dynamic = 'force-static';
+export const dynamic = "force-static";
 
 // Force dynamic rendering at request time
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // Revalidate every 60 seconds (ISR)
 export const revalidate = 60;
 
 // Revalidate on-demand
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from "next/cache";
 
 async function updateProduct(id: string, data: ProductData) {
   await db.products.update({ where: { id }, data });
@@ -113,7 +114,7 @@ async function updateProduct(id: string, data: ProductData) {
   revalidatePath(`/products/${id}`);
 
   // Or revalidate by tag
-  revalidateTag('products');
+  revalidateTag("products");
 }
 ```
 
@@ -162,17 +163,17 @@ module.exports = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'cdn.example.com',
-        pathname: '/images/**',
+        protocol: "https",
+        hostname: "cdn.example.com",
+        pathname: "/images/**",
       },
       {
-        protocol: 'https',
-        hostname: '*.cloudinary.com',
+        protocol: "https",
+        hostname: "*.cloudinary.com",
       },
     ],
     // Image formats (webp is default)
-    formats: ['image/avif', 'image/webp'],
+    formats: ["image/avif", "image/webp"],
     // Device sizes for srcset
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     // Image sizes for srcset
@@ -211,26 +212,24 @@ module.exports = {
 ### Dynamic Imports
 
 ```tsx
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 
 // Basic dynamic import
-const HeavyChart = dynamic(() => import('@/components/HeavyChart'), {
+const HeavyChart = dynamic(() => import("@/components/HeavyChart"), {
   loading: () => <ChartSkeleton />,
 });
 
 // Disable SSR for client-only components
-const MapComponent = dynamic(() => import('@/components/Map'), {
+const MapComponent = dynamic(() => import("@/components/Map"), {
   ssr: false,
   loading: () => <div className="h-[400px] bg-gray-100" />,
 });
 
 // Named exports
-const Modal = dynamic(() =>
-  import('@/components/ui').then(mod => mod.Modal)
-);
+const Modal = dynamic(() => import("@/components/ui").then((mod) => mod.Modal));
 
 // With suspense
-const DashboardCharts = dynamic(() => import('@/components/DashboardCharts'), {
+const DashboardCharts = dynamic(() => import("@/components/DashboardCharts"), {
   loading: () => <Suspense fallback={<ChartsSkeleton />} />,
 });
 ```
@@ -240,8 +239,8 @@ const DashboardCharts = dynamic(() => import('@/components/DashboardCharts'), {
 ```tsx
 // app/dashboard/analytics/page.tsx
 // This page only loads when /dashboard/analytics is visited
-import { Suspense } from 'react';
-import AnalyticsCharts from './AnalyticsCharts';
+import { Suspense } from "react";
+import AnalyticsCharts from "./AnalyticsCharts";
 
 export default function AnalyticsPage() {
   return (
@@ -315,7 +314,7 @@ async function Dashboard() {
 ### Streaming with Suspense
 
 ```tsx
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
 async function ProductPage({ params }: { params: { id: string } }) {
   const product = await getProduct(params.id);
@@ -371,24 +370,24 @@ async function Header() {
 
 ```tsx
 // Cache indefinitely (default for static)
-fetch('https://api.example.com/data');
+fetch("https://api.example.com/data");
 
 // No cache - always fresh
-fetch('https://api.example.com/data', { cache: 'no-store' });
+fetch("https://api.example.com/data", { cache: "no-store" });
 
 // Revalidate after time
-fetch('https://api.example.com/data', {
-  next: { revalidate: 3600 } // 1 hour
+fetch("https://api.example.com/data", {
+  next: { revalidate: 3600 }, // 1 hour
 });
 
 // Tag-based revalidation
-fetch('https://api.example.com/products', {
-  next: { tags: ['products'] }
+fetch("https://api.example.com/products", {
+  next: { tags: ["products"] },
 });
 
 // Later, revalidate by tag
-import { revalidateTag } from 'next/cache';
-revalidateTag('products');
+import { revalidateTag } from "next/cache";
+revalidateTag("products");
 ```
 
 ### Route Segment Config
@@ -400,30 +399,30 @@ revalidateTag('products');
 export const revalidate = 3600;
 
 // Or force dynamic
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // Generate static params at build
 export async function generateStaticParams() {
   const products = await getProducts();
-  return products.map(p => ({ id: p.id }));
+  return products.map((p) => ({ id: p.id }));
 }
 ```
 
 ### unstable_cache for Custom Caching
 
 ```tsx
-import { unstable_cache } from 'next/cache';
+import { unstable_cache } from "next/cache";
 
 const getCachedUser = unstable_cache(
   async (userId: string) => {
     const user = await db.users.findUnique({ where: { id: userId } });
     return user;
   },
-  ['user-cache'],
+  ["user-cache"],
   {
     revalidate: 3600, // 1 hour
-    tags: ['users'],
-  }
+    tags: ["users"],
+  },
 );
 
 // Usage
@@ -457,15 +456,15 @@ ANALYZE=true npm run build
 
 ```tsx
 // BAD - Imports entire library
-import _ from 'lodash';
+import _ from "lodash";
 const result = _.debounce(fn, 300);
 
 // GOOD - Import only what you need
-import debounce from 'lodash/debounce';
+import debounce from "lodash/debounce";
 const result = debounce(fn, 300);
 
 // GOOD - Named imports (tree-shakeable)
-import { debounce } from 'lodash-es';
+import { debounce } from "lodash-es";
 ```
 
 ### Optimize Dependencies
@@ -474,15 +473,15 @@ import { debounce } from 'lodash-es';
 // next.config.js
 module.exports = {
   // Transpile specific packages
-  transpilePackages: ['ui-library', 'shared-utils'],
+  transpilePackages: ["ui-library", "shared-utils"],
 
   // Optimize package imports
   experimental: {
-    optimizePackageImports: ['lucide-react', '@heroicons/react'],
+    optimizePackageImports: ["lucide-react", "@heroicons/react"],
   },
 
   // External packages for server
-  serverExternalPackages: ['sharp', 'bcrypt'],
+  serverExternalPackages: ["sharp", "bcrypt"],
 };
 ```
 
@@ -490,18 +489,18 @@ module.exports = {
 
 ```tsx
 // app/layout.tsx
-import { Inter, Roboto_Mono } from 'next/font/google';
+import { Inter, Roboto_Mono } from "next/font/google";
 
 const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
 });
 
 const robotoMono = Roboto_Mono({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-roboto-mono',
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-roboto-mono",
 });
 
 export default function RootLayout({ children }) {
@@ -521,7 +520,7 @@ export default function RootLayout({ children }) {
 
 ```tsx
 // Optimize LCP hero image
-import Image from 'next/image';
+import Image from "next/image";
 
 export default function Hero() {
   return (
@@ -597,7 +596,7 @@ function ProductCard({ product }: { product?: Product }) {
 
 ```tsx
 // Defer non-critical JavaScript
-import Script from 'next/script';
+import Script from "next/script";
 
 export default function Layout({ children }) {
   return (
@@ -623,15 +622,17 @@ export default function Layout({ children }) {
 
 // Use web workers for heavy computation
 // app/components/DataProcessor.tsx
-'use client';
+("use client");
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 function DataProcessor({ data }: { data: number[] }) {
   const [result, setResult] = useState<number | null>(null);
 
   useEffect(() => {
-    const worker = new Worker(new URL('../workers/processor.js', import.meta.url));
+    const worker = new Worker(
+      new URL("../workers/processor.js", import.meta.url),
+    );
 
     worker.postMessage(data);
     worker.onmessage = (e) => setResult(e.data);
@@ -647,29 +648,29 @@ function DataProcessor({ data }: { data: number[] }) {
 
 ```tsx
 // app/components/PerformanceMonitor.tsx
-'use client';
+"use client";
 
-import { useReportWebVitals } from 'next/web-vitals';
+import { useReportWebVitals } from "next/web-vitals";
 
 export function PerformanceMonitor() {
   useReportWebVitals((metric) => {
     switch (metric.name) {
-      case 'LCP':
-        console.log('LCP:', metric.value);
+      case "LCP":
+        console.log("LCP:", metric.value);
         break;
-      case 'FID':
-        console.log('FID:', metric.value);
+      case "FID":
+        console.log("FID:", metric.value);
         break;
-      case 'CLS':
-        console.log('CLS:', metric.value);
+      case "CLS":
+        console.log("CLS:", metric.value);
         break;
-      case 'TTFB':
-        console.log('TTFB:', metric.value);
+      case "TTFB":
+        console.log("TTFB:", metric.value);
         break;
     }
 
     // Send to analytics
-    analytics.track('web-vital', {
+    analytics.track("web-vital", {
       name: metric.name,
       value: metric.value,
       id: metric.id,
@@ -686,15 +687,15 @@ export function PerformanceMonitor() {
 
 ### Performance Checklist
 
-| Area | Optimization | Impact |
-|------|-------------|--------|
-| Images | Use next/image with priority for LCP | High |
-| Fonts | Use next/font with display: swap | Medium |
-| Code | Dynamic imports for heavy components | High |
-| Data | Parallel fetching with Promise.all | High |
-| Render | Server Components by default | High |
-| Cache | Configure revalidate appropriately | Medium |
-| Bundle | Tree-shake imports, analyze size | Medium |
+| Area   | Optimization                         | Impact |
+| ------ | ------------------------------------ | ------ |
+| Images | Use next/image with priority for LCP | High   |
+| Fonts  | Use next/font with display: swap     | Medium |
+| Code   | Dynamic imports for heavy components | High   |
+| Data   | Parallel fetching with Promise.all   | High   |
+| Render | Server Components by default         | High   |
+| Cache  | Configure revalidate appropriately   | Medium |
+| Bundle | Tree-shake imports, analyze size     | Medium |
 
 ### Config Template
 
@@ -703,18 +704,18 @@ export function PerformanceMonitor() {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    remotePatterns: [{ hostname: 'cdn.example.com' }],
-    formats: ['image/avif', 'image/webp'],
+    remotePatterns: [{ hostname: "cdn.example.com" }],
+    formats: ["image/avif", "image/webp"],
   },
   experimental: {
-    optimizePackageImports: ['lucide-react'],
+    optimizePackageImports: ["lucide-react"],
   },
   headers: async () => [
     {
-      source: '/(.*)',
+      source: "/(.*)",
       headers: [
-        { key: 'X-Content-Type-Options', value: 'nosniff' },
-        { key: 'X-Frame-Options', value: 'DENY' },
+        { key: "X-Content-Type-Options", value: "nosniff" },
+        { key: "X-Frame-Options", value: "DENY" },
       ],
     },
   ],

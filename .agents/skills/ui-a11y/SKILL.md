@@ -19,6 +19,7 @@ tools: [claude, cursor, codex, gemini]
 Part of [StyleSeed](https://github.com/bitjaru/styleseed), this skill audits components and pages for accessibility issues with an emphasis on the Toss seed's mobile UI patterns. It combines WCAG 2.2 AA checks with practical code fixes for touch targets, focus states, contrast, labels, and reduced motion.
 
 ## When to Use
+
 - Use when reviewing a page or component for accessibility regressions
 - Use when a StyleSeed UI looks polished but has uncertain keyboard or contrast behavior
 - Use when adding new interactive controls to a mobile-first screen
@@ -58,6 +59,7 @@ Part of [StyleSeed](https://github.com/bitjaru/styleseed), this skill audits com
 ## Output
 
 Return:
+
 1. Issues found, grouped by severity
 2. Safe autofixes that can be applied directly
 3. Items that need manual review or product judgment
@@ -76,6 +78,7 @@ Return:
 - [Source skill](https://github.com/bitjaru/styleseed/blob/main/seeds/toss/.claude/skills/ui-a11y/SKILL.md)
 
 ## Limitations
+
 - Use this skill only when the task clearly matches the scope described above.
 - Do not treat the output as a substitute for environment-specific validation, testing, or expert review.
 - Stop and ask for clarification if required inputs, permissions, safety boundaries, or success criteria are missing.

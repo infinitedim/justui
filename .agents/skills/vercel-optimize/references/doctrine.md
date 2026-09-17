@@ -41,7 +41,7 @@ If you find yourself wanting to grep the whole codebase, stop and re-read the cu
 
 Static AST-grep scanners run in parallel with the metric-driven investigations. Their output is annotated with the per-file observability signal (`function invocations: 1.2M; 95th percentile duration: 850ms; cache hit rate: 0%` if the file maps to a hot route, `COLD-PATH` if it maps to a route with no traffic, `NO-ROUTE-MAPPING` if the file doesn't map to any route).
 
-**Default rule:** scanner findings on `COLD-PATH` or `NO-ROUTE-MAPPING` files are dropped. They become recs only if the pattern is *traffic-independent*: build configuration, middleware matcher, source maps in production, raw script tags, React Compiler config. These don't care about traffic — they affect every request equally or affect the build itself.
+**Default rule:** scanner findings on `COLD-PATH` or `NO-ROUTE-MAPPING` files are dropped. They become recs only if the pattern is _traffic-independent_: build configuration, middleware matcher, source maps in production, raw script tags, React Compiler config. These don't care about traffic — they affect every request equally or affect the build itself.
 
 The traffic-independent allow-list lives in each scanner's `metadata.trafficIndependent: boolean` field. Set it to `true` only when you can defend the claim.
 
@@ -50,10 +50,12 @@ The traffic-independent allow-list lives in each scanner's `metadata.trafficInde
 Every recommendation must carry at least one citation from `references/docs-library.json`. Anything else is dropped at sanitizer time.
 
 The library has two parts:
+
 - **URLs** — Vercel docs, Next.js docs, SvelteKit docs, etc. Each declares `applicableFrameworks` (e.g., `["next@>=15.0.0"]`).
 - **Cross-skill rule references** — by name only (`vercel-react-best-practices:async-parallel`). The agent's host resolves these.
 
 Three sanitizers enforce this:
+
 - `missing-citation` — drops recs with empty `citations[]`.
 - `unknown-citation` — strips URLs not in the library, marks `needsReview=true`.
 - `version-mismatch` — strips URLs whose `applicableFrameworks` doesn't match the project's framework@version (parsed from `package.json`).
@@ -77,6 +79,7 @@ Performance numbers stay precise because they're observed, not extrapolated. We 
 ## What good looks like
 
 A good run produces:
+
 - A small number (5-15) of recommendations.
 - Every rec ties to a specific route or file plus a specific metric signal.
 - Every rec carries before/after code and ≥1 citation matching the user's framework version.

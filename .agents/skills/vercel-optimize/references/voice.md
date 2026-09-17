@@ -27,45 +27,45 @@ Write for a user deciding what to fix next. Lead with the observed signal, the s
 
 Use customer-facing replacements:
 
-| Internal | Customer-facing |
-|---|---|
-| `sub-agent` | `investigation` |
-| `abstained` | `found no supported change` |
-| `abstention` | `investigated, no change recommended` |
-| `passRate` | `verification result` |
-| `quality score` | `review result` |
-| `inv` | `function invocations` or `requests`, based on the metric |
-| `p95` | `95th percentile` |
-| `perf` | `performance` |
-| `CWV` | `Core Web Vitals` |
+| Internal        | Customer-facing                                           |
+| --------------- | --------------------------------------------------------- |
+| `sub-agent`     | `investigation`                                           |
+| `abstained`     | `found no supported change`                               |
+| `abstention`    | `investigated, no change recommended`                     |
+| `passRate`      | `verification result`                                     |
+| `quality score` | `review result`                                           |
+| `inv`           | `function invocations` or `requests`, based on the metric |
+| `p95`           | `95th percentile`                                         |
+| `perf`          | `performance`                                             |
+| `CWV`           | `Core Web Vitals`                                         |
 
 ## Product names
 
 Use these spellings:
 
-| Right | Wrong |
-|---|---|
-| `Observability Plus` | `OPlus`, `Oplus`, `O11y Plus`, `o11y+`, `obs+` |
-| `Vercel Functions` | `serverless functions` when referring to Vercel's product |
-| `fluid compute` mid-sentence | `Fluid Compute` mid-sentence |
-| `BotID` | `Bot ID`, `botID` |
-| `AI Gateway` | `Vercel AI Gateway`, `ai gateway` |
-| `AI SDK` | `Vercel AI SDK` |
-| `Edge Config` | `EdgeConfig` |
-| `Routing Middleware` | `Edge Middleware` |
-| `Web Analytics` | `Vercel Analytics` |
-| `Hobby`, `Pro`, `Enterprise` | `hobby`, `pro`, `enterprise` as plan names |
+| Right                        | Wrong                                                     |
+| ---------------------------- | --------------------------------------------------------- |
+| `Observability Plus`         | `OPlus`, `Oplus`, `O11y Plus`, `o11y+`, `obs+`            |
+| `Vercel Functions`           | `serverless functions` when referring to Vercel's product |
+| `fluid compute` mid-sentence | `Fluid Compute` mid-sentence                              |
+| `BotID`                      | `Bot ID`, `botID`                                         |
+| `AI Gateway`                 | `Vercel AI Gateway`, `ai gateway`                         |
+| `AI SDK`                     | `Vercel AI SDK`                                           |
+| `Edge Config`                | `EdgeConfig`                                              |
+| `Routing Middleware`         | `Edge Middleware`                                         |
+| `Web Analytics`              | `Vercel Analytics`                                        |
+| `Hobby`, `Pro`, `Enterprise` | `hobby`, `pro`, `enterprise` as plan names                |
 
 Mirror billing names from the user's dashboard. If a dashboard still says `Edge Requests`, use `Edge Requests`; do not rename it.
 
 ## Recommendation shape
 
-| Field | Pattern |
-|---|---|
-| `what` | Verb + change + scope. Example: `Add shared caching to /api/products`. |
-| `why` | State the metric and code evidence. Example: `The route handled 1,200,000 requests with a 0% cache hit rate; src/app/api/products/route.ts returns no Cache-Control header.` |
-| `fix` | Numbered steps. Start each step with a verb. |
-| `verify` | Tell the user exactly which metric or command to re-check. |
+| Field    | Pattern                                                                                                                                                                      |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `what`   | Verb + change + scope. Example: `Add shared caching to /api/products`.                                                                                                       |
+| `why`    | State the metric and code evidence. Example: `The route handled 1,200,000 requests with a 0% cache hit rate; src/app/api/products/route.ts returns no Cache-Control header.` |
+| `fix`    | Numbered steps. Start each step with a verb.                                                                                                                                 |
+| `verify` | Tell the user exactly which metric or command to re-check.                                                                                                                   |
 
 Good:
 

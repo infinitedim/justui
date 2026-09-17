@@ -21,6 +21,7 @@ Total scanners: 15.
 **Fix.** Hoist the promise to the page level (`const dataPromise = fetchData()` at the top, passed down to each Suspense child) OR move the shared fetch into a `'use cache: remote'` data-access layer so cross-request and cross-boundary dedupe applies.
 
 **Citations:**
+
 - `https://nextjs.org/docs/app/api-reference/directives/use-cache`
 - `https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents`
 - `https://nextjs.org/docs/app/guides/migrating-to-cache-components`
@@ -38,6 +39,7 @@ Total scanners: 15.
 **Fix.** Either (a) drop the `export const runtime = 'edge'` so the route runs on Node (default in 2026), or (b) replace the heavy import with an edge-compatible alternative. For DB: use @neondatabase/serverless or @planetscale/database instead of pg/mysql2. For image: do the work in a Node route handler. For auth signing: use jose (Web Crypto) instead of jsonwebtoken.
 
 **Citations:**
+
 - `https://vercel.com/docs/functions/runtimes/edge-runtime`
 - `https://vercel.com/docs/fluid-compute`
 
@@ -54,6 +56,7 @@ Total scanners: 15.
 **Fix.** Audit the route. If dynamic behavior comes from cookies()/headers()/searchParams, force-dynamic may be redundant — Next infers dynamic automatically. Consider revalidate / 'use cache' / generateStaticParams if any portion can be pre-rendered.
 
 **Citations:**
+
 - `https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config`
 
 ---
@@ -69,6 +72,7 @@ Total scanners: 15.
 **Fix.** Move the dynamic API call into a child Server Component that lives inside a Suspense boundary. The parent can stay static; only the leaf re-renders dynamically.
 
 **Citations:**
+
 - `https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config`
 - `https://nextjs.org/docs/app/building-your-application/caching`
 
@@ -85,6 +89,7 @@ Total scanners: 15.
 **Fix.** Verify the asset is reachable on the customer-facing hot path. Then choose: (a) compress (convert PNG → AVIF/WebP; transcode MP4 to lower bitrate); (b) host externally (Vercel Blob, S3, or a media CDN with per-asset signed URLs); (c) lazy-load (defer to client-side fetch instead of bundling into initial HTML).
 
 **Citations:**
+
 - `https://vercel.com/docs/manage-cdn-usage`
 - `https://vercel.com/docs/image-optimization`
 
@@ -101,6 +106,7 @@ Total scanners: 15.
 **Fix.** Add s-maxage to the Cache-Control header. Example: Cache-Control: public, max-age=60, s-maxage=600, stale-while-revalidate=86400. Pair with explicit cache-bust strategy if content can change.
 
 **Citations:**
+
 - `https://vercel.com/docs/caching/cdn-cache`
 - `https://vercel.com/docs/caching/cache-control-headers`
 
@@ -114,9 +120,10 @@ Total scanners: 15.
 
 **Description.** middleware.ts without a config.matcher (or matcher: ["/(.*)"]) runs on every request including _next/static, _next/image, favicon.ico, and image asset fetches. Edge-request cost scales accordingly.
 
-**Fix.** Scope the matcher to actual application paths. Example: matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"]
+**Fix.** Scope the matcher to actual application paths. Example: matcher: ["/((?!_next/static|_next/image|favicon.ico|._\\.(?:svg|png|jpg|jpeg|gif|webp)$)._)"]
 
 **Citations:**
+
 - `https://nextjs.org/docs/app/building-your-application/routing/middleware`
 
 ---
@@ -132,6 +139,7 @@ Total scanners: 15.
 **Fix.** For GET handlers: return a Response with Cache-Control: public, s-maxage=<seconds>, stale-while-revalidate=<window>. For fetch(): drop cache:"no-store" (use { next: { revalidate: <seconds> } } in Next.js) so the response is cached by the framework + CDN.
 
 **Citations:**
+
 - `https://vercel.com/docs/caching/cdn-cache`
 - `https://vercel.com/docs/caching/cache-control-headers`
 - `https://nextjs.org/docs/app/building-your-application/caching`
@@ -149,6 +157,7 @@ Total scanners: 15.
 **Fix.** Replace with explicit .findMany() calls or scoped .include() of only what the consumer reads. Consider Prisma.select() to project specific fields. For lists, batch with DataLoader patterns.
 
 **Citations:**
+
 - `vercel-react-best-practices:server-parallel-fetching`
 
 ---
@@ -164,6 +173,7 @@ Total scanners: 15.
 **Fix.** Audit the pinned region against traffic geography (Speed Insights or Web Analytics by country) and data-source location. Consider multi-region if data lives in a fixed location and users are global; consider relocating if users are concentrated in one geography.
 
 **Citations:**
+
 - `https://vercel.com/docs/functions/configuring-functions/region`
 - `https://vercel.com/docs/functions/configuring-functions/region`
 
@@ -180,6 +190,7 @@ Total scanners: 15.
 **Fix.** Keep source maps generation but exclude them from the public bundle. Upload to your error tracker via build-time CI step; do not serve them with the deployment.
 
 **Citations:**
+
 - `https://nextjs.org/docs/messages/improper-devtool`
 
 ---
@@ -195,6 +206,7 @@ Total scanners: 15.
 **Fix.** If the page is static (no per-user / per-request data), add `export const prerender = true` in +page.ts or +page.server.ts. If the data refreshes on a schedule, prefer adapter-vercel's ISR option via `export const config = { isr: { expiration: 60 } }`.
 
 **Citations:**
+
 - `https://kit.svelte.dev/docs/page-options`
 - `https://kit.svelte.dev/docs/adapter-vercel`
 - `https://vercel.com/docs/incremental-static-regeneration`
@@ -212,6 +224,7 @@ Total scanners: 15.
 **Fix.** Remove `TURBO_FORCE=true` from build env/scripts unless intentional. Set `tasks.build.cache: true` in `turbo.json` (or remove the override), and include generated outputs in Turbo's cache contract. Prefer Vercel's skip-unaffected monorepo behavior when available; use `ignoreCommand` only when that setting cannot cover the project.
 
 **Citations:**
+
 - `https://vercel.com/docs/monorepos`
 - `https://vercel.com/docs/builds`
 - `https://turborepo.dev/docs/crafting-your-repository/caching`
@@ -229,6 +242,7 @@ Total scanners: 15.
 **Fix.** For raw <img>: switch to next/image, enhanced-img (SvelteKit), <Image /> (Astro), or NuxtImg. For global unoptimized:true: remove the flag unless the project is hosted outside Vercel. For fill without sizes: add `sizes="(max-width: 768px) 100vw, 50vw"` or whatever matches your layout. For SVG: add `unoptimized` so the raw SVG ships instead of rastering it.
 
 **Citations:**
+
 - `https://nextjs.org/docs/app/api-reference/components/image`
 - `https://vercel.com/docs/image-optimization`
 
@@ -245,6 +259,7 @@ Total scanners: 15.
 **Fix.** Replace module-scope `new Date()` with a build-time constant (`const buildYear = new Date().getFullYear()`) or move per-request timestamps into a client component inside `useEffect`. Do not pass dates as arguments to `'use cache'` functions — they invalidate the cache every call.
 
 **Citations:**
+
 - `https://nextjs.org/docs/app/api-reference/directives/use-cache`
 - `https://nextjs.org/docs/app/api-reference/functions/cacheLife`
 

@@ -1,6 +1,6 @@
 ---
 name: changelog-generator
-description: 'Produce consistent, auditable release notes from Conventional Commits. Separates commit parsing, semantic-bump logic, and changelog rendering for automated releases with editorial control. Use when cutting a release, generating CHANGELOG.md from git history, computing the next semantic version from commits, automating release notes in CI, or planning a hotfix/rollback. Examples: ''generate the changelog for v1.4.0'', ''what version bump do these commits require'', ''we need an emergency hotfix process''.'
+description: "Produce consistent, auditable release notes from Conventional Commits. Separates commit parsing, semantic-bump logic, and changelog rendering for automated releases with editorial control. Use when cutting a release, generating CHANGELOG.md from git history, computing the next semantic version from commits, automating release notes in CI, or planning a hotfix/rollback. Examples: 'generate the changelog for v1.4.0', 'what version bump do these commits require', 'we need an emergency hotfix process'."
 disable-model-invocation: false
 ---
 
@@ -135,11 +135,11 @@ SemVer mapping:
 
 When a release goes wrong, classify before acting (full procedures in [references/hotfix-procedures.md](references/hotfix-procedures.md)):
 
-| Severity | Definition | SLA | Approval |
-|---|---|---|---|
-| P0 — Critical | Outage, data loss, exploited vulnerability | Fix deployed ≤ 2h; emergency deploy bypasses normal gates | Engineering Lead + On-call Manager |
-| P1 — High | Major feature broken, significant user impact | Fix deployed ≤ 24h; expedited review | Engineering Lead + Product Manager |
-| P2 — Medium | Minor issues, limited impact | Next release cycle | Standard PR review |
+| Severity      | Definition                                    | SLA                                                       | Approval                           |
+| ------------- | --------------------------------------------- | --------------------------------------------------------- | ---------------------------------- |
+| P0 — Critical | Outage, data loss, exploited vulnerability    | Fix deployed ≤ 2h; emergency deploy bypasses normal gates | Engineering Lead + On-call Manager |
+| P1 — High     | Major feature broken, significant user impact | Fix deployed ≤ 24h; expedited review                      | Engineering Lead + Product Manager |
+| P2 — Medium   | Minor issues, limited impact                  | Next release cycle                                        | Standard PR review                 |
 
 Hotfix branch comes from the last stable tag, contains the minimal fix only, and gets its own patch-bump changelog entry via the workflow above.
 
@@ -147,13 +147,13 @@ Hotfix branch comes from the last stable tag, contains the minimal fix only, and
 
 Pre-commit to these thresholds before tagging; roll back when any fires:
 
-| Trigger | Threshold |
-|---|---|
-| Error rate spike | > 2x baseline within 30 min |
-| Performance degradation | > 50% latency increase |
-| Feature failure | Core functionality broken |
-| Security incident | Vulnerability being exploited |
-| Data corruption | Database integrity compromised |
+| Trigger                 | Threshold                      |
+| ----------------------- | ------------------------------ |
+| Error rate spike        | > 2x baseline within 30 min    |
+| Performance degradation | > 50% latency increase         |
+| Feature failure         | Core functionality broken      |
+| Security incident       | Vulnerability being exploited  |
+| Data corruption         | Database integrity compromised |
 
 Prefer feature-flag disable over code rollback; database rollbacks only for non-destructive migrations (forward-only migrations preferred). See [references/hotfix-procedures.md](references/hotfix-procedures.md).
 

@@ -35,6 +35,7 @@ Scans React/TypeScript components and generates Jest + React Testing Library tes
 **Output:** Test files with describe blocks, render tests, interaction tests
 
 **Usage:**
+
 ```bash
 # Basic usage - scan components and generate tests
 python scripts/test_suite_generator.py src/components/ --output __tests__/
@@ -47,6 +48,7 @@ python scripts/test_suite_generator.py src/ --template custom-template.tsx
 ```
 
 **Supported Patterns:**
+
 - Functional components with hooks
 - Components with Context providers
 - Components with data fetching
@@ -62,6 +64,7 @@ Parses Jest/Istanbul coverage reports and identifies gaps, uncovered branches, a
 **Output:** Coverage analysis with recommendations
 
 **Usage:**
+
 ```bash
 # Analyze coverage report
 python scripts/coverage_analyzer.py coverage/coverage-final.json
@@ -83,6 +86,7 @@ Scans Next.js pages/app directory and generates Playwright test files with commo
 **Output:** Playwright test files organized by route
 
 **Usage:**
+
 ```bash
 # Scaffold E2E tests for Next.js App Router
 python scripts/e2e_test_scaffolder.py src/app/ --output e2e/
@@ -103,16 +107,19 @@ python scripts/e2e_test_scaffolder.py src/app/ --routes "/login,/dashboard,/chec
 Use when setting up tests for new or existing React components.
 
 **Step 1: Scan project for untested components**
+
 ```bash
 python scripts/test_suite_generator.py src/components/ --scan-only
 ```
 
 **Step 2: Generate test stubs**
+
 ```bash
 python scripts/test_suite_generator.py src/components/ --output __tests__/
 ```
 
 **Step 3: Review and customize generated tests**
+
 ```typescript
 // __tests__/Button.test.tsx (generated)
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -136,6 +143,7 @@ describe('Button', () => {
 ```
 
 **Step 4: Run tests and check coverage**
+
 ```bash
 npm test -- --coverage
 python scripts/coverage_analyzer.py coverage/coverage-final.json
@@ -148,26 +156,31 @@ python scripts/coverage_analyzer.py coverage/coverage-final.json
 Use when improving test coverage or preparing for release.
 
 **Step 1: Generate coverage report**
+
 ```bash
 npm test -- --coverage --coverageReporters=json
 ```
 
 **Step 2: Analyze coverage gaps**
+
 ```bash
 python scripts/coverage_analyzer.py coverage/coverage-final.json --threshold 80
 ```
 
 **Step 3: Identify critical paths**
+
 ```bash
 python scripts/coverage_analyzer.py coverage/ --critical-paths
 ```
 
 **Step 4: Generate missing test stubs**
+
 ```bash
 python scripts/test_suite_generator.py src/ --uncovered-only --output __tests__/
 ```
 
 **Step 5: Verify improvement**
+
 ```bash
 npm test -- --coverage
 python scripts/coverage_analyzer.py coverage/ --compare previous-coverage.json
@@ -180,39 +193,44 @@ python scripts/coverage_analyzer.py coverage/ --compare previous-coverage.json
 Use when setting up Playwright for a Next.js project.
 
 **Step 1: Initialize Playwright (if not installed)**
+
 ```bash
 npm init playwright@latest
 ```
 
 **Step 2: Scaffold E2E tests from routes**
+
 ```bash
 python scripts/e2e_test_scaffolder.py src/app/ --output e2e/
 ```
 
 **Step 3: Configure authentication fixtures**
+
 ```typescript
 // e2e/fixtures/auth.ts (generated)
-import { test as base } from '@playwright/test';
+import { test as base } from "@playwright/test";
 
 export const test = base.extend({
   authenticatedPage: async ({ page }, use) => {
-    await page.goto('/login');
-    await page.fill('[name="email"]', 'test@example.com');
-    await page.fill('[name="password"]', 'password');
+    await page.goto("/login");
+    await page.fill('[name="email"]', "test@example.com");
+    await page.fill('[name="password"]', "password");
     await page.click('button[type="submit"]');
-    await page.waitForURL('/dashboard');
+    await page.waitForURL("/dashboard");
     await use(page);
   },
 });
 ```
 
 **Step 4: Run E2E tests**
+
 ```bash
 npx playwright test
 npx playwright show-report
 ```
 
 **Step 5: Add to CI pipeline**
+
 ```yaml
 # .github/workflows/e2e.yml
 - name: "run-e2e-tests"
@@ -228,11 +246,11 @@ npx playwright show-report
 
 ## Reference Documentation
 
-| File | Contains | Use When |
-|------|----------|----------|
-| `references/testing_strategies.md` | Test pyramid, testing types, coverage targets, CI/CD integration | Designing test strategy |
-| `references/test_automation_patterns.md` | Page Object Model, mocking (MSW), fixtures, async patterns | Writing test code |
-| `references/qa_best_practices.md` | Testable code, flaky tests, debugging, quality metrics | Improving test quality |
+| File                                     | Contains                                                         | Use When                |
+| ---------------------------------------- | ---------------------------------------------------------------- | ----------------------- |
+| `references/testing_strategies.md`       | Test pyramid, testing types, coverage targets, CI/CD integration | Designing test strategy |
+| `references/test_automation_patterns.md` | Page Object Model, mocking (MSW), fixtures, async patterns       | Writing test code       |
+| `references/qa_best_practices.md`        | Testable code, flaky tests, debugging, quality metrics           | Improving test quality  |
 
 ---
 
@@ -242,12 +260,12 @@ npx playwright show-report
 
 ```typescript
 // Preferred (accessible)
-screen.getByRole('button', { name: /submit/i })
-screen.getByLabelText(/email/i)
-screen.getByPlaceholderText(/search/i)
+screen.getByRole("button", { name: /submit/i });
+screen.getByLabelText(/email/i);
+screen.getByPlaceholderText(/search/i);
 
 // Fallback
-screen.getByTestId('custom-element')
+screen.getByTestId("custom-element");
 ```
 
 ### Async Testing
@@ -268,13 +286,13 @@ await waitFor(() => {
 ### Mocking with MSW
 
 ```typescript
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
+import { rest } from "msw";
+import { setupServer } from "msw/node";
 
 const server = setupServer(
-  rest.get('/api/users', (req, res, ctx) => {
+  rest.get("/api/users", (req, res, ctx) => {
     return res(ctx.json([{ id: 1, name: "john" }]));
-  })
+  }),
 );
 
 beforeAll(() => server.listen());
@@ -286,12 +304,12 @@ afterAll(() => server.close());
 
 ```typescript
 // Preferred
-page.getByRole('button', { name: "submit" })
-page.getByLabel('Email')
-page.getByText('Welcome')
+page.getByRole("button", { name: "submit" });
+page.getByLabel("Email");
+page.getByText("Welcome");
 
 // Chaining
-page.getByRole('listitem').filter({ hasText: 'Product' })
+page.getByRole("listitem").filter({ hasText: "Product" });
 ```
 
 ### Coverage Thresholds (jest.config.js)

@@ -3,19 +3,19 @@ name: agent-orchestrator
 description: Meta-skill que orquestra todos os agentes do ecossistema. Scan automatico de skills, match por capacidades, coordenacao de workflows multi-skill e registry management.
 risk: safe
 source: community
-date_added: '2026-03-06'
+date_added: "2026-03-06"
 author: renat
 tags:
-- orchestration
-- multi-agent
-- workflow
-- automation
+  - orchestration
+  - multi-agent
+  - workflow
+  - automation
 tools:
-- claude-code
-- antigravity
-- cursor
-- gemini-cli
-- codex-cli
+  - claude-code
+  - antigravity
+  - cursor
+  - gemini-cli
+  - codex-cli
 ---
 
 # Agent Orchestrator
@@ -71,11 +71,11 @@ python agent-orchestrator/scripts/match_skills.py "<solicitacao do usuario>"
 
 Retorna JSON com skills ranqueadas por relevancia. Interpretar o resultado:
 
-| Resultado              | Acao                                                    |
-|:-----------------------|:--------------------------------------------------------|
-| `matched: 0`          | Nenhum skill relevante. Operar normalmente sem skills.  |
-| `matched: 1`          | Um skill relevante. Carregar seu SKILL.md e seguir.     |
-| `matched: 2+`         | Multiplos skills. Executar Passo 3 (orquestracao).      |
+| Resultado     | Acao                                                   |
+| :------------ | :----------------------------------------------------- |
+| `matched: 0`  | Nenhum skill relevante. Operar normalmente sem skills. |
+| `matched: 1`  | Um skill relevante. Carregar seu SKILL.md e seguir.    |
+| `matched: 2+` | Multiplos skills. Executar Passo 3 (orquestracao).     |
 
 ## Passo 3: Orquestracao (Se Matched >= 2)
 
@@ -88,6 +88,7 @@ Retorna plano de execucao com padrao, ordem dos steps e data flow entre skills.
 ## Passo Rapido (Atalho)
 
 Para queries simples, os passos 1+2 podem ser combinados em sequencia:
+
 ```bash
 python agent-orchestrator/scripts/scan_registry.py && python agent-orchestrator/scripts/match_skills.py "<solicitacao>"
 ```
@@ -97,6 +98,7 @@ python agent-orchestrator/scripts/scan_registry.py && python agent-orchestrator/
 ## Skill Registry
 
 O registry vive em:
+
 ```
 agent-orchestrator/data/registry.json
 ```
@@ -104,6 +106,7 @@ agent-orchestrator/data/registry.json
 ## Locais De Busca
 
 O scanner procura SKILL.md em:
+
 1. `.claude/skills/*/` (skills registradas no Claude Code)
 2. `*/` (skills standalone no top-level)
 3. `*/*\` (skills em subpastas, ate profundidade 3)
@@ -112,17 +115,17 @@ O scanner procura SKILL.md em:
 
 Cada entrada no registry contem:
 
-| Campo          | Descricao                                          |
-|:---------------|:---------------------------------------------------|
-| name           | Nome da skill (do frontmatter YAML)                |
-| description    | Descricao completa (triggers inclusos)             |
-| location       | Caminho absoluto do diretorio                      |
-| skill_md       | Caminho absoluto do SKILL.md                       |
-| registered     | Se esta em .claude/skills/ (true/false)            |
-| capabilities   | Tags de capacidade (auto-extraidas + explicitas)   |
-| triggers       | Keywords de ativacao extraidas da description      |
-| language       | Linguagem principal (python/nodejs/bash/none)      |
-| status         | active / incomplete / missing                      |
+| Campo        | Descricao                                        |
+| :----------- | :----------------------------------------------- |
+| name         | Nome da skill (do frontmatter YAML)              |
+| description  | Descricao completa (triggers inclusos)           |
+| location     | Caminho absoluto do diretorio                    |
+| skill_md     | Caminho absoluto do SKILL.md                     |
+| registered   | Se esta em .claude/skills/ (true/false)          |
+| capabilities | Tags de capacidade (auto-extraidas + explicitas) |
+| triggers     | Keywords de ativacao extraidas da description    |
+| language     | Linguagem principal (python/nodejs/bash/none)    |
+| status       | active / incomplete / missing                    |
 
 ## Comandos Do Registry
 
@@ -147,13 +150,13 @@ python agent-orchestrator/scripts/scan_registry.py --force
 
 Para cada solicitacao, o matcher pontua skills usando:
 
-| Criterio                     | Pontos | Exemplo                               |
-|:-----------------------------|:-------|:--------------------------------------|
-| Nome do skill na query       | +15    | "use web-scraper" -> web-scraper      |
-| Keyword trigger exata        | +10    | "scrape" -> web-scraper               |
-| Categoria de capacidade      | +5     | data-extraction -> web-scraper        |
-| Sobreposicao de palavras     | +1     | Palavras da query na description      |
-| Boost de projeto             | +20    | Skill atribuida ao projeto ativo      |
+| Criterio                 | Pontos | Exemplo                          |
+| :----------------------- | :----- | :------------------------------- |
+| Nome do skill na query   | +15    | "use web-scraper" -> web-scraper |
+| Keyword trigger exata    | +10    | "scrape" -> web-scraper          |
+| Categoria de capacidade  | +5     | data-extraction -> web-scraper   |
+| Sobreposicao de palavras | +1     | Palavras da query na description |
+| Boost de projeto         | +20    | Skill atribuida ao projeto ativo |
 
 Threshold minimo: 5 pontos. Skills abaixo disso sao ignoradas.
 
@@ -225,6 +228,7 @@ agent-orchestrator/data/projects.json
 
 **Criar projeto:**
 Adicionar entrada ao projects.json:
+
 ```json
 {
   "name": "nome-do-projeto",
@@ -248,23 +252,23 @@ Para adicionar uma nova skill ao ecossistema:
 
 1. Criar uma pasta em qualquer lugar sob `skills root:`
 2. Criar um `SKILL.md` com frontmatter YAML:
+
 ```yaml
 ---
 name: minha-nova-skill
 description: "Descricao com keywords de ativacao..."
 ---
-
 ## Documentacao Da Skill
-
 ```
+
 3. **Pronto!** O auto-discovery detecta automaticamente na proxima solicitacao.
 
-Opcionalmente, para discovery nativo do Claude Code:
-4. Copiar o SKILL.md para `.claude/skills/<nome>/SKILL.md`
+Opcionalmente, para discovery nativo do Claude Code: 4. Copiar o SKILL.md para `.claude/skills/<nome>/SKILL.md`
 
 ## Tags De Capacidade Explicitas (Opcional)
 
 Adicionar ao frontmatter para matching mais preciso:
+
 ```yaml
 capabilities: [data-extraction, web-automation]
 ```
@@ -279,24 +283,24 @@ python agent-orchestrator/scripts/scan_registry.py --status
 
 ## Interpretar Status
 
-| Status     | Significado                                        |
-|:-----------|:---------------------------------------------------|
-| active     | SKILL.md com name + description presentes          |
-| incomplete | SKILL.md existe mas falta name ou description      |
-| missing    | Diretorio existe mas sem SKILL.md                  |
+| Status     | Significado                                   |
+| :--------- | :-------------------------------------------- |
+| active     | SKILL.md com name + description presentes     |
+| incomplete | SKILL.md existe mas falta name ou description |
+| missing    | Diretorio existe mas sem SKILL.md             |
 
 ---
 
 ## Skills Atuais Do Ecossistema
 
-| Skill              | Capacidades                           | Status  |
-|:-------------------|:--------------------------------------|:--------|
-| web-scraper        | data-extraction, web-automation       | active  |
-| junta-leiloeiros   | government-data, data-extraction      | active  |
-| whatsapp-cloud-api | messaging, api-integration            | active  |
-| instagram          | social-media, api-integration         | partial |
+| Skill              | Capacidades                      | Status  |
+| :----------------- | :------------------------------- | :------ |
+| web-scraper        | data-extraction, web-automation  | active  |
+| junta-leiloeiros   | government-data, data-extraction | active  |
+| whatsapp-cloud-api | messaging, api-integration       | active  |
+| instagram          | social-media, api-integration    | partial |
 
-*Esta tabela e atualizada automaticamente via `scan_registry.py --status`.*
+_Esta tabela e atualizada automaticamente via `scan_registry.py --status`._
 
 ## Best Practices
 
@@ -316,6 +320,7 @@ python agent-orchestrator/scripts/scan_registry.py --status
 - `task-intelligence` - Complementary skill for enhanced analysis
 
 ## Limitations
+
 - Use this skill only when the task clearly matches the scope described above.
 - Do not treat the output as a substitute for environment-specific validation, testing, or expert review.
 - Stop and ask for clarification if required inputs, permissions, safety boundaries, or success criteria are missing.
