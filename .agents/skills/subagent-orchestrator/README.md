@@ -20,11 +20,13 @@ Turns one big task into a set of isolated, efficient agent missions — without 
 ## Install
 
 **One command (Windows PowerShell):**
+
 ```powershell
 node scripts/install.js
 ```
 
 **Manual install — copy this folder to:**
+
 ```
 Windows: %USERPROFILE%\.agents\skills\subagent-orchestrator\
 Mac/Linux: ~/.agents/skills/subagent-orchestrator/
@@ -37,11 +39,13 @@ Then restart your Antigravity session.
 ## Usage
 
 The skill auto-activates when your task:
+
 - Spans 3+ files or components
 - Needs parallel agents (UI + API, planner + builder, etc.)
 - Has quota risk (large codebase, many tool calls expected)
 
 Or trigger it manually:
+
 ```
 "Use subagent-orchestrator to build the auth flow"
 ```
@@ -68,17 +72,17 @@ subagent-orchestrator/
 
 ## Quota reference (quick)
 
-| Model | Cost |
-|-------|------|
-| Gemini Flash | 1x (default for all subagents) |
-| Claude Sonnet | ~4x (max 1 per mission) |
-| Claude Opus | Never use in subagents |
+| Model         | Cost                           |
+| ------------- | ------------------------------ |
+| Gemini Flash  | 1x (default for all subagents) |
+| Claude Sonnet | ~4x (max 1 per mission)        |
+| Claude Opus   | Never use in subagents         |
 
-| Mission size | Est. sprint used |
-|-------------|-----------------|
-| 1-file repair | < 5% |
-| Single feature | 15–25% |
-| Full flow (auth, API, UI) | 30–45% |
+| Mission size              | Est. sprint used |
+| ------------------------- | ---------------- |
+| 1-file repair             | < 5%             |
+| Single feature            | 15–25%           |
+| Full flow (auth, API, UI) | 30–45%           |
 
 ---
 

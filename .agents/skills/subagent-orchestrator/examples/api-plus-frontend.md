@@ -1,6 +1,7 @@
 # Example: Backend API Agent + Frontend UI Agent in Parallel
 
 ## Scenario
+
 User prompt: "Build a proposal generator — form on frontend, AI call on backend, result displayed on screen."
 
 ## This is the ProposalKit core feature pattern.
@@ -49,6 +50,7 @@ AGENTS:
 ## Key Pattern: Spec-First Parallelism
 
 agents 001 and 002 run at the same time because:
+
 - agent-002 receives the **API contract** (input/output shape) not the actual code
 - The contract is defined before either agent runs
 - Both agents work from the same agreed spec
@@ -56,6 +58,7 @@ agents 001 and 002 run at the same time because:
 This avoids agent-002 waiting for agent-001 to finish, saving significant time and quota.
 
 **Always define the API contract before spawning parallel agents:**
+
 ```typescript
 // Agree on this before agents run:
 // POST /api/generate
@@ -67,10 +70,10 @@ This avoids agent-002 waiting for agent-001 to finish, saving significant time a
 
 ## Quota Log
 
-| Event | Impact |
-|-------|--------|
-| agent-001 (Flash, 1 file) | LOW |
-| agent-002 (Sonnet, 3 files) | MEDIUM |
-| agent-003 (Flash, review only) | LOW |
-| 0 browser agents | NONE |
-| **Total estimated** | **~30% sprint** |
+| Event                          | Impact          |
+| ------------------------------ | --------------- |
+| agent-001 (Flash, 1 file)      | LOW             |
+| agent-002 (Sonnet, 3 files)    | MEDIUM          |
+| agent-003 (Flash, review only) | LOW             |
+| 0 browser agents               | NONE            |
+| **Total estimated**            | **~30% sprint** |

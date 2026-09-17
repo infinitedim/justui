@@ -11,14 +11,14 @@ Application-profile-specific advice that shapes how recommendations are phrased 
 
 ## Profile detection (best-effort heuristics)
 
-| Signals → | Profile |
-|---|---|
+| Signals →                                                                                                                       | Profile          |
+| ------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
 | `@vercel/sandbox`, `@ai-sdk/*`, `ai`, `openai`, `@anthropic-ai/sdk` deps OR AI Gateway / Sandbox SKU active in `usage.services` | `ai-application` |
-| `stripe`, `@shopify/*`, `react-stripe-js`, "cart"/"checkout" routes | `ecommerce` |
-| `next-auth`, `clerk`, dashboard routes, multi-tenant headers | `saas` |
-| Only `pages/api/**` or `app/api/**`, no UI routes | `api-service` |
-| Heavy MDX / markdown, mostly static routes | `content-site` |
-| Lots of `/(marketing)/` route groups, A/B test deps | `marketing` |
+| `stripe`, `@shopify/*`, `react-stripe-js`, "cart"/"checkout" routes                                                             | `ecommerce`      |
+| `next-auth`, `clerk`, dashboard routes, multi-tenant headers                                                                    | `saas`           |
+| Only `pages/api/**` or `app/api/**`, no UI routes                                                                               | `api-service`    |
+| Heavy MDX / markdown, mostly static routes                                                                                      | `content-site`   |
+| Lots of `/(marketing)/` route groups, A/B test deps                                                                             | `marketing`      |
 
 `ai-application` is checked first — AI-shaped customers often share routes with SaaS/ecommerce surfaces, but the billing shape (AI Gateway dominant) and remediation set (provider failover, sandbox reuse, OIDC keyless) belong to this profile.
 
@@ -32,15 +32,19 @@ Each playbook is a Markdown file with a fixed shape so the recommender can parse
 # {Profile name}
 
 ## Typical billing shape
+
 (Which dimensions dominate — e.g., "Edge Requests > Function Duration > Image Optimization")
 
 ## Priority patterns
+
 (Ordered list of patterns this profile particularly benefits from)
 
 ## Frequent gotchas
+
 (Anti-patterns specific to this profile)
 
 ## Cross-references
+
 (Rec IDs from recommendations.md or rule names from vercel-react-best-practices)
 ```
 

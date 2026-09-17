@@ -4,14 +4,14 @@ Keep changes small, metric-grounded, and fixture-tested. Runtime code lives in `
 
 ## Common changes
 
-| Change | Edit | Test |
-|---|---|---|
-| Gate | `lib/gates/<id>.mjs`, `lib/gates/index.mjs` | `node --test packages/vercel-optimize-tests/test/*gate*.test.mjs` |
-| Scanner | `lib/scanners/<id>.mjs`, `lib/scanners/index.mjs` | Scanner-specific test in `packages/vercel-optimize-tests/test/` |
-| Citation | `references/docs-library.json` | `node skills/vercel-optimize/scripts/check-citations.mjs` |
-| Support topic | `references/support-topics/<id>.md` | `node --test packages/vercel-optimize-tests/test/support-topics.test.mjs` |
-| Playbook | `references/playbooks/<profile>.md` and selection matrix in `references/scoring.md` | `node --test packages/vercel-optimize-tests/test/support-topics.test.mjs packages/vercel-optimize-tests/test/investigation-brief.test.mjs` |
-| Renderer or verifier | `lib/render-report.mjs`, `lib/verify-claim.mjs`, or related module | Focused test plus full test suite |
+| Change               | Edit                                                                                | Test                                                                                                                                       |
+| -------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Gate                 | `lib/gates/<id>.mjs`, `lib/gates/index.mjs`                                         | `node --test packages/vercel-optimize-tests/test/*gate*.test.mjs`                                                                          |
+| Scanner              | `lib/scanners/<id>.mjs`, `lib/scanners/index.mjs`                                   | Scanner-specific test in `packages/vercel-optimize-tests/test/`                                                                            |
+| Citation             | `references/docs-library.json`                                                      | `node skills/vercel-optimize/scripts/check-citations.mjs`                                                                                  |
+| Support topic        | `references/support-topics/<id>.md`                                                 | `node --test packages/vercel-optimize-tests/test/support-topics.test.mjs`                                                                  |
+| Playbook             | `references/playbooks/<profile>.md` and selection matrix in `references/scoring.md` | `node --test packages/vercel-optimize-tests/test/support-topics.test.mjs packages/vercel-optimize-tests/test/investigation-brief.test.mjs` |
+| Renderer or verifier | `lib/render-report.mjs`, `lib/verify-claim.mjs`, or related module                  | Focused test plus full test suite                                                                                                          |
 
 Generated docs:
 

@@ -5,27 +5,27 @@ Copy this before every multi-agent task. Fill it in, share with the orchestrator
 ```
 MISSION BRIEF
 ─────────────────────────────────────────
-Goal: 
-Total Agents: 
+Goal:
+Total Agents:
 Quota Strategy: [ FLASH-ONLY | MIXED | SONNET-LEAD ]
 Expected Token Cost: [ LOW | MEDIUM | HIGH ]
 
 AGENTS:
 [1] ID: agent-001
-    Role: 
-    Scope: 
+    Role:
+    Scope:
     Model: [ Gemini Flash | Claude Sonnet ]
-    Input: 
-    Output: 
+    Input:
+    Output:
     Depends on: [ none | agent-XXX ]
 
 [2] ID: agent-002
-    Role: 
-    Scope: 
-    Model: 
-    Input: 
-    Output: 
-    Depends on: 
+    Role:
+    Scope:
+    Model:
+    Input:
+    Output:
+    Depends on:
 
 ─────────────────────────────────────────
 EXCLUSIONS (files agents must not touch):
@@ -36,7 +36,7 @@ EXCLUSIONS (files agents must not touch):
 - [add project-specific exclusions]
 
 API CONTRACT (if agents share data):
-  Endpoint: 
+  Endpoint:
   Input shape:  { }
   Output shape: { }
 ─────────────────────────────────────────

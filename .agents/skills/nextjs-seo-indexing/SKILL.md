@@ -28,33 +28,35 @@ Fix Google Search Console coverage issues, canonical problems, sitemap errors, a
 
 ## Understanding Search Console Coverage States
 
-| Status | Meaning | Fix |
-|--------|---------|-----|
-| Crawled – not indexed | Google crawled but chose not to index | Improve content quality + canonical + internal links |
-| Duplicate without canonical | Multiple URLs serve same content, no canonical | Add explicit canonical to the preferred URL |
-| Excluded by noindex | `noindex` tag present | Remove noindex if page should be indexed |
-| Duplicate, Google chose different canonical | Google prefers a different URL than you specified | Align canonical with the URL Google naturally picks |
-| Alternative page with proper canonical | Correct — non-preferred duplicate pointing to canonical | Expected behavior, not a problem |
-| Not found 404 | Page deleted or URL changed | Add redirect or restore page |
-| Discovered – not indexed | Google knows it exists but hasn't crawled it | Improve internal linking + crawl budget |
-| Page with redirect | Redirect chain or redirect to wrong target | Shorten redirect chain, verify destination |
+| Status                                      | Meaning                                                 | Fix                                                  |
+| ------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------- |
+| Crawled – not indexed                       | Google crawled but chose not to index                   | Improve content quality + canonical + internal links |
+| Duplicate without canonical                 | Multiple URLs serve same content, no canonical          | Add explicit canonical to the preferred URL          |
+| Excluded by noindex                         | `noindex` tag present                                   | Remove noindex if page should be indexed             |
+| Duplicate, Google chose different canonical | Google prefers a different URL than you specified       | Align canonical with the URL Google naturally picks  |
+| Alternative page with proper canonical      | Correct — non-preferred duplicate pointing to canonical | Expected behavior, not a problem                     |
+| Not found 404                               | Page deleted or URL changed                             | Add redirect or restore page                         |
+| Discovered – not indexed                    | Google knows it exists but hasn't crawled it            | Improve internal linking + crawl budget              |
+| Page with redirect                          | Redirect chain or redirect to wrong target              | Shorten redirect chain, verify destination           |
 
 ---
 
 ## Step 1 — Canonical Audit
 
 ### Next.js App Router (metadata export)
+
 ```js
 // app/blog/my-post/page.js
 export const metadata = {
-  title: 'My Post Title',
+  title: "My Post Title",
   alternates: {
-    canonical: 'https://www.yourdomain.com/blog/my-post',
+    canonical: "https://www.yourdomain.com/blog/my-post",
   },
 };
 ```
 
 ### Next.js App Router (generateMetadata)
+
 ```js
 export async function generateMetadata({ params }) {
   return {
@@ -66,15 +68,16 @@ export async function generateMetadata({ params }) {
 ```
 
 ### Common canonical mistakes to fix:
+
 ```js
 // ❌ WRONG — relative URL
-canonical: '/blog/my-post'
+canonical: "/blog/my-post";
 
-// ❌ WRONG — missing trailing slash inconsistency  
+// ❌ WRONG — missing trailing slash inconsistency
 // (pick one and stick with it sitewide)
 
 // ✓ CORRECT — absolute URL, consistent scheme + subdomain
-canonical: 'https://www.yourdomain.com/blog/my-post'
+canonical: "https://www.yourdomain.com/blog/my-post";
 ```
 
 ---
@@ -108,39 +111,52 @@ export const metadata = {
 ## Step 3 — Sitemap Health
 
 ### Verify sitemap routes return 200 + valid XML
+
 ```bash
 curl -sI https://www.yourdomain.com/sitemap.xml | grep -i "content-type\|status"
 curl -s https://www.yourdomain.com/sitemap.xml | head -20
 ```
 
 ### Next.js App Router sitemap (recommended pattern)
+
 ```js
 // app/sitemap.js
 export default async function sitemap() {
-  const baseUrl = 'https://www.yourdomain.com';
-  
+  const baseUrl = "https://www.yourdomain.com";
+
   // Static pages
   const staticPages = [
-    { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
-    { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
   ];
-  
+
   // Dynamic pages (fetch from DB or CMS)
   const posts = await getPosts(); // your data fetch
-  const dynamicPages = posts.map(post => ({
+  const dynamicPages = posts.map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
     lastModified: new Date(post.updatedAt),
-    changeFrequency: 'weekly',
+    changeFrequency: "weekly",
     priority: 0.7,
   }));
-  
+
   return [...staticPages, ...dynamicPages];
 }
 ```
 
 ### Multiple sitemaps (sitemap index)
+
 ```js
-// app/sitemap-tools/sitemap.js  
+// app/sitemap-tools/sitemap.js
 // app/sitemap-blog/sitemap.js
 // Each returns an array of URL entries
 ```
@@ -168,7 +184,7 @@ If important pages are `λ` (fully dynamic with no static generation), add:
 // app/blog/[slug]/page.js
 export async function generateStaticParams() {
   const posts = await getPosts();
-  return posts.map(post => ({ slug: post.slug }));
+  return posts.map((post) => ({ slug: post.slug }));
 }
 ```
 
@@ -177,6 +193,7 @@ export async function generateStaticParams() {
 ## Step 5 — Internal Linking Audit
 
 Pages with zero internal links are rarely indexed. Every important page should be reachable from:
+
 1. Homepage or navigation
 2. A sitemap
 3. At least one other content page
@@ -236,8 +253,8 @@ Disallow: /tools/
 // app/robots.js (Next.js App Router)
 export default function robots() {
   return {
-    rules: { userAgent: '*', allow: '/' },
-    sitemap: 'https://www.yourdomain.com/sitemap.xml',
+    rules: { userAgent: "*", allow: "/" },
+    sitemap: "https://www.yourdomain.com/sitemap.xml",
   };
 }
 ```

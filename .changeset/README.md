@@ -11,6 +11,7 @@ bun changeset
 ```
 
 CLI akan menanyakan:
+
 1. Package mana yang berubah (`just_ui_tokens`, `just_ui_core`, `justui_cli`)
 2. Jenis bump: `patch` (bug fix), `minor` (fitur baru backward-compatible), `major` (breaking change)
 3. Deskripsi singkat perubahan

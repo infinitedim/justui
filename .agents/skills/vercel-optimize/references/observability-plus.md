@@ -6,16 +6,16 @@ Use this file only when `signals.observabilityPlusBlocker` is set. Do not silent
 
 This is a data dependency, not an upgrade pitch. The skill ranks work by observed route behavior so it can separate hot, expensive paths from code that only looks suspicious. These gates need per-route metrics:
 
-| Gate | Required signal |
-|---|---|
-| `slow_route` | Function duration and invocation count by route |
-| `uncached_route` | Cache result and request count by route |
-| `cold_start` | Function start type by route |
-| `route_errors` | Function status by route |
-| `isr_overrevalidation` | ISR reads and writes by route |
-| `middleware_heavy` | Middleware invocations and duration |
-| `cwv_poor` | Core Web Vitals by route |
-| `platform_bot_protection` | Fast Data Transfer by bot category |
+| Gate                      | Required signal                                 |
+| ------------------------- | ----------------------------------------------- |
+| `slow_route`              | Function duration and invocation count by route |
+| `uncached_route`          | Cache result and request count by route         |
+| `cold_start`              | Function start type by route                    |
+| `route_errors`            | Function status by route                        |
+| `isr_overrevalidation`    | ISR reads and writes by route                   |
+| `middleware_heavy`        | Middleware invocations and duration             |
+| `cwv_poor`                | Core Web Vitals by route                        |
+| `platform_bot_protection` | Fast Data Transfer by bot category              |
 
 Scanner-only mode can still catch traffic-independent code issues, but it cannot rank the hottest routes or prove cost impact. Make that tradeoff explicit before continuing.
 
@@ -33,6 +33,7 @@ This audit needs route-level metrics to rank fixes by observed latency, cache hi
 Docs: https://vercel.com/docs/observability/observability-plus
 
 Choose one:
+
 1. Enable Observability Plus, then re-run the metric-backed audit.
 2. Continue in scanner-only mode for a limited audit.
 ```
@@ -72,15 +73,15 @@ If the user chooses **Run scanner-only**, continue with the scanner-only steps b
 
 ## Blocker Copy
 
-| Blocker | Detail |
-|---|---|
-| `payment_required` | `Detected: route-level metrics were recognized for this team, but these metric queries are not usable.` |
-| `no_oplus_probe` | `Detected: this team does not expose the route-level metrics this audit needs.` |
-| `not_linked` | `Detected: this app directory is not linked to a Vercel project.` |
-| `forbidden` | `Detected: the Vercel CLI is authenticated to a team that cannot read this project.` |
-| `project_not_found` | `Detected: the project ID is not visible to the authenticated team.` |
-| `project_disabled` | `Detected: route-level metrics are enabled for the team but disabled for this project.` |
-| `all_failed_other` | `Detected: every per-route metric query failed. Error code: <code>.` |
+| Blocker             | Detail                                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------------------- |
+| `payment_required`  | `Detected: route-level metrics were recognized for this team, but these metric queries are not usable.` |
+| `no_oplus_probe`    | `Detected: this team does not expose the route-level metrics this audit needs.`                         |
+| `not_linked`        | `Detected: this app directory is not linked to a Vercel project.`                                       |
+| `forbidden`         | `Detected: the Vercel CLI is authenticated to a team that cannot read this project.`                    |
+| `project_not_found` | `Detected: the project ID is not visible to the authenticated team.`                                    |
+| `project_disabled`  | `Detected: route-level metrics are enabled for the team but disabled for this project.`                 |
+| `all_failed_other`  | `Detected: every per-route metric query failed. Error code: <code>.`                                    |
 
 For `not_linked`, do not use the Observability Plus template. Link the app directory first:
 

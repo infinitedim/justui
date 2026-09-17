@@ -15,6 +15,7 @@ A quota-aware, parallel subagent coordination skill for Antigravity 2.0. Turns o
 ---
 
 ## Use this skill when
+
 - A task spans 3+ files or components
 - You want multiple agents working at the same time
 - You've hit quota issues mid-task before
@@ -22,6 +23,7 @@ A quota-aware, parallel subagent coordination skill for Antigravity 2.0. Turns o
 - You need browser agent + code agent + terminal agent running together
 
 ## Do not use this skill when
+
 - Editing a single file or fixing one bug
 - Writing a quick script under 50 lines
 - Asking a question or generating a plan only
@@ -31,6 +33,7 @@ A quota-aware, parallel subagent coordination skill for Antigravity 2.0. Turns o
 ## Phase 1 — DECOMPOSE (before any agent runs)
 
 Before spawning any subagent, the orchestrator MUST produce a Mission Brief. Announce:
+
 > "Running subagent-orchestrator skill. Decomposing task into isolated missions."
 
 Then output a Mission Brief in this format:
@@ -74,6 +77,7 @@ Is this task > 20 files OR > 500 lines of new code?
 ```
 
 **Model cost rules (never violate these):**
+
 - Claude Opus → NEVER use in subagents. Too expensive.
 - Claude Sonnet → Max 1 subagent per mission.
 - Gemini Flash → Default for all subagents. Fast, cheap, separate quota pool.
@@ -86,6 +90,7 @@ Is this task > 20 files OR > 500 lines of new code?
 Each subagent gets a scoped context packet. Never give all agents the full codebase.
 
 For each agent, prepare:
+
 ```
 AGENT CONTEXT PACKET — agent-[ID]
 Files to read: [list only what this agent needs]
@@ -109,6 +114,7 @@ Round 3 (final): Integrate + verify
 ```
 
 Between rounds, the orchestrator MUST:
+
 1. Collect each agent's output artifact
 2. Run a 3-point spot check:
    - Did the agent stay within its assigned scope?
@@ -158,16 +164,17 @@ If any check fails, spawn one final repair agent scoped to the exact issue.
 
 Track estimated usage throughout the mission:
 
-| Event | Quota Impact |
-|-------|-------------|
-| Agent spawned | LOW (setup) |
-| File indexed (each) | LOW |
-| Tool call (file read/write) | MEDIUM |
-| Terminal command | MEDIUM |
-| Browser subagent activated | HIGH |
-| Thinking mode enabled | VERY HIGH |
+| Event                       | Quota Impact |
+| --------------------------- | ------------ |
+| Agent spawned               | LOW (setup)  |
+| File indexed (each)         | LOW          |
+| Tool call (file read/write) | MEDIUM       |
+| Terminal command            | MEDIUM       |
+| Browser subagent activated  | HIGH         |
+| Thinking mode enabled       | VERY HIGH    |
 
 If estimated usage crosses 60% of sprint quota mid-mission:
+
 - Pause and report: "Quota checkpoint: ~60% of sprint used. Continue or defer remaining agents?"
 - Switch remaining agents to Gemini Flash
 - Disable browser subagent if not yet started
@@ -190,6 +197,7 @@ If estimated usage crosses 60% of sprint quota mid-mission:
 ## Examples
 
 See `examples/` folder:
+
 - `nextjs-feature.md` — Building a full Next.js feature with 3 parallel agents
 - `api-plus-frontend.md` — Backend API agent + Frontend UI agent running in parallel
 - `debug-mission.md` — Repair mission for a broken build using minimal quota

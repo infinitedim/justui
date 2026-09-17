@@ -1,6 +1,7 @@
 # Example: Building a Full Next.js Feature with 3 Parallel Agents
 
 ## Scenario
+
 User prompt: "Add a user authentication flow — login page, signup page, and a protected dashboard route."
 
 ---
@@ -76,12 +77,12 @@ Integration Check:
 
 ## Quota Log
 
-| Event | Impact |
-|-------|--------|
-| 3 agents spawned | LOW |
-| ~12 files indexed total | LOW |
-| ~18 tool calls across all agents | MEDIUM |
-| 0 browser agents used | NONE |
-| **Total estimated** | **~25% sprint** |
+| Event                            | Impact          |
+| -------------------------------- | --------------- |
+| 3 agents spawned                 | LOW             |
+| ~12 files indexed total          | LOW             |
+| ~18 tool calls across all agents | MEDIUM          |
+| 0 browser agents used            | NONE            |
+| **Total estimated**              | **~25% sprint** |
 
 > Tip: This mission costs ~25% sprint quota. You can run 3–4 missions like this per day on the free tier.
