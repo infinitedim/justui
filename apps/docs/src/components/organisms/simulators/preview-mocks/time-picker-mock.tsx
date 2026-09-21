@@ -10,7 +10,12 @@ export function TimePickerMock({
   preset?: 'default' | 'neobrutalism';
 }) {
   const [period, setPeriod] = useState<'AM' | 'PM'>('PM');
+  const [hours] = useState(18);
+  const [minutes] = useState(30);
   const isNeo = preset === 'neobrutalism';
+
+  const displayHours = hours % 12 === 0 ? 12 : hours % 12;
+  const formattedTime = `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
   return (
     <div
@@ -23,7 +28,7 @@ export function TimePickerMock({
       )}
     >
       <Clock className="text-muted h-4 w-4" />
-      <span className="text-foreground font-bold">18:30</span>
+      <span className="text-foreground font-bold">{formattedTime}</span>
       <button
         type="button"
         onClick={() => setPeriod(period === 'AM' ? 'PM' : 'AM')}

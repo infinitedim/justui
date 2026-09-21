@@ -67,8 +67,8 @@ describe('LivingStage', () => {
       <LivingStage
         widgets={[
           {
-            id: 'widget-dialog',
-            component: 'dialog',
+            id: 'widget-custom',
+            component: 'custom-widget',
             mountedAt: Date.now(),
           },
         ]}
@@ -78,7 +78,7 @@ describe('LivingStage', () => {
     const codeTab = screen.getByRole('tab', { name: /flutter code/i });
     fireEvent.click(codeTab);
 
-    expect(screen.getByText(/JustDialog\(\)/)).toBeInTheDocument();
+    expect(screen.getByText(/JustCustomWidget\(\)/)).toBeInTheDocument();
   });
 
   it('dispatches justui-mounted telemetry event when widgets are mounted', () => {

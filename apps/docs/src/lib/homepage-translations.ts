@@ -61,7 +61,7 @@ export const homepageTranslations: Readonly<
     heroTitle: 'Copy. Paste. Ship.',
     heroDescription:
       'A zero-dependency, copy-paste component library for Flutter. No Material. No boilerplate. Just UI.',
-    getStarted: 'Get started ->',
+    getStarted: 'Get started',
     browseComponents: 'Browse components',
     componentsHeading: 'Components',
     navHome: 'Home',
@@ -94,7 +94,7 @@ export const homepageTranslations: Readonly<
     bentoBadge: 'THE ENGINE ROOM',
     bentoHeading: 'Engineered for Extreme Performance',
     bentoDescription:
-      'Every pixel and render tick backed by computer science principles: zero-allocation layout loops, aspect-based virtual tree reconciliation, and mathematically provable accessibility.',
+      'Built with core Flutter principles: zero-allocation paint loops, aspect-based InheritedModel isolation, and WCAG AA contrast compliance.',
     bentoCard1Title: 'Zero-Dependency Footprint',
     bentoCard1Desc:
       'No pub.dev dependency bloat. Pure Flutter primitives directly copied into your workspace.',
@@ -103,13 +103,13 @@ export const homepageTranslations: Readonly<
       'Real-time WCAG AA ratio calculation with OKLCH gamut awareness and lightness correction.',
     bentoCard3Title: 'Aspect-Based Rebuilds',
     bentoCard3Desc:
-      'InheritedModel reduces widget rebuild costs from O(N) to O(K), saving up to 86% CPU cycles.',
+      'InheritedModel aspect isolation ensures widgets only rebuild when their targeted properties mutate.',
     bentoCard4Title: 'Neobrutalism Zero-Drift',
     bentoCard4Desc:
-      'Spatial invariance physics (P_rest == P_pressed) and inner-border compensation calculus.',
+      'Offset-compensated inward borders and instant animation timing to prevent visual jitter.',
     bentoCard5Title: 'Dart 3 Expressive DX',
     bentoCard5Desc:
-      'Dot-shorthand and concise constructors save 42% boilerplate code without extra tooling.',
+      'Dot-shorthand syntax and concise constructors for clean, idiomatic Flutter code.',
     catalogSearchPlaceholder: 'Search 33 components... (press "/" to focus)',
     catalogAllCategories: 'All',
     catalogNoResults: 'No components found matching your query.',
@@ -124,7 +124,7 @@ export const homepageTranslations: Readonly<
     heroTitle: 'Salin. Tempel. Rilis.',
     heroDescription:
       'Pustaka komponen Flutter tanpa dependensi tambahan, tinggal salin-tempel. Tanpa Material. Tanpa boilerplate. Hanya UI.',
-    getStarted: 'Mulai ->',
+    getStarted: 'Mulai',
     browseComponents: 'Jelajahi komponen',
     componentsHeading: 'Komponen',
     navHome: 'Beranda',
@@ -157,7 +157,7 @@ export const homepageTranslations: Readonly<
     bentoBadge: 'RUANG MESIN ARSITEKTUR',
     bentoHeading: 'Direkayasa untuk Performa Ekstrem',
     bentoDescription:
-      'Setiap piksel dan render tick didukung prinsip ilmu komputer: layout loop bebas alokasi, rekonsiliasi pohon virtual berbasis aspek, dan aksesibilitas matematis terbukti.',
+      'Dibangun dengan prinsip inti Flutter: paint loop bebas alokasi, isolasi InheritedModel berbasis aspek, dan kepatuhan kontras WCAG AA.',
     bentoCard1Title: 'Jejak Nol-Dependensi',
     bentoCard1Desc:
       'Bebas dari beban dependensi pub.dev pihak ketiga. Primitif murni Flutter disalin langsung ke proyekmu.',
@@ -166,13 +166,13 @@ export const homepageTranslations: Readonly<
       'Kalkulasi rasio WCAG AA seketika dengan kesadaran gamut OKLCH dan koreksi lightness otomatis.',
     bentoCard3Title: 'Rebuild Berbasis Aspek',
     bentoCard3Desc:
-      'InheritedModel menekan biaya render ulang dari O(N) ke O(K), menghemat hingga 86% siklus CPU.',
+      'Isolasi aspek InheritedModel memastikan widget hanya render ulang saat properti targetnya berubah.',
     bentoCard4Title: 'Fisika Zero-Drift Neobrutalisme',
     bentoCard4Desc:
-      'Invariansi spasial (P_rest == P_pressed) dan kalkulus kompensasi border bagian dalam.',
+      'Kompensasi border ke dalam dan timing animasi instan untuk mencegah jitter visual saat ditekan.',
     bentoCard5Title: 'Pengalaman Pengembang Dart 3',
     bentoCard5Desc:
-      'Dot-shorthand dan konstruktor ringkas memangkas 42% kode boilerplate tanpa tooling tambahan.',
+      'Sintaksis dot-shorthand dan konstruktor ringkas untuk kode Flutter yang bersih dan idiomatis.',
     catalogSearchPlaceholder: 'Cari 33 komponen... (tekan "/" untuk fokus)',
     catalogAllCategories: 'Semua',
     catalogNoResults: 'Tidak ada komponen yang cocok dengan pencarian Anda.',

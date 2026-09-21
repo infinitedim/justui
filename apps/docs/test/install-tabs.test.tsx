@@ -38,7 +38,7 @@ describe('InstallTabs', () => {
     fireEvent.click(cargoTab);
 
     expect(cargoTab).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByText('cargo install justui_cli')).toBeInTheDocument();
+    expect(screen.getByText('cargo install justui')).toBeInTheDocument();
   });
 
   it('renders copy button for active command', () => {

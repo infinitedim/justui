@@ -90,7 +90,7 @@ export function HeroInteractive({
             className={cn(
               'rounded-full px-4 py-1.5 font-mono text-xs transition-colors',
               preset === 'default'
-                ? 'bg-accent text-foreground shadow-solid font-medium'
+                ? 'bg-accent text-accent-foreground shadow-solid font-medium'
                 : 'text-muted hover:text-foreground'
             )}
           >
@@ -104,7 +104,7 @@ export function HeroInteractive({
             className={cn(
               'rounded-full px-4 py-1.5 font-mono text-xs transition-colors',
               preset === 'neobrutalism'
-                ? 'bg-accent text-foreground shadow-solid font-medium'
+                ? 'bg-accent text-accent-foreground shadow-solid font-medium'
                 : 'text-muted hover:text-foreground'
             )}
           >

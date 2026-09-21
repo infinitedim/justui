@@ -127,10 +127,10 @@ Saat merender UI, Anda wajib menggunakan getter ekstensi aspek spesifik. Ini men
 ```dart
 @override
 Widget build(BuildContext context) {
-  // ✅ REKOMENDASI: Hanya me-rebuild widget jika warna berubah
+  // [OK] REKOMENDASI: Hanya me-rebuild widget jika warna berubah
   final colors = context.justColors;
 
-  // ✅ REKOMENDASI: Hanya me-rebuild widget jika spacing berubah
+  // [OK] REKOMENDASI: Hanya me-rebuild widget jika spacing berubah
   final spacing = context.justSpacing;
 
   return Container(
@@ -153,7 +153,7 @@ Gunakan metode `context.readTheme()` untuk mengambil nilai tema secara instan ta
 JustButton(
   label: 'Simpan',
   onPressed: () {
-    // ✅ REKOMENDASI: Mengakses tema tanpa mendaftarkan widget untuk rebuild
+    // [OK] REKOMENDASI: Mengakses tema tanpa mendaftarkan widget untuk rebuild
     final activeTheme = context.readTheme();
 
     if (activeTheme.preset == JustThemePreset.neobrutalism) {
