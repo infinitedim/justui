@@ -87,5 +87,8 @@ describe('HomePage Component', () => {
     expect(
       screen.getByRole('link', { name: /JustSwitch/i })
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('contentinfo', { name: /site footer/i })
+    ).toBeInTheDocument();
   });
 });

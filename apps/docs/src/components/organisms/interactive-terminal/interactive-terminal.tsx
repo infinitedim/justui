@@ -5,11 +5,6 @@ import { cn } from '@/lib/cn';
 import { TerminalPrompt } from '@/components/molecules/terminal-prompt';
 import { TerminalLine } from '@/components/molecules/terminal-line';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
-import {
-  getKeystrokeDelay,
-  shouldSimulateTypo,
-  getAdjacentKey,
-} from './keystroke-engine';
 import { parseCommand } from './cli-parser';
 import { REGISTRY_COMPONENT_NAMES } from './levenshtein';
 import type {
@@ -115,32 +110,25 @@ export function InteractiveTerminal({
 
       try {
         let typedSoFar = '';
+        // Fast-path budget: action-chip automated typing completes under 200ms
+        const AUTOMATED_BUDGET_MS = 100;
+        const charDelay = Math.max(
+          2,
+          Math.floor(AUTOMATED_BUDGET_MS / (command.length || 1))
+        );
+
         for (let i = 0; i < command.length; i++) {
           if (cancelledRef.current) return;
           const char = command[i];
-          const prevChar = i > 0 ? command[i - 1] : '';
-          const waitMs = getKeystrokeDelay(char, prevChar);
-          await delay(waitMs);
+          await delay(charDelay);
 
           if (cancelledRef.current) return;
-
-          if (shouldSimulateTypo() && i > 3 && i < command.length - 2) {
-            const wrongKey = getAdjacentKey(char);
-            typedSoFar += wrongKey;
-            setCurrentInput(typedSoFar);
-            await delay(120);
-            if (cancelledRef.current) return;
-            typedSoFar = typedSoFar.slice(0, -1);
-            setCurrentInput(typedSoFar);
-            await delay(70);
-            if (cancelledRef.current) return;
-          }
 
           typedSoFar += char;
           setCurrentInput(typedSoFar);
         }
 
-        await delay(150);
+        await delay(20);
         if (cancelledRef.current) return;
 
         setCommandHistory((prev) => [command, ...prev.slice(0, 19)]);
@@ -331,7 +319,7 @@ export function InteractiveTerminal({
             className={cn(
               'rounded-full px-2.5 py-1 font-mono text-xs transition-colors',
               'border-border border-(length:--just-border-width)',
-              'bg-card text-foreground hover:bg-accent hover:text-foreground hover:shadow-solid',
+              'bg-card text-foreground hover:bg-accent hover:text-accent-foreground hover:shadow-solid',
               'disabled:cursor-not-allowed disabled:opacity-50'
             )}
           >

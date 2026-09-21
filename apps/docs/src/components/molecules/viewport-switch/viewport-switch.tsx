@@ -45,7 +45,7 @@ export function ViewportSwitch({
           className={cn(
             'inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors',
             value === id
-              ? 'bg-accent text-foreground shadow-solid'
+              ? 'bg-accent text-accent-foreground shadow-solid'
               : 'text-muted hover:text-foreground'
           )}
         >

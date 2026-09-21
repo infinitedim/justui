@@ -85,8 +85,8 @@ JustUI implements this adjustment dynamically through the `.withAdaptiveHeight(c
 1. Takes the base font size (`fontSize`, default: `16.0`).
 2. Applies the user's operating system accessibility text scale (`MediaQuery.textScalerOf(context).scale(baseSize)`).
 3. Performs the new line height calculation:
-   - If the measured font size is **≤ 12.0 px**, line height is set generous: **`1.6`**.
-   - If the measured font size is **≥ 36.0 px**, line height is set tight: **`1.15`**.
+   - If the measured font size is **12.0 px or less**, line height is set generous: **`1.6`**.
+   - If the measured font size is **36.0 px or greater**, line height is set tight: **`1.15`**.
    - For font sizes in between, line height is interpolated linearly.
 
 ---
@@ -99,15 +99,15 @@ You simply call the instance function by passing `BuildContext`:
 
 ```dart
 // Available presets in JustFluidTypo:
-TextStyle fluidLg = JustFluidTypo.displayLg(context); // Scaling 36px ↔ 48px
-TextStyle fluidMd = JustFluidTypo.displayMd(context); // Scaling 30px ↔ 38px
-TextStyle fluidSm = JustFluidTypo.displaySm(context); // Scaling 24px ↔ 32px
-TextStyle headLg  = JustFluidTypo.headingLg(context); // Scaling 20px ↔ 24px
-TextStyle headMd  = JustFluidTypo.headingMd(context); // Scaling 18px ↔ 20px
-TextStyle headSm  = JustFluidTypo.headingSm(context); // Scaling 16px ↔ 18px
-TextStyle bodyLg  = JustFluidTypo.bodyLg(context);    // Scaling 15px ↔ 16px
-TextStyle bodyMd  = JustFluidTypo.bodyMd(context);    // Scaling 13px ↔ 14px
-TextStyle bodySm  = JustFluidTypo.bodySm(context);    // Scaling 11px ↔ 12px
+TextStyle fluidLg = JustFluidTypo.displayLg(context); // Scaling 36px <-> 48px
+TextStyle fluidMd = JustFluidTypo.displayMd(context); // Scaling 30px <-> 38px
+TextStyle fluidSm = JustFluidTypo.displaySm(context); // Scaling 24px <-> 32px
+TextStyle headLg  = JustFluidTypo.headingLg(context); // Scaling 20px <-> 24px
+TextStyle headMd  = JustFluidTypo.headingMd(context); // Scaling 18px <-> 20px
+TextStyle headSm  = JustFluidTypo.headingSm(context); // Scaling 16px <-> 18px
+TextStyle bodyLg  = JustFluidTypo.bodyLg(context);    // Scaling 15px <-> 16px
+TextStyle bodyMd  = JustFluidTypo.bodyMd(context);    // Scaling 13px <-> 14px
+TextStyle bodySm  = JustFluidTypo.bodySm(context);    // Scaling 11px <-> 12px
 ```
 
 ---

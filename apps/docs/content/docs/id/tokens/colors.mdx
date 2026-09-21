@@ -98,7 +98,7 @@ Ekstensi ini menyediakan dua API utama:
 1. `contrastRatioWith(Color other)`: Menghasilkan nilai rasio antara `1.0` (tidak ada kontras/warna sama) hingga `21.0` (kontras sempurna hitam dan putih).
 2. `isAccessibleWith(Color other, {bool isLargeText = false})`: Memeriksa kepatuhan kontras terhadap standar WCAG AA:
    - **Teks Normal**: Membutuhkan rasio kontras minimal **4.5:1** terhadap latar belakang.
-   - **Teks Besar / Komponen Visual** (seperti border input, fokus, atau lencana): Membutuhkan rasio kontras minimal **3.0:1**. Teks besar didefinisikan sebagai teks berukuran ≥ 18pt/24px (atau teks tebal ≥ 14pt/18.67px).
+   - **Teks Besar / Komponen Visual** (seperti border input, fokus, atau lencana): Membutuhkan rasio kontras minimal **3.0:1**. Teks besar didefinisikan sebagai teks berukuran >= 18pt/24px (atau teks tebal >= 14pt/18.67px).
 
 ```dart
 // Contoh penggunaan audit kontras secara manual:

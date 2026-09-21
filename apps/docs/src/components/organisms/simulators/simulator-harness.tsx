@@ -23,7 +23,7 @@ export function SimulatorHarness({
       data-testid="simulator-harness"
       data-preset={preset}
       className={cn(
-        'relative flex h-44 w-full items-center justify-center overflow-hidden p-4 transition-all select-none',
+        'relative flex h-44 w-full items-center justify-center overflow-visible p-4 transition-all select-none focus-within:z-20',
         'bg-surface/50 bg-[radial-gradient(var(--color-border)_1px,transparent_1px)] bg-size-[14px_14px]',
         isNeo
           ? 'bg-surface rounded-md border-2 border-black shadow-[3px_3px_0px_0px_#000] dark:border-white dark:shadow-[3px_3px_0px_0px_#fff]'

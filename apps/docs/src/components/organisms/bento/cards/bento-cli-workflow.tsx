@@ -14,7 +14,7 @@ interface BentoCliWorkflowProps {
 const VERBOSE_CODE = `// Standard Verbose Flutter (314 characters)
 Widget build(BuildContext context) {
   return Container(
-    padding: .symmetric(horizontal: 16.0, vertical: 12.0),
+    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.all(Radius.circular(8.0)),
       border: Border.all(color: Theme.of(context).primaryColor),

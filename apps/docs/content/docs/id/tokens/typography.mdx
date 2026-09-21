@@ -85,8 +85,8 @@ JustUI mengimplementasikan penyesuaian ini secara dinamis melalui method `.withA
 1. Mengambil ukuran font dasar (`fontSize`, default: `16.0`).
 2. Menerapkan skala teks aksesibilitas sistem operasi pengguna (`MediaQuery.textScalerOf(context).scale(baseSize)`).
 3. Melakukan perhitungan tinggi baris baru:
-   - Jika ukuran font yang terukur **≤ 12.0 px**, tinggi baris disetel renggang: **`1.6`**.
-   - Jika ukuran font yang terukur **≥ 36.0 px**, tinggi baris disetel rapat: **`1.15`**.
+   - Jika ukuran font yang terukur **12.0 px atau lebih kecil**, tinggi baris disetel renggang: **`1.6`**.
+   - Jika ukuran font yang terukur **36.0 px atau lebih besar**, tinggi baris disetel rapat: **`1.15`**.
    - Untuk ukuran font di antaranya, tinggi baris diinterpolasi secara linear.
 
 ---
@@ -99,15 +99,15 @@ Anda cukup memanggil fungsi instans dengan melewatkan `BuildContext`:
 
 ```dart
 // Presets yang tersedia di JustFluidTypo:
-TextStyle fluidLg = JustFluidTypo.displayLg(context); // Penskalaan 36px ↔ 48px
-TextStyle fluidMd = JustFluidTypo.displayMd(context); // Penskalaan 30px ↔ 38px
-TextStyle fluidSm = JustFluidTypo.displaySm(context); // Penskalaan 24px ↔ 32px
-TextStyle headLg  = JustFluidTypo.headingLg(context); // Penskalaan 20px ↔ 24px
-TextStyle headMd  = JustFluidTypo.headingMd(context); // Penskalaan 18px ↔ 20px
-TextStyle headSm  = JustFluidTypo.headingSm(context); // Penskalaan 16px ↔ 18px
-TextStyle bodyLg  = JustFluidTypo.bodyLg(context);    // Penskalaan 15px ↔ 16px
-TextStyle bodyMd  = JustFluidTypo.bodyMd(context);    // Penskalaan 13px ↔ 14px
-TextStyle bodySm  = JustFluidTypo.bodySm(context);    // Penskalaan 11px ↔ 12px
+TextStyle fluidLg = JustFluidTypo.displayLg(context); // Penskalaan 36px <-> 48px
+TextStyle fluidMd = JustFluidTypo.displayMd(context); // Penskalaan 30px <-> 38px
+TextStyle fluidSm = JustFluidTypo.displaySm(context); // Penskalaan 24px <-> 32px
+TextStyle headLg  = JustFluidTypo.headingLg(context); // Penskalaan 20px <-> 24px
+TextStyle headMd  = JustFluidTypo.headingMd(context); // Penskalaan 18px <-> 20px
+TextStyle headSm  = JustFluidTypo.headingSm(context); // Penskalaan 16px <-> 18px
+TextStyle bodyLg  = JustFluidTypo.bodyLg(context);    // Penskalaan 15px <-> 16px
+TextStyle bodyMd  = JustFluidTypo.bodyMd(context);    // Penskalaan 13px <-> 14px
+TextStyle bodySm  = JustFluidTypo.bodySm(context);    // Penskalaan 11px <-> 12px
 ```
 
 ---

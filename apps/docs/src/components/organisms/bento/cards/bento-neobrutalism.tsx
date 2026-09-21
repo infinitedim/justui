@@ -60,8 +60,8 @@ export function BentoNeobrutalism({
               onTouchStart={() => setIsPressed(true)}
               onTouchEnd={() => setIsPressed(false)}
               className={cn(
-                'border-foreground text-foreground rounded-none border-[2.5px] px-5 py-2.5 font-mono text-xs font-black uppercase transition-none select-none',
-                'bg-accent',
+                'border-foreground rounded-none border-[2.5px] px-5 py-2.5 font-mono text-xs font-black uppercase transition-none select-none',
+                'bg-accent text-accent-foreground',
                 isPressed
                   ? 'translate-x-1 translate-y-1 shadow-none'
                   : 'translate-x-0 translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.9)]'
@@ -111,7 +111,7 @@ export function BentoNeobrutalism({
         <div className="mt-3">
           <FormulaMathBlock
             formula="D = H - 2p - 2b | P_rest == P_pressed"
-            caption="Bresenham Space Compensation & Spatial Invariance"
+            caption="Inward Border Compensation & Spatial Invariance"
           />
         </div>
       </div>

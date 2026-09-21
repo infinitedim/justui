@@ -6,6 +6,8 @@ import { ToggleChip } from '@/components/atoms/toggle-chip';
 import { ProgressBar } from '@/components/atoms/progress-bar';
 import { Separator } from '@/components/atoms/separator';
 import { dispatchStageEvent } from '@/lib/stage-bridge';
+import { SIMULATOR_REGISTRY } from '../simulators/simulator-registry';
+import { components } from '@/lib/components-data';
 
 export interface WidgetDef {
   render: () => ReactNode;
@@ -135,5 +137,22 @@ export const STAGE_WIDGET_REGISTRY: Record<string, WidgetDef> = {
 };
 
 export function getWidgetDef(name: string): WidgetDef | undefined {
-  return STAGE_WIDGET_REGISTRY[name];
+  if (STAGE_WIDGET_REGISTRY[name]) {
+    return STAGE_WIDGET_REGISTRY[name];
+  }
+
+  const MockComp = SIMULATOR_REGISTRY[name];
+  if (MockComp) {
+    const meta = components.find((c) => c.slug === name);
+    const pascal = name
+      .split('-')
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join('');
+    return {
+      render: () => <MockComp />,
+      dartCode: meta?.dartSnippet ?? `Just${pascal}()`,
+    };
+  }
+
+  return undefined;
 }

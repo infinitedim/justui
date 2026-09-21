@@ -33,7 +33,7 @@ export function LivingComponentCard({
     <article
       data-testid={`living-component-card-${component.slug}`}
       className={cn(
-        'bg-surface flex flex-col justify-between p-4 transition-all select-none',
+        'bg-surface relative flex flex-col justify-between p-4 transition-all select-none focus-within:z-30',
         isNeo
           ? 'rounded-md border-2 border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
           : 'border-border/80 hover:border-accent rounded-xl border shadow-xs hover:shadow-md',

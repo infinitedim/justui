@@ -98,7 +98,7 @@ This extension provides two main APIs:
 1. `contrastRatioWith(Color other)`: Produces a ratio value between `1.0` (no contrast/same color) and `21.0` (perfect black and white contrast).
 2. `isAccessibleWith(Color other, {bool isLargeText = false})`: Checks contrast compliance against WCAG AA standards:
    - **Normal Text**: Requires a minimum contrast ratio of **4.5:1** against the background.
-   - **Large Text / Visual Components** (such as input borders, focus indicators, or badges): Requires a minimum contrast ratio of **3.0:1**. Large text is defined as text sized ≥ 18pt/24px (or bold text ≥ 14pt/18.67px).
+   - **Large Text / Visual Components** (such as input borders, focus indicators, or badges): Requires a minimum contrast ratio of **3.0:1**. Large text is defined as text sized >= 18pt/24px (or bold text >= 14pt/18.67px).
 
 ```dart
 // Example of manual contrast audit usage:

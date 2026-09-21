@@ -82,7 +82,7 @@ export function LivingStage({
             className={cn(
               'rounded-full px-3 py-1 font-mono text-xs transition-colors',
               view === 'preview'
-                ? 'bg-accent text-foreground shadow-solid font-medium'
+                ? 'bg-accent text-accent-foreground shadow-solid font-medium'
                 : 'text-muted hover:text-foreground'
             )}
           >
@@ -98,7 +98,7 @@ export function LivingStage({
             className={cn(
               'rounded-full px-3 py-1 font-mono text-xs transition-colors',
               view === 'code'
-                ? 'bg-accent text-foreground shadow-solid font-medium'
+                ? 'bg-accent text-accent-foreground shadow-solid font-medium'
                 : 'text-muted hover:text-foreground'
             )}
           >

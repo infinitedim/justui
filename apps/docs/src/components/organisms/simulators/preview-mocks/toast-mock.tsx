@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/cn';
 import { Bell, CheckCircle2 } from 'lucide-react';
 
@@ -10,12 +10,33 @@ export function ToastMock({
   preset?: 'default' | 'neobrutalism';
 }) {
   const [show, setShow] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isNeo = preset === 'neobrutalism';
 
-  const triggerToast = () => {
-    setShow(true);
-    setTimeout(() => setShow(false), 2400);
+  const clearTimers = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
   };
+
+  const triggerToast = () => {
+    clearTimers();
+    setIsExiting(false);
+    setShow(true);
+
+    timerRef.current = setTimeout(() => {
+      setIsExiting(true);
+      exitTimerRef.current = setTimeout(() => {
+        setShow(false);
+        setIsExiting(false);
+      }, 150);
+    }, 2400);
+  };
+
+  useEffect(() => {
+    return () => clearTimers();
+  }, []);
 
   return (
     <div className="relative flex w-full flex-col items-center justify-center">
@@ -38,7 +59,9 @@ export function ToastMock({
         <div
           data-testid="mock-toast-popup"
           className={cn(
-            'absolute -top-2 flex animate-bounce items-center gap-2 px-3 py-1.5 font-mono text-[11px] transition-all',
+            'absolute -top-2 flex items-center gap-2 px-3 py-1.5 font-mono text-[11px] select-none',
+            'motion-reduce:animate-none',
+            isExiting ? 'animate-toast-exit' : 'animate-toast-enter',
             isNeo
               ? 'bg-accent rounded-md border-2 border-black font-bold text-black shadow-[3px_3px_0px_0px_#000] dark:border-white'
               : 'border-border bg-foreground text-background rounded-lg border shadow-lg'

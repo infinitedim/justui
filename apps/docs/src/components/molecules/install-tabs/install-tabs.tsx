@@ -26,7 +26,7 @@ const PLATFORMS: readonly PlatformMeta[] = [
   {
     id: 'cargo',
     defaultLabel: 'Cargo',
-    command: 'cargo install justui_cli',
+    command: 'cargo install justui',
   },
 ] as const;
 
