@@ -94,6 +94,9 @@ vi.mock('@/lib/source', () => ({
 // Imports of pages and layouts
 import RootLayout from '@/app/layout';
 import LangLayout from '@/app/[lang]/layout';
+import {
+  generateStaticParams as homeStaticParams,
+} from '@/app/[lang]/page';
 import ComponentsPage, {
   generateStaticParams as componentsStaticParams,
 } from '@/app/[lang]/components/page';
@@ -101,6 +104,12 @@ import Layout from '@/app/[lang]/docs/layout';
 import Page, {
   generateStaticParams as docsStaticParams,
 } from '@/app/[lang]/docs/[[...slug]]/page';
+import {
+  LandingTemplate,
+  CatalogTemplate,
+  StudioTemplate,
+} from '@/components/templates';
+import { usePreset } from '@/components/providers';
 
 describe('App Router Pages and Layouts', () => {
   describe('RootLayout', () => {
@@ -123,6 +132,19 @@ describe('App Router Pages and Layouts', () => {
 
       console.error = consoleError;
     });
+
+    it('provides PresetProvider context to child components', () => {
+      function Consumer() {
+        const { preset } = usePreset();
+        return <div data-testid="preset-val">{preset}</div>;
+      }
+      render(
+        <RootLayout>
+          <Consumer />
+        </RootLayout>
+      );
+      expect(screen.getByTestId('preset-val')).toHaveTextContent('default');
+    });
   });
 
   describe('LangLayout', () => {
@@ -137,8 +159,15 @@ describe('App Router Pages and Layouts', () => {
     });
   });
 
+  describe('HomePage', () => {
+    it('returns static params for all supported languages', async () => {
+      const params = await homeStaticParams();
+      expect(params).toEqual([{ lang: 'en' }, { lang: 'id' }]);
+    });
+  });
+
   describe('ComponentsPage', () => {
-    it('renders components catalog correctly', async () => {
+    it('renders components catalog and footer correctly', async () => {
       const page = await ComponentsPage({
         params: Promise.resolve({ lang: 'en' }),
       });
@@ -147,11 +176,90 @@ describe('App Router Pages and Layouts', () => {
         screen.getByRole('heading', { level: 1, name: 'Components' })
       ).toBeInTheDocument();
       expect(screen.getByText('JustButton')).toBeInTheDocument();
+      expect(
+        screen.getByRole('contentinfo', { name: /site footer/i })
+      ).toBeInTheDocument();
     });
 
     it('returns static params', async () => {
       const params = await componentsStaticParams();
       expect(params).toEqual([{ lang: 'id' }, { lang: 'en' }]);
+    });
+  });
+
+  describe('Templates', () => {
+    describe('LandingTemplate', () => {
+      it('renders all structural slots correctly', () => {
+        render(
+          <LandingTemplate
+            navbar={<div data-testid="landing-navbar" />}
+            hero={<div data-testid="landing-hero" />}
+            installStrip={<div data-testid="landing-install-strip" />}
+            bentoGrid={<div data-testid="landing-bento-grid" />}
+            componentShowcase={<div data-testid="landing-component-showcase" />}
+            footer={<div data-testid="landing-footer" />}
+          />
+        );
+
+        expect(screen.getByTestId('landing-navbar')).toBeInTheDocument();
+        expect(screen.getByTestId('landing-hero')).toBeInTheDocument();
+        expect(screen.getByTestId('landing-install-strip')).toBeInTheDocument();
+        expect(screen.getByTestId('landing-bento-grid')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('landing-component-showcase')
+        ).toBeInTheDocument();
+        expect(screen.getByTestId('landing-footer')).toBeInTheDocument();
+      });
+
+      it('renders workbench slot when provided', () => {
+        render(
+          <LandingTemplate
+            navbar={<div data-testid="landing-navbar" />}
+            hero={<div data-testid="landing-hero" />}
+            workbench={<div data-testid="landing-workbench" />}
+            installStrip={<div data-testid="landing-install-strip" />}
+            bentoGrid={<div data-testid="landing-bento-grid" />}
+            componentShowcase={<div data-testid="landing-component-showcase" />}
+            footer={<div data-testid="landing-footer" />}
+          />
+        );
+
+        expect(screen.getByTestId('landing-workbench')).toBeInTheDocument();
+      });
+    });
+
+    describe('CatalogTemplate', () => {
+      it('renders all structural slots correctly', () => {
+        render(
+          <CatalogTemplate
+            navbar={<div data-testid="catalog-navbar" />}
+            header={<div data-testid="catalog-header" />}
+            catalog={<div data-testid="catalog-content" />}
+            footer={<div data-testid="catalog-footer" />}
+          />
+        );
+
+        expect(screen.getByTestId('catalog-navbar')).toBeInTheDocument();
+        expect(screen.getByTestId('catalog-header')).toBeInTheDocument();
+        expect(screen.getByTestId('catalog-content')).toBeInTheDocument();
+        expect(screen.getByTestId('catalog-footer')).toBeInTheDocument();
+      });
+    });
+
+    describe('StudioTemplate', () => {
+      it('renders all structural slots correctly', () => {
+        render(
+          <StudioTemplate
+            navbar={<div data-testid="studio-navbar" />}
+            studioContent={<div data-testid="studio-content" />}
+            footer={<div data-testid="studio-footer" />}
+          />
+        );
+
+        expect(screen.getByTestId('studio-navbar')).toBeInTheDocument();
+        expect(screen.getByTestId('studio-content')).toBeInTheDocument();
+        expect(screen.getByTestId('studio-footer')).toBeInTheDocument();
+      });
     });
   });
 

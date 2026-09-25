@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/cn';
-import { usePreset } from '@/lib/preset-context';
+import { usePreset } from '@/components/providers';
 import type { PresetToggleProps } from './preset-toggle.types';
 
 /**

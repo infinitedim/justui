@@ -103,6 +103,20 @@ const nextConfig: NextConfig = {
       permanent: false,
     });
 
+    // Redirect studio root to default locale studio
+    redirects.push({
+      source: '/studio',
+      destination: `/${defaultLocale}/studio`,
+      permanent: false,
+    });
+
+    // Redirect all /studio/:path* without locale to default locale
+    redirects.push({
+      source: '/studio/:path*',
+      destination: `/${defaultLocale}/studio/:path*`,
+      permanent: false,
+    });
+
     return redirects;
   },
   // Proxy rewrites for locale handling

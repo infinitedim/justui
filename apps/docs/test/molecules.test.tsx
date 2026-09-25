@@ -19,7 +19,7 @@ import { StateToggle } from '@/components/molecules/state-toggle';
 import { StatCounter } from '@/components/molecules/stat-counter';
 import { LightnessSlider } from '@/components/molecules/lightness-slider';
 import { SearchResultItem } from '@/components/molecules/search-result-item';
-import { PresetProvider } from '@/lib/preset-context';
+import { PresetProvider } from '@/components/providers';
 
 describe('Molecules Components', () => {
   describe('CopyButton', () => {

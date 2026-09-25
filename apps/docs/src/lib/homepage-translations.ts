@@ -8,6 +8,7 @@ export type HomepageDictionary = {
   navHome: string;
   navDocs: string;
   navComponents: string;
+  navStudio: string;
   searchPlaceholder: string;
   toggleTheme: string;
   changeLanguage: string;
@@ -67,6 +68,7 @@ export const homepageTranslations: Readonly<
     navHome: 'Home',
     navDocs: 'Docs',
     navComponents: 'Components',
+    navStudio: 'Studio',
     searchPlaceholder: 'Search...',
     toggleTheme: 'Toggle theme',
     changeLanguage: 'Switch to Indonesian',
@@ -130,6 +132,7 @@ export const homepageTranslations: Readonly<
     navHome: 'Beranda',
     navDocs: 'Dokumentasi',
     navComponents: 'Komponen',
+    navStudio: 'Studio',
     searchPlaceholder: 'Cari...',
     toggleTheme: 'Ubah tema',
     changeLanguage: 'Ganti ke Bahasa Inggris',
