@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/cn';
-import { usePreset } from '@/lib/preset-context';
+import { usePreset } from '@/components/providers';
 import { InteractiveTerminal } from '@/components/organisms/interactive-terminal';
 import { LivingStage } from '@/components/organisms/living-stage';
 import type { MountedWidget } from '@/components/organisms/living-stage';
@@ -74,7 +74,12 @@ export function HeroInteractive({
   }, []);
 
   return (
-    <div className={cn('flex flex-col gap-6', className)}>
+    <div
+      className={cn(
+        'w-full max-w-6xl mx-auto flex flex-col gap-6 lg:gap-8',
+        className
+      )}
+    >
       {/* Centerpiece Preset Spotlight Toggle */}
       <div className="flex items-center justify-center">
         <div
@@ -113,14 +118,20 @@ export function HeroInteractive({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch w-full">
         <InteractiveTerminal
           lang={lang}
           onMount={handleMount}
           onPresetChange={handlePresetChange}
           onClear={handleClear}
+          className="h-full"
         />
-        <LivingStage widgets={widgets} preset={preset} lang={lang} />
+        <LivingStage
+          widgets={widgets}
+          preset={preset}
+          lang={lang}
+          className="h-full"
+        />
       </div>
     </div>
   );

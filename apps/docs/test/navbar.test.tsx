@@ -177,13 +177,23 @@ describe('Navbar & SearchModal Components', () => {
     expect(mockPush).toHaveBeenCalled();
   });
 
-  it('renders correct navigation destinations for Docs and Components', () => {
+  it('renders correct navigation destinations for Docs, Components, and Studio', () => {
     render(<Navbar starCount={100} lang="en" />);
     const docsLink = screen.getByRole('link', { name: 'Docs' });
     const componentsLink = screen.getByRole('link', { name: 'Components' });
+    const studioLink = screen.getByRole('link', { name: 'Studio' });
 
     expect(docsLink).toHaveAttribute('href', '/en/docs/introduction');
     expect(componentsLink).toHaveAttribute('href', '/en/components');
+    expect(studioLink).toHaveAttribute('href', '/en/studio');
+  });
+
+  it('marks studio as active link when pathname is /en/studio', () => {
+    mockPathname = '/en/studio';
+    render(<Navbar starCount={100} lang="en" />);
+    const studioLink = screen.getByRole('link', { name: 'Studio' });
+    expect(studioLink).toHaveClass('text-foreground');
+    expect(studioLink).not.toHaveClass('text-muted');
   });
 
   it('toggles mobile navigation drawer', () => {
@@ -199,4 +209,31 @@ describe('Navbar & SearchModal Components', () => {
     fireEvent.click(menuBtn);
     expect(menuBtn).toHaveAttribute('aria-expanded', 'false');
   });
+
+  it('renders Studio link in mobile drawer with active state and closes on link click', () => {
+    mockPathname = '/en/studio';
+    render(<Navbar starCount={100} lang="en" />);
+
+    const menuBtn = screen.getByRole('button', {
+      name: /open navigation menu/i,
+    });
+    fireEvent.click(menuBtn);
+
+    const drawer = screen.getByTestId('mobile-navigation-drawer');
+    expect(drawer).toBeInTheDocument();
+
+    const mobileNav = screen.getByRole('navigation', {
+      name: /mobile navigation/i,
+    });
+    const studioLink = mobileNav.querySelector('a[href="/en/studio"]');
+    expect(studioLink).toBeInTheDocument();
+    expect(studioLink).toHaveTextContent('Studio');
+    expect(studioLink).toHaveClass('bg-accent-muted');
+
+    fireEvent.click(studioLink!);
+    expect(
+      screen.queryByTestId('mobile-navigation-drawer')
+    ).not.toBeInTheDocument();
+  });
 });
+

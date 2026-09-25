@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
-import { ThemeProvider } from '@/components/theme-provider';
-import { PresetProvider } from '@/lib/preset-context';
+import { ThemeProvider, PresetProvider } from '@/components/providers';
 import './globals.css';
 
 const sans = IBM_Plex_Sans({

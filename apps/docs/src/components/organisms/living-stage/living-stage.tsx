@@ -59,12 +59,12 @@ export function LivingStage({
       aria-label="Living Widget Stage"
       data-preset={preset}
       className={cn(
-        'border-border bg-card shadow-solid flex flex-col rounded-(--just-radius-lg) border-(length:--just-border-width) p-4 text-left',
+        'border-border bg-card shadow-solid flex min-h-[440px] flex-1 flex-col rounded-(--just-radius-lg) border-(length:--just-border-width) text-left',
         className
       )}
     >
       {/* Top Toolbar */}
-      <div className="border-border flex flex-wrap items-center justify-between gap-3 border-(length:--just-border-width) border-b pb-3">
+      <div className="border-border flex h-12 flex-wrap items-center justify-between gap-3 border-(length:--just-border-width) border-b px-4">
         <ViewportSwitch value={viewport} onChange={setViewport} />
 
         <div
@@ -110,7 +110,7 @@ export function LivingStage({
       {/* Main viewport-constrained content container */}
       <div
         className={cn(
-          'mx-auto w-full pt-4 transition-all duration-300',
+          'mx-auto flex w-full flex-1 flex-col p-4 transition-all duration-300',
           viewportWidthClass[viewport]
         )}
       >
@@ -119,17 +119,17 @@ export function LivingStage({
             id="stage-panel-preview"
             role="tabpanel"
             aria-labelledby="stage-tab-preview"
-            className="w-full"
+            className="flex flex-1 flex-col justify-center w-full"
           >
             {widgets.length === 0 ? (
-              <div className="border-border flex min-h-60 flex-col items-center justify-center rounded-(--just-radius-md) border-dashed p-8 text-center">
+              <div className="border-border flex min-h-[280px] flex-1 flex-col items-center justify-center rounded-(--just-radius-md) border-dashed border-(length:--just-border-width) p-8 text-center">
                 <p className="text-muted font-mono text-xs">
                   {t.stageEmptyState ||
                     'Run a command in the terminal to see components appear here.'}
                 </p>
               </div>
             ) : (
-              <div className="border-border bg-background/50 flex min-h-60 flex-wrap items-center justify-center gap-4 rounded-(--just-radius-md) border-(length:--just-border-width) p-6">
+              <div className="border-border bg-background/50 flex min-h-[280px] flex-1 flex-wrap items-center justify-center gap-4 rounded-(--just-radius-md) border-(length:--just-border-width) p-6">
                 {widgets.map((widget, index) => {
                   const def = getWidgetDef(widget.component);
                   if (!def) {
@@ -161,7 +161,7 @@ export function LivingStage({
             id="stage-panel-code"
             role="tabpanel"
             aria-labelledby="stage-tab-code"
-            className="flex flex-col"
+            className="flex flex-1 flex-col"
           >
             <CodeBlockHeader
               title="widget.dart"
@@ -169,7 +169,7 @@ export function LivingStage({
                 <CopyButton text={combinedDart} label="Copy Flutter code" />
               }
             />
-            <Code block className="min-h-50 text-xs">
+            <Code block className="min-h-[260px] flex-1 text-xs">
               {combinedDart}
             </Code>
           </div>

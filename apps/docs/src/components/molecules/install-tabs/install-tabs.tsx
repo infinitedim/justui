@@ -46,12 +46,12 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
 
   return (
     <div
-      className={cn('mx-auto flex w-full max-w-xl flex-col gap-2', className)}
+      className={cn('mx-auto flex w-full max-w-xl flex-col items-center gap-2.5', className)}
     >
       <div
         role="tablist"
         aria-label="Installation platform"
-        className="border-border flex items-center gap-1 border-b pb-1"
+        className="flex items-center justify-center gap-1 pb-1"
       >
         {PLATFORMS.map((platform) => {
           const isSelected = activePlatform === platform.id;
@@ -65,10 +65,10 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
               aria-controls={`install-tabpanel-${platform.id}`}
               onClick={() => setActivePlatform(platform.id)}
               className={cn(
-                'rounded-(--just-radius-md) px-3 py-1.5 font-mono text-xs transition-colors',
+                'rounded-full px-3 py-1 font-mono text-xs transition-colors',
                 'border-(length:--just-border-width)',
                 isSelected
-                  ? 'border-border bg-accent text-foreground shadow-solid font-medium'
+                  ? 'border-border bg-accent text-accent-foreground shadow-solid font-medium'
                   : 'text-muted hover:border-border hover:text-foreground border-transparent'
               )}
             >
@@ -82,7 +82,7 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
         id={`install-tabpanel-${activePlatform}`}
         role="tabpanel"
         aria-labelledby={`install-tab-${activePlatform}`}
-        className="border-border bg-card shadow-solid flex items-center justify-between gap-3 rounded-(--just-radius-md) border-(length:--just-border-width) p-3"
+        className="border-border bg-card shadow-solid flex w-full items-center justify-between gap-3 rounded-(--just-radius-md) border-(length:--just-border-width) px-4 py-3"
       >
         <code className="text-foreground overflow-x-auto font-mono text-xs whitespace-nowrap select-all sm:text-sm">
           {activeMeta.command}

@@ -275,12 +275,12 @@ export function InteractiveTerminal({
       aria-label="Interactive Terminal"
       onClick={() => inputRef.current?.focus()}
       className={cn(
-        'border-border bg-card shadow-solid flex flex-col rounded-(--just-radius-lg) border-(length:--just-border-width) text-left',
+        'border-border bg-card shadow-solid flex min-h-[440px] flex-1 flex-col rounded-(--just-radius-lg) border-(length:--just-border-width) text-left',
         className
       )}
     >
       {/* macOS window chrome */}
-      <div className="border-border flex items-center justify-between border-(length:--just-border-width) border-b px-4 py-3">
+      <div className="border-border flex h-12 items-center justify-between border-(length:--just-border-width) border-b px-4">
         <div className="flex items-center gap-2">
           <span
             className="h-3 w-3 rounded-full bg-[#FF5F57]"
@@ -329,7 +329,7 @@ export function InteractiveTerminal({
       </div>
 
       {/* Terminal Buffer */}
-      <div className="flex max-h-70 min-h-60 flex-col overflow-y-auto p-4 font-mono text-xs leading-6">
+      <div className="flex min-h-[280px] flex-1 flex-col overflow-y-auto p-4 font-mono text-xs leading-6">
         {buffer.map((entry) => {
           if (entry.kind === 'prompt') {
             return (

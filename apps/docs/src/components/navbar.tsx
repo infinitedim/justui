@@ -10,7 +10,7 @@ import { useTheme } from 'next-themes';
 import { githubUrl } from '@/lib/github';
 import { SearchModal } from '@/components/search-modal';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
-import { usePreset } from '@/lib/preset-context';
+import { usePreset } from '@/components/providers';
 
 interface NavbarProps {
   starCount: number | null;
@@ -112,6 +112,11 @@ export function Navbar({ starCount, lang }: NavbarProps) {
       href: `/${lang}/components`,
       activeHref: '/components',
     },
+    {
+      label: t.navStudio,
+      href: `/${lang}/studio`,
+      activeHref: '/studio',
+    },
   ];
 
   const pathname = usePathname();
@@ -139,9 +144,11 @@ export function Navbar({ starCount, lang }: NavbarProps) {
   }, []);
 
   const activeHref = useMemo(() => {
-    const normalized = pathname.replace(/^\/(id|en)(?=\/|$)/, '') || '/';
+    const normalized =
+      (pathname ?? '').replace(/^\/(id|en)(?=\/|$)/, '') || '/';
     if (normalized.startsWith('/components')) return '/components';
     if (normalized.startsWith('/docs')) return '/docs';
+    if (normalized.startsWith('/studio')) return '/studio';
     return '/';
   }, [pathname]);
 

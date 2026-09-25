@@ -6,7 +6,7 @@ import type { HomepageDictionary } from '@/lib/homepage-translations';
 import { CatalogFilterBar } from '@/components/molecules/catalog-filter-bar/catalog-filter-bar';
 import { LivingComponentCard } from '@/components/organisms/living-component-card/living-component-card';
 import { SearchX } from 'lucide-react';
-import { usePreset } from '@/lib/preset-context';
+import { usePreset } from '@/components/providers';
 
 export interface ComponentsCatalogClientProps {
   components: ComponentMeta[];

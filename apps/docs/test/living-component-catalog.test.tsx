@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { ComponentsCatalogClient } from '@/app/[lang]/components/components-catalog-client';
 import { components } from '@/lib/components-data';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
-import { PresetProvider } from '@/lib/preset-context';
+import { PresetProvider } from '@/components/providers';
 
 describe('Living Component Catalog', () => {
   const dictionary = getHomepageDictionary('en');

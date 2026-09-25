@@ -27,11 +27,6 @@
   --color-destructive: var(--just-error);
   --color-info: var(--just-info);
 
-  /* Spacing */
-  --spacing-sm: var(--just-spacing-sm);
-  --spacing-md: var(--just-spacing-md);
-  --spacing-lg: var(--just-spacing-lg);
-
   /* Border Radius */
   --radius-xs: var(--just-radius-xs);
   --radius-sm: var(--just-radius-sm);

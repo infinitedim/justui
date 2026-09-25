@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/organisms/footer';
+import { StudioTemplate } from '@/components/templates';
 import { fetchStarCount } from '@/lib/github';
 import { StudioClient } from './studio-client';
 
@@ -16,9 +17,7 @@ export async function generateMetadata({
   const isId = lang === 'id';
 
   return {
-    title: isId
-      ? 'Theme Studio - JustUI'
-      : 'Theme Studio - JustUI',
+    title: isId ? 'Theme Studio - JustUI' : 'Theme Studio - JustUI',
     description: isId
       ? 'Konfigurasi design token secara visual dan ekspor kode siap produksi.'
       : 'Configure your design tokens visually and export production-ready code.',
@@ -43,12 +42,10 @@ export default async function StudioPage({
   const starCount = await fetchStarCount();
 
   return (
-    <div className="bg-background text-foreground min-h-screen flex flex-col">
-      <Navbar starCount={starCount} lang={lang} />
-      <main className="flex-1">
-        <StudioClient lang={lang} />
-      </main>
-      <Footer lang={lang} />
-    </div>
+    <StudioTemplate
+      navbar={<Navbar starCount={starCount} lang={lang} />}
+      studioContent={<StudioClient lang={lang} />}
+      footer={<Footer lang={lang} />}
+    />
   );
 }
