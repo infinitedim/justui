@@ -21,7 +21,8 @@ typedef ResolvedPaths = ({File srcFile, File destFile, FileOrigin origin});
 void main(List<String> args) async {
   final bool isDryRun = args.contains('--dry-run');
 
-  final String scriptPath = File(Platform.script.toFilePath()).canonicalPath();
+  final String scriptPath = File(Platform.script.toFilePath()).absolute
+      .resolveSymbolicLinksSync();
   final String projectRoot = p.dirname(p.dirname(scriptPath));
 
   final File indexFile = File(p.join(projectRoot, 'registry', 'index.json'));
@@ -420,8 +421,8 @@ Future<_FileResult> _processFile({
     );
   }
 
-  // Poin 1 + 4: hash-based drift check using streamed hashing instead of
-  // loading both files fully into memory and comparing bytes.
+  // Detect manual edits made in registry/ that would be overwritten by the
+  // core mirror. Hashes are streamed so large files are never fully buffered.
   bool drifted = false;
   if (origin == .coreMirrored && destFile.existsSync()) {
     final Digest srcHash = await _hashFile(srcFile);
@@ -443,8 +444,8 @@ Future<_FileResult> _processFile({
 
   await destFile.parent.create(recursive: true);
 
-  // Poin 2: pattern matching over the FileOrigin enum decides the action
-  // and resulting log line, instead of an inline boolean branch.
+  // Only core-mirrored files are copied; registry-native files are already
+  // the source of truth and are just re-hashed.
   if (origin == .coreMirrored) {
     await srcFile.copy(destFile.path);
   }
@@ -455,15 +456,16 @@ Future<_FileResult> _processFile({
 
   final Digest digest = await _hashFile(destFile);
 
-  // Poin 5: mutation is isolated to this single call site rather than
-  // scattered inline in the main loop.
   _applyChecksum(fileMap, digest);
 
   return (error: null, drifted: drifted, relPath: relPath, logLine: logLine);
 }
 
-/// Poin 3: path resolution extracted into a pure function — no I/O side
-/// effects, easy to unit test independent of the filesystem.
+/// Maps a registry-relative path to its source and destination files.
+///
+/// Preset folders (`default/`, `neobrutalism/`) are stripped to find the
+/// matching file in `packages/core/lib/src`; when no core file exists the
+/// registry copy itself is the source.
 ResolvedPaths _resolvePaths({
   required String relPath,
   required String preset,
@@ -582,22 +584,14 @@ List<String> _validateRegistryDependencies({
   return errors;
 }
 
-/// Poin 4: streamed SHA-256 instead of reading the whole file into memory
-/// first via readAsBytes().
+/// Computes the SHA-256 of [file] by streaming it, without buffering the
+/// whole file in memory.
 Future<Digest> _hashFile(File file) async {
   return sha256.bind(file.openRead()).first;
 }
 
-/// Poin 5: the one place fileMap gets mutated with its checksum. Keeping
-/// this isolated (rather than inlined in the main loop) makes the mutation
-/// explicit and easy to swap for an immutable DTO later if the script ever
-/// grows beyond a single-run CLI.
+/// Stores the `sha256:<hex>` checksum on a registry file entry. This is the
+/// only place where file entries in `index.json` are mutated.
 void _applyChecksum(Map<String, dynamic> fileMap, Digest digest) {
   fileMap['checksum'] = 'sha256:$digest';
-}
-
-extension on File {
-  String canonicalPath() {
-    return File(p.normalize(path)).absolute.path;
-  }
 }
