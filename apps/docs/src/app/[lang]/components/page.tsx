@@ -8,14 +8,9 @@ import {
   type HomepageDictionary,
 } from '@/lib/homepage-translations';
 import { ComponentsCatalogClient } from './components-catalog-client';
+import { localeStaticParams } from '@/lib/i18n';
 
-function CatalogHeader({
-  t,
-  count,
-}: {
-  t: HomepageDictionary;
-  count: number;
-}) {
+function CatalogHeader({ t, count }: { t: HomepageDictionary; count: number }) {
   return (
     <>
       <p className="text-accent mb-3 font-mono text-sm">
@@ -57,5 +52,5 @@ export default async function ComponentsPage({
 }
 
 export async function generateStaticParams() {
-  return [{ lang: 'id' }, { lang: 'en' }];
+  return localeStaticParams();
 }

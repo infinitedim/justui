@@ -163,7 +163,7 @@ dart_target: standard # 'standard' | 'primary' (primary-constructors experiment)
 - **Strict Active Locales:** Currently, documentation is authored and maintained **strictly in two active languages**:
   1. English: `apps/docs/content/docs/en/` (Default)
   2. Indonesian: `apps/docs/content/docs/id/`
-- **Inactive Stubs (`cn`):** The `apps/docs/content/docs/cn/` directory is an unactivated placeholder containing only `.gitkeep`. `next.config.ts` explicitly hardcodes `_supportedLocales = ['en', 'id']`. **Do not author or enforce `cn` files** until Chinese localization is officially activated.
+- **Inactive Stubs (`cn`):** The `apps/docs/content/docs/cn/` directory is an unactivated placeholder containing only `.gitkeep`. The active locale list lives in one place, `apps/docs/src/lib/i18n.ts` (`locales`, `isLocale`, `localeStaticParams`); every `[lang]` route derives from it. **Do not author or enforce `cn` files** until Chinese localization is officially activated.
 - **Routing & Proxies:** Redirections and locale resolution are governed by `next.config.ts` rewrite rules, not deprecated middleware.
 
 ### 5.2 Stage Bridge Telemetry Protocol (`stage-bridge.ts`)
