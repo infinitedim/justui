@@ -224,8 +224,13 @@ pub fn run(
     let pkg_name = pubspec_editor::get_package_name(std::path::Path::new("pubspec.yaml"))
         .unwrap_or_else(|_| "flutter_app".to_string());
 
-    embedded_templates::extract_tokens(std::path::Path::new(&tokens_dir), &pkg_name)?;
-    embedded_templates::extract_core(std::path::Path::new("lib/core"), &pkg_name, &tokens_dir)?;
+    embedded_templates::extract_tokens(std::path::Path::new(&tokens_dir), &pkg_name, dart_target)?;
+    embedded_templates::extract_core(
+        std::path::Path::new("lib/core"),
+        &pkg_name,
+        &tokens_dir,
+        dart_target,
+    )?;
 
     logger::success("Design tokens & Core engine scaffolded locally.");
 

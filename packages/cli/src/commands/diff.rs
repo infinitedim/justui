@@ -245,12 +245,10 @@ pub fn run(
                     &config.preset,
                     &pkg_name,
                 );
-                if config.dart_target == crate::utils::env_resolver::DartTarget::Primary {
-                    remote_rewritten =
-                        crate::utils::constructor_transpiler::transpile_to_primary_constructor(
-                            &remote_rewritten,
-                        );
-                }
+                remote_rewritten = crate::utils::constructor_transpiler::apply_dart_target(
+                    &remote_rewritten,
+                    config.dart_target,
+                );
                 print_line_diff(&fs.file.name, &fs.local_content, &remote_rewritten);
             }
             return Ok(());
@@ -275,9 +273,7 @@ pub fn run(
                 &config.preset,
                 &pkg_name,
             );
-            if config.dart_target == crate::utils::env_resolver::DartTarget::Primary {
-                rr = crate::utils::constructor_transpiler::transpile_to_primary_constructor(&rr);
-            }
+            rr = crate::utils::constructor_transpiler::apply_dart_target(&rr, config.dart_target);
             remote_rewritten_map.insert(idx, rr);
         }
 

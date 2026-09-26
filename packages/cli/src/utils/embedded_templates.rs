@@ -2,6 +2,8 @@ use anyhow::Result;
 use rust_embed::RustEmbed;
 use std::path::Path;
 
+use crate::utils::constructor_transpiler::apply_dart_target;
+use crate::utils::env_resolver::DartTarget;
 use crate::utils::logger;
 
 #[derive(RustEmbed)]
@@ -12,7 +14,11 @@ pub struct TokensAssets;
 #[folder = "../core/lib/"]
 pub struct CoreAssets;
 
-pub fn extract_tokens(target_tokens_dir: &Path, package_name: &str) -> Result<()> {
+pub fn extract_tokens(
+    target_tokens_dir: &Path,
+    package_name: &str,
+    dart_target: DartTarget,
+) -> Result<()> {
     logger::info(&format!(
         "Extracting design tokens to {}...",
         target_tokens_dir.display()
@@ -28,6 +34,7 @@ pub fn extract_tokens(target_tokens_dir: &Path, package_name: &str) -> Result<()
             };
 
             file_content = rewrite_tokens_internal_imports(&file_content, package_name);
+            file_content = apply_dart_target(&file_content, dart_target);
 
             let rel_path_str = path_str
                 .strip_prefix("src/")
@@ -45,7 +52,12 @@ pub fn extract_tokens(target_tokens_dir: &Path, package_name: &str) -> Result<()
     Ok(())
 }
 
-pub fn extract_core(target_core_dir: &Path, package_name: &str, tokens_dir: &str) -> Result<()> {
+pub fn extract_core(
+    target_core_dir: &Path,
+    package_name: &str,
+    tokens_dir: &str,
+    dart_target: DartTarget,
+) -> Result<()> {
     logger::info(&format!(
         "Extracting core theming engine to {}...",
         target_core_dir.display()
@@ -69,6 +81,7 @@ pub fn extract_core(target_core_dir: &Path, package_name: &str, tokens_dir: &str
             if path_str.ends_with("theme_data_material.dart") {
                 file_content = sanitize_theme_data_material(&file_content);
             }
+            file_content = apply_dart_target(&file_content, dart_target);
 
             let rel_path_str = path_str
                 .strip_prefix("src/")
@@ -111,8 +124,16 @@ fn rewrite_core_internal_imports(content: &str, package_name: &str, tokens_dir: 
             &format!("export '{}';", tokens_import),
         )
         .replace(
+            "package:just_ui_tokens/src/",
+            &format!("package:{}/{}/", package_name, tokens_dir_rel),
+        )
+        .replace(
             "package:just_ui_tokens/",
             &format!("package:{}/{}/", package_name, tokens_dir_rel),
+        )
+        .replace(
+            "package:just_ui_core/src/",
+            &format!("package:{}/core/", package_name),
         )
         .replace(
             "package:just_ui_core/",
@@ -176,8 +197,18 @@ mod tests {
         let tok_dir = temp_dir.path().join("tokens");
         let core_dir = temp_dir.path().join("core");
 
-        assert!(extract_tokens(&tok_dir, "my_app").is_ok());
-        assert!(extract_core(&core_dir, "my_app", "lib/tokens").is_ok());
+        assert!(extract_tokens(&tok_dir, "my_app", DartTarget::Standard).is_ok());
+        assert!(extract_core(&core_dir, "my_app", "lib/tokens", DartTarget::Standard).is_ok());
+
+        let provider = std::fs::read_to_string(core_dir.join("theme/theme_provider.dart")).unwrap();
+        assert!(provider.contains("const JustThemeProvider({"));
+        assert!(!provider.contains("class const"));
+
+        let primary_dir = temp_dir.path().join("core_primary");
+        assert!(extract_core(&primary_dir, "my_app", "lib/tokens", DartTarget::Primary).is_ok());
+        let provider =
+            std::fs::read_to_string(primary_dir.join("theme/theme_provider.dart")).unwrap();
+        assert!(provider.contains("class const JustThemeProvider({"));
     }
 
     #[test]
