@@ -162,25 +162,15 @@ const nextConfig: NextConfig = {
           },
         ];
 
+    // Fingerprinted build output under /_next/static already gets
+    // `immutable` caching from Next.js. Files in public/ keep stable names,
+    // so they must not be cached as immutable.
     const headersList = [
       {
         source: '/(.*)',
         headers: [...baselineHeaders, ...productionHeaders],
       },
     ];
-
-    if (!isDev) {
-      headersList.push({
-        // Long-lived cache for immutable static assets.
-        source: '/:path*\\.(ico|png|jpg|jpeg|gif|webp|svg|css|js)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      });
-    }
 
     return headersList;
   },
