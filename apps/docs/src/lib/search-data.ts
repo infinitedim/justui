@@ -47,5 +47,3 @@ const docItems = (lang: string): SearchItem[] => [
 export function getSearchData(lang: string): SearchItem[] {
   return docItems(lang);
 }
-
-export const searchData = docItems('en');

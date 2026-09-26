@@ -1,14 +1,9 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 
 import { fetchStarCount, githubUrl } from '@/lib/github';
-import { i18n } from '@/lib/i18n';
+import { i18n, isLocale, localeStaticParams, locales } from '@/lib/i18n';
 import { source } from '@/lib/source';
 import { translations, baseOptions } from '@/lib/layout.shared';
-import {
-  getDictionary,
-  getHomepageDictionary,
-  getStudioDictionary,
-} from '@/lib/i18n/dictionaries';
 
 describe('Library Helpers', () => {
   describe('github.ts', () => {
@@ -64,6 +59,15 @@ describe('Library Helpers', () => {
       expect(i18n.languages).toContain('en');
       expect(i18n.languages).toContain('id');
     });
+
+    it('exposes a single locale source for routing helpers', () => {
+      expect(locales).toEqual(['en', 'id']);
+      expect(i18n.languages).toEqual([...locales]);
+      expect(localeStaticParams()).toEqual([{ lang: 'en' }, { lang: 'id' }]);
+      expect(isLocale('id')).toBe(true);
+      expect(isLocale('fr')).toBe(false);
+      expect(isLocale('robots.txt')).toBe(false);
+    });
   });
 
   describe('source.ts', () => {
@@ -85,39 +89,4 @@ describe('Library Helpers', () => {
       expect(options.nav?.url).toBe('/en');
     });
   });
-
-  describe('dictionaries.ts', () => {
-    it('aggregates English homepage and studio dictionaries', () => {
-      const dict = getDictionary('en');
-      expect(dict.heroTitle).toBe('Copy. Paste. Ship.');
-      expect(dict.navStudio).toBe('Studio');
-      expect(dict.title).toBe('Theme Studio');
-      expect(dict.seedColor).toBe('Seed Color');
-      expect(dict.resolvedPalette).toBe('Resolved Palette');
-    });
-
-    it('aggregates Indonesian homepage and studio dictionaries', () => {
-      const dict = getDictionary('id');
-      expect(dict.heroTitle).toBe('Salin. Tempel. Rilis.');
-      expect(dict.navStudio).toBe('Studio');
-      expect(dict.seedColor).toBe('Warna Dasar');
-      expect(dict.resolvedPalette).toBe('Palet Hasil');
-    });
-
-    it('falls back to English when an unsupported language is requested', () => {
-      const dict = getDictionary('de');
-      expect(dict.heroTitle).toBe('Copy. Paste. Ship.');
-      expect(dict.seedColor).toBe('Seed Color');
-    });
-
-    it('re-exports individual dictionary getters as functions', () => {
-      expect(typeof getHomepageDictionary).toBe('function');
-      expect(typeof getStudioDictionary).toBe('function');
-      expect(getHomepageDictionary('en').tagline).toBe(
-        'Copy-paste Flutter components'
-      );
-      expect(getStudioDictionary('en').preset).toBe('Preset');
-    });
-  });
 });
-

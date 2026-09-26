@@ -35,7 +35,7 @@ vi.mock('next/link', () => ({
 
 describe('HomePage Component', () => {
   it('renders the hero heading and description', async () => {
-    const page = await HomePage();
+    const page = await HomePage({ params: Promise.resolve({ lang: 'en' }) });
     render(page);
 
     expect(
@@ -48,7 +48,7 @@ describe('HomePage Component', () => {
   });
 
   it('renders the primary homepage actions', async () => {
-    const page = await HomePage();
+    const page = await HomePage({ params: Promise.resolve({ lang: 'en' }) });
     render(page);
 
     expect(screen.getByRole('link', { name: /get started/i })).toHaveAttribute(
@@ -61,7 +61,7 @@ describe('HomePage Component', () => {
   });
 
   it('renders the install tabs and interactive hero section', async () => {
-    const page = await HomePage();
+    const page = await HomePage({ params: Promise.resolve({ lang: 'en' }) });
     render(page);
 
     expect(

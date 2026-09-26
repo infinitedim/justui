@@ -46,7 +46,6 @@ const cspDevelopment = `
 `;
 
 const defaultLocale = 'en';
-const _supportedLocales = ['en', 'id'];
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
