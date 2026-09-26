@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_button_style.dart';
+import 'just_button_variants.dart';
 
 /// Alias for [JustButtonTheme] for convention parity.
 typedef JustButtonThemeData = JustButtonTheme;
@@ -59,6 +60,15 @@ class const JustButtonTheme({
       enableHaptic: t < 0.5 ? enableHaptic : other.enableHaptic,
     );
   }
+
+  /// Returns the style override configured for [variant], if any.
+  JustButtonStyle? styleFor(JustButtonVariant variant) => switch (variant) {
+    .primary => primaryStyle,
+    .secondary => secondaryStyle,
+    .ghost => ghostStyle,
+    .destructive => destructiveStyle,
+    .link => linkStyle,
+  };
 
   @override
   bool operator ==(Object other) =>

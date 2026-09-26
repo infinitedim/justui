@@ -15,7 +15,7 @@ import 'just_button_variants.dart';
 import 'just_button_theme.dart';
 
 /// An icon-only button component following JustUI tokens and strict accessibility rules.
-class JustIconButton extends StatefulWidget {
+class JustIconButton extends StatelessWidget {
   /// The icon widget to display inside the button.
   final Widget icon;
 
@@ -62,37 +62,13 @@ class JustIconButton extends StatefulWidget {
        );
 
   @override
-  State<JustIconButton> createState() => _JustIconButtonState();
-}
-
-class _JustIconButtonState extends State<JustIconButton> {
-  @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
     final JustButtonTheme? buttonTheme = Theme.of(context)
         .extension<JustButtonTheme>();
-    JustButtonStyle? themeStyle;
-    if (buttonTheme != null) {
-      switch (widget.variant) {
-        case .primary:
-          themeStyle = buttonTheme.primaryStyle;
-          break;
-        case .secondary:
-          themeStyle = buttonTheme.secondaryStyle;
-          break;
-        case .ghost:
-          themeStyle = buttonTheme.ghostStyle;
-          break;
-        case .destructive:
-          themeStyle = buttonTheme.destructiveStyle;
-          break;
-        case .link:
-          themeStyle = buttonTheme.linkStyle;
-          break;
-      }
-    }
+    final JustButtonStyle? themeStyle = buttonTheme?.styleFor(variant);
     final bool finalEnableHaptic =
-        widget.enableHaptic ??
+        enableHaptic ??
         buttonTheme?.enableHaptic ??
         customTheme.presetTokens.showsDefaultBorder;
 
@@ -103,48 +79,28 @@ class _JustIconButtonState extends State<JustIconButton> {
     final JustRadiusScheme radius = customTheme.radius;
     final JustMotionProfile animations = customTheme.animations;
 
-    final bool isInteractive =
-        widget.onPressed != null && !widget.isDisabled && !widget.isLoading;
+    final bool isInteractive = onPressed != null && !isDisabled && !isLoading;
 
-    // Resolve dimension (width = height) based on size
-    double sizeDimension;
-    double iconSize;
-    BorderRadius defaultRadius;
-
-    switch (widget.size) {
-      case .xs:
-        sizeDimension = 28.0;
-        iconSize = 14.0;
-        defaultRadius = .all(radius.sm);
-        break;
-      case .sm:
-        sizeDimension = 32.0;
-        iconSize = 16.0;
-        defaultRadius = .all(radius.md);
-        break;
-      case .md:
-        sizeDimension = 40.0;
-        iconSize = 18.0;
-        defaultRadius = .all(radius.md);
-        break;
-      case .lg:
-        sizeDimension = 48.0;
-        iconSize = 20.0;
-        defaultRadius = .all(radius.md);
-        break;
-      case .xl:
-        sizeDimension = 56.0;
-        iconSize = 22.0;
-        defaultRadius = .all(radius.lg);
-        break;
-    }
+    // Square button: width == height == sizeDimension.
+    final (
+      double sizeDimension,
+      double iconSize,
+      Radius cornerRadius,
+    ) = switch (size) {
+      .xs => (28.0, 14.0, radius.sm),
+      .sm => (32.0, 16.0, radius.md),
+      .md => (40.0, 18.0, radius.md),
+      .lg => (48.0, 20.0, radius.md),
+      .xl => (56.0, 22.0, radius.lg),
+    };
+    final BorderRadius defaultRadius = .all(cornerRadius);
 
     final bool needsMinTargetSize = sizeDimension < 48.0;
 
     return Semantics(
       button: true,
-      label: widget.tooltip,
-      hint: widget.isLoading ? 'Loading' : null,
+      label: tooltip,
+      hint: isLoading ? 'Loading' : null,
       enabled: isInteractive,
       child: ConstrainedBox(
         constraints: BoxConstraints(
@@ -156,154 +112,43 @@ class _JustIconButtonState extends State<JustIconButton> {
           heightFactor: 1.0,
           child: JustPressable(
             enabled: isInteractive,
-            onTap: widget.onPressed == null
+            onTap: onPressed == null
                 ? null
                 : () {
                     if (finalEnableHaptic) {
                       HapticFeedback.lightImpact();
                     }
-                    widget.onPressed?.call();
+                    onPressed?.call();
                   },
             builder: (BuildContext context, JustInteractionState state) {
               final bool isHovered = state.isHovered;
               final bool isPressed = state.isPressed;
               final JustPresetTokens presetTokens = customTheme.presetTokens;
-              Color bg;
-              Color text;
-              Color border;
-
-              final Color primaryBg = presetTokens.showsDefaultBorder
-                  ? colors.warning
-                  : colors.borderFocus;
-              final Color primaryFg = presetTokens.showsDefaultBorder
-                  ? const Color(0xFF000000)
-                  : colors.textInverse;
-              final Color errorBg = colors.error;
-
-              switch (widget.variant) {
-                case .primary:
-                  bg = primaryBg;
-                  text = primaryFg;
-                  border = presetTokens.showsDefaultBorder
-                      ? colors.textPrimary
-                      : const Color(0x00000000);
-
-                  if (!isInteractive) {
-                    bg = bg.withValues(alpha: 0.5);
-                    text = text.withValues(alpha: 0.7);
-                  } else if (isPressed) {
-                    bg = bg.withValues(alpha: 0.8);
-                  } else if (isHovered) {
-                    bg = bg.withValues(alpha: 0.9);
-                  }
-                  break;
-
-                case .secondary:
-                  bg = presetTokens.showsDefaultBorder
-                      ? colors.card
-                      : const Color(0x00000000);
-                  text = colors.textPrimary;
-                  border = presetTokens.showsDefaultBorder
-                      ? colors.textPrimary
-                      : colors.borderDefault;
-
-                  if (!isInteractive) {
-                    text = text.withValues(alpha: 0.4);
-                    border = border.withValues(alpha: 0.4);
-                  } else if (isPressed) {
-                    bg = presetTokens.showsDefaultBorder
-                        ? colors.card
-                        : primaryBg.withValues(alpha: 0.15);
-                    border = presetTokens.showsDefaultBorder
-                        ? colors.textPrimary
-                        : primaryBg;
-                    text = presetTokens.showsDefaultBorder
-                        ? colors.textPrimary
-                        : primaryBg;
-                  } else if (isHovered) {
-                    bg = presetTokens.showsDefaultBorder
-                        ? colors.card
-                        : primaryBg.withValues(alpha: 0.08);
-                    border = presetTokens.showsDefaultBorder
-                        ? colors.textPrimary
-                        : primaryBg;
-                    text = presetTokens.showsDefaultBorder
-                        ? colors.textPrimary
-                        : primaryBg;
-                  }
-                  break;
-
-                case .ghost:
-                  bg = const Color(0x00000000);
-                  text = colors.textPrimary;
-                  border = const Color(0x00000000);
-
-                  if (!isInteractive) {
-                    text = text.withValues(alpha: 0.4);
-                  } else if (isPressed) {
-                    bg = colors.textPrimary.withValues(alpha: 0.15);
-                  } else if (isHovered) {
-                    bg = colors.textPrimary.withValues(alpha: 0.08);
-                  }
-                  break;
-
-                case .destructive:
-                  bg = errorBg;
-                  text = presetTokens.showsDefaultBorder
-                      ? const Color(0xFF000000)
-                      : colors.textInverse;
-                  border = presetTokens.showsDefaultBorder
-                      ? colors.textPrimary
-                      : const Color(0x00000000);
-
-                  if (!isInteractive) {
-                    bg = bg.withValues(alpha: 0.5);
-                    text = text.withValues(alpha: 0.7);
-                  } else if (isPressed) {
-                    bg = bg.withValues(alpha: 0.8);
-                  } else if (isHovered) {
-                    bg = bg.withValues(alpha: 0.9);
-                  }
-                  break;
-
-                case .link:
-                  bg = const Color(0x00000000);
-                  text = presetTokens.showsDefaultBorder
-                      ? ((colors.background.computeLuminance() < 0.5)
-                            ? colors.textPrimary
-                            : colors.info)
-                      : primaryBg;
-                  border = const Color(0x00000000);
-
-                  if (!isInteractive) {
-                    text = text.withValues(alpha: 0.4);
-                  } else if (isPressed) {
-                    text = text.withValues(alpha: 0.7);
-                  } else if (isHovered) {
-                    text = text.withValues(alpha: 0.8);
-                  }
-                  break;
-              }
+              final JustButtonColors resolved = resolveJustButtonColors(
+                variant: variant,
+                colors: colors,
+                presetTokens: presetTokens,
+                isInteractive: isInteractive,
+                isPressed: isPressed,
+                isHovered: isHovered,
+              );
+              final Color bg = resolved.bg;
+              final Color text = resolved.text;
+              final Color border = resolved.border;
 
               final Color finalBg =
-                  widget.style?.backgroundColor ??
-                  themeStyle?.backgroundColor ??
-                  bg;
+                  style?.backgroundColor ?? themeStyle?.backgroundColor ?? bg;
               final Color finalFg =
-                  widget.style?.foregroundColor ??
-                  themeStyle?.foregroundColor ??
-                  text;
+                  style?.foregroundColor ?? themeStyle?.foregroundColor ?? text;
               final Color finalBorder =
-                  widget.style?.borderColor ??
-                  themeStyle?.borderColor ??
-                  border;
+                  style?.borderColor ?? themeStyle?.borderColor ?? border;
               final BorderRadius resolvedRadius =
-                  widget.style?.borderRadius ??
+                  style?.borderRadius ??
                   themeStyle?.borderRadius ??
                   defaultRadius;
 
               Widget content;
-              if (widget.isLoading) {
+              if (isLoading) {
                 content = JustProgressSpinner(
                   size: iconSize,
                   color: finalFg,
@@ -312,7 +157,7 @@ class _JustIconButtonState extends State<JustIconButton> {
               } else {
                 content = IconTheme.merge(
                   data: IconThemeData(size: iconSize, color: finalFg),
-                  child: widget.icon,
+                  child: icon,
                 );
               }
 
@@ -321,9 +166,9 @@ class _JustIconButtonState extends State<JustIconButton> {
               // Shadows resolution (flat solid offset shadow for neobrutalism)
               List<BoxShadow> defaultShadows;
               if (presetTokens.showsDefaultBorder &&
-                  widget.variant != JustButtonVariant.link &&
-                  widget.variant != JustButtonVariant.ghost) {
-                defaultShadows = widget.size == JustButtonSize.xs
+                  variant != JustButtonVariant.link &&
+                  variant != JustButtonVariant.ghost) {
+                defaultShadows = size == JustButtonSize.xs
                     ? customTheme.shadows.xs
                     : customTheme.shadows.sm;
               } else {
@@ -331,7 +176,7 @@ class _JustIconButtonState extends State<JustIconButton> {
               }
 
               final double? styleElevation =
-                  widget.style?.elevation ?? themeStyle?.elevation;
+                  style?.elevation ?? themeStyle?.elevation;
               List<BoxShadow> resolvedShadows;
               if (styleElevation != null) {
                 resolvedShadows = styleElevation > 0.0
@@ -350,7 +195,7 @@ class _JustIconButtonState extends State<JustIconButton> {
 
               final double finalBorderWidth =
                   presetTokens.showsDefaultBorder &&
-                      widget.variant != JustButtonVariant.link
+                      variant != JustButtonVariant.link
                   ? presetTokens.borderWidth
                   : (finalBorder != const Color(0x00000000) ? 1.0 : 0.0);
 

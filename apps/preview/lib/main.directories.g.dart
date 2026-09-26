@@ -10,6 +10,7 @@
 // **************************************************************************
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+
 import 'package:preview/usecases/accordion_usecases.dart'
     as _preview_usecases_accordion_usecases;
 import 'package:preview/usecases/avatar_usecases.dart'
@@ -24,6 +25,8 @@ import 'package:preview/usecases/button_usecases.dart'
     as _preview_usecases_button_usecases;
 import 'package:preview/usecases/card_usecases.dart'
     as _preview_usecases_card_usecases;
+import 'package:preview/usecases/carousel_usecases.dart'
+    as _preview_usecases_carousel_usecases;
 import 'package:preview/usecases/checkbox_usecases.dart'
     as _preview_usecases_checkbox_usecases;
 import 'package:preview/usecases/date_picker_usecases.dart'
@@ -36,6 +39,8 @@ import 'package:preview/usecases/progress_usecases.dart'
     as _preview_usecases_progress_usecases;
 import 'package:preview/usecases/radio_usecases.dart'
     as _preview_usecases_radio_usecases;
+import 'package:preview/usecases/resizable_usecases.dart'
+    as _preview_usecases_resizable_usecases;
 import 'package:preview/usecases/scroll_usecases.dart'
     as _preview_usecases_scroll_usecases;
 import 'package:preview/usecases/select_usecases.dart'
@@ -188,6 +193,26 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'carousel',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'JustCarousel',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Auto Scroll',
+                builder: _preview_usecases_carousel_usecases
+                    .buildJustCarouselAutoScrollUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Default Carousel',
+                builder: _preview_usecases_carousel_usecases
+                    .buildJustCarouselDefaultUseCase,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'checkbox',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -316,12 +341,32 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'radio',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'JustRadio',
+            name: 'JustRadio<String>',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Default Radio',
                 builder: _preview_usecases_radio_usecases
                     .buildJustRadioDefaultUseCase,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'resizable',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'JustResizable',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Collapsible Panels',
+                builder: _preview_usecases_resizable_usecases
+                    .buildJustResizableCollapsibleUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Two Panels',
+                builder: _preview_usecases_resizable_usecases
+                    .buildJustResizableTwoPanelsUseCase,
               ),
             ],
           ),
@@ -346,7 +391,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'select',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'JustSelect',
+            name: 'JustSelect<String>',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Default Select',
@@ -481,7 +526,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'table',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'JustTable',
+            name: 'JustTable<_SampleRow>',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Default Table',
