@@ -437,40 +437,19 @@ class _JustInputState extends State<JustInput> {
     ).theme.spacing;
     final JustMotionProfile animations = theme.animations;
 
-    // Dimensions based on size
-    double fieldHeight;
-    double fontSize;
-    double paddingV;
-    double iconSize;
+    final bool isMultiline = widget.maxLines != null && widget.maxLines! > 1;
+    final (
+      double fieldHeight,
+      double fontSize,
+      double iconSize,
+      double paddingV,
+    ) = _inputSizeMetrics(
+      widget.size,
+      isMultiline,
+      spacing,
+    );
     final double paddingH = spacing.md; // 12px
     final BorderRadius defaultRadius = .all(theme.radius.md);
-
-    switch (widget.size) {
-      case .sm:
-        fieldHeight = widget.maxLines != null && widget.maxLines! > 1
-            ? 80.0
-            : 36.0;
-        fontSize = 13.0;
-        iconSize = 16.0;
-        paddingV = spacing.xs; // 4px
-        break;
-      case .md:
-        fieldHeight = widget.maxLines != null && widget.maxLines! > 1
-            ? 110.0
-            : 44.0;
-        fontSize = 14.0;
-        iconSize = 18.0;
-        paddingV = spacing.sm; // 8px
-        break;
-      case .lg:
-        fieldHeight = widget.maxLines != null && widget.maxLines! > 1
-            ? 140.0
-            : 52.0;
-        fontSize = 16.0;
-        iconSize = 20.0;
-        paddingV = spacing.md; // 12px
-        break;
-    }
 
     // Custom styles
     final Color finalBg =
@@ -552,151 +531,23 @@ class _JustInputState extends State<JustInput> {
                 child: ValueListenableBuilder<bool>(
                   valueListenable: _isFilled,
                   builder: (BuildContext context, bool isFilled, _) {
-                    Color border = widget.style?.borderColor ?? defaultBorder;
-                    if (widget.errorText != null) {
-                      border = widget.style?.errorBorderColor ?? errorBorder;
-                    } else if (widget.successText != null) {
-                      border = successBorder;
-                    } else if (isFocused) {
-                      border =
-                          widget.style?.focusedBorderColor ?? focusedBorder;
-                    }
-
-                    // Generate Prefix Widget
-                    Widget? leadingWidget;
-                    if (widget.prefixIcon != null) {
-                      leadingWidget = Padding(
-                        padding: .only(right: spacing.sm),
-                        child: Icon(
-                          widget.prefixIcon,
-                          size: iconSize,
-                          color: colors.textSecondary,
-                        ),
-                      );
-                    } else if (widget.prefix != null) {
-                      leadingWidget = Padding(
-                        padding: .only(right: spacing.sm),
-                        child: widget.prefix,
-                      );
-                    } else if (widget.variant == .search) {
-                      leadingWidget = Padding(
-                        padding: .only(right: spacing.sm),
-                        child: Icon(
-                          Icons.search_rounded,
-                          size: iconSize,
-                          color: colors.textSecondary,
-                        ),
-                      );
-                    }
-
-                    // Generate Suffix Widget
-                    Widget? trailingWidget;
-                    if (widget.variant == .password) {
-                      trailingWidget = ValueListenableBuilder<bool>(
-                        valueListenable: _isPasswordObscured,
-                        builder: (BuildContext context, bool obscured, _) {
-                          return GestureDetector(
-                            onTap: () {
-                              if (widget.enabled) {
-                                _isPasswordObscured.value = !obscured;
-                              }
-                            },
-                            child: Padding(
-                              padding: .only(left: spacing.sm),
-                              child: Icon(
-                                obscured
-                                    ? Icons.visibility_off_rounded
-                                    : Icons.visibility_rounded,
-                                size: iconSize,
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    } else if (widget.variant == .number) {
-                      trailingWidget = Row(
-                        mainAxisSize: .min,
-                        children: <Widget>[
-                          GestureDetector(
-                            onTap: _handleDecrement,
-                            child: Padding(
-                              padding: .symmetric(horizontal: spacing.xxs),
-                              child: Icon(
-                                Icons.remove_rounded,
-                                size: iconSize,
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: _handleIncrement,
-                            child: Padding(
-                              padding: .symmetric(horizontal: spacing.xxs),
-                              child: Icon(
-                                Icons.add_rounded,
-                                size: iconSize,
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    } else if (widget.showClearButton) {
-                      trailingWidget = ValueListenableBuilder<bool>(
-                        valueListenable: _isFilled,
-                        builder: (BuildContext context, bool filled, _) {
-                          if (!filled) {
-                            if (widget.suffixIcon != null) {
-                              return Padding(
-                                padding: .only(left: spacing.sm),
-                                child: Icon(
-                                  widget.suffixIcon,
-                                  size: iconSize,
-                                  color: colors.textSecondary,
-                                ),
-                              );
-                            } else if (widget.suffix != null) {
-                              return Padding(
-                                padding: .only(left: spacing.sm),
-                                child: widget.suffix,
-                              );
-                            }
-                            return const SizedBox.shrink();
-                          }
-                          return GestureDetector(
-                            onTap: () {
-                              if (widget.enabled) {
-                                _controller.clear();
-                                widget.onChanged?.call('');
-                              }
-                            },
-                            child: Padding(
-                              padding: .only(left: spacing.sm),
-                              child: Icon(
-                                Icons.close_rounded,
-                                size: iconSize,
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    } else if (widget.suffixIcon != null) {
-                      trailingWidget = Padding(
-                        padding: .only(left: spacing.sm),
-                        child: Icon(
-                          widget.suffixIcon,
-                          size: iconSize,
-                          color: colors.textSecondary,
-                        ),
-                      );
-                    } else if (widget.suffix != null) {
-                      trailingWidget = Padding(
-                        padding: .only(left: spacing.sm),
-                        child: widget.suffix,
-                      );
-                    }
+                    final Color border = _resolveBorderColor(
+                      isFocused: isFocused,
+                      defaultBorder: defaultBorder,
+                      focusedBorder: focusedBorder,
+                      errorBorder: errorBorder,
+                      successBorder: successBorder,
+                    );
+                    final Widget? leadingWidget = _buildLeading(
+                      colors,
+                      spacing,
+                      iconSize,
+                    );
+                    final Widget? trailingWidget = _buildTrailing(
+                      colors,
+                      spacing,
+                      iconSize,
+                    );
 
                     // Compute text area / normal text field constraints
                     Widget textInput;
@@ -720,10 +571,7 @@ class _JustInputState extends State<JustInput> {
                     }
 
                     final Row fieldContent = Row(
-                      crossAxisAlignment:
-                          widget.maxLines != null && widget.maxLines! > 1
-                          ? .start
-                          : .center,
+                      crossAxisAlignment: isMultiline ? .start : .center,
                       children: <Widget>[
                         ?leadingWidget,
                         Expanded(child: textInput),
@@ -766,58 +614,17 @@ class _JustInputState extends State<JustInput> {
               // Sub-elements (Error, Success, Helper texts & Character Counter)
               if (hasSubElements || hasCounter) ...<Widget>[
                 SizedBox(height: spacing.xs),
-                Row(
-                  mainAxisAlignment: .spaceBetween,
-                  crossAxisAlignment: .start,
-                  children: <Widget>[
-                    if (hasSubElements)
-                      Expanded(
-                        child: Builder(
-                          builder: (BuildContext context) {
-                            String text;
-                            Color textColor;
-                            if (widget.errorText != null) {
-                              text = widget.errorText!;
-                              textColor = errorBorder;
-                            } else if (widget.successText != null) {
-                              text = widget.successText!;
-                              textColor = successBorder;
-                            } else {
-                              text = widget.helper!;
-                              textColor = colors.textSecondary;
-                            }
-                            return Text(
-                              text,
-                              style: finalHelperStyle.copyWith(
-                                color: textColor,
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    else
-                      const Spacer(),
-                    if (hasCounter)
-                      Padding(
-                        padding: .only(left: spacing.sm),
-                        child: ValueListenableBuilder<TextEditingValue>(
-                          valueListenable: _controller,
-                          builder:
-                              (
-                                BuildContext context,
-                                TextEditingValue value,
-                                _,
-                              ) {
-                                return Text(
-                                  '${value.text.length} / ${widget.maxLength}',
-                                  style: finalHelperStyle.copyWith(
-                                    color: colors.textSecondary,
-                                  ),
-                                );
-                              },
-                        ),
-                      ),
-                  ],
+                _InputHelperRow(
+                  errorText: widget.errorText,
+                  successText: widget.successText,
+                  helper: widget.helper,
+                  maxLength: widget.maxLength,
+                  controller: _controller,
+                  style: finalHelperStyle,
+                  errorColor: errorBorder,
+                  successColor: successBorder,
+                  neutralColor: colors.textSecondary,
+                  gap: spacing.sm,
                 ),
               ],
             ],
@@ -825,6 +632,173 @@ class _JustInputState extends State<JustInput> {
         },
       ),
     );
+  }
+
+  /// Border color for the current validation and focus state.
+  Color _resolveBorderColor({
+    required bool isFocused,
+    required Color defaultBorder,
+    required Color focusedBorder,
+    required Color errorBorder,
+    required Color successBorder,
+  }) {
+    if (widget.errorText != null) {
+      return widget.style?.errorBorderColor ?? errorBorder;
+    }
+    if (widget.successText != null) return successBorder;
+    if (isFocused) return widget.style?.focusedBorderColor ?? focusedBorder;
+    return widget.style?.borderColor ?? defaultBorder;
+  }
+
+  /// Prefix icon/widget, or the implicit search icon for [JustInputVariant.search].
+  Widget? _buildLeading(
+    JustColorScheme colors,
+    JustSpacingScheme spacing,
+    double iconSize,
+  ) {
+    Widget? leadingWidget;
+    if (widget.prefixIcon != null) {
+      leadingWidget = Padding(
+        padding: .only(right: spacing.sm),
+        child: Icon(
+          widget.prefixIcon,
+          size: iconSize,
+          color: colors.textSecondary,
+        ),
+      );
+    } else if (widget.prefix != null) {
+      leadingWidget = Padding(
+        padding: .only(right: spacing.sm),
+        child: widget.prefix,
+      );
+    } else if (widget.variant == .search) {
+      leadingWidget = Padding(
+        padding: .only(right: spacing.sm),
+        child: Icon(
+          Icons.search_rounded,
+          size: iconSize,
+          color: colors.textSecondary,
+        ),
+      );
+    }
+    return leadingWidget;
+  }
+
+  /// Suffix controls: password toggle, number stepper, clear button or a
+  /// custom suffix icon/widget.
+  Widget? _buildTrailing(
+    JustColorScheme colors,
+    JustSpacingScheme spacing,
+    double iconSize,
+  ) {
+    Widget? trailingWidget;
+    if (widget.variant == .password) {
+      trailingWidget = ValueListenableBuilder<bool>(
+        valueListenable: _isPasswordObscured,
+        builder: (BuildContext context, bool obscured, _) {
+          return GestureDetector(
+            onTap: () {
+              if (widget.enabled) {
+                _isPasswordObscured.value = !obscured;
+              }
+            },
+            child: Padding(
+              padding: .only(left: spacing.sm),
+              child: Icon(
+                obscured
+                    ? Icons.visibility_off_rounded
+                    : Icons.visibility_rounded,
+                size: iconSize,
+                color: colors.textSecondary,
+              ),
+            ),
+          );
+        },
+      );
+    } else if (widget.variant == .number) {
+      trailingWidget = Row(
+        mainAxisSize: .min,
+        children: <Widget>[
+          GestureDetector(
+            onTap: _handleDecrement,
+            child: Padding(
+              padding: .symmetric(horizontal: spacing.xxs),
+              child: Icon(
+                Icons.remove_rounded,
+                size: iconSize,
+                color: colors.textSecondary,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: _handleIncrement,
+            child: Padding(
+              padding: .symmetric(horizontal: spacing.xxs),
+              child: Icon(
+                Icons.add_rounded,
+                size: iconSize,
+                color: colors.textSecondary,
+              ),
+            ),
+          ),
+        ],
+      );
+    } else if (widget.showClearButton) {
+      trailingWidget = ValueListenableBuilder<bool>(
+        valueListenable: _isFilled,
+        builder: (BuildContext context, bool filled, _) {
+          if (!filled) {
+            if (widget.suffixIcon != null) {
+              return Padding(
+                padding: .only(left: spacing.sm),
+                child: Icon(
+                  widget.suffixIcon,
+                  size: iconSize,
+                  color: colors.textSecondary,
+                ),
+              );
+            } else if (widget.suffix != null) {
+              return Padding(
+                padding: .only(left: spacing.sm),
+                child: widget.suffix,
+              );
+            }
+            return const SizedBox.shrink();
+          }
+          return GestureDetector(
+            onTap: () {
+              if (widget.enabled) {
+                _controller.clear();
+                widget.onChanged?.call('');
+              }
+            },
+            child: Padding(
+              padding: .only(left: spacing.sm),
+              child: Icon(
+                Icons.close_rounded,
+                size: iconSize,
+                color: colors.textSecondary,
+              ),
+            ),
+          );
+        },
+      );
+    } else if (widget.suffixIcon != null) {
+      trailingWidget = Padding(
+        padding: .only(left: spacing.sm),
+        child: Icon(
+          widget.suffixIcon,
+          size: iconSize,
+          color: colors.textSecondary,
+        ),
+      );
+    } else if (widget.suffix != null) {
+      trailingWidget = Padding(
+        padding: .only(left: spacing.sm),
+        child: widget.suffix,
+      );
+    }
+    return trailingWidget;
   }
 
   Widget _buildNativeTextField(
@@ -854,6 +828,73 @@ class _JustInputState extends State<JustInput> {
       onChanged: widget.onChanged,
       onSubmitted: widget.onSubmitted,
       inputFormatters: widget.inputFormatters,
+    );
+  }
+}
+
+/// Table-driven field height, font size, icon size and vertical padding for
+/// each [JustInputSize]. Multi-line fields get a taller default height.
+(double, double, double, double) _inputSizeMetrics(
+  JustInputSize size,
+  bool isMultiline,
+  JustSpacingScheme spacing,
+) {
+  return switch (size) {
+    .sm => (isMultiline ? 80.0 : 36.0, 13.0, 16.0, spacing.xs),
+    .md => (isMultiline ? 110.0 : 44.0, 14.0, 18.0, spacing.sm),
+    .lg => (isMultiline ? 140.0 : 52.0, 16.0, 20.0, spacing.md),
+  };
+}
+
+/// Error / success / helper message and optional character counter shown
+/// below a [JustInput].
+class const _InputHelperRow({
+  required final String? errorText,
+  required final String? successText,
+  required final String? helper,
+  required final int? maxLength,
+  required final TextEditingController controller,
+  required final TextStyle style,
+  required final Color errorColor,
+  required final Color successColor,
+  required final Color neutralColor,
+  required final double gap,
+}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final (String? message, Color messageColor) = switch ((
+      errorText,
+      successText,
+    )) {
+      (final String error, _) => (error, errorColor),
+      (null, final String success) => (success, successColor),
+      _ => (helper, neutralColor),
+    };
+
+    return Row(
+      mainAxisAlignment: .spaceBetween,
+      crossAxisAlignment: .start,
+      children: <Widget>[
+        if (message != null)
+          Expanded(
+            child: Text(message, style: style.copyWith(color: messageColor)),
+          )
+        else
+          const Spacer(),
+        if (maxLength != null)
+          Padding(
+            padding: .only(left: gap),
+            child: ValueListenableBuilder<TextEditingValue>(
+              valueListenable: controller,
+              builder: (BuildContext context, TextEditingValue value, _) {
+                return Text(
+                  '${value.text.length} / $maxLength',
+                  style: style.copyWith(color: neutralColor),
+                );
+              },
+            ),
+          ),
+      ],
     );
   }
 }

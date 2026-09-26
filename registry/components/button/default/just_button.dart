@@ -79,7 +79,7 @@ class const JustButton({
 
   /// If null, falls back to the theme setting.
   final bool? enableHaptic,
-}) extends StatefulWidget {
+}) extends StatelessWidget {
   /// Named constructor for primary solid buttons.
   const new primary({
     Key? key,
@@ -221,11 +221,6 @@ class const JustButton({
        );
 
   @override
-  State<JustButton> createState() => _JustButtonState();
-}
-
-class _JustButtonState extends State<JustButton> {
-  @override
   Widget build(BuildContext context) {
     // Attempt to read from Flutter Theme Extension
     // Using context.justTheme which resolves InheritedModel aspects properly
@@ -234,28 +229,9 @@ class _JustButtonState extends State<JustButton> {
         .extension<JustButtonTheme>();
     final JustPresetTokens presetTokens = customTheme.presetTokens;
 
-    JustButtonStyle? themeStyle;
-    if (buttonTheme != null) {
-      switch (widget.variant) {
-        case .primary:
-          themeStyle = buttonTheme.primaryStyle;
-          break;
-        case .secondary:
-          themeStyle = buttonTheme.secondaryStyle;
-          break;
-        case .ghost:
-          themeStyle = buttonTheme.ghostStyle;
-          break;
-        case .destructive:
-          themeStyle = buttonTheme.destructiveStyle;
-          break;
-        case .link:
-          themeStyle = buttonTheme.linkStyle;
-          break;
-      }
-    }
+    final JustButtonStyle? themeStyle = buttonTheme?.styleFor(variant);
     final bool finalEnableHaptic =
-        widget.enableHaptic ??
+        enableHaptic ??
         buttonTheme?.enableHaptic ??
         presetTokens.showsDefaultBorder;
 
@@ -275,92 +251,20 @@ class _JustButtonState extends State<JustButton> {
     final JustRadiusScheme radius = customTheme.radius;
     final JustMotionProfile animations = customTheme.animations;
 
-    final bool isInteractive =
-        widget.onPressed != null && !widget.isDisabled && !widget.isLoading;
+    final bool isInteractive = onPressed != null && !isDisabled && !isLoading;
 
-    // Determine dimensions & paddings based on size
-    double height;
-    double paddingH;
-    TextStyle textStyle;
-    double iconSize;
-    BorderRadius defaultRadius;
-
-    switch (widget.size) {
-      case .xs:
-        height = 28.0;
-        paddingH = spacing.sm; // 8px
-        textStyle = typography.caption.copyWith(fontWeight: .w500);
-        iconSize = 14.0;
-        defaultRadius = presetTokens.resolveBorderRadius(radius);
-        break;
-      case .sm:
-        height = 32.0;
-        paddingH = spacing.md; // 12px
-        textStyle = typography.bodySm.copyWith(fontWeight: .w500);
-        iconSize = 16.0;
-        defaultRadius = presetTokens.resolveBorderRadius(radius);
-        break;
-      case .md:
-        height = 40.0;
-        paddingH = spacing.lg; // 16px
-        textStyle = typography.bodyMd.copyWith(fontWeight: .w500);
-        iconSize = 18.0;
-        defaultRadius = presetTokens.resolveBorderRadius(radius);
-        break;
-      case .lg:
-        height = 48.0;
-        paddingH = spacing.xl; // 20px
-        textStyle = typography.bodyLg.copyWith(fontWeight: .w500);
-        iconSize = 20.0;
-        defaultRadius = presetTokens.resolveBorderRadius(radius);
-        break;
-      case .xl:
-        height = 56.0;
-        paddingH = spacing.xxl; // 24px
-        textStyle = typography.headingSm.copyWith(fontWeight: .w500);
-        iconSize = 22.0;
-        defaultRadius = presetTokens.resolveBorderRadius(radius);
-        break;
-    }
+    final _ButtonMetrics metrics = _buttonMetrics(size, spacing, typography);
+    final double height = metrics.height;
+    final double paddingH = metrics.paddingH;
+    final TextStyle textStyle = metrics.textStyle;
+    final double iconSize = metrics.iconSize;
+    final BorderRadius defaultRadius = presetTokens.resolveBorderRadius(radius);
 
     // Apply button group attached adjustments if in a group
-    final JustButtonGroupInfo? groupInfo = JustButtonGroupInfo.of(context);
-    BorderRadius resolvedRadius =
-        widget.style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius;
-    if (groupInfo != null) {
-      final bool isFirst = groupInfo.index == 0;
-      final bool isLast = groupInfo.index == groupInfo.totalCount - 1;
-
-      if (groupInfo.direction == .horizontal) {
-        if (isFirst) {
-          resolvedRadius = .only(
-            topLeft: resolvedRadius.topLeft,
-            bottomLeft: resolvedRadius.bottomLeft,
-          );
-        } else if (isLast) {
-          resolvedRadius = .only(
-            topRight: resolvedRadius.topRight,
-            bottomRight: resolvedRadius.bottomRight,
-          );
-        } else {
-          resolvedRadius = .zero;
-        }
-      } else {
-        if (isFirst) {
-          resolvedRadius = .only(
-            topLeft: resolvedRadius.topLeft,
-            topRight: resolvedRadius.topRight,
-          );
-        } else if (isLast) {
-          resolvedRadius = .only(
-            bottomLeft: resolvedRadius.bottomLeft,
-            bottomRight: resolvedRadius.bottomRight,
-          );
-        } else {
-          resolvedRadius = .zero;
-        }
-      }
-    }
+    final BorderRadius resolvedRadius = _attachedGroupRadius(
+      style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius,
+      JustButtonGroupInfo.of(context),
+    );
 
     // Accessibility Target enforcement
     // Touch targets must be at least 48x48
@@ -368,180 +272,63 @@ class _JustButtonState extends State<JustButton> {
 
     return Semantics(
       button: true,
-      label: widget.isLoading ? 'Loading ${widget.label}' : widget.label,
+      label: isLoading ? 'Loading $label' : label,
       enabled: isInteractive,
       child: ConstrainedBox(
         constraints: BoxConstraints(
           minHeight: needsMinTargetSize ? 48.0 : height,
-          minWidth: widget.isFullWidth
-              ? .infinity
-              : (needsMinTargetSize ? 48.0 : 0.0),
+          minWidth: isFullWidth ? .infinity : (needsMinTargetSize ? 48.0 : 0.0),
         ),
         child: Center(
-          widthFactor: widget.isFullWidth ? null : 1.0,
+          widthFactor: isFullWidth ? null : 1.0,
           heightFactor: 1.0,
           child: JustPressable(
             enabled: isInteractive,
-            onTap: widget.onPressed == null
+            onTap: onPressed == null
                 ? null
                 : () {
                     if (finalEnableHaptic) {
                       HapticFeedback.lightImpact();
                     }
-                    widget.onPressed?.call();
+                    onPressed?.call();
                   },
             builder: (BuildContext context, JustInteractionState state) {
               final bool isHovered = state.isHovered;
               final bool isPressed = state.isPressed;
 
-              // Resolve states colors
-              Color bg;
-              Color text;
-              Color border;
-
-              // Fallback colors matching semantic rules
-              final Color primaryBg = presetTokens.showsDefaultBorder
-                  ? colors.warning
-                  : colors.borderFocus;
-              final Color primaryFg = presetTokens.showsDefaultBorder
-                  ? const Color(0xFF000000)
-                  : colors.textInverse;
-              final Color errorBg = colors.error;
-
-              switch (widget.variant) {
-                case .primary:
-                  bg = primaryBg;
-                  text = primaryFg;
-                  border = presetTokens.showsDefaultBorder
-                      ? colors.textPrimary
-                      : const Color(0x00000000);
-
-                  if (!isInteractive) {
-                    bg = bg.withValues(alpha: 0.5);
-                    text = text.withValues(alpha: 0.7);
-                  } else if (isPressed) {
-                    bg = bg.withValues(alpha: 0.8);
-                  } else if (isHovered) {
-                    bg = bg.withValues(alpha: 0.9);
-                  }
-                  break;
-
-                case .secondary:
-                  bg = presetTokens.showsDefaultBorder
-                      ? colors.card
-                      : const Color(0x00000000);
-                  text = colors.textPrimary;
-                  border = presetTokens.showsDefaultBorder
-                      ? colors.textPrimary
-                      : colors.borderDefault;
-
-                  if (!isInteractive) {
-                    text = text.withValues(alpha: 0.4);
-                    border = border.withValues(alpha: 0.4);
-                  } else if (isPressed) {
-                    bg = presetTokens.showsDefaultBorder
-                        ? colors.card
-                        : primaryBg.withValues(alpha: 0.15);
-                    border = presetTokens.showsDefaultBorder
-                        ? colors.textPrimary
-                        : primaryBg;
-                    text = presetTokens.showsDefaultBorder
-                        ? colors.textPrimary
-                        : primaryBg;
-                  } else if (isHovered) {
-                    bg = presetTokens.showsDefaultBorder
-                        ? colors.card
-                        : primaryBg.withValues(alpha: 0.08);
-                    border = presetTokens.showsDefaultBorder
-                        ? colors.textPrimary
-                        : primaryBg;
-                    text = presetTokens.showsDefaultBorder
-                        ? colors.textPrimary
-                        : primaryBg;
-                  }
-                  break;
-
-                case .ghost:
-                  bg = const Color(0x00000000);
-                  text = colors.textPrimary;
-                  border = const Color(0x00000000);
-
-                  if (!isInteractive) {
-                    text = text.withValues(alpha: 0.4);
-                  } else if (isPressed) {
-                    bg = colors.textPrimary.withValues(alpha: 0.15);
-                  } else if (isHovered) {
-                    bg = colors.textPrimary.withValues(alpha: 0.08);
-                  }
-                  break;
-
-                case .destructive:
-                  bg = errorBg;
-                  text = presetTokens.showsDefaultBorder
-                      ? const Color(0xFF000000)
-                      : colors.textInverse;
-                  border = presetTokens.showsDefaultBorder
-                      ? colors.textPrimary
-                      : const Color(0x00000000);
-
-                  if (!isInteractive) {
-                    bg = bg.withValues(alpha: 0.5);
-                    text = text.withValues(alpha: 0.7);
-                  } else if (isPressed) {
-                    bg = bg.withValues(alpha: 0.8);
-                  } else if (isHovered) {
-                    bg = bg.withValues(alpha: 0.9);
-                  }
-                  break;
-
-                case .link:
-                  bg = const Color(0x00000000);
-                  text = presetTokens.showsDefaultBorder
-                      ? ((colors.background.computeLuminance() < 0.5)
-                            ? colors.textPrimary
-                            : colors.info)
-                      : primaryBg;
-                  border = const Color(0x00000000);
-
-                  if (!isInteractive) {
-                    text = text.withValues(alpha: 0.4);
-                  } else if (isPressed) {
-                    text = text.withValues(alpha: 0.7);
-                  } else if (isHovered) {
-                    text = text.withValues(alpha: 0.8);
-                  }
-                  break;
-              }
+              final JustButtonColors resolved = resolveJustButtonColors(
+                variant: variant,
+                colors: colors,
+                presetTokens: presetTokens,
+                isInteractive: isInteractive,
+                isPressed: isPressed,
+                isHovered: isHovered,
+              );
+              final Color bg = resolved.bg;
+              final Color text = resolved.text;
+              final Color border = resolved.border;
 
               // Apply theme & manual instance styles if provided
               final Color finalBg =
-                  widget.style?.backgroundColor ??
-                  themeStyle?.backgroundColor ??
-                  bg;
+                  style?.backgroundColor ?? themeStyle?.backgroundColor ?? bg;
               final Color finalFg =
-                  widget.style?.foregroundColor ??
-                  themeStyle?.foregroundColor ??
-                  text;
+                  style?.foregroundColor ?? themeStyle?.foregroundColor ?? text;
               final Color finalBorder =
-                  widget.style?.borderColor ??
-                  themeStyle?.borderColor ??
-                  border;
+                  style?.borderColor ?? themeStyle?.borderColor ?? border;
               final EdgeInsets finalPadding =
-                  widget.style?.padding ??
+                  style?.padding ??
                   themeStyle?.padding ??
-                  (widget.variant == .link
-                      ? .zero
-                      : .symmetric(horizontal: paddingH));
+                  (variant == .link ? .zero : .symmetric(horizontal: paddingH));
               final TextStyle finalTextStyle =
-                  widget.style?.textStyle ??
+                  style?.textStyle ??
                   themeStyle?.textStyle ??
                   textStyle.copyWith(color: finalFg);
 
               // Link decoration
-              final bool isLinkWithHover = widget.variant == .link && isHovered;
+              final bool isLinkWithHover = variant == .link && isHovered;
 
               final Text labelWidget = Text(
-                widget.label,
+                label,
                 style: isLinkWithHover
                     ? finalTextStyle.copyWith(decoration: .underline)
                     : finalTextStyle,
@@ -551,7 +338,7 @@ class _JustButtonState extends State<JustButton> {
 
               // Layout children inside button
               Widget content;
-              if (widget.isLoading) {
+              if (isLoading) {
                 content = Row(
                   mainAxisSize: .min,
                   mainAxisAlignment: .center,
@@ -564,8 +351,8 @@ class _JustButtonState extends State<JustButton> {
                   ],
                 );
               } else {
-                final bool hasLeading = widget.leading != null;
-                final bool hasTrailing = widget.trailing != null;
+                final bool hasLeading = leading != null;
+                final bool hasTrailing = trailing != null;
 
                 if (hasLeading || hasTrailing) {
                   content = Row(
@@ -575,7 +362,7 @@ class _JustButtonState extends State<JustButton> {
                       if (hasLeading) ...<Widget>[
                         IconTheme.merge(
                           data: IconThemeData(size: iconSize, color: finalFg),
-                          child: widget.leading!,
+                          child: leading!,
                         ),
                         SizedBox(width: spacing.sm),
                       ],
@@ -584,7 +371,7 @@ class _JustButtonState extends State<JustButton> {
                         SizedBox(width: spacing.sm),
                         IconTheme.merge(
                           data: IconThemeData(size: iconSize, color: finalFg),
-                          child: widget.trailing!,
+                          child: trailing!,
                         ),
                       ],
                     ],
@@ -596,11 +383,11 @@ class _JustButtonState extends State<JustButton> {
 
               // Shadows resolution
               List<BoxShadow> resolvedShadows;
-              if (widget.variant == .link || widget.variant == .ghost) {
+              if (variant == .link || variant == .ghost) {
                 resolvedShadows = const <BoxShadow>[];
               } else {
                 final double? styleElevation =
-                    widget.style?.elevation ?? themeStyle?.elevation;
+                    style?.elevation ?? themeStyle?.elevation;
 
                 final bool hasShadow = styleElevation != null
                     ? styleElevation > 0.0
@@ -611,7 +398,7 @@ class _JustButtonState extends State<JustButton> {
                   if (styleElevation != null) {
                     level = styleElevation <= 1.5 ? .xs : .sm;
                   } else {
-                    level = widget.size == .xs ? .xs : .sm;
+                    level = size == .xs ? .xs : .sm;
                   }
                   resolvedShadows = presetTokens.resolveShadow(
                     customTheme.shadows,
@@ -624,7 +411,7 @@ class _JustButtonState extends State<JustButton> {
               }
 
               final double finalBorderWidth =
-                  presetTokens.showsDefaultBorder && widget.variant != .link
+                  presetTokens.showsDefaultBorder && variant != .link
                   ? presetTokens.borderWidth
                   : (finalBorder != const Color(0x00000000) ? 1.0 : 0.0);
 
@@ -663,6 +450,70 @@ class _JustButtonState extends State<JustButton> {
       ),
     );
   }
+}
+
+/// Size-dependent geometry of a [JustButton].
+typedef _ButtonMetrics = ({
+  double height,
+  double paddingH,
+  TextStyle textStyle,
+  double iconSize,
+});
+
+/// Table-driven lookup of button geometry for each [JustButtonSize].
+_ButtonMetrics _buttonMetrics(
+  JustButtonSize size,
+  JustSpacingScheme spacing,
+  JustTypographyScheme typography,
+) {
+  final (
+    double height,
+    double paddingH,
+    TextStyle base,
+    double iconSize,
+  ) = switch (size) {
+    .xs => (28.0, spacing.sm, typography.caption, 14.0),
+    .sm => (32.0, spacing.md, typography.bodySm, 16.0),
+    .md => (40.0, spacing.lg, typography.bodyMd, 18.0),
+    .lg => (48.0, spacing.xl, typography.bodyLg, 20.0),
+    .xl => (56.0, spacing.xxl, typography.headingSm, 22.0),
+  };
+  return (
+    height: height,
+    paddingH: paddingH,
+    textStyle: base.copyWith(fontWeight: .w500),
+    iconSize: iconSize,
+  );
+}
+
+/// Keeps only the outer corners of [radius] for a button inside an attached
+/// [JustButtonGroup]; returns [radius] unchanged outside a group.
+BorderRadius _attachedGroupRadius(
+  BorderRadius radius,
+  JustButtonGroupInfo? groupInfo,
+) {
+  if (groupInfo == null) return radius;
+
+  final bool isFirst = groupInfo.index == 0;
+  final bool isLast = groupInfo.index == groupInfo.totalCount - 1;
+  if (!isFirst && !isLast) return .zero;
+
+  final bool horizontal = groupInfo.direction == .horizontal;
+  return switch ((horizontal, isFirst)) {
+    (true, true) => .only(
+      topLeft: radius.topLeft,
+      bottomLeft: radius.bottomLeft,
+    ),
+    (true, false) => .only(
+      topRight: radius.topRight,
+      bottomRight: radius.bottomRight,
+    ),
+    (false, true) => .only(topLeft: radius.topLeft, topRight: radius.topRight),
+    (false, false) => .only(
+      bottomLeft: radius.bottomLeft,
+      bottomRight: radius.bottomRight,
+    ),
+  };
 }
 
 /// A layout component to group multiple buttons together.

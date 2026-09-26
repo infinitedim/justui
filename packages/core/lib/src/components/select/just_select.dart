@@ -297,53 +297,48 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       aspect: .spacing,
     ).theme.spacing;
     final JustRadiusScheme radius = customTheme.radius;
-    final JustShadowScheme shadows = customTheme.shadows;
     final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
     final JustPresetTokens presetTokens = customTheme.presetTokens;
 
-    // Resolve Size Properties
-    double height;
-    TextStyle textStyle;
-    final BorderRadius defaultRadius;
+    final (double height, TextStyle textStyle) = _selectSizeMetrics(
+      widget.size,
+      typography,
+    );
+    final BorderRadius defaultRadius = presetTokens.resolveBorderRadius(radius);
 
-    switch (widget.size) {
-      case .sm:
-        height = 36.0;
-        textStyle = typography.bodySm;
-        defaultRadius = presetTokens.resolveBorderRadius(radius);
-        break;
-      case .md:
-        height = 44.0;
-        textStyle = typography.bodyMd;
-        defaultRadius = presetTokens.resolveBorderRadius(radius);
-        break;
-      case .lg:
-        height = 52.0;
-        textStyle = typography.bodyLg;
-        defaultRadius = presetTokens.resolveBorderRadius(radius);
-        break;
-    }
-
-    // Style Resolution
-    final Color finalBg =
-        widget.style?.triggerBackgroundColor ??
-        themeStyle?.triggerBackgroundColor ??
-        colors.background;
-    final Color finalBorderColor =
-        widget.style?.triggerBorderColor ??
-        themeStyle?.triggerBorderColor ??
-        colors.borderDefault;
-    final Color finalTextColor =
-        widget.style?.textColor ?? themeStyle?.textColor ?? colors.textPrimary;
-    final Color finalPlaceholderColor =
-        widget.style?.placeholderColor ??
-        themeStyle?.placeholderColor ??
-        colors.textSecondary;
-    final BorderRadius finalRadius =
-        widget.style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius;
+    final _SelectVisuals visuals = (
+      theme: customTheme,
+      themeStyle: themeStyle,
+      colors: colors,
+      spacing: spacing,
+      radius: radius,
+      presetTokens: presetTokens,
+      height: height,
+      textStyle: textStyle,
+      bg:
+          widget.style?.triggerBackgroundColor ??
+          themeStyle?.triggerBackgroundColor ??
+          colors.background,
+      borderColor:
+          widget.style?.triggerBorderColor ??
+          themeStyle?.triggerBorderColor ??
+          colors.borderDefault,
+      textColor:
+          widget.style?.textColor ??
+          themeStyle?.textColor ??
+          colors.textPrimary,
+      placeholderColor:
+          widget.style?.placeholderColor ??
+          themeStyle?.placeholderColor ??
+          colors.textSecondary,
+      borderRadius:
+          widget.style?.borderRadius ??
+          themeStyle?.borderRadius ??
+          defaultRadius,
+    );
 
     final JustSelectOption<T>? selectedOption = widget.options
         .cast<JustSelectOption<T>?>()
@@ -354,109 +349,6 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
         );
 
     final bool hasError = widget.errorText != null;
-
-    final BoxDecoration triggerDecoration = BoxDecoration(
-      color: widget.enabled ? finalBg : finalBg.withValues(alpha: 0.5),
-      border: .all(
-        color: hasError
-            ? colors.error
-            : (_overlayController.isShowing
-                  ? colors.borderFocus
-                  : finalBorderColor),
-        width: presetTokens.borderWidth,
-      ),
-      borderRadius: presetTokens.showsDefaultBorder ? .zero : finalRadius,
-    );
-
-    final Widget triggerChild = Focus(
-      focusNode: _triggerFocusNode,
-      onKeyEvent: (FocusNode node, KeyEvent event) =>
-          _handleKeyEvent(node, event),
-      child: JustPressable(
-        enabled: widget.enabled,
-        onTap: _toggleDropdown,
-        builder: (BuildContext context, JustInteractionState state) {
-          Widget inner = Container(
-            height: height,
-            padding: .symmetric(horizontal: spacing.md),
-            decoration: triggerDecoration,
-            child: Row(
-              children: <Widget>[
-                if (widget.prefixIcon != null) ...<Widget>[
-                  widget.prefixIcon!,
-                  SizedBox(width: spacing.sm),
-                ],
-                Expanded(
-                  child: selectedOption != null
-                      ? Row(
-                          children: <Widget>[
-                            if (selectedOption.icon != null) ...<Widget>[
-                              selectedOption.icon!,
-                              SizedBox(width: spacing.sm),
-                            ],
-                            Expanded(
-                              child: Text(
-                                selectedOption.label,
-                                style: textStyle.copyWith(
-                                  color: finalTextColor,
-                                ),
-                                overflow: .ellipsis,
-                              ),
-                            ),
-                          ],
-                        )
-                      : Text(
-                          widget.placeholder ?? 'Select option...',
-                          style: textStyle.copyWith(
-                            color: finalPlaceholderColor,
-                          ),
-                          overflow: .ellipsis,
-                        ),
-                ),
-                SizedBox(width: spacing.sm),
-                // Chevron Icon
-                AnimatedRotation(
-                  turns: _overlayController.isShowing ? 0.5 : 0.0,
-                  duration: presetTokens.dropdownOpenDuration,
-                  curve: presetTokens.dropdownOpenCurve,
-                  child: Icon(
-                    const IconData(0xe150, fontFamily: 'MaterialIcons'),
-                    size: widget.size == .sm ? 16 : 20,
-                    color: hasError
-                        ? colors.error
-                        : (widget.enabled
-                              ? finalTextColor
-                              : finalTextColor.withValues(alpha: 0.5)),
-                  ),
-                ),
-              ],
-            ),
-          );
-
-          if (presetTokens.showsDefaultBorder) {
-            inner = customTheme.buildPressEffect(
-              isPressed: state.isPressed,
-              child: Container(
-                decoration: BoxDecoration(
-                  boxShadow: customTheme.resolveShadows(
-                    shadows.md,
-                    isPressed: state.isPressed,
-                  ),
-                  borderRadius: .zero,
-                ),
-                child: inner,
-              ),
-            );
-          }
-
-          return FocusIndicator(
-            isFocused: state.isFocusVisible,
-            borderRadius: presetTokens.showsDefaultBorder ? .zero : finalRadius,
-            child: inner,
-          );
-        },
-      ),
-    );
 
     return Semantics(
       container: true,
@@ -480,296 +372,11 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
           ],
           OverlayPortal.overlayChildLayoutBuilder(
             controller: _overlayController,
-            overlayChildBuilder: (BuildContext context, OverlayChildLayoutInfo info) {
-              final Offset targetOffset = MatrixUtils.transformPoint(
-                info.childPaintTransform,
-                .zero,
-              );
-              final double triggerHeight = info.childSize.height;
-              final double triggerWidth = info.childSize.width;
-              final double screenHeight = MediaQuery.sizeOf(context).height;
-
-              // Calculate flip logic
-              final double dropdownHeight = widget.maxDropdownHeight.toDouble();
-              final double totalDropdownHeightNeeded =
-                  dropdownHeight + spacing.xs;
-              final bool fitsBelow =
-                  targetOffset.dy + triggerHeight + totalDropdownHeightNeeded <=
-                  screenHeight;
-              final bool fitsAbove =
-                  targetOffset.dy - totalDropdownHeightNeeded >= 0;
-
-              final double topPosition;
-              if (fitsBelow || !fitsAbove) {
-                topPosition = targetOffset.dy + triggerHeight + spacing.xs;
-              } else {
-                topPosition = targetOffset.dy - dropdownHeight - spacing.xs;
-              }
-
-              final List<JustSelectOption<T>> filtered = _filteredOptions;
-
-              final Color dropdownContainerBg =
-                  widget.style?.dropdownBackgroundColor ??
-                  themeStyle?.dropdownBackgroundColor ??
-                  colors.background;
-
-              final BoxDecoration dropdownDecoration = BoxDecoration(
-                color: dropdownContainerBg,
-                border: .all(
-                  color: presetTokens.showsDefaultBorder
-                      ? colors.textPrimary
-                      : colors.borderDefault,
-                  width: presetTokens.borderWidth,
-                ),
-                borderRadius: presetTokens.showsDefaultBorder
-                    ? .zero
-                    : finalRadius,
-                boxShadow: presetTokens.showsDefaultBorder
-                    ? <BoxShadow>[
-                        BoxShadow(
-                          color: colors.textPrimary,
-                          offset: const Offset(6, 6),
-                          blurRadius: 0,
-                        ),
-                      ]
-                    : shadows.lg,
-              );
-
-              Widget dropdownContent = Container(
-                width: triggerWidth,
-                height: dropdownHeight,
-                decoration: dropdownDecoration,
-                child: Column(
-                  children: <Widget>[
-                    if (widget.searchable)
-                      Padding(
-                        padding: .all(spacing.sm),
-                        child: Focus(
-                          focusNode: _searchFocusNode,
-                          onKeyEvent: (FocusNode node, KeyEvent event) =>
-                              _handleKeyEvent(node, event),
-                          child: Container(
-                            height: 36,
-                            decoration: BoxDecoration(
-                              color: colors.background,
-                              border: .all(
-                                color: colors.borderDefault,
-                                width: presetTokens.showsDefaultBorder
-                                    ? 2.0
-                                    : 1.0,
-                              ),
-                              borderRadius: presetTokens.showsDefaultBorder
-                                  ? .zero
-                                  : .all(radius.sm),
-                            ),
-                            padding: .symmetric(horizontal: spacing.sm),
-                            child: Row(
-                              children: <Widget>[
-                                Icon(
-                                  const IconData(
-                                    0xe554,
-                                    fontFamily: 'MaterialIcons',
-                                  ),
-                                  size: 16,
-                                  color: colors.textSecondary,
-                                ),
-                                SizedBox(width: spacing.xs),
-                                Expanded(
-                                  child: EditableText(
-                                    controller: _searchController,
-                                    focusNode: _searchEditableFocusNode, // internal dummy focus
-                                    style: textStyle.copyWith(
-                                      color: colors.textPrimary,
-                                    ),
-                                    cursorColor: colors.borderFocus,
-                                    backgroundCursorColor: colors.background,
-                                    textInputAction: TextInputAction.search,
-                                    keyboardType: TextInputType.text,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    Expanded(
-                      child: filtered.isEmpty
-                          ? Center(
-                              child: Padding(
-                                padding: .all(spacing.md),
-                                child: Text(
-                                  'No options found',
-                                  style: textStyle.copyWith(
-                                    color: colors.textSecondary,
-                                  ),
-                                ),
-                              ),
-                            )
-                          : ListView.builder(
-                              controller: _optionScrollController,
-                              padding: .zero,
-                              itemCount: filtered.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final JustSelectOption<T> option =
-                                    filtered[index];
-
-                                if (option.isDivider) {
-                                  return Container(
-                                    height: 1,
-                                    margin: .symmetric(vertical: spacing.xs),
-                                    color: colors.borderDefault,
-                                  );
-                                }
-
-                                final bool isSelected =
-                                    option.value == widget.value;
-                                final bool isKeyboardFocused =
-                                    index == _focusedOptionIndex;
-
-                                final Color optionBg = isSelected
-                                    ? (presetTokens.showsDefaultBorder
-                                          ? colors.textPrimary
-                                          : (widget
-                                                    .style
-                                                    ?.selectedOptionColor ??
-                                                themeStyle
-                                                    ?.selectedOptionColor ??
-                                                colors.borderFocus.withValues(
-                                                  alpha: 0.15,
-                                                )))
-                                    : const Color(0x00000000);
-
-                                final Color optionText = isSelected
-                                    ? (presetTokens.showsDefaultBorder
-                                          ? colors.textInverse
-                                          : (widget.style?.textColor ??
-                                                themeStyle?.textColor ??
-                                                colors.borderFocus))
-                                    : (option.enabled
-                                          ? finalTextColor
-                                          : finalTextColor.withValues(
-                                              alpha: 0.4,
-                                            ));
-
-                                return JustPressable(
-                                  enabled: option.enabled,
-                                  onTap: () => _selectOption(option),
-                                  builder:
-                                      (
-                                        BuildContext context,
-                                        JustInteractionState state,
-                                      ) {
-                                        final bool isHovered = state.isHovered;
-                                        final bool showHover =
-                                            isHovered || isKeyboardFocused;
-                                        Color itemBg = optionBg;
-
-                                        if (showHover && !isSelected) {
-                                          itemBg =
-                                              widget.style?.optionHoverColor ??
-                                              themeStyle?.optionHoverColor ??
-                                              colors.borderDefault.withValues(
-                                                alpha: 0.1,
-                                              );
-                                        }
-
-                                        return Container(
-                                          height: height - 4,
-                                          padding: .symmetric(
-                                            horizontal: spacing.md,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: itemBg,
-                                            border:
-                                                presetTokens
-                                                        .showsDefaultBorder &&
-                                                    showHover
-                                                ? Border(
-                                                    left: BorderSide(
-                                                      color: colors.textPrimary,
-                                                      width: 3.0,
-                                                    ),
-                                                  )
-                                                : null,
-                                          ),
-                                          child: Row(
-                                            children: <Widget>[
-                                              if (option.icon !=
-                                                  null) ...<Widget>[
-                                                option.icon!,
-                                                SizedBox(width: spacing.sm),
-                                              ],
-                                              Expanded(
-                                                child: Text(
-                                                  option.label,
-                                                  style: textStyle.copyWith(
-                                                    color: optionText,
-                                                    fontWeight: isSelected
-                                                        ? .w600
-                                                        : .w400,
-                                                  ),
-                                                  overflow: .ellipsis,
-                                                ),
-                                              ),
-                                              if (isSelected &&
-                                                  !presetTokens
-                                                      .showsDefaultBorder) ...<
-                                                Widget
-                                              >[
-                                                SizedBox(width: spacing.sm),
-                                                Icon(
-                                                  const IconData(
-                                                    0xe156,
-                                                    fontFamily: 'MaterialIcons',
-                                                  ),
-                                                  size: 16,
-                                                  color: optionText,
-                                                ),
-                                              ],
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                );
-                              },
-                            ),
-                    ),
-                  ],
-                ),
-              );
-
-              dropdownContent = TweenAnimationBuilder<double>(
-                tween: Tween<double>(begin: 0.0, end: 1.0),
-                duration: presetTokens.dropdownOpenDuration,
-                curve: presetTokens.dropdownOpenCurve,
-                builder: (BuildContext context, double val, Widget? child) {
-                  return Opacity(
-                    opacity: val,
-                    child: Transform.translate(
-                      offset: Offset(0, (1 - val) * 10),
-                      child: child,
-                    ),
-                  );
-                },
-                child: dropdownContent,
-              );
-
-              return Stack(
-                children: <Widget>[
-                  GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: _closeDropdown,
-                    child: const SizedBox.expand(),
-                  ),
-                  Positioned(
-                    left: targetOffset.dx,
-                    top: topPosition,
-                    child: dropdownContent,
-                  ),
-                ],
-              );
-            },
-            child: triggerChild,
+            overlayChildBuilder: (
+              BuildContext context,
+              OverlayChildLayoutInfo info,
+            ) => _buildDropdown(context, info, visuals),
+            child: _buildTrigger(visuals, selectedOption, hasError),
           ),
           if (hasError) ...<Widget>[
             SizedBox(height: spacing.xs),
@@ -780,6 +387,437 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
           ],
         ],
       ),
+    );
+  }
+
+  /// The always-visible trigger showing the selected option or placeholder.
+  Widget _buildTrigger(
+    _SelectVisuals v,
+    JustSelectOption<T>? selectedOption,
+    bool hasError,
+  ) {
+    final JustColorScheme colors = v.colors;
+    final JustSpacingScheme spacing = v.spacing;
+    final JustPresetTokens presetTokens = v.presetTokens;
+
+    final BoxDecoration triggerDecoration = BoxDecoration(
+      color: widget.enabled ? v.bg : v.bg.withValues(alpha: 0.5),
+      border: .all(
+        color: hasError
+            ? colors.error
+            : (_overlayController.isShowing
+                  ? colors.borderFocus
+                  : v.borderColor),
+        width: presetTokens.borderWidth,
+      ),
+      borderRadius: presetTokens.showsDefaultBorder ? .zero : v.borderRadius,
+    );
+
+    return Focus(
+      focusNode: _triggerFocusNode,
+      onKeyEvent: (FocusNode node, KeyEvent event) =>
+          _handleKeyEvent(node, event),
+      child: JustPressable(
+        enabled: widget.enabled,
+        onTap: _toggleDropdown,
+        builder: (BuildContext context, JustInteractionState state) {
+          Widget inner = Container(
+            height: v.height,
+            padding: .symmetric(horizontal: spacing.md),
+            decoration: triggerDecoration,
+            child: Row(
+              children: <Widget>[
+                if (widget.prefixIcon != null) ...<Widget>[
+                  widget.prefixIcon!,
+                  SizedBox(width: spacing.sm),
+                ],
+                Expanded(
+                  child: selectedOption != null
+                      ? Row(
+                          children: <Widget>[
+                            if (selectedOption.icon != null) ...<Widget>[
+                              selectedOption.icon!,
+                              SizedBox(width: spacing.sm),
+                            ],
+                            Expanded(
+                              child: Text(
+                                selectedOption.label,
+                                style: v.textStyle.copyWith(color: v.textColor),
+                                overflow: .ellipsis,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          widget.placeholder ?? 'Select option...',
+                          style: v.textStyle.copyWith(
+                            color: v.placeholderColor,
+                          ),
+                          overflow: .ellipsis,
+                        ),
+                ),
+                SizedBox(width: spacing.sm),
+                // Chevron Icon
+                AnimatedRotation(
+                  turns: _overlayController.isShowing ? 0.5 : 0.0,
+                  duration: presetTokens.dropdownOpenDuration,
+                  curve: presetTokens.dropdownOpenCurve,
+                  child: Icon(
+                    const IconData(0xe150, fontFamily: 'MaterialIcons'),
+                    size: widget.size == .sm ? 16 : 20,
+                    color: hasError
+                        ? colors.error
+                        : (widget.enabled
+                              ? v.textColor
+                              : v.textColor.withValues(alpha: 0.5)),
+                  ),
+                ),
+              ],
+            ),
+          );
+
+          if (presetTokens.showsDefaultBorder) {
+            inner = v.theme.buildPressEffect(
+              isPressed: state.isPressed,
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: v.theme.resolveShadows(
+                    v.theme.shadows.md,
+                    isPressed: state.isPressed,
+                  ),
+                  borderRadius: .zero,
+                ),
+                child: inner,
+              ),
+            );
+          }
+
+          return FocusIndicator(
+            isFocused: state.isFocusVisible,
+            borderRadius: presetTokens.showsDefaultBorder
+                ? .zero
+                : v.borderRadius,
+            child: inner,
+          );
+        },
+      ),
+    );
+  }
+
+  /// The floating option list, positioned below the trigger (or above it
+  /// when there is not enough room below).
+  Widget _buildDropdown(
+    BuildContext context,
+    OverlayChildLayoutInfo info,
+    _SelectVisuals v,
+  ) {
+    final JustColorScheme colors = v.colors;
+    final JustSpacingScheme spacing = v.spacing;
+    final JustPresetTokens presetTokens = v.presetTokens;
+
+    final Offset targetOffset = MatrixUtils.transformPoint(
+      info.childPaintTransform,
+      .zero,
+    );
+    final double triggerHeight = info.childSize.height;
+    final double triggerWidth = info.childSize.width;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
+
+    // Calculate flip logic
+    final double dropdownHeight = widget.maxDropdownHeight.toDouble();
+    final double totalDropdownHeightNeeded = dropdownHeight + spacing.xs;
+    final bool fitsBelow =
+        targetOffset.dy + triggerHeight + totalDropdownHeightNeeded <=
+        screenHeight;
+    final bool fitsAbove = targetOffset.dy - totalDropdownHeightNeeded >= 0;
+    final double topPosition = (fitsBelow || !fitsAbove)
+        ? targetOffset.dy + triggerHeight + spacing.xs
+        : targetOffset.dy - dropdownHeight - spacing.xs;
+
+    final List<JustSelectOption<T>> filtered = _filteredOptions;
+
+    final BoxDecoration dropdownDecoration = BoxDecoration(
+      color:
+          widget.style?.dropdownBackgroundColor ??
+          v.themeStyle?.dropdownBackgroundColor ??
+          colors.background,
+      border: .all(
+        color: presetTokens.showsDefaultBorder
+            ? colors.textPrimary
+            : colors.borderDefault,
+        width: presetTokens.borderWidth,
+      ),
+      borderRadius: presetTokens.showsDefaultBorder ? .zero : v.borderRadius,
+      boxShadow: presetTokens.showsDefaultBorder
+          ? <BoxShadow>[
+              BoxShadow(
+                color: colors.textPrimary,
+                offset: const Offset(6, 6),
+                blurRadius: 0,
+              ),
+            ]
+          : v.theme.shadows.lg,
+    );
+
+    final Widget dropdownContent = Container(
+      width: triggerWidth,
+      height: dropdownHeight,
+      decoration: dropdownDecoration,
+      child: Column(
+        children: <Widget>[
+          if (widget.searchable)
+            _SelectSearchField(
+              focusNode: _searchFocusNode,
+              editableFocusNode: _searchEditableFocusNode,
+              controller: _searchController,
+              onKeyEvent: _handleKeyEvent,
+              visuals: v,
+            ),
+          Expanded(
+            child: filtered.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: .all(spacing.md),
+                      child: Text(
+                        'No options found',
+                        style: v.textStyle.copyWith(
+                          color: colors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    controller: _optionScrollController,
+                    padding: .zero,
+                    itemCount: filtered.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final JustSelectOption<T> option = filtered[index];
+                      if (option.isDivider) {
+                        return Container(
+                          height: 1,
+                          margin: .symmetric(vertical: spacing.xs),
+                          color: colors.borderDefault,
+                        );
+                      }
+                      return _SelectOptionTile<T>(
+                        option: option,
+                        isSelected: option.value == widget.value,
+                        isKeyboardFocused: index == _focusedOptionIndex,
+                        instanceStyle: widget.style,
+                        visuals: v,
+                        onTap: () => _selectOption(option),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+
+    return Stack(
+      children: <Widget>[
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: _closeDropdown,
+          child: const SizedBox.expand(),
+        ),
+        Positioned(
+          left: targetOffset.dx,
+          top: topPosition,
+          child: TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0.0, end: 1.0),
+            duration: presetTokens.dropdownOpenDuration,
+            curve: presetTokens.dropdownOpenCurve,
+            builder: (BuildContext context, double val, Widget? child) {
+              return Opacity(
+                opacity: val,
+                child: Transform.translate(
+                  offset: Offset(0, (1 - val) * 10),
+                  child: child,
+                ),
+              );
+            },
+            child: dropdownContent,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Theme values resolved once per [JustSelect] build and shared by the
+/// trigger, dropdown, search field and option tiles.
+typedef _SelectVisuals = ({
+  JustThemeData theme,
+  JustSelectStyle? themeStyle,
+  JustColorScheme colors,
+  JustSpacingScheme spacing,
+  JustRadiusScheme radius,
+  JustPresetTokens presetTokens,
+  double height,
+  TextStyle textStyle,
+  Color bg,
+  Color borderColor,
+  Color textColor,
+  Color placeholderColor,
+  BorderRadius borderRadius,
+});
+
+/// Table-driven trigger height and text style for each [JustSelectSize].
+(double, TextStyle) _selectSizeMetrics(
+  JustSelectSize size,
+  JustTypographyScheme typography,
+) {
+  return switch (size) {
+    .sm => (36.0, typography.bodySm),
+    .md => (44.0, typography.bodyMd),
+    .lg => (52.0, typography.bodyLg),
+  };
+}
+
+/// Search box shown at the top of a searchable [JustSelect] dropdown.
+class const _SelectSearchField({
+  required final FocusNode focusNode,
+  required final FocusNode editableFocusNode,
+  required final TextEditingController controller,
+  required final FocusOnKeyEventCallback onKeyEvent,
+  required final _SelectVisuals visuals,
+}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final JustColorScheme colors = visuals.colors;
+    final JustSpacingScheme spacing = visuals.spacing;
+    final JustPresetTokens presetTokens = visuals.presetTokens;
+
+    return Padding(
+      padding: .all(spacing.sm),
+      child: Focus(
+        focusNode: focusNode,
+        onKeyEvent: onKeyEvent,
+        child: Container(
+          height: 36,
+          decoration: BoxDecoration(
+            color: colors.background,
+            border: .all(
+              color: colors.borderDefault,
+              width: presetTokens.showsDefaultBorder ? 2.0 : 1.0,
+            ),
+            borderRadius: presetTokens.showsDefaultBorder
+                ? .zero
+                : .all(visuals.radius.sm),
+          ),
+          padding: .symmetric(horizontal: spacing.sm),
+          child: Row(
+            children: <Widget>[
+              Icon(
+                const IconData(0xe554, fontFamily: 'MaterialIcons'),
+                size: 16,
+                color: colors.textSecondary,
+              ),
+              SizedBox(width: spacing.xs),
+              Expanded(
+                child: EditableText(
+                  controller: controller,
+                  focusNode: editableFocusNode, // internal dummy focus
+                  style: visuals.textStyle.copyWith(color: colors.textPrimary),
+                  cursorColor: colors.borderFocus,
+                  backgroundCursorColor: colors.background,
+                  textInputAction: TextInputAction.search,
+                  keyboardType: TextInputType.text,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A single selectable row inside the [JustSelect] dropdown.
+class const _SelectOptionTile<T>({
+  required final JustSelectOption<T> option,
+  required final bool isSelected,
+  required final bool isKeyboardFocused,
+  required final JustSelectStyle? instanceStyle,
+  required final _SelectVisuals visuals,
+  required final VoidCallback onTap,
+}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final JustColorScheme colors = visuals.colors;
+    final JustSpacingScheme spacing = visuals.spacing;
+    final JustPresetTokens presetTokens = visuals.presetTokens;
+    final JustSelectStyle? themeStyle = visuals.themeStyle;
+
+    final Color optionBg = isSelected
+        ? (presetTokens.showsDefaultBorder
+              ? colors.textPrimary
+              : (instanceStyle?.selectedOptionColor ??
+                    themeStyle?.selectedOptionColor ??
+                    colors.borderFocus.withValues(alpha: 0.15)))
+        : const Color(0x00000000);
+
+    final Color optionText = isSelected
+        ? (presetTokens.showsDefaultBorder
+              ? colors.textInverse
+              : (instanceStyle?.textColor ??
+                    themeStyle?.textColor ??
+                    colors.borderFocus))
+        : (option.enabled
+              ? visuals.textColor
+              : visuals.textColor.withValues(alpha: 0.4));
+
+    return JustPressable(
+      enabled: option.enabled,
+      onTap: onTap,
+      builder: (BuildContext context, JustInteractionState state) {
+        final bool showHover = state.isHovered || isKeyboardFocused;
+        final Color itemBg = showHover && !isSelected
+            ? (instanceStyle?.optionHoverColor ??
+                  themeStyle?.optionHoverColor ??
+                  colors.borderDefault.withValues(alpha: 0.1))
+            : optionBg;
+
+        return Container(
+          height: visuals.height - 4,
+          padding: .symmetric(horizontal: spacing.md),
+          decoration: BoxDecoration(
+            color: itemBg,
+            border: presetTokens.showsDefaultBorder && showHover
+                ? Border(
+                    left: BorderSide(color: colors.textPrimary, width: 3.0),
+                  )
+                : null,
+          ),
+          child: Row(
+            children: <Widget>[
+              if (option.icon != null) ...<Widget>[
+                option.icon!,
+                SizedBox(width: spacing.sm),
+              ],
+              Expanded(
+                child: Text(
+                  option.label,
+                  style: visuals.textStyle.copyWith(
+                    color: optionText,
+                    fontWeight: isSelected ? .w600 : .w400,
+                  ),
+                  overflow: .ellipsis,
+                ),
+              ),
+              if (isSelected && !presetTokens.showsDefaultBorder) ...<Widget>[
+                SizedBox(width: spacing.sm),
+                Icon(
+                  const IconData(0xe156, fontFamily: 'MaterialIcons'),
+                  size: 16,
+                  color: optionText,
+                ),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 }
