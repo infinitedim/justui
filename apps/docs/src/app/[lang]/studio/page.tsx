@@ -5,8 +5,7 @@ import { Footer } from '@/components/organisms/footer';
 import { StudioTemplate } from '@/components/templates';
 import { fetchStarCount } from '@/lib/github';
 import { StudioClient } from './studio-client';
-
-const validLangs = ['en', 'id'] as const;
+import { isLocale, localeStaticParams } from '@/lib/i18n';
 
 export async function generateMetadata({
   params,
@@ -25,7 +24,7 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'id' }];
+  return localeStaticParams();
 }
 
 export default async function StudioPage({
@@ -35,7 +34,7 @@ export default async function StudioPage({
 }) {
   const { lang } = await params;
 
-  if (!(validLangs as readonly string[]).includes(lang)) {
+  if (!isLocale(lang)) {
     notFound();
   }
 

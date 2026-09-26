@@ -12,6 +12,7 @@ import {
   getHomepageDictionary,
   type HomepageDictionary,
 } from '@/lib/homepage-translations';
+import { localeStaticParams } from '@/lib/i18n';
 
 function HeroSection({ lang, t }: { lang: string; t: HomepageDictionary }) {
   return (
@@ -96,10 +97,10 @@ function ComponentShowcase({
 }
 
 export default async function HomePage({
-  params = Promise.resolve({ lang: 'en' }),
+  params,
 }: {
-  params?: Promise<{ lang: string }>;
-} = {}) {
+  params: Promise<{ lang: string }>;
+}) {
   const { lang } = await params;
   const starCount = await fetchStarCount();
   const t = getHomepageDictionary(lang);
@@ -118,6 +119,5 @@ export default async function HomePage({
 }
 
 export async function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'id' }];
+  return localeStaticParams();
 }
-

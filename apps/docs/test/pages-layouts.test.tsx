@@ -183,7 +183,7 @@ describe('App Router Pages and Layouts', () => {
 
     it('returns static params', async () => {
       const params = await componentsStaticParams();
-      expect(params).toEqual([{ lang: 'id' }, { lang: 'en' }]);
+      expect(params).toEqual([{ lang: 'en' }, { lang: 'id' }]);
     });
   });
 
