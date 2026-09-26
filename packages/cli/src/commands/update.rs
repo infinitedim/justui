@@ -82,26 +82,16 @@ pub fn run(auto_yes: bool) -> Result<()> {
             None => continue,
         };
 
-        let target_dir = if component.category == "tokens" || component.category == "core" {
-            config.tokens_dir.clone()
-        } else if component.name == "_shared_theme_provider" {
-            "lib/theme".to_string()
-        } else if component.internal {
-            config.shared_dir.clone()
-        } else {
-            format!("{}/{}", config.components_dir, component.name)
-        };
+        let target_dir = component.install_dir(
+            &config.components_dir,
+            &config.tokens_dir,
+            &config.shared_dir,
+        );
 
         let mut needs_update = false;
 
         for file in component.files_for_preset(&config.preset) {
-            let local_file_name = if component.name == "_shared_theme_provider" {
-                file.name.clone()
-            } else if component.internal {
-                import_rewriter::normalize_shared_file_name(&file.name)
-            } else {
-                file.name.clone()
-            };
+            let local_file_name = component.local_file_name(&file.name);
             let target_path = format!("{}/{}", target_dir, local_file_name);
             let local_file = std::path::Path::new(&target_path);
 

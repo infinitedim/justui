@@ -798,15 +798,11 @@ fn draw_ui(
 }
 
 fn get_component_status(comp: &RegistryComponent, config: &JustUIConfig) -> String {
-    let target_dir = if comp.name == "_shared_theme_provider" {
-        "lib/theme".to_string()
-    } else if comp.category == "tokens" || comp.category == "core" {
-        config.tokens_dir.clone()
-    } else if comp.internal {
-        config.shared_dir.clone()
-    } else {
-        format!("{}/{}", config.components_dir, comp.name)
-    };
+    let target_dir = comp.install_dir(
+        &config.components_dir,
+        &config.tokens_dir,
+        &config.shared_dir,
+    );
 
     let files = comp.files_for_preset(&config.preset);
     if files.is_empty() {
@@ -817,13 +813,7 @@ fn get_component_status(comp: &RegistryComponent, config: &JustUIConfig) -> Stri
     let mut matching_count = 0;
 
     for file in &files {
-        let local_file_name = if comp.name == "_shared_theme_provider" {
-            file.name.clone()
-        } else if comp.internal {
-            crate::utils::import_rewriter::normalize_shared_file_name(&file.name)
-        } else {
-            file.name.clone()
-        };
+        let local_file_name = comp.local_file_name(&file.name);
         let path = std::path::Path::new(&target_dir).join(local_file_name);
         if path.exists() {
             existing_count += 1;
@@ -1178,9 +1168,9 @@ mod tests {
         };
 
         let comp2 = RegistryComponent {
-            name: "_shared_theme_provider".to_string(),
+            name: "_shared_base".to_string(),
             version: "0.1.0".to_string(),
-            description: "Internal theme provider".to_string(),
+            description: "Internal base".to_string(),
             category: "core".to_string(),
             internal: true,
             supported_presets: vec![],
@@ -1430,8 +1420,8 @@ mod tests {
         };
         assert_eq!(get_component_status(&comp_tokens, &config), "Not Installed");
 
-        let comp_theme_provider = RegistryComponent {
-            name: "_shared_theme_provider".to_string(),
+        let comp_internal_core = RegistryComponent {
+            name: "_shared_kernel".to_string(),
             version: "1.0".to_string(),
             description: "".to_string(),
             category: "core".to_string(),
@@ -1444,8 +1434,8 @@ mod tests {
                 map.insert(
                     "default".to_string(),
                     vec![crate::registry::RegistryFile {
-                        name: "just_theme_provider.dart".to_string(),
-                        path: "just_theme_provider.dart".to_string(),
+                        name: "_shared_kernel.dart".to_string(),
+                        path: "_shared_kernel.dart".to_string(),
                         checksum: "sha256:123".to_string(),
                     }],
                 );
@@ -1453,7 +1443,7 @@ mod tests {
             },
         };
         assert_eq!(
-            get_component_status(&comp_theme_provider, &config),
+            get_component_status(&comp_internal_core, &config),
             "Not Installed"
         );
 
