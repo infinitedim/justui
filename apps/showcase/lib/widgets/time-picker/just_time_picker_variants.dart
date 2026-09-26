@@ -1,4 +1,4 @@
-// justui-meta: registry=7548b8e50d221ceecb38540a1ac2cba9e56d09d6a70aa7aa2ec0d67a2342872e local=7548b8e50d221ceecb38540a1ac2cba9e56d09d6a70aa7aa2ec0d67a2342872e
+// justui-meta: registry=9a60cbc296ca494bf76daaf52493d31e712ce879f32cd89369cb5d9e8b038702 local=482b16f2affe0aab096adc65f820cd4c4f60db4ecc8834796793caa7510877f8
 import 'package:flutter/material.dart' show DayPeriod, TimeOfDay;
 
 /// Display variant for time pickers (mirrors date picker variants).
@@ -50,37 +50,50 @@ enum JustTimeFormat {
 }
 
 /// Zero-dependency locale strings for time picker labels.
-class const JustTimePickerLocale({
+class JustTimePickerLocale {
   /// Label for the hour segment.
-  final String hourLabel = 'Hour',
+  final String hourLabel;
 
   /// Label for the minute segment.
-  final String minuteLabel = 'Minute',
+  final String minuteLabel;
 
   /// Label for the period segment.
-  final String periodLabel = 'Period',
+  final String periodLabel;
 
   /// Label for the AM period.
-  final String amLabel = 'AM',
+  final String amLabel;
 
   /// Label for the PM period.
-  final String pmLabel = 'PM',
+  final String pmLabel;
 
   /// Label for cancel action.
-  final String cancelLabel = 'Cancel',
+  final String cancelLabel;
 
   /// Label for confirmation action.
-  final String confirmLabel = 'OK',
+  final String confirmLabel;
 
   /// Tooltip text for switching to dial mode.
-  final String dialModeTooltip = 'Switch to dial mode',
+  final String dialModeTooltip;
 
   /// Tooltip text for switching to text input mode.
-  final String inputModeTooltip = 'Switch to text input',
+  final String inputModeTooltip;
 
   /// Tooltip text for switching to spinner mode.
-  final String spinnerModeTooltip = 'Switch to spinner mode',
-});
+  final String spinnerModeTooltip;
+
+  const JustTimePickerLocale({
+    this.hourLabel = 'Hour',
+    this.minuteLabel = 'Minute',
+    this.periodLabel = 'Period',
+    this.amLabel = 'AM',
+    this.pmLabel = 'PM',
+    this.cancelLabel = 'Cancel',
+    this.confirmLabel = 'OK',
+    this.dialModeTooltip = 'Switch to dial mode',
+    this.inputModeTooltip = 'Switch to text input',
+    this.spinnerModeTooltip = 'Switch to spinner mode',
+  });
+}
 
 /// Boundary and formatting helper extensions on [TimeOfDay].
 extension TimeOfDayBoundary on TimeOfDay {
@@ -104,20 +117,20 @@ extension TimeOfDayBoundary on TimeOfDay {
   /// Snaps minute to the nearest valid interval step.
   TimeOfDay snapMinute(int interval) {
     assert(60 % interval == 0, 'Interval must evenly divide 60');
-    final snapped = ((minute / interval).round() * interval) % 60;
+    final int snapped = ((minute / interval).round() * interval) % 60;
     return replacing(minute: snapped);
   }
 
   /// Returns a copy with the period toggled (AM↔PM).
   TimeOfDay togglePeriod() {
-    final newHour = hour < 12 ? hour + 12 : hour - 12;
+    final int newHour = hour < 12 ? hour + 12 : hour - 12;
     return replacing(hour: newHour);
   }
 
   /// Returns a copy with a specific 12-hour value (1..12) and period.
   TimeOfDay withHour12(int hour12, DayPeriod period) {
     assert(hour12 >= 1 && hour12 <= 12, 'Hour in 12-hour format must be 1..12');
-    final new24 = period == DayPeriod.am
+    final int new24 = period == DayPeriod.am
         ? (hour12 == 12 ? 0 : hour12)
         : (hour12 == 12 ? 12 : hour12 + 12);
     return replacing(hour: new24);

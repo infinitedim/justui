@@ -1,73 +1,97 @@
-// justui-meta: registry=9a9f42077462b76d8c388a1bd756d6e983e658c5bcfc35aebca8b78d77f25ac9 local=9a9f42077462b76d8c388a1bd756d6e983e658c5bcfc35aebca8b78d77f25ac9
+// justui-meta: registry=9bde14f7d9b67fedcf8b6394e6cf70de963a01e00910008d6de08417ca688dc2 local=b93b80e969712ee789325317230ba573e0ddc128857c3140182f890bc283ecad
 import 'package:flutter/widgets.dart';
 
 import 'just_carousel_variants.dart';
 
 /// Customized per-instance visual styles for [JustCarousel].
-class const JustCarouselStyle({
+class JustCarouselStyle {
   /// Visible fraction of the viewport occupied by each slide item (0.0 < fraction <= 1.0).
-  final double? viewportFraction,
+  final double? viewportFraction;
 
   /// Duration for programmatic or auto-scrolling page transitions.
-  final Duration? animationDuration,
+  final Duration? animationDuration;
 
   /// Animation curve used for animated transitions between slides.
-  final Curve? animationCurve,
+  final Curve? animationCurve;
 
   /// Visual display variant for page indicators.
-  final JustCarouselIndicator? indicator,
+  final JustCarouselIndicator? indicator;
 
   /// Relative placement of page indicators (inside vs outside slide bounds).
-  final JustCarouselIndicatorPosition? indicatorPosition,
+  final JustCarouselIndicatorPosition? indicatorPosition;
 
   /// Visual transition animation between adjacent slides.
-  final JustCarouselTransition? transition,
+  final JustCarouselTransition? transition;
 
   /// Inactive background color of indicator items.
-  final Color? indicatorColor,
+  final Color? indicatorColor;
 
   /// Active background color of current indicator item.
-  final Color? activeIndicatorColor,
+  final Color? activeIndicatorColor;
 
   /// Size / diameter in pixels of inactive indicator items.
-  final double? indicatorSize,
+  final double? indicatorSize;
 
   /// Size / diameter in pixels of the active indicator item.
-  final double? activeIndicatorSize,
+  final double? activeIndicatorSize;
 
   /// Spacing in pixels separating adjacent indicator items.
-  final double? indicatorSpacing,
+  final double? indicatorSpacing;
 
   /// Border radius applied to indicator items.
-  final BorderRadius? indicatorRadius,
+  final BorderRadius? indicatorRadius;
 
   /// Configuration for automatic slide progression.
-  final JustCarouselAutoScroll? autoScroll,
+  final JustCarouselAutoScroll? autoScroll;
 
   /// Whether tapping on an indicator dot navigates directly to that slide.
-  final bool? interactiveIndicators,
+  final bool? interactiveIndicators;
 
   /// Whether pointer wheel or trackpad scroll gestures navigate slides on desktop/web.
-  final bool? enableMouseWheel,
+  final bool? enableMouseWheel;
 
   /// Whether arrow keys navigate slides and spacebar pauses/resumes auto-scrolling.
-  final bool? enableKeyboardNavigation,
+  final bool? enableKeyboardNavigation;
 
   /// Whether visual previous/next arrow buttons are rendered.
-  final bool? showArrows,
+  final bool? showArrows;
 
   /// Inactive background/icon color for navigation arrows.
-  final Color? arrowColor,
+  final Color? arrowColor;
 
   /// Active / hovered background/icon color for navigation arrows.
-  final Color? activeArrowColor,
+  final Color? activeArrowColor;
 
   /// Size / bounding dimension in pixels of navigation arrows.
-  final double? arrowSize,
+  final double? arrowSize;
 
   /// Border radius applied to navigation arrows.
-  final BorderRadius? arrowRadius,
-}) {
+  final BorderRadius? arrowRadius;
+
+  const JustCarouselStyle({
+    this.viewportFraction,
+    this.animationDuration,
+    this.animationCurve,
+    this.indicator,
+    this.indicatorPosition,
+    this.transition,
+    this.indicatorColor,
+    this.activeIndicatorColor,
+    this.indicatorSize,
+    this.activeIndicatorSize,
+    this.indicatorSpacing,
+    this.indicatorRadius,
+    this.autoScroll,
+    this.interactiveIndicators,
+    this.enableMouseWheel,
+    this.enableKeyboardNavigation,
+    this.showArrows,
+    this.arrowColor,
+    this.activeArrowColor,
+    this.arrowSize,
+    this.arrowRadius,
+  });
+
   /// Returns a copy with given fields replaced.
   JustCarouselStyle copyWith({
     double? viewportFraction,
@@ -204,7 +228,7 @@ class const JustCarouselStyle({
           arrowRadius == other.arrowRadius;
 
   @override
-  int get hashCode => Object.hashAll([
+  int get hashCode => Object.hashAll(<Object?>[
     viewportFraction,
     animationDuration,
     animationCurve,

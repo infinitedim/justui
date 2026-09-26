@@ -9,7 +9,7 @@ abstract final class JustTypo {
   static const String fontFamily = 'Inter';
 
   /// Default fallback font family chain for sans-serif typography.
-  static const List<String> fontFamilyFallback = [
+  static const List<String> fontFamilyFallback = <String>[
     'SF Pro Text',
     'Roboto',
     'Segoe UI',
@@ -21,7 +21,7 @@ abstract final class JustTypo {
   static const String monoFontFamily = 'JetBrains Mono';
 
   /// Default fallback font family chain for monospace typography.
-  static const List<String> monoFontFamilyFallback = [
+  static const List<String> monoFontFamilyFallback = <String>[
     'SF Mono',
     'Fira Code',
     'Consolas',

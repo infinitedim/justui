@@ -10,16 +10,26 @@ import 'theme_data.dart';
 ///
 /// Under the hood, it propagates the active theme down the tree using an [InheritedModel],
 /// enabling widgets to subscribe to specific theme components (aspects) for optimal rendering performance.
-class const JustThemeProvider({
-  super.key,
-  required final Widget child,
-  final void Function(ThemeMode)? onThemeChanged,
-  final ThemeMode? initialThemeMode,
-  final JustThemeData? lightTheme,
-  final JustThemeData? darkTheme,
-  final Duration transitionDuration = JustDuration.normal,
-  final Curve transitionCurve = JustCurves.default_,
-}) extends StatefulWidget {
+class JustThemeProvider extends StatefulWidget {
+  final Widget child;
+  final void Function(ThemeMode)? onThemeChanged;
+  final ThemeMode? initialThemeMode;
+  final JustThemeData? lightTheme;
+  final JustThemeData? darkTheme;
+  final Duration transitionDuration;
+  final Curve transitionCurve;
+
+  const JustThemeProvider({
+    super.key,
+    required this.child,
+    this.onThemeChanged,
+    this.initialThemeMode,
+    this.lightTheme,
+    this.darkTheme,
+    this.transitionDuration = JustDuration.normal,
+    this.transitionCurve = JustCurves.default_,
+  });
+
   @override
   State<JustThemeProvider> createState() => JustThemeProviderState();
 
@@ -28,7 +38,7 @@ class const JustThemeProvider({
     BuildContext context, {
     JustThemeAspect? aspect,
   }) {
-    final model = InheritedModel.inheritFrom<_JustThemeModel>(
+    final _JustThemeModel? model = InheritedModel.inheritFrom<_JustThemeModel>(
       context,
       aspect: aspect,
     );
@@ -42,7 +52,7 @@ class const JustThemeProvider({
     BuildContext context, {
     JustThemeAspect? aspect,
   }) {
-    final state = maybeOf(context, aspect: aspect);
+    final JustThemeProviderState? state = maybeOf(context, aspect: aspect);
     if (state == null) {
       throw FlutterError('JustThemeProvider was not found in the widget tree.');
     }
@@ -51,7 +61,7 @@ class const JustThemeProvider({
 
   /// Retrieves the active state without registering a rebuild dependency, or null if not found.
   static JustThemeProviderState? maybeRead(BuildContext context) {
-    final element = context
+    final InheritedElement? element = context
         .getElementForInheritedWidgetOfExactType<_JustThemeModel>();
     return (element?.widget as _JustThemeModel?)?.state;
   }
@@ -60,7 +70,7 @@ class const JustThemeProvider({
   ///
   /// Ideal for callbacks, event handlers, or initialization.
   static JustThemeProviderState read(BuildContext context) {
-    final state = maybeRead(context);
+    final JustThemeProviderState? state = maybeRead(context);
     if (state == null) {
       throw FlutterError('JustThemeProvider was not found in the widget tree.');
     }
@@ -95,13 +105,13 @@ class JustThemeProviderState extends State<JustThemeProvider>
         baseTheme = _darkTheme;
         break;
       case .system:
-        final brightness =
+        final Brightness brightness =
             WidgetsBinding.instance.platformDispatcher.platformBrightness;
         baseTheme = brightness == .dark ? _darkTheme : _lightTheme;
         break;
     }
 
-    final isHighContrast =
+    final bool isHighContrast =
         WidgetsBinding
             .instance
             .platformDispatcher
@@ -109,12 +119,13 @@ class JustThemeProviderState extends State<JustThemeProvider>
             .highContrast ||
         (MediaQuery.maybeHighContrastOf(context) ?? false);
 
-    final resolvedTheme = isHighContrast
+    final JustThemeData resolvedTheme = isHighContrast
         ? baseTheme.applyHighContrastOverrides()
         : baseTheme;
 
     final double width = MediaQuery.maybeSizeOf(context)?.width ?? 1024.0;
-    final resolvedAnimations = resolvedTheme.animations.resolve(context);
+    final JustMotionProfile resolvedAnimations = resolvedTheme.animations
+        .resolve(context);
 
     return resolvedTheme.copyWith(
       spacing: resolvedTheme.spacing.resolve(width),
@@ -196,12 +207,18 @@ class JustThemeProviderState extends State<JustThemeProvider>
   }
 }
 
-class const _JustThemeModel({
-  required super.child,
-  required final JustThemeProviderState state,
-  required final ThemeMode themeMode,
-  required final JustThemeData themeData,
-}) extends InheritedModel<JustThemeAspect> {
+class _JustThemeModel extends InheritedModel<JustThemeAspect> {
+  final JustThemeProviderState state;
+  final ThemeMode themeMode;
+  final JustThemeData themeData;
+
+  const _JustThemeModel({
+    required super.child,
+    required this.state,
+    required this.themeMode,
+    required this.themeData,
+  });
+
   @override
   bool updateShouldNotify(_JustThemeModel oldWidget) {
     return themeMode != oldWidget.themeMode || themeData != oldWidget.themeData;

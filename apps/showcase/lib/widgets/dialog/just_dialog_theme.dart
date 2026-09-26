@@ -1,21 +1,23 @@
-// justui-meta: registry=bbbb6c55417059722b4715e2d5f2896912127252873e748f40bd7f31b6cbca1c local=bbbb6c55417059722b4715e2d5f2896912127252873e748f40bd7f31b6cbca1c
+// justui-meta: registry=fcd48ec1e9657846a661521136884c5500c73b85822f8604f6d976738d97ccea local=096cc8b3099ed8773232540745628b5c36dd6e153d4a2ed0bc1186779ba9bdc4
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_dialog_style.dart';
 
 /// Global theme configuration for dialogs, extending Flutter's [ThemeExtension].
-class const JustDialogTheme({
+class JustDialogTheme extends ThemeExtension<JustDialogTheme> {
   /// Style override for centered dialogs.
-  final JustDialogStyle? centerStyle,
+  final JustDialogStyle? centerStyle;
 
   /// Style override for bottom sheet-like dialogs.
-  final JustDialogStyle? bottomStyle,
+  final JustDialogStyle? bottomStyle;
 
   /// Style override for top banner-like dialogs.
-  final JustDialogStyle? topStyle,
-}) extends ThemeExtension<JustDialogTheme> {
+  final JustDialogStyle? topStyle;
+
+  const JustDialogTheme({this.centerStyle, this.bottomStyle, this.topStyle});
+
   /// Default configuration for the theme.
-  static const defaults = JustDialogTheme();
+  static const JustDialogTheme defaults = JustDialogTheme();
 
   @override
   JustDialogTheme copyWith({

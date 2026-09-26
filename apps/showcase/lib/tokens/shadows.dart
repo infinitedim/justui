@@ -10,7 +10,7 @@ abstract final class JustShadows {
   // ==========================================
 
   /// Extra small light shadow (subtle depth)
-  static const List<BoxShadow> xs = [
+  static const List<BoxShadow> xs = <BoxShadow>[
     BoxShadow(
       offset: Offset(0, 1),
       blurRadius: 2.0,
@@ -20,7 +20,7 @@ abstract final class JustShadows {
   ];
 
   /// Small light shadow (cards / dropdowns)
-  static const List<BoxShadow> sm = [
+  static const List<BoxShadow> sm = <BoxShadow>[
     BoxShadow(
       offset: Offset(0, 1),
       blurRadius: 2.0,
@@ -36,7 +36,7 @@ abstract final class JustShadows {
   ];
 
   /// Medium light shadow (interactive popovers)
-  static const List<BoxShadow> md = [
+  static const List<BoxShadow> md = <BoxShadow>[
     BoxShadow(
       offset: Offset(0, 4),
       blurRadius: 6.0,
@@ -52,7 +52,7 @@ abstract final class JustShadows {
   ];
 
   /// Large light shadow (menus / dialogs)
-  static const List<BoxShadow> lg = [
+  static const List<BoxShadow> lg = <BoxShadow>[
     BoxShadow(
       offset: Offset(0, 10),
       blurRadius: 15.0,
@@ -68,7 +68,7 @@ abstract final class JustShadows {
   ];
 
   /// Extra large light shadow (modals)
-  static const List<BoxShadow> xl = [
+  static const List<BoxShadow> xl = <BoxShadow>[
     BoxShadow(
       offset: Offset(0, 20),
       blurRadius: 25.0,
@@ -84,7 +84,7 @@ abstract final class JustShadows {
   ];
 
   /// Double extra large light shadow (toasts / floating sheets)
-  static const List<BoxShadow> xxl = [
+  static const List<BoxShadow> xxl = <BoxShadow>[
     BoxShadow(
       offset: Offset(0, 25),
       blurRadius: 50.0,
@@ -98,7 +98,7 @@ abstract final class JustShadows {
   // ==========================================
 
   /// Extra small dark shadow
-  static const List<BoxShadow> xsDark = [
+  static const List<BoxShadow> xsDark = <BoxShadow>[
     BoxShadow(
       offset: Offset(0, 1),
       blurRadius: 2.0,
@@ -108,7 +108,7 @@ abstract final class JustShadows {
   ];
 
   /// Small dark shadow
-  static const List<BoxShadow> smDark = [
+  static const List<BoxShadow> smDark = <BoxShadow>[
     BoxShadow(
       offset: Offset(0, 1),
       blurRadius: 2.0,
@@ -124,7 +124,7 @@ abstract final class JustShadows {
   ];
 
   /// Medium dark shadow
-  static const List<BoxShadow> mdDark = [
+  static const List<BoxShadow> mdDark = <BoxShadow>[
     BoxShadow(
       offset: Offset(0, 4),
       blurRadius: 6.0,
@@ -140,7 +140,7 @@ abstract final class JustShadows {
   ];
 
   /// Large dark shadow
-  static const List<BoxShadow> lgDark = [
+  static const List<BoxShadow> lgDark = <BoxShadow>[
     BoxShadow(
       offset: Offset(0, 10),
       blurRadius: 15.0,
@@ -156,7 +156,7 @@ abstract final class JustShadows {
   ];
 
   /// Extra large dark shadow
-  static const List<BoxShadow> xlDark = [
+  static const List<BoxShadow> xlDark = <BoxShadow>[
     BoxShadow(
       offset: Offset(0, 20),
       blurRadius: 25.0,
@@ -172,7 +172,7 @@ abstract final class JustShadows {
   ];
 
   /// Double extra large dark shadow
-  static const List<BoxShadow> xxlDark = [
+  static const List<BoxShadow> xxlDark = <BoxShadow>[
     BoxShadow(
       offset: Offset(0, 25),
       blurRadius: 50.0,
@@ -270,7 +270,7 @@ abstract final class JustShadows {
       ambientSpread = -6.0;
     }
 
-    return [
+    return <BoxShadow>[
       BoxShadow(
         offset: keyOffset,
         blurRadius: keyBlur,

@@ -1,21 +1,27 @@
-// justui-meta: registry=d92ae611a7ddd3540c70d6fb61f4277a788590c38d52371593493205ea691640 local=d92ae611a7ddd3540c70d6fb61f4277a788590c38d52371593493205ea691640
+// justui-meta: registry=ddea63de6efd336c12972cf2f69d06a11eef3c39a6133293d3e26fdcc0ab1eed local=d4f20cd20a2b0f764323310e60ac5c2284fc557c7992835e81d47c2396c7b3c1
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_sidebar_style.dart';
 
 /// Global theme configuration for sidebars, extending Flutter's [ThemeExtension].
-class const JustSidebarTheme({
+class JustSidebarTheme extends ThemeExtension<JustSidebarTheme> {
   /// Default style override for [JustSidebarVariant.default_].
-  final JustSidebarStyle? defaultStyle,
+  final JustSidebarStyle? defaultStyle;
 
   /// Default style override for [JustSidebarVariant.floating].
-  final JustSidebarStyle? floatingStyle,
+  final JustSidebarStyle? floatingStyle;
 
   /// Default style override for [JustSidebarVariant.inset].
-  final JustSidebarStyle? insetStyle,
-}) extends ThemeExtension<JustSidebarTheme> {
+  final JustSidebarStyle? insetStyle;
+
+  const JustSidebarTheme({
+    this.defaultStyle,
+    this.floatingStyle,
+    this.insetStyle,
+  });
+
   /// Default theme configuration.
-  static const defaults = JustSidebarTheme();
+  static const JustSidebarTheme defaults = JustSidebarTheme();
 
   @override
   JustSidebarTheme copyWith({

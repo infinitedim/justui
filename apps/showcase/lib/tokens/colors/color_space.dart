@@ -60,11 +60,11 @@ abstract final class ColorSpaceOps {
         return PerceptualColor(hsl.lightness, hsl.saturation, hsl.hue);
 
       case .oklch:
-        final oklch = OklchEngine.fromColor(color);
+        final OklchColor oklch = OklchEngine.fromColor(color);
         return PerceptualColor(oklch.l, oklch.c, oklch.h);
 
       case .hsluv:
-        final hsluv = HsluvEngine.fromColor(color);
+        final HsluvColor hsluv = HsluvEngine.fromColor(color);
         return PerceptualColor(hsluv.l / 100.0, hsluv.s / 100.0, hsluv.h);
     }
   }

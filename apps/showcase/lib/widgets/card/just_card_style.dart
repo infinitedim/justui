@@ -1,4 +1,4 @@
-// justui-meta: registry=8b90a32390f360b0ec64a8cb403ff598da4f9f8c0e9151c97535db3aa39b0547 local=8b90a32390f360b0ec64a8cb403ff598da4f9f8c0e9151c97535db3aa39b0547
+// justui-meta: registry=8b90a32390f360b0ec64a8cb403ff598da4f9f8c0e9151c97535db3aa39b0547 local=4a22a3433e949e3566c04c38ab50ff8d6ff897f7c06f88502a55fe121c1b065e
 import 'package:flutter/widgets.dart';
 
 /// Visual variants for [JustCard].
@@ -14,40 +14,55 @@ enum JustCardVariant {
 }
 
 /// Customized per-instance visual styles for [JustCard].
-class const JustCardStyle({
+class JustCardStyle {
   /// The background color of the card.
-  final Color? backgroundColor,
+  final Color? backgroundColor;
 
   /// The border color of the card.
-  final Color? borderColor,
+  final Color? borderColor;
 
   /// The thickness of the card's border.
-  final double? borderWidth,
+  final double? borderWidth;
 
   /// The corner radius of the card.
-  final BorderRadius? borderRadius,
+  final BorderRadius? borderRadius;
 
   /// The list of shadows applied to the card.
-  final List<BoxShadow>? shadows,
+  final List<BoxShadow>? shadows;
 
   /// Inner padding of the card content.
-  final EdgeInsets? padding,
+  final EdgeInsets? padding;
 
   /// Outer margin around the card.
-  final EdgeInsets? margin,
+  final EdgeInsets? margin;
 
   /// Inner padding of the card header.
-  final EdgeInsets? headerPadding,
+  final EdgeInsets? headerPadding;
 
   /// Inner padding of the card footer.
-  final EdgeInsets? footerPadding,
+  final EdgeInsets? footerPadding;
 
   /// Color of the divider line below the header.
-  final Color? headerDividerColor,
+  final Color? headerDividerColor;
 
   /// Color of the divider line above the footer.
-  final Color? footerDividerColor,
+  final Color? footerDividerColor;
 
   /// The scale factor when the card is pressed. Defaults to 0.99 for interactive cards.
-  final double? scaleOnPress,
-});
+  final double? scaleOnPress;
+
+  const JustCardStyle({
+    this.backgroundColor,
+    this.borderColor,
+    this.borderWidth,
+    this.borderRadius,
+    this.shadows,
+    this.padding,
+    this.margin,
+    this.headerPadding,
+    this.footerPadding,
+    this.headerDividerColor,
+    this.footerDividerColor,
+    this.scaleOnPress,
+  });
+}

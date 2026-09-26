@@ -1,28 +1,36 @@
-// justui-meta: registry=62061e838b622c991abf35eec2d1fe58d6cc6675355c9558459a14e6bfb7190c local=62061e838b622c991abf35eec2d1fe58d6cc6675355c9558459a14e6bfb7190c
+// justui-meta: registry=8bce76196570eeff315b98c0ce9c702fc0e4adec7bd471bc6fd4856bb78c52e5 local=8299446bc928737ddd8ec542587346eff50a74e0f029801b73380d1353da54d5
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_time_picker_style.dart';
 import 'just_time_picker_variants.dart';
 
 /// Global theme configuration for time pickers, extending Flutter's [ThemeExtension].
-class const JustTimePickerTheme({
+class JustTimePickerTheme extends ThemeExtension<JustTimePickerTheme> {
   /// Style overrides applied to inline/dial/spinner variants.
-  final JustTimePickerStyle? inlineStyle,
+  final JustTimePickerStyle? inlineStyle;
 
   /// Style overrides applied to modal variant.
-  final JustTimePickerStyle? modalStyle,
+  final JustTimePickerStyle? modalStyle;
 
   /// Style overrides applied to dropdown variant.
-  final JustTimePickerStyle? dropdownStyle,
+  final JustTimePickerStyle? dropdownStyle;
 
   /// Default interaction mode. If null, defaults to .dial.
-  final JustTimePickerMode? defaultMode,
+  final JustTimePickerMode? defaultMode;
 
   /// Whether haptic feedback is enabled globally.
-  final bool enableHaptic = false,
-}) extends ThemeExtension<JustTimePickerTheme> {
+  final bool enableHaptic;
+
+  const JustTimePickerTheme({
+    this.inlineStyle,
+    this.modalStyle,
+    this.dropdownStyle,
+    this.defaultMode,
+    this.enableHaptic = false,
+  });
+
   /// Default configuration for the theme.
-  static const defaults = JustTimePickerTheme();
+  static const JustTimePickerTheme defaults = JustTimePickerTheme();
 
   @override
   JustTimePickerTheme copyWith({

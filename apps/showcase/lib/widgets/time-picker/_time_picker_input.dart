@@ -1,4 +1,4 @@
-// justui-meta: registry=2a20085eecf20f90d9ed8b1d11fd9cfcd17eb9bd5cc96d8317d8e4de8fb3a616 local=4e444f15c981c69513695e7b42adebbe9b1659280f50177ac6ad68358489b96c
+// justui-meta: registry=46d7d77ada93e462bc549fce668de0cbb31b801c1f7e5f74810dacd32039aee2 local=509c2b0b572d97990c55bc60cd58d89e2cfbbfb1088d8da235dd730c75f28f47
 import 'package:flutter/material.dart' show DayPeriod, Theme, TimeOfDay;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
@@ -14,20 +14,56 @@ import 'just_time_picker_variants.dart';
 /// Provides a WCAG-compliant keyboard-first interface consisting of two
 /// [JustInput.number] fields for hour and minute with stepper controls,
 /// automatic focus traversal, input sanitization, and an AM/PM segmented toggle.
-class const TimePickerInput({
-  super.key,
-  final TimeOfDay? selectedTime,
-  final ValueChanged<TimeOfDay>? onChanged,
-  final TimeOfDay? firstTime,
-  final TimeOfDay? lastTime,
-  final bool Function(TimeOfDay)? selectableTimePredicate,
-  final JustTimeFormat timeFormat = .twelveHour,
-  final int minuteInterval = 1,
-  final JustTimePickerLocale locale = const JustTimePickerLocale(),
-  final JustTimePickerStyle? style,
-  final bool autofocus = false,
-  final bool? enableHaptic,
-}) extends StatefulWidget {
+class TimePickerInput extends StatefulWidget {
+  /// Currently selected time value.
+  final TimeOfDay? selectedTime;
+
+  /// Callback fired when the selected time changes.
+  final ValueChanged<TimeOfDay>? onChanged;
+
+  /// Earliest selectable time (inclusive).
+  final TimeOfDay? firstTime;
+
+  /// Latest selectable time (inclusive).
+  final TimeOfDay? lastTime;
+
+  /// Predicate to selectively disable specific times.
+  final bool Function(TimeOfDay)? selectableTimePredicate;
+
+  /// Time format (12-hour or 24-hour).
+  final JustTimeFormat timeFormat;
+
+  /// Minute selection interval (e.g. 1, 5, 10, 15, 30).
+  final int minuteInterval;
+
+  /// Locale strings for labels and tooltips.
+  final JustTimePickerLocale locale;
+
+  /// Per-instance style overrides.
+  final JustTimePickerStyle? style;
+
+  /// Whether to autofocus the hour input field.
+  final bool autofocus;
+
+  /// Whether haptic feedback is enabled.
+  final bool? enableHaptic;
+
+  /// Creates a [TimePickerInput] widget.
+  const TimePickerInput({
+    super.key,
+    this.selectedTime,
+    this.onChanged,
+    this.firstTime,
+    this.lastTime,
+    this.selectableTimePredicate,
+    this.timeFormat = .twelveHour,
+    this.minuteInterval = 1,
+    this.locale = const JustTimePickerLocale(),
+    this.style,
+    this.autofocus = false,
+    this.enableHaptic,
+  });
+
   @override
   State<TimePickerInput> createState() => _TimePickerInputState();
 }
@@ -84,7 +120,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
     if (widget.timeFormat == .twentyFourHour) {
       return time.hour.toString().padLeft(2, '0');
     } else {
-      final h12 = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+      final int h12 = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
       return h12.toString().padLeft(2, '0');
     }
   }
@@ -94,11 +130,11 @@ class _TimePickerInputState extends State<TimePickerInput> {
   }
 
   void _updateControllers() {
-    final hourText = _formatHour(_currentTime);
+    final String hourText = _formatHour(_currentTime);
     if (_hourController.text != hourText) {
       _hourController.text = hourText;
     }
-    final minuteText = _formatMinute(_currentTime);
+    final String minuteText = _formatMinute(_currentTime);
     if (_minuteController.text != minuteText) {
       _minuteController.text = minuteText;
     }
@@ -117,7 +153,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
   }
 
   void _commitHourText() {
-    final parsed = int.tryParse(_hourController.text);
+    final int? parsed = int.tryParse(_hourController.text);
     int validHour;
 
     if (widget.timeFormat == .twentyFourHour) {
@@ -141,7 +177,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
   }
 
   void _commitMinuteText() {
-    final parsed = int.tryParse(_minuteController.text);
+    final int? parsed = int.tryParse(_minuteController.text);
     int validMinute;
 
     if (parsed == null) {
@@ -149,7 +185,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
     } else {
       validMinute = parsed.clamp(0, 59);
       if (widget.minuteInterval > 1) {
-        final snapped =
+        final int snapped =
             ((validMinute / widget.minuteInterval).round() *
                 widget.minuteInterval) %
             60;
@@ -162,7 +198,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
   }
 
   void _onHourChanged(String text) {
-    var digits = text.replaceAll(RegExp(r'[^0-9]'), '');
+    String digits = text.replaceAll(RegExp(r'[^0-9]'), '');
     if (digits.length > 2) {
       digits = digits.substring(digits.length - 2);
       _hourController.value = TextEditingValue(
@@ -171,7 +207,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
       );
     }
 
-    final val = int.tryParse(digits);
+    final int? val = int.tryParse(digits);
     if (val != null) {
       if (widget.timeFormat == .twentyFourHour) {
         if (val >= 0 && val <= 23) {
@@ -191,7 +227,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
   }
 
   void _onMinuteChanged(String text) {
-    var digits = text.replaceAll(RegExp(r'[^0-9]'), '');
+    String digits = text.replaceAll(RegExp(r'[^0-9]'), '');
     if (digits.length > 2) {
       digits = digits.substring(digits.length - 2);
       _minuteController.value = TextEditingValue(
@@ -200,14 +236,14 @@ class _TimePickerInputState extends State<TimePickerInput> {
       );
     }
 
-    final val = int.tryParse(digits);
+    final int? val = int.tryParse(digits);
     if (val != null && val >= 0 && val <= 59) {
       _applyTimeChange(_currentTime.replacing(minute: val));
     }
   }
 
   void _applyTimeChange(TimeOfDay newTime) {
-    var validTime = newTime;
+    TimeOfDay validTime = newTime;
 
     if (!validTime.isWithin(widget.firstTime, widget.lastTime)) {
       validTime = validTime.clampTo(widget.firstTime, widget.lastTime);
@@ -232,17 +268,18 @@ class _TimePickerInputState extends State<TimePickerInput> {
   void _setPeriod(DayPeriod period) {
     if (_currentTime.period == period) return;
 
-    final hour12 = _currentTime.hourOfPeriod == 0
+    final int hour12 = _currentTime.hourOfPeriod == 0
         ? 12
         : _currentTime.hourOfPeriod;
-    final newTime = _currentTime.withHour12(hour12, period);
+    final TimeOfDay newTime = _currentTime.withHour12(hour12, period);
     _applyTimeChange(newTime);
   }
 
   void _triggerHaptic() {
-    final theme = context.justTheme;
-    final timePickerTheme = Theme.of(context).extension<JustTimePickerTheme>();
-    final isHapticEnabled =
+    final JustThemeData theme = context.justTheme;
+    final JustTimePickerTheme? timePickerTheme = Theme.of(context)
+        .extension<JustTimePickerTheme>();
+    final bool isHapticEnabled =
         widget.enableHaptic ??
         timePickerTheme?.enableHaptic ??
         theme.presetTokens.selectionHapticDefault;
@@ -254,10 +291,10 @@ class _TimePickerInputState extends State<TimePickerInput> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.justTheme;
-    final colors = context.justColors;
-    final spacing = context.justSpacing;
-    final typo = context.justTypo;
+    final JustThemeData theme = context.justTheme;
+    final JustColorScheme colors = context.justColors;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustTypographyScheme typo = context.justTypo;
 
     return Center(
       child: Padding(
@@ -266,14 +303,14 @@ class _TimePickerInputState extends State<TimePickerInput> {
           mainAxisSize: .min,
           mainAxisAlignment: .center,
           crossAxisAlignment: .center,
-          children: [
+          children: <Widget>[
             // Hour Input Column
             SizedBox(
               width: 80.0,
               child: Column(
                 mainAxisSize: .min,
                 crossAxisAlignment: .center,
-                children: [
+                children: <Widget>[
                   Semantics(
                     label: widget.locale.hourLabel,
                     child: JustInput.number(
@@ -316,7 +353,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
               child: Column(
                 mainAxisSize: .min,
                 crossAxisAlignment: .center,
-                children: [
+                children: <Widget>[
                   Semantics(
                     label: widget.locale.minuteLabel,
                     child: JustInput.number(
@@ -340,7 +377,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
             ),
 
             // AM/PM Toggle Segment (12-hour format only)
-            if (widget.timeFormat == .twelveHour) ...[
+            if (widget.timeFormat == .twelveHour) ...<Widget>[
               SizedBox(width: spacing.sm),
               Padding(
                 padding: .only(bottom: spacing.lg),
@@ -354,23 +391,28 @@ class _TimePickerInputState extends State<TimePickerInput> {
   }
 
   Widget _buildPeriodToggle(BuildContext context, JustThemeData theme) {
-    final colors = context.justColors;
-    final radius = theme.radius;
-    final typo = context.justTypo;
-    final presetTokens = theme.presetTokens;
+    final JustColorScheme colors = context.justColors;
+    final JustRadiusScheme radius = theme.radius;
+    final JustTypographyScheme typo = context.justTypo;
+    final JustPresetTokens presetTokens = theme.presetTokens;
 
-    final isAm = _currentTime.period == DayPeriod.am;
-    final activeBg = widget.style?.periodActiveColor ?? colors.borderFocus;
-    final activeFg = widget.style?.selectedTextColor ?? colors.textInverse;
-    final inactiveBg = colors.muted;
-    final inactiveFg = widget.style?.dialTextColor ?? colors.textSecondary;
-    final borderColor =
+    final bool isAm = _currentTime.period == DayPeriod.am;
+    final Color activeBg =
+        widget.style?.periodActiveColor ?? colors.borderFocus;
+    final Color activeFg =
+        widget.style?.selectedTextColor ?? colors.textInverse;
+    final Color inactiveBg = colors.muted;
+    final Color inactiveFg =
+        widget.style?.dialTextColor ?? colors.textSecondary;
+    final Color borderColor =
         widget.style?.borderColor ??
         (presetTokens.showsDefaultBorder
             ? colors.borderDefault
             : colors.borderDefault);
 
-    final resolvedRadius = presetTokens.resolveBorderRadius(radius);
+    final BorderRadius resolvedRadius = presetTokens.resolveBorderRadius(
+      radius,
+    );
 
     return Container(
       decoration: BoxDecoration(
@@ -385,7 +427,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
       ),
       child: Column(
         mainAxisSize: .min,
-        children: [
+        children: <Widget>[
           // AM button
           Semantics(
             button: true,

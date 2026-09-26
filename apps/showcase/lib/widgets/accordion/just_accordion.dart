@@ -1,4 +1,4 @@
-// justui-meta: registry=da9f6684dc35448ef8dbf58c29ad83aecbe5595d07b54514fb367bb9893218ff local=7d2c55d6400c635d12d99a10a56fa11af13b28bff3345aab09cb23a650e966cf
+// justui-meta: registry=094b184d63cf355becae63591fc3e2ee330645f35565223c75b9effc6d0181fa local=7c265fd89505621336548fed583a8d648d642c6a97ed3d86a473629149e502fc
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 
@@ -11,37 +11,63 @@ import 'just_accordion_theme.dart';
 import 'just_accordion_variants.dart';
 
 /// Data model representing an individual panel in the [JustAccordion].
-class const JustAccordionItem({
-  required final String title,
-  required final Widget content,
-  final Widget? subtitle,
-  final Widget? leading,
-  final bool enabled = true,
-}) {}
+class JustAccordionItem {
+  /// The header title text.
+  final String title;
+
+  /// The widget content displayed when the panel is expanded.
+  final Widget content;
+
+  /// Optional subtitle text displayed below the title.
+  final Widget? subtitle;
+
+  /// Optional leading widget (such as an icon).
+  final Widget? leading;
+
+  /// Whether this item can be interacted with.
+  final bool enabled;
+
+  /// Creates a [JustAccordionItem].
+  const JustAccordionItem({
+    required this.title,
+    required this.content,
+    this.subtitle,
+    this.leading,
+    this.enabled = true,
+  });
+}
 
 /// A highly customizable, accessible accordion component supporting single and multi-expansion.
 /// A highly customizable, accessible accordion component supporting single and multi-expansion.
-class const JustAccordion({
-  super.key,
-
+class JustAccordion extends StatefulWidget {
   /// The list of accordion items to display.
-  required final List<JustAccordionItem> items,
+  final List<JustAccordionItem> items;
 
   /// If true, multiple items can be expanded concurrently.
-  final bool allowMultiple = false,
+  final bool allowMultiple;
 
   /// The indices of items that should be expanded initially.
-  final Set<int>? initialExpanded,
+  final Set<int>? initialExpanded;
 
   /// Callback when the set of expanded item indices changes.
-  final ValueChanged<Set<int>>? onChanged,
+  final ValueChanged<Set<int>>? onChanged;
 
   /// The visual layout variant.
-  final JustAccordionVariant variant = .default_,
+  final JustAccordionVariant variant;
 
   /// Per-instance style overrides.
-  final JustAccordionStyle? style,
-}) extends StatefulWidget {
+  final JustAccordionStyle? style;
+
+  const JustAccordion({
+    super.key,
+    required this.items,
+    this.allowMultiple = false,
+    this.initialExpanded,
+    this.onChanged,
+    this.variant = .default_,
+    this.style,
+  });
+
   @override
   State<JustAccordion> createState() => _JustAccordionState();
 }
@@ -52,9 +78,9 @@ class _JustAccordionState extends State<JustAccordion> {
   @override
   void initState() {
     super.initState();
-    _expandedIndices = Set<int>.from(widget.initialExpanded ?? {});
+    _expandedIndices = Set<int>.from(widget.initialExpanded ?? <dynamic>{});
     if (!widget.allowMultiple && _expandedIndices.length > 1) {
-      _expandedIndices = {_expandedIndices.first};
+      _expandedIndices = <int>{_expandedIndices.first};
     }
   }
 
@@ -79,32 +105,36 @@ class _JustAccordionState extends State<JustAccordion> {
 
   @override
   Widget build(BuildContext context) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final accordionTheme = Theme.of(context).extension<JustAccordionTheme>();
-    final themeStyle = accordionTheme?.style;
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustAccordionTheme? accordionTheme = Theme.of(context)
+        .extension<JustAccordionTheme>();
+    final JustAccordionStyle? themeStyle = accordionTheme?.style;
 
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final radius = customTheme.radius;
-    final shadows = customTheme.shadows;
-    final typography = JustThemeProvider.of(
+    final JustRadiusScheme radius = customTheme.radius;
+    final JustShadowScheme shadows = customTheme.shadows;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final presetTokens = customTheme.presetTokens;
+    final JustPresetTokens presetTokens = customTheme.presetTokens;
 
     final BorderRadius defaultBorderRadius = presetTokens.resolveBorderRadius(
       radius,
     );
-    final finalRadius =
+    final BorderRadius finalRadius =
         widget.style?.borderRadius ??
         themeStyle?.borderRadius ??
         defaultBorderRadius;
 
-    final borderColor =
+    final Color borderColor =
         widget.style?.borderColor ??
         themeStyle?.borderColor ??
         (presetTokens.showsDefaultBorder
@@ -118,7 +148,7 @@ class _JustAccordionState extends State<JustAccordion> {
           : 1.0;
       final List<BoxShadow> containerShadows = presetTokens.showsDefaultBorder
           ? shadows.md
-          : const [];
+          : const <BoxShadow>[];
 
       return Container(
         decoration: BoxDecoration(
@@ -130,13 +160,13 @@ class _JustAccordionState extends State<JustAccordion> {
         clipBehavior: .antiAlias,
         child: Column(
           mainAxisSize: .min,
-          children: .generate(widget.items.length, (index) {
-            final item = widget.items[index];
-            final isLast = index == widget.items.length - 1;
+          children: .generate(widget.items.length, (int index) {
+            final JustAccordionItem item = widget.items[index];
+            final bool isLast = index == widget.items.length - 1;
 
             return Column(
               mainAxisSize: .min,
-              children: [
+              children: <Widget>[
                 _JustAccordionItemWidget(
                   item: item,
                   isExpanded: _expandedIndices.contains(index),
@@ -173,9 +203,9 @@ class _JustAccordionState extends State<JustAccordion> {
 
     return Column(
       mainAxisSize: .min,
-      children: .generate(widget.items.length, (index) {
-        final item = widget.items[index];
-        final isLast = index == widget.items.length - 1;
+      children: .generate(widget.items.length, (int index) {
+        final JustAccordionItem item = widget.items[index];
+        final bool isLast = index == widget.items.length - 1;
 
         final Widget child = _JustAccordionItemWidget(
           item: item,
@@ -197,7 +227,7 @@ class _JustAccordionState extends State<JustAccordion> {
 
         return Column(
           mainAxisSize: .min,
-          children: [
+          children: <Widget>[
             child,
             if (!isLast)
               Container(height: dividerThickness, color: borderColor),
@@ -208,23 +238,41 @@ class _JustAccordionState extends State<JustAccordion> {
   }
 }
 
-class const _JustAccordionItemWidget({
-  required final JustAccordionItem item,
-  required final bool isExpanded,
-  required final VoidCallback onToggle,
-  required final JustAccordionVariant variant,
-  required final JustAccordionStyle? style,
-  required final JustAccordionStyle? themeStyle,
-  required final JustPresetTokens presetTokens,
-  required final JustColorScheme colors,
-  required final JustSpacingScheme spacing,
-  required final JustRadiusScheme radius,
-  required final JustShadowScheme shadows,
-  required final JustTypographyScheme typography,
-  required final JustThemeData customTheme,
-  required final int index,
-  required final int totalItems,
-}) extends StatefulWidget {
+class _JustAccordionItemWidget extends StatefulWidget {
+  final JustAccordionItem item;
+  final bool isExpanded;
+  final VoidCallback onToggle;
+  final JustAccordionVariant variant;
+  final JustAccordionStyle? style;
+  final JustAccordionStyle? themeStyle;
+  final JustPresetTokens presetTokens;
+  final JustColorScheme colors;
+  final JustSpacingScheme spacing;
+  final JustRadiusScheme radius;
+  final JustShadowScheme shadows;
+  final JustTypographyScheme typography;
+  final JustThemeData customTheme;
+  final int index;
+  final int totalItems;
+
+  const _JustAccordionItemWidget({
+    required this.item,
+    required this.isExpanded,
+    required this.onToggle,
+    required this.variant,
+    required this.style,
+    required this.themeStyle,
+    required this.presetTokens,
+    required this.colors,
+    required this.spacing,
+    required this.radius,
+    required this.shadows,
+    required this.typography,
+    required this.customTheme,
+    required this.index,
+    required this.totalItems,
+  });
+
   @override
   State<_JustAccordionItemWidget> createState() =>
       _JustAccordionItemWidgetState();
@@ -279,37 +327,37 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
   @override
   Widget build(BuildContext context) {
     // Resolve styling parameters
-    final headerBg =
+    final Color headerBg =
         widget.style?.headerBackgroundColor ??
         widget.themeStyle?.headerBackgroundColor ??
         widget.colors.card;
 
-    final contentBg =
+    final Color contentBg =
         widget.style?.contentBackgroundColor ??
         widget.themeStyle?.contentBackgroundColor ??
         widget.colors.card;
 
-    final titleColor =
+    final Color titleColor =
         widget.style?.titleColor ??
         widget.themeStyle?.titleColor ??
         widget.colors.textPrimary;
 
-    final iconColor =
+    final Color iconColor =
         widget.style?.iconColor ??
         widget.themeStyle?.iconColor ??
         widget.colors.textPrimary;
 
-    final headerPadding =
+    final EdgeInsetsGeometry headerPadding =
         widget.style?.headerPadding ??
         widget.themeStyle?.headerPadding ??
         .symmetric(horizontal: widget.spacing.lg, vertical: widget.spacing.md);
 
-    final contentPadding =
+    final EdgeInsetsGeometry contentPadding =
         widget.style?.contentPadding ??
         widget.themeStyle?.contentPadding ??
         .symmetric(horizontal: widget.spacing.lg, vertical: widget.spacing.md);
 
-    final borderColor =
+    final Color borderColor =
         widget.style?.borderColor ??
         widget.themeStyle?.borderColor ??
         (widget.presetTokens.showsDefaultBorder
@@ -318,14 +366,14 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
 
     final BorderRadius defaultBorderRadius = widget.presetTokens
         .resolveBorderRadius(widget.radius);
-    final finalRadius =
+    final BorderRadius finalRadius =
         widget.style?.borderRadius ??
         widget.themeStyle?.borderRadius ??
         defaultBorderRadius;
 
     final Widget header = Row(
-      children: [
-        if (widget.item.leading != null) ...[
+      children: <Widget>[
+        if (widget.item.leading != null) ...<Widget>[
           widget.item.leading!,
           SizedBox(width: widget.spacing.sm),
         ],
@@ -333,7 +381,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
           child: Column(
             crossAxisAlignment: .start,
             mainAxisSize: .min,
-            children: [
+            children: <Widget>[
               Text(
                 widget.item.title,
                 style: widget.typography.bodyMd.copyWith(
@@ -343,7 +391,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
                       : titleColor.withValues(alpha: 0.4),
                 ),
               ),
-              if (widget.item.subtitle != null) ...[
+              if (widget.item.subtitle != null) ...<Widget>[
                 SizedBox(height: widget.spacing.xs),
                 widget.item.subtitle!,
               ],
@@ -372,8 +420,8 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
         enabled: widget.item.enabled,
         onTap: widget.onToggle,
         builder: (BuildContext context, JustInteractionState state) {
-          final isHovered = state.isHovered;
-          final isPressed = state.isPressed;
+          final bool isHovered = state.isHovered;
+          final bool isPressed = state.isPressed;
 
           Color resolvedHeaderBg = headerBg;
           if (isHovered && widget.item.enabled) {
@@ -421,7 +469,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       child: Column(
         mainAxisSize: .min,
         crossAxisAlignment: .stretch,
-        children: [
+        children: <Widget>[
           Container(
             height: widget.presetTokens.borderWidth > 0.0
                 ? widget.presetTokens.borderWidth
@@ -445,13 +493,13 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       ),
     );
 
-    final itemWidget = Column(
+    final Column itemWidget = Column(
       mainAxisSize: .min,
       crossAxisAlignment: .stretch,
-      children: [headerButton, contentArea],
+      children: <Widget>[headerButton, contentArea],
     );
 
-    final semanticItemWidget = Semantics(
+    final Semantics semanticItemWidget = Semantics(
       container: true,
       label: 'Accordion Panel: ${widget.item.title}',
       value: widget.isExpanded ? 'Expanded' : 'Collapsed',

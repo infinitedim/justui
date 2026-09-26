@@ -66,7 +66,7 @@ class JustColorScale {
     Color seed, {
     JustColorSpaceEngine engine = .hsl,
   }) {
-    final pc = ColorSpaceOps.toPerceptual(seed, engine);
+    final PerceptualColor pc = ColorSpaceOps.toPerceptual(seed, engine);
     final double seedL = pc.l;
 
     Color makeShade(double targetL) {
@@ -146,7 +146,7 @@ extension JustColorContrastCorrection on Color {
     if (currentRatio >= targetRatio) return this;
 
     final double bgLuminance = background.computeLuminance();
-    final pc = ColorSpaceOps.toPerceptual(this, engine);
+    final PerceptualColor pc = ColorSpaceOps.toPerceptual(this, engine);
     final bool makeLighter = bgLuminance < 0.5;
 
     double low = makeLighter ? pc.l : 0.0;
@@ -193,7 +193,7 @@ abstract final class JustDynamicSurfaces {
     double saturationFactor = 0.20,
     JustColorSpaceEngine engine = .hsl,
   }) {
-    final pc = ColorSpaceOps.toPerceptual(seedColor, engine);
+    final PerceptualColor pc = ColorSpaceOps.toPerceptual(seedColor, engine);
     final double dampedC = (pc.c * saturationFactor).clamp(0.0, maxSaturation);
     return ColorSpaceOps.fromPerceptual(
       PerceptualColor(lightness, dampedC, pc.h),

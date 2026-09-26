@@ -49,7 +49,7 @@ abstract final class JustSpacingScheme {
 
   @override
   int get hashCode {
-    return Object.hashAll([xxs, xs, sm, md, lg, xl, xxl, xxxl, huge]);
+    return Object.hashAll(<Object?>[xxs, xs, sm, md, lg, xl, xxl, xxxl, huge]);
   }
 
   /// Resolves the spacing scheme for a given screen width. Defaults to returning itself.
@@ -90,8 +90,8 @@ final class FluidSpacingScheme extends JustSpacingScheme {
   double _fluid(double minSize, double maxSize) {
     const double minWidth = 640.0;
     const double maxWidth = 1024.0;
-    final clampedWidth = width.clamp(minWidth, maxWidth);
-    final slope = (maxSize - minSize) / (maxWidth - minWidth);
+    final double clampedWidth = width.clamp(minWidth, maxWidth);
+    final double slope = (maxSize - minSize) / (maxWidth - minWidth);
     return minSize + slope * (clampedWidth - minWidth);
   }
 

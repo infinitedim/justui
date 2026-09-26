@@ -1,4 +1,4 @@
-// justui-meta: registry=37b39af85172809f14545ebc930ed89ad8a2312d20f93a07d5f66674e0096495 local=37b39af85172809f14545ebc930ed89ad8a2312d20f93a07d5f66674e0096495
+// justui-meta: registry=c9111e1bda45eb535163e8711846bd8625e957ba552b7b5cff63bda1bdaac7d8 local=c8b47f1e188bcbd27cbbe32a0d756f090b039793fb52f7b56269c35fcfd29ec2
 export 'package:flutter/widgets.dart' show Axis, Curve;
 
 import 'package:flutter/widgets.dart' show Curve;
@@ -43,24 +43,32 @@ enum JustCarouselTransition {
 }
 
 /// Configuration options for automatic slide advancement in [JustCarousel].
-class const JustCarouselAutoScroll({
+class JustCarouselAutoScroll {
   /// Interval between automatic page transitions. Defaults to 4 seconds.
-  final Duration interval = const Duration(seconds: 4),
+  final Duration interval;
 
   /// Optional custom animation duration for the auto-scroll transition.
-  final Duration? animationDuration,
+  final Duration? animationDuration;
 
   /// Optional custom animation curve for the auto-scroll transition.
-  final Curve? animationCurve,
+  final Curve? animationCurve;
 
   /// Whether auto-scrolling pauses when the pointer hovers over the carousel. Defaults to true.
-  final bool pauseOnHover = true,
+  final bool pauseOnHover;
 
   /// Whether auto-scrolling pauses when the user drags or touches the carousel. Defaults to true.
-  final bool pauseOnTouch = true,
-}) {
+  final bool pauseOnTouch;
+
+  const JustCarouselAutoScroll({
+    this.interval = const Duration(seconds: 4),
+    this.animationDuration,
+    this.animationCurve,
+    this.pauseOnHover = true,
+    this.pauseOnTouch = true,
+  });
+
   /// Default configuration for auto-scrolling.
-  static const defaults = JustCarouselAutoScroll();
+  static const JustCarouselAutoScroll defaults = JustCarouselAutoScroll();
 
   /// Returns a copy with given fields replaced.
   JustCarouselAutoScroll copyWith({

@@ -1,7 +1,8 @@
-// justui-meta: registry=a7ab3ebcb9c5861128b8688653b3b96ecfc4e3c01a3031d6759eb92afc7bdc49 local=79fc18f7e510713892649e66c2bbb0346aaadd7db5db46c3a05346f50f1bed62
+// justui-meta: registry=f7236cfb5edc123e99b406ffa26ebaf4573264b678853f30b5b5beec69c75bd0 local=af9012a3e47f0984d3042d1ac1668baa4cc8457704dcd9481ddd96389b1a7e63
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
 import 'package:flutter/widgets.dart';
+import 'package:showcase/core/theme/preset_tokens.dart';
 
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -153,10 +154,16 @@ class _JustSliderState extends State<JustSlider> {
         : range / 20.0;
 
     if (_isRange) {
-      final newEnd = (_currentEnd + step).clamp(_currentStart, widget.max);
+      final double newEnd = (_currentEnd + step).clamp(
+        _currentStart,
+        widget.max,
+      );
       widget.onRangeChanged?.call(JustRangeValues(_currentStart, newEnd));
     } else {
-      final newValue = (_currentStart + step).clamp(widget.min, widget.max);
+      final double newValue = (_currentStart + step).clamp(
+        widget.min,
+        widget.max,
+      );
       widget.onChanged?.call(newValue);
     }
   }
@@ -169,21 +176,28 @@ class _JustSliderState extends State<JustSlider> {
         : range / 20.0;
 
     if (_isRange) {
-      final newStart = (_currentStart - step).clamp(widget.min, _currentEnd);
+      final double newStart = (_currentStart - step).clamp(
+        widget.min,
+        _currentEnd,
+      );
       widget.onRangeChanged?.call(JustRangeValues(newStart, _currentEnd));
     } else {
-      final newValue = (_currentStart - step).clamp(widget.min, widget.max);
+      final double newValue = (_currentStart - step).clamp(
+        widget.min,
+        widget.max,
+      );
       widget.onChanged?.call(newValue);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = JustThemeProvider.of(context);
-    final presetTokens = theme.theme.presetTokens;
+    final JustThemeProviderState theme = JustThemeProvider.of(context);
+    final JustPresetTokens presetTokens = theme.theme.presetTokens;
 
-    final globalTheme = Theme.of(context).extension<JustSliderTheme>();
-    final finalEnableHaptic =
+    final JustSliderTheme? globalTheme = Theme.of(context)
+        .extension<JustSliderTheme>();
+    final bool finalEnableHaptic =
         widget.enableHaptic ??
         globalTheme?.enableHaptic ??
         presetTokens.sliderDefaultHaptic;
@@ -195,28 +209,28 @@ class _JustSliderState extends State<JustSlider> {
     final double thumbSize = presetTokens.resolveSliderThumbSize(widget.size);
 
     // Resolve colors
-    final colors = theme.theme.colors;
-    final activeTrackColor =
+    final JustColorScheme colors = theme.theme.colors;
+    final Color activeTrackColor =
         widget.style?.activeTrackColor ??
         globalTheme?.style?.activeTrackColor ??
         (presetTokens.showsDefaultBorder
             ? colors.textPrimary
             : colors.borderFocus);
-    final inactiveTrackColor =
+    final Color inactiveTrackColor =
         widget.style?.inactiveTrackColor ??
         globalTheme?.style?.inactiveTrackColor ??
         (presetTokens.showsDefaultBorder
             ? colors.background
             : colors.borderDefault);
-    final thumbColor =
+    final Color thumbColor =
         widget.style?.thumbColor ??
         globalTheme?.style?.thumbColor ??
         (presetTokens.showsDefaultBorder ? colors.warning : colors.background);
-    final thumbBorderColor =
+    final Color thumbBorderColor =
         widget.style?.thumbBorderColor ??
         globalTheme?.style?.thumbBorderColor ??
         colors.textPrimary;
-    final tickMarkColor =
+    final Color tickMarkColor =
         widget.style?.tickMarkColor ??
         globalTheme?.style?.tickMarkColor ??
         (presetTokens.showsDefaultBorder
@@ -230,9 +244,9 @@ class _JustSliderState extends State<JustSlider> {
             ? .all(theme.theme.radius.xs)
             : .all(theme.theme.radius.full));
 
-    const sliderHeight = 48.0;
+    const double sliderHeight = 48.0;
 
-    final isInteractive = (_isRange
+    final bool isInteractive = (_isRange
         ? widget.onRangeChanged != null
         : widget.onChanged != null);
 
@@ -265,10 +279,10 @@ class _JustSliderState extends State<JustSlider> {
       onIncrease: isInteractive ? _increaseValue : null,
       onDecrease: isInteractive ? _decreaseValue : null,
       child: LayoutBuilder(
-        builder: (context, constraints) {
-          final totalWidth = constraints.maxWidth;
-          final usableWidth = totalWidth - thumbSize;
-          final range = widget.max - widget.min;
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final double totalWidth = constraints.maxWidth;
+          final double usableWidth = totalWidth - thumbSize;
+          final double range = widget.max - widget.min;
 
           // Calculate visual positions (0.0 to 1.0) with zero-range / NaN guard
           final double startFraction = (usableWidth <= 0 || range <= 0)
@@ -284,7 +298,7 @@ class _JustSliderState extends State<JustSlider> {
           return Focus(
             focusNode: _focusNode,
             canRequestFocus: isInteractive,
-            onKeyEvent: (node, event) {
+            onKeyEvent: (FocusNode node, KeyEvent event) {
               if (!isInteractive || event is! KeyDownEvent) return .ignored;
               if (event.logicalKey == .arrowLeft ||
                   event.logicalKey == .arrowDown) {
@@ -326,7 +340,7 @@ class _JustSliderState extends State<JustSlider> {
                 },
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onPanStart: (details) => _handleDragStart(
+                  onPanStart: (DragStartDetails details) => _handleDragStart(
                     details.localPosition.dx,
                     startPosition,
                     endPosition,
@@ -334,13 +348,13 @@ class _JustSliderState extends State<JustSlider> {
                     usableWidth,
                     finalEnableHaptic,
                   ),
-                  onPanUpdate: (details) => _handleDragUpdate(
+                  onPanUpdate: (DragUpdateDetails details) => _handleDragUpdate(
                     details.localPosition.dx,
                     usableWidth,
                     finalEnableHaptic,
                   ),
                   onPanEnd: (_) => _handleDragEnd(),
-                  onTapDown: (details) {
+                  onTapDown: (TapDownDetails details) {
                     _handleDragStart(
                       details.localPosition.dx,
                       startPosition,
@@ -361,7 +375,7 @@ class _JustSliderState extends State<JustSlider> {
                     child: Stack(
                       clipBehavior: .none,
                       alignment: .centerLeft,
-                      children: [
+                      children: <Widget>[
                         // 1. Inactive Track (Background)
                         Container(
                           height: trackHeight,
@@ -417,7 +431,7 @@ class _JustSliderState extends State<JustSlider> {
                             ),
 
                         // 4. Thumbs
-                        if (_isRange) ...[
+                        if (_isRange) ...<Widget>[
                           _buildThumb(
                             index: 0,
                             leftPosition: startPosition,
@@ -438,7 +452,7 @@ class _JustSliderState extends State<JustSlider> {
                             thumbBorderColor: thumbBorderColor,
                             theme: theme,
                           ),
-                        ] else ...[
+                        ] else ...<Widget>[
                           _buildThumb(
                             index: 0,
                             leftPosition: startPosition,
@@ -472,8 +486,8 @@ class _JustSliderState extends State<JustSlider> {
     required Color thumbBorderColor,
     required JustThemeProviderState theme,
   }) {
-    final isPressed = _activeThumbIndex == index;
-    final presetTokens = theme.theme.presetTokens;
+    final bool isPressed = _activeThumbIndex == index;
+    final JustPresetTokens presetTokens = theme.theme.presetTokens;
 
     Widget thumbWidget;
 
@@ -497,7 +511,7 @@ class _JustSliderState extends State<JustSlider> {
           border: .all(color: thumbBorderColor, width: 2.5),
           boxShadow: isPressed
               ? null
-              : [
+              : <BoxShadow>[
                   BoxShadow(
                     color: colors.textPrimary,
                     offset: shadowOffset,
@@ -518,7 +532,7 @@ class _JustSliderState extends State<JustSlider> {
             color: thumbColor,
             shape: .circle,
             border: .all(color: thumbBorderColor, width: 1.5),
-            boxShadow: [
+            boxShadow: <BoxShadow>[
               BoxShadow(
                 color: colors.textPrimary.withValues(alpha: 0.15),
                 offset: const Offset(0.0, 2.0),
@@ -535,7 +549,7 @@ class _JustSliderState extends State<JustSlider> {
       child: Stack(
         clipBehavior: .none,
         alignment: .center,
-        children: [
+        children: <Widget>[
           thumbWidget,
           if (widget.showTooltip && isPressed)
             Positioned(top: -36.0, child: _buildTooltip(value, colors, theme)),
@@ -549,8 +563,10 @@ class _JustSliderState extends State<JustSlider> {
     JustColorScheme colors,
     JustThemeProviderState theme,
   ) {
-    final valueText = value.toStringAsFixed(widget.divisions == null ? 1 : 0);
-    final presetTokens = theme.theme.presetTokens;
+    final String valueText = value.toStringAsFixed(
+      widget.divisions == null ? 1 : 0,
+    );
+    final JustPresetTokens presetTokens = theme.theme.presetTokens;
 
     if (presetTokens.showsDefaultBorder) {
       return Container(
@@ -562,7 +578,7 @@ class _JustSliderState extends State<JustSlider> {
           color: colors.background,
           borderRadius: .all(theme.theme.radius.xs),
           border: .all(color: colors.textPrimary, width: 2.0),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: colors.textPrimary,
               offset: const Offset(2.0, 2.0),
@@ -612,13 +628,14 @@ class _JustSliderState extends State<JustSlider> {
     if (usableWidth <= 0) return;
 
     // Find the touch position fraction
-    final touchFraction = (localX - thumbSize / 2) / usableWidth;
-    final touchValue = widget.min + touchFraction * (widget.max - widget.min);
+    final double touchFraction = (localX - thumbSize / 2) / usableWidth;
+    final double touchValue =
+        widget.min + touchFraction * (widget.max - widget.min);
 
     if (_isRange) {
       // Determine which thumb is closer
-      final distToStart = (touchValue - _currentStart).abs();
-      final distToEnd = (touchValue - _currentEnd).abs();
+      final double distToStart = (touchValue - _currentStart).abs();
+      final double distToEnd = (touchValue - _currentEnd).abs();
 
       if (distToStart <= distToEnd) {
         _activeThumbIndex = 0;
@@ -638,13 +655,13 @@ class _JustSliderState extends State<JustSlider> {
   void _handleDragUpdate(double localX, double usableWidth, bool enableHaptic) {
     if (_activeThumbIndex == -1 || usableWidth <= 0) return;
 
-    final fraction = (localX / usableWidth).clamp(0.0, 1.0);
+    final double fraction = (localX / usableWidth).clamp(0.0, 1.0);
     double newValue = widget.min + fraction * (widget.max - widget.min);
 
     // Apply divisions snapping
     if (widget.divisions != null) {
-      final step = (widget.max - widget.min) / widget.divisions!;
-      final steps = ((newValue - widget.min) / step).round();
+      final double step = (widget.max - widget.min) / widget.divisions!;
+      final int steps = ((newValue - widget.min) / step).round();
       newValue = (widget.min + steps * step).clamp(widget.min, widget.max);
     }
 
@@ -652,7 +669,10 @@ class _JustSliderState extends State<JustSlider> {
       if (_activeThumbIndex == 0) {
         // Dragging start thumb, clamp it below end thumb
         newValue = newValue.clamp(widget.min, _currentEnd);
-        final updatedRange = JustRangeValues(newValue, _currentEnd);
+        final JustRangeValues updatedRange = JustRangeValues(
+          newValue,
+          _currentEnd,
+        );
         if (updatedRange != widget.rangeValues) {
           widget.onRangeChanged?.call(updatedRange);
           _triggerHapticIfNeeded(updatedRange, enableHaptic);
@@ -660,7 +680,10 @@ class _JustSliderState extends State<JustSlider> {
       } else {
         // Dragging end thumb, clamp it above start thumb
         newValue = newValue.clamp(_currentStart, widget.max);
-        final updatedRange = JustRangeValues(_currentStart, newValue);
+        final JustRangeValues updatedRange = JustRangeValues(
+          _currentStart,
+          newValue,
+        );
         if (updatedRange != widget.rangeValues) {
           widget.onRangeChanged?.call(updatedRange);
           _triggerHapticIfNeeded(updatedRange, enableHaptic);
@@ -693,7 +716,7 @@ class _JustSliderState extends State<JustSlider> {
       }
     } else {
       // For continuous sliders, trigger haptics when hitting boundaries
-      final hitBoundary =
+      final bool hitBoundary =
           newValues.start == widget.min ||
           newValues.end == widget.max ||
           newValues.start == newValues.end;
@@ -716,7 +739,7 @@ class _JustSliderState extends State<JustSlider> {
       }
     } else {
       // For continuous sliders, trigger haptics when hitting boundaries
-      final hitBoundary = newValue == widget.min || newValue == widget.max;
+      final bool hitBoundary = newValue == widget.min || newValue == widget.max;
       if (hitBoundary &&
           (_lastHapticValue == null || _lastHapticValue != newValue)) {
         HapticFeedback.selectionClick();

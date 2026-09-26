@@ -1,4 +1,4 @@
-// justui-meta: registry=ad4b188a0380721b8d6354b01b05444e033402fb2a65a05c94f9d23d0b88eb9b local=ad4b188a0380721b8d6354b01b05444e033402fb2a65a05c94f9d23d0b88eb9b
+// justui-meta: registry=9dd731b42752f06dc1450a74a852922170375f698372bb53400e4bc6a3aaf316 local=df43e1745b29363173428cfb810f53b07cf1612b86f872038bf96f48a14ba29a
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
@@ -7,16 +7,26 @@ import 'package:flutter/widgets.dart';
 ///
 /// Implements Material 3 variable arc sweep animation while maintaining
 /// zero-Material-dependency.
-class const JustProgressSpinner({
-  required final double size,
-  required final Color color,
-  super.key,
-  final double strokeWidth = 2.0,
-  final StrokeCap strokeCap = .round,
-  final Color? trackColor,
-  final String? semanticLabel = 'Loading',
-  final bool excludeSemantics = false,
-}) extends StatefulWidget {
+class JustProgressSpinner extends StatefulWidget {
+  final double size;
+  final Color color;
+  final double strokeWidth;
+  final StrokeCap strokeCap;
+  final Color? trackColor;
+  final String? semanticLabel;
+  final bool excludeSemantics;
+
+  const JustProgressSpinner({
+    required this.size,
+    required this.color,
+    super.key,
+    this.strokeWidth = 2.0,
+    this.strokeCap = .round,
+    this.trackColor,
+    this.semanticLabel = 'Loading',
+    this.excludeSemantics = false,
+  });
+
   @override
   State<JustProgressSpinner> createState() => _JustProgressSpinnerState();
 }
@@ -42,12 +52,12 @@ class _JustProgressSpinnerState extends State<JustProgressSpinner>
 
   @override
   Widget build(BuildContext context) {
-    final disableAnimations = MediaQuery.of(context).disableAnimations;
+    final bool disableAnimations = MediaQuery.of(context).disableAnimations;
 
     Widget spinner = RepaintBoundary(
       child: AnimatedBuilder(
         animation: _controller,
-        builder: (context, child) {
+        builder: (BuildContext context, Widget? child) {
           final double value = disableAnimations ? 0.5 : _controller.value;
           // Variable arc sweep oscillation (M3 style: expands & contracts)
           final double headValue = CurvedAnimation(
@@ -100,27 +110,36 @@ class _JustProgressSpinnerState extends State<JustProgressSpinner>
   }
 }
 
-class const _SpinnerPainter({
-  required final Color color,
-  required final double strokeWidth,
-  required final StrokeCap strokeCap,
-  final Color? trackColor,
-  required final double startAngle,
-  required final double sweepAngle,
-}) extends CustomPainter {
+class _SpinnerPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final StrokeCap strokeCap;
+  final Color? trackColor;
+  final double startAngle;
+  final double sweepAngle;
+
+  const _SpinnerPainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.strokeCap,
+    this.trackColor,
+    required this.startAngle,
+    required this.sweepAngle,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
     final Rect rect = .fromLTWH(0.0, 0.0, size.width, size.height);
 
     if (trackColor != null) {
-      final trackPaint = Paint()
+      final Paint trackPaint = Paint()
         ..color = trackColor!
         ..style = .stroke
         ..strokeWidth = strokeWidth;
       canvas.drawArc(rect, 0.0, math.pi * 2.0, false, trackPaint);
     }
 
-    final paint = Paint()
+    final Paint paint = Paint()
       ..color = color
       ..style = .stroke
       ..strokeWidth = strokeWidth

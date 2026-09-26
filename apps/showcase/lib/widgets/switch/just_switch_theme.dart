@@ -1,4 +1,4 @@
-// justui-meta: registry=b25bd07bac76690ab6ad7c9a1f7202d810eab2caba5f543385bc53028a730b18 local=b25bd07bac76690ab6ad7c9a1f7202d810eab2caba5f543385bc53028a730b18
+// justui-meta: registry=fe8e5270f6f1999ece4c111923f2a998dc9fbeb99cb432b14c55ea9fc88e0354 local=2adcf6ba7d9335377ca5dfe10e81199d2ef3e7bf5b5e8db4563d7ed772c86914
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_switch_style.dart';
@@ -7,15 +7,17 @@ import 'just_switch_style.dart';
 typedef JustSwitchThemeData = JustSwitchTheme;
 
 /// Global theme configuration for switch controls, extending Flutter's [ThemeExtension].
-class const JustSwitchTheme({
+class JustSwitchTheme extends ThemeExtension<JustSwitchTheme> {
   /// Base style override for switches.
-  final JustSwitchStyle? style,
+  final JustSwitchStyle? style;
 
   /// Whether to enable haptic feedback on switch toggles.
-  final bool enableHaptic = false,
-}) extends ThemeExtension<JustSwitchTheme> {
+  final bool enableHaptic;
+
+  const JustSwitchTheme({this.style, this.enableHaptic = false});
+
   /// Default configuration for the theme.
-  static const defaults = JustSwitchTheme();
+  static const JustSwitchTheme defaults = JustSwitchTheme();
 
   @override
   JustSwitchTheme copyWith({JustSwitchStyle? style, bool? enableHaptic}) {

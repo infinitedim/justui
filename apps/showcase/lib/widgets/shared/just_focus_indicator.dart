@@ -1,36 +1,50 @@
-// justui-meta: registry=ea7aa851710455caaaec043e15cbc50d2773d5a757fa12a5cfd8c22bdcc90f19 local=430d4d223f019cdec9a9f2e7c9c9257e238fbf9ca26a255403d2f1ca66eee93e
+// justui-meta: registry=a8f67914d14cc52293dd5857099377fdd4a0aa271750b08dea7b15bd2a0fd85f local=a0b686fbeaf857419f98d3e3c4f6134befd794aa92d79bb0aae9092770661b7e
 import 'package:flutter/widgets.dart';
+import 'package:showcase/core/theme/preset_tokens.dart';
+import 'package:showcase/tokens/just_ui_tokens.dart'
+    show JustColorScheme, JustMotionProfile;
 
 import 'package:showcase/core/just_ui_core.dart';
 
 /// A decorator widget that draws a focus ring around its child with smooth animation.
-class const FocusIndicator({
-  required final bool isFocused,
-  required final BorderRadius borderRadius,
-  required final Widget child,
-  super.key,
-}) extends StatelessWidget {
+class FocusIndicator extends StatelessWidget {
+  final bool isFocused;
+  final BorderRadius borderRadius;
+  final Widget child;
+
+  const FocusIndicator({
+    required this.isFocused,
+    required this.borderRadius,
+    required this.child,
+    super.key,
+  });
+
   @override
   Widget build(BuildContext context) {
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final animations = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustMotionProfile animations = JustThemeProvider.of(
       context,
       aspect: .animations,
     ).theme.animations;
-    final presetTokens = JustThemeProvider.of(context).theme.presetTokens;
-    final disableAnimations = MediaQuery.of(context).disableAnimations;
+    final JustPresetTokens presetTokens = JustThemeProvider.of(context)
+        .theme
+        .presetTokens;
+    final bool disableAnimations = MediaQuery.of(context).disableAnimations;
 
-    final focusColor = presetTokens.showsDefaultBorder
+    final Color focusColor = presetTokens.showsDefaultBorder
         ? colors.textPrimary
         : colors.borderFocus;
-    final strokeWidth = presetTokens.showsDefaultBorder
+    final double strokeWidth = presetTokens.showsDefaultBorder
         ? presetTokens.borderWidth
         : 2.0;
 
     return TweenAnimationBuilder<double>(
       duration: disableAnimations ? Duration.zero : animations.fast,
       tween: Tween<double>(begin: 0.0, end: isFocused ? 1.0 : 0.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return CustomPaint(
           foregroundPainter: value > 0.001
               ? _FocusRingPainter(
@@ -47,14 +61,20 @@ class const FocusIndicator({
   }
 }
 
-class const _FocusRingPainter({
-  required final Color color,
-  required final BorderRadius borderRadius,
-  final double strokeWidth = 2.0,
-}) extends CustomPainter {
+class _FocusRingPainter extends CustomPainter {
+  final Color color;
+  final BorderRadius borderRadius;
+  final double strokeWidth;
+
+  const _FocusRingPainter({
+    required this.color,
+    required this.borderRadius,
+    this.strokeWidth = 2.0,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
+    final Paint paint = Paint()
       ..color = color
       ..style = .stroke
       ..strokeWidth = strokeWidth;

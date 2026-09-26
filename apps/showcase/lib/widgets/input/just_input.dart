@@ -1,8 +1,10 @@
-// justui-meta: registry=02b3bb849c490616f9b1b189650e36e5d0dfbc83cde43e1ee58899441e4145a4 local=e2a958b86c09a89b7d2142097b7f058e6acb68e7443fbd793c49c021e64372a3
+// justui-meta: registry=81efc6f260c87ee4d97814eb4abeb682246e8045c12896c81f3eecc0e7f8bcc3 local=c17bd65f2f9b5a18af0155a4d7cc62fcd41f2805f8be1dcfff4f796c75ddda41
 import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:showcase/core/theme/preset_tokens.dart';
+import 'package:showcase/core/theme/theme_data.dart';
 
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -387,7 +389,7 @@ class _JustInputState extends State<JustInput> {
   void _handleIncrement() {
     if (!widget.enabled || widget.readOnly) return;
     final double val = .tryParse(_controller.text) ?? 0.0;
-    final updated = val + 1.0;
+    final double updated = val + 1.0;
     // Format appropriately
     _controller.text = updated % 1 == 0
         ? updated.toInt().toString()
@@ -398,7 +400,7 @@ class _JustInputState extends State<JustInput> {
   void _handleDecrement() {
     if (!widget.enabled || widget.readOnly) return;
     final double val = .tryParse(_controller.text) ?? 0.0;
-    final updated = val - 1.0;
+    final double updated = val - 1.0;
     _controller.text = updated % 1 == 0
         ? updated.toInt().toString()
         : updated.toString();
@@ -421,81 +423,64 @@ class _JustInputState extends State<JustInput> {
       );
     }
 
-    final theme = JustThemeProvider.of(context).theme;
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final animations = theme.animations;
+    final JustMotionProfile animations = theme.animations;
 
-    // Dimensions based on size
-    double fieldHeight;
-    double fontSize;
-    double paddingV;
-    double iconSize;
+    final bool isMultiline = widget.maxLines != null && widget.maxLines! > 1;
+    final (
+      double fieldHeight,
+      double fontSize,
+      double iconSize,
+      double paddingV,
+    ) = _inputSizeMetrics(
+      widget.size,
+      isMultiline,
+      spacing,
+    );
     final double paddingH = spacing.md; // 12px
     final BorderRadius defaultRadius = .all(theme.radius.md);
 
-    switch (widget.size) {
-      case .sm:
-        fieldHeight = widget.maxLines != null && widget.maxLines! > 1
-            ? 80.0
-            : 36.0;
-        fontSize = 13.0;
-        iconSize = 16.0;
-        paddingV = spacing.xs; // 4px
-        break;
-      case .md:
-        fieldHeight = widget.maxLines != null && widget.maxLines! > 1
-            ? 110.0
-            : 44.0;
-        fontSize = 14.0;
-        iconSize = 18.0;
-        paddingV = spacing.sm; // 8px
-        break;
-      case .lg:
-        fieldHeight = widget.maxLines != null && widget.maxLines! > 1
-            ? 140.0
-            : 52.0;
-        fontSize = 16.0;
-        iconSize = 20.0;
-        paddingV = spacing.md; // 12px
-        break;
-    }
-
     // Custom styles
-    final finalBg =
+    final Color finalBg =
         widget.style?.backgroundColor ??
         (widget.readOnly
             ? colors.background.withValues(alpha: 0.5)
             : colors.background);
-    final finalRadius = widget.style?.borderRadius ?? defaultRadius;
-    final finalTextStyle =
+    final BorderRadius finalRadius =
+        widget.style?.borderRadius ?? defaultRadius;
+    final TextStyle finalTextStyle =
         widget.style?.textStyle ??
         typography.bodyMd.copyWith(
           fontSize: fontSize,
           color: colors.textPrimary,
         );
-    final finalLabelStyle =
+    final TextStyle finalLabelStyle =
         widget.style?.labelStyle ??
         typography.bodySm.copyWith(color: colors.textSecondary);
-    final finalHelperStyle =
+    final TextStyle finalHelperStyle =
         widget.style?.helperStyle ??
         typography.caption.copyWith(color: colors.textSecondary);
-    final finalPadding =
+    final EdgeInsetsGeometry finalPadding =
         widget.style?.contentPadding ??
         .symmetric(horizontal: paddingH, vertical: paddingV);
 
     // Resolve state colors
-    final defaultBorder = colors.borderDefault;
-    final focusedBorder = colors.borderFocus;
-    final errorBorder = colors.borderError;
-    final successBorder = colors.success;
+    final Color defaultBorder = colors.borderDefault;
+    final Color focusedBorder = colors.borderFocus;
+    final Color errorBorder = colors.borderError;
+    final Color successBorder = colors.success;
 
     // Accessibility targets
     final bool needsMinTargetSize =
@@ -520,12 +505,12 @@ class _JustInputState extends State<JustInput> {
       enabled: widget.enabled,
       child: ValueListenableBuilder<bool>(
         valueListenable: _isFocused,
-        builder: (context, isFocused, _) {
+        builder: (BuildContext context, bool isFocused, _) {
           return Column(
             crossAxisAlignment: .start,
             mainAxisSize: .min,
-            children: [
-              if (widget.label != null) ...[
+            children: <Widget>[
+              if (widget.label != null) ...<Widget>[
                 Padding(
                   padding: .only(bottom: spacing.xs),
                   child: Text(
@@ -546,159 +531,31 @@ class _JustInputState extends State<JustInput> {
                 ),
                 child: ValueListenableBuilder<bool>(
                   valueListenable: _isFilled,
-                  builder: (context, isFilled, _) {
-                    Color border = widget.style?.borderColor ?? defaultBorder;
-                    if (widget.errorText != null) {
-                      border = widget.style?.errorBorderColor ?? errorBorder;
-                    } else if (widget.successText != null) {
-                      border = successBorder;
-                    } else if (isFocused) {
-                      border =
-                          widget.style?.focusedBorderColor ?? focusedBorder;
-                    }
-
-                    // Generate Prefix Widget
-                    Widget? leadingWidget;
-                    if (widget.prefixIcon != null) {
-                      leadingWidget = Padding(
-                        padding: .only(right: spacing.sm),
-                        child: Icon(
-                          widget.prefixIcon,
-                          size: iconSize,
-                          color: colors.textSecondary,
-                        ),
-                      );
-                    } else if (widget.prefix != null) {
-                      leadingWidget = Padding(
-                        padding: .only(right: spacing.sm),
-                        child: widget.prefix,
-                      );
-                    } else if (widget.variant == .search) {
-                      leadingWidget = Padding(
-                        padding: .only(right: spacing.sm),
-                        child: Icon(
-                          Icons.search_rounded,
-                          size: iconSize,
-                          color: colors.textSecondary,
-                        ),
-                      );
-                    }
-
-                    // Generate Suffix Widget
-                    Widget? trailingWidget;
-                    if (widget.variant == .password) {
-                      trailingWidget = ValueListenableBuilder<bool>(
-                        valueListenable: _isPasswordObscured,
-                        builder: (context, obscured, _) {
-                          return GestureDetector(
-                            onTap: () {
-                              if (widget.enabled) {
-                                _isPasswordObscured.value = !obscured;
-                              }
-                            },
-                            child: Padding(
-                              padding: .only(left: spacing.sm),
-                              child: Icon(
-                                obscured
-                                    ? Icons.visibility_off_rounded
-                                    : Icons.visibility_rounded,
-                                size: iconSize,
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    } else if (widget.variant == .number) {
-                      trailingWidget = Row(
-                        mainAxisSize: .min,
-                        children: [
-                          GestureDetector(
-                            onTap: _handleDecrement,
-                            child: Padding(
-                              padding: .symmetric(horizontal: spacing.xxs),
-                              child: Icon(
-                                Icons.remove_rounded,
-                                size: iconSize,
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: _handleIncrement,
-                            child: Padding(
-                              padding: .symmetric(horizontal: spacing.xxs),
-                              child: Icon(
-                                Icons.add_rounded,
-                                size: iconSize,
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    } else if (widget.showClearButton) {
-                      trailingWidget = ValueListenableBuilder<bool>(
-                        valueListenable: _isFilled,
-                        builder: (context, filled, _) {
-                          if (!filled) {
-                            if (widget.suffixIcon != null) {
-                              return Padding(
-                                padding: .only(left: spacing.sm),
-                                child: Icon(
-                                  widget.suffixIcon,
-                                  size: iconSize,
-                                  color: colors.textSecondary,
-                                ),
-                              );
-                            } else if (widget.suffix != null) {
-                              return Padding(
-                                padding: .only(left: spacing.sm),
-                                child: widget.suffix,
-                              );
-                            }
-                            return const SizedBox.shrink();
-                          }
-                          return GestureDetector(
-                            onTap: () {
-                              if (widget.enabled) {
-                                _controller.clear();
-                                widget.onChanged?.call('');
-                              }
-                            },
-                            child: Padding(
-                              padding: .only(left: spacing.sm),
-                              child: Icon(
-                                Icons.close_rounded,
-                                size: iconSize,
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    } else if (widget.suffixIcon != null) {
-                      trailingWidget = Padding(
-                        padding: .only(left: spacing.sm),
-                        child: Icon(
-                          widget.suffixIcon,
-                          size: iconSize,
-                          color: colors.textSecondary,
-                        ),
-                      );
-                    } else if (widget.suffix != null) {
-                      trailingWidget = Padding(
-                        padding: .only(left: spacing.sm),
-                        child: widget.suffix,
-                      );
-                    }
+                  builder: (BuildContext context, bool isFilled, _) {
+                    final Color border = _resolveBorderColor(
+                      isFocused: isFocused,
+                      defaultBorder: defaultBorder,
+                      focusedBorder: focusedBorder,
+                      errorBorder: errorBorder,
+                      successBorder: successBorder,
+                    );
+                    final Widget? leadingWidget = _buildLeading(
+                      colors,
+                      spacing,
+                      iconSize,
+                    );
+                    final Widget? trailingWidget = _buildTrailing(
+                      colors,
+                      spacing,
+                      iconSize,
+                    );
 
                     // Compute text area / normal text field constraints
                     Widget textInput;
                     if (widget.variant == .password) {
                       textInput = ValueListenableBuilder<bool>(
                         valueListenable: _isPasswordObscured,
-                        builder: (context, obscured, _) {
+                        builder: (BuildContext context, bool obscured, _) {
                           return _buildNativeTextField(
                             obscured,
                             finalTextStyle,
@@ -714,19 +571,16 @@ class _JustInputState extends State<JustInput> {
                       );
                     }
 
-                    final fieldContent = Row(
-                      crossAxisAlignment:
-                          widget.maxLines != null && widget.maxLines! > 1
-                          ? .start
-                          : .center,
-                      children: [
+                    final Row fieldContent = Row(
+                      crossAxisAlignment: isMultiline ? .start : .center,
+                      children: <Widget>[
                         ?leadingWidget,
                         Expanded(child: textInput),
                         ?trailingWidget,
                       ],
                     );
 
-                    final presetTokens = theme.presetTokens;
+                    final JustPresetTokens presetTokens = theme.presetTokens;
                     final double borderWidth = presetTokens.showsDefaultBorder
                         ? presetTokens.borderWidth
                         : (isFocused ? 2.0 : 1.0);
@@ -759,55 +613,19 @@ class _JustInputState extends State<JustInput> {
                 ),
               ),
               // Sub-elements (Error, Success, Helper texts & Character Counter)
-              if (hasSubElements || hasCounter) ...[
+              if (hasSubElements || hasCounter) ...<Widget>[
                 SizedBox(height: spacing.xs),
-                Row(
-                  mainAxisAlignment: .spaceBetween,
-                  crossAxisAlignment: .start,
-                  children: [
-                    if (hasSubElements)
-                      Expanded(
-                        child: Builder(
-                          builder: (context) {
-                            String text;
-                            Color textColor;
-                            if (widget.errorText != null) {
-                              text = widget.errorText!;
-                              textColor = errorBorder;
-                            } else if (widget.successText != null) {
-                              text = widget.successText!;
-                              textColor = successBorder;
-                            } else {
-                              text = widget.helper!;
-                              textColor = colors.textSecondary;
-                            }
-                            return Text(
-                              text,
-                              style: finalHelperStyle.copyWith(
-                                color: textColor,
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    else
-                      const Spacer(),
-                    if (hasCounter)
-                      Padding(
-                        padding: .only(left: spacing.sm),
-                        child: ValueListenableBuilder<TextEditingValue>(
-                          valueListenable: _controller,
-                          builder: (context, value, _) {
-                            return Text(
-                              '${value.text.length} / ${widget.maxLength}',
-                              style: finalHelperStyle.copyWith(
-                                color: colors.textSecondary,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                  ],
+                _InputHelperRow(
+                  errorText: widget.errorText,
+                  successText: widget.successText,
+                  helper: widget.helper,
+                  maxLength: widget.maxLength,
+                  controller: _controller,
+                  style: finalHelperStyle,
+                  errorColor: errorBorder,
+                  successColor: successBorder,
+                  neutralColor: colors.textSecondary,
+                  gap: spacing.sm,
                 ),
               ],
             ],
@@ -817,12 +635,179 @@ class _JustInputState extends State<JustInput> {
     );
   }
 
+  /// Border color for the current validation and focus state.
+  Color _resolveBorderColor({
+    required bool isFocused,
+    required Color defaultBorder,
+    required Color focusedBorder,
+    required Color errorBorder,
+    required Color successBorder,
+  }) {
+    if (widget.errorText != null) {
+      return widget.style?.errorBorderColor ?? errorBorder;
+    }
+    if (widget.successText != null) return successBorder;
+    if (isFocused) return widget.style?.focusedBorderColor ?? focusedBorder;
+    return widget.style?.borderColor ?? defaultBorder;
+  }
+
+  /// Prefix icon/widget, or the implicit search icon for [JustInputVariant.search].
+  Widget? _buildLeading(
+    JustColorScheme colors,
+    JustSpacingScheme spacing,
+    double iconSize,
+  ) {
+    Widget? leadingWidget;
+    if (widget.prefixIcon != null) {
+      leadingWidget = Padding(
+        padding: .only(right: spacing.sm),
+        child: Icon(
+          widget.prefixIcon,
+          size: iconSize,
+          color: colors.textSecondary,
+        ),
+      );
+    } else if (widget.prefix != null) {
+      leadingWidget = Padding(
+        padding: .only(right: spacing.sm),
+        child: widget.prefix,
+      );
+    } else if (widget.variant == .search) {
+      leadingWidget = Padding(
+        padding: .only(right: spacing.sm),
+        child: Icon(
+          Icons.search_rounded,
+          size: iconSize,
+          color: colors.textSecondary,
+        ),
+      );
+    }
+    return leadingWidget;
+  }
+
+  /// Suffix controls: password toggle, number stepper, clear button or a
+  /// custom suffix icon/widget.
+  Widget? _buildTrailing(
+    JustColorScheme colors,
+    JustSpacingScheme spacing,
+    double iconSize,
+  ) {
+    Widget? trailingWidget;
+    if (widget.variant == .password) {
+      trailingWidget = ValueListenableBuilder<bool>(
+        valueListenable: _isPasswordObscured,
+        builder: (BuildContext context, bool obscured, _) {
+          return GestureDetector(
+            onTap: () {
+              if (widget.enabled) {
+                _isPasswordObscured.value = !obscured;
+              }
+            },
+            child: Padding(
+              padding: .only(left: spacing.sm),
+              child: Icon(
+                obscured
+                    ? Icons.visibility_off_rounded
+                    : Icons.visibility_rounded,
+                size: iconSize,
+                color: colors.textSecondary,
+              ),
+            ),
+          );
+        },
+      );
+    } else if (widget.variant == .number) {
+      trailingWidget = Row(
+        mainAxisSize: .min,
+        children: <Widget>[
+          GestureDetector(
+            onTap: _handleDecrement,
+            child: Padding(
+              padding: .symmetric(horizontal: spacing.xxs),
+              child: Icon(
+                Icons.remove_rounded,
+                size: iconSize,
+                color: colors.textSecondary,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: _handleIncrement,
+            child: Padding(
+              padding: .symmetric(horizontal: spacing.xxs),
+              child: Icon(
+                Icons.add_rounded,
+                size: iconSize,
+                color: colors.textSecondary,
+              ),
+            ),
+          ),
+        ],
+      );
+    } else if (widget.showClearButton) {
+      trailingWidget = ValueListenableBuilder<bool>(
+        valueListenable: _isFilled,
+        builder: (BuildContext context, bool filled, _) {
+          if (!filled) {
+            if (widget.suffixIcon != null) {
+              return Padding(
+                padding: .only(left: spacing.sm),
+                child: Icon(
+                  widget.suffixIcon,
+                  size: iconSize,
+                  color: colors.textSecondary,
+                ),
+              );
+            } else if (widget.suffix != null) {
+              return Padding(
+                padding: .only(left: spacing.sm),
+                child: widget.suffix,
+              );
+            }
+            return const SizedBox.shrink();
+          }
+          return GestureDetector(
+            onTap: () {
+              if (widget.enabled) {
+                _controller.clear();
+                widget.onChanged?.call('');
+              }
+            },
+            child: Padding(
+              padding: .only(left: spacing.sm),
+              child: Icon(
+                Icons.close_rounded,
+                size: iconSize,
+                color: colors.textSecondary,
+              ),
+            ),
+          );
+        },
+      );
+    } else if (widget.suffixIcon != null) {
+      trailingWidget = Padding(
+        padding: .only(left: spacing.sm),
+        child: Icon(
+          widget.suffixIcon,
+          size: iconSize,
+          color: colors.textSecondary,
+        ),
+      );
+    } else if (widget.suffix != null) {
+      trailingWidget = Padding(
+        padding: .only(left: spacing.sm),
+        child: widget.suffix,
+      );
+    }
+    return trailingWidget;
+  }
+
   Widget _buildNativeTextField(
     bool obscure,
     TextStyle textStyle,
     double fontSize,
   ) {
-    final theme = JustThemeProvider.of(context).theme;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
     return EditableText(
       controller: _controller,
       focusNode: _focusNode,
@@ -848,19 +833,111 @@ class _JustInputState extends State<JustInput> {
   }
 }
 
+/// Table-driven field height, font size, icon size and vertical padding for
+/// each [JustInputSize]. Multi-line fields get a taller default height.
+(double, double, double, double) _inputSizeMetrics(
+  JustInputSize size,
+  bool isMultiline,
+  JustSpacingScheme spacing,
+) {
+  return switch (size) {
+    .sm => (isMultiline ? 80.0 : 36.0, 13.0, 16.0, spacing.xs),
+    .md => (isMultiline ? 110.0 : 44.0, 14.0, 18.0, spacing.sm),
+    .lg => (isMultiline ? 140.0 : 52.0, 16.0, 20.0, spacing.md),
+  };
+}
+
+/// Error / success / helper message and optional character counter shown
+/// below a [JustInput].
+class _InputHelperRow extends StatelessWidget {
+  final String? errorText;
+  final String? successText;
+  final String? helper;
+  final int? maxLength;
+  final TextEditingController controller;
+  final TextStyle style;
+  final Color errorColor;
+  final Color successColor;
+  final Color neutralColor;
+  final double gap;
+
+  const _InputHelperRow({
+    required this.errorText,
+    required this.successText,
+    required this.helper,
+    required this.maxLength,
+    required this.controller,
+    required this.style,
+    required this.errorColor,
+    required this.successColor,
+    required this.neutralColor,
+    required this.gap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final (String? message, Color messageColor) = switch ((
+      errorText,
+      successText,
+    )) {
+      (final String error, _) => (error, errorColor),
+      (null, final String success) => (success, successColor),
+      _ => (helper, neutralColor),
+    };
+
+    return Row(
+      mainAxisAlignment: .spaceBetween,
+      crossAxisAlignment: .start,
+      children: <Widget>[
+        if (message != null)
+          Expanded(
+            child: Text(message, style: style.copyWith(color: messageColor)),
+          )
+        else
+          const Spacer(),
+        if (maxLength != null)
+          Padding(
+            padding: .only(left: gap),
+            child: ValueListenableBuilder<TextEditingValue>(
+              valueListenable: controller,
+              builder: (BuildContext context, TextEditingValue value, _) {
+                return Text(
+                  '${value.text.length} / $maxLength',
+                  style: style.copyWith(color: neutralColor),
+                );
+              },
+            ),
+          ),
+      ],
+    );
+  }
+}
+
 /// A segmented OTP input row that automatically shifts focus.
 /// A segmented OTP input row that automatically shifts focus.
-class const _OtpInputRow({
-  required final int length,
-  required final bool enabled,
-  required final bool autofocus,
-  required final JustInputSize size,
-  final JustInputStyle? style,
-  final String? errorText,
-  final String? successText,
-  final ValueChanged<String>? onChanged,
-  required final TextEditingController controller,
-}) extends StatefulWidget {
+class _OtpInputRow extends StatefulWidget {
+  final int length;
+  final bool enabled;
+  final bool autofocus;
+  final JustInputSize size;
+  final JustInputStyle? style;
+  final String? errorText;
+  final String? successText;
+  final ValueChanged<String>? onChanged;
+  final TextEditingController controller;
+
+  const _OtpInputRow({
+    required this.length,
+    required this.enabled,
+    required this.autofocus,
+    required this.size,
+    this.style,
+    this.errorText,
+    this.successText,
+    this.onChanged,
+    required this.controller,
+  });
+
   @override
   State<_OtpInputRow> createState() => _OtpInputRowState();
 }
@@ -885,7 +962,7 @@ class _OtpInputRowState extends State<_OtpInputRow> {
     );
 
     // Initialize values from controller if pre-populated
-    final initial = widget.controller.text;
+    final String initial = widget.controller.text;
     for (int i = 0; i < widget.length; i++) {
       if (i < initial.length) {
         _controllers[i].text = initial[i];
@@ -895,26 +972,28 @@ class _OtpInputRowState extends State<_OtpInputRow> {
 
   @override
   void dispose() {
-    for (var c in _controllers) {
+    for (TextEditingController c in _controllers) {
       c.dispose();
     }
-    for (var f in _focusNodes) {
+    for (FocusNode f in _focusNodes) {
       f.dispose();
     }
-    for (var f in _keyInterceptFocusNodes) {
+    for (FocusNode f in _keyInterceptFocusNodes) {
       f.dispose();
     }
     super.dispose();
   }
 
   void _updateValue() {
-    final code = _controllers.map((c) => c.text).join();
+    final String code = _controllers
+        .map((TextEditingController c) => c.text)
+        .join();
     widget.controller.text = code;
     widget.onChanged?.call(code);
   }
 
   void _handlePaste(String text, int startIndex) {
-    final cleanText = text.replaceAll(RegExp(r'\D'), ''); // Numbers only
+    final String cleanText = text.replaceAll(RegExp(r'\D'), ''); // Numbers only
     int fillIndex = startIndex;
     for (int i = 0; i < cleanText.length; i++) {
       if (fillIndex < widget.length) {
@@ -923,7 +1002,7 @@ class _OtpInputRowState extends State<_OtpInputRow> {
       }
     }
     _updateValue();
-    final targetFocus = fillIndex < widget.length
+    final int targetFocus = fillIndex < widget.length
         ? fillIndex
         : widget.length - 1;
     _focusNodes[targetFocus].requestFocus();
@@ -931,22 +1010,22 @@ class _OtpInputRowState extends State<_OtpInputRow> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = JustThemeProvider.of(context).theme;
-    final spacing = theme.spacing;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustSpacingScheme spacing = theme.spacing;
 
     return Column(
       crossAxisAlignment: .start,
       mainAxisSize: .min,
-      children: [
+      children: <Widget>[
         Row(
           mainAxisAlignment: .spaceBetween,
-          children: [
-            for (int i = 0; i < widget.length; i++) ...[
+          children: <Widget>[
+            for (int i = 0; i < widget.length; i++) ...<Widget>[
               if (i > 0) SizedBox(width: spacing.sm),
               Expanded(
                 child: KeyboardListener(
                   focusNode: _keyInterceptFocusNodes[i], // Intermediate node to intercept backspace keys
-                  onKeyEvent: (event) {
+                  onKeyEvent: (KeyEvent event) {
                     if (event is KeyDownEvent &&
                         event.logicalKey == LogicalKeyboardKey.backspace) {
                       if (_controllers[i].text.isEmpty && i > 0) {
@@ -957,7 +1036,7 @@ class _OtpInputRowState extends State<_OtpInputRow> {
                     }
                   },
                   child: Focus(
-                    onKeyEvent: (node, event) {
+                    onKeyEvent: (FocusNode node, KeyEvent event) {
                       return KeyEventResult.ignored;
                     },
                     child: JustInput(
@@ -973,7 +1052,7 @@ class _OtpInputRowState extends State<_OtpInputRow> {
                           ? ''
                           : null, // Color red but no text label
                       successText: widget.successText != null ? '' : null,
-                      onChanged: (val) {
+                      onChanged: (String val) {
                         if (val.length > 1) {
                           // Handle Paste
                           _handlePaste(val, i);
@@ -993,7 +1072,7 @@ class _OtpInputRowState extends State<_OtpInputRow> {
             ],
           ],
         ),
-        if (widget.errorText != null || widget.successText != null) ...[
+        if (widget.errorText != null || widget.successText != null) ...<Widget>[
           SizedBox(height: spacing.xs),
           Text(
             widget.errorText ?? widget.successText!,

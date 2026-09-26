@@ -1,18 +1,20 @@
-// justui-meta: registry=15c2c225aa0f9dd5171a6561f8827a386425c43e56a1e50ac0427e0d8cec3b7b local=15c2c225aa0f9dd5171a6561f8827a386425c43e56a1e50ac0427e0d8cec3b7b
+// justui-meta: registry=142ea9bc77e2bd39236a089a439f51aa22ec9ba962ecf7fbcae6e81b9042d301 local=15826c274228c6fa102e30c62d86b1a13fe41f4c510ec346722bf44d5a3de816
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_radio_style.dart';
 
 /// Global theme configuration for radio buttons, extending Flutter's [ThemeExtension].
-class const JustRadioTheme({
+class JustRadioTheme extends ThemeExtension<JustRadioTheme> {
   /// Base style override for radio buttons.
-  final JustRadioStyle? style,
+  final JustRadioStyle? style;
 
   /// Whether to enable haptic feedback on radio selection changes.
-  final bool enableHaptic = false,
-}) extends ThemeExtension<JustRadioTheme> {
+  final bool enableHaptic;
+
+  const JustRadioTheme({this.style, this.enableHaptic = false});
+
   /// Default configuration for the theme.
-  static const defaults = JustRadioTheme();
+  static const JustRadioTheme defaults = JustRadioTheme();
 
   @override
   JustRadioTheme copyWith({JustRadioStyle? style, bool? enableHaptic}) {

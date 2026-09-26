@@ -67,7 +67,7 @@ abstract class JustTypographyScheme {
 
   @override
   int get hashCode {
-    return Object.hashAll([
+    return Object.hashAll(<Object?>[
       displayLg,
       displayMd,
       displaySm,

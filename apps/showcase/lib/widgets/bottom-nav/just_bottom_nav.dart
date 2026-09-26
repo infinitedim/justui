@@ -1,8 +1,12 @@
-// justui-meta: registry=0f5c77aea5fe081861318b74c0eefe8bee91200e693073e5478a6ab4f8cd2dbc local=25aff2f40f37348b142658246340ac1d044488661ecf3135cc400a0a692a432d
+// justui-meta: registry=4658bd43ba48bd3ddc4613224ddaee94f81d1ff44d9062decd8f7890333bc5ba local=8e71d8d0f3872138e5d41b50b59862b5d81bfc13fb066ba6163946e042a4b644
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' show Theme;
 
 import 'package:flutter/services.dart' show HapticFeedback;
+import 'package:showcase/core/theme/preset_tokens.dart';
+import 'package:showcase/core/theme/theme_data.dart';
+import 'package:showcase/tokens/just_ui_tokens.dart'
+    show JustColorScheme, JustMotionProfile;
 
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -12,12 +16,27 @@ import 'just_bottom_nav_theme.dart';
 import 'just_bottom_nav_variants.dart';
 
 /// Represents a single destination item in the bottom navigation bar.
-class const JustBottomNavItem({
-  required final String label,
-  required final Widget icon,
-  final Widget? activeIcon,
-  final Widget? badge,
-}) {}
+class JustBottomNavItem {
+  /// The label text of the destination.
+  final String label;
+
+  /// The default icon widget.
+  final Widget icon;
+
+  /// An optional active icon displayed when this item is selected.
+  final Widget? activeIcon;
+
+  /// An optional notification badge displayed on top of the icon.
+  final Widget? badge;
+
+  /// Creates a [JustBottomNavItem] destination.
+  const JustBottomNavItem({
+    required this.label,
+    required this.icon,
+    this.activeIcon,
+    this.badge,
+  });
+}
 
 /// A premium, Material-free bottom navigation bar widget supporting fixed, shifting,
 /// and floating visual layout variants.
@@ -73,21 +92,25 @@ class _JustBottomNavState extends State<JustBottomNav> {
 
   @override
   Widget build(BuildContext context) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final navTheme = Theme.of(context).extension<JustBottomNavTheme>();
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustBottomNavTheme? navTheme = Theme.of(context)
+        .extension<JustBottomNavTheme>();
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final radius = customTheme.radius;
-    final animations = customTheme.animations;
+    final JustRadiusScheme radius = customTheme.radius;
+    final JustMotionProfile animations = customTheme.animations;
 
-    final presetTokens = customTheme.presetTokens;
+    final JustPresetTokens presetTokens = customTheme.presetTokens;
 
     // Resolve theme-specific styles
     JustBottomNavStyle? themeStyle;
@@ -105,11 +128,11 @@ class _JustBottomNavState extends State<JustBottomNav> {
       }
     }
 
-    final activeColor =
+    final Color activeColor =
         widget.style?.activeColor ??
         themeStyle?.activeColor ??
         colors.borderFocus;
-    final inactiveColor =
+    final Color inactiveColor =
         widget.style?.inactiveColor ??
         themeStyle?.inactiveColor ??
         colors.textSecondary;
@@ -119,39 +142,39 @@ class _JustBottomNavState extends State<JustBottomNav> {
     final double height =
         widget.style?.height ?? themeStyle?.height ?? defaultHeight;
 
-    final containerBg =
+    final Color containerBg =
         widget.style?.backgroundColor ??
         themeStyle?.backgroundColor ??
         colors.elevated;
-    final containerBorderRadius =
+    final BorderRadius containerBorderRadius =
         widget.style?.borderRadius ??
         themeStyle?.borderRadius ??
         (widget.variant == .floating ? .all(radius.full) : .zero);
 
-    final finalTextStyle =
+    final TextStyle finalTextStyle =
         widget.style?.textStyle ??
         themeStyle?.textStyle ??
         typography.caption.copyWith(fontWeight: .w500);
 
-    final resolvedDuration =
+    final Duration resolvedDuration =
         widget.style?.animationDuration ??
         themeStyle?.animationDuration ??
         animations.fast;
-    final resolvedCurve =
+    final Curve resolvedCurve =
         widget.style?.animationCurve ??
         themeStyle?.animationCurve ??
         animations.defaultCurve;
 
     // Build items
-    final List<Widget> navItems = [];
+    final List<Widget> navItems = <Widget>[];
     for (int i = 0; i < widget.items.length; i++) {
-      final item = widget.items[i];
-      final isSelected = widget.selectedIndex == i;
+      final JustBottomNavItem item = widget.items[i];
+      final bool isSelected = widget.selectedIndex == i;
 
       final Widget iconContent = Stack(
         clipBehavior: .none,
         alignment: .center,
-        children: [
+        children: <Widget>[
           IconTheme.merge(
             data: IconThemeData(
               size: iconSize,
@@ -160,7 +183,7 @@ class _JustBottomNavState extends State<JustBottomNav> {
             child: item.activeIcon != null
                 ? Stack(
                     alignment: .center,
-                    children: [
+                    children: <Widget>[
                       AnimatedOpacity(
                         opacity: isSelected ? 0.0 : 1.0,
                         duration: resolvedDuration,
@@ -204,7 +227,7 @@ class _JustBottomNavState extends State<JustBottomNav> {
           if (widget.variant == .shifting) {
             content = Column(
               mainAxisAlignment: .center,
-              children: [
+              children: <Widget>[
                 iconContent,
                 ClipRect(
                   child: AnimatedAlign(
@@ -223,9 +246,9 @@ class _JustBottomNavState extends State<JustBottomNav> {
           } else {
             content = Column(
               mainAxisAlignment: .center,
-              children: [
+              children: <Widget>[
                 iconContent,
-                if (widget.showLabels) ...[
+                if (widget.showLabels) ...<Widget>[
                   SizedBox(width: spacing.xs),
                   Padding(
                     padding: .only(top: spacing.xs),
@@ -260,8 +283,8 @@ class _JustBottomNavState extends State<JustBottomNav> {
             duration: resolvedDuration,
             curve: resolvedCurve,
             child: itemWidget,
-            builder: (context, value, child) {
-              final flex = 1.0 + value * 0.5;
+            builder: (BuildContext context, double value, Widget? child) {
+              final double flex = 1.0 + value * 0.5;
               return Expanded(flex: (flex * 1000).toInt(), child: child!);
             },
           ),
