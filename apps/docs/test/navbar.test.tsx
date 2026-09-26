@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { Navbar } from '@/components/navbar';
+import { Navbar } from '@/components/organisms/navbar';
 
 // Mock next-themes
 const mockSetTheme = vi.fn((theme) => {
