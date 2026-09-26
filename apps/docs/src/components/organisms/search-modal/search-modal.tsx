@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import type { Route } from 'next';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { SearchResultItem } from '@/components/molecules/search-result-item';
@@ -74,7 +73,7 @@ export function SearchModal({ open, onOpenChange, lang }: SearchModalProps) {
       if (results[selectedIndex]) {
         event.preventDefault();
         onOpenChange(false);
-        router.push(results[selectedIndex].href as Route);
+        router.push(results[selectedIndex].href);
       }
     }
   };
