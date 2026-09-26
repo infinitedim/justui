@@ -7,5 +7,9 @@ export interface SearchResultItemProps {
   href: string;
   /** Click handler (e.g. to close modal). */
   onClick?: () => void;
+  /** Highlights the item as the keyboard-selected result. */
+  isSelected?: boolean;
+  /** Pointer-enter handler, used to sync keyboard and mouse selection. */
+  onMouseEnter?: () => void;
   className?: string;
 }

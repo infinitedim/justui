@@ -4,7 +4,7 @@ import { BentoGrid } from '@/components/organisms/bento';
 import { InstallTabs } from '@/components/molecules/install-tabs';
 import { HeroInteractive } from '@/components/organisms/hero-interactive';
 import { Footer } from '@/components/organisms/footer';
-import { Navbar } from '@/components/navbar';
+import { Navbar } from '@/components/organisms/navbar';
 import { LandingTemplate } from '@/components/templates';
 import { fetchStarCount } from '@/lib/github';
 import { components } from '@/lib/components-data';

@@ -1,4 +1,4 @@
-import { Navbar } from '@/components/navbar';
+import { Navbar } from '@/components/organisms/navbar';
 import { Footer } from '@/components/organisms/footer';
 import { CatalogTemplate } from '@/components/templates';
 import { components } from '@/lib/components-data';
