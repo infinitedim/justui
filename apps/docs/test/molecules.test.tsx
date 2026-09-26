@@ -18,6 +18,7 @@ import { StateToggle } from '@/components/molecules/state-toggle';
 import { StatCounter } from '@/components/molecules/stat-counter';
 import { LightnessSlider } from '@/components/molecules/lightness-slider';
 import { SearchResultItem } from '@/components/molecules/search-result-item';
+import { localizedHref } from '@/lib/i18n';
 import { PresetProvider } from '@/components/providers';
 
 describe('Molecules Components', () => {
@@ -224,7 +225,11 @@ describe('Molecules Components', () => {
   describe('SearchResultItem', () => {
     it('renders item with label, type and href', () => {
       render(
-        <SearchResultItem label="Button" type="Component" href="/docs/button" />
+        <SearchResultItem
+          label="Button"
+          type="Component"
+          href={localizedHref('en', '/docs/components/button')}
+        />
       );
       expect(screen.getByText('Button')).toBeInTheDocument();
       expect(screen.getByText('Component')).toBeInTheDocument();

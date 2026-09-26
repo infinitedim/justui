@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import type { Route } from 'next';
 import { cn } from '@/lib/cn';
 import { CopyButton } from '@/components/molecules/copy-button';
 import { Code, ExternalLink } from 'lucide-react';
@@ -61,7 +60,7 @@ export function CardActionBar({
         </button>
 
         <Link
-          href={`/${lang}/docs/components/${slug}` as Route}
+          href={`/${lang}/docs/components/${slug}`}
           aria-label={docsLabel}
           className={cn(
             'inline-flex items-center gap-1 px-2 py-1 text-[11px] transition-all select-none',
