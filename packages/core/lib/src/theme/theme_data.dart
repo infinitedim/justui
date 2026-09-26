@@ -87,32 +87,23 @@ class const JustThemeData({
   /// In default mode, applies a smooth scale animation.
   /// In neobrutalism mode, translates the widget down/right by [shadowOffset]
   /// to align with the collapsed shadow.
+  ///
+  /// This is a convenience wrapper around [JustPresetTokens.buildPressEffect]
+  /// that supplies this theme's [animations]; both APIs share one
+  /// implementation per preset.
   Widget buildPressEffect({
     required Widget child,
     required bool isPressed,
     double scaleFactor = 0.97,
     Offset? translationOffset,
   }) {
-    if (preset == .neobrutalism) {
-      final Offset offset = translationOffset ?? shadowOffset;
-      return AnimatedContainer(
-        duration: animations.instant,
-        curve: animations.defaultCurve,
-        transform: .translationValues(
-          isPressed ? offset.dx : 0.0,
-          isPressed ? offset.dy : 0.0,
-          0.0,
-        ),
-        child: child,
-      );
-    } else {
-      return AnimatedScale(
-        scale: isPressed ? scaleFactor : 1.0,
-        duration: animations.instant,
-        curve: animations.defaultCurve,
-        child: child,
-      );
-    }
+    return presetTokens.buildPressEffect(
+      child: child,
+      isPressed: isPressed,
+      animations: animations,
+      customOffset: translationOffset,
+      customScale: scaleFactor,
+    );
   }
 
   /// Generates a complete [JustThemeData] configuration dynamically from a single [seedColor].
