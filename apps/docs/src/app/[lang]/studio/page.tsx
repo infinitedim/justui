@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { Navbar } from '@/components/navbar';
+import { Navbar } from '@/components/organisms/navbar';
 import { Footer } from '@/components/organisms/footer';
 import { StudioTemplate } from '@/components/templates';
 import { fetchStarCount } from '@/lib/github';

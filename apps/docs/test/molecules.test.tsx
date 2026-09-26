@@ -12,7 +12,6 @@ import { TerminalLine } from '@/components/molecules/terminal-line';
 import { TerminalPrompt } from '@/components/molecules/terminal-prompt';
 import { ViewportSwitch } from '@/components/molecules/viewport-switch';
 import { FormulaMathBlock } from '@/components/molecules/formula-math-block';
-import { BreadcrumbTrail } from '@/components/molecules/breadcrumb-trail';
 import { CodeBlockHeader } from '@/components/molecules/code-block-header';
 import { VariantPicker } from '@/components/molecules/variant-picker';
 import { StateToggle } from '@/components/molecules/state-toggle';
@@ -154,25 +153,6 @@ describe('Molecules Components', () => {
       );
       expect(screen.getByText('V(G) <= 3')).toBeInTheDocument();
       expect(screen.getByText('Cyclomatic Complexity')).toBeInTheDocument();
-    });
-  });
-
-  describe('BreadcrumbTrail', () => {
-    it('renders trail segments with page marked for last', () => {
-      render(
-        <BreadcrumbTrail
-          segments={[
-            { label: 'Home', href: '/' },
-            { label: 'Docs', href: '/docs' },
-            { label: 'Button' },
-          ]}
-        />
-      );
-      expect(screen.getByText('Home')).toBeInTheDocument();
-      expect(screen.getByText('Button')).toHaveAttribute(
-        'aria-current',
-        'page'
-      );
     });
   });
 

@@ -1,103 +1,24 @@
 'use client';
 
-import { FaGithub } from 'react-icons/fa';
-import { Menu, Moon, Search, Sun, X } from 'lucide-react';
+import { Menu, Search, X } from 'lucide-react';
 import Link from 'next/link';
 import type { Route } from 'next';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { useTheme } from 'next-themes';
 import { githubUrl } from '@/lib/github';
 import { isApplePlatform } from '@/lib/platform';
-import { SearchModal } from '@/components/search-modal';
+import { GitHubPill } from '@/components/molecules/github-pill';
+import { LanguageSwitcher } from '@/components/molecules/language-switcher';
+import { PresetToggle } from '@/components/molecules/preset-toggle';
+import { SearchBar } from '@/components/molecules/search-bar';
+import { ThemeSwitcher } from '@/components/molecules/theme-switcher';
+import { SearchModal } from '@/components/organisms/search-modal';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
-import { usePreset } from '@/components/providers';
 
-interface NavbarProps {
-  starCount: number | null;
-  lang: string;
-}
+import type { NavbarProps } from './navbar.types';
 
-function formatStars(stars: number | null) {
-  if (stars === null) return 'Stars';
-  if (stars >= 1000) return `${(stars / 1000).toFixed(1)}k`;
-  return stars.toString();
-}
-
-function LanguageSwitcher({ lang }: { lang: string }) {
-  const pathname = usePathname();
-  const otherLang = lang === 'en' ? 'id' : 'en';
-  const otherLabel = lang === 'en' ? 'ID' : 'EN';
-  const t = getHomepageDictionary(lang);
-
-  const otherPath = pathname.replace(
-    new RegExp(`^/(id|en)(?=/|$)`),
-    `/${otherLang}`
-  );
-
-  return (
-    <Link
-      href={otherPath as Route}
-      className="border-border text-muted hover:text-foreground inline-flex h-8 items-center rounded-full border px-2.5 font-mono text-[11px] transition-colors"
-      aria-label={t.changeLanguage}
-    >
-      {otherLabel}
-    </Link>
-  );
-}
-
-function ThemeSwitcher({ lang }: { lang: string }) {
-  const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const t = getHomepageDictionary(lang);
-
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) return null;
-
-  return (
-    <button
-      type="button"
-      onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-      className="border-border text-muted hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors"
-      aria-label={t.toggleTheme}
-    >
-      {resolvedTheme === 'dark' ? (
-        <Sun size={14} aria-hidden="true" />
-      ) : (
-        <Moon size={14} aria-hidden="true" />
-      )}
-    </button>
-  );
-}
-
-function PresetSwitcher({ lang }: { lang: string }) {
-  const { preset, setPreset } = usePreset();
-  const [mounted, setMounted] = useState(false);
-  const t = getHomepageDictionary(lang);
-
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) return null;
-
-  const isNeo = preset === 'neobrutalism';
-
-  return (
-    <button
-      type="button"
-      onClick={() => setPreset(isNeo ? 'default' : 'neobrutalism')}
-      className="border-border text-muted hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors"
-      aria-label={t.togglePreset}
-      title={
-        isNeo ? 'Switch to Default preset' : 'Switch to Neobrutalism preset'
-      }
-    >
-      <span className="font-mono text-[10px] font-bold">
-        {isNeo ? 'N' : 'D'}
-      </span>
-    </button>
-  );
-}
+/** Shared sizing so the molecules keep the navbar's 32px control height. */
+const NAV_PILL = 'h-8 border';
 
 export function Navbar({ starCount, lang }: NavbarProps) {
   const t = getHomepageDictionary(lang);
@@ -186,9 +107,15 @@ export function Navbar({ starCount, lang }: NavbarProps) {
           </nav>
 
           <div className="flex items-center gap-2">
-            <LanguageSwitcher lang={lang} />
-            <PresetSwitcher lang={lang} />
-            <ThemeSwitcher lang={lang} />
+            <LanguageSwitcher lang={lang} className={NAV_PILL} />
+            <PresetToggle
+              label={t.togglePreset}
+              className={`${NAV_PILL} w-8 justify-center px-0`}
+            />
+            <ThemeSwitcher
+              label={t.toggleTheme}
+              className={`${NAV_PILL} w-8 px-0`}
+            />
             <button
               type="button"
               className="border-border text-muted hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-full border bg-transparent transition-colors sm:hidden"
@@ -197,26 +124,18 @@ export function Navbar({ starCount, lang }: NavbarProps) {
             >
               <Search size={14} aria-hidden="true" />
             </button>
-            <button
-              type="button"
-              className="border-border text-muted hover:text-foreground hidden items-center gap-3 rounded-full border bg-transparent px-3 py-1.5 font-mono text-xs transition-colors sm:flex"
-              onClick={() => setOpen(true)}
-              aria-label={lang === 'en' ? 'Open search' : 'Buka pencarian'}
-            >
-              <span>{t.searchPlaceholder}</span>
-              <kbd className="border-border text-muted rounded border px-1.5 py-0.5 font-mono text-[10px]">
-                {shortcut}
-              </kbd>
-            </button>
-            <a
+            <SearchBar
+              shortcut={shortcut}
+              placeholder={t.searchPlaceholder}
+              onActivate={() => setOpen(true)}
+              label={lang === 'en' ? 'Open search' : 'Buka pencarian'}
+              className="border"
+            />
+            <GitHubPill
               href={githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border-border text-muted hover:text-foreground inline-flex items-center gap-2 rounded-full border bg-transparent px-3 py-1.5 font-mono text-xs transition-colors"
-            >
-              <FaGithub size={14} aria-hidden="true" />
-              <span>{formatStars(starCount)}</span>
-            </a>
+              starCount={starCount}
+              className="border"
+            />
             <button
               type="button"
               className="border-border text-muted hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-full border bg-transparent transition-colors md:hidden"

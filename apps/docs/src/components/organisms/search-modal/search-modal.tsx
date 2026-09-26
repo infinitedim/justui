@@ -1,18 +1,12 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { X } from 'lucide-react';
-import { cn } from '@/lib/cn';
+import { SearchResultItem } from '@/components/molecules/search-result-item';
 import { getSearchData } from '@/lib/search-data';
-
-interface SearchModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  lang: string;
-}
+import type { SearchModalProps } from './search-modal.types';
 
 export function SearchModal({ open, onOpenChange, lang }: SearchModalProps) {
   const [query, setQuery] = useState('');
@@ -120,26 +114,17 @@ export function SearchModal({ open, onOpenChange, lang }: SearchModalProps) {
         </div>
         <div className="max-h-80 overflow-y-auto p-2 font-mono">
           {results.length > 0 ? (
-            results.map((item, index) => {
-              const isSelected = index === selectedIndex;
-              return (
-                <Link
-                  key={`${item.type}-${item.href}`}
-                  href={item.href as Route}
-                  className={cn(
-                    'flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors',
-                    isSelected
-                      ? 'bg-accent-muted text-foreground'
-                      : 'text-muted-foreground hover:bg-accent-muted hover:text-foreground'
-                  )}
-                  onMouseEnter={() => setSelectedIndex(index)}
-                  onClick={() => onOpenChange(false)}
-                >
-                  <span className="font-sans font-medium">{item.label}</span>
-                  <span className="text-muted text-xs">{item.type}</span>
-                </Link>
-              );
-            })
+            results.map((item, index) => (
+              <SearchResultItem
+                key={`${item.type}-${item.href}`}
+                label={item.label}
+                type={item.type}
+                href={item.href}
+                isSelected={index === selectedIndex}
+                onMouseEnter={() => setSelectedIndex(index)}
+                onClick={() => onOpenChange(false)}
+              />
+            ))
           ) : (
             <p className="text-muted px-3 py-8 text-center text-sm">
               No results found.
