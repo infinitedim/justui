@@ -1,15 +1,17 @@
-// justui-meta: registry=e635d9c8dc3d5b3254b268e6372363f09e22656eca300b6aa3f845eb1e6cdee7 local=e635d9c8dc3d5b3254b268e6372363f09e22656eca300b6aa3f845eb1e6cdee7
+// justui-meta: registry=72713e2987f3b9487c7a994bf5c7f5db58e65f084df5034c155f4f20868e968b local=600ef5e830e9e4928c6f6d1582c156501726c8f28a0d9a10eda91d327fc6877d
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_card_style.dart';
 
 /// Global theme configuration for cards, extending Flutter's [ThemeExtension].
-class const JustCardTheme({
+class JustCardTheme extends ThemeExtension<JustCardTheme> {
   /// The global base style override for all card variants.
-  final JustCardStyle? style,
-}) extends ThemeExtension<JustCardTheme> {
+  final JustCardStyle? style;
+
+  const JustCardTheme({this.style});
+
   /// Default configuration for the theme.
-  static const defaults = JustCardTheme();
+  static const JustCardTheme defaults = JustCardTheme();
 
   @override
   JustCardTheme copyWith({JustCardStyle? style}) {

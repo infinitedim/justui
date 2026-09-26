@@ -1,18 +1,20 @@
-// justui-meta: registry=d52cab130b0710e6b4e5e846b842679cf324d65532b797b4ad488ca4c7ffa8c9 local=d52cab130b0710e6b4e5e846b842679cf324d65532b797b4ad488ca4c7ffa8c9
+// justui-meta: registry=a5867baaa5fde9fb8d9fc58246b3e724fd399fe3938c98b490b309ce9c1702ce local=8ae4171744e12d73909d23c6f1230aebaad6a844aab58f9e769a9db76586334d
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_slider_style.dart';
 
 /// Global theme configuration for sliders, extending Flutter's [ThemeExtension].
-class const JustSliderTheme({
+class JustSliderTheme extends ThemeExtension<JustSliderTheme> {
   /// Base style override for sliders.
-  final JustSliderStyle? style,
+  final JustSliderStyle? style;
 
   /// Whether to enable haptic feedback on slider interactions.
-  final bool enableHaptic = true,
-}) extends ThemeExtension<JustSliderTheme> {
+  final bool enableHaptic;
+
+  const JustSliderTheme({this.style, this.enableHaptic = true});
+
   /// Default configuration for the theme.
-  static const defaults = JustSliderTheme();
+  static const JustSliderTheme defaults = JustSliderTheme();
 
   @override
   JustSliderTheme copyWith({JustSliderStyle? style, bool? enableHaptic}) {

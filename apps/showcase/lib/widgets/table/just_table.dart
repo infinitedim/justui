@@ -1,6 +1,7 @@
-// justui-meta: registry=ee2975495e1aea051e3f3983210c29d78835087736cd8f7bf38bb76e67c2d0b4 local=ca26bd08ea2599f3cc74b6b17d9161059f89c3e44f24cb9a87b69e146e765dc5
+// justui-meta: registry=62394129d54ebe4f198c5eb5ef6acb2bf3618bfe57d33f509552f3c36633b971 local=09196c20d075353fe6bf85e975097c4b87048d2c6b29724bc5cadd2a57b4a478
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
+import 'package:showcase/core/theme/theme_data.dart';
 
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -11,31 +12,103 @@ import 'just_table_theme.dart';
 import 'just_table_variants.dart';
 
 /// Data model representing a column definition in the [JustTable].
-class const JustTableColumn<T>({
-  required final String header,
-  required final Widget Function(T row) cell,
-  final double? width,
-  final bool sortable = false,
-  final MainAxisAlignment alignment = .start,
-}) {}
+class JustTableColumn<T> {
+  /// The header text displayed at the top of the column.
+  final String header;
+
+  /// A builder function to render the cell widget for a given row.
+  final Widget Function(T row) cell;
+
+  /// Optional fixed width for the column. If null, the column flexes.
+  final double? width;
+
+  /// Whether this column can be sorted by tapping its header.
+  final bool sortable;
+
+  /// Alignment of the content within the column. Defaults to [.start].
+  final MainAxisAlignment alignment;
+
+  /// Creates a [JustTableColumn].
+  const JustTableColumn({
+    required this.header,
+    required this.cell,
+    this.width,
+    this.sortable = false,
+    this.alignment = .start,
+  });
+}
 
 /// A premium, customizable data table component built from scratch without Material's [DataTable].
-class const JustTable<T>({
-  super.key,
-  required final List<JustTableColumn<T>> columns,
-  required final List<T> rows,
-  final bool selectable = false,
-  final Set<int>? selectedRows,
-  final ValueChanged<Set<int>>? onSelectionChanged,
-  final int? sortColumnIndex,
-  final bool sortAscending = true,
-  final ValueChanged<int>? onSort,
-  final bool stickyHeader = true,
-  final double rowHeight = 52.0,
-  final JustTableVariant variant = JustTableVariant.default_,
-  final JustTableStyle? style,
-  final Widget? emptyState,
-}) extends StatefulWidget {
+class JustTable<T> extends StatefulWidget {
+  /// The column definitions.
+  final List<JustTableColumn<T>> columns;
+
+  /// The list of data rows.
+  final List<T> rows;
+
+  /// Whether to enable row selection checkboxes.
+  final bool selectable;
+
+  /// The set of currently selected row indices.
+  final Set<int>? selectedRows;
+
+  /// Callback when the set of selected row indices changes.
+  final ValueChanged<Set<int>>? onSelectionChanged;
+
+  /// The index of the column that is currently sorted.
+  final int? sortColumnIndex;
+
+  /// Whether the sorted column is in ascending order.
+  final bool sortAscending;
+
+  /// Callback when a column header is tapped for sorting.
+  final ValueChanged<int>? onSort;
+
+  /// Whether the header row remains fixed at the top while scrolling vertically.
+  ///
+  /// When set to `false`, the header and body scroll together inside an unbounded
+  /// `SingleChildScrollView`. Because the scroll view is unbounded, true viewport
+  /// virtualization is disabled; `itemExtent: rowHeight` helps calculate total
+  /// extent without eager measurement, but setting `stickyHeader: false` should
+  /// only be used with small, bounded datasets. For large datasets requiring full
+  /// viewport virtualization, use `stickyHeader: true` (the default).
+  final bool stickyHeader;
+
+  /// The height of each row. Defaults to 52px.
+  ///
+  /// This is also supplied as the row list's `itemExtent`, which lets Flutter
+  /// compute the list's total scroll extent arithmetically instead of eagerly
+  /// building every row to measure it. This keeps row building lazy — even
+  /// for large [rows] datasets — regardless of [stickyHeader].
+  final double rowHeight;
+
+  /// The visual variant.
+  final JustTableVariant variant;
+
+  /// Per-instance style overrides.
+  final JustTableStyle? style;
+
+  /// Widget displayed in the center of the table when [rows] is empty.
+  final Widget? emptyState;
+
+  /// Creates a [JustTable] component.
+  const JustTable({
+    super.key,
+    required this.columns,
+    required this.rows,
+    this.selectable = false,
+    this.selectedRows,
+    this.onSelectionChanged,
+    this.sortColumnIndex,
+    this.sortAscending = true,
+    this.onSort,
+    this.stickyHeader = true,
+    this.rowHeight = 52.0,
+    this.variant = JustTableVariant.default_,
+    this.style,
+    this.emptyState,
+  });
+
   @override
   State<JustTable<T>> createState() => _JustTableState<T>();
 }
@@ -46,7 +119,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
   @override
   void initState() {
     super.initState();
-    _internalSelectedRows = Set<int>.from(widget.selectedRows ?? {});
+    _internalSelectedRows = Set<int>.from(widget.selectedRows ?? <dynamic>{});
   }
 
   @override
@@ -60,7 +133,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
   void _toggleSelectAll() {
     if (widget.onSelectionChanged == null) return;
 
-    final newSelection = Set<int>.from(_internalSelectedRows);
+    final Set<int> newSelection = Set<int>.from(_internalSelectedRows);
     if (newSelection.length == widget.rows.length) {
       newSelection.clear();
     } else {
@@ -81,7 +154,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
   void _toggleRow(int index) {
     if (widget.onSelectionChanged == null) return;
 
-    final newSelection = Set<int>.from(_internalSelectedRows);
+    final Set<int> newSelection = Set<int>.from(_internalSelectedRows);
     if (newSelection.contains(index)) {
       newSelection.remove(index);
     } else {
@@ -98,75 +171,79 @@ class _JustTableState<T> extends State<JustTable<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final tableTheme = Theme.of(context).extension<JustTableTheme>();
-    final themeStyle = tableTheme?.style;
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustTableTheme? tableTheme = Theme.of(context)
+        .extension<JustTableTheme>();
+    final JustTableStyle? themeStyle = tableTheme?.style;
 
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final radius = customTheme.radius;
-    final typography = JustThemeProvider.of(
+    final JustRadiusScheme radius = customTheme.radius;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final presetTokens = customTheme.presetTokens;
+    final JustPresetTokens presetTokens = customTheme.presetTokens;
 
     // Resolve Styles
-    final headerBg =
+    final Color headerBg =
         widget.style?.headerBackgroundColor ??
         themeStyle?.headerBackgroundColor ??
         (presetTokens.showsDefaultBorder
             ? colors.textPrimary
             : colors.borderDefault.withValues(alpha: 0.1));
 
-    final headerText =
+    final Color headerText =
         widget.style?.headerTextColor ??
         themeStyle?.headerTextColor ??
         (presetTokens.showsDefaultBorder
             ? colors.textInverse
             : colors.textPrimary);
 
-    final rowBg =
+    final Color rowBg =
         widget.style?.rowBackgroundColor ??
         themeStyle?.rowBackgroundColor ??
         colors.background;
 
-    final alternateRowBg =
+    final Color alternateRowBg =
         widget.style?.alternateRowBackgroundColor ??
         themeStyle?.alternateRowBackgroundColor ??
         colors.borderDefault.withValues(alpha: 0.04);
 
-    final borderColor =
+    final Color borderColor =
         widget.style?.borderColor ??
         themeStyle?.borderColor ??
         (presetTokens.showsDefaultBorder
             ? colors.textPrimary
             : colors.borderDefault);
 
-    final hoverBg =
+    final Color hoverBg =
         widget.style?.hoverColor ??
         themeStyle?.hoverColor ??
         colors.borderDefault.withValues(alpha: 0.08);
 
-    final selectedBg =
+    final Color selectedBg =
         widget.style?.selectedRowColor ??
         themeStyle?.selectedRowColor ??
         colors.borderFocus.withValues(alpha: 0.15);
 
-    final cellPadding =
+    final double cellPadding =
         widget.style?.horizontalPadding ??
         themeStyle?.horizontalPadding ??
         spacing.md;
 
-    final headerTextStyle =
+    final TextStyle headerTextStyle =
         widget.style?.headerTextStyle ??
         themeStyle?.headerTextStyle ??
         typography.bodyMd.copyWith(fontWeight: .w700, color: headerText);
 
-    final cellTextStyle =
+    final TextStyle cellTextStyle =
         widget.style?.cellTextStyle ??
         themeStyle?.cellTextStyle ??
         typography.bodySm.copyWith(color: colors.textPrimary);
@@ -174,10 +251,10 @@ class _JustTableState<T> extends State<JustTable<T>> {
     final BorderRadius defaultBorderRadius = presetTokens.resolveBorderRadius(
       radius,
     );
-    final finalRadius = defaultBorderRadius;
+    final BorderRadius finalRadius = defaultBorderRadius;
 
     // Outer Container Border
-    final tableDecoration = BoxDecoration(
+    final BoxDecoration tableDecoration = BoxDecoration(
       border: .all(color: borderColor, width: presetTokens.borderWidth),
       borderRadius: finalRadius,
     );
@@ -207,11 +284,11 @@ class _JustTableState<T> extends State<JustTable<T>> {
     }
 
     // Header Row
-    final List<Widget> headerCells = [];
+    final List<Widget> headerCells = <Widget>[];
 
     // Optional Checkbox Column
     if (widget.selectable) {
-      final isAllSelected =
+      final bool isAllSelected =
           widget.rows.isNotEmpty &&
           _internalSelectedRows.length == widget.rows.length;
       headerCells.add(
@@ -230,12 +307,12 @@ class _JustTableState<T> extends State<JustTable<T>> {
     }
 
     for (int i = 0; i < widget.columns.length; i++) {
-      final col = widget.columns[i];
-      final isSorted = widget.sortColumnIndex == i;
+      final JustTableColumn<T> col = widget.columns[i];
+      final bool isSorted = widget.sortColumnIndex == i;
 
       Widget headerContent = Row(
         mainAxisSize: .min,
-        children: [
+        children: <Widget>[
           Flexible(
             child: Text(
               col.header,
@@ -243,7 +320,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
               overflow: .ellipsis,
             ),
           ),
-          if (col.sortable) ...[
+          if (col.sortable) ...<Widget>[
             SizedBox(width: spacing.xs),
             Icon(
               isSorted
@@ -305,13 +382,13 @@ class _JustTableState<T> extends State<JustTable<T>> {
             ? const ClampingScrollPhysics()
             : const NeverScrollableScrollPhysics(),
         itemCount: widget.rows.length,
-        itemBuilder: (context, rowIndex) {
-          final rowData = widget.rows[rowIndex];
-          final isSelected = _internalSelectedRows.contains(rowIndex);
-          final isAlternate =
+        itemBuilder: (BuildContext context, int rowIndex) {
+          final T rowData = widget.rows[rowIndex];
+          final bool isSelected = _internalSelectedRows.contains(rowIndex);
+          final bool isAlternate =
               widget.variant == JustTableVariant.striped && rowIndex.isOdd;
 
-          final List<Widget> rowCells = [];
+          final List<Widget> rowCells = <Widget>[];
 
           // Optional Checkbox Cell
           if (widget.selectable) {
@@ -331,7 +408,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
 
           // Render Cells
           for (int i = 0; i < widget.columns.length; i++) {
-            final col = widget.columns[i];
+            final JustTableColumn<T> col = widget.columns[i];
             rowCells.add(
               buildCell(
                 DefaultTextStyle.merge(
@@ -351,7 +428,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
           final Widget rowWidget = JustPressable(
             onTap: widget.selectable ? () => _toggleRow(rowIndex) : () {},
             builder: (BuildContext context, JustInteractionState state) {
-              final isHovered = state.isHovered;
+              final bool isHovered = state.isHovered;
               Color finalRowBg = currentBg;
               if (isHovered) {
                 finalRowBg = isSelected
@@ -388,7 +465,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
       tableContent = Column(
         mainAxisSize: .min,
         crossAxisAlignment: .stretch,
-        children: [
+        children: <Widget>[
           headerRow,
           Container(height: presetTokens.borderWidth, color: borderColor),
           Flexible(child: SingleChildScrollView(child: bodyContent)),
@@ -399,7 +476,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
         child: Column(
           mainAxisSize: .min,
           crossAxisAlignment: .stretch,
-          children: [
+          children: <Widget>[
             headerRow,
             Container(height: presetTokens.borderWidth, color: borderColor),
             bodyContent,
@@ -434,7 +511,7 @@ class _JustTableState<T> extends State<JustTable<T>> {
   ) {
     double totalWidth = selectable ? 48.0 : 0.0;
 
-    for (final col in columns) {
+    for (final JustTableColumn<T> col in columns) {
       if (col.width != null) {
         totalWidth += col.width!;
       } else {
@@ -448,18 +525,25 @@ class _JustTableState<T> extends State<JustTable<T>> {
 
 /// A lightweight, custom checkbox widget to avoid using Material's [Checkbox].
 /// A lightweight, custom checkbox widget to avoid using Material's [Checkbox].
-class const _CustomCheckbox({
-  required final bool value,
-  required final ValueChanged<bool?> onChanged,
-  required final JustPresetTokens presetTokens,
-  required final JustColorScheme colors,
-}) extends StatelessWidget {
+class _CustomCheckbox extends StatelessWidget {
+  final bool value;
+  final ValueChanged<bool?> onChanged;
+  final JustPresetTokens presetTokens;
+  final JustColorScheme colors;
+
+  const _CustomCheckbox({
+    required this.value,
+    required this.onChanged,
+    required this.presetTokens,
+    required this.colors,
+  });
+
   @override
   Widget build(BuildContext context) {
     return JustPressable(
       onTap: () => onChanged(!value),
       builder: (BuildContext context, JustInteractionState state) {
-        final borderSize = presetTokens.borderWidth;
+        final double borderSize = presetTokens.borderWidth;
 
         final Widget box = Container(
           width: 18,

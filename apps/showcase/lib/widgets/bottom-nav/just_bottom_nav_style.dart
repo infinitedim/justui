@@ -1,35 +1,48 @@
-// justui-meta: registry=31bc6f0bcf514a99e44c64dd24a91fc8879481846c1c5b2631c99d23b10091c9 local=31bc6f0bcf514a99e44c64dd24a91fc8879481846c1c5b2631c99d23b10091c9
+// justui-meta: registry=31bc6f0bcf514a99e44c64dd24a91fc8879481846c1c5b2631c99d23b10091c9 local=072de7f41217ad6d52fb1f0e8c5a57d11c318b494e824a08efc840750ae77792
 import 'package:flutter/widgets.dart';
 
 /// Customized per-instance visual styles for [JustBottomNav].
-class const JustBottomNavStyle({
+class JustBottomNavStyle {
   /// Custom height of the navigation bar.
-  final double? height,
+  final double? height;
 
   /// Custom padding around the bar content.
-  final EdgeInsets? padding,
+  final EdgeInsets? padding;
 
   /// Custom background color of the bar.
-  final Color? backgroundColor,
+  final Color? backgroundColor;
 
   /// Custom border radius of the bar (especially useful for the floating variant).
-  final BorderRadius? borderRadius,
+  final BorderRadius? borderRadius;
 
   /// Custom color of the active item (icon and text).
-  final Color? activeColor,
+  final Color? activeColor;
 
   /// Custom color of inactive items.
-  final Color? inactiveColor,
+  final Color? inactiveColor;
 
   /// Custom text style for labels.
-  final TextStyle? textStyle,
+  final TextStyle? textStyle;
 
   /// Custom icon size.
-  final double? iconSize,
+  final double? iconSize;
 
   /// Custom animation duration for transitions.
-  final Duration? animationDuration,
+  final Duration? animationDuration;
 
   /// Custom animation curve for transitions.
-  final Curve? animationCurve,
-});
+  final Curve? animationCurve;
+
+  const JustBottomNavStyle({
+    this.height,
+    this.padding,
+    this.backgroundColor,
+    this.borderRadius,
+    this.activeColor,
+    this.inactiveColor,
+    this.textStyle,
+    this.iconSize,
+    this.animationDuration,
+    this.animationCurve,
+  });
+}

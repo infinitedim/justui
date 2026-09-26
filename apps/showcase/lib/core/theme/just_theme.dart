@@ -4,7 +4,7 @@ import '../just_ui_core.dart';
 
 /// Dynamically generated light theme from brand seed color.
 final JustThemeData justThemeLight = JustThemeData.fromSeed(
-  const Color(0xFFA3E635),
+  const Color(0xFF3B82F6),
   isDark: false,
   preset: JustThemePreset.neobrutalism,
   colorSpace: JustColorSpaceEngine.oklch,
@@ -12,7 +12,7 @@ final JustThemeData justThemeLight = JustThemeData.fromSeed(
 
 /// Dynamically generated dark theme from brand seed color.
 final JustThemeData justThemeDark = JustThemeData.fromSeed(
-  const Color(0xFFA3E635),
+  const Color(0xFF3B82F6),
   isDark: true,
   preset: JustThemePreset.neobrutalism,
   colorSpace: JustColorSpaceEngine.oklch,

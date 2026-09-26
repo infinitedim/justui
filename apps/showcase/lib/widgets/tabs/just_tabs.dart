@@ -1,7 +1,9 @@
-// justui-meta: registry=fbad4b4db643f359dc09b098e8ccf252c1ac621b76092ab65af05dd515ee2fb1 local=7f6e11bc0a1aff6739361305b4eba690563d2b6681a38711a7693fe8093e491e
+// justui-meta: registry=2f9addd45983d5d42ff643ccd9c8a00961e265b494a9e2eb5b916cdc181277c2 local=9ad8848049417f2244d42fe0b0da25a1118643f271f7709cbbdd8e2cca6eb921
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
 import 'package:flutter/material.dart' show Colors, Theme;
 import 'package:flutter/widgets.dart';
+import 'package:showcase/core/theme/preset_tokens.dart';
+import 'package:showcase/core/theme/theme_data.dart';
 
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -12,13 +14,31 @@ import 'just_tabs_theme.dart';
 import 'just_tabs_variants.dart';
 
 /// Represents a single tab configuration containing label, optional icon, and content.
-class const JustTab({
-  required final String label,
-  final Widget? icon,
-  required final Widget content,
-  final bool enabled = true,
-  final Widget? badge,
-}) {}
+class JustTab {
+  /// The label text of the tab.
+  final String label;
+
+  /// An optional leading icon.
+  final Widget? icon;
+
+  /// The widget content rendered when this tab is selected.
+  final Widget content;
+
+  /// Whether the tab is interactive. Disabled tabs cannot be clicked or focused.
+  final bool enabled;
+
+  /// An optional notification badge displayed next to the label.
+  final Widget? badge;
+
+  /// Creates a [JustTab] item.
+  const JustTab({
+    required this.label,
+    this.icon,
+    required this.content,
+    this.enabled = true,
+    this.badge,
+  });
+}
 
 /// A synchronization controller that acts as the single source of truth for [JustTabs].
 class JustTabController extends ChangeNotifier {
@@ -58,7 +78,7 @@ class JustTabController extends ChangeNotifier {
   void updateAnimationValue(double value) {
     if (value == _animationValue) return;
     _animationValue = value;
-    final newIndex = length == 0 ? 0 : value.round().clamp(0, length - 1);
+    final int newIndex = length == 0 ? 0 : value.round().clamp(0, length - 1);
     if (newIndex != _index) {
       _index = newIndex;
     }
@@ -84,32 +104,41 @@ class JustTabController extends ChangeNotifier {
 /// lazy loading/caching, and keyboard navigation.
 /// A premium, Material-free tabs component supporting sliding indicators, swiping,
 /// lazy loading/caching, and keyboard navigation.
-class const JustTabs({
-  super.key,
-
+class JustTabs extends StatefulWidget {
   /// The list of tab configurations.
-  required final List<JustTab> tabs,
+  final List<JustTab> tabs;
 
   /// The visual style variant (line, enclosed, pill, vertical).
-  final JustTabVariant variant = .line,
+  final JustTabVariant variant;
 
   /// The initial active tab index (defaults to 0).
-  final int initialIndex = 0,
+  final int initialIndex;
 
   /// Callback executed when the active tab index changes.
-  final ValueChanged<int>? onChanged,
+  final ValueChanged<int>? onChanged;
 
   /// Whether the tab headers scroll horizontally (defaults to false).
-  final bool isScrollable = false,
+  final bool isScrollable;
 
   /// An optional external controller to sync selection and transitions.
-  final JustTabController? controller,
+  final JustTabController? controller;
 
   /// Custom style overrides.
-  final JustTabsStyle? style,
-}) extends StatefulWidget {
+  final JustTabsStyle? style;
+
+  const JustTabs({
+    super.key,
+    required this.tabs,
+    this.variant = .line,
+    this.initialIndex = 0,
+    this.onChanged,
+    this.isScrollable = false,
+    this.controller,
+    this.style,
+  });
+
   /// Named constructor for underline style tabs.
-  const new line({
+  const JustTabs.line({
     Key? key,
     required List<JustTab> tabs,
     int initialIndex = 0,
@@ -129,7 +158,7 @@ class const JustTabs({
        );
 
   /// Named constructor for card enclosed style tabs.
-  const new enclosed({
+  const JustTabs.enclosed({
     Key? key,
     required List<JustTab> tabs,
     int initialIndex = 0,
@@ -149,7 +178,7 @@ class const JustTabs({
        );
 
   /// Named constructor for pill style tabs.
-  const new pill({
+  const JustTabs.pill({
     Key? key,
     required List<JustTab> tabs,
     int initialIndex = 0,
@@ -169,7 +198,7 @@ class const JustTabs({
        );
 
   /// Named constructor for vertical layout tabs.
-  const new vertical({
+  const JustTabs.vertical({
     Key? key,
     required List<JustTab> tabs,
     int initialIndex = 0,
@@ -194,14 +223,14 @@ class const JustTabs({
 class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
   late JustTabController _tabController;
   late final PageController _pageController;
-  final List<GlobalKey> _tabKeys = [];
+  final List<GlobalKey> _tabKeys = <GlobalKey<State<StatefulWidget>>>[];
   final FocusNode _focusNode = FocusNode();
 
   // Visited set for lazy loading tab page content
-  final Set<int> _visitedIndices = {};
+  final Set<int> _visitedIndices = <int>{};
 
-  List<double> _tabWidths = [];
-  List<double> _tabOffsets = [];
+  List<double> _tabWidths = <double>[];
+  List<double> _tabOffsets = <double>[];
   bool _isLocalController = false;
 
   @override
@@ -219,7 +248,9 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       _isLocalController = true;
     }
 
-    final animations = JustThemeProvider.read(context).theme.animations;
+    final JustMotionProfile animations = JustThemeProvider.read(context)
+        .theme
+        .animations;
     _tabController._bindVsync(this, defaultDuration: animations.normal);
     _tabController.addListener(_onControllerChanged);
 
@@ -257,7 +288,9 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
         );
         _isLocalController = true;
       }
-      final animations = JustThemeProvider.read(context).theme.animations;
+      final JustMotionProfile animations = JustThemeProvider.read(context)
+          .theme
+          .animations;
       _tabController._bindVsync(this, defaultDuration: animations.normal);
       _tabController.addListener(_onControllerChanged);
     }
@@ -280,8 +313,10 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     final int index = _tabController.index;
     _visitedIndices.add(index);
     if (_pageController.hasClients && _pageController.page?.round() != index) {
-      final animations = JustThemeProvider.read(context).theme.animations;
-      final duration = _durationForTransition(
+      final JustMotionProfile animations = JustThemeProvider.read(context)
+          .theme
+          .animations;
+      final Duration duration = _durationForTransition(
         _tabController.index,
         index,
         animations,
@@ -313,17 +348,20 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     final RenderBox? parentBox = context.findRenderObject() as RenderBox?;
     if (parentBox == null) return;
 
-    final List<double> widths = [];
-    final List<double> offsets = [];
+    final List<double> widths = <double>[];
+    final List<double> offsets = <double>[];
 
-    for (final key in _tabKeys) {
+    for (final GlobalKey<State<StatefulWidget>> key in _tabKeys) {
       final RenderBox? box =
           key.currentContext?.findRenderObject() as RenderBox?;
       if (box != null && box.hasSize) {
         widths.add(
           widget.variant == .vertical ? box.size.height : box.size.width,
         );
-        final localOffset = box.localToGlobal(.zero, ancestor: parentBox);
+        final Offset localOffset = box.localToGlobal(
+          .zero,
+          ancestor: parentBox,
+        );
         offsets.add(
           widget.variant == .vertical ? localOffset.dy : localOffset.dx,
         );
@@ -370,8 +408,10 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     if (!widget.tabs[index].enabled) return;
     HapticFeedback.selectionClick();
     _visitedIndices.add(index);
-    final animations = JustThemeProvider.read(context).theme.animations;
-    final duration = _durationForTransition(
+    final JustMotionProfile animations = JustThemeProvider.read(context)
+        .theme
+        .animations;
+    final Duration duration = _durationForTransition(
       _tabController.index,
       index,
       animations,
@@ -416,19 +456,23 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _measureTabs());
 
-    final customTheme = JustThemeProvider.of(context).theme;
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
     _tabController.updateDuration(customTheme.animations.normal);
-    final tabsTheme = Theme.of(context).extension<JustTabsTheme>();
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(
+    final JustTabsTheme? tabsTheme = Theme.of(context)
+        .extension<JustTabsTheme>();
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final radius = customTheme.radius;
+    final JustRadiusScheme radius = customTheme.radius;
 
     // Resolve active styles
     JustTabsStyle? themeStyle;
@@ -449,23 +493,23 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       }
     }
 
-    final activeColor =
+    final Color activeColor =
         widget.style?.activeColor ??
         themeStyle?.activeColor ??
         colors.borderFocus;
-    final inactiveColor =
+    final Color inactiveColor =
         widget.style?.inactiveColor ??
         themeStyle?.inactiveColor ??
         colors.textSecondary;
 
-    final containerBg =
+    final Color containerBg =
         widget.style?.containerBackgroundColor ??
         themeStyle?.containerBackgroundColor ??
         (widget.variant == .pill || widget.variant == .enclosed
             ? colors.card
             : const Color(0x00000000));
 
-    final containerBorderRadius =
+    final BorderRadius containerBorderRadius =
         widget.style?.containerRadius ??
         themeStyle?.containerRadius ??
         .all(radius.md);
@@ -476,11 +520,11 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     );
 
     // Build Tab Headers
-    final List<Widget> tabWidgets = [];
+    final List<Widget> tabWidgets = <Widget>[];
     for (int i = 0; i < widget.tabs.length; i++) {
-      final tab = widget.tabs[i];
-      final isSelected = _tabController.index == i;
-      final isEnabled = tab.enabled;
+      final JustTab tab = widget.tabs[i];
+      final bool isSelected = _tabController.index == i;
+      final bool isEnabled = tab.enabled;
 
       tabWidgets.add(
         JustPressable(
@@ -494,7 +538,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
                 .lerp(inactiveColor, activeColor, textInterpolation) ??
                 inactiveColor;
 
-            final resolvedTextStyle = isSelected
+            final TextStyle resolvedTextStyle = isSelected
                 ? (widget.style?.activeTextStyle ??
                       typography.bodyMd.copyWith(fontWeight: .w600))
                 : (widget.style?.inactiveTextStyle ?? typography.bodyMd);
@@ -502,8 +546,8 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
             final Widget headerContent = Row(
               mainAxisSize: .min,
               mainAxisAlignment: .center,
-              children: [
-                if (tab.icon != null) ...[
+              children: <Widget>[
+                if (tab.icon != null) ...<Widget>[
                   IconTheme.merge(
                     data: IconThemeData(
                       size: 18.0,
@@ -516,7 +560,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
                 Flexible(
                   child: Stack(
                     alignment: Alignment.center,
-                    children: [
+                    children: <Widget>[
                       // Invisible bold placeholder reserves max width so switching tabs has 0 layout jitter
                       Opacity(
                         opacity: 0.0,
@@ -542,7 +586,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
-                if (tab.badge != null) ...[
+                if (tab.badge != null) ...<Widget>[
                   SizedBox(width: spacing.sm),
                   tab.badge!,
                 ],
@@ -582,7 +626,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       final double pos = pos1 + (pos2 - pos1) * t;
       final double size = size1 + (size2 - size1) * t;
 
-      final indicatorInner = JustTabIndicator(
+      final JustTabIndicator indicatorInner = JustTabIndicator(
         variant: widget.variant,
         orientation: widget.variant == .vertical ? .vertical : .horizontal,
         colors: colors,
@@ -615,7 +659,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
 
     final Widget headerBar = Stack(
       clipBehavior: .none,
-      children: [
+      children: <Widget>[
         // ignore: use_null_aware_elements
         if (indicatorWidget != null) indicatorWidget,
         if (widget.isScrollable && !isVertical)
@@ -633,13 +677,13 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
           Row(
             mainAxisAlignment: .spaceEvenly,
             children: tabWidgets
-                .map((w) => Expanded(child: Center(child: w)))
+                .map((Widget w) => Expanded(child: Center(child: w)))
                 .toList(),
           ),
       ],
     );
 
-    final presetTokens = customTheme.presetTokens;
+    final JustPresetTokens presetTokens = customTheme.presetTokens;
     final Widget headerContainer = KeyboardListener(
       focusNode: _focusNode,
       onKeyEvent: _handleKeyEvent,
@@ -664,12 +708,12 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     );
 
     // Build the Tab Pages
-    final pageView = PageView.builder(
+    final PageView pageView = PageView.builder(
       controller: _pageController,
       physics: const ClampingScrollPhysics(),
       itemCount: widget.tabs.length,
-      itemBuilder: (context, index) {
-        final isVisited = _visitedIndices.contains(index);
+      itemBuilder: (BuildContext context, int index) {
+        final bool isVisited = _visitedIndices.contains(index);
         if (isVisited) {
           return _JustTabKeepAlive(child: widget.tabs[index].content);
         } else {
@@ -681,7 +725,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     if (isVertical) {
       return Row(
         crossAxisAlignment: .start,
-        children: [
+        children: <Widget>[
           SizedBox(
             width: 200, // Fixed width for vertical tab header panel
             child: headerContainer,
@@ -692,7 +736,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     } else {
       return Column(
         crossAxisAlignment: .stretch,
-        children: [
+        children: <Widget>[
           headerContainer,
           Expanded(child: pageView),
         ],
@@ -701,8 +745,11 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
   }
 }
 
-class const _JustTabKeepAlive({required final Widget child})
-    extends StatefulWidget {
+class _JustTabKeepAlive extends StatefulWidget {
+  final Widget child;
+
+  const _JustTabKeepAlive({required this.child});
+
   @override
   State<_JustTabKeepAlive> createState() => _JustTabKeepAliveState();
 }
@@ -715,7 +762,10 @@ class _JustTabKeepAliveState extends State<_JustTabKeepAlive>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
     return DefaultTextStyle(
       style: JustFluidTypo.bodyMd(context).copyWith(color: colors.textPrimary),
       child: IconTheme.merge(

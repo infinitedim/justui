@@ -1,9 +1,11 @@
-// justui-meta: registry=c62de53602cf42bf9f21f0d2110ed33841e9de51279a2e47537c0d82bca26139 local=a61e1f8f20f6f3c40a770142324ebf358f605647e6677674d9152c7595118e10
+// justui-meta: registry=461bcb41c4f02cbdf75335366f1d7ef1ae063863f427eedacd35cdf7ae54926d local=c254ffa7f3fee5e2ca171a8d0dc5be7d4fcd18c425b09ec8b822ca98ec0dccd9
 import 'dart:async';
 
 import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
+import 'package:showcase/core/theme/preset_tokens.dart';
+import 'package:showcase/core/theme/theme_data.dart';
 
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -12,18 +14,17 @@ import 'just_toast_theme.dart';
 import 'just_toast_variants.dart';
 
 /// Represents a single active toast entry in the overlay.
-class _ToastEntry({
-  required final String id,
-  required final String message,
-  required final ToastVariant variant,
-  required final Duration duration,
-  final JustToastStyle? style,
-  final Widget? icon,
-  final Widget? action,
-  final VoidCallback? onDismissed,
-  required final OverlayEntry overlayEntry,
-  required final AnimationController animationController,
-}) {
+class _ToastEntry {
+  final String id;
+  final String message;
+  final ToastVariant variant;
+  final Duration duration;
+  final JustToastStyle? style;
+  final Widget? icon;
+  final Widget? action;
+  final VoidCallback? onDismissed;
+  final OverlayEntry overlayEntry;
+  final AnimationController animationController;
   late final Timer timer;
 
   /// Set as soon as a dismissal has been requested for this entry, so a
@@ -32,32 +33,73 @@ class _ToastEntry({
   /// the close affordance) is a no-op instead of starting a second reverse
   /// animation.
   bool _dismissRequested = false;
+
+  _ToastEntry({
+    required this.id,
+    required this.message,
+    required this.variant,
+    required this.duration,
+    this.style,
+    this.icon,
+    this.action,
+    this.onDismissed,
+    required this.overlayEntry,
+    required this.animationController,
+  });
 }
 
 /// A pending toast waiting in the queue.
-class _ToastPending({
-  required final String message,
-  required final ToastVariant variant,
-  required final Duration duration,
-  final JustToastStyle? style,
-  final Widget? icon,
-  final Widget? action,
-  final VoidCallback? onDismissed,
-  final AnimationController? animationController,
-  final JustOverlayAnimationBuilder? animationBuilder,
-}) {}
+class _ToastPending {
+  final String message;
+  final ToastVariant variant;
+  final Duration duration;
+  final JustToastStyle? style;
+  final Widget? icon;
+  final Widget? action;
+  final VoidCallback? onDismissed;
+  final AnimationController? animationController;
+  final JustOverlayAnimationBuilder? animationBuilder;
+
+  _ToastPending({
+    required this.message,
+    required this.variant,
+    required this.duration,
+    this.style,
+    this.icon,
+    this.action,
+    this.onDismissed,
+    this.animationController,
+    this.animationBuilder,
+  });
+}
 
 /// Imperative controller for managing stacked or queued toasts.
-class JustToastController({
-  final ToastBehavior behavior = .stacked,
-  final int? limit = 3,
-  final ToastPosition position = .bottomCenter,
-  final bool enableDragDismiss = true,
-}) extends JustOverlayController {
+class JustToastController extends JustOverlayController {
+  /// The behavior mode (stacked or queue) for multiple toasts.
+  final ToastBehavior behavior;
+
+  /// The maximum number of visible toasts in stacked mode, or maximum queued
+  /// pending toasts in queue mode.
+  final int? limit;
+
+  /// The screen position where toasts are anchored.
+  final ToastPosition position;
+
+  /// Whether to enable horizontal swipe-to-dismiss gesture.
+  final bool enableDragDismiss;
+
   OverlayState? _overlayState;
   TickerProvider? _vsync;
-  final List<_ToastEntry> _activeToasts = [];
-  final List<_ToastPending> _queue = [];
+  final List<_ToastEntry> _activeToasts = <_ToastEntry>[];
+  final List<_ToastPending> _queue = <_ToastPending>[];
+
+  /// Creates a [JustToastController].
+  JustToastController({
+    this.behavior = .stacked,
+    this.limit = 3,
+    this.position = .bottomCenter,
+    this.enableDragDismiss = true,
+  });
 
   @override
   bool get isVisible => _activeToasts.isNotEmpty;
@@ -84,7 +126,7 @@ class JustToastController({
       'JustToastController must have a valid TickerProvider from JustToastScope',
     );
 
-    final pending = _ToastPending(
+    final _ToastPending pending = _ToastPending(
       message: message,
       variant: variant,
       duration: duration,
@@ -96,7 +138,7 @@ class JustToastController({
       animationBuilder: animationBuilder,
     );
 
-    final effectiveLimit = limit ?? this.limit;
+    final int? effectiveLimit = limit ?? this.limit;
 
     if (behavior == .queue) {
       if (_activeToasts.isNotEmpty) {
@@ -115,8 +157,8 @@ class JustToastController({
     } else {
       if (effectiveLimit != null) {
         // 1. Get non-dismissing active toasts
-        final activeVisible = _activeToasts
-            .where((t) => !t._dismissRequested)
+        final List<_ToastEntry> activeVisible = _activeToasts
+            .where((_ToastEntry t) => !t._dismissRequested)
             .toList();
 
         // 2. If active visible toasts reach limit, dismiss the oldest active one
@@ -127,9 +169,9 @@ class JustToastController({
         // 3. Immediately clean up any toasts that are already reversing/dismissing
         // if total entries exceed effectiveLimit to prevent overlay accumulation during rapid click spam
         while (_activeToasts.length >= effectiveLimit &&
-            _activeToasts.any((t) => t._dismissRequested)) {
-          final oldestDismissing = _activeToasts.firstWhere(
-            (t) => t._dismissRequested,
+            _activeToasts.any((_ToastEntry t) => t._dismissRequested)) {
+          final _ToastEntry oldestDismissing = _activeToasts.firstWhere(
+            (_ToastEntry t) => t._dismissRequested,
           );
           _cleanupToastEntry(oldestDismissing);
         }
@@ -139,23 +181,23 @@ class JustToastController({
   }
 
   void _showToast(_ToastPending pending) {
-    final animController =
+    final AnimationController animController =
         pending.animationController ??
         AnimationController(vsync: _vsync!, duration: JustDuration.normal);
 
     late final _ToastEntry entry;
-    final overlayEntry = OverlayEntry(
-      builder: (context) {
-        final index = _activeToasts.indexOf(entry);
+    final OverlayEntry overlayEntry = OverlayEntry(
+      builder: (BuildContext context) {
+        final int index = _activeToasts.indexOf(entry);
         if (index == -1) return const SizedBox.shrink();
 
-        final theme = JustThemeProvider.of(context).theme;
-        final spacing = theme.spacing;
+        final JustThemeData theme = JustThemeProvider.of(context).theme;
+        final JustSpacingScheme spacing = theme.spacing;
 
         // Approximate toast height + spacing for stack offset calculations
         const double toastHeight = 56.0;
         final double toastSpacing = spacing.sm;
-        final offset =
+        final double offset =
             (_activeToasts.length - 1 - index) * (toastHeight + toastSpacing);
 
         Widget toastCard = RepaintBoundary(
@@ -244,13 +286,14 @@ class JustToastController({
     } catch (_) {}
 
     // Only dispose if it was created locally
-    final wasLocal =
+    final bool wasLocal =
         !_queue.any(
-          (q) => q.animationController == entry.animationController,
+          (_ToastPending q) =>
+              q.animationController == entry.animationController,
         ) &&
         _activeToasts
             .where(
-              (t) =>
+              (_ToastEntry t) =>
                   t != entry &&
                   t.animationController == entry.animationController,
             )
@@ -276,7 +319,7 @@ class JustToastController({
       });
       return;
     }
-    for (final toast in _activeToasts) {
+    for (final _ToastEntry toast in _activeToasts) {
       try {
         if (toast.overlayEntry.mounted) {
           toast.overlayEntry.markNeedsBuild();
@@ -287,8 +330,8 @@ class JustToastController({
 
   @override
   void dismiss() {
-    final targets = List<_ToastEntry>.from(_activeToasts);
-    for (final toast in targets) {
+    final List<_ToastEntry> targets = List<_ToastEntry>.from(_activeToasts);
+    for (final _ToastEntry toast in targets) {
       _dismissToast(toast);
     }
   }
@@ -307,9 +350,9 @@ class JustToastController({
   /// overlay/animation resources yet and can still be shown later if this
   /// controller is re-attached to a new scope.
   void forceDismissAll() {
-    final targets = List<_ToastEntry>.from(_activeToasts);
+    final List<_ToastEntry> targets = List<_ToastEntry>.from(_activeToasts);
     _activeToasts.clear();
-    for (final entry in targets) {
+    for (final _ToastEntry entry in targets) {
       try {
         if (entry.overlayEntry.mounted) {
           entry.overlayEntry.remove();
@@ -319,13 +362,14 @@ class JustToastController({
         entry.overlayEntry.dispose();
       } catch (_) {}
 
-      final wasLocal =
+      final bool wasLocal =
           !_queue.any(
-            (q) => q.animationController == entry.animationController,
+            (_ToastPending q) =>
+                q.animationController == entry.animationController,
           ) &&
           _activeToasts
               .where(
-                (t) =>
+                (_ToastEntry t) =>
                     t != entry &&
                     t.animationController == entry.animationController,
               )
@@ -353,19 +397,26 @@ class JustToastController({
 
 /// A wrapper widget that handles the slide/fade entrance and vertical staggering.
 /// A wrapper widget that handles the slide/fade entrance and vertical staggering.
-class const _ToastPositionedWrapper({
-  required final ToastPosition position,
-  required final double offset,
-  required final Animation<double> animation,
-  required final Widget child,
-}) extends StatelessWidget {
+class _ToastPositionedWrapper extends StatelessWidget {
+  final ToastPosition position;
+  final double offset;
+  final Animation<double> animation;
+  final Widget child;
+
+  const _ToastPositionedWrapper({
+    required this.position,
+    required this.offset,
+    required this.animation,
+    required this.child,
+  });
+
   @override
   Widget build(BuildContext context) {
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final motion = JustThemeProvider.of(
+    final JustMotionProfile motion = JustThemeProvider.of(
       context,
       aspect: .animations,
     ).theme.animations.resolve(context);
@@ -394,7 +445,7 @@ class const _ToastPositionedWrapper({
 
     double? top;
     double? bottom;
-    final isTop =
+    final bool isTop =
         position == .topLeft || position == .topCenter || position == .topRight;
 
     if (isTop) {
@@ -410,11 +461,11 @@ class const _ToastPositionedWrapper({
       positionedChild = Center(child: child);
     }
 
-    final slideTween = isTop
+    final Tween<Offset> slideTween = isTop
         ? Tween<Offset>(begin: const Offset(0, -1), end: .zero)
         : Tween<Offset>(begin: const Offset(0, 1), end: .zero);
 
-    final curvedAnimation = CurvedAnimation(
+    final CurvedAnimation curvedAnimation = CurvedAnimation(
       parent: animation,
       curve: motion.enter,
       reverseCurve: motion.exit,
@@ -440,11 +491,17 @@ class const _ToastPositionedWrapper({
 
 /// The actual visual card of the Toast, supporting horizontal swipe-to-dismiss.
 /// The actual visual card of the Toast, supporting horizontal swipe-to-dismiss.
-class const _JustToastWidget({
-  required final _ToastEntry entry,
-  required final bool enableDrag,
-  required final VoidCallback onDismiss,
-}) extends StatefulWidget {
+class _JustToastWidget extends StatefulWidget {
+  final _ToastEntry entry;
+  final bool enableDrag;
+  final VoidCallback onDismiss;
+
+  const _JustToastWidget({
+    required this.entry,
+    required this.enableDrag,
+    required this.onDismiss,
+  });
+
   @override
   State<_JustToastWidget> createState() => _JustToastWidgetState();
 }
@@ -500,11 +557,11 @@ class _JustToastWidgetState extends State<_JustToastWidget>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _swipeBackController,
-      builder: (context, child) {
-        final currentX = _swipeBackController.isAnimating
+      builder: (BuildContext context, Widget? child) {
+        final double currentX = _swipeBackController.isAnimating
             ? _swipeBackAnimation.value
             : _dragX;
-        final opacity = (1.0 - (currentX.abs() / 300.0)).clamp(0.0, 1.0);
+        final double opacity = (1.0 - (currentX.abs() / 300.0)).clamp(0.0, 1.0);
         return Transform.translate(
           offset: Offset(currentX, 0.0),
           child: Opacity(
@@ -522,13 +579,14 @@ class _JustToastWidgetState extends State<_JustToastWidget>
   }
 
   Widget _buildCard(BuildContext context) {
-    final theme = JustThemeProvider.of(context).theme;
-    final colors = theme.colors;
-    final spacing = theme.spacing;
-    final radius = theme.radius;
-    final shadows = theme.shadows;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = theme.colors;
+    final JustSpacingScheme spacing = theme.spacing;
+    final JustRadiusScheme radius = theme.radius;
+    final JustShadowScheme shadows = theme.shadows;
 
-    final globalTheme = Theme.of(context).extension<JustToastTheme>();
+    final JustToastTheme? globalTheme = Theme.of(context)
+        .extension<JustToastTheme>();
 
     // Resolve variant style from theme extension
     JustToastStyle? variantThemeStyle;
@@ -547,41 +605,41 @@ class _JustToastWidgetState extends State<_JustToastWidget>
         break;
     }
 
-    final entryStyle = widget.entry.style;
+    final JustToastStyle? entryStyle = widget.entry.style;
 
     // Resolve visual styles
-    final defaultVariantBg = switch (widget.entry.variant) {
+    final Color defaultVariantBg = switch (widget.entry.variant) {
       .success => colors.success.withValues(alpha: 0.1),
       .error => colors.error.withValues(alpha: 0.1),
       .warning => colors.warning.withValues(alpha: 0.1),
       .info => colors.info.withValues(alpha: 0.08),
     };
-    final defaultBg = Color.alphaBlend(defaultVariantBg, colors.card);
-    final bgColor =
+    final Color defaultBg = Color.alphaBlend(defaultVariantBg, colors.card);
+    final Color bgColor =
         entryStyle?.backgroundColor ??
         variantThemeStyle?.backgroundColor ??
         defaultBg;
-    final borderColor =
+    final Color borderColor =
         entryStyle?.borderColor ??
         variantThemeStyle?.borderColor ??
         colors.borderDefault;
-    final borderRadius =
+    final BorderRadius borderRadius =
         entryStyle?.borderRadius ??
         variantThemeStyle?.borderRadius ??
         .all(radius.md);
-    final padding =
+    final EdgeInsets padding =
         entryStyle?.padding ??
         variantThemeStyle?.padding ??
         .symmetric(horizontal: spacing.md, vertical: spacing.sm);
-    final textStyle =
+    final TextStyle textStyle =
         entryStyle?.textStyle ??
         variantThemeStyle?.textStyle ??
         JustFluidTypo.bodySm(context).copyWith(color: colors.textPrimary);
-    final maxWidth =
+    final double maxWidth =
         entryStyle?.maxWidth ?? variantThemeStyle?.maxWidth ?? 360.0;
-    final minWidth =
+    final double minWidth =
         entryStyle?.minWidth ?? variantThemeStyle?.minWidth ?? 280.0;
-    final toastShadows =
+    final List<BoxShadow> toastShadows =
         entryStyle?.shadows ?? variantThemeStyle?.shadows ?? shadows.md;
 
     // Default icons
@@ -613,10 +671,10 @@ class _JustToastWidgetState extends State<_JustToastWidget>
         break;
     }
 
-    final resolvedIcon = widget.entry.icon ?? defaultIcon;
+    final Widget resolvedIcon = widget.entry.icon ?? defaultIcon;
 
-    final presetTokens = theme.presetTokens;
-    final borderSide = BorderSide(
+    final JustPresetTokens presetTokens = theme.presetTokens;
+    final BorderSide borderSide = BorderSide(
       color: presetTokens.showsDefaultBorder ? colors.textPrimary : borderColor,
       width: presetTokens.borderWidth,
     );
@@ -638,14 +696,14 @@ class _JustToastWidgetState extends State<_JustToastWidget>
         padding: padding,
         child: Row(
           mainAxisSize: .min,
-          children: [
+          children: <Widget>[
             resolvedIcon,
             SizedBox(width: spacing.sm),
             Expanded(child: Text(widget.entry.message, style: textStyle)),
-            if (widget.entry.action != null) ...[
+            if (widget.entry.action != null) ...<Widget>[
               SizedBox(width: spacing.sm),
               widget.entry.action!,
-            ] else ...[
+            ] else ...<Widget>[
               SizedBox(width: spacing.sm),
               GestureDetector(
                 onTap: widget.onDismiss,
@@ -665,30 +723,38 @@ class _JustToastWidgetState extends State<_JustToastWidget>
 
 /// Scope widget that binds a [JustToastController] and handles the Flutter context/ticker binding.
 /// Scope widget that binds a [JustToastController] and handles the Flutter context/ticker binding.
-class const JustToastScope({
-  super.key,
-
+class JustToastScope extends StatefulWidget {
   /// If omitted, a default controller using [limit], [position], [behavior], and [enableDragDismiss] is automatically created.
-  final JustToastController? controller,
+  final JustToastController? controller;
 
   /// The maximum number of active/queued toasts. Defaults to 3.
-  final int? limit = 3,
+  final int? limit;
 
   /// The screen position where toasts are anchored. Defaults to [ToastPosition.bottomCenter].
-  final ToastPosition position = .bottomCenter,
+  final ToastPosition position;
 
   /// The behavior mode (stacked or queue) for multiple toasts. Defaults to [ToastBehavior.stacked].
-  final ToastBehavior behavior = .stacked,
+  final ToastBehavior behavior;
 
   /// Whether to enable horizontal swipe-to-dismiss gesture. Defaults to true.
-  final bool enableDragDismiss = true,
+  final bool enableDragDismiss;
 
   /// The child subtree.
-  required final Widget child,
-}) extends StatefulWidget {
+  final Widget child;
+
+  const JustToastScope({
+    super.key,
+    this.controller,
+    this.limit = 3,
+    this.position = .bottomCenter,
+    this.behavior = .stacked,
+    this.enableDragDismiss = true,
+    required this.child,
+  });
+
   /// Retrieves the nearest [JustToastController] from the ancestor scope.
   static JustToastController of(BuildContext context) {
-    final scope = context
+    final _JustToastScopeInherited? scope = context
         .dependOnInheritedWidgetOfExactType<_JustToastScopeInherited>();
     assert(scope != null, 'No JustToastScope found in context');
     return scope!.controller;
@@ -729,7 +795,8 @@ class _JustToastScopeState extends State<JustToastScope>
   void didUpdateWidget(covariant JustToastScope oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
-      final oldCtrl = oldWidget.controller ?? _internalController;
+      final JustToastController? oldCtrl =
+          oldWidget.controller ?? _internalController;
       oldCtrl?.forceDismissAll();
       oldCtrl?._vsync = null;
       oldCtrl?._overlayState = null;
@@ -743,7 +810,7 @@ class _JustToastScopeState extends State<JustToastScope>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final newOverlay = Overlay.maybeOf(context);
+    final OverlayState? newOverlay = Overlay.maybeOf(context);
     if (_effectiveController._overlayState != null &&
         _effectiveController._overlayState != newOverlay) {
       _effectiveController.forceDismissAll();
@@ -769,10 +836,14 @@ class _JustToastScopeState extends State<JustToastScope>
   }
 }
 
-class const _JustToastScopeInherited({
-  required super.child,
-  required final JustToastController controller,
-}) extends InheritedWidget {
+class _JustToastScopeInherited extends InheritedWidget {
+  final JustToastController controller;
+
+  const _JustToastScopeInherited({
+    required super.child,
+    required this.controller,
+  });
+
   @override
   bool updateShouldNotify(_JustToastScopeInherited oldWidget) {
     return controller != oldWidget.controller;

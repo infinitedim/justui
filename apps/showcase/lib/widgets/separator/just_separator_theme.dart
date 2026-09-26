@@ -1,15 +1,17 @@
-// justui-meta: registry=9d40ec1154f69dc69eb34dfc0d5b34b95f8bd5c5dcd122c47a236fb718f42b24 local=9d40ec1154f69dc69eb34dfc0d5b34b95f8bd5c5dcd122c47a236fb718f42b24
+// justui-meta: registry=794bf56a7cd3f52f9ad250843c36d88248474b5a24a54260a4b1e1f613bc94ea local=9b8e70030cd43642de17947bac2ad620e205497bae2757789d5b16b9d0f08817
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_separator_style.dart';
 
 /// Global theme configuration for separators, extending Flutter's [ThemeExtension].
-class const JustSeparatorTheme({
+class JustSeparatorTheme extends ThemeExtension<JustSeparatorTheme> {
   /// The global style override for all separators.
-  final JustSeparatorStyle? style,
-}) extends ThemeExtension<JustSeparatorTheme> {
+  final JustSeparatorStyle? style;
+
+  const JustSeparatorTheme({this.style});
+
   /// Default configuration for the theme.
-  static const defaults = JustSeparatorTheme();
+  static const JustSeparatorTheme defaults = JustSeparatorTheme();
 
   @override
   JustSeparatorTheme copyWith({JustSeparatorStyle? style}) {

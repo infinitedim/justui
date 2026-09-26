@@ -1,6 +1,11 @@
-// justui-meta: registry=aab00af0b65df330109e99691ecae70d4ffd441581371685d5667e6ff0d33155 local=f767f5058a0d5c905c63664f387e0f90b583f7161e6ae8d0bf4db65a2dcfac43
+// justui-meta: registry=59ab3cf9e9a969e1cbe204067906cf40a6daf68a5f915c512200892689d7d7ba local=2fc1586c5b3a72b9a2cb2085468db52cbb5533d08a5c693ff5d52b5b00b0e4fb
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' show Theme;
+import 'package:showcase/core/theme/preset_tokens.dart';
+import 'package:showcase/core/theme/theme_data.dart';
+
+import 'package:showcase/tokens/just_ui_tokens.dart'
+    show JustBreakpoints, JustColorScheme;
 
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -11,58 +16,93 @@ import 'just_sidebar_theme.dart';
 import 'just_sidebar_variants.dart';
 
 /// Represents a single navigation destination item inside [JustSidebar].
-class const JustSidebarItem({
-  required final String label,
-  required final Widget icon,
-  final VoidCallback? onTap,
-  final Widget? badge,
-  final List<JustSidebarItem>? children,
-  final bool enabled = true,
-}) {}
+class JustSidebarItem {
+  /// The label text.
+  final String label;
+
+  /// The leading icon.
+  final Widget icon;
+
+  /// Callback executed when the item is tapped.
+  final VoidCallback? onTap;
+
+  /// An optional notification badge widget (e.g. JustBadge).
+  final Widget? badge;
+
+  /// Nested sub-menu items under this item.
+  final List<JustSidebarItem>? children;
+
+  /// Whether the item is interactive.
+  final bool enabled;
+
+  /// Creates a [JustSidebarItem] destination.
+  const JustSidebarItem({
+    required this.label,
+    required this.icon,
+    this.onTap,
+    this.badge,
+    this.children,
+    this.enabled = true,
+  });
+}
 
 /// A premium, collapsible sidebar navigation panel supporting recursive sub-menus,
 /// collapsed hover tooltips, and responsive layout scaling.
 /// A premium, collapsible sidebar navigation panel supporting recursive sub-menus,
 /// collapsed hover tooltips, and responsive layout scaling.
-class const JustSidebar({
-  super.key,
-
+class JustSidebar extends StatefulWidget {
   /// The list of sidebar navigation items.
-  required final List<JustSidebarItem> items,
+  final List<JustSidebarItem> items;
 
   /// Logo or brand widget displayed at the top of the sidebar.
-  final Widget? header,
+  final Widget? header;
 
   /// User profile or actions widget displayed at the bottom of the sidebar.
-  final Widget? footer,
+  final Widget? footer;
 
   /// The expanded width of the sidebar (defaults to 260px).
-  final double width = 260.0,
+  final double width;
 
   /// The collapsed width of the sidebar (defaults to 68px).
-  final double collapsedWidth = 68.0,
+  final double collapsedWidth;
 
   /// Whether the sidebar can be collapsed.
-  final bool isCollapsible = true,
+  final bool isCollapsible;
 
   /// Whether the sidebar is currently collapsed.
-  final bool isCollapsed = false,
+  final bool isCollapsed;
 
   /// Callback executed when collapse state changes.
-  final ValueChanged<bool>? onCollapsedChanged,
+  final ValueChanged<bool>? onCollapsedChanged;
 
   /// The active item index in the flattened top-level items.
-  final int selectedIndex = 0,
+  final int selectedIndex;
 
   /// Callback executed when a top-level menu item is selected.
-  final ValueChanged<int>? onItemSelected,
+  final ValueChanged<int>? onItemSelected;
 
   /// The layout variant (default_, floating, inset).
-  final JustSidebarVariant variant = .default_,
+  final JustSidebarVariant variant;
 
   /// Custom style overrides.
-  final JustSidebarStyle? style,
-}) extends StatefulWidget {
+  final JustSidebarStyle? style;
+
+  const JustSidebar({
+    super.key,
+    required this.items,
+    this.header,
+    this.footer,
+    this.width = 260.0,
+    this.collapsedWidth = 68.0,
+    this.isCollapsible = true,
+    this.isCollapsed = false,
+    this.onCollapsedChanged,
+    this.selectedIndex = 0,
+    this.onItemSelected,
+    this.variant = .default_,
+    this.style,
+  });
+
   @override
   State<JustSidebar> createState() => _JustSidebarState();
 }
@@ -102,15 +142,19 @@ class _JustSidebarState extends State<JustSidebar>
 
   @override
   Widget build(BuildContext context) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final sidebarTheme = Theme.of(context).extension<JustSidebarTheme>();
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final spacing = JustThemeProvider.of(
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustSidebarTheme? sidebarTheme = Theme.of(context)
+        .extension<JustSidebarTheme>();
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final radius = customTheme.radius;
-    final shadows = customTheme.shadows;
+    final JustRadiusScheme radius = customTheme.radius;
+    final JustShadowScheme shadows = customTheme.shadows;
 
     // Resolve active styles
     JustSidebarStyle? themeStyle;
@@ -143,15 +187,15 @@ class _JustSidebarState extends State<JustSidebar>
       _collapseController.value = 1.0;
     }
 
-    final containerBg =
+    final Color containerBg =
         widget.style?.backgroundColor ??
         themeStyle?.backgroundColor ??
         colors.elevated;
-    final activeColor =
+    final Color activeColor =
         widget.style?.activeColor ??
         themeStyle?.activeColor ??
         colors.borderFocus;
-    final inactiveColor =
+    final Color inactiveColor =
         widget.style?.inactiveColor ??
         themeStyle?.inactiveColor ??
         colors.textSecondary;
@@ -162,7 +206,7 @@ class _JustSidebarState extends State<JustSidebar>
               ? .symmetric(horizontal: spacing.md, vertical: spacing.lg)
               : .symmetric(vertical: spacing.lg));
 
-    final finalPadding =
+    final EdgeInsetsGeometry finalPadding =
         widget.style?.padding ?? themeStyle?.padding ?? defaultPadding;
 
     final BorderRadius borderRadius = widget.variant == .floating
@@ -171,12 +215,12 @@ class _JustSidebarState extends State<JustSidebar>
 
     return AnimatedBuilder(
       animation: _collapseAnimation,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         final double currentWidth =
             widget.collapsedWidth +
             (widget.width - widget.collapsedWidth) * _collapseAnimation.value;
 
-        final presetTokens = customTheme.presetTokens;
+        final JustPresetTokens presetTokens = customTheme.presetTokens;
         final Border borderStyle = widget.variant == .default_
             ? Border(
                 right: BorderSide(
@@ -205,9 +249,9 @@ class _JustSidebarState extends State<JustSidebar>
           padding: finalPadding,
           child: Column(
             crossAxisAlignment: .stretch,
-            children: [
+            children: <Widget>[
               // Header logo area
-              if (widget.header != null) ...[
+              if (widget.header != null) ...<Widget>[
                 ClipRect(
                   child: Align(
                     alignment: .centerLeft,
@@ -224,7 +268,7 @@ class _JustSidebarState extends State<JustSidebar>
                   child: Column(
                     mainAxisSize: .min,
                     crossAxisAlignment: .stretch,
-                    children: [
+                    children: <Widget>[
                       for (int i = 0; i < widget.items.length; i++)
                         _buildSidebarItem(
                           context: context,
@@ -242,7 +286,7 @@ class _JustSidebarState extends State<JustSidebar>
               ),
 
               // Footer area
-              if (widget.footer != null) ...[
+              if (widget.footer != null) ...<Widget>[
                 SizedBox(height: spacing.lg),
                 ClipRect(
                   child: Align(alignment: .centerLeft, child: widget.footer!),
@@ -265,39 +309,41 @@ class _JustSidebarState extends State<JustSidebar>
     required Color inactiveColor,
     JustSidebarStyle? themeStyle,
   }) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final colors = customTheme.colors;
-    final spacing = customTheme.spacing;
-    final typography = JustThemeProvider.of(
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = customTheme.colors;
+    final JustSpacingScheme spacing = customTheme.spacing;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final radius = JustThemeProvider.of(context).theme.radius;
+    final JustRadiusScheme radius = JustThemeProvider.of(context).theme.radius;
 
-    final isSelected = widget.selectedIndex == index && depth == 0;
-    final hasChildren = item.children != null && item.children!.isNotEmpty;
+    final bool isSelected = widget.selectedIndex == index && depth == 0;
+    final bool hasChildren = item.children != null && item.children!.isNotEmpty;
 
     // Proportional indentation in LTR/RTL
-    final isRtl = Directionality.of(context) == .rtl;
+    final bool isRtl = Directionality.of(context) == .rtl;
     final double indent = depth * 16.0;
 
     final EdgeInsetsGeometry defaultItemPadding = widget.variant == .inset
         ? .symmetric(horizontal: spacing.md, vertical: spacing.sm)
         : .symmetric(horizontal: spacing.lg, vertical: spacing.sm);
 
-    final itemPadding =
+    final EdgeInsetsGeometry itemPadding =
         widget.style?.itemPadding ??
         themeStyle?.itemPadding ??
         defaultItemPadding;
-    final resolvedItemPadding = itemPadding.resolve(Directionality.of(context));
-    final itemRadius =
+    final EdgeInsets resolvedItemPadding = itemPadding.resolve(
+      Directionality.of(context),
+    );
+    final BorderRadius itemRadius =
         widget.style?.itemBorderRadius ??
         themeStyle?.itemBorderRadius ??
         .all(radius.md);
 
-    final textStyle =
+    final TextStyle textStyle =
         widget.style?.textStyle ?? themeStyle?.textStyle ?? typography.bodyMd;
-    final activeTextStyle =
+    final TextStyle activeTextStyle =
         widget.style?.activeTextStyle ??
         themeStyle?.activeTextStyle ??
         typography.bodyMd.copyWith(fontWeight: .w600);
@@ -314,11 +360,11 @@ class _JustSidebarState extends State<JustSidebar>
         }
       },
       builder: (BuildContext context, JustInteractionState state) {
-        final isHovered = state.isHovered;
-        final isPressed = state.isPressed;
+        final bool isHovered = state.isHovered;
+        final bool isPressed = state.isPressed;
         final double itemOpacity = item.enabled ? 1.0 : 0.5;
 
-        final presetTokens = customTheme.presetTokens;
+        final JustPresetTokens presetTokens = customTheme.presetTokens;
 
         final Color itemBg = isSelected
             ? (presetTokens.showsDefaultBorder
@@ -338,7 +384,9 @@ class _JustSidebarState extends State<JustSidebar>
                   ? activeColor
                   : (isHovered || isPressed ? activeColor : inactiveColor));
 
-        final resolvedTextStyle = isSelected ? activeTextStyle : textStyle;
+        final TextStyle resolvedTextStyle = isSelected
+            ? activeTextStyle
+            : textStyle;
 
         final Border? itemBorder = presetTokens.showsDefaultBorder
             ? .all(
@@ -375,12 +423,12 @@ class _JustSidebarState extends State<JustSidebar>
                   : resolvedItemPadding.right,
             ),
             child: Row(
-              children: [
+              children: <Widget>[
                 IconTheme.merge(
                   data: IconThemeData(size: 20.0, color: foregroundColor),
                   child: item.icon,
                 ),
-                if (!isCollapsed) ...[
+                if (!isCollapsed) ...<Widget>[
                   SizedBox(width: spacing.md),
                   Expanded(
                     child: Text(
@@ -390,7 +438,7 @@ class _JustSidebarState extends State<JustSidebar>
                       overflow: .ellipsis,
                     ),
                   ),
-                  if (item.badge != null) ...[
+                  if (item.badge != null) ...<Widget>[
                     SizedBox(width: spacing.sm),
                     item.badge!,
                   ],
@@ -428,15 +476,25 @@ class _JustSidebarState extends State<JustSidebar>
   }
 }
 
-class const _JustSidebarFolder({
-  required final JustSidebarItem item,
-  required final int depth,
-  required final bool isCollapsed,
-  required final Color activeColor,
-  required final Color inactiveColor,
-  final JustSidebarStyle? themeStyle,
-  required final Widget itemWidget,
-}) extends StatefulWidget {
+class _JustSidebarFolder extends StatefulWidget {
+  final JustSidebarItem item;
+  final int depth;
+  final bool isCollapsed;
+  final Color activeColor;
+  final Color inactiveColor;
+  final JustSidebarStyle? themeStyle;
+  final Widget itemWidget;
+
+  const _JustSidebarFolder({
+    required this.item,
+    required this.depth,
+    required this.isCollapsed,
+    required this.activeColor,
+    required this.inactiveColor,
+    this.themeStyle,
+    required this.itemWidget,
+  });
+
   @override
   State<_JustSidebarFolder> createState() => _JustSidebarFolderState();
 }
@@ -477,16 +535,17 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
 
   @override
   Widget build(BuildContext context) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final colors = customTheme.colors;
-    final spacing = customTheme.spacing;
-    final radius = customTheme.radius;
-    final isRtl = Directionality.of(context) == .rtl;
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = customTheme.colors;
+    final JustSpacingScheme spacing = customTheme.spacing;
+    final JustRadiusScheme radius = customTheme.radius;
+    final bool isRtl = Directionality.of(context) == .rtl;
 
-    final itemPadding =
+    final EdgeInsets itemPadding =
         widget.themeStyle?.itemPadding ??
         .symmetric(horizontal: spacing.lg, vertical: spacing.sm);
-    final itemRadius = widget.themeStyle?.itemBorderRadius ?? .all(radius.md);
+    final BorderRadius itemRadius =
+        widget.themeStyle?.itemBorderRadius ?? .all(radius.md);
 
     // Chevron pointing side (or left in RTL) when collapsed, down when expanded
     final Widget chevronIcon = RotationTransition(
@@ -503,23 +562,23 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
     // Wrap the base item row layout to support folder toggling on folder header click
     final Widget folderHeader = AnimatedBuilder(
       animation: _expandAnimation,
-      builder: (context, child) {
-        final isFolderExpanded = _expandController.value > 0.5;
+      builder: (BuildContext context, Widget? child) {
+        final bool isFolderExpanded = _expandController.value > 0.5;
 
         return Semantics(
           expanded: isFolderExpanded,
           child: JustPressable(
             onTap: _toggleExpand,
             builder: (BuildContext context, JustInteractionState state) {
-              final isHovered = state.isHovered;
-              final isPressed = state.isPressed;
+              final bool isHovered = state.isHovered;
+              final bool isPressed = state.isPressed;
               final Color itemBg = isPressed
                   ? widget.activeColor.withValues(alpha: 0.12)
                   : (isHovered
                         ? widget.activeColor.withValues(alpha: 0.05)
                         : const Color(0x00000000));
 
-              final presetTokens = customTheme.presetTokens;
+              final JustPresetTokens presetTokens = customTheme.presetTokens;
               final Color foregroundColor = presetTokens.showsDefaultBorder
                   ? colors.textPrimary
                   : (isHovered || isPressed
@@ -550,12 +609,12 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
                       : itemPadding.right,
                 ),
                 child: Row(
-                  children: [
+                  children: <Widget>[
                     IconTheme.merge(
                       data: IconThemeData(size: 20.0, color: foregroundColor),
                       child: widget.item.icon,
                     ),
-                    if (!widget.isCollapsed) ...[
+                    if (!widget.isCollapsed) ...<Widget>[
                       SizedBox(width: spacing.md),
                       Expanded(
                         child: Text(
@@ -588,7 +647,7 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
     return Column(
       mainAxisSize: .min,
       crossAxisAlignment: .stretch,
-      children: [
+      children: <Widget>[
         folderHeader,
         SizeTransition(
           sizeFactor: _expandAnimation,
@@ -615,45 +674,60 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
 }
 
 // Stateful/Stateless Indentation Helper widget
-class const _JustSidebarItemWidget({
-  required final JustSidebarItem item,
-  required final int depth,
-  required final bool isCollapsed,
-  required final Color activeColor,
-  required final Color inactiveColor,
-  final JustSidebarStyle? themeStyle,
-}) extends StatelessWidget {
+class _JustSidebarItemWidget extends StatelessWidget {
+  final JustSidebarItem item;
+  final int depth;
+  final bool isCollapsed;
+  final Color activeColor;
+  final Color inactiveColor;
+  final JustSidebarStyle? themeStyle;
+
+  const _JustSidebarItemWidget({
+    required this.item,
+    required this.depth,
+    required this.isCollapsed,
+    required this.activeColor,
+    required this.inactiveColor,
+    this.themeStyle,
+  });
+
   @override
   @override
   Widget build(BuildContext context) {
-    final customTheme = JustThemeProvider.of(context, aspect: .colors).theme;
-    final colors = customTheme.colors;
-    final spacing = JustThemeProvider.of(
+    final JustThemeData customTheme = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme;
+    final JustColorScheme colors = customTheme.colors;
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final typography = JustThemeProvider.of(
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final radius = JustThemeProvider.of(context).theme.radius;
+    final JustRadiusScheme radius = JustThemeProvider.of(context).theme.radius;
 
-    final hasChildren = item.children != null && item.children!.isNotEmpty;
-    final isRtl = Directionality.of(context) == .rtl;
+    final bool hasChildren = item.children != null && item.children!.isNotEmpty;
+    final bool isRtl = Directionality.of(context) == .rtl;
     final double indent = depth * 16.0;
 
-    final itemPadding =
+    final EdgeInsets itemPadding =
         themeStyle?.itemPadding ??
         .symmetric(horizontal: spacing.lg, vertical: spacing.sm);
-    final resolvedItemPadding = itemPadding.resolve(Directionality.of(context));
-    final itemRadius = themeStyle?.itemBorderRadius ?? .all(radius.md);
+    final EdgeInsets resolvedItemPadding = itemPadding.resolve(
+      Directionality.of(context),
+    );
+    final BorderRadius itemRadius =
+        themeStyle?.itemBorderRadius ?? .all(radius.md);
 
     Widget content = JustPressable(
       enabled: item.enabled,
       onTap: item.onTap,
       builder: (BuildContext context, JustInteractionState state) {
-        final isHovered = state.isHovered;
-        final isPressed = state.isPressed;
+        final bool isHovered = state.isHovered;
+        final bool isPressed = state.isPressed;
         final double itemOpacity = item.enabled ? 1.0 : 0.5;
 
         final Color itemBg = isPressed
@@ -662,7 +736,7 @@ class const _JustSidebarItemWidget({
                   ? activeColor.withValues(alpha: 0.05)
                   : const Color(0x00000000));
 
-        final presetTokens = customTheme.presetTokens;
+        final JustPresetTokens presetTokens = customTheme.presetTokens;
         final Color foregroundColor = presetTokens.showsDefaultBorder
             ? colors.textPrimary
             : (isHovered || isPressed ? activeColor : inactiveColor);
@@ -691,12 +765,12 @@ class const _JustSidebarItemWidget({
                   : resolvedItemPadding.right,
             ),
             child: Row(
-              children: [
+              children: <Widget>[
                 IconTheme.merge(
                   data: IconThemeData(size: 20.0, color: foregroundColor),
                   child: item.icon,
                 ),
-                if (!isCollapsed) ...[
+                if (!isCollapsed) ...<Widget>[
                   SizedBox(width: spacing.md),
                   Expanded(
                     child: Text(
@@ -706,7 +780,7 @@ class const _JustSidebarItemWidget({
                       overflow: .ellipsis,
                     ),
                   ),
-                  if (item.badge != null) ...[
+                  if (item.badge != null) ...<Widget>[
                     SizedBox(width: spacing.sm),
                     item.badge!,
                   ],

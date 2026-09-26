@@ -1,16 +1,24 @@
-// justui-meta: registry=0a91c217e0111fa24d406c7b570518b723c4280821d591f6133d129cc9b38db9 local=0a91c217e0111fa24d406c7b570518b723c4280821d591f6133d129cc9b38db9
+// justui-meta: registry=c1670f23e3b6a67d3b52ea22932bf970cf7b96ea72638b0d41f393b7c73437b5 local=22669de3aa25ace2216734a9ddba547752e60f63080b3123b1aa882efa7aa0c7
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
 import 'package:flutter/widgets.dart';
 
 /// Holds the active interaction states of a pressable element.
-class const JustInteractionState(
-  final bool isHovered,
-  final bool isPressed,
-  final bool isFocused,
-  final bool isFocusVisible,
-  final FocusNode focusNode,
-);
+class JustInteractionState {
+  final bool isHovered;
+  final bool isPressed;
+  final bool isFocused;
+  final bool isFocusVisible;
+  final FocusNode focusNode;
+
+  const JustInteractionState(
+    this.isHovered,
+    this.isPressed,
+    this.isFocused,
+    this.isFocusVisible,
+    this.focusNode,
+  );
+}
 
 /// A builder function that provides the active interactive states of a pressable element.
 typedef JustPressableBuilder = Widget Function(
@@ -22,16 +30,26 @@ typedef JustPressableBuilder = Widget Function(
 ///
 /// Encapsulates primitive widgets (`Focus`, `MouseRegion`, `GestureDetector`) and
 /// exposes their states via [JustPressableBuilder] using [ValueNotifier] to isolate rebuilds.
-class const JustPressable({
-  required final JustPressableBuilder builder,
-  super.key,
-  final bool enabled = true,
-  final VoidCallback? onTap,
-  final FocusNode? focusNode,
-  final FocusOnKeyEventCallback? onKeyEvent,
-  final bool? enableHapticFeedback,
-  final String? semanticLabel,
-}) extends StatefulWidget {
+class JustPressable extends StatefulWidget {
+  final JustPressableBuilder builder;
+  final bool enabled;
+  final VoidCallback? onTap;
+  final FocusNode? focusNode;
+  final FocusOnKeyEventCallback? onKeyEvent;
+  final bool? enableHapticFeedback;
+  final String? semanticLabel;
+
+  const JustPressable({
+    required this.builder,
+    super.key,
+    this.enabled = true,
+    this.onTap,
+    this.focusNode,
+    this.onKeyEvent,
+    this.enableHapticFeedback,
+    this.semanticLabel,
+  });
+
   @override
   State<JustPressable> createState() => _JustPressableState();
 }
@@ -50,7 +68,7 @@ class _JustPressableState extends State<JustPressable> {
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_onFocusChanged);
     FocusManager.instance.addHighlightModeListener(_onHighlightModeChanged);
-    _statesListenable = .merge([
+    _statesListenable = .merge(<Listenable?>[
       _isHovered,
       _isPressed,
       _isFocused,
@@ -104,7 +122,7 @@ class _JustPressableState extends State<JustPressable> {
   void _handleTapDown(TapDownDetails details) {
     if (widget.enabled) {
       _isPressed.value = true;
-      final shouldHaptic =
+      final bool shouldHaptic =
           widget.enableHapticFeedback ??
           (defaultTargetPlatform == .iOS || defaultTargetPlatform == .android);
       if (shouldHaptic) {
@@ -145,7 +163,7 @@ class _JustPressableState extends State<JustPressable> {
       canRequestFocus: widget.enabled,
       onKeyEvent:
           widget.onKeyEvent ??
-          (node, event) {
+          (FocusNode node, KeyEvent event) {
             if (!widget.enabled ||
                 widget.onTap == null ||
                 event is! KeyDownEvent) {
@@ -170,7 +188,7 @@ class _JustPressableState extends State<JustPressable> {
           onTap: widget.enabled ? widget.onTap : null,
           child: AnimatedBuilder(
             animation: _statesListenable,
-            builder: (context, _) {
+            builder: (BuildContext context, _) {
               return widget.builder(
                 context,
                 JustInteractionState(

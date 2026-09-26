@@ -1,7 +1,8 @@
-// justui-meta: registry=c1380f3a6f37b5c7805741569e36906a8f0802fa4b1f284c50af5d510185322f local=ec7f58216cc2b3f88ca9a4c11dab0099fe8c09afdd5b5857907feba7b069c679
+// justui-meta: registry=c583f09b961dc6819db5778913d40fa8a2415cfe0c2c59425307c260f1d498a1 local=2df3748cbd32017aeae619567046e8e210a6696ab05d98ee8795327a61a4e969
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:showcase/core/theme/theme_data.dart';
 
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -18,33 +19,43 @@ import 'just_checkbox_theme.dart';
 ///
 /// Follows zero-Material visual widget policy and supports indeterminate state,
 /// custom animated paths via [CustomPainter], haptic feedback, and keyboard navigation.
-class const JustCheckbox({
-  super.key,
-
+class JustCheckbox extends StatefulWidget {
   /// * `null` — Indeterminate (e.g. parent status)
-  required final bool? value,
+  final bool? value;
 
   /// If null, the checkbox is disabled.
-  required final ValueChanged<bool?>? onChanged,
+  final ValueChanged<bool?>? onChanged;
 
   /// Optional text label placed alongside the checkbox. Tapping the label also toggles the checkbox.
-  final Widget? label,
+  final Widget? label;
 
   /// The size of the visual checkbox box. Defaults to [.md].
-  final JustCheckboxSize size = .md,
+  final JustCheckboxSize size;
 
   /// Whether the checkbox is explicitly disabled.
-  final bool isDisabled = false,
+  final bool isDisabled;
 
   /// Per-instance style overrides.
-  final JustCheckboxStyle? style,
+  final JustCheckboxStyle? style;
 
   /// If null, falls back to the theme extension setting.
-  final bool? enableHaptic,
+  final bool? enableHaptic;
 
   /// Optional external [FocusNode] to manage focus.
-  final FocusNode? focusNode,
-}) extends StatefulWidget {
+  final FocusNode? focusNode;
+
+  const JustCheckbox({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.label,
+    this.size = .md,
+    this.isDisabled = false,
+    this.style,
+    this.enableHaptic,
+    this.focusNode,
+  });
+
   @override
   State<JustCheckbox> createState() => _JustCheckboxState();
 }
@@ -113,8 +124,9 @@ class _JustCheckboxState extends State<JustCheckbox>
   void _handleToggle() {
     if (widget.isDisabled || widget.onChanged == null) return;
 
-    final checkboxTheme = Theme.of(context).extension<JustCheckboxTheme>();
-    final finalEnableHaptic =
+    final JustCheckboxTheme? checkboxTheme = Theme.of(context)
+        .extension<JustCheckboxTheme>();
+    final bool finalEnableHaptic =
         widget.enableHaptic ??
         checkboxTheme?.enableHaptic ??
         JustThemeProvider.read(context)
@@ -126,7 +138,7 @@ class _JustCheckboxState extends State<JustCheckbox>
       HapticFeedback.selectionClick();
     }
 
-    final currentValue = widget.value;
+    final bool? currentValue = widget.value;
     if (currentValue == null) {
       widget.onChanged?.call(true);
     } else {
@@ -136,21 +148,25 @@ class _JustCheckboxState extends State<JustCheckbox>
 
   @override
   Widget build(BuildContext context) {
-    final customTheme = JustThemeProvider.of(context).theme;
-    final checkboxTheme = Theme.of(context).extension<JustCheckboxTheme>();
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustCheckboxTheme? checkboxTheme = Theme.of(context)
+        .extension<JustCheckboxTheme>();
 
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final radius = customTheme.radius;
+    final JustRadiusScheme radius = customTheme.radius;
 
-    final isInteractive = !widget.isDisabled && widget.onChanged != null;
+    final bool isInteractive = !widget.isDisabled && widget.onChanged != null;
 
     // Resolve sizing values
     double boxSize;
@@ -176,25 +192,25 @@ class _JustCheckboxState extends State<JustCheckbox>
     }
 
     // Resolve theme styles
-    final themeStyle = checkboxTheme?.style;
-    final hasBorderPreset = customTheme.presetTokens.showsDefaultBorder;
-    final resolvedActiveColor =
+    final JustCheckboxStyle? themeStyle = checkboxTheme?.style;
+    final bool hasBorderPreset = customTheme.presetTokens.showsDefaultBorder;
+    final Color resolvedActiveColor =
         widget.style?.activeColor ??
         themeStyle?.activeColor ??
         (hasBorderPreset ? colors.warning : colors.borderFocus);
-    final resolvedCheckColor =
+    final Color resolvedCheckColor =
         widget.style?.checkColor ??
         themeStyle?.checkColor ??
         (hasBorderPreset ? colors.textPrimary : colors.textInverse);
-    final resolvedBorderColor =
+    final Color resolvedBorderColor =
         widget.style?.borderColor ??
         themeStyle?.borderColor ??
         colors.borderDefault;
-    final resolvedRadius =
+    final BorderRadius resolvedRadius =
         widget.style?.borderRadius ??
         themeStyle?.borderRadius ??
         (hasBorderPreset ? .zero : .all(radius.xs));
-    final resolvedTextStyle =
+    final TextStyle resolvedTextStyle =
         widget.style?.textStyle ??
         themeStyle?.textStyle ??
         textStyle.copyWith(color: colors.textPrimary);
@@ -214,7 +230,7 @@ class _JustCheckboxState extends State<JustCheckbox>
             child: Row(
               mainAxisSize: .min,
               crossAxisAlignment: .center,
-              children: [
+              children: <Widget>[
                 // Accessibility target constraint (minimum 48x48 touch target)
                 ConstrainedBox(
                   constraints: const BoxConstraints(
@@ -228,10 +244,10 @@ class _JustCheckboxState extends State<JustCheckbox>
                         borderRadius: resolvedRadius,
                         child: AnimatedBuilder(
                           animation: _controller,
-                          builder: (context, child) {
-                            final progress = _controller.value;
-                            final isIndeterminate = widget.value == null;
-                            final hasBorder =
+                          builder: (BuildContext context, Widget? child) {
+                            final double progress = _controller.value;
+                            final bool isIndeterminate = widget.value == null;
+                            final bool hasBorder =
                                 customTheme.presetTokens.showsDefaultBorder;
 
                             // Interpolate colors based on checked/indeterminate progress
@@ -257,9 +273,9 @@ class _JustCheckboxState extends State<JustCheckbox>
                                     JustShadowLevel.sm,
                                     isPressed: state.isPressed,
                                   )
-                                : const [];
+                                : const <BoxShadow>[];
 
-                            final checkboxBox = Container(
+                            final Container checkboxBox = Container(
                               width: boxSize,
                               height: boxSize,
                               decoration: BoxDecoration(
@@ -304,7 +320,7 @@ class _JustCheckboxState extends State<JustCheckbox>
                     ),
                   ),
                 ),
-                if (widget.label != null) ...[
+                if (widget.label != null) ...<Widget>[
                   SizedBox(width: spacing.sm),
                   DefaultTextStyle(
                     style: resolvedTextStyle,
@@ -320,39 +336,45 @@ class _JustCheckboxState extends State<JustCheckbox>
   }
 }
 
-class const _CheckmarkPainter({
-  required final double progress,
-  required final Color color,
-  required final double strokeWidth,
-}) extends CustomPainter {
+class _CheckmarkPainter extends CustomPainter {
+  final double progress;
+  final Color color;
+  final double strokeWidth;
+
+  const _CheckmarkPainter({
+    required this.progress,
+    required this.color,
+    required this.strokeWidth,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
     if (progress <= 0.0) return;
 
-    final paint = Paint()
+    final Paint paint = Paint()
       ..color = color
       ..style = .stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = .round
       ..strokeJoin = .round;
 
-    final start = Offset(size.width * 0.26, size.height * 0.50);
-    final pivot = Offset(size.width * 0.44, size.height * 0.68);
-    final end = Offset(size.width * 0.74, size.height * 0.32);
+    final Offset start = Offset(size.width * 0.26, size.height * 0.50);
+    final Offset pivot = Offset(size.width * 0.44, size.height * 0.68);
+    final Offset end = Offset(size.width * 0.74, size.height * 0.32);
 
-    final path = Path();
+    final Path path = Path();
     path.moveTo(start.dx, start.dy);
 
     if (progress <= 0.5) {
-      final t = progress / 0.5;
-      final currentX = start.dx + (pivot.dx - start.dx) * t;
-      final currentY = start.dy + (pivot.dy - start.dy) * t;
+      final double t = progress / 0.5;
+      final double currentX = start.dx + (pivot.dx - start.dx) * t;
+      final double currentY = start.dy + (pivot.dy - start.dy) * t;
       path.lineTo(currentX, currentY);
     } else {
       path.lineTo(pivot.dx, pivot.dy);
-      final t = (progress - 0.5) / 0.5;
-      final currentX = pivot.dx + (end.dx - pivot.dx) * t;
-      final currentY = pivot.dy + (end.dy - pivot.dy) * t;
+      final double t = (progress - 0.5) / 0.5;
+      final double currentX = pivot.dx + (end.dx - pivot.dx) * t;
+      final double currentY = pivot.dy + (end.dy - pivot.dy) * t;
       path.lineTo(currentX, currentY);
     }
 
@@ -367,24 +389,30 @@ class const _CheckmarkPainter({
   }
 }
 
-class const _IndeterminatePainter({
-  required final double progress,
-  required final Color color,
-  required final double strokeWidth,
-}) extends CustomPainter {
+class _IndeterminatePainter extends CustomPainter {
+  final double progress;
+  final Color color;
+  final double strokeWidth;
+
+  const _IndeterminatePainter({
+    required this.progress,
+    required this.color,
+    required this.strokeWidth,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
     if (progress <= 0.0) return;
 
-    final paint = Paint()
+    final Paint paint = Paint()
       ..color = color
       ..style = .stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = .round;
 
-    final startX = size.width * (0.5 - 0.22 * progress);
-    final endX = size.width * (0.5 + 0.22 * progress);
-    final y = size.height * 0.5;
+    final double startX = size.width * (0.5 - 0.22 * progress);
+    final double endX = size.width * (0.5 + 0.22 * progress);
+    final double y = size.height * 0.5;
 
     canvas.drawLine(Offset(startX, y), Offset(endX, y), paint);
   }

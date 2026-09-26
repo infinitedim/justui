@@ -1,0 +1,234 @@
+// justui-meta: registry=c5a1904e7914ff5d1d639a3a5f3239779e985c003ebf46e5f167b5f364886593 local=9eca2da4dbe9fdc8a326ff75a2600b5ed2c927cd62560d61e02a7fbeabb98d92
+import 'package:flutter/material.dart' show Colors, DateTimeRange;
+import 'package:flutter/widgets.dart';
+import 'package:showcase/core/just_ui_core.dart';
+
+import '../shared/just_pressable.dart';
+import '../date-picker/_date_picker_calendar.dart';
+import '../date-picker/just_date_picker_style.dart';
+import '../date-picker/just_date_picker_variants.dart';
+
+/// A date range selection component supporting multi-day selection and quick presets.
+class JustDateRangePicker extends StatelessWidget {
+  /// Currently selected range.
+  final DateTimeRange? value;
+
+  /// Callback executed when a new range is selected.
+  final ValueChanged<DateTimeRange>? onChanged;
+
+  /// Earliest selectable date.
+  final DateTime? firstDate;
+
+  /// Latest selectable date.
+  final DateTime? lastDate;
+
+  /// Predicate function for disabling dates.
+  final bool Function(DateTime)? selectableDayPredicate;
+
+  /// List of quick preset ranges (e.g. 'Last 7 Days', 'This Month').
+  final List<JustDateRangePreset>? presets;
+
+  /// Whether to display week numbers column.
+  final bool showWeekNumbers;
+
+  /// First day of week (1=Mon, 7=Sun).
+  final int firstDayOfWeek;
+
+  /// Custom day cell builder.
+  final Widget Function(BuildContext context, DateTime date, bool isSelected)?
+  dayBuilder;
+
+  /// Custom header builder.
+  final Widget Function(
+    BuildContext context,
+    DateTime activeDate,
+    JustCalendarView view,
+    VoidCallback toggleView,
+    VoidCallback onPrev,
+    VoidCallback onNext,
+  )?
+  headerBuilder;
+
+  /// Custom locale names provider.
+  final JustDatePickerLocale locale;
+
+  /// Per-instance style overrides.
+  final JustDatePickerStyle? style;
+
+  /// Whether to enable haptic feedback on selection.
+  final bool? enableHaptic;
+
+  /// Creates a [JustDateRangePicker] component.
+  const JustDateRangePicker({
+    super.key,
+    this.value,
+    this.onChanged,
+    this.firstDate,
+    this.lastDate,
+    this.selectableDayPredicate,
+    this.presets,
+    this.showWeekNumbers = false,
+    this.firstDayOfWeek = 7,
+    this.dayBuilder,
+    this.headerBuilder,
+    this.locale = const JustDatePickerLocale(),
+    this.style,
+    this.enableHaptic,
+  });
+
+  /// Default list of common range presets.
+  static List<JustDateRangePreset> defaultPresets() {
+    final DateTime now = .now();
+    final DateTime today = DateTime(now.year, now.month, now.day);
+
+    return <JustDateRangePreset>[
+      JustDateRangePreset(
+        label: 'Today',
+        resolve: () => DateTimeRange(start: today, end: today),
+      ),
+      JustDateRangePreset(
+        label: 'Last 7 Days',
+        resolve: () => DateTimeRange(
+          start: today.subtract(const Duration(days: 6)),
+          end: today,
+        ),
+      ),
+      JustDateRangePreset(
+        label: 'Last 30 Days',
+        resolve: () => DateTimeRange(
+          start: today.subtract(const Duration(days: 29)),
+          end: today,
+        ),
+      ),
+      JustDateRangePreset(
+        label: 'This Month',
+        resolve: () {
+          final DateTime start = DateTime(today.year, today.month, 1);
+          final DateTime end = DateTime(today.year, today.month + 1, 0);
+          return DateTimeRange(start: start, end: end);
+        },
+      ),
+      JustDateRangePreset(
+        label: 'This Year',
+        resolve: () {
+          final DateTime start = DateTime(today.year, 1, 1);
+          final DateTime end = DateTime(today.year, 12, 31);
+          return DateTimeRange(start: start, end: end);
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustPresetTokens presetTokens = theme.presetTokens;
+
+    final DatePickerCalendar calendar = DatePickerCalendar(
+      selectedRange: value,
+      onRangeSelected: onChanged,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      selectableDayPredicate: selectableDayPredicate,
+      showWeekNumbers: showWeekNumbers,
+      firstDayOfWeek: firstDayOfWeek,
+      dayBuilder: dayBuilder,
+      headerBuilder: headerBuilder,
+      locale: locale,
+      style: style,
+      enableHaptic: enableHaptic,
+    );
+
+    if (presets == null || presets!.isEmpty) {
+      return calendar;
+    }
+
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final bool isMobile = constraints.maxWidth < 500;
+
+        final Container presetsColumn = Container(
+          padding: .all(spacing.sm),
+          decoration: BoxDecoration(
+            color: colors.card,
+            borderRadius: presetTokens.resolveBorderRadius(radius),
+            border: presetTokens.showsDefaultBorder
+                ? .all(
+                    color: colors.textPrimary,
+                    width: presetTokens.borderWidth,
+                  )
+                : .all(
+                    color: colors.borderDefault,
+                    width: presetTokens.borderWidth,
+                  ),
+          ),
+          child: Column(
+            mainAxisSize: .min,
+            crossAxisAlignment: .start,
+            children: presets!
+                .map(
+                  (JustDateRangePreset preset) => Padding(
+                    padding: .only(bottom: spacing.xs),
+                    child: JustPressable(
+                      onTap: () {
+                        final DateTimeRange<DateTime> range = preset.resolve();
+                        onChanged?.call(range);
+                      },
+                      builder:
+                          (BuildContext context, JustInteractionState state) {
+                            return Container(
+                              width: .infinity,
+                              padding: .symmetric(
+                                horizontal: spacing.sm,
+                                vertical: spacing.xs,
+                              ),
+                              decoration: BoxDecoration(
+                                color: state.isHovered
+                                    ? colors.muted
+                                    : Colors.transparent,
+                                borderRadius: .all(context.justRadius.sm),
+                              ),
+                              child: Text(
+                                preset.label,
+                                style: typo.bodySm.copyWith(
+                                  color: colors.textPrimary,
+                                  fontWeight: .w500,
+                                ),
+                              ),
+                            );
+                          },
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        );
+
+        if (isMobile) {
+          return Column(
+            mainAxisSize: .min,
+            children: <Widget>[
+              presetsColumn,
+              SizedBox(height: spacing.sm),
+              calendar,
+            ],
+          );
+        }
+
+        return Row(
+          mainAxisSize: .min,
+          crossAxisAlignment: .start,
+          children: <Widget>[
+            SizedBox(width: 140.0, child: presetsColumn),
+            SizedBox(width: spacing.sm),
+            Flexible(child: calendar),
+          ],
+        );
+      },
+    );
+  }
+}

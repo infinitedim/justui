@@ -1,27 +1,35 @@
-// justui-meta: registry=790636410ca043e519c1df34bea547490c447ff7a12659c1cf2b018e96d3bea7 local=790636410ca043e519c1df34bea547490c447ff7a12659c1cf2b018e96d3bea7
+// justui-meta: registry=f0d9b6d5f0496f85b7b6d51a3fb5fa90064efd4db232420a472c989a29dbee19 local=81f079dd90994c1560a91bb869cc2f1054bdee33721f6c626923b4385daabe0b
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_toast_style.dart';
 
 /// Global theme configuration for toasts, extending Flutter's [ThemeExtension].
-class const JustToastTheme({
+class JustToastTheme extends ThemeExtension<JustToastTheme> {
   /// Style override for informational toasts.
-  final JustToastStyle? infoStyle,
+  final JustToastStyle? infoStyle;
 
   /// Style override for success toasts.
-  final JustToastStyle? successStyle,
+  final JustToastStyle? successStyle;
 
   /// Style override for warning toasts.
-  final JustToastStyle? warningStyle,
+  final JustToastStyle? warningStyle;
 
   /// Style override for error toasts.
-  final JustToastStyle? errorStyle,
+  final JustToastStyle? errorStyle;
 
   /// Whether to enable haptic feedback when a toast is shown.
-  final bool enableHaptic = false,
-}) extends ThemeExtension<JustToastTheme> {
+  final bool enableHaptic;
+
+  const JustToastTheme({
+    this.infoStyle,
+    this.successStyle,
+    this.warningStyle,
+    this.errorStyle,
+    this.enableHaptic = false,
+  });
+
   /// Default configuration for the theme.
-  static const defaults = JustToastTheme();
+  static const JustToastTheme defaults = JustToastTheme();
 
   @override
   JustToastTheme copyWith({

@@ -1,9 +1,13 @@
-// justui-meta: registry=047139904991700eade0b85e2485169434e6de74f77564229664c8679ec958a9 local=44fd093b4177916990053ff3e16bae08b451cb9e81d8ac07545907a56aafb0c6
+// justui-meta: registry=ca3d6cc7c80c32e94dc0373396c620d61e26d18fd932e4fdf0e8a0c1cc5e311e local=b9da99fc9a74e6c19a5d2e74f248027470da8c2ea6c9ba48364bdea4113a6fe2
 import 'dart:async';
 
 import 'package:flutter/material.dart' show Theme, showGeneralDialog;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:showcase/core/theme/preset_tokens.dart';
+import 'package:showcase/core/theme/theme_data.dart';
+import 'package:showcase/tokens/just_ui_tokens.dart'
+    show JustColorScheme, JustMotionProfile;
 
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -12,27 +16,37 @@ import 'just_sheet_theme.dart';
 import 'just_sheet_variants.dart';
 
 /// Represents an active sheet instance.
-class _SheetInstance<T>({
-  required final String id,
-  required final Completer<T?> completer,
-  required final OverlayEntry barrierEntry,
-  required final OverlayEntry contentEntry,
-  required final AnimationController animationController,
-  required final bool isLocalController,
-}) {
+class _SheetInstance<T> {
+  final String id;
+  final Completer<T?> completer;
+  final OverlayEntry barrierEntry;
+  final OverlayEntry contentEntry;
+  final AnimationController animationController;
+  final bool isLocalController;
+
   /// Set as soon as a dismissal has been requested for this instance, so a
   /// second dismiss request for the same instance (e.g. a held-down Escape
   /// key delivering repeated key events, or a drag-to-dismiss racing the
   /// Escape handler) is a no-op instead of starting a second reverse
   /// animation.
   bool _dismissRequested = false;
+
+  _SheetInstance({
+    required this.id,
+    required this.completer,
+    required this.barrierEntry,
+    required this.contentEntry,
+    required this.animationController,
+    required this.isLocalController,
+  });
 }
 
 /// Imperative controller for managing slide-in sheets.
 class JustSheetController extends JustOverlayController {
   OverlayState? _overlayState;
   TickerProvider? _vsync;
-  final List<_SheetInstance<dynamic>> _activeSheets = [];
+  final List<_SheetInstance<dynamic>> _activeSheets =
+      <_SheetInstance<dynamic>>[];
 
   @override
   bool get isVisible => _activeSheets.isNotEmpty;
@@ -60,11 +74,11 @@ class JustSheetController extends JustOverlayController {
       'JustSheetController must have a valid TickerProvider from JustSheetScope',
     );
 
-    final completer = Completer<T?>();
-    final id = DateTime.now().microsecondsSinceEpoch.toString();
+    final Completer<T?> completer = Completer<T?>();
+    final String id = DateTime.now().microsecondsSinceEpoch.toString();
 
-    final isLocalController = animationController == null;
-    final animController =
+    final bool isLocalController = animationController == null;
+    final AnimationController animController =
         animationController ??
         AnimationController(
           vsync: _vsync!,
@@ -74,11 +88,11 @@ class JustSheetController extends JustOverlayController {
     late final _SheetInstance<T> instance;
 
     // 1. Barrier Entry
-    final barrierEntry = OverlayEntry(
-      builder: (context) {
-        final theme = JustThemeProvider.of(context).theme;
-        final colors = theme.colors;
-        final resolvedBarrierColor =
+    final OverlayEntry barrierEntry = OverlayEntry(
+      builder: (BuildContext context) {
+        final JustThemeData theme = JustThemeProvider.of(context).theme;
+        final JustColorScheme colors = theme.colors;
+        final Color resolvedBarrierColor =
             style?.barrierColor ??
             barrierColor ??
             colors.overlay.withValues(alpha: 0.5);
@@ -98,11 +112,11 @@ class JustSheetController extends JustOverlayController {
       },
     );
 
-    final previousFocus = FocusManager.instance.primaryFocus;
+    final FocusNode? previousFocus = FocusManager.instance.primaryFocus;
 
     // 2. Content Entry
-    final contentEntry = OverlayEntry(
-      builder: (context) {
+    final OverlayEntry contentEntry = OverlayEntry(
+      builder: (BuildContext context) {
         return _JustSheetWidget(
           instance: instance,
           content: content,
@@ -113,7 +127,7 @@ class JustSheetController extends JustOverlayController {
           style: style,
           animationBuilder: animationBuilder,
           previousFocus: previousFocus,
-          onDismiss: (val) => _dismissSheet(instance, val),
+          onDismiss: (dynamic val) => _dismissSheet(instance, val),
         );
       },
     );
@@ -173,8 +187,9 @@ class JustSheetController extends JustOverlayController {
 
   @override
   void dismiss() {
-    final targets = List<_SheetInstance<dynamic>>.from(_activeSheets);
-    for (final sheet in targets) {
+    final List<_SheetInstance<dynamic>> targets =
+        List<_SheetInstance<dynamic>>.from(_activeSheets);
+    for (final _SheetInstance<dynamic> sheet in targets) {
       _dismissSheet(sheet, null);
     }
   }
@@ -190,8 +205,9 @@ class JustSheetController extends JustOverlayController {
   /// app/root [Navigator]'s overlay) would stay inserted indefinitely,
   /// continuing to render stale content after the scope is gone.
   void forceDismissAll() {
-    final targets = List<_SheetInstance<dynamic>>.from(_activeSheets);
-    for (final instance in targets) {
+    final List<_SheetInstance<dynamic>> targets =
+        List<_SheetInstance<dynamic>>.from(_activeSheets);
+    for (final _SheetInstance<dynamic> instance in targets) {
       _cleanupSheetInstance(instance, null);
     }
   }
@@ -204,18 +220,31 @@ class JustSheetController extends JustOverlayController {
 
 /// The internal widget for rendering the sheet content with drag-to-dismiss and focus trapping.
 /// The internal widget for rendering the sheet content with drag-to-dismiss and focus trapping.
-class const _JustSheetWidget({
-  required final _SheetInstance<dynamic> instance,
-  required final Widget content,
-  required final SheetDirection direction,
-  final double? size,
-  final double? maxSize,
-  required final bool draggable,
-  final JustSheetStyle? style,
-  final JustOverlayAnimationBuilder? animationBuilder,
-  final FocusNode? previousFocus,
-  required final ValueChanged<dynamic> onDismiss,
-}) extends StatefulWidget {
+class _JustSheetWidget extends StatefulWidget {
+  final _SheetInstance<dynamic> instance;
+  final Widget content;
+  final SheetDirection direction;
+  final double? size;
+  final double? maxSize;
+  final bool draggable;
+  final JustSheetStyle? style;
+  final JustOverlayAnimationBuilder? animationBuilder;
+  final FocusNode? previousFocus;
+  final ValueChanged<dynamic> onDismiss;
+
+  const _JustSheetWidget({
+    required this.instance,
+    required this.content,
+    required this.direction,
+    this.size,
+    this.maxSize,
+    required this.draggable,
+    this.style,
+    this.animationBuilder,
+    this.previousFocus,
+    required this.onDismiss,
+  });
+
   @override
   State<_JustSheetWidget> createState() => _JustSheetWidgetState();
 }
@@ -234,8 +263,8 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
     if (!widget.draggable) return;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final delta = details.primaryDelta! / screenHeight;
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double delta = details.primaryDelta! / screenHeight;
 
     // For bottom: dragging down (positive delta) reduces animation value.
     // For top: dragging up (negative delta) reduces animation value.
@@ -250,8 +279,8 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
 
   void _onHorizontalDragUpdate(DragUpdateDetails details) {
     if (!widget.draggable) return;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final delta = details.primaryDelta! / screenWidth;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double delta = details.primaryDelta! / screenWidth;
 
     // For right: dragging right (positive delta) reduces animation value.
     // For left: dragging left (negative delta) reduces animation value.
@@ -275,15 +304,16 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = JustThemeProvider.of(context).theme;
-    final colors = theme.colors;
-    final spacing = theme.spacing;
-    final radius = theme.radius;
-    final shadows = theme.shadows;
-    final motion = theme.animations.resolve(context);
-    final typography = theme.typography;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = theme.colors;
+    final JustSpacingScheme spacing = theme.spacing;
+    final JustRadiusScheme radius = theme.radius;
+    final JustShadowScheme shadows = theme.shadows;
+    final JustMotionProfile motion = theme.animations.resolve(context);
+    final JustTypographyScheme typography = theme.typography;
 
-    final globalTheme = Theme.of(context).extension<JustSheetTheme>();
+    final JustSheetTheme? globalTheme = Theme.of(context)
+        .extension<JustSheetTheme>();
 
     JustSheetStyle? directionThemeStyle;
     switch (widget.direction) {
@@ -301,20 +331,20 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
         break;
     }
 
-    final entryStyle = widget.style;
+    final JustSheetStyle? entryStyle = widget.style;
 
     // Resolve styles
-    final bgColor =
+    final Color bgColor =
         entryStyle?.backgroundColor ??
         directionThemeStyle?.backgroundColor ??
         colors.card;
-    final padding =
+    final EdgeInsets padding =
         entryStyle?.padding ?? directionThemeStyle?.padding ?? .all(spacing.lg);
-    final handleColor =
+    final Color handleColor =
         entryStyle?.handleColor ??
         directionThemeStyle?.handleColor ??
         colors.borderDefault;
-    final sheetShadows =
+    final List<BoxShadow> sheetShadows =
         entryStyle?.shadows ?? directionThemeStyle?.shadows ?? shadows.lg;
 
     final BorderRadius resolvedRadius;
@@ -345,8 +375,8 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
         break;
     }
 
-    final presetTokens = theme.presetTokens;
-    final borderSide = BorderSide(
+    final JustPresetTokens presetTokens = theme.presetTokens;
+    final BorderSide borderSide = BorderSide(
       color: presetTokens.showsDefaultBorder
           ? colors.textPrimary
           : colors.borderDefault,
@@ -354,7 +384,7 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     );
 
     // Calculate layout sizing based on direction and screen dimensions
-    final screenSize = MediaQuery.of(context).size;
+    final Size screenSize = MediaQuery.of(context).size;
 
     double? width;
     double? height;
@@ -396,10 +426,11 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     }
 
     // Drag handle bar
-    final isVertical = widget.direction == .bottom || widget.direction == .top;
+    final bool isVertical =
+        widget.direction == .bottom || widget.direction == .top;
 
     // Keyboard inset awareness for bottom sheets
-    final bottomInset = widget.direction == .bottom
+    final double bottomInset = widget.direction == .bottom
         ? MediaQuery.of(context).viewInsets.bottom
         : 0.0;
 
@@ -423,8 +454,8 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
         child: Column(
           mainAxisSize: mainAxisSize,
           crossAxisAlignment: .stretch,
-          children: [
-            if (widget.draggable && isVertical) ...[
+          children: <Widget>[
+            if (widget.draggable && isVertical) ...<Widget>[
               Center(
                 child: Container(
                   width: 36.0,
@@ -474,7 +505,7 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     }
 
     // Apply animation
-    final curvedAnimation = CurvedAnimation(
+    final CurvedAnimation curvedAnimation = CurvedAnimation(
       parent: widget.instance.animationController,
       curve: motion.enter,
       reverseCurve: motion.exit,
@@ -518,13 +549,13 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
         autofocus: true,
         child: KeyboardListener(
           focusNode: _focusNode,
-          onKeyEvent: (event) {
+          onKeyEvent: (KeyEvent event) {
             if (event is KeyDownEvent && event.logicalKey == .escape) {
               widget.onDismiss(null);
             }
           },
           child: Stack(
-            children: [
+            children: <Widget>[
               Align(
                 alignment: alignment,
                 child: Semantics(
@@ -545,18 +576,22 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
 
 /// Scope widget that binds a [JustSheetController] and handles the Flutter context/ticker binding.
 /// Scope widget that binds a [JustSheetController] and handles the Flutter context/ticker binding.
-class const JustSheetScope({
-  super.key,
-
+class JustSheetScope extends StatefulWidget {
   /// The controller that manages the sheet overlay.
-  required final JustSheetController controller,
+  final JustSheetController controller;
 
   /// The child subtree.
-  required final Widget child,
-}) extends StatefulWidget {
+  final Widget child;
+
+  const JustSheetScope({
+    super.key,
+    required this.controller,
+    required this.child,
+  });
+
   /// Retrieves the nearest [JustSheetController] from the ancestor scope.
   static JustSheetController of(BuildContext context) {
-    final scope = context
+    final _JustSheetScopeInherited? scope = context
         .dependOnInheritedWidgetOfExactType<_JustSheetScopeInherited>();
     assert(scope != null, 'No JustSheetScope found in context');
     return scope!.controller;
@@ -564,7 +599,7 @@ class const JustSheetScope({
 
   /// Retrieves the nearest [JustSheetController] from the ancestor scope if available.
   static JustSheetController? maybeOf(BuildContext context) {
-    final scope = context
+    final _JustSheetScopeInherited? scope = context
         .dependOnInheritedWidgetOfExactType<_JustSheetScopeInherited>();
     return scope?.controller;
   }
@@ -621,10 +656,14 @@ class _JustSheetScopeState extends State<JustSheetScope>
   }
 }
 
-class const _JustSheetScopeInherited({
-  required super.child,
-  required final JustSheetController controller,
-}) extends InheritedWidget {
+class _JustSheetScopeInherited extends InheritedWidget {
+  final JustSheetController controller;
+
+  const _JustSheetScopeInherited({
+    required super.child,
+    required this.controller,
+  });
+
   @override
   bool updateShouldNotify(_JustSheetScopeInherited oldWidget) {
     return controller != oldWidget.controller;
@@ -652,7 +691,7 @@ Future<T?> showJustBottomSheet<T>({
   bool draggable = true,
   JustSheetStyle? style,
 }) {
-  final scope = JustSheetScope.maybeOf(context);
+  final JustSheetController? scope = JustSheetScope.maybeOf(context);
   if (scope != null) {
     return scope.show<T>(
       content: content,
@@ -666,22 +705,23 @@ Future<T?> showJustBottomSheet<T>({
     );
   }
 
-  final themeState = JustThemeProvider.maybeOf(context);
-  final theme = themeState?.theme ?? JustThemeProvider.of(context).theme;
-  final colors = theme.colors;
-  final radius = theme.radius;
-  final spacing = theme.spacing;
-  final shadows = theme.shadows;
-  final presetTokens = theme.presetTokens;
+  final JustThemeProviderState? themeState = JustThemeProvider.maybeOf(context);
+  final JustThemeData theme =
+      themeState?.theme ?? JustThemeProvider.of(context).theme;
+  final JustColorScheme colors = theme.colors;
+  final JustRadiusScheme radius = theme.radius;
+  final JustSpacingScheme spacing = theme.spacing;
+  final JustShadowScheme shadows = theme.shadows;
+  final JustPresetTokens presetTokens = theme.presetTokens;
 
-  final borderSide = BorderSide(
+  final BorderSide borderSide = BorderSide(
     color: presetTokens.showsDefaultBorder
         ? colors.textPrimary
         : colors.borderDefault,
     width: presetTokens.borderWidth,
   );
 
-  final isVertical = direction == .bottom || direction == .top;
+  final bool isVertical = direction == .bottom || direction == .top;
 
   return showGeneralDialog<T>(
     context: context,
@@ -693,95 +733,106 @@ Future<T?> showJustBottomSheet<T>({
         style?.barrierColor ??
         barrierColor ??
         colors.overlay.withValues(alpha: 0.5),
-    pageBuilder: (context, animation, secondaryAnimation) {
-      Alignment alignment;
-      switch (direction) {
-        case .bottom:
-          alignment = .bottomCenter;
-          break;
-        case .top:
-          alignment = .topCenter;
-          break;
-        case .left:
-          alignment = .centerLeft;
-          break;
-        case .right:
-          alignment = .centerRight;
-          break;
-      }
+    pageBuilder:
+        (
+          BuildContext context,
+          Animation<double> animation,
+          Animation<double> secondaryAnimation,
+        ) {
+          Alignment alignment;
+          switch (direction) {
+            case .bottom:
+              alignment = .bottomCenter;
+              break;
+            case .top:
+              alignment = .topCenter;
+              break;
+            case .left:
+              alignment = .centerLeft;
+              break;
+            case .right:
+              alignment = .centerRight;
+              break;
+          }
 
-      return Align(
-        alignment: alignment,
-        child: Container(
-          width: .infinity,
-          decoration: BoxDecoration(
-            color: style?.backgroundColor ?? colors.card,
-            borderRadius: style?.borderRadius ?? .vertical(top: radius.lg),
-            border: .fromBorderSide(borderSide),
-            boxShadow: theme.resolveShadows(
-              style?.shadows ?? shadows.lg,
-              isPressed: false,
-            ),
-          ),
-          padding: style?.padding ?? .all(spacing.lg),
-          child: SafeArea(
-            top: direction == .top,
-            bottom: direction == .bottom,
-            left: direction == .left,
-            right: direction == .right,
-            child: Column(
-              mainAxisSize: size != null ? .max : .min,
-              crossAxisAlignment: .stretch,
-              children: [
-                if (draggable && isVertical)
-                  Center(
-                    child: Container(
-                      width: 36.0,
-                      height: 4.0,
-                      margin: .only(bottom: spacing.md),
-                      decoration: BoxDecoration(
-                        color: style?.handleColor ?? colors.borderDefault,
-                        borderRadius: .all(radius.xs),
+          return Align(
+            alignment: alignment,
+            child: Container(
+              width: .infinity,
+              decoration: BoxDecoration(
+                color: style?.backgroundColor ?? colors.card,
+                borderRadius: style?.borderRadius ?? .vertical(top: radius.lg),
+                border: .fromBorderSide(borderSide),
+                boxShadow: theme.resolveShadows(
+                  style?.shadows ?? shadows.lg,
+                  isPressed: false,
+                ),
+              ),
+              padding: style?.padding ?? .all(spacing.lg),
+              child: SafeArea(
+                top: direction == .top,
+                bottom: direction == .bottom,
+                left: direction == .left,
+                right: direction == .right,
+                child: Column(
+                  mainAxisSize: size != null ? .max : .min,
+                  crossAxisAlignment: .stretch,
+                  children: <Widget>[
+                    if (draggable && isVertical)
+                      Center(
+                        child: Container(
+                          width: 36.0,
+                          height: 4.0,
+                          margin: .only(bottom: spacing.md),
+                          decoration: BoxDecoration(
+                            color: style?.handleColor ?? colors.borderDefault,
+                            borderRadius: .all(radius.xs),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                if (size != null) Expanded(child: content) else content,
-              ],
+                    if (size != null) Expanded(child: content) else content,
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
-      );
-    },
-    transitionBuilder: (context, animation, secondaryAnimation, child) {
-      Offset beginOffset;
-      switch (direction) {
-        case .bottom:
-          beginOffset = const Offset(0, 1.0);
-          break;
-        case .top:
-          beginOffset = const Offset(0, -1.0);
-          break;
-        case .left:
-          beginOffset = const Offset(-1.0, 0);
-          break;
-        case .right:
-          beginOffset = const Offset(1.0, 0);
-          break;
-      }
+          );
+        },
+    transitionBuilder:
+        (
+          BuildContext context,
+          Animation<double> animation,
+          Animation<double> secondaryAnimation,
+          Widget child,
+        ) {
+          Offset beginOffset;
+          switch (direction) {
+            case .bottom:
+              beginOffset = const Offset(0, 1.0);
+              break;
+            case .top:
+              beginOffset = const Offset(0, -1.0);
+              break;
+            case .left:
+              beginOffset = const Offset(-1.0, 0);
+              break;
+            case .right:
+              beginOffset = const Offset(1.0, 0);
+              break;
+          }
 
-      final curvedAnimation = CurvedAnimation(
-        parent: animation,
-        curve: theme.animations.enter,
-        reverseCurve: theme.animations.exit,
-      );
+          final CurvedAnimation curvedAnimation = CurvedAnimation(
+            parent: animation,
+            curve: theme.animations.enter,
+            reverseCurve: theme.animations.exit,
+          );
 
-      return SlideTransition(
-        position: Tween<Offset>(
-          begin: beginOffset,
-          end: .zero,
-        ).animate(curvedAnimation),
-        child: child,
-      );
-    },
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: beginOffset,
+              end: .zero,
+            ).animate(curvedAnimation),
+            child: child,
+          );
+        },
   );
 }

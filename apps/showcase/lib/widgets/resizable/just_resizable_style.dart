@@ -1,55 +1,73 @@
-// justui-meta: registry=47b0a7a36ae93ddbb9c30001cf5eb9e9d292ec1446bca2547a23229a9f709791 local=47b0a7a36ae93ddbb9c30001cf5eb9e9d292ec1446bca2547a23229a9f709791
+// justui-meta: registry=47b0a7a36ae93ddbb9c30001cf5eb9e9d292ec1446bca2547a23229a9f709791 local=26b4110cd372fd71c60c97da8c90fb9e3ef98147b0497442a34924947d23ea87
 import 'package:flutter/widgets.dart';
 
 import 'just_resizable_variants.dart';
 
 /// Customized per-instance visual styles for [JustResizable].
-class const JustResizableStyle({
+class JustResizableStyle {
   /// Custom thickness for the splitter divider line.
-  final double? dividerThickness,
+  final double? dividerThickness;
 
   /// Custom color for the splitter divider line in its normal state.
-  final Color? dividerColor,
+  final Color? dividerColor;
 
   /// Custom color for the splitter divider line when hovered or dragged.
-  final Color? activeDividerColor,
+  final Color? activeDividerColor;
 
   /// Custom hit box size for splitter touch and mouse interactions. Defaults to 8.0.
-  final double? handleHitSize,
+  final double? handleHitSize;
 
   /// Visual variant of the handle (line, grip, none).
-  final JustResizableHandleVariant? handleVariant,
+  final JustResizableHandleVariant? handleVariant;
 
   /// Custom size for the centered grip pill.
-  final Size? gripSize,
+  final Size? gripSize;
 
   /// Custom background color of the centered grip pill.
-  final Color? gripColor,
+  final Color? gripColor;
 
   /// Custom active background color of the centered grip pill when hovered or dragged.
-  final Color? activeGripColor,
+  final Color? activeGripColor;
 
   /// Custom border color of the centered grip pill.
-  final Color? gripBorderColor,
+  final Color? gripBorderColor;
 
   /// Custom active border color of the centered grip pill.
-  final Color? activeGripBorderColor,
+  final Color? activeGripBorderColor;
 
   /// Custom icon / dots color inside the grip pill.
-  final Color? gripDotColor,
+  final Color? gripDotColor;
 
   /// Custom border radius for the centered grip pill.
-  final BorderRadius? gripRadius,
+  final BorderRadius? gripRadius;
 
   /// Custom double-tap action for splitters.
-  final JustResizableDoubleTapBehavior? doubleTapBehavior,
+  final JustResizableDoubleTapBehavior? doubleTapBehavior;
 
   /// Distance in pixels adjusted per standard arrow keypress.
-  final double? keyboardStep,
+  final double? keyboardStep;
 
   /// Distance in pixels adjusted when Shift is held with arrow keypress.
-  final double? keyboardShiftStep,
-}) {
+  final double? keyboardShiftStep;
+
+  const JustResizableStyle({
+    this.dividerThickness,
+    this.dividerColor,
+    this.activeDividerColor,
+    this.handleHitSize,
+    this.handleVariant,
+    this.gripSize,
+    this.gripColor,
+    this.activeGripColor,
+    this.gripBorderColor,
+    this.activeGripBorderColor,
+    this.gripDotColor,
+    this.gripRadius,
+    this.doubleTapBehavior,
+    this.keyboardStep,
+    this.keyboardShiftStep,
+  });
+
   /// Returns a copy with given fields replaced.
   JustResizableStyle copyWith({
     double? dividerThickness,

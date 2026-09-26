@@ -1,8 +1,8 @@
-// justui-meta: registry=21eeec9cfcfd1db8a1b3fbf0ad159a5bcf566761ba55a7c2b1397aff86155029 local=c8734117abe7634d6132139b7642808f478a3fb6be8b8cfa0ad9b3afdff7d2ea
+// justui-meta: registry=4190957650f770ded05ece53aa6526cc72f32ac22564c7e719f8f493901cd9e3 local=1c6e2eb141c38a9a59501fd65b4a09fa51fab768f7d632c0062ee56ef7062455
 import 'dart:async' show Timer;
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart' show Theme, TimeOfDay;
+import 'package:flutter/material.dart' show Theme, TimeOfDay, DayPeriod;
 import 'package:flutter/rendering.dart' show SemanticsService, TextDirection;
 import 'package:flutter/services.dart'
     show
@@ -26,22 +26,64 @@ import 'just_time_picker_variants.dart';
 /// hand animations, dual concentric rings in 24-hour mode, responsive drag
 /// gestures with atan2 angle resolution, and WCAG-compliant keyboard and
 /// screen reader accessibility.
-class const TimePickerDial({
-  super.key,
-  final TimeOfDay? selectedTime,
-  final ValueChanged<TimeOfDay>? onChanged,
-  final TimeOfDay? firstTime,
-  final TimeOfDay? lastTime,
-  final bool Function(TimeOfDay)? selectableTimePredicate,
-  final JustTimeFormat timeFormat = .twelveHour,
-  final int minuteInterval = 1,
-  final JustTimePickerSegment activeSegment = .hour,
-  final ValueChanged<JustTimePickerSegment>? onSegmentChanged,
-  final bool autoAdvance = true,
-  final JustTimePickerLocale locale = const JustTimePickerLocale(),
-  final JustTimePickerStyle? style,
-  final bool? enableHaptic,
-}) extends StatefulWidget {
+class TimePickerDial extends StatefulWidget {
+  /// Currently selected time value.
+  final TimeOfDay? selectedTime;
+
+  /// Callback fired when the selected time changes.
+  final ValueChanged<TimeOfDay>? onChanged;
+
+  /// Earliest selectable time (inclusive).
+  final TimeOfDay? firstTime;
+
+  /// Latest selectable time (inclusive).
+  final TimeOfDay? lastTime;
+
+  /// Predicate to selectively disable specific times.
+  final bool Function(TimeOfDay)? selectableTimePredicate;
+
+  /// Time format (12-hour or 24-hour).
+  final JustTimeFormat timeFormat;
+
+  /// Minute selection interval (e.g. 1, 5, 10, 15, 30).
+  final int minuteInterval;
+
+  /// Currently active segment (hour or minute).
+  final JustTimePickerSegment activeSegment;
+
+  /// Callback when segment changes (e.g. auto-advance from hour to minute).
+  final ValueChanged<JustTimePickerSegment>? onSegmentChanged;
+
+  /// Whether selecting an hour automatically advances to minute selection.
+  final bool autoAdvance;
+
+  /// Locale strings for semantic announcements and tooltips.
+  final JustTimePickerLocale locale;
+
+  /// Per-instance style overrides.
+  final JustTimePickerStyle? style;
+
+  /// Whether haptic feedback is enabled.
+  final bool? enableHaptic;
+
+  /// Creates a [TimePickerDial] widget.
+  const TimePickerDial({
+    super.key,
+    this.selectedTime,
+    this.onChanged,
+    this.firstTime,
+    this.lastTime,
+    this.selectableTimePredicate,
+    this.timeFormat = .twelveHour,
+    this.minuteInterval = 1,
+    this.activeSegment = .hour,
+    this.onSegmentChanged,
+    this.autoAdvance = true,
+    this.locale = const JustTimePickerLocale(),
+    this.style,
+    this.enableHaptic,
+  });
+
   @override
   State<TimePickerDial> createState() => _TimePickerDialState();
 }
@@ -100,20 +142,20 @@ class _TimePickerDialState extends State<TimePickerDial>
   void didUpdateWidget(covariant TimePickerDial oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    final size = widget.style?.dialSize ?? 240.0;
-    final outerR = _resolveOuterRadius(size);
-    final innerR = _resolveInnerRadius(size);
+    final double size = widget.style?.dialSize ?? 240.0;
+    final double outerR = _resolveOuterRadius(size);
+    final double innerR = _resolveInnerRadius(size);
 
     if (widget.selectedTime != null &&
         widget.selectedTime != _currentTime &&
         !_isDragging) {
       _currentTime = widget.selectedTime!;
-      final targetAngle = _angleForTime(
+      final double targetAngle = _angleForTime(
         _currentTime,
         _activeSegment,
         widget.timeFormat,
       );
-      final targetRadius = _radiusForTime(
+      final double targetRadius = _radiusForTime(
         _currentTime,
         _activeSegment,
         widget.timeFormat,
@@ -123,12 +165,12 @@ class _TimePickerDialState extends State<TimePickerDial>
       _animateHandTo(targetAngle, targetRadius);
     } else if (widget.activeSegment != oldWidget.activeSegment) {
       _activeSegment = widget.activeSegment;
-      final targetAngle = _angleForTime(
+      final double targetAngle = _angleForTime(
         _currentTime,
         _activeSegment,
         widget.timeFormat,
       );
-      final targetRadius = _radiusForTime(
+      final double targetRadius = _radiusForTime(
         _currentTime,
         _activeSegment,
         widget.timeFormat,
@@ -160,7 +202,7 @@ class _TimePickerDialState extends State<TimePickerDial>
 
   void _onAnimationTick() {
     setState(() {
-      final curve = Curves.easeOutCubic.transform(_handController.value);
+      final double curve = Curves.easeOutCubic.transform(_handController.value);
       _currentAngle = _startAngle + _deltaAngle * curve;
       _currentRadius = _startRadius + (_targetRadius - _startRadius) * curve;
     });
@@ -177,10 +219,10 @@ class _TimePickerDialState extends State<TimePickerDial>
   ) {
     if (segment == .hour) {
       if (format == .twentyFourHour) {
-        final sector = time.hour % 12;
+        final int sector = time.hour % 12;
         return (sector * 2 * math.pi) / 12;
       } else {
-        final h12 = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+        final int h12 = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
         return (h12 % 12) * (2 * math.pi) / 12;
       }
     } else {
@@ -233,9 +275,10 @@ class _TimePickerDialState extends State<TimePickerDial>
   }
 
   void _triggerHaptic() {
-    final theme = context.justTheme;
-    final timePickerTheme = Theme.of(context).extension<JustTimePickerTheme>();
-    final isHapticEnabled =
+    final JustThemeData theme = context.justTheme;
+    final JustTimePickerTheme? timePickerTheme = Theme.of(context)
+        .extension<JustTimePickerTheme>();
+    final bool isHapticEnabled =
         widget.enableHaptic ??
         timePickerTheme?.enableHaptic ??
         theme.presetTokens.selectionHapticDefault;
@@ -248,14 +291,14 @@ class _TimePickerDialState extends State<TimePickerDial>
   void _announceTime(TimeOfDay time) {
     _announceTimer?.cancel();
     _announceTimer = Timer(const Duration(milliseconds: 300), () {
-      final periodStr = time.period == .am
+      final String periodStr = time.period == .am
           ? widget.locale.amLabel
           : widget.locale.pmLabel;
-      final hourStr = widget.timeFormat == .twentyFourHour
+      final String hourStr = widget.timeFormat == .twentyFourHour
           ? time.hour.toString().padLeft(2, '0')
           : (time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod).toString();
-      final minuteStr = time.minute.toString().padLeft(2, '0');
-      final message = widget.timeFormat == .twentyFourHour
+      final String minuteStr = time.minute.toString().padLeft(2, '0');
+      final String message = widget.timeFormat == .twentyFourHour
           ? '$hourStr:$minuteStr'
           : '$hourStr:$minuteStr $periodStr';
       SemanticsService.sendAnnouncement(
@@ -272,13 +315,17 @@ class _TimePickerDialState extends State<TimePickerDial>
       if (!mounted || _isDragging) return;
       setState(() {
         _activeSegment = .minute;
-        final time =
+        final TimeOfDay time =
             widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
-        final size = widget.style?.dialSize ?? 240.0;
-        final outerR = _resolveOuterRadius(size);
-        final innerR = _resolveInnerRadius(size);
-        final targetAngle = _angleForTime(time, .minute, widget.timeFormat);
-        final targetRadius = _radiusForTime(
+        final double size = widget.style?.dialSize ?? 240.0;
+        final double outerR = _resolveOuterRadius(size);
+        final double innerR = _resolveInnerRadius(size);
+        final double targetAngle = _angleForTime(
+          time,
+          .minute,
+          widget.timeFormat,
+        );
+        final double targetRadius = _radiusForTime(
           time,
           .minute,
           widget.timeFormat,
@@ -298,21 +345,22 @@ class _TimePickerDialState extends State<TimePickerDial>
 
   void _handleTouch(Offset localPosition, Size size, {required bool isFinal}) {
     _lastTouchPosition = localPosition;
-    final center = Offset(size.width / 2, size.height / 2);
-    final dx = localPosition.dx - center.dx;
-    final dy = localPosition.dy - center.dy;
-    final r = math.sqrt(dx * dx + dy * dy);
+    final Offset center = Offset(size.width / 2, size.height / 2);
+    final double dx = localPosition.dx - center.dx;
+    final double dy = localPosition.dy - center.dy;
+    final double r = math.sqrt(dx * dx + dy * dy);
 
     // atan2(dy, dx) returns angle from +X axis clockwise
-    final rawTheta = math.atan2(dy, dx);
-    final clockTheta = rawTheta + (math.pi / 2);
-    final theta = (clockTheta % (2 * math.pi) + (2 * math.pi)) % (2 * math.pi);
+    final double rawTheta = math.atan2(dy, dx);
+    final double clockTheta = rawTheta + (math.pi / 2);
+    final double theta =
+        (clockTheta % (2 * math.pi) + (2 * math.pi)) % (2 * math.pi);
 
-    final outerR = _resolveOuterRadius(size.width);
-    final innerR = _resolveInnerRadius(size.width);
-    final thresholdR = (outerR + innerR) / 2;
+    final double outerR = _resolveOuterRadius(size.width);
+    final double innerR = _resolveInnerRadius(size.width);
+    final double thresholdR = (outerR + innerR) / 2;
 
-    final currentTime = _currentTime;
+    final TimeOfDay currentTime = _currentTime;
     TimeOfDay newTime;
     double targetAngle;
     double targetRadius;
@@ -321,19 +369,19 @@ class _TimePickerDialState extends State<TimePickerDial>
 
     if (_activeSegment == .hour) {
       if (widget.timeFormat == .twentyFourHour) {
-        final sector = ((theta * 12) / (2 * math.pi)).round() % 12;
-        final base12 = sector == 0 ? 12 : sector;
-        final isInner = r < thresholdR;
-        final hour24 = isInner ? (base12 == 12 ? 0 : base12 + 12) : base12;
+        final int sector = ((theta * 12) / (2 * math.pi)).round() % 12;
+        final int base12 = sector == 0 ? 12 : sector;
+        final bool isInner = r < thresholdR;
+        final int hour24 = isInner ? (base12 == 12 ? 0 : base12 + 12) : base12;
         newTime = currentTime.replacing(hour: hour24);
         targetAngle = (sector * 2 * math.pi) / 12;
         targetRadius = isInner ? innerR : outerR;
         hapticVal = hour24;
         justSelectedHour = hour24;
       } else {
-        final sector = ((theta * 12) / (2 * math.pi)).round() % 12;
-        final hour12 = sector == 0 ? 12 : sector;
-        final period = currentTime.period;
+        final int sector = ((theta * 12) / (2 * math.pi)).round() % 12;
+        final int hour12 = sector == 0 ? 12 : sector;
+        final DayPeriod period = currentTime.period;
         newTime = currentTime.withHour12(hour12, period);
         targetAngle = (sector * 2 * math.pi) / 12;
         targetRadius = outerR;
@@ -341,10 +389,10 @@ class _TimePickerDialState extends State<TimePickerDial>
         justSelectedHour = hour12;
       }
     } else {
-      final stepCount = 60 ~/ widget.minuteInterval;
-      final stepIndex =
+      final int stepCount = 60 ~/ widget.minuteInterval;
+      final int stepIndex =
           ((theta * stepCount) / (2 * math.pi)).round() % stepCount;
-      final minute = (stepIndex * widget.minuteInterval) % 60;
+      final int minute = (stepIndex * widget.minuteInterval) % 60;
       newTime = currentTime.replacing(minute: minute);
       targetAngle = (minute * 2 * math.pi) / 60;
       targetRadius = outerR;
@@ -404,21 +452,21 @@ class _TimePickerDialState extends State<TimePickerDial>
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent) return .ignored;
 
-    final currentTime =
+    final TimeOfDay currentTime =
         widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
-    final size = widget.style?.dialSize ?? 240.0;
-    final outerR = _resolveOuterRadius(size);
-    final innerR = _resolveInnerRadius(size);
+    final double size = widget.style?.dialSize ?? 240.0;
+    final double outerR = _resolveOuterRadius(size);
+    final double innerR = _resolveInnerRadius(size);
 
     TimeOfDay? nextTime;
 
     if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
         event.logicalKey == LogicalKeyboardKey.arrowRight) {
       if (_activeSegment == .hour) {
-        final newHour = (currentTime.hour + 1) % 24;
+        final int newHour = (currentTime.hour + 1) % 24;
         nextTime = currentTime.replacing(hour: newHour);
       } else {
-        final snapped =
+        final int snapped =
             ((currentTime.minute ~/ widget.minuteInterval) + 1) *
             widget.minuteInterval;
         nextTime = currentTime.replacing(minute: snapped % 60);
@@ -426,20 +474,20 @@ class _TimePickerDialState extends State<TimePickerDial>
     } else if (event.logicalKey == LogicalKeyboardKey.arrowDown ||
         event.logicalKey == LogicalKeyboardKey.arrowLeft) {
       if (_activeSegment == .hour) {
-        final newHour = (currentTime.hour - 1 + 24) % 24;
+        final int newHour = (currentTime.hour - 1 + 24) % 24;
         nextTime = currentTime.replacing(hour: newHour);
       } else {
-        final currentSteps = currentTime.minute ~/ widget.minuteInterval;
-        final snapped =
+        final int currentSteps = currentTime.minute ~/ widget.minuteInterval;
+        final int snapped =
             (currentSteps - 1 + (60 ~/ widget.minuteInterval)) *
             widget.minuteInterval;
         nextTime = currentTime.replacing(minute: snapped % 60);
       }
     } else if (event.logicalKey == LogicalKeyboardKey.pageUp) {
-      final newHour = (currentTime.hour + 1) % 24;
+      final int newHour = (currentTime.hour + 1) % 24;
       nextTime = currentTime.replacing(hour: newHour);
     } else if (event.logicalKey == LogicalKeyboardKey.pageDown) {
-      final newHour = (currentTime.hour - 1 + 24) % 24;
+      final int newHour = (currentTime.hour - 1 + 24) % 24;
       nextTime = currentTime.replacing(hour: newHour);
     } else if (event.logicalKey == LogicalKeyboardKey.home) {
       nextTime = widget.firstTime ?? const TimeOfDay(hour: 0, minute: 0);
@@ -450,12 +498,12 @@ class _TimePickerDialState extends State<TimePickerDial>
       if (_activeSegment == .hour) {
         setState(() {
           _activeSegment = .minute;
-          final targetAngle = _angleForTime(
+          final double targetAngle = _angleForTime(
             currentTime,
             .minute,
             widget.timeFormat,
           );
-          final targetRadius = _radiusForTime(
+          final double targetRadius = _radiusForTime(
             currentTime,
             .minute,
             widget.timeFormat,
@@ -472,12 +520,12 @@ class _TimePickerDialState extends State<TimePickerDial>
     if (nextTime != null && _isTimeAllowed(nextTime)) {
       _triggerHaptic();
       widget.onChanged?.call(nextTime);
-      final targetAngle = _angleForTime(
+      final double targetAngle = _angleForTime(
         nextTime,
         _activeSegment,
         widget.timeFormat,
       );
-      final targetRadius = _radiusForTime(
+      final double targetRadius = _radiusForTime(
         nextTime,
         _activeSegment,
         widget.timeFormat,
@@ -494,33 +542,35 @@ class _TimePickerDialState extends State<TimePickerDial>
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.justTheme;
-    final colors = context.justColors;
-    final typo = context.justTypo;
-    final presetTokens = theme.presetTokens;
+    final JustThemeData theme = context.justTheme;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
+    final JustPresetTokens presetTokens = theme.presetTokens;
 
-    final dialSize =
+    final double dialSize =
         widget.style?.dialSize ?? presetTokens.resolveTimePickerDialSize();
-    final time = widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
-    final dialFaceColor = widget.style?.dialFaceColor ?? colors.muted;
-    final handColor = widget.style?.handColor ?? colors.borderFocus;
-    final dialTextColor = widget.style?.dialTextColor ?? colors.textPrimary;
-    final selectedTextColor =
+    final TimeOfDay time =
+        widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
+    final Color dialFaceColor = widget.style?.dialFaceColor ?? colors.muted;
+    final Color handColor = widget.style?.handColor ?? colors.borderFocus;
+    final Color dialTextColor =
+        widget.style?.dialTextColor ?? colors.textPrimary;
+    final Color selectedTextColor =
         widget.style?.selectedTextColor ?? colors.textInverse;
-    final borderColor =
+    final Color borderColor =
         widget.style?.borderColor ??
         (presetTokens.showsDefaultBorder
             ? colors.borderDefault
             : colors.borderDefault);
 
-    final selectedValueLabel = _activeSegment == .hour
+    final String selectedValueLabel = _activeSegment == .hour
         ? (widget.timeFormat == .twentyFourHour
               ? time.hour.toString().padLeft(2, '0')
               : (time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod).toString())
         : time.minute.toString().padLeft(2, '0');
 
-    final outerR = _resolveOuterRadius(dialSize);
-    final innerR = _resolveInnerRadius(dialSize);
+    final double outerR = _resolveOuterRadius(dialSize);
+    final double innerR = _resolveInnerRadius(dialSize);
 
     return FocusIndicator(
       isFocused: _isFocused,
@@ -554,12 +604,12 @@ class _TimePickerDialState extends State<TimePickerDial>
           ),
           child: GestureDetector(
             behavior: .opaque,
-            onPanStart: (d) => _handleTouch(
+            onPanStart: (DragStartDetails d) => _handleTouch(
               d.localPosition,
               Size(dialSize, dialSize),
               isFinal: false,
             ),
-            onPanUpdate: (d) => _handleTouch(
+            onPanUpdate: (DragUpdateDetails d) => _handleTouch(
               d.localPosition,
               Size(dialSize, dialSize),
               isFinal: false,
@@ -569,7 +619,7 @@ class _TimePickerDialState extends State<TimePickerDial>
               Size(dialSize, dialSize),
               isFinal: true,
             ),
-            onTapUp: (d) => _handleTouch(
+            onTapUp: (TapUpDetails d) => _handleTouch(
               d.localPosition,
               Size(dialSize, dialSize),
               isFinal: true,
@@ -580,7 +630,7 @@ class _TimePickerDialState extends State<TimePickerDial>
                 width: dialSize,
                 height: dialSize,
                 child: Stack(
-                  children: [
+                  children: <Widget>[
                     // Layer 1 — Static dial face background & ticks & numbers (RepaintBoundary)
                     RepaintBoundary(
                       child: CustomPaint(
@@ -642,33 +692,54 @@ class _TimePickerDialState extends State<TimePickerDial>
 }
 
 /// Static painter for the clock dial background, tick marks, and hour/minute numbers.
-class _ClockFacePainter({
-  required final Color dialFaceColor,
-  required final Color borderColor,
-  required final double borderWidth,
-  required final Color tickColor,
-  required final Color numberColor,
-  required final Color disabledNumberColor,
-  required final JustTimeFormat timeFormat,
-  required final JustTimePickerSegment activeSegment,
-  required final int minuteInterval,
-  required final TimeOfDay currentTime,
-  required final TimeOfDay? firstTime,
-  required final TimeOfDay? lastTime,
-  required final bool Function(TimeOfDay)? selectableTimePredicate,
-  required final double outerRadius,
-  required final double innerRadius,
-  required final TextStyle textStyle,
-  required final TextStyle innerTextStyle,
-  required final bool isNeobrutalism,
-}) extends CustomPainter {
+class _ClockFacePainter extends CustomPainter {
+  final Color dialFaceColor;
+  final Color borderColor;
+  final double borderWidth;
+  final Color tickColor;
+  final Color numberColor;
+  final Color disabledNumberColor;
+  final JustTimeFormat timeFormat;
+  final JustTimePickerSegment activeSegment;
+  final int minuteInterval;
+  final TimeOfDay currentTime;
+  final TimeOfDay? firstTime;
+  final TimeOfDay? lastTime;
+  final bool Function(TimeOfDay)? selectableTimePredicate;
+  final double outerRadius;
+  final double innerRadius;
+  final TextStyle textStyle;
+  final TextStyle innerTextStyle;
+  final bool isNeobrutalism;
+
+  _ClockFacePainter({
+    required this.dialFaceColor,
+    required this.borderColor,
+    required this.borderWidth,
+    required this.tickColor,
+    required this.numberColor,
+    required this.disabledNumberColor,
+    required this.timeFormat,
+    required this.activeSegment,
+    required this.minuteInterval,
+    required this.currentTime,
+    required this.firstTime,
+    required this.lastTime,
+    required this.selectableTimePredicate,
+    required this.outerRadius,
+    required this.innerRadius,
+    required this.textStyle,
+    required this.innerTextStyle,
+    required this.isNeobrutalism,
+  });
+
   bool _isNumberAllowed(int value, bool isInnerRing) {
     TimeOfDay testTime;
     if (activeSegment == .hour) {
       if (timeFormat == .twentyFourHour) {
         testTime = currentTime.replacing(hour: value);
       } else {
-        final period = currentTime.period;
+        final DayPeriod period = currentTime.period;
         testTime = currentTime.withHour12(value, period);
       }
     } else {
@@ -687,46 +758,46 @@ class _ClockFacePainter({
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final dialRadius = size.width / 2;
+    final Offset center = Offset(size.width / 2, size.height / 2);
+    final double dialRadius = size.width / 2;
 
     // 1. Dial Face Background
-    final bgPaint = Paint()
+    final Paint bgPaint = Paint()
       ..color = dialFaceColor
       ..style = .fill;
     canvas.drawCircle(center, dialRadius, bgPaint);
 
     // 2. Outer Border
-    final borderPaint = Paint()
+    final Paint borderPaint = Paint()
       ..color = borderColor
       ..style = .stroke
       ..strokeWidth = borderWidth;
     canvas.drawCircle(center, dialRadius - (borderWidth / 2), borderPaint);
 
     // 3. Tick Marks (60 ticks around the circumference)
-    final majorTickPaint = Paint()
+    final Paint majorTickPaint = Paint()
       ..color = tickColor
       ..strokeWidth = 2.0
       ..strokeCap = .round;
 
-    final minorTickPaint = Paint()
+    final Paint minorTickPaint = Paint()
       ..color = tickColor.withValues(alpha: 0.4)
       ..strokeWidth = 1.0
       ..strokeCap = .round;
 
-    final tickMargin = borderWidth + 2.0;
-    final tickEndRadius = dialRadius - tickMargin;
+    final double tickMargin = borderWidth + 2.0;
+    final double tickEndRadius = dialRadius - tickMargin;
 
     for (int i = 0; i < 60; i++) {
-      final angle = (i * 2 * math.pi) / 60;
-      final isMajor = i % 5 == 0;
-      final tickLength = isMajor ? 6.0 : 3.0;
-      final tickStartRadius = tickEndRadius - tickLength;
+      final double angle = (i * 2 * math.pi) / 60;
+      final bool isMajor = i % 5 == 0;
+      final double tickLength = isMajor ? 6.0 : 3.0;
+      final double tickStartRadius = tickEndRadius - tickLength;
 
-      final startX = center.dx + tickStartRadius * math.sin(angle);
-      final startY = center.dy - tickStartRadius * math.cos(angle);
-      final endX = center.dx + tickEndRadius * math.sin(angle);
-      final endY = center.dy - tickEndRadius * math.cos(angle);
+      final double startX = center.dx + tickStartRadius * math.sin(angle);
+      final double startY = center.dy - tickStartRadius * math.cos(angle);
+      final double endX = center.dx + tickEndRadius * math.sin(angle);
+      final double endY = center.dy - tickEndRadius * math.cos(angle);
 
       canvas.drawLine(
         Offset(startX, startY),
@@ -740,11 +811,11 @@ class _ClockFacePainter({
       if (timeFormat == .twentyFourHour) {
         // Outer ring: 1..12
         for (int h = 1; h <= 12; h++) {
-          final sector = h % 12;
-          final angle = (sector * 2 * math.pi) / 12;
-          final x = center.dx + outerRadius * math.sin(angle);
-          final y = center.dy - outerRadius * math.cos(angle);
-          final allowed = _isNumberAllowed(h, false);
+          final int sector = h % 12;
+          final double angle = (sector * 2 * math.pi) / 12;
+          final double x = center.dx + outerRadius * math.sin(angle);
+          final double y = center.dy - outerRadius * math.cos(angle);
+          final bool allowed = _isNumberAllowed(h, false);
 
           _drawText(
             canvas: canvas,
@@ -759,11 +830,11 @@ class _ClockFacePainter({
 
         // Inner ring: 00, 13..23
         for (int i = 0; i < 12; i++) {
-          final hour24 = i == 0 ? 0 : i + 12;
-          final angle = (i * 2 * math.pi) / 12;
-          final x = center.dx + innerRadius * math.sin(angle);
-          final y = center.dy - innerRadius * math.cos(angle);
-          final allowed = _isNumberAllowed(hour24, true);
+          final int hour24 = i == 0 ? 0 : i + 12;
+          final double angle = (i * 2 * math.pi) / 12;
+          final double x = center.dx + innerRadius * math.sin(angle);
+          final double y = center.dy - innerRadius * math.cos(angle);
+          final bool allowed = _isNumberAllowed(hour24, true);
 
           _drawText(
             canvas: canvas,
@@ -780,11 +851,11 @@ class _ClockFacePainter({
       } else {
         // 12-Hour mode: 1..12
         for (int h = 1; h <= 12; h++) {
-          final sector = h % 12;
-          final angle = (sector * 2 * math.pi) / 12;
-          final x = center.dx + outerRadius * math.sin(angle);
-          final y = center.dy - outerRadius * math.cos(angle);
-          final allowed = _isNumberAllowed(h, false);
+          final int sector = h % 12;
+          final double angle = (sector * 2 * math.pi) / 12;
+          final double x = center.dx + outerRadius * math.sin(angle);
+          final double y = center.dy - outerRadius * math.cos(angle);
+          final bool allowed = _isNumberAllowed(h, false);
 
           _drawText(
             canvas: canvas,
@@ -800,10 +871,10 @@ class _ClockFacePainter({
     } else {
       // Minute mode: 00, 05, 10, ... 55
       for (int m = 0; m < 60; m += 5) {
-        final angle = (m * 2 * math.pi) / 60;
-        final x = center.dx + outerRadius * math.sin(angle);
-        final y = center.dy - outerRadius * math.cos(angle);
-        final allowed = _isNumberAllowed(m, false);
+        final double angle = (m * 2 * math.pi) / 60;
+        final double x = center.dx + outerRadius * math.sin(angle);
+        final double y = center.dy - outerRadius * math.cos(angle);
+        final bool allowed = _isNumberAllowed(m, false);
 
         _drawText(
           canvas: canvas,
@@ -824,12 +895,12 @@ class _ClockFacePainter({
     required Offset center,
     required TextStyle style,
   }) {
-    final textPainter = TextPainter(
+    final TextPainter textPainter = TextPainter(
       text: TextSpan(text: text, style: style),
       textDirection: .ltr,
     )..layout();
 
-    final textOffset = Offset(
+    final Offset textOffset = Offset(
       center.dx - (textPainter.width / 2),
       center.dy - (textPainter.height / 2),
     );
@@ -859,39 +930,55 @@ class _ClockFacePainter({
 
 /// Dynamic foreground painter that draws the animated clock hand, center pin,
 /// and selection indicator bubble.
-class _ClockHandPainter({
-  required final double angle,
-  required final double radius,
-  required final Color handColor,
-  required final Color selectedTextColor,
-  required final String selectedLabel,
-  required final bool isUnlabelledMinute,
-  required final bool isCircularSelection,
-  required final double borderWidth,
-  required final Color borderColor,
-}) extends CustomPainter {
+class _ClockHandPainter extends CustomPainter {
+  final double angle;
+  final double radius;
+  final Color handColor;
+  final Color selectedTextColor;
+  final String selectedLabel;
+  final bool isUnlabelledMinute;
+  final bool isCircularSelection;
+  final double borderWidth;
+  final Color borderColor;
+
+  _ClockHandPainter({
+    required this.angle,
+    required this.radius,
+    required this.handColor,
+    required this.selectedTextColor,
+    required this.selectedLabel,
+    required this.isUnlabelledMinute,
+    required this.isCircularSelection,
+    required this.borderWidth,
+    required this.borderColor,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final thumbX = center.dx + radius * math.sin(angle);
-    final thumbY = center.dy - radius * math.cos(angle);
-    final thumbCenter = Offset(thumbX, thumbY);
+    final Offset center = Offset(size.width / 2, size.height / 2);
+    final double thumbX = center.dx + radius * math.sin(angle);
+    final double thumbY = center.dy - radius * math.cos(angle);
+    final Offset thumbCenter = Offset(thumbX, thumbY);
 
     // 1. Center Pin
     if (isCircularSelection) {
-      final pinPaint = Paint()
+      final Paint pinPaint = Paint()
         ..color = handColor
         ..style = .fill;
       canvas.drawCircle(center, 4.0, pinPaint);
     } else {
       // Neobrutalism square pin
-      final pinRect = Rect.fromCenter(center: center, width: 8.0, height: 8.0);
-      final fillPaint = Paint()
+      final Rect pinRect = Rect.fromCenter(
+        center: center,
+        width: 8.0,
+        height: 8.0,
+      );
+      final Paint fillPaint = Paint()
         ..color = handColor
         ..style = .fill;
       canvas.drawRect(pinRect, fillPaint);
 
-      final borderPaint = Paint()
+      final Paint borderPaint = Paint()
         ..color = borderColor
         ..style = .stroke
         ..strokeWidth = borderWidth;
@@ -899,7 +986,7 @@ class _ClockHandPainter({
     }
 
     // 2. Hand Line (from center to thumb edge)
-    final handPaint = Paint()
+    final Paint handPaint = Paint()
       ..color = handColor
       ..style = .stroke
       ..strokeWidth = isCircularSelection ? 2.0 : borderWidth
@@ -907,25 +994,25 @@ class _ClockHandPainter({
     canvas.drawLine(center, thumbCenter, handPaint);
 
     // 3. Thumb Selector Bubble
-    const thumbRadius = 20.0;
+    const double thumbRadius = 20.0;
     if (isCircularSelection) {
-      final thumbPaint = Paint()
+      final Paint thumbPaint = Paint()
         ..color = handColor
         ..style = .fill;
       canvas.drawCircle(thumbCenter, thumbRadius, thumbPaint);
     } else {
       // Neobrutalism sharp box selector
-      final thumbRect = Rect.fromCenter(
+      final Rect thumbRect = Rect.fromCenter(
         center: thumbCenter,
         width: thumbRadius * 2,
         height: thumbRadius * 2,
       );
-      final fillPaint = Paint()
+      final Paint fillPaint = Paint()
         ..color = handColor
         ..style = .fill;
       canvas.drawRect(thumbRect, fillPaint);
 
-      final borderPaint = Paint()
+      final Paint borderPaint = Paint()
         ..color = borderColor
         ..style = .stroke
         ..strokeWidth = borderWidth;
@@ -934,12 +1021,12 @@ class _ClockHandPainter({
 
     // 4. Content inside Thumb (Label or Unlabelled Dot)
     if (isUnlabelledMinute) {
-      final dotPaint = Paint()
+      final Paint dotPaint = Paint()
         ..color = selectedTextColor
         ..style = .fill;
       canvas.drawCircle(thumbCenter, 3.0, dotPaint);
     } else {
-      final textPainter = TextPainter(
+      final TextPainter textPainter = TextPainter(
         text: TextSpan(
           text: selectedLabel,
           style: TextStyle(
@@ -951,7 +1038,7 @@ class _ClockHandPainter({
         textDirection: .ltr,
       )..layout();
 
-      final textOffset = Offset(
+      final Offset textOffset = Offset(
         thumbCenter.dx - (textPainter.width / 2),
         thumbCenter.dy - (textPainter.height / 2),
       );

@@ -1,32 +1,44 @@
-// justui-meta: registry=038cab311adc91ac112f4cf650184bfd082c774ee34057f30aa5986ae3b45896 local=038cab311adc91ac112f4cf650184bfd082c774ee34057f30aa5986ae3b45896
+// justui-meta: registry=038cab311adc91ac112f4cf650184bfd082c774ee34057f30aa5986ae3b45896 local=8d3d3ad14c99a387d620d1e31907dbb85124a8f34c0ca1049124be5f4dff2143
 import 'package:flutter/widgets.dart';
 
 /// Customized per-instance visual styles for [JustSelect].
-class const JustSelectStyle({
+class JustSelectStyle {
   /// Custom background color of the select trigger.
-  final Color? triggerBackgroundColor,
+  final Color? triggerBackgroundColor;
 
   /// Custom border color of the select trigger.
-  final Color? triggerBorderColor,
+  final Color? triggerBorderColor;
 
   /// Custom background color of the dropdown overlay.
-  final Color? dropdownBackgroundColor,
+  final Color? dropdownBackgroundColor;
 
   /// Custom background color of options on hover.
-  final Color? optionHoverColor,
+  final Color? optionHoverColor;
 
   /// Custom background color of the selected option.
-  final Color? selectedOptionColor,
+  final Color? selectedOptionColor;
 
   /// Custom text color of the select content.
-  final Color? textColor,
+  final Color? textColor;
 
   /// Custom text color of the placeholder.
-  final Color? placeholderColor,
+  final Color? placeholderColor;
 
   /// Custom border radius of both trigger and dropdown.
-  final BorderRadius? borderRadius,
+  final BorderRadius? borderRadius;
 
   /// Custom elevation (shadow) for the dropdown.
-  final double? dropdownElevation,
-});
+  final double? dropdownElevation;
+
+  const JustSelectStyle({
+    this.triggerBackgroundColor,
+    this.triggerBorderColor,
+    this.dropdownBackgroundColor,
+    this.optionHoverColor,
+    this.selectedOptionColor,
+    this.textColor,
+    this.placeholderColor,
+    this.borderRadius,
+    this.dropdownElevation,
+  });
+}

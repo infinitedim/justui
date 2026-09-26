@@ -1,4 +1,4 @@
-// justui-meta: registry=cea5caf0a2b1ee8537d6b69fe0860758c572b2c7b3212414a5791ca7c40ea2a1 local=e5fce431b8feb1ea7ca59ed43d5fac1268cdc597e223acc95385e65b07556b11
+// justui-meta: registry=a89b060e233004040ce1a637a4b5450e4b84883338779636c6533aa99239613a local=42cb6b6c1a3a792dbffbe7af6c3493840f7ed5a5bd832724906eed7348a4b0e0
 import 'package:flutter/material.dart'
     show DayPeriod, Icon, Icons, Theme, TimeOfDay, showGeneralDialog;
 import 'package:flutter/widgets.dart';
@@ -322,14 +322,14 @@ class _JustTimePickerState extends State<JustTimePicker> {
 
   String _formatTime(TimeOfDay time) {
     if (widget.timeFormat == .twentyFourHour) {
-      final hourStr = time.hour.toString().padLeft(2, '0');
-      final minuteStr = time.minute.toString().padLeft(2, '0');
+      final String hourStr = time.hour.toString().padLeft(2, '0');
+      final String minuteStr = time.minute.toString().padLeft(2, '0');
       return '$hourStr:$minuteStr';
     } else {
-      final hourOfPeriod = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
-      final hourStr = hourOfPeriod.toString().padLeft(2, '0');
-      final minuteStr = time.minute.toString().padLeft(2, '0');
-      final periodStr = time.period == DayPeriod.am
+      final int hourOfPeriod = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+      final String hourStr = hourOfPeriod.toString().padLeft(2, '0');
+      final String minuteStr = time.minute.toString().padLeft(2, '0');
+      final String periodStr = time.period == DayPeriod.am
           ? widget.locale.amLabel
           : widget.locale.pmLabel;
       return '$hourStr:$minuteStr $periodStr';
@@ -362,36 +362,38 @@ class _JustTimePickerState extends State<JustTimePicker> {
     BuildContext context, {
     ValueChanged<TimeOfDay>? onTimeSelected,
   }) {
-    final colors = context.justColors;
-    final spacing = context.justSpacing;
-    final radius = context.justRadius;
-    final theme = context.justTheme;
-    final presetTokens = theme.presetTokens;
+    final JustColorScheme colors = context.justColors;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustThemeData theme = context.justTheme;
+    final JustPresetTokens presetTokens = theme.presetTokens;
 
-    final themeExtension = Theme.of(context).extension<JustTimePickerTheme>();
-    final style = widget.style;
+    final JustTimePickerTheme? themeExtension = Theme.of(context)
+        .extension<JustTimePickerTheme>();
+    final JustTimePickerStyle? style = widget.style;
 
-    final bgColor =
+    final Color bgColor =
         style?.backgroundColor ??
         themeExtension?.inlineStyle?.backgroundColor ??
         colors.card;
-    final borderColor =
+    final Color borderColor =
         style?.borderColor ??
         themeExtension?.inlineStyle?.borderColor ??
         (presetTokens.showsDefaultBorder
             ? colors.textPrimary
             : colors.borderDefault);
-    final borderRadius =
+    final BorderRadius borderRadius =
         style?.borderRadius ??
         themeExtension?.inlineStyle?.borderRadius ??
         presetTokens.resolveBorderRadius(radius);
-    final padding =
+    final EdgeInsets padding =
         style?.padding ??
         themeExtension?.inlineStyle?.padding ??
         .all(spacing.md);
-    final borderWidth = presetTokens.borderWidth;
+    final double borderWidth = presetTokens.borderWidth;
 
-    final effectiveOnChanged = onTimeSelected ?? _onTimeSelected;
+    final void Function(TimeOfDay value) effectiveOnChanged =
+        onTimeSelected ?? _onTimeSelected;
 
     return Container(
       padding: widget.showContainer ? padding : .zero,
@@ -414,7 +416,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
       child: Column(
         mainAxisSize: .min,
         crossAxisAlignment: .center,
-        children: [
+        children: <Widget>[
           // Header: Digital Time Readout + Mode Switch Button
           _buildPickerHeader(context, theme),
           SizedBox(height: spacing.sm),
@@ -430,7 +432,8 @@ class _JustTimePickerState extends State<JustTimePicker> {
               timeFormat: widget.timeFormat,
               minuteInterval: widget.minuteInterval,
               activeSegment: _activeSegment,
-              onSegmentChanged: (seg) => setState(() => _activeSegment = seg),
+              onSegmentChanged: (JustTimePickerSegment seg) =>
+                  setState(() => _activeSegment = seg),
               autoAdvance: true,
               locale: widget.locale,
               style: widget.style,
@@ -468,37 +471,39 @@ class _JustTimePickerState extends State<JustTimePicker> {
   }
 
   Widget _buildPickerHeader(BuildContext context, JustThemeData theme) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
-    final spacing = context.justSpacing;
-    final radius = theme.radius;
-    final presetTokens = theme.presetTokens;
-    final style = widget.style;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = theme.radius;
+    final JustPresetTokens presetTokens = theme.presetTokens;
+    final JustTimePickerStyle? style = widget.style;
 
-    final hourVal = widget.timeFormat == .twentyFourHour
+    final int hourVal = widget.timeFormat == .twentyFourHour
         ? _currentTime.hour
         : (_currentTime.hourOfPeriod == 0 ? 12 : _currentTime.hourOfPeriod);
-    final hourStr = hourVal.toString().padLeft(2, '0');
-    final minuteStr = _currentTime.minute.toString().padLeft(2, '0');
+    final String hourStr = hourVal.toString().padLeft(2, '0');
+    final String minuteStr = _currentTime.minute.toString().padLeft(2, '0');
 
-    final isHourActive = _activeSegment == .hour;
-    final isMinuteActive = _activeSegment == .minute;
-    final isAm = _currentTime.period == DayPeriod.am;
+    final bool isHourActive = _activeSegment == .hour;
+    final bool isMinuteActive = _activeSegment == .minute;
+    final bool isAm = _currentTime.period == DayPeriod.am;
 
-    final resolvedRadius = presetTokens.resolveBorderRadius(radius);
-    final activeBg = style?.periodActiveColor ?? colors.borderFocus;
-    final activeFg = style?.selectedTextColor ?? colors.textInverse;
-    final inactiveBg = colors.muted;
-    final inactiveFg = style?.dialTextColor ?? colors.textPrimary;
-    final borderWidth = presetTokens.borderWidth;
+    final BorderRadius resolvedRadius = presetTokens.resolveBorderRadius(
+      radius,
+    );
+    final Color activeBg = style?.periodActiveColor ?? colors.borderFocus;
+    final Color activeFg = style?.selectedTextColor ?? colors.textInverse;
+    final Color inactiveBg = colors.muted;
+    final Color inactiveFg = style?.dialTextColor ?? colors.textPrimary;
+    final double borderWidth = presetTokens.borderWidth;
 
-    final modeTooltip = switch (_currentMode) {
+    final String modeTooltip = switch (_currentMode) {
       .dial => widget.locale.spinnerModeTooltip,
       .spinner => widget.locale.inputModeTooltip,
       .input => widget.locale.dialModeTooltip,
     };
 
-    final modeIcon = switch (_currentMode) {
+    final IconData modeIcon = switch (_currentMode) {
       .dial => Icons.view_agenda_rounded,
       .spinner => Icons.keyboard_outlined,
       .input => Icons.access_time_rounded,
@@ -507,11 +512,11 @@ class _JustTimePickerState extends State<JustTimePicker> {
     return Row(
       mainAxisAlignment: .spaceBetween,
       crossAxisAlignment: .center,
-      children: [
+      children: <Widget>[
         // Digital Time Readout (Segment Switcher)
         Row(
           mainAxisSize: .min,
-          children: [
+          children: <Widget>[
             // Hour Segment Button
             Semantics(
               button: true,
@@ -523,7 +528,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
                     _activeSegment = .hour;
                   });
                 },
-                builder: (context, state) {
+                builder: (BuildContext context, JustInteractionState state) {
                   return Container(
                     padding: .symmetric(
                       horizontal: spacing.sm,
@@ -575,7 +580,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
                     _activeSegment = .minute;
                   });
                 },
-                builder: (context, state) {
+                builder: (BuildContext context, JustInteractionState state) {
                   return Container(
                     padding: .symmetric(
                       horizontal: spacing.sm,
@@ -607,7 +612,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
               ),
             ),
             // AM / PM Segment Buttons (12-hour format only)
-            if (widget.timeFormat == .twelveHour) ...[
+            if (widget.timeFormat == .twelveHour) ...<Widget>[
               SizedBox(width: spacing.xs),
               Container(
                 decoration: BoxDecoration(
@@ -622,7 +627,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
                 ),
                 child: Row(
                   mainAxisSize: .min,
-                  children: [
+                  children: <Widget>[
                     Semantics(
                       button: true,
                       label: widget.locale.amLabel,
@@ -630,31 +635,35 @@ class _JustTimePickerState extends State<JustTimePicker> {
                       child: JustPressable(
                         onTap: () {
                           if (!isAm) {
-                            final toggled = _currentTime.togglePeriod();
+                            final TimeOfDay toggled = _currentTime
+                                .togglePeriod();
                             _onTimeSelected(toggled);
                           }
                         },
-                        builder: (context, state) {
-                          return Container(
-                            padding: .symmetric(
-                              horizontal: spacing.xs,
-                              vertical: spacing.xs,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isAm ? activeBg : const Color(0x00000000),
-                              borderRadius: resolvedRadius,
-                            ),
-                            child: Text(
-                              widget.locale.amLabel,
-                              style: typo.bodySm.copyWith(
-                                fontWeight: isAm
-                                    ? FontWeight.w700
-                                    : FontWeight.w500,
-                                color: isAm ? activeFg : inactiveFg,
-                              ),
-                            ),
-                          );
-                        },
+                        builder:
+                            (BuildContext context, JustInteractionState state) {
+                              return Container(
+                                padding: .symmetric(
+                                  horizontal: spacing.xs,
+                                  vertical: spacing.xs,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isAm
+                                      ? activeBg
+                                      : const Color(0x00000000),
+                                  borderRadius: resolvedRadius,
+                                ),
+                                child: Text(
+                                  widget.locale.amLabel,
+                                  style: typo.bodySm.copyWith(
+                                    fontWeight: isAm
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                    color: isAm ? activeFg : inactiveFg,
+                                  ),
+                                ),
+                              );
+                            },
                       ),
                     ),
                     Semantics(
@@ -664,31 +673,35 @@ class _JustTimePickerState extends State<JustTimePicker> {
                       child: JustPressable(
                         onTap: () {
                           if (isAm) {
-                            final toggled = _currentTime.togglePeriod();
+                            final TimeOfDay toggled = _currentTime
+                                .togglePeriod();
                             _onTimeSelected(toggled);
                           }
                         },
-                        builder: (context, state) {
-                          return Container(
-                            padding: .symmetric(
-                              horizontal: spacing.xs,
-                              vertical: spacing.xs,
-                            ),
-                            decoration: BoxDecoration(
-                              color: !isAm ? activeBg : const Color(0x00000000),
-                              borderRadius: resolvedRadius,
-                            ),
-                            child: Text(
-                              widget.locale.pmLabel,
-                              style: typo.bodySm.copyWith(
-                                fontWeight: !isAm
-                                    ? FontWeight.w700
-                                    : FontWeight.w500,
-                                color: !isAm ? activeFg : inactiveFg,
-                              ),
-                            ),
-                          );
-                        },
+                        builder:
+                            (BuildContext context, JustInteractionState state) {
+                              return Container(
+                                padding: .symmetric(
+                                  horizontal: spacing.xs,
+                                  vertical: spacing.xs,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: !isAm
+                                      ? activeBg
+                                      : const Color(0x00000000),
+                                  borderRadius: resolvedRadius,
+                                ),
+                                child: Text(
+                                  widget.locale.pmLabel,
+                                  style: typo.bodySm.copyWith(
+                                    fontWeight: !isAm
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                    color: !isAm ? activeFg : inactiveFg,
+                                  ),
+                                ),
+                              );
+                            },
                       ),
                     ),
                   ],
@@ -705,7 +718,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
             label: modeTooltip,
             child: JustPressable(
               onTap: _cycleNextMode,
-              builder: (context, state) {
+              builder: (BuildContext context, JustInteractionState state) {
                 return Container(
                   padding: .all(spacing.xs),
                   decoration: BoxDecoration(
@@ -739,112 +752,117 @@ class _JustTimePickerState extends State<JustTimePicker> {
   // ---------------------------------------------------------------------------
 
   Widget _buildDropdownVariant(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
-    final spacing = context.justSpacing;
-    final radius = context.justRadius;
-    final themeState = JustThemeProvider.maybeOf(context);
-    final theme = themeState?.theme;
-    final presetTokens = (theme ?? context.justTheme).presetTokens;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustThemeProviderState? themeState = JustThemeProvider.maybeOf(
+      context,
+    );
+    final JustThemeData? theme = themeState?.theme;
+    final JustPresetTokens presetTokens =
+        (theme ?? context.justTheme).presetTokens;
 
-    final displayText = widget.value != null
+    final String displayText = widget.value != null
         ? _formatTime(widget.value!)
         : (widget.placeholder ?? 'Select time');
 
     return OverlayPortal.overlayChildLayoutBuilder(
       controller: _overlayController,
-      overlayChildBuilder: (overlayContext, info) {
-        final targetOffset = MatrixUtils.transformPoint(
-          info.childPaintTransform,
-          Offset.zero,
-        );
-        final triggerHeight = info.childSize.height;
-        final triggerWidth = info.childSize.width;
-        final screenSize = MediaQuery.sizeOf(overlayContext);
-        final screenWidth = screenSize.width;
-        final screenHeight = screenSize.height;
+      overlayChildBuilder:
+          (BuildContext overlayContext, OverlayChildLayoutInfo info) {
+            final Offset targetOffset = MatrixUtils.transformPoint(
+              info.childPaintTransform,
+              Offset.zero,
+            );
+            final double triggerHeight = info.childSize.height;
+            final double triggerWidth = info.childSize.width;
+            final Size screenSize = MediaQuery.sizeOf(overlayContext);
+            final double screenWidth = screenSize.width;
+            final double screenHeight = screenSize.height;
 
-        const margin = 16.0;
-        final double pickerWidth = (screenWidth - margin * 2).clamp(
-          280.0,
-          320.0,
-        );
-        const double estimatedPickerHeight = 360.0;
+            const double margin = 16.0;
+            final double pickerWidth = (screenWidth - margin * 2).clamp(
+              280.0,
+              320.0,
+            );
+            const double estimatedPickerHeight = 360.0;
 
-        // Vertical flip logic
-        final bool fitsBelow =
-            targetOffset.dy +
-                triggerHeight +
-                spacing.xs +
-                estimatedPickerHeight <=
-            screenHeight - margin;
-        final bool fitsAbove =
-            targetOffset.dy - spacing.xs - estimatedPickerHeight >= margin;
+            // Vertical flip logic
+            final bool fitsBelow =
+                targetOffset.dy +
+                    triggerHeight +
+                    spacing.xs +
+                    estimatedPickerHeight <=
+                screenHeight - margin;
+            final bool fitsAbove =
+                targetOffset.dy - spacing.xs - estimatedPickerHeight >= margin;
 
-        final bool showAbove = !fitsBelow && fitsAbove;
+            final bool showAbove = !fitsBelow && fitsAbove;
 
-        final double topPosition;
-        if (fitsBelow || !fitsAbove) {
-          topPosition = targetOffset.dy + triggerHeight + spacing.xs;
-        } else {
-          topPosition = targetOffset.dy - estimatedPickerHeight - spacing.xs;
-        }
+            final double topPosition;
+            if (fitsBelow || !fitsAbove) {
+              topPosition = targetOffset.dy + triggerHeight + spacing.xs;
+            } else {
+              topPosition =
+                  targetOffset.dy - estimatedPickerHeight - spacing.xs;
+            }
 
-        // Horizontal positioning logic with screen boundary clamping
-        double leftPosition = targetOffset.dx;
-        if (leftPosition + pickerWidth > screenWidth - margin) {
-          leftPosition = targetOffset.dx + triggerWidth - pickerWidth;
-        }
+            // Horizontal positioning logic with screen boundary clamping
+            double leftPosition = targetOffset.dx;
+            if (leftPosition + pickerWidth > screenWidth - margin) {
+              leftPosition = targetOffset.dx + triggerWidth - pickerWidth;
+            }
 
-        final maxLeft = screenWidth - pickerWidth - margin;
-        if (maxLeft >= margin) {
-          leftPosition = leftPosition.clamp(margin, maxLeft);
-        } else {
-          leftPosition = (screenWidth - pickerWidth) / 2;
-        }
+            final double maxLeft = screenWidth - pickerWidth - margin;
+            if (maxLeft >= margin) {
+              leftPosition = leftPosition.clamp(margin, maxLeft);
+            } else {
+              leftPosition = (screenWidth - pickerWidth) / 2;
+            }
 
-        final pickerWidget = _buildTimePickerBody(context);
+            final Widget pickerWidget = _buildTimePickerBody(context);
 
-        final themedPicker = theme != null
-            ? JustThemeProvider(
-                lightTheme: theme,
-                darkTheme: theme,
-                initialThemeMode: themeState!.themeMode,
-                child: pickerWidget,
-              )
-            : pickerWidget;
+            final Widget themedPicker = theme != null
+                ? JustThemeProvider(
+                    lightTheme: theme,
+                    darkTheme: theme,
+                    initialThemeMode: themeState!.themeMode,
+                    child: pickerWidget,
+                  )
+                : pickerWidget;
 
-        return Stack(
-          children: [
-            // Backdrop barrier to dismiss on tap outside
-            Positioned.fill(
-              child: GestureDetector(
-                behavior: .translucent,
-                onTap: () {
-                  if (_overlayController.isShowing) {
-                    _overlayController.hide();
-                  }
-                },
-              ),
-            ),
-            // Positioned Dropdown Picker with entrance animation
-            Positioned(
-              left: leftPosition,
-              top: topPosition,
-              child: SizedBox(
-                width: pickerWidth,
-                child: JustOverlayTransition(
-                  isVisible: true,
-                  scaleAlignment: showAbove
-                      ? Alignment.bottomCenter
-                      : Alignment.topCenter,
-                  child: themedPicker,
+            return Stack(
+              children: <Widget>[
+                // Backdrop barrier to dismiss on tap outside
+                Positioned.fill(
+                  child: GestureDetector(
+                    behavior: .translucent,
+                    onTap: () {
+                      if (_overlayController.isShowing) {
+                        _overlayController.hide();
+                      }
+                    },
+                  ),
                 ),
-              ),
-            ),
-          ],
-        );
-      },
+                // Positioned Dropdown Picker with entrance animation
+                Positioned(
+                  left: leftPosition,
+                  top: topPosition,
+                  child: SizedBox(
+                    width: pickerWidth,
+                    child: JustOverlayTransition(
+                      isVisible: true,
+                      scaleAlignment: showAbove
+                          ? Alignment.bottomCenter
+                          : Alignment.topCenter,
+                      child: themedPicker,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
       child: _buildTriggerButton(
         context,
         colors: colors,
@@ -863,7 +881,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
   // ---------------------------------------------------------------------------
 
   Widget _buildResponsiveVariant(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
     if (screenWidth >= JustBreakpoints.sm) {
       return _buildDropdownVariant(context);
     }
@@ -871,15 +889,18 @@ class _JustTimePickerState extends State<JustTimePicker> {
   }
 
   Widget _buildMobileSheetTrigger(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
-    final spacing = context.justSpacing;
-    final radius = context.justRadius;
-    final themeState = JustThemeProvider.maybeOf(context);
-    final theme = themeState?.theme;
-    final presetTokens = (theme ?? context.justTheme).presetTokens;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustThemeProviderState? themeState = JustThemeProvider.maybeOf(
+      context,
+    );
+    final JustThemeData? theme = themeState?.theme;
+    final JustPresetTokens presetTokens =
+        (theme ?? context.justTheme).presetTokens;
 
-    final displayText = widget.value != null
+    final String displayText = widget.value != null
         ? _formatTime(widget.value!)
         : (widget.placeholder ?? 'Select time');
 
@@ -893,9 +914,9 @@ class _JustTimePickerState extends State<JustTimePicker> {
       displayText: displayText,
       showChevron: false,
       onTap: () {
-        final pickerWidget = _buildTimePickerBody(
+        final Widget pickerWidget = _buildTimePickerBody(
           context,
-          onTimeSelected: (time) {
+          onTimeSelected: (TimeOfDay time) {
             _onTimeSelected(time);
             try {
               JustSheetScope.of(context).dismiss();
@@ -943,8 +964,8 @@ class _JustTimePickerState extends State<JustTimePicker> {
     return Column(
       crossAxisAlignment: .start,
       mainAxisSize: .min,
-      children: [
-        if (widget.label != null) ...[
+      children: <Widget>[
+        if (widget.label != null) ...<Widget>[
           Text(
             widget.label!,
             style: typo.bodySm.copyWith(
@@ -956,7 +977,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
         ],
         JustPressable(
           onTap: onTap ?? _toggleDropdown,
-          builder: (context, state) {
+          builder: (BuildContext context, JustInteractionState state) {
             return Container(
               padding: .symmetric(horizontal: spacing.md, vertical: spacing.sm),
               decoration: BoxDecoration(
@@ -974,7 +995,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
               ),
               child: Row(
                 mainAxisSize: .min,
-                children: [
+                children: <Widget>[
                   Icon(
                     Icons.access_time_rounded,
                     size: 16.0,
@@ -989,7 +1010,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
                           : colors.textSecondary,
                     ),
                   ),
-                  if (showChevron) ...[
+                  if (showChevron) ...<Widget>[
                     SizedBox(width: spacing.md),
                     Icon(
                       _overlayController.isShowing
@@ -1013,20 +1034,20 @@ class _JustTimePickerState extends State<JustTimePicker> {
   // ---------------------------------------------------------------------------
 
   Widget _buildModalTriggerButton(BuildContext context) {
-    final colors = context.justColors;
-    final typo = context.justTypo;
-    final spacing = context.justSpacing;
-    final radius = context.justRadius;
-    final theme = JustThemeProvider.of(context).theme;
-    final presetTokens = theme.presetTokens;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustPresetTokens presetTokens = theme.presetTokens;
 
-    final displayText = widget.value != null
+    final String displayText = widget.value != null
         ? _formatTime(widget.value!)
         : (widget.placeholder ?? 'Select time');
 
     return JustPressable(
       onTap: () async {
-        final selected = await showJustTimePicker(
+        final TimeOfDay? selected = await showJustTimePicker(
           context: context,
           initialTime: widget.value,
           firstTime: widget.firstTime,
@@ -1043,7 +1064,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
           _onTimeSelected(selected);
         }
       },
-      builder: (context, state) {
+      builder: (BuildContext context, JustInteractionState state) {
         return Container(
           padding: .symmetric(horizontal: spacing.md, vertical: spacing.sm),
           decoration: BoxDecoration(
@@ -1061,7 +1082,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
           ),
           child: Row(
             mainAxisSize: .min,
-            children: [
+            children: <Widget>[
               Icon(
                 Icons.access_time_rounded,
                 size: 16.0,
@@ -1085,20 +1106,35 @@ class _JustTimePickerState extends State<JustTimePicker> {
 }
 
 /// Content wrapper for modal dialogs and bottom sheets, including action buttons.
-class const _ModalTimePickerContent({
-  final TimeOfDay? initialTime,
-  final TimeOfDay? firstTime,
-  final TimeOfDay? lastTime,
-  final bool Function(TimeOfDay)? selectableTimePredicate,
-  final JustTimePickerMode mode = .dial,
-  final JustTimeFormat timeFormat = .twelveHour,
-  final int minuteInterval = 1,
-  final JustTimePickerLocale locale = const JustTimePickerLocale(),
-  final JustTimePickerStyle? style,
-  final bool? enableHaptic,
-  required final ValueChanged<TimeOfDay> onConfirm,
-  required final VoidCallback onCancel,
-}) extends StatefulWidget {
+class _ModalTimePickerContent extends StatefulWidget {
+  final TimeOfDay? initialTime;
+  final TimeOfDay? firstTime;
+  final TimeOfDay? lastTime;
+  final bool Function(TimeOfDay)? selectableTimePredicate;
+  final JustTimePickerMode mode;
+  final JustTimeFormat timeFormat;
+  final int minuteInterval;
+  final JustTimePickerLocale locale;
+  final JustTimePickerStyle? style;
+  final bool? enableHaptic;
+  final ValueChanged<TimeOfDay> onConfirm;
+  final VoidCallback onCancel;
+
+  const _ModalTimePickerContent({
+    this.initialTime,
+    this.firstTime,
+    this.lastTime,
+    this.selectableTimePredicate,
+    this.mode = .dial,
+    this.timeFormat = .twelveHour,
+    this.minuteInterval = 1,
+    this.locale = const JustTimePickerLocale(),
+    this.style,
+    this.enableHaptic,
+    required this.onConfirm,
+    required this.onCancel,
+  });
+
   @override
   State<_ModalTimePickerContent> createState() =>
       _ModalTimePickerContentState();
@@ -1115,12 +1151,12 @@ class _ModalTimePickerContentState extends State<_ModalTimePickerContent> {
 
   @override
   Widget build(BuildContext context) {
-    final spacing = context.justSpacing;
+    final JustSpacingScheme spacing = context.justSpacing;
 
     return Column(
       mainAxisSize: .min,
       crossAxisAlignment: .stretch,
-      children: [
+      children: <Widget>[
         JustTimePicker.inline(
           value: _selectedTime,
           firstTime: widget.firstTime,
@@ -1133,7 +1169,7 @@ class _ModalTimePickerContentState extends State<_ModalTimePickerContent> {
           showContainer: false,
           style: widget.style,
           enableHaptic: widget.enableHaptic,
-          onChanged: (time) {
+          onChanged: (TimeOfDay time) {
             setState(() {
               _selectedTime = time;
             });
@@ -1142,7 +1178,7 @@ class _ModalTimePickerContentState extends State<_ModalTimePickerContent> {
         SizedBox(height: spacing.md),
         Row(
           mainAxisAlignment: .end,
-          children: [
+          children: <Widget>[
             JustButton(
               label: widget.locale.cancelLabel,
               variant: .ghost,
@@ -1182,8 +1218,8 @@ Future<TimeOfDay?> showJustTimePicker({
 }) async {
   TimeOfDay? result;
 
-  final themeState = JustThemeProvider.maybeOf(context);
-  final theme = themeState?.theme;
+  final JustThemeProviderState? themeState = JustThemeProvider.maybeOf(context);
+  final JustThemeData? theme = themeState?.theme;
 
   Widget wrapWithTheme(Widget child) {
     Widget themedChild = child;
@@ -1201,7 +1237,7 @@ Future<TimeOfDay?> showJustTimePicker({
     );
   }
 
-  final isMobile = MediaQuery.sizeOf(context).width < JustBreakpoints.sm;
+  final bool isMobile = MediaQuery.sizeOf(context).width < JustBreakpoints.sm;
 
   if (isMobile) {
     return showJustBottomSheet<TimeOfDay>(
@@ -1220,9 +1256,11 @@ Future<TimeOfDay?> showJustTimePicker({
             locale: locale,
             style: style,
             enableHaptic: enableHaptic,
-            onConfirm: (time) {
+            onConfirm: (TimeOfDay time) {
               result = time;
-              final scope = JustSheetScope.maybeOf(context);
+              final JustSheetController? scope = JustSheetScope.maybeOf(
+                context,
+              );
               if (scope != null) {
                 scope.dismiss();
               } else {
@@ -1230,7 +1268,9 @@ Future<TimeOfDay?> showJustTimePicker({
               }
             },
             onCancel: () {
-              final scope = JustSheetScope.maybeOf(context);
+              final JustSheetController? scope = JustSheetScope.maybeOf(
+                context,
+              );
               if (scope != null) {
                 scope.dismiss();
               } else {
@@ -1247,7 +1287,7 @@ Future<TimeOfDay?> showJustTimePicker({
   if (!context.mounted) return null;
 
   try {
-    final dialogScope = JustDialogScope.of(context);
+    final JustDialogController dialogScope = JustDialogScope.of(context);
     await dialogScope.show<void>(
       content: wrapWithTheme(
         SizedBox(
@@ -1263,7 +1303,7 @@ Future<TimeOfDay?> showJustTimePicker({
             locale: locale,
             style: style,
             enableHaptic: enableHaptic,
-            onConfirm: (time) {
+            onConfirm: (TimeOfDay time) {
               result = time;
               dialogScope.dismiss();
             },
@@ -1300,7 +1340,7 @@ Future<TimeOfDay?> showJustTimePicker({
                     locale: locale,
                     style: style,
                     enableHaptic: enableHaptic,
-                    onConfirm: (time) {
+                    onConfirm: (TimeOfDay time) {
                       result = time;
                       Navigator.of(dialogContext).pop();
                     },

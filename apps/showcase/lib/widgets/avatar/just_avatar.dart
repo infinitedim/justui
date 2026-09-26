@@ -1,5 +1,7 @@
-// justui-meta: registry=1ae36112b797c3a7d6a3fcc817bb821ef90be4c46335b105a2bcb8478b14ce77 local=4292bc2fd9dbd06fade7cd23ff177e8150d97eb1f4480e0f6c82a5eb90bd6e67
+// justui-meta: registry=34fc1aedcc40aa394d508a1a9668296a1573efcdb67c6a7d7eb70fa4011206bd local=26bae8aaf46f671297fc05ff92c9aa45ef2f345f583f157e83ab996bfe3fbe01
 import 'package:flutter/widgets.dart';
+import 'package:showcase/core/theme/preset_tokens.dart';
+import 'package:showcase/core/theme/theme_data.dart';
 
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -11,21 +13,24 @@ import 'just_avatar_variants.dart';
 /// A custom fallback painter that draws a head-and-shoulders person profile.
 ///
 /// Avoids external dependencies on Material icons.
-class const PersonFallbackPainter({required final Color color})
-    extends CustomPainter {
+class PersonFallbackPainter extends CustomPainter {
+  final Color color;
+
+  const PersonFallbackPainter({required this.color});
+
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
+    final Paint paint = Paint()
       ..color = color
       ..style = .fill;
 
     // Draw head (circle)
-    final headRadius = size.width * 0.22;
-    final headCenter = Offset(size.width * 0.5, size.height * 0.35);
+    final double headRadius = size.width * 0.22;
+    final Offset headCenter = Offset(size.width * 0.5, size.height * 0.35);
     canvas.drawCircle(headCenter, headRadius, paint);
 
     // Draw shoulders (quadratic bezier curve)
-    final path = Path()
+    final Path path = Path()
       ..moveTo(size.width * 0.15, size.height * 0.85)
       ..quadraticBezierTo(
         size.width * 0.5,
@@ -50,24 +55,38 @@ class const PersonFallbackPainter({required final Color color})
 }
 
 /// An avatar component for displaying user profile photos, initials, or fallback icons.
-class const JustAvatar({
-  super.key,
-  final String? imageUrl,
-  final String? name,
-  final IconData? icon,
-  final JustAvatarSize size = .md,
-  final JustAvatarShape shape = .circle,
-  final BorderSide? border,
-  final JustAvatarStatus? statusDot,
-  final Color? backgroundColor,
-  final VoidCallback? onTap,
-  final String? semanticLabel,
-  final JustAvatarStyle? style,
-}) extends StatelessWidget {
+class JustAvatar extends StatelessWidget {
+  final String? imageUrl;
+  final String? name;
+  final IconData? icon;
+  final JustAvatarSize size;
+  final JustAvatarShape shape;
+  final BorderSide? border;
+  final JustAvatarStatus? statusDot;
+  final Color? backgroundColor;
+  final VoidCallback? onTap;
+  final String? semanticLabel;
+  final JustAvatarStyle? style;
+
+  const JustAvatar({
+    super.key,
+    this.imageUrl,
+    this.name,
+    this.icon,
+    this.size = .md,
+    this.shape = .circle,
+    this.border,
+    this.statusDot,
+    this.backgroundColor,
+    this.onTap,
+    this.semanticLabel,
+    this.style,
+  });
+
   /// Generate 1-2 letters from a name.
   static String _generateInitials(String? name) {
     if (name == null) return '';
-    final parts = name.trim().split(' ');
+    final List<String> parts = name.trim().split(' ');
     if (parts.isEmpty || parts.first.isEmpty) return '';
     if (parts.length == 1) return parts.first[0].toUpperCase();
     return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
@@ -75,7 +94,7 @@ class const JustAvatar({
 
   /// Generate a deterministic background color from a name.
   static Color _colorFromName(String name) {
-    const colors = [
+    const List<Color> colors = <Color>[
       JustColorPalette.primary500,
       JustColorPalette.success500,
       JustColorPalette.warning500,
@@ -88,9 +107,12 @@ class const JustAvatar({
 
   @override
   Widget build(BuildContext context) {
-    final theme = JustThemeProvider.of(context).theme;
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final radius = theme.radius;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustRadiusScheme radius = theme.radius;
 
     // Resolve diameter, font size, status dot size
     double diameter;
@@ -136,13 +158,13 @@ class const JustAvatar({
         : .all(radius.xl);
 
     // Resolve colors & overrides
-    final initials = _generateInitials(name);
+    final String initials = _generateInitials(name);
     final Color bg =
         style?.backgroundColor ??
         backgroundColor ??
         (name != null ? _colorFromName(name!) : colors.borderDefault);
     final Color fg = style?.foregroundColor ?? colors.textInverse;
-    final presetTokens = theme.presetTokens;
+    final JustPresetTokens presetTokens = theme.presetTokens;
     final double borderWidth =
         style?.borderWidth ??
         border?.width ??
@@ -164,7 +186,7 @@ class const JustAvatar({
         height: diameter,
         errorBuilder: (_, _, _) =>
             _buildFallback(initials, fg, diameter, fontSize),
-        loadingBuilder: (_, child, progress) {
+        loadingBuilder: (_, Widget child, ImageChunkEvent? progress) {
           if (progress == null) return child;
           return _buildFallback(initials, fg, diameter, fontSize);
         },
@@ -210,7 +232,7 @@ class const JustAvatar({
         height: diameter,
         child: Stack(
           clipBehavior: .none,
-          children: [
+          children: <Widget>[
             avatarBody,
             Positioned(
               right: 0.0,

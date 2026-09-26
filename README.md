@@ -47,7 +47,8 @@ justui/
 ├── registry/            # Component source files + index.json
 ├── apps/
 │   ├── docs/            # Next.js + Fumadocs documentation site
-│   └── showcase/        # Flutter showcase app
+│   ├── preview/         # Widgetbook component workbench
+│   └── showcase/        # CLI sandbox (components installed via `justui add --all`)
 └── docs/                # Phase specs and architecture decisions
 ```
 

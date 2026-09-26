@@ -1,21 +1,27 @@
-// justui-meta: registry=bb4d3c347a2ea9e3ec6c84875b9745a51feb20e6e6afe22438ca91650ab1e4a1 local=bb4d3c347a2ea9e3ec6c84875b9745a51feb20e6e6afe22438ca91650ab1e4a1
+// justui-meta: registry=e899c9ab266748e128c91bd087029b0f3d59972f5b465f993e2cbb6847bb8cb3 local=55a50a709da415d400423631216ba66f61b72d3f42ac88306d0c05f21defaed2
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_bottom_nav_style.dart';
 
 /// Global theme configuration for bottom navigation bars, extending Flutter's [ThemeExtension].
-class const JustBottomNavTheme({
+class JustBottomNavTheme extends ThemeExtension<JustBottomNavTheme> {
   /// Default style override for [JustBottomNavVariant.fixed].
-  final JustBottomNavStyle? fixedStyle,
+  final JustBottomNavStyle? fixedStyle;
 
   /// Default style override for [JustBottomNavVariant.shifting].
-  final JustBottomNavStyle? shiftingStyle,
+  final JustBottomNavStyle? shiftingStyle;
 
   /// Default style override for [JustBottomNavVariant.floating].
-  final JustBottomNavStyle? floatingStyle,
-}) extends ThemeExtension<JustBottomNavTheme> {
+  final JustBottomNavStyle? floatingStyle;
+
+  const JustBottomNavTheme({
+    this.fixedStyle,
+    this.shiftingStyle,
+    this.floatingStyle,
+  });
+
   /// Default theme configuration.
-  static const defaults = JustBottomNavTheme();
+  static const JustBottomNavTheme defaults = JustBottomNavTheme();
 
   @override
   JustBottomNavTheme copyWith({

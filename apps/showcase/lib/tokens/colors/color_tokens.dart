@@ -87,7 +87,7 @@ abstract final class JustColorScheme {
 
   @override
   int get hashCode {
-    return Object.hashAll([
+    return Object.hashAll(<Object?>[
       background,
       card,
       elevated,
@@ -618,22 +618,22 @@ final class CustomColorScheme extends JustColorScheme {
       );
     }
 
-    final semanticTextPrimary = isDark
+    final Color semanticTextPrimary = isDark
         ? JustColorSemanticDark.textPrimary
         : JustColorSemanticLight.textPrimary;
-    final semanticTextSecondary = isDark
+    final Color semanticTextSecondary = isDark
         ? JustColorSemanticDark.textSecondary
         : JustColorSemanticLight.textSecondary;
-    final semanticTextDisabled = isDark
+    final Color semanticTextDisabled = isDark
         ? JustColorSemanticDark.textDisabled
         : JustColorSemanticLight.textDisabled;
-    final semanticTextInverse = isDark
+    final Color semanticTextInverse = isDark
         ? JustColorSemanticDark.textInverse
         : JustColorSemanticLight.textInverse;
-    final semanticBorderDefault = isDark
+    final Color semanticBorderDefault = isDark
         ? JustColorSemanticDark.borderDefault
         : JustColorSemanticLight.borderDefault;
-    final semanticBorderError = isDark
+    final Color semanticBorderError = isDark
         ? JustColorSemanticDark.borderError
         : JustColorSemanticLight.borderError;
 

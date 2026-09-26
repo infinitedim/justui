@@ -1,4 +1,4 @@
-// justui-meta: registry=ee2d2134b878450af3cd505a02a972ef62c075e06d8c84ec678b0ea34c1b96e6 local=ee2d2134b878450af3cd505a02a972ef62c075e06d8c84ec678b0ea34c1b96e6
+// justui-meta: registry=033f977fbeb91050e785b6c4d4b429d8e03b6b650f797a955422dbd618121f5f local=867132c41ac5e1e6c4647a00e8e6217d2a11f1556f6aec909137511a37c59a9b
 import 'package:flutter/material.dart' show DateTimeRange;
 
 /// Display variant for [JustDatePicker].
@@ -30,56 +30,64 @@ enum JustCalendarView {
 }
 
 /// Custom locale names provider for date pickers without external dependencies.
-class const JustDatePickerLocale({
+class JustDatePickerLocale {
   /// Full month names starting from January (index 0).
-  final List<String> monthNames = const [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ],
+  final List<String> monthNames;
 
   /// Short month names starting from Jan (index 0).
-  final List<String> shortMonthNames = const [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ],
+  final List<String> shortMonthNames;
 
   /// Weekday abbreviation headers starting from Monday (index 0).
-  final List<String> weekdayHeaders = const [
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat',
-    'Sun',
-  ],
-});
+  final List<String> weekdayHeaders;
+
+  const JustDatePickerLocale({
+    this.monthNames = const <String>[
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ],
+    this.shortMonthNames = const <String>[
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ],
+    this.weekdayHeaders = const <String>[
+      'Mon',
+      'Tue',
+      'Wed',
+      'Thu',
+      'Fri',
+      'Sat',
+      'Sun',
+    ],
+  });
+}
 
 /// Quick-select date range preset definition for [JustDateRangePicker].
-class const JustDateRangePreset({
+class JustDateRangePreset {
   /// Display label shown on the preset button (e.g. 'Last 7 Days').
-  required final String label,
+  final String label;
 
   /// Callback returning the corresponding [DateTimeRange].
-  required final DateTimeRange Function() resolve,
-});
+  final DateTimeRange Function() resolve;
+
+  const JustDateRangePreset({required this.label, required this.resolve});
+}

@@ -1,4 +1,4 @@
-// justui-meta: registry=dcb82b367c1af41f79a6f413c68642b06d990625eb11d216e00ffb94b7581027 local=dcb82b367c1af41f79a6f413c68642b06d990625eb11d216e00ffb94b7581027
+// justui-meta: registry=d420060a7b3b30cc503e2708efa1c7743464ca1b95ab0b02a2e106eebae74088 local=e162ce2c7907971f5da20b3cd19aed114e9266e625283ebf3ca79a2a080b98fe
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_checkbox_style.dart';
@@ -7,15 +7,17 @@ import 'just_checkbox_style.dart';
 typedef JustCheckboxThemeData = JustCheckboxTheme;
 
 /// Global theme configuration for checkboxes, extending Flutter's [ThemeExtension].
-class const JustCheckboxTheme({
+class JustCheckboxTheme extends ThemeExtension<JustCheckboxTheme> {
   /// Base style override for checkboxes.
-  final JustCheckboxStyle? style,
+  final JustCheckboxStyle? style;
 
   /// Whether to enable haptic feedback on checkbox state changes.
-  final bool enableHaptic = false,
-}) extends ThemeExtension<JustCheckboxTheme> {
+  final bool enableHaptic;
+
+  const JustCheckboxTheme({this.style, this.enableHaptic = false});
+
   /// Default configuration for the theme.
-  static const defaults = JustCheckboxTheme();
+  static const JustCheckboxTheme defaults = JustCheckboxTheme();
 
   @override
   JustCheckboxTheme copyWith({JustCheckboxStyle? style, bool? enableHaptic}) {
