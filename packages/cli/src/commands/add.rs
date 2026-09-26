@@ -306,15 +306,11 @@ pub fn run(
 
     for name in &components_to_add {
         if let Some(component) = index.components.iter().find(|c| c.name == *name) {
-            let target_dir = if component.category == "tokens" || component.category == "core" {
-                config.tokens_dir.clone()
-            } else if component.name == "_shared_theme_provider" {
-                "lib/theme".to_string()
-            } else if component.internal {
-                config.shared_dir.clone()
-            } else {
-                format!("{}/{}", config.components_dir, component.name)
-            };
+            let target_dir = component.install_dir(
+                &config.components_dir,
+                &config.tokens_dir,
+                &config.shared_dir,
+            );
 
             summary_items.push(SummaryItem {
                 label: name.clone(),
@@ -413,15 +409,7 @@ pub fn add_component(
         component.name, component.version
     ));
 
-    let target_dir = if component.category == "tokens" || component.category == "core" {
-        tokens_dir.to_string()
-    } else if component.name == "_shared_theme_provider" {
-        "lib/theme".to_string()
-    } else if component.internal {
-        shared_dir.to_string()
-    } else {
-        format!("{}/{}", components_dir, component.name)
-    };
+    let target_dir = component.install_dir(components_dir, tokens_dir, shared_dir);
 
     let files: Vec<_> = component.files_for_preset(preset).clone();
     let comp_name = component.name.clone();
@@ -482,13 +470,7 @@ pub fn add_component(
             &local_rewritten_hash,
         );
 
-        let local_file_name = if component.name == "_shared_theme_provider" {
-            file.name.clone()
-        } else if component.internal {
-            import_rewriter::normalize_shared_file_name(&file.name)
-        } else {
-            file.name.clone()
-        };
+        let local_file_name = component.local_file_name(&file.name);
         let target_path = std::path::Path::new(&target_dir).join(&local_file_name);
 
         let file_exists = target_path.exists();
@@ -1395,9 +1377,9 @@ mod tests {
                     }}
                 }},
                 {{
-                    "name": "_shared_theme_provider",
+                    "name": "_shared_theme_bridge",
                     "version": "1.0.0",
-                    "description": "Shared theme provider",
+                    "description": "Shared theme bridge",
                     "category": "shared",
                     "internal": true,
                     "supportedPresets": ["default"],
@@ -1406,8 +1388,8 @@ mod tests {
                     "files": {{
                         "default": [
                             {{
-                                "name": "theme_provider.dart",
-                                "path": "theme/theme_provider.dart",
+                                "name": "_shared_theme_bridge.dart",
+                                "path": "theme/_shared_theme_bridge.dart",
                                 "checksum": "sha256:{theme_hash}"
                             }}
                         ]
@@ -1419,7 +1401,7 @@ mod tests {
 
         std::fs::write(reg_dir.join("index.json"), index_json).unwrap();
         std::fs::write(reg_dir.join("core/core.dart"), core_code).unwrap();
-        std::fs::write(reg_dir.join("theme/theme_provider.dart"), theme_code).unwrap();
+        std::fs::write(reg_dir.join("theme/_shared_theme_bridge.dart"), theme_code).unwrap();
 
         let config_yaml = format!(
             "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
@@ -1431,7 +1413,9 @@ mod tests {
         assert!(run(vec![], false, false, true, false, true).is_ok());
 
         assert!(std::path::Path::new("lib/tokens/core.dart").exists());
-        assert!(std::path::Path::new("lib/theme/theme_provider.dart").exists());
+        // Internal components always land flat in shared_dir with the `_shared_` prefix
+        // rewritten to `just_`.
+        assert!(std::path::Path::new("lib/widgets/shared/just_theme_bridge.dart").exists());
     }
 
     #[test]
@@ -2005,17 +1989,13 @@ mod tests {
         // Setup local registry
         let reg_dir = temp_dir.path().join("registry");
         std::fs::create_dir_all(reg_dir.join("components/button")).unwrap();
-        std::fs::create_dir_all(reg_dir.join("components/_shared_theme_provider")).unwrap();
+        std::fs::create_dir_all(reg_dir.join("components/_shared_base")).unwrap();
 
         let button_code = "class JustButton {}";
         let button_hash = sha256_hex(button_code.as_bytes());
 
         std::fs::write(reg_dir.join("just_button.dart"), button_code).unwrap();
-        std::fs::write(
-            reg_dir.join("just_theme_provider.dart"),
-            "class JustThemeProvider {}",
-        )
-        .unwrap();
+        std::fs::write(reg_dir.join("_shared_base.dart"), "class JustBase {}").unwrap();
 
         std::fs::write(
             reg_dir.join("index.json"),
@@ -2030,7 +2010,7 @@ mod tests {
                         "category": "primitive",
                         "internal": false,
                         "supportedPresets": ["default"],
-                        "registryDependencies": ["_shared_theme_provider"],
+                        "registryDependencies": ["_shared_base"],
                         "pubDependencies": {"flutter_svg": "^2.0.0"},
                         "files": {
                             "default": [{
@@ -2041,9 +2021,9 @@ mod tests {
                         }
                     },
                     {
-                        "name": "_shared_theme_provider",
+                        "name": "_shared_base",
                         "version": "1.0.0",
-                        "description": "Theme provider",
+                        "description": "Shared base",
                         "category": "core",
                         "internal": true,
                         "supportedPresets": ["default"],
@@ -2051,8 +2031,8 @@ mod tests {
                         "pubDependencies": {},
                         "files": {
                             "default": [{
-                                "name": "just_theme_provider.dart",
-                                "path": "just_theme_provider.dart",
+                                "name": "_shared_base.dart",
+                                "path": "_shared_base.dart",
                                 "checksum": "sha256:abc"
                             }]
                         }
