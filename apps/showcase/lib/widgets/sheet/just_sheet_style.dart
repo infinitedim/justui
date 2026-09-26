@@ -1,23 +1,32 @@
-// justui-meta: registry=e10fed5e990a9d1375ab78848e72862278e8ebe62b685c3dd85753fba232f6b6 local=e10fed5e990a9d1375ab78848e72862278e8ebe62b685c3dd85753fba232f6b6
+// justui-meta: registry=e10fed5e990a9d1375ab78848e72862278e8ebe62b685c3dd85753fba232f6b6 local=e731104490a460c50b1d4492d86679636a753e5aad1738e364601af728899bfc
 import 'package:flutter/widgets.dart';
 
 /// Customized per-instance visual styles for a sheet.
-class const JustSheetStyle({
+class JustSheetStyle {
   /// Custom background color of the sheet surface.
-  final Color? backgroundColor,
+  final Color? backgroundColor;
 
   /// Custom background color of the backdrop/barrier.
-  final Color? barrierColor,
+  final Color? barrierColor;
 
   /// Custom color of the drag handle bar (if visible).
-  final Color? handleColor,
+  final Color? handleColor;
 
   /// Custom border radius of the sheet surface.
-  final BorderRadius? borderRadius,
+  final BorderRadius? borderRadius;
 
   /// Custom inner padding of the sheet surface.
-  final EdgeInsets? padding,
+  final EdgeInsets? padding;
 
   /// Custom shadows/elevation.
-  final List<BoxShadow>? shadows,
-});
+  final List<BoxShadow>? shadows;
+
+  const JustSheetStyle({
+    this.backgroundColor,
+    this.barrierColor,
+    this.handleColor,
+    this.borderRadius,
+    this.padding,
+    this.shadows,
+  });
+}

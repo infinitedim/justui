@@ -1,4 +1,4 @@
-// justui-meta: registry=78568290abd210897818d7ab3d91be4e807a031b035ae6c4216da8550f4a7fa3 local=0498641839a502b38fa26fc26a6d5bcd4d6cb315fa25fa363ef7188555d06e65
+// justui-meta: registry=d6ba9b973d4dfdc26faf7b53adc049fda6f8797914d8593aba8034623774b915 local=ead12f0880abf0e7c02d416a050081b0d4eb39e48795cc8734329f371abf4577
 import 'package:flutter/widgets.dart';
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -7,38 +7,49 @@ import 'just_badge_variants.dart';
 
 /// A badge component for showing status, counts, or small tags.
 /// A badge component for showing status, counts, or small tags.
-class const JustBadge({
-  super.key,
-
+class JustBadge extends StatelessWidget {
   /// The text label of the badge. Null represents a notification dot badge.
-  final String? label,
+  final String? label;
 
   /// The color category classification.
-  final JustBadgeColor color = .primary,
+  final JustBadgeColor color;
 
   /// The visual style variant.
-  final JustBadgeVariant variant = .solid,
+  final JustBadgeVariant variant;
 
   /// The physical size classification.
-  final JustBadgeSize size = .md,
+  final JustBadgeSize size;
 
   /// An optional icon or widget displayed before the label.
-  final Widget? leading,
+  final Widget? leading;
 
   /// Optional callback to dismiss the badge. If non-null, displays a close icon at the end.
-  final VoidCallback? onDismiss,
+  final VoidCallback? onDismiss;
 
   /// Optional maximum width constraint. Text will truncate with ellipsis if exceeded.
-  final double? maxWidth,
+  final double? maxWidth;
 
   /// Per-instance style overrides.
-  final JustBadgeStyle? style,
+  final JustBadgeStyle? style;
 
   /// Whether to show a pulse animation (only applicable to dot variant).
-  final bool pulse = false,
-}) extends StatelessWidget {
+  final bool pulse;
+
+  const JustBadge({
+    super.key,
+    this.label,
+    this.color = .primary,
+    this.variant = .solid,
+    this.size = .md,
+    this.leading,
+    this.onDismiss,
+    this.maxWidth,
+    this.style,
+    this.pulse = false,
+  });
+
   /// Shorthand constructor for notification dot badges.
-  const new dot({
+  const JustBadge.dot({
     Key? key,
     JustBadgeColor color = .error,
     JustBadgeSize size = .sm,
@@ -88,7 +99,7 @@ class const JustBadge({
 
     return Stack(
       clipBehavior: .none,
-      children: [
+      children: <Widget>[
         child,
         Positioned(
           top: top,
@@ -103,17 +114,20 @@ class const JustBadge({
 
   @override
   Widget build(BuildContext context) {
-    final theme = JustThemeProvider.of(context).theme;
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final typography = JustThemeProvider.of(
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustTypographyScheme typography = JustThemeProvider.of(
       context,
       aspect: .typography,
     ).theme.typography;
-    final spacing = JustThemeProvider.of(
+    final JustSpacingScheme spacing = JustThemeProvider.of(
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final radius = theme.radius;
+    final JustRadiusScheme radius = theme.radius;
 
     // Resolve sizes
     double height;
@@ -160,15 +174,15 @@ class const JustBadge({
     Color fg;
     Color border = const Color(0x00000000);
 
-    final primaryBg = theme.presetTokens.showsDefaultBorder
+    final Color primaryBg = theme.presetTokens.showsDefaultBorder
         ? colors.warning
         : colors.borderFocus;
-    final primaryFg = theme.presetTokens.showsDefaultBorder
+    final Color primaryFg = theme.presetTokens.showsDefaultBorder
         ? colors.textPrimary
         : colors.textInverse;
-    final textPrimary = colors.textPrimary;
-    final textSecondary = colors.textSecondary;
-    final borderDefault = colors.borderDefault;
+    final Color textPrimary = colors.textPrimary;
+    final Color textSecondary = colors.textSecondary;
+    final Color borderDefault = colors.borderDefault;
 
     switch (color) {
       case .primary:
@@ -200,7 +214,7 @@ class const JustBadge({
         break;
 
       case .success:
-        final c = colors.success;
+        final Color c = colors.success;
         if (variant == .solid) {
           bg = c;
           fg = primaryFg;
@@ -215,7 +229,7 @@ class const JustBadge({
         break;
 
       case .warning:
-        final c = colors.warning;
+        final Color c = colors.warning;
         if (variant == .solid) {
           bg = c;
           fg = primaryFg;
@@ -230,7 +244,7 @@ class const JustBadge({
         break;
 
       case .error:
-        final c = colors.error;
+        final Color c = colors.error;
         if (variant == .solid) {
           bg = c;
           fg = primaryFg;
@@ -245,7 +259,7 @@ class const JustBadge({
         break;
 
       case .info:
-        final c = colors.info;
+        final Color c = colors.info;
         if (variant == .solid) {
           bg = c;
           fg = primaryFg;
@@ -275,17 +289,20 @@ class const JustBadge({
     }
 
     // Overrides
-    final finalBg = style?.backgroundColor ?? bg;
-    final finalFg = style?.foregroundColor ?? fg;
-    final finalBorder = style?.borderColor ?? border;
-    final finalRadius = style?.borderRadius ?? defaultRadius;
-    final finalPadding = style?.padding ?? .symmetric(horizontal: paddingH);
-    final finalTextStyle =
+    final Color finalBg = style?.backgroundColor ?? bg;
+    final Color finalFg = style?.foregroundColor ?? fg;
+    final Color finalBorder = style?.borderColor ?? border;
+    final BorderRadius finalRadius = style?.borderRadius ?? defaultRadius;
+    final EdgeInsetsGeometry finalPadding =
+        style?.padding ?? .symmetric(horizontal: paddingH);
+    final TextStyle finalTextStyle =
         style?.textStyle ?? textStyle.copyWith(color: finalFg);
 
     // Dot variant layout
     if (variant == .dot) {
-      final dotColor = finalBg == const Color(0x00000000) ? finalFg : finalBg;
+      final Color dotColor = finalBg == const Color(0x00000000)
+          ? finalFg
+          : finalBg;
       if (pulse) {
         return _JustPulsingDot(
           size: dotSize,
@@ -336,7 +353,7 @@ class const JustBadge({
       );
     }
 
-    final presetTokens = theme.presetTokens;
+    final JustPresetTokens presetTokens = theme.presetTokens;
 
     final Border? resolvedBorder = presetTokens.showsDefaultBorder
         ? .all(color: colors.textPrimary, width: presetTokens.borderWidth)
@@ -360,17 +377,23 @@ class const JustBadge({
       child: Row(
         mainAxisSize: .min,
         crossAxisAlignment: .center,
-        children: [?leadingIcon, labelText, ?dismissIcon],
+        children: <Widget>[?leadingIcon, labelText, ?dismissIcon],
       ),
     );
   }
 }
 
-class const _JustPulsingDot({
-  required final double size,
-  required final Color color,
-  required final double pulseScale,
-}) extends StatefulWidget {
+class _JustPulsingDot extends StatefulWidget {
+  final double size;
+  final Color color;
+  final double pulseScale;
+
+  const _JustPulsingDot({
+    required this.size,
+    required this.color,
+    required this.pulseScale,
+  });
+
   @override
   State<_JustPulsingDot> createState() => _JustPulsingDotState();
 }
@@ -402,7 +425,7 @@ class _JustPulsingDotState extends State<_JustPulsingDot>
           controller: _controller,
           pulseScale: widget.pulseScale,
         ),
-        children: [
+        children: <Widget>[
           // Pulse halo (decorative)
           ExcludeSemantics(
             child: Container(

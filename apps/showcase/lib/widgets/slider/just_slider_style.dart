@@ -1,31 +1,42 @@
-// justui-meta: registry=d6531b58b5b206cc86ed00e2a5c344dd3392e05c11e36dd9c8a955ab7d781927 local=2d83e4ff163d96d57196dd9dfddfbd788104e69b1d036366d35ba146c24b78f8
+// justui-meta: registry=d6531b58b5b206cc86ed00e2a5c344dd3392e05c11e36dd9c8a955ab7d781927 local=bfff310906a10be894c7813f199659e242d050437cb2c11a29270f9bb8e5fc86
 import 'package:flutter/widgets.dart';
 
 export 'package:showcase/core/just_ui_core.dart' show JustSliderSize;
 
 /// Customized per-instance visual styles for [JustSlider].
-class const JustSliderStyle({
+class JustSliderStyle {
   /// Color of the active track (filled portion).
-  final Color? activeTrackColor,
+  final Color? activeTrackColor;
 
   /// Color of the inactive track (empty portion).
-  final Color? inactiveTrackColor,
+  final Color? inactiveTrackColor;
 
   /// Color of the thumb.
-  final Color? thumbColor,
+  final Color? thumbColor;
 
   /// Border color of the thumb.
-  final Color? thumbBorderColor,
+  final Color? thumbBorderColor;
 
   /// Color of the tick marks.
-  final Color? tickMarkColor,
+  final Color? tickMarkColor;
 
   /// Custom height for the slider track.
-  final double? trackHeight,
+  final double? trackHeight;
 
   /// Custom size (diameter or side length) for the thumb.
-  final double? thumbSize,
+  final double? thumbSize;
 
   /// Border radius of the slider track.
-  final BorderRadius? borderRadius,
-});
+  final BorderRadius? borderRadius;
+
+  const JustSliderStyle({
+    this.activeTrackColor,
+    this.inactiveTrackColor,
+    this.thumbColor,
+    this.thumbBorderColor,
+    this.tickMarkColor,
+    this.trackHeight,
+    this.thumbSize,
+    this.borderRadius,
+  });
+}

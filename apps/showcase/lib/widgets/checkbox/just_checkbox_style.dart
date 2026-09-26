@@ -1,4 +1,4 @@
-// justui-meta: registry=e2169e308cf72c1d23f36dce87157684557ae96535ae0c91cd9b860471dfad8e local=e2169e308cf72c1d23f36dce87157684557ae96535ae0c91cd9b860471dfad8e
+// justui-meta: registry=e2169e308cf72c1d23f36dce87157684557ae96535ae0c91cd9b860471dfad8e local=5d430da044be3c0029145c97e25843d11db4fad3e6f9c492f255a3b459ec3a0f
 import 'package:flutter/widgets.dart';
 
 /// The physical size classification for [JustCheckbox].
@@ -14,22 +14,30 @@ enum JustCheckboxSize {
 }
 
 /// Customized per-instance visual styles for [JustCheckbox].
-class const JustCheckboxStyle({
+class JustCheckboxStyle {
   /// Background color of the checkbox when checked.
-  final Color? activeColor,
+  final Color? activeColor;
 
   /// Color of the checkmark/indeterminate dash.
-  final Color? checkColor,
+  final Color? checkColor;
 
   /// Border color of the checkbox when unchecked.
-  final Color? borderColor,
+  final Color? borderColor;
 
   /// Border radius of the checkbox square.
-  final BorderRadius? borderRadius,
+  final BorderRadius? borderRadius;
 
   /// Text style of the checkbox label.
-  final TextStyle? textStyle,
-}) {
+  final TextStyle? textStyle;
+
+  const JustCheckboxStyle({
+    this.activeColor,
+    this.checkColor,
+    this.borderColor,
+    this.borderRadius,
+    this.textStyle,
+  });
+
   /// Returns a copy with given fields replaced.
   JustCheckboxStyle copyWith({
     Color? activeColor,

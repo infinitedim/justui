@@ -1,15 +1,17 @@
-// justui-meta: registry=32f9c401d33484293d7b8d93a208a88841289d752ffb24021ab9cf321f09ebf2 local=32f9c401d33484293d7b8d93a208a88841289d752ffb24021ab9cf321f09ebf2
+// justui-meta: registry=b605291f0db7999ae15a9fc4a46bce506326b2dc10c36ed8828c25bdd83e75d0 local=4b0b99f6c35df5adba2a3a06608297beaf1886dc3aaa1022bc36cfd2f61389ad
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_tooltip_style.dart';
 
 /// Global theme configuration for tooltips, extending Flutter's [ThemeExtension].
-class const JustTooltipTheme({
+class JustTooltipTheme extends ThemeExtension<JustTooltipTheme> {
   /// Style override for the tooltip.
-  final JustTooltipStyle? style,
-}) extends ThemeExtension<JustTooltipTheme> {
+  final JustTooltipStyle? style;
+
+  const JustTooltipTheme({this.style});
+
   /// Default configuration for the theme.
-  static const defaults = JustTooltipTheme();
+  static const JustTooltipTheme defaults = JustTooltipTheme();
 
   @override
   JustTooltipTheme copyWith({JustTooltipStyle? style}) {

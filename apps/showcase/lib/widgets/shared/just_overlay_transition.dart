@@ -1,4 +1,4 @@
-// justui-meta: registry=8c977d96997c11900fdb5c04ac82ada59064cb7d3e9eaf7122b54500abbc518e local=9ec64bf89034372a17d7ec5e7c76bcf883b430361086ddf791eaeea546e8a18e
+// justui-meta: registry=549ec5176eb7f04488c89de4e00104c10fae0cc39ce79d5448268522f893f1af local=45dc4d5179237ca32419ca16c8d847d31d333cc89b2f0b956ae85ac451dd62bc
 import 'package:flutter/widgets.dart';
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -16,16 +16,43 @@ import 'package:showcase/core/just_ui_core.dart';
 ///   child: calendarWidget,
 /// )
 /// ```
-class const JustOverlayTransition({
-  super.key,
-  required final Widget child,
-  required final bool isVisible,
-  final VoidCallback? onExitComplete,
-  final Duration? duration,
-  final Curve? enterCurve,
-  final Curve? exitCurve,
-  final Alignment scaleAlignment = Alignment.topCenter,
-}) extends StatefulWidget {
+class JustOverlayTransition extends StatefulWidget {
+  /// The overlay content to animate.
+  final Widget child;
+
+  /// Whether the overlay is currently visible.
+  /// When set to `false`, the exit animation plays before [onExitComplete] fires.
+  final bool isVisible;
+
+  /// Called after the exit animation completes.
+  /// Typically used to call `_overlayController.hide()`.
+  final VoidCallback? onExitComplete;
+
+  /// Override duration (defaults to resolved motion profile `fast` duration).
+  final Duration? duration;
+
+  /// Override entrance curve (defaults to resolved motion profile `enter` curve).
+  final Curve? enterCurve;
+
+  /// Override exit curve (defaults to resolved motion profile `exit` curve).
+  final Curve? exitCurve;
+
+  /// Alignment origin for the scale animation.
+  /// Defaults to [Alignment.topCenter] for dropdown-style overlays.
+  final Alignment scaleAlignment;
+
+  /// Creates a [JustOverlayTransition].
+  const JustOverlayTransition({
+    super.key,
+    required this.child,
+    required this.isVisible,
+    this.onExitComplete,
+    this.duration,
+    this.enterCurve,
+    this.exitCurve,
+    this.scaleAlignment = Alignment.topCenter,
+  });
+
   @override
   State<JustOverlayTransition> createState() => _JustOverlayTransitionState();
 }
@@ -71,13 +98,15 @@ class _JustOverlayTransitionState extends State<JustOverlayTransition>
     super.didChangeDependencies();
     if (!_motionResolved) {
       _motionResolved = true;
-      final themeState = JustThemeProvider.maybeOf(
+      final JustThemeProviderState? themeState = JustThemeProvider.maybeOf(
         context,
         aspect: .animations,
       );
       if (themeState != null) {
-        final motion = themeState.theme.animations.resolve(context);
-        final resolvedDuration = widget.duration ?? motion.fast;
+        final JustMotionProfile motion = themeState.theme.animations.resolve(
+          context,
+        );
+        final Duration resolvedDuration = widget.duration ?? motion.fast;
         _controller.duration = resolvedDuration;
         _setupAnimations(motion.enter, motion.exit);
       }

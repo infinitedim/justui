@@ -1,5 +1,6 @@
-// justui-meta: registry=0d763bd94b2059491df20cd662841a7ef3be3c2f9f20eeb125dddcc01e6eef8a local=59450c04705e186dfbeebb5cc4e096faea66d362a02aca6287f5e6ebc0fca546
+// justui-meta: registry=3dbbecf80a3fbb69e0f0277ec404d1ea0c456a6f90d617a0a483d5509b0553bd local=00a166a785af3d033b0df7bc6557b19ba71c657d622079d6c2272abc088c8a38
 import 'package:flutter/widgets.dart';
+import 'package:showcase/core/theme/preset_tokens.dart';
 
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -10,41 +11,50 @@ import 'just_tabs_variants.dart';
 /// based on the selected [JustTabVariant].
 /// An internal, package-private widget that renders the active tab indicator shape
 /// based on the selected [JustTabVariant].
-class const JustTabIndicator({
-  super.key,
-
+class JustTabIndicator extends StatelessWidget {
   /// The active variant.
-  required final JustTabVariant variant,
+  final JustTabVariant variant;
 
   /// The active tabs orientation.
-  required final Axis orientation,
+  final Axis orientation;
 
   /// The active color scheme.
-  required final JustColorScheme colors,
+  final JustColorScheme colors;
 
   /// The active radius scheme.
-  required final JustRadiusScheme radius,
+  final JustRadiusScheme radius;
 
   /// The active theme data.
-  required final JustThemeData theme,
+  final JustThemeData theme;
 
   /// Optional per-instance styles.
-  final JustTabsStyle? style,
-}) extends StatelessWidget {
+  final JustTabsStyle? style;
+
+  const JustTabIndicator({
+    super.key,
+    required this.variant,
+    required this.orientation,
+    required this.colors,
+    required this.radius,
+    required this.theme,
+    this.style,
+  });
+
   @override
   Widget build(BuildContext context) {
-    final presetTokens = theme.presetTokens;
+    final JustPresetTokens presetTokens = theme.presetTokens;
     // Resolve styling colors and shapes
-    final activeColor =
+    final Color activeColor =
         style?.indicatorColor ?? style?.activeColor ?? colors.borderFocus;
     final BorderRadius defaultIndicatorRadius = variant == .pill
         ? .all(radius.full)
         : .all(radius.md);
-    final indicatorRadius = style?.indicatorRadius ?? defaultIndicatorRadius;
+    final BorderRadius indicatorRadius =
+        style?.indicatorRadius ?? defaultIndicatorRadius;
 
     switch (variant) {
       case .line:
-        final thickness = presetTokens.resolveTabIndicatorThickness(
+        final double thickness = presetTokens.resolveTabIndicatorThickness(
           style?.indicatorThickness,
         );
         if (orientation == .horizontal) {
@@ -64,7 +74,7 @@ class const JustTabIndicator({
           );
         } else {
           // Vertical layout: line on the starting edge (respecting Directionality)
-          final isRtl = Directionality.of(context) == .rtl;
+          final bool isRtl = Directionality.of(context) == .rtl;
           return Align(
             alignment: isRtl ? .centerRight : .centerLeft,
             child: Container(
@@ -114,10 +124,10 @@ class const JustTabIndicator({
 
       case .vertical:
         // Fallback for vertical: line by default, or similar to line
-        final thickness = presetTokens.resolveTabIndicatorThickness(
+        final double thickness = presetTokens.resolveTabIndicatorThickness(
           style?.indicatorThickness,
         );
-        final isRtl = Directionality.of(context) == .rtl;
+        final bool isRtl = Directionality.of(context) == .rtl;
         return Align(
           alignment: isRtl ? .centerRight : .centerLeft,
           child: Container(

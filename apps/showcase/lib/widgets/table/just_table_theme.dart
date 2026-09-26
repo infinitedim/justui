@@ -1,15 +1,17 @@
-// justui-meta: registry=46dab696d696d2550c9096743646964288bda6dfbe42699f80ef3db0b15264d5 local=46dab696d696d2550c9096743646964288bda6dfbe42699f80ef3db0b15264d5
+// justui-meta: registry=0bfb5051be3f7f12a2f16148f4ebde71929a19b9376c94a5f5d7a89d81229284 local=0505999efccd56a1be90b1c4b1ffb84ab3c5665a408e19bd2c390d5ea3cd5fee
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_table_style.dart';
 
 /// Global theme configuration for tables, extending Flutter's [ThemeExtension].
-class const JustTableTheme({
+class JustTableTheme extends ThemeExtension<JustTableTheme> {
   /// Base style override for table components.
-  final JustTableStyle? style,
-}) extends ThemeExtension<JustTableTheme> {
+  final JustTableStyle? style;
+
+  const JustTableTheme({this.style});
+
   /// Default configuration for the theme.
-  static const defaults = JustTableTheme();
+  static const JustTableTheme defaults = JustTableTheme();
 
   @override
   JustTableTheme copyWith({JustTableStyle? style}) {

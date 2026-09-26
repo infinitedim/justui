@@ -12,7 +12,7 @@ tokens_dir: lib/tokens
 shared_dir: lib/widgets/shared
 
 # Base registry URL/path to download component sources from
-registry_url: https://raw.githubusercontent.com/infinitedim/justui/main/registry
+registry_url: ../../registry
 
 # Active style preset to use (e.g., 'default', 'neobrutalism')
 preset: neobrutalism
@@ -21,4 +21,4 @@ preset: neobrutalism
 color_space: oklch
 
 # Target Dart constructor syntax ('primary' or 'standard')
-dart_target: primary
+dart_target: standard

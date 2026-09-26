@@ -1,4 +1,4 @@
-// justui-meta: registry=5daf84edd49b11f33201e7a3699a425b273d87d9aac0ce986eb279c9ac4456f0 local=5c81b3f48d2989211c45577f050348d1ec112d9aae26d1b9111dd676bddc4d3c
+// justui-meta: registry=a9b5a92d7832136ce69efc63850fe09f7d7f21cc603b33259b0b729cbe3c0b1c local=52c2dae10dafb36135a196ee800cf024e1f4fd2d8f3357a565e9ae0c30bc8788
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:showcase/core/just_ui_core.dart';
@@ -130,17 +130,21 @@ class _JustSkeletonState extends State<JustSkeleton>
   @override
   Widget build(BuildContext context) {
     // Subscriptions for performance aspects
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final animations = JustThemeProvider.of(
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustMotionProfile animations = JustThemeProvider.of(
       context,
       aspect: .animations,
     ).theme.animations;
 
-    final globalTheme = Theme.of(context).extension<JustSkeletonTheme>();
-    final themeStyle = globalTheme?.style;
+    final JustSkeletonTheme? globalTheme = Theme.of(context)
+        .extension<JustSkeletonTheme>();
+    final JustSkeletonStyle? themeStyle = globalTheme?.style;
 
     // Resolve base colors
-    final isDark = colors.background.computeLuminance() < 0.5;
+    final bool isDark = colors.background.computeLuminance() < 0.5;
     final Color defaultBase = isDark
         ? const Color(0xFF1E293B)
         : const Color(0xFFE2E8F0);
@@ -148,16 +152,16 @@ class _JustSkeletonState extends State<JustSkeleton>
         ? const Color(0xFF334155)
         : const Color(0xFFF1F5F9);
 
-    final resolvedBase =
+    final Color resolvedBase =
         widget.style?.backgroundColor ??
         themeStyle?.backgroundColor ??
         defaultBase;
-    final resolvedHighlight =
+    final Color resolvedHighlight =
         widget.style?.shimmerColor ??
         themeStyle?.shimmerColor ??
         defaultHighlight;
 
-    final resolvedDuration =
+    final Duration resolvedDuration =
         widget.style?.duration ?? themeStyle?.duration ?? animations.slower * 2;
 
     if (_controller.duration != resolvedDuration) {
@@ -171,7 +175,7 @@ class _JustSkeletonState extends State<JustSkeleton>
       }
     }
 
-    final resolvedStyle = JustSkeletonStyle(
+    final JustSkeletonStyle resolvedStyle = JustSkeletonStyle(
       backgroundColor: resolvedBase,
       shimmerColor: resolvedHighlight,
       duration: resolvedDuration,
@@ -222,7 +226,7 @@ class _JustSkeletonState extends State<JustSkeleton>
     if (widget is JustSkeletonAtomic) {
       double? w = widget.width;
       double? h = widget.height;
-      final child = widget.child;
+      final Widget child = widget.child;
 
       if (w == null) {
         if (child is Container) {
@@ -372,11 +376,12 @@ class _JustSkeletonState extends State<JustSkeleton>
 
     // 5. Standard Leaf Widgets
     if (widget is Text) {
-      final textStr = widget.data ?? widget.textSpan?.toPlainText() ?? '';
-      final fontSize = widget.style?.fontSize ?? 14.0;
+      final String textStr =
+          widget.data ?? widget.textSpan?.toPlainText() ?? '';
+      final double fontSize = widget.style?.fontSize ?? 14.0;
       if (textStr.isEmpty) return const SizedBox.shrink();
 
-      final textAlign = widget.textAlign ?? .start;
+      final TextAlign textAlign = widget.textAlign ?? .start;
       CrossAxisAlignment columnAlignment = .start;
       Alignment alignment = .centerLeft;
       if (textAlign == .center) {
@@ -388,15 +393,15 @@ class _JustSkeletonState extends State<JustSkeleton>
       }
 
       if (textStr.length > 40 || textStr.contains('\n')) {
-        final linesCount = textStr.contains('\n')
+        final int linesCount = textStr.contains('\n')
             ? textStr.split('\n').length
             : (textStr.length / 40).ceil();
-        final clampedLines = linesCount.clamp(1, 4);
+        final int clampedLines = linesCount.clamp(1, 4);
         return Column(
           crossAxisAlignment: columnAlignment,
           mainAxisSize: .min,
-          children: .generate(clampedLines, (index) {
-            final isLast = index == clampedLines - 1;
+          children: .generate(clampedLines, (int index) {
+            final bool isLast = index == clampedLines - 1;
             return Padding(
               padding: .only(bottom: isLast ? 0.0 : 6.0),
               child: FractionallySizedBox(
@@ -421,13 +426,13 @@ class _JustSkeletonState extends State<JustSkeleton>
     }
 
     if (widget is RichText) {
-      final textStr = widget.text.toPlainText();
+      final String textStr = widget.text.toPlainText();
       if (textStr.isEmpty) return const SizedBox.shrink();
 
-      final style = widget.text.style;
-      final fontSize = style?.fontSize ?? 14.0;
+      final TextStyle? style = widget.text.style;
+      final double fontSize = style?.fontSize ?? 14.0;
 
-      final textAlign = widget.textAlign;
+      final TextAlign textAlign = widget.textAlign;
       CrossAxisAlignment columnAlignment = .start;
       Alignment alignment = .centerLeft;
       if (textAlign == .center) {
@@ -439,15 +444,15 @@ class _JustSkeletonState extends State<JustSkeleton>
       }
 
       if (textStr.length > 40 || textStr.contains('\n')) {
-        final linesCount = textStr.contains('\n')
+        final int linesCount = textStr.contains('\n')
             ? textStr.split('\n').length
             : (textStr.length / 40).ceil();
-        final clampedLines = linesCount.clamp(1, 4);
+        final int clampedLines = linesCount.clamp(1, 4);
         return Column(
           crossAxisAlignment: columnAlignment,
           mainAxisSize: .min,
-          children: .generate(clampedLines, (index) {
-            final isLast = index == clampedLines - 1;
+          children: .generate(clampedLines, (int index) {
+            final bool isLast = index == clampedLines - 1;
             return Padding(
               padding: .only(bottom: isLast ? 0.0 : 6.0),
               child: FractionallySizedBox(
@@ -539,8 +544,8 @@ class _JustSkeletonState extends State<JustSkeleton>
       );
     }
     if (widget is Semantics) {
-      final label = widget.properties.label;
-      final resolvedLabel = label != null && label.isNotEmpty
+      final String? label = widget.properties.label;
+      final String resolvedLabel = label != null && label.isNotEmpty
           ? '$label (loading)'
           : 'Loading';
       return Semantics(
@@ -705,7 +710,9 @@ class _JustSkeletonState extends State<JustSkeleton>
         textDirection: widget.textDirection,
         verticalDirection: widget.verticalDirection,
         textBaseline: widget.textBaseline,
-        children: widget.children.map((c) => _transform(c, context)).toList(),
+        children: widget.children
+            .map((Widget c) => _transform(c, context))
+            .toList(),
       );
     }
     if (widget is Column) {
@@ -717,7 +724,9 @@ class _JustSkeletonState extends State<JustSkeleton>
         textDirection: widget.textDirection,
         verticalDirection: widget.verticalDirection,
         textBaseline: widget.textBaseline,
-        children: widget.children.map((c) => _transform(c, context)).toList(),
+        children: widget.children
+            .map((Widget c) => _transform(c, context))
+            .toList(),
       );
     }
     if (widget is Wrap) {
@@ -732,7 +741,9 @@ class _JustSkeletonState extends State<JustSkeleton>
         textDirection: widget.textDirection,
         verticalDirection: widget.verticalDirection,
         clipBehavior: widget.clipBehavior,
-        children: widget.children.map((c) => _transform(c, context)).toList(),
+        children: widget.children
+            .map((Widget c) => _transform(c, context))
+            .toList(),
       );
     }
 
@@ -747,11 +758,14 @@ class _JustSkeletonState extends State<JustSkeleton>
     try {
       final dynamic dynamicWidget = widget;
       if (dynamicWidget.children is List<Widget>) {
-        final childrenList = (dynamicWidget.children as List).cast<Widget>();
+        final List<Widget> childrenList =
+            dynamicWidget.children as List<Widget>;
         return Column(
           mainAxisSize: .min,
           crossAxisAlignment: .start,
-          children: childrenList.map((c) => _transform(c, context)).toList(),
+          children: childrenList
+              .map((Widget c) => _transform(c, context))
+              .toList(),
         );
       }
     } catch (_) {}
@@ -767,13 +781,20 @@ class _JustSkeletonState extends State<JustSkeleton>
 
 /// A scope that provides shared synchronized shimmer parameters.
 /// A scope that provides shared synchronized shimmer parameters.
-class const _JustSkeletonScope({
-  required super.child,
-  required final AnimationController animation,
-  required final JustSkeletonStyle resolvedStyle,
-  required final Color baseColor,
-  required final Color highlightColor,
-}) extends InheritedWidget {
+class _JustSkeletonScope extends InheritedWidget {
+  final AnimationController animation;
+  final JustSkeletonStyle resolvedStyle;
+  final Color baseColor;
+  final Color highlightColor;
+
+  const _JustSkeletonScope({
+    required super.child,
+    required this.animation,
+    required this.resolvedStyle,
+    required this.baseColor,
+    required this.highlightColor,
+  });
+
   static _JustSkeletonScope? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<_JustSkeletonScope>();
   }
@@ -784,7 +805,7 @@ class const _JustSkeletonScope({
       screenWidth = MediaQuery.sizeOf(context).width;
     } catch (_) {}
 
-    final renderBox = context.findRenderObject() as RenderBox?;
+    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
     double globalX = 0.0;
     if (renderBox != null && renderBox.hasSize) {
       try {
@@ -799,8 +820,8 @@ class const _JustSkeletonScope({
     return LinearGradient(
       begin: .centerLeft,
       end: .centerRight,
-      colors: [baseColor, highlightColor, baseColor],
-      stops: const [0.0, 0.5, 1.0],
+      colors: <Color>[baseColor, highlightColor, baseColor],
+      stops: const <double>[0.0, 0.5, 1.0],
       transform: _GradientTranslation(localXOffset),
     ).createShader(bounds);
   }
@@ -818,12 +839,19 @@ class const _JustSkeletonScope({
 /// or run its own independent local animation controller.
 /// A leaf skeleton shape widget that can either participate in a synchronized parent scope
 /// or run its own independent local animation controller.
-class const _JustSkeletonShape({
-  final double? width,
-  final double? height,
-  final BorderRadius? borderRadius,
-  final BoxShape shape = .rectangle,
-}) extends StatefulWidget {
+class _JustSkeletonShape extends StatefulWidget {
+  final double? width;
+  final double? height;
+  final BorderRadius? borderRadius;
+  final BoxShape shape;
+
+  const _JustSkeletonShape({
+    this.width,
+    this.height,
+    this.borderRadius,
+    this.shape = .rectangle,
+  });
+
   @override
   State<_JustSkeletonShape> createState() => _JustSkeletonShapeState();
 }
@@ -840,10 +868,13 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
 
   @override
   Widget build(BuildContext context) {
-    final scope = _JustSkeletonScope.of(context);
+    final _JustSkeletonScope? scope = _JustSkeletonScope.of(context);
 
-    final colors = JustThemeProvider.of(context, aspect: .colors).theme.colors;
-    final isDark = colors.background.computeLuminance() < 0.5;
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final bool isDark = colors.background.computeLuminance() < 0.5;
 
     final Color defaultBase = isDark
         ? const Color(0xFF1E293B)
@@ -852,8 +883,8 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
         ? const Color(0xFF334155)
         : const Color(0xFFF1F5F9);
 
-    final baseColor = scope?.baseColor ?? defaultBase;
-    final highlightColor = scope?.highlightColor ?? defaultHighlight;
+    final Color baseColor = scope?.baseColor ?? defaultBase;
+    final Color highlightColor = scope?.highlightColor ?? defaultHighlight;
 
     final BorderRadius resolvedRadius = widget.shape == .circle
         ? .zero
@@ -861,27 +892,27 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
               scope?.resolvedStyle.fallbackRadius ??
               const .all(.circular(4.0)));
 
-    final decoration = BoxDecoration(
+    final BoxDecoration decoration = BoxDecoration(
       color: baseColor,
       borderRadius: widget.shape == .circle ? null : resolvedRadius,
       shape: widget.shape,
     );
 
-    final baseContainer = Container(
+    final Container baseContainer = Container(
       width: widget.width,
       height: widget.height,
       decoration: decoration,
     );
 
-    final theme = JustThemeProvider.of(context).theme;
-    final usePulsing = theme.presetTokens.usePulsingSkeleton;
+    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final bool usePulsing = theme.presetTokens.usePulsingSkeleton;
 
     if (usePulsing) {
-      final animations = JustThemeProvider.of(
+      final JustMotionProfile animations = JustThemeProvider.of(
         context,
         aspect: .animations,
       ).theme.animations;
-      final targetDuration =
+      final Duration targetDuration =
           scope?.resolvedStyle.duration ?? (animations.slower * 2);
 
       if (targetDuration == .zero) {
@@ -916,7 +947,7 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
       return RepaintBoundary(
         child: AnimatedBuilder(
           animation: activeController!,
-          builder: (context, child) {
+          builder: (BuildContext context, Widget? child) {
             final double value = activeController!.value;
             final double opacity =
                 0.3 + 0.3 * (1.0 - (2.0 * (value - 0.5).abs()));
@@ -941,9 +972,9 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
       return RepaintBoundary(
         child: AnimatedBuilder(
           animation: scope.animation,
-          builder: (context, child) {
+          builder: (BuildContext context, Widget? child) {
             return ShaderMask(
-              shaderCallback: (bounds) {
+              shaderCallback: (Rect bounds) {
                 return scope.createShader(
                   bounds,
                   scope.animation.value,
@@ -958,11 +989,11 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
         ),
       );
     } else {
-      final animations = JustThemeProvider.of(
+      final JustMotionProfile animations = JustThemeProvider.of(
         context,
         aspect: .animations,
       ).theme.animations;
-      final targetDuration = animations.slower * 2;
+      final Duration targetDuration = animations.slower * 2;
 
       if (targetDuration == .zero) {
         return baseContainer;
@@ -984,16 +1015,17 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
       return RepaintBoundary(
         child: AnimatedBuilder(
           animation: _localController!,
-          builder: (context, child) {
+          builder: (BuildContext context, Widget? child) {
             final double value = _localController!.value;
             return ShaderMask(
-              shaderCallback: (bounds) {
+              shaderCallback: (Rect bounds) {
                 double screenWidth = 1000.0;
                 try {
                   screenWidth = MediaQuery.sizeOf(context).width;
                 } catch (_) {}
 
-                final renderBox = context.findRenderObject() as RenderBox?;
+                final RenderBox? renderBox =
+                    context.findRenderObject() as RenderBox?;
                 double globalX = 0.0;
                 if (renderBox != null && renderBox.hasSize) {
                   try {
@@ -1008,8 +1040,8 @@ class _JustSkeletonShapeState extends State<_JustSkeletonShape>
                 return LinearGradient(
                   begin: .centerLeft,
                   end: .centerRight,
-                  colors: [baseColor, highlightColor, baseColor],
-                  stops: const [0.0, 0.5, 1.0],
+                  colors: <Color>[baseColor, highlightColor, baseColor],
+                  stops: const <double>[0.0, 0.5, 1.0],
                   transform: _GradientTranslation(localXOffset),
                 ).createShader(bounds);
               },
@@ -1049,12 +1081,12 @@ class _GradientTranslation extends GradientTransform {
 /// fully visible and interactive during a skeleton loading state.
 /// Wrapper widget that acts as an escape hatch to keep its child and descendants
 /// fully visible and interactive during a skeleton loading state.
-class const JustSkeletonIgnore({
-  super.key,
-
+class JustSkeletonIgnore extends StatelessWidget {
   /// The child widget.
-  required final Widget child,
-}) extends StatelessWidget {
+  final Widget child;
+
+  const JustSkeletonIgnore({super.key, required this.child});
+
   @override
   Widget build(BuildContext context) => child;
 }
@@ -1073,27 +1105,33 @@ class const JustSkeletonIgnore({
 /// from the child if it is a [Container] or [SizedBox] with explicit sizes.
 /// If dimensions cannot be resolved, they fall back to predictable defaults
 /// ([double.infinity] for width, and `56.0` for height).
-class const JustSkeletonAtomic({
-  super.key,
-
+class JustSkeletonAtomic extends StatelessWidget {
   /// The child widget.
-  required final Widget child,
+  final Widget child;
 
   /// Optional explicit width for the resulting skeleton block.
-  final double? width,
+  final double? width;
 
   /// Optional explicit height for the resulting skeleton block.
-  final double? height,
+  final double? height;
 
   /// Optional explicit border radius for the resulting skeleton block.
-  final BorderRadius? borderRadius,
-}) extends StatelessWidget {
+  final BorderRadius? borderRadius;
+
+  const JustSkeletonAtomic({
+    super.key,
+    required this.child,
+    this.width,
+    this.height,
+    this.borderRadius,
+  });
+
   @override
   Widget build(BuildContext context) => child;
 }
 
 double? _getContainerWidth(Container container) {
-  final constraints = container.constraints;
+  final BoxConstraints? constraints = container.constraints;
   if (constraints != null &&
       constraints.maxWidth < double.infinity &&
       constraints.hasTightWidth) {
@@ -1103,7 +1141,7 @@ double? _getContainerWidth(Container container) {
 }
 
 double? _getContainerHeight(Container container) {
-  final constraints = container.constraints;
+  final BoxConstraints? constraints = container.constraints;
   if (constraints != null &&
       constraints.maxHeight < double.infinity &&
       constraints.hasTightHeight) {

@@ -1,4 +1,4 @@
-// justui-meta: registry=0504c9bd09063f49605fb8d3f503e95443fade54c12fc9f5de4b6dd79425aae2 local=1f961dcaf5bf0c344a625c2ea10134b3ea85ccec158785d3a37bb00792092620
+// justui-meta: registry=21a17fb617a3462b62e09cb59e44445412eb5832b1d7eabaa607d7fc2b599eca local=a1842eec7c0fef019808ac5ba291243ed0a95d83ea684ff06d62fcfa79e28687
 import 'package:flutter/widgets.dart';
 
 import 'just_toggle.dart';
@@ -6,45 +6,61 @@ import 'just_toggle_style.dart';
 import 'just_toggle_variants.dart';
 
 /// Data model representing an item in the [JustToggleGroup].
-class const JustToggleGroupItem({
-  required final Widget child,
-  final bool enabled = true,
-}) {}
+class JustToggleGroupItem {
+  /// The widget content of the item.
+  final Widget child;
+
+  /// Whether this item can be selected.
+  final bool enabled;
+
+  /// Creates a [JustToggleGroupItem].
+  const JustToggleGroupItem({required this.child, this.enabled = true});
+}
 
 /// A group of toggle buttons supporting single or multi-select modes.
 /// A group of toggle buttons supporting single or multi-select modes.
-class const JustToggleGroup({
-  super.key,
-
+class JustToggleGroup extends StatelessWidget {
   /// The list of items in the group.
-  required final List<JustToggleGroupItem> items,
+  final List<JustToggleGroupItem> items;
 
   /// The set of currently selected indices.
-  required final Set<int> selectedIndices,
+  final Set<int> selectedIndices;
 
   /// Callback when the set of selected indices changes.
-  required final ValueChanged<Set<int>>? onChanged,
+  final ValueChanged<Set<int>>? onChanged;
 
   /// If false, only one item can be selected (radio behavior).
-  final bool allowMultiple = false,
+  final bool allowMultiple;
 
   /// If false, at least one item must remain selected at all times.
-  final bool nullable = true,
+  final bool nullable;
 
   /// The physical size classification.
-  final JustToggleSize size = JustToggleSize.md,
+  final JustToggleSize size;
 
   /// Per-instance style overrides.
-  final JustToggleStyle? style,
+  final JustToggleStyle? style;
 
   /// The layout direction of the group.
-  final Axis direction = Axis.horizontal,
-}) extends StatelessWidget {
+  final Axis direction;
+
+  const JustToggleGroup({
+    super.key,
+    required this.items,
+    required this.selectedIndices,
+    required this.onChanged,
+    this.allowMultiple = false,
+    this.nullable = true,
+    this.size = JustToggleSize.md,
+    this.style,
+    this.direction = Axis.horizontal,
+  });
+
   void _handlePress(int index) {
     if (onChanged == null) return;
 
-    final newSelected = Set<int>.from(selectedIndices);
-    final isSelected = newSelected.contains(index);
+    final Set<int> newSelected = Set<int>.from(selectedIndices);
+    final bool isSelected = newSelected.contains(index);
 
     if (allowMultiple) {
       if (isSelected) {
@@ -70,8 +86,10 @@ class const JustToggleGroup({
 
   @override
   Widget build(BuildContext context) {
-    final children = List<Widget>.generate(items.length, (index) {
-      final item = items[index];
+    final List<Widget> children = List<Widget>.generate(items.length, (
+      int index,
+    ) {
+      final JustToggleGroupItem item = items[index];
 
       return JustToggleGroupInfo(
         index: index,

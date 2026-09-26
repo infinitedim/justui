@@ -1,4 +1,4 @@
-// justui-meta: registry=471ce7a3e7427248fe1f19738933432cd3c62bface458a46e7ddd3f588a027a5 local=471ce7a3e7427248fe1f19738933432cd3c62bface458a46e7ddd3f588a027a5
+// justui-meta: registry=471ce7a3e7427248fe1f19738933432cd3c62bface458a46e7ddd3f588a027a5 local=8b65fe6a85a0e94fb8f5a702ad2f1ea706437488953cbb8133fb8f32404a5b11
 import 'package:flutter/widgets.dart';
 
 /// The physical size classification for [JustSwitch].
@@ -14,22 +14,30 @@ enum JustSwitchSize {
 }
 
 /// Customized per-instance visual styles for [JustSwitch].
-class const JustSwitchStyle({
+class JustSwitchStyle {
   /// The track color when the switch is active (ON).
-  final Color? activeTrackColor,
+  final Color? activeTrackColor;
 
   /// The track color when the switch is inactive (OFF).
-  final Color? inactiveTrackColor,
+  final Color? inactiveTrackColor;
 
   /// The thumb color when the switch is active (ON).
-  final Color? activeThumbColor,
+  final Color? activeThumbColor;
 
   /// The thumb color when the switch is inactive (OFF).
-  final Color? inactiveThumbColor,
+  final Color? inactiveThumbColor;
 
   /// Text style of the switch label.
-  final TextStyle? textStyle,
-}) {
+  final TextStyle? textStyle;
+
+  const JustSwitchStyle({
+    this.activeTrackColor,
+    this.inactiveTrackColor,
+    this.activeThumbColor,
+    this.inactiveThumbColor,
+    this.textStyle,
+  });
+
   /// Returns a copy with given fields replaced.
   JustSwitchStyle copyWith({
     Color? activeTrackColor,

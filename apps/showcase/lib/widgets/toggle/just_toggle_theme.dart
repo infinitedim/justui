@@ -1,15 +1,17 @@
-// justui-meta: registry=831e62bcd5a658526132133b7103cf704e4affd64838bbe34a7bace20432c84b local=831e62bcd5a658526132133b7103cf704e4affd64838bbe34a7bace20432c84b
+// justui-meta: registry=e15e4eec2e0737a8ca4f8cd9df8010c277860eb3b560fec3e073459ba08b1b7c local=2dfb6054b6a6acccbd99a011885822f37b5ccf0a9cdb48622a9e8414bfa93461
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_toggle_style.dart';
 
 /// Global theme configuration for toggle buttons, extending Flutter's [ThemeExtension].
-class const JustToggleTheme({
+class JustToggleTheme extends ThemeExtension<JustToggleTheme> {
   /// Base style override for toggle components.
-  final JustToggleStyle? style,
-}) extends ThemeExtension<JustToggleTheme> {
+  final JustToggleStyle? style;
+
+  const JustToggleTheme({this.style});
+
   /// Default configuration for the theme.
-  static const defaults = JustToggleTheme();
+  static const JustToggleTheme defaults = JustToggleTheme();
 
   @override
   JustToggleTheme copyWith({JustToggleStyle? style}) {

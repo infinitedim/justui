@@ -1,24 +1,31 @@
-// justui-meta: registry=41fb50d6ee295d49a16fb4bf0db5c004ca6aff510e984d1c0c8bd10e1bdfbd9c local=41fb50d6ee295d49a16fb4bf0db5c004ca6aff510e984d1c0c8bd10e1bdfbd9c
+// justui-meta: registry=e0f593c07da11119ae79ab275ae42ba06a786e6886895353cb0f649e61271b3d local=43e0013fcf8b9c9dbc8b20073fb9641e292d25b8084931a269fd7d371959c98f
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_date_picker_style.dart';
 
 /// Global theme configuration for date pickers, extending Flutter's [ThemeExtension].
-class const JustDatePickerTheme({
+class JustDatePickerTheme extends ThemeExtension<JustDatePickerTheme> {
   /// Style override for inline date pickers.
-  final JustDatePickerStyle? inlineStyle,
+  final JustDatePickerStyle? inlineStyle;
 
   /// Style override for modal date pickers.
-  final JustDatePickerStyle? modalStyle,
+  final JustDatePickerStyle? modalStyle;
 
   /// Style override for dropdown date pickers.
-  final JustDatePickerStyle? dropdownStyle,
+  final JustDatePickerStyle? dropdownStyle;
 
   /// Whether to enable haptic feedback on date selection by default.
-  final bool enableHaptic = false,
-}) extends ThemeExtension<JustDatePickerTheme> {
+  final bool enableHaptic;
+
+  const JustDatePickerTheme({
+    this.inlineStyle,
+    this.modalStyle,
+    this.dropdownStyle,
+    this.enableHaptic = false,
+  });
+
   /// Default configuration for the theme.
-  static const defaults = JustDatePickerTheme();
+  static const JustDatePickerTheme defaults = JustDatePickerTheme();
 
   @override
   JustDatePickerTheme copyWith({

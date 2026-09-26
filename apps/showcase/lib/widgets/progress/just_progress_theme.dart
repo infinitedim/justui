@@ -1,15 +1,17 @@
-// justui-meta: registry=b0daccf2155b281df42a47bda1ddec5817e0c3fd844a8d07f94a1665c1cba334 local=b0daccf2155b281df42a47bda1ddec5817e0c3fd844a8d07f94a1665c1cba334
+// justui-meta: registry=6c20b28590d5a532d92194b95e2965ef6c8ea4f29483c62581901693e4568d30 local=649462dd24d9c3f2608a18fcb9473ad9812d46df21c865d31225835db6994006
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_progress_style.dart';
 
 /// Global theme configuration for progress indicators, extending Flutter's [ThemeExtension].
-class const JustProgressTheme({
+class JustProgressTheme extends ThemeExtension<JustProgressTheme> {
   /// Base style override for progress components.
-  final JustProgressStyle? style,
-}) extends ThemeExtension<JustProgressTheme> {
+  final JustProgressStyle? style;
+
+  const JustProgressTheme({this.style});
+
   /// Default configuration for the theme.
-  static const defaults = JustProgressTheme();
+  static const JustProgressTheme defaults = JustProgressTheme();
 
   @override
   JustProgressTheme copyWith({JustProgressStyle? style}) {

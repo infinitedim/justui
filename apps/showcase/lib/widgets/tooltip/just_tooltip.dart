@@ -1,9 +1,10 @@
-// justui-meta: registry=50fc7bb36c595672bffa7543c2708cd0fddd5acaf0e9f68a8ab90197f2e7fa5a local=998ec220750546cf08348e9c2c49fe2e888893bda5f0a447164a199edef4e4de
+// justui-meta: registry=8d0f459efd4b41a2adea3bd9736fdffbebb2c0948f4783945dfcfdd24d4dec1d local=781c2a97b0a4f999622fb1a7f106d63c7b544d06015dbd6d7d744656031a269e
 import 'dart:async';
 
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show KeyDownEvent, LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
+import 'package:showcase/core/theme/theme_data.dart';
 
 import 'package:showcase/core/just_ui_core.dart';
 
@@ -13,22 +14,37 @@ import 'just_tooltip_variants.dart';
 
 /// A declarative, accessible tooltip widget that displays a floating label
 /// relative to its target using the native [OverlayPortal.overlayChildLayoutBuilder] API.
-class const JustTooltip({
-  required final String message,
-  required final Widget child,
-  super.key,
-  final TooltipPosition preferredPosition = TooltipPosition.auto,
-  final bool triggerOnHover = true,
-  final bool triggerOnLongPress = true,
-  final Duration showDelay = Duration.zero,
-  final Duration hideDelay = const Duration(milliseconds: 150),
-  final JustTooltipStyle? style,
-  final bool showArrow = false,
-  final OverlayPortalController? controller,
-  final AnimationController? animationController,
+class JustTooltip extends StatefulWidget {
+  final String message;
+  final Widget child;
+  final TooltipPosition preferredPosition;
+  final bool triggerOnHover;
+  final bool triggerOnLongPress;
+  final Duration showDelay;
+  final Duration hideDelay;
+  final JustTooltipStyle? style;
+  final bool showArrow;
+  final OverlayPortalController? controller;
+  final AnimationController? animationController;
   final Widget Function(BuildContext, Animation<double>, Widget)?
-  animationBuilder,
-}) extends StatefulWidget {
+  animationBuilder;
+
+  const JustTooltip({
+    required this.message,
+    required this.child,
+    super.key,
+    this.preferredPosition = TooltipPosition.auto,
+    this.triggerOnHover = true,
+    this.triggerOnLongPress = true,
+    this.showDelay = Duration.zero,
+    this.hideDelay = const Duration(milliseconds: 150),
+    this.style,
+    this.showArrow = false,
+    this.controller,
+    this.animationController,
+    this.animationBuilder,
+  });
+
   @override
   State<JustTooltip> createState() => _JustTooltipState();
 }
@@ -121,10 +137,10 @@ class _JustTooltipState extends State<JustTooltip>
       return widget.preferredPosition;
     }
 
-    final spaceTop = childRect.top;
-    final spaceBottom = screenSize.height - childRect.bottom;
-    final spaceLeft = childRect.left;
-    final spaceRight = screenSize.width - childRect.right;
+    final double spaceTop = childRect.top;
+    final double spaceBottom = screenSize.height - childRect.bottom;
+    final double spaceLeft = childRect.left;
+    final double spaceRight = screenSize.width - childRect.right;
 
     if (spaceTop > 48.0) return .top;
     if (spaceBottom > 48.0) return .bottom;
@@ -137,7 +153,7 @@ class _JustTooltipState extends State<JustTooltip>
   Widget build(BuildContext context) {
     Widget target = Focus(
       focusNode: _focusNode,
-      onKeyEvent: (node, event) {
+      onKeyEvent: (FocusNode node, KeyEvent event) {
         if (event is KeyDownEvent &&
             event.logicalKey == LogicalKeyboardKey.escape &&
             _overlayController.isShowing) {
@@ -183,54 +199,60 @@ class _JustTooltipState extends State<JustTooltip>
 
     return OverlayPortal.overlayChildLayoutBuilder(
       controller: _overlayController,
-      overlayChildBuilder: (BuildContext context, info) {
-        final theme = JustThemeProvider.of(context).theme;
-        final colors = theme.colors;
-        final spacing = theme.spacing;
-        final radius = theme.radius;
+      overlayChildBuilder: (BuildContext context, OverlayChildLayoutInfo info) {
+        final JustThemeData theme = JustThemeProvider.of(context).theme;
+        final JustColorScheme colors = theme.colors;
+        final JustSpacingScheme spacing = theme.spacing;
+        final JustRadiusScheme radius = theme.radius;
 
-        final globalTheme = Theme.of(context).extension<JustTooltipTheme>();
-        final themeStyle = globalTheme?.style;
-        final entryStyle = widget.style;
+        final JustTooltipTheme? globalTheme = Theme.of(context)
+            .extension<JustTooltipTheme>();
+        final JustTooltipStyle? themeStyle = globalTheme?.style;
+        final JustTooltipStyle? entryStyle = widget.style;
 
-        final resolvedBg =
+        final Color resolvedBg =
             entryStyle?.backgroundColor ??
             themeStyle?.backgroundColor ??
             (theme.presetTokens.showsDefaultBorder
                 ? colors.background
                 : colors.elevated);
 
-        final resolvedBorderColor = theme.presetTokens.showsDefaultBorder
+        final Color resolvedBorderColor = theme.presetTokens.showsDefaultBorder
             ? colors.textPrimary
             : colors.borderDefault;
 
-        final resolvedTextColor =
+        final Color resolvedTextColor =
             entryStyle?.foregroundColor ??
             themeStyle?.foregroundColor ??
             colors.textPrimary;
 
-        final resolvedPadding =
+        final EdgeInsets resolvedPadding =
             entryStyle?.padding ??
             themeStyle?.padding ??
             .symmetric(horizontal: spacing.sm, vertical: spacing.xs);
 
-        final resolvedRadius =
+        final BorderRadius resolvedRadius =
             entryStyle?.borderRadius ??
             themeStyle?.borderRadius ??
             .all(radius.sm);
 
-        final showBorder = theme.presetTokens.showsDefaultBorder;
-        final borderWidth = showBorder ? theme.presetTokens.borderWidth : 0.0;
+        final bool showBorder = theme.presetTokens.showsDefaultBorder;
+        final double borderWidth = showBorder
+            ? theme.presetTokens.borderWidth
+            : 0.0;
 
-        final targetOffset = MatrixUtils.transformPoint(
+        final Offset targetOffset = MatrixUtils.transformPoint(
           info.childPaintTransform,
           .zero,
         );
-        final childSize = info.childSize;
-        final childRect = targetOffset & childSize;
-        final screenSize = MediaQuery.of(context).size;
+        final Size childSize = info.childSize;
+        final Rect childRect = targetOffset & childSize;
+        final Size screenSize = MediaQuery.of(context).size;
 
-        final resolvedPos = _resolvePosition(screenSize, childRect);
+        final TooltipPosition resolvedPos = _resolvePosition(
+          screenSize,
+          childRect,
+        );
 
         double left = 0.0;
         double top = 0.0;
@@ -259,7 +281,7 @@ class _JustTooltipState extends State<JustTooltip>
             break;
         }
 
-        final tooltipBubble = Container(
+        final Container tooltipBubble = Container(
           padding: resolvedPadding,
           decoration: BoxDecoration(
             color: resolvedBg,
@@ -275,9 +297,9 @@ class _JustTooltipState extends State<JustTooltip>
           ),
         );
 
-        final animatedTooltip = AnimatedBuilder(
+        final AnimatedBuilder animatedTooltip = AnimatedBuilder(
           animation: _animController,
-          builder: (context, child) {
+          builder: (BuildContext context, Widget? child) {
             return Transform.scale(
               scale: 0.95 + 0.05 * _animController.value,
               child: Opacity(opacity: _animController.value, child: child),

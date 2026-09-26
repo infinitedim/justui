@@ -1,4 +1,4 @@
-// justui-meta: registry=7a13825ea2a491c8f0522181649391a9f673fdf7592c07287799d8e5542d2d08 local=6266b1b862e6965da71cbbd56a2f99036c538445f6fddcd1dcd708fe9470874d
+// justui-meta: registry=f3ff20c5e9cef00c8d5d6eb4b8b978d1206a2e5bbd404263770063d062a670b7 local=f89f41006f11a62235a4d1f9c1297b45a5793bbea97c5c689b96ca8b0f7c741a
 import 'package:flutter/material.dart' show ThemeExtension;
 import 'package:flutter/widgets.dart';
 
@@ -11,80 +11,105 @@ import 'just_carousel_variants.dart';
 typedef JustCarouselThemeData = JustCarouselTheme;
 
 /// Global theme configuration for carousel layouts, extending Flutter's [ThemeExtension].
-class const JustCarouselTheme({
+class JustCarouselTheme extends ThemeExtension<JustCarouselTheme> {
   /// Global base style override for carousels.
-  final JustCarouselStyle? style,
+  final JustCarouselStyle? style;
 
   /// Default fraction of the viewport occupied by each slide item. Defaults to 1.0.
-  final double viewportFraction = 1.0,
+  final double viewportFraction;
 
   /// Default duration for page transition animations. Defaults to 300ms.
-  final Duration animationDuration = const Duration(milliseconds: 300),
+  final Duration animationDuration;
 
   /// Default animation curve for page transitions. Defaults to [Curves.easeInOut].
-  final Curve animationCurve = Curves.easeInOut,
+  final Curve animationCurve;
 
   /// Default indicator style. Defaults to [JustCarouselIndicator.dots].
-  final JustCarouselIndicator indicator = .dots,
+  final JustCarouselIndicator indicator;
 
   /// Default indicator position. Defaults to [JustCarouselIndicatorPosition.inside].
-  final JustCarouselIndicatorPosition indicatorPosition = .inside,
+  final JustCarouselIndicatorPosition indicatorPosition;
 
   /// Default transition animation effect. Defaults to [JustCarouselTransition.slide].
-  final JustCarouselTransition transition = .slide,
+  final JustCarouselTransition transition;
 
   /// Default inactive indicator color.
-  final Color? indicatorColor,
+  final Color? indicatorColor;
 
   /// Default active indicator color.
-  final Color? activeIndicatorColor,
+  final Color? activeIndicatorColor;
 
   /// Default diameter of inactive indicators. Defaults to 8.0.
-  final double indicatorSize = 8.0,
+  final double indicatorSize;
 
   /// Default diameter / length of active indicator. Defaults to 8.0.
-  final double activeIndicatorSize = 8.0,
+  final double activeIndicatorSize;
 
   /// Default spacing between adjacent indicators. Defaults to 8.0.
-  final double indicatorSpacing = 8.0,
+  final double indicatorSpacing;
 
   /// Default border radius for indicator items.
-  final BorderRadius? indicatorRadius,
+  final BorderRadius? indicatorRadius;
 
   /// Default configuration for auto-scrolling progression.
-  final JustCarouselAutoScroll? autoScroll,
+  final JustCarouselAutoScroll? autoScroll;
 
   /// Whether tapping indicator dots navigates directly to slides. Defaults to true.
-  final bool interactiveIndicators = true,
+  final bool interactiveIndicators;
 
   /// Whether pointer wheel / trackpad scrolling navigates slides. Defaults to true.
-  final bool enableMouseWheel = true,
+  final bool enableMouseWheel;
 
   /// Whether arrow keys and spacebar control navigation and playback. Defaults to true.
-  final bool enableKeyboardNavigation = true,
+  final bool enableKeyboardNavigation;
 
   /// Whether navigation arrow buttons are displayed. Defaults to false.
-  final bool showArrows = false,
+  final bool showArrows;
 
   /// Default background / icon color for navigation arrows.
-  final Color? arrowColor,
+  final Color? arrowColor;
 
   /// Default active / hovered color for navigation arrows.
-  final Color? activeArrowColor,
+  final Color? activeArrowColor;
 
   /// Default bounding dimension in pixels for navigation arrows. Defaults to 36.0.
-  final double arrowSize = 36.0,
+  final double arrowSize;
 
   /// Default border radius applied to navigation arrows.
-  final BorderRadius? arrowRadius,
-}) extends ThemeExtension<JustCarouselTheme> {
+  final BorderRadius? arrowRadius;
+
+  const JustCarouselTheme({
+    this.style,
+    this.viewportFraction = 1.0,
+    this.animationDuration = const Duration(milliseconds: 300),
+    this.animationCurve = Curves.easeInOut,
+    this.indicator = .dots,
+    this.indicatorPosition = .inside,
+    this.transition = .slide,
+    this.indicatorColor,
+    this.activeIndicatorColor,
+    this.indicatorSize = 8.0,
+    this.activeIndicatorSize = 8.0,
+    this.indicatorSpacing = 8.0,
+    this.indicatorRadius,
+    this.autoScroll,
+    this.interactiveIndicators = true,
+    this.enableMouseWheel = true,
+    this.enableKeyboardNavigation = true,
+    this.showArrows = false,
+    this.arrowColor,
+    this.activeArrowColor,
+    this.arrowSize = 36.0,
+    this.arrowRadius,
+  });
+
   /// Default configuration for the theme.
-  static const defaults = JustCarouselTheme();
+  static const JustCarouselTheme defaults = JustCarouselTheme();
 
   /// Creates a theme resolved from [JustThemeData].
   factory JustCarouselTheme.fromTheme(JustThemeData theme) {
-    final colors = theme.colors;
-    final radius = theme.radius;
+    final JustColorScheme colors = theme.colors;
+    final JustRadiusScheme radius = theme.radius;
 
     return JustCarouselTheme(
       indicatorColor: colors.borderDefault,
@@ -98,7 +123,7 @@ class const JustCarouselTheme({
 
   /// Creates a theme matching the neobrutalism preset specifications.
   factory JustCarouselTheme.neobrutalism(JustThemeData theme) {
-    final colors = theme.colors;
+    final JustColorScheme colors = theme.colors;
 
     return JustCarouselTheme(
       indicatorColor: colors.background,
@@ -170,16 +195,17 @@ class const JustCarouselTheme({
   JustCarouselTheme lerp(ThemeExtension<JustCarouselTheme>? other, double t) {
     if (other is! JustCarouselTheme) return this;
 
-    final lerpedFraction =
+    final double lerpedFraction =
         viewportFraction + (other.viewportFraction - viewportFraction) * t;
-    final lerpedSize =
+    final double lerpedSize =
         indicatorSize + (other.indicatorSize - indicatorSize) * t;
-    final lerpedActiveSize =
+    final double lerpedActiveSize =
         activeIndicatorSize +
         (other.activeIndicatorSize - activeIndicatorSize) * t;
-    final lerpedSpacing =
+    final double lerpedSpacing =
         indicatorSpacing + (other.indicatorSpacing - indicatorSpacing) * t;
-    final lerpedArrowSize = arrowSize + (other.arrowSize - arrowSize) * t;
+    final double lerpedArrowSize =
+        arrowSize + (other.arrowSize - arrowSize) * t;
 
     return JustCarouselTheme(
       style: .lerp(style, other.style, t),
@@ -244,7 +270,7 @@ class const JustCarouselTheme({
           arrowRadius == other.arrowRadius;
 
   @override
-  int get hashCode => Object.hashAll([
+  int get hashCode => Object.hashAll(<Object?>[
     style,
     viewportFraction,
     animationDuration,

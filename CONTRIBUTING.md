@@ -42,7 +42,8 @@ justui/
 │   └── index.json       # Registry manifest with versions, deps, and checksums
 ├── apps/
 │   ├── docs/            # Next.js + Fumadocs documentation site
-│   └── showcase/        # Flutter showcase app
+│   ├── preview/         # Widgetbook component workbench
+│   └── showcase/        # CLI sandbox (components installed via `justui add --all`)
 └── docs/                # Phase specs and architecture decision records
 ```
 
@@ -271,8 +272,8 @@ Add widget tests under `packages/core/test/components/just_<name>_test.dart`. Te
 
 ### Step 6 — Add Widgetbook Use-Case
 
-To preview and test your component interactively during development, add a Widgetbook use-case under `apps/showcase/lib/usecases/`:
-- Create `just_<name>_usecase.dart`
+To preview and test your component interactively during development, add a Widgetbook use-case under `apps/preview/lib/usecases/` (then run `dart run build_runner build --delete-conflicting-outputs` in `apps/preview`):
+- Create `<name>_usecases.dart`
 - Register both Light and Dark mode states, plus all visual variants (`default_`, `neobrutalism`).
 - Ensure knobs are provided for key interactive props (labels, sizes, state toggles).
 
