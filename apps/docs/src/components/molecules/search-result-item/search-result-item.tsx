@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import type { Route } from 'next';
 import { cn } from '@/lib/cn';
 import type { SearchResultItemProps } from './search-result-item.types';
 
@@ -18,7 +17,7 @@ export function SearchResultItem({
 }: SearchResultItemProps) {
   return (
     <Link
-      href={href as Route}
+      href={href}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       aria-current={isSelected ? 'true' : undefined}

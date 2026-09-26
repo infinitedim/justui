@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import type { Route } from 'next';
 import type { ComponentMeta } from '@/lib/components-data';
 
 interface ComponentCardProps {
@@ -10,7 +9,7 @@ interface ComponentCardProps {
 export function ComponentCard({ component, lang }: ComponentCardProps) {
   return (
     <Link
-      href={`/${lang}/docs/components/${component.slug}` as Route}
+      href={`/${lang}/docs/components/${component.slug}`}
       className="hover:border-accent-dark hover:bg-accent-muted border-border rounded-lg border p-4 transition-colors"
     >
       <h3 className="text-foreground text-sm font-medium">{component.name}</h3>

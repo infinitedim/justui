@@ -1,7 +1,14 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 
 import { fetchStarCount, githubUrl } from '@/lib/github';
-import { i18n, isLocale, localeStaticParams, locales } from '@/lib/i18n';
+import {
+  i18n,
+  isLocale,
+  localeStaticParams,
+  localizedHref,
+  locales,
+  switchLocalePath,
+} from '@/lib/i18n';
 import { source } from '@/lib/source';
 import { translations, baseOptions } from '@/lib/layout.shared';
 
@@ -67,6 +74,17 @@ describe('Library Helpers', () => {
       expect(isLocale('id')).toBe(true);
       expect(isLocale('fr')).toBe(false);
       expect(isLocale('robots.txt')).toBe(false);
+    });
+
+    it('builds and swaps locale-prefixed routes', () => {
+      expect(localizedHref('id', '/docs/theming')).toBe('/id/docs/theming');
+      expect(localizedHref('en', '')).toBe('/en');
+      expect(switchLocalePath('/en/docs/guides/migration', 'id')).toBe(
+        '/id/docs/guides/migration'
+      );
+      expect(switchLocalePath('/id', 'en')).toBe('/en');
+      expect(switchLocalePath('/', 'id')).toBe('/id');
+      expect(switchLocalePath('/english-page', 'id')).toBe('/id');
     });
   });
 

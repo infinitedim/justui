@@ -6,6 +6,7 @@ import type { Route } from 'next';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { githubUrl } from '@/lib/github';
+import { localizedHref } from '@/lib/i18n';
 import { isApplePlatform } from '@/lib/platform';
 import { GitHubPill } from '@/components/molecules/github-pill';
 import { LanguageSwitcher } from '@/components/molecules/language-switcher';
@@ -22,21 +23,21 @@ const NAV_PILL = 'h-8 border';
 
 export function Navbar({ starCount, lang }: NavbarProps) {
   const t = getHomepageDictionary(lang);
-  const links = [
-    { label: t.navHome, href: `/${lang}`, activeHref: '/' },
+  const links: Array<{ label: string; href: Route; activeHref: string }> = [
+    { label: t.navHome, href: localizedHref(lang, ''), activeHref: '/' },
     {
       label: t.navDocs,
-      href: `/${lang}/docs/introduction`,
+      href: localizedHref(lang, '/docs/introduction'),
       activeHref: '/docs',
     },
     {
       label: t.navComponents,
-      href: `/${lang}/components`,
+      href: localizedHref(lang, '/components'),
       activeHref: '/components',
     },
     {
       label: t.navStudio,
-      href: `/${lang}/studio`,
+      href: localizedHref(lang, '/studio'),
       activeHref: '/studio',
     },
   ];
@@ -77,11 +78,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
     <>
       <header className="border-border bg-background/80 sticky top-0 z-40 h-14 border-b backdrop-blur-sm">
         <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link
-            href={`/${lang}` as Route}
-            aria-label="JustUI home"
-            className="shrink-0"
-          >
+          <Link href={`/${lang}`} aria-label="JustUI home" className="shrink-0">
             <span className="text-foreground font-mono text-sm font-medium">
               just
             </span>
@@ -94,7 +91,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
             {links.map((link) => (
               <Link
                 key={link.href}
-                href={link.href as Route}
+                href={link.href}
                 className={
                   activeHref === link.activeHref
                     ? 'text-foreground text-sm transition-colors'
@@ -171,7 +168,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
               {links.map((link) => (
                 <Link
                   key={link.href}
-                  href={link.href as Route}
+                  href={link.href}
                   onClick={() => setMobileOpen(false)}
                   className={
                     activeHref === link.activeHref
