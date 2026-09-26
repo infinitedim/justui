@@ -97,6 +97,25 @@ pub struct RegistryIndex {
     pub components: Vec<RegistryComponent>,
 }
 
+/// Environment variable that overrides the registry request timeout, in whole seconds.
+pub const REGISTRY_TIMEOUT_ENV: &str = "JUSTUI_HTTP_TIMEOUT";
+
+const DEFAULT_REGISTRY_TIMEOUT_SECS: u64 = 15;
+const REGISTRY_CONNECT_TIMEOUT_SECS: u64 = 5;
+
+/// Resolves the total request timeout for registry fetches.
+///
+/// A positive integer in `JUSTUI_HTTP_TIMEOUT` wins; anything else (unset, empty,
+/// zero or not a number) falls back to the default, which is generous enough for
+/// slow or high-latency connections.
+pub fn registry_timeout(env_value: Option<&str>) -> std::time::Duration {
+    let secs = env_value
+        .and_then(|raw| raw.trim().parse::<u64>().ok())
+        .filter(|secs| *secs > 0)
+        .unwrap_or(DEFAULT_REGISTRY_TIMEOUT_SECS);
+    std::time::Duration::from_secs(secs)
+}
+
 pub struct RegistryClient {
     pub base_url: String,
 }
@@ -136,8 +155,12 @@ impl RegistryClient {
             };
             let url = format!("{}{}", clean_base, relative_path);
             let client = reqwest::blocking::Client::builder()
-                .timeout(std::time::Duration::from_secs(3))
-                .connect_timeout(std::time::Duration::from_secs(2))
+                .timeout(registry_timeout(
+                    std::env::var(REGISTRY_TIMEOUT_ENV).ok().as_deref(),
+                ))
+                .connect_timeout(std::time::Duration::from_secs(
+                    REGISTRY_CONNECT_TIMEOUT_SECS,
+                ))
                 .build()
                 .unwrap_or_default();
             let response = client
@@ -192,6 +215,17 @@ mod tests {
         let index = local_client.fetch_index().unwrap();
         assert_eq!(index.version, "1.0");
         assert_eq!(index.presets, vec!["default"]);
+    }
+
+    #[test]
+    fn test_registry_timeout_env_override() {
+        use std::time::Duration;
+        assert_eq!(registry_timeout(None), Duration::from_secs(15));
+        assert_eq!(registry_timeout(Some("")), Duration::from_secs(15));
+        assert_eq!(registry_timeout(Some("abc")), Duration::from_secs(15));
+        assert_eq!(registry_timeout(Some("0")), Duration::from_secs(15));
+        assert_eq!(registry_timeout(Some("-5")), Duration::from_secs(15));
+        assert_eq!(registry_timeout(Some(" 42 ")), Duration::from_secs(42));
     }
 
     #[test]
