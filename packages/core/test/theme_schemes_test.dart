@@ -830,6 +830,44 @@ void main() {
       },
     );
 
+    test(
+      'JustThemeData.buildPressEffect matches the preset token implementation',
+      () {
+        for (final JustThemeData theme in <JustThemeData>[
+          JustThemeData.light,
+          JustThemeData.neobrutalismLight,
+        ]) {
+          const Text child = Text('child');
+          final Widget fromTheme = theme.buildPressEffect(
+            isPressed: true,
+            child: child,
+          );
+          final Widget fromTokens = theme.presetTokens.buildPressEffect(
+            isPressed: true,
+            animations: theme.animations,
+            child: child,
+          );
+
+          expect(fromTheme.runtimeType, fromTokens.runtimeType);
+          if (fromTheme is AnimatedScale && fromTokens is AnimatedScale) {
+            expect(fromTheme.scale, fromTokens.scale);
+            expect(fromTheme.scale, 0.97);
+            expect(fromTheme.duration, theme.animations.instant);
+          } else if (fromTheme is AnimatedContainer &&
+              fromTokens is AnimatedContainer) {
+            expect(fromTheme.transform, fromTokens.transform);
+            expect(
+              fromTheme.transform,
+              Matrix4.translationValues(4.0, 4.0, 0.0),
+            );
+            expect(fromTheme.duration, theme.animations.instant);
+          } else {
+            fail('Unexpected press effect widget: ${fromTheme.runtimeType}');
+          }
+        }
+      },
+    );
+
     testWidgets(
       'JustThemeContext extension getters subscribe to correct aspects',
       (WidgetTester tester) async {
