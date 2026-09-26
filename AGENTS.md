@@ -424,6 +424,20 @@ bun changeset version
 
 To ensure optimal engineering quality, prevent hallucinatory patterns, and enforce domain-specific excellence across all areas of this monorepo:
 
+**Skill catalog (`.agents/skills`).** Only skills that map to this repo's stack are kept in the repository:
+
+| Area | Skills |
+| --- | --- |
+| Flutter / Dart UI | `flutter-expert`, `ui-a11y`, `ux-audit` |
+| Visual direction & presets | `taste-skill`, `soft-skill`, `brutalist-skill`, `minimalist-skill` |
+| Code generation | `output-skill` |
+| Rust CLI | `rust-pro` |
+| Docs portal (Next.js / TypeScript) | `typescript-expert`, `senior-frontend`, `i18n-localization`, `nextjs-seo-indexing` |
+| Monorepo & releases | `monorepo-architect`, `changelog-generator` |
+| Security review | `cc-skill-security-review`, `security-scanning-security-dependencies`, `security-scanning-security-sast` |
+
+Unrelated general-purpose skills (image generation, cloud/Vercel optimization, orchestrators, PRD tooling, and so on) were removed; keep such skills in your personal agent setup instead of committing them here.
+
 1. **Mandatory Skill Identification on Every Prompt:**
    - For **every prompt and user task**, AI Agents **must proactively analyze and determine** which specialized skill(s) in `.agents/skills` (or active workspace skills) correspond to the request.
    - Agents are strictly prohibited from answering or executing tasks in a generic manner when a dedicated skill exists for the target domain.
