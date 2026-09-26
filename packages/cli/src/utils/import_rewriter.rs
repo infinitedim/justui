@@ -24,6 +24,14 @@ pub struct JustUIMetadata {
     pub local_hash: String,
 }
 
+/// Maps a path inside the `just_ui_core` / `just_ui_tokens` packages to its
+/// location in the user project. `init` extracts package files with the
+/// leading `src/` removed but keeps every other directory, so imports must
+/// preserve the same subpath (e.g. `src/theme/schemes/x.dart` -> `theme/schemes/x.dart`).
+pub fn local_package_subpath(subpath: &str) -> &str {
+    subpath.strip_prefix("src/").unwrap_or(subpath)
+}
+
 pub fn normalize_shared_file_name(file_name: &str) -> String {
     if let Some(rest) = file_name.strip_prefix("_shared_") {
         format!("just_{}", rest)
@@ -279,18 +287,23 @@ pub fn rewrite(
 
             // Rewrite just_ui_tokens and just_ui_core package imports to local package imports
             if let Some(subpath) = import_path.strip_prefix("package:just_ui_tokens/") {
-                let clean_subpath = subpath.split('/').next_back().unwrap_or(subpath);
                 let tokens_rel = tokens_dir.strip_prefix("lib/").unwrap_or(tokens_dir);
                 return format!(
                     "{} 'package:{}/{}/{}'{};",
-                    kw, package_name, tokens_rel, clean_subpath, trailing
+                    kw,
+                    package_name,
+                    tokens_rel,
+                    local_package_subpath(subpath),
+                    trailing
                 );
             }
             if let Some(subpath) = import_path.strip_prefix("package:just_ui_core/") {
-                let clean_subpath = subpath.split('/').next_back().unwrap_or(subpath);
                 return format!(
                     "{} 'package:{}/core/{}'{};",
-                    kw, package_name, clean_subpath, trailing
+                    kw,
+                    package_name,
+                    local_package_subpath(subpath),
+                    trailing
                 );
             }
             if import_path == "package:just_ui_core" {
@@ -452,6 +465,34 @@ mod tests {
             .filter(|l| l.trim() == "import 'unresolved.dart';")
             .count();
         assert_eq!(count, 1);
+    }
+
+    #[test]
+    fn test_package_imports_preserve_nested_subpaths() {
+        let index = RegistryIndex {
+            version: "1.0".to_string(),
+            presets: vec!["default".to_string()],
+            components: vec![],
+        };
+
+        let content = "import 'package:just_ui_core/src/theme/preset_tokens.dart';\nimport 'package:just_ui_core/src/theme/schemes/spacing_scheme.dart';\nimport 'package:just_ui_tokens/src/colors/oklch_engine.dart';\n";
+        let rewritten = rewrite(
+            content,
+            "components/slider/default/just_slider.dart",
+            "slider",
+            &index,
+            "lib/widgets",
+            "lib/tokens",
+            "lib/widgets/shared",
+            "default",
+            "my_app",
+        );
+
+        assert!(rewritten.contains("import 'package:my_app/core/theme/preset_tokens.dart';"));
+        assert!(
+            rewritten.contains("import 'package:my_app/core/theme/schemes/spacing_scheme.dart';")
+        );
+        assert!(rewritten.contains("import 'package:my_app/tokens/colors/oklch_engine.dart';"));
     }
 
     #[test]

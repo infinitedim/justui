@@ -305,8 +305,20 @@ void main(List<String> args) async {
 
   print('-----------------------------------------');
 
+  final List<String> dependencyErrors = _validateRegistryDependencies(
+    components: components,
+    projectRoot: projectRoot,
+  );
+  if (dependencyErrors.isNotEmpty) {
+    print('registryDependencies do not match actual imports:');
+    for (final String error in dependencyErrors) {
+      print('  - $error');
+    }
+    hasErrors = true;
+  }
+
   if (hasErrors) {
-    print('Completed with errors. Fix missing source files above and re-run.');
+    print('Completed with errors. Fix the problems listed above and re-run.');
     exit(1);
   }
 
@@ -475,6 +487,99 @@ ResolvedPaths _resolvePaths({
   final File destFile = File(p.join(projectRoot, 'registry', relPath));
 
   return (srcFile: srcFile, destFile: destFile, origin: origin);
+}
+
+/// Cross-checks every component's declared `registryDependencies` against the
+/// relative imports its files actually contain. Theme and overlay imports are
+/// satisfied by the core kernel and are ignored.
+List<String> _validateRegistryDependencies({
+  required List<dynamic> components,
+  required String projectRoot,
+}) {
+  final RegExp presetSegment = RegExp(r'/(default|neobrutalism)/');
+  final RegExp relativeImport = RegExp(
+    r"^(?:import|export)\s+'([^']+)'",
+    multiLine: true,
+  );
+
+  final Map<String, String> ownerByCanonicalPath = <String, String>{};
+  for (final dynamic comp in components) {
+    final Map<String, dynamic> compMap = comp as Map<String, dynamic>;
+    final Map<String, dynamic> filesMap =
+        compMap['files'] as Map<String, dynamic>;
+    for (final dynamic fileList in filesMap.values) {
+      for (final dynamic f in fileList as List<dynamic>) {
+        final String path = (f as Map<String, dynamic>)['path'] as String;
+        ownerByCanonicalPath.putIfAbsent(
+          p.posix.normalize(path.replaceFirst(presetSegment, '/')),
+          () => compMap['name'] as String,
+        );
+      }
+    }
+  }
+
+  final List<String> errors = <String>[];
+  for (final dynamic comp in components) {
+    final Map<String, dynamic> compMap = comp as Map<String, dynamic>;
+    final String name = compMap['name'] as String;
+    final bool isInternal = compMap['internal'] == true;
+    final Map<String, dynamic> filesMap =
+        compMap['files'] as Map<String, dynamic>;
+
+    final Set<String> needed = <String>{};
+    for (final MapEntry<String, dynamic> section in filesMap.entries) {
+      for (final dynamic f in section.value as List<dynamic>) {
+        final String relPath = (f as Map<String, dynamic>)['path'] as String;
+        final File srcFile = _resolvePaths(
+          relPath: relPath,
+          preset: section.key,
+          isInternal: isInternal,
+          projectRoot: projectRoot,
+        ).srcFile;
+        if (!srcFile.existsSync()) continue;
+
+        final String canonicalDir = p.posix.dirname(
+          relPath.replaceFirst(presetSegment, '/'),
+        );
+        for (final RegExpMatch match in relativeImport.allMatches(
+          srcFile.readAsStringSync(),
+        )) {
+          final String target = match.group(1)!;
+          if (target.startsWith('package:') || target.startsWith('dart:')) {
+            continue;
+          }
+          final String resolved = p.posix.normalize(
+            p.posix.join(canonicalDir, target),
+          );
+          if (resolved.startsWith('theme/') ||
+              resolved.startsWith('overlay/') ||
+              resolved.startsWith('..')) {
+            continue;
+          }
+          final String? owner = ownerByCanonicalPath[resolved];
+          if (owner == null) {
+            errors.add('$name: $relPath imports unregistered file $resolved');
+          } else if (owner != name) {
+            needed.add(owner);
+          }
+        }
+      }
+    }
+
+    final Set<String> declared =
+        ((compMap['registryDependencies'] as List<dynamic>?) ?? <dynamic>[])
+            .cast<String>()
+            .toSet();
+    final Set<String> missing = needed.difference(declared);
+    final Set<String> unused = declared.difference(needed);
+    if (missing.isNotEmpty) {
+      errors.add('$name: missing ${missing.toList()..sort()}');
+    }
+    if (unused.isNotEmpty) {
+      errors.add('$name: unused ${unused.toList()..sort()}');
+    }
+  }
+  return errors;
 }
 
 /// Poin 4: streamed SHA-256 instead of reading the whole file into memory

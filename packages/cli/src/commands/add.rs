@@ -470,12 +470,10 @@ pub fn add_component(
             &pkg_name,
         );
 
-        if dart_target == crate::utils::env_resolver::DartTarget::Primary {
-            rewritten_content =
-                crate::utils::constructor_transpiler::transpile_to_primary_constructor(
-                    &rewritten_content,
-                );
-        }
+        rewritten_content = crate::utils::constructor_transpiler::apply_dart_target(
+            &rewritten_content,
+            dart_target,
+        );
 
         let local_rewritten_hash = sha256_hex(rewritten_content.as_bytes());
         let final_content = import_rewriter::inject_metadata(

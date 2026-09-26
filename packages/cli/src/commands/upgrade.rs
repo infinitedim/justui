@@ -269,6 +269,62 @@ pub fn plan_upgrade(
     }
 }
 
+/// File name of the checksum manifest published next to every release archive
+/// (see `.github/workflows/release.yaml` and `install/install.sh`).
+const CHECKSUM_MANIFEST: &str = "SHA256SUMS";
+
+/// Derives the `SHA256SUMS` URL and the archive file name from an archive URL.
+/// Release assets live in one directory, so the manifest is a sibling of the archive.
+fn checksum_manifest_location(download_url: &str) -> Result<(String, String)> {
+    let without_query = download_url
+        .split(['?', '#'])
+        .next()
+        .unwrap_or(download_url);
+    let (base, asset_name) = without_query
+        .rsplit_once('/')
+        .filter(|(_, name)| !name.is_empty())
+        .with_context(|| format!("Cannot derive archive name from URL {}", download_url))?;
+    Ok((
+        format!("{}/{}", base, CHECKSUM_MANIFEST),
+        asset_name.to_string(),
+    ))
+}
+
+/// Verifies `bytes` against the entry for `asset_name` in a `sha256sum`-style manifest
+/// (`<hex>  <name>`, `<hex> *<name>` or `./<name>` per line, matching `install.sh`).
+fn verify_sha256(bytes: &[u8], manifest: &str, asset_name: &str) -> Result<()> {
+    use sha2::{Digest, Sha256};
+
+    let expected = manifest
+        .lines()
+        .filter_map(|line| {
+            let mut parts = line.split_whitespace();
+            let hash = parts.next()?;
+            let name = parts.next()?.trim_start_matches('*');
+            let name = name.strip_prefix("./").unwrap_or(name);
+            Some((hash, name))
+        })
+        .find(|(_, name)| *name == asset_name)
+        .map(|(hash, _)| hash.to_ascii_lowercase())
+        .with_context(|| {
+            format!(
+                "Archive \"{}\" is not listed in {}. Refusing to install an unverified binary.",
+                asset_name, CHECKSUM_MANIFEST
+            )
+        })?;
+
+    let actual = hex::encode(Sha256::digest(bytes));
+    if actual != expected {
+        anyhow::bail!(
+            "Checksum mismatch for \"{}\": expected {}, got {}. The download may be corrupted or tampered with.",
+            asset_name,
+            expected,
+            actual
+        );
+    }
+    Ok(())
+}
+
 fn download_and_unpack(client: &reqwest::blocking::Client, download_url: &str) -> Result<Vec<u8>> {
     logger::info(&format!("Downloading update from {}...", download_url));
     let response = client
@@ -284,6 +340,24 @@ fn download_and_unpack(client: &reqwest::blocking::Client, download_url: &str) -
     }
 
     let bytes = response.bytes().context("Failed to read response bytes")?;
+
+    let (manifest_url, asset_name) = checksum_manifest_location(download_url)?;
+    let manifest_response = client
+        .get(&manifest_url)
+        .header(reqwest::header::USER_AGENT, "justui-cli")
+        .send()
+        .with_context(|| format!("Failed to download checksum manifest from {}", manifest_url))?;
+    if !manifest_response.status().is_success() {
+        anyhow::bail!(
+            "Failed to download checksum manifest {}: HTTP status {}. Refusing to install an unverified binary.",
+            manifest_url,
+            manifest_response.status()
+        );
+    }
+    let manifest = manifest_response
+        .text()
+        .context("Failed to read checksum manifest")?;
+    verify_sha256(&bytes, &manifest, &asset_name)?;
 
     let binary_name = if env::consts::OS == "windows" {
         "justui.exe"
@@ -1066,15 +1140,13 @@ mod tests {
         assert!(plan_upgrade("invalid_local_version", &new_release, false, false).is_err());
     }
 
-    #[test]
-    fn test_execute_upgrade_to_path() {
-        use std::io::{Read, Write};
-        use std::net::TcpListener;
+    /// Builds a `.tar.gz` holding a minimal executable for the host platform.
+    /// Returns `(archive_bytes, binary_bytes, binary_name)`.
+    fn fake_release_archive() -> (Vec<u8>, Vec<u8>, &'static str) {
+        use flate2::write::GzEncoder;
+        use flate2::Compression;
+        use std::io::Write;
 
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-        let port = listener.local_addr().unwrap().port();
-
-        // Create a valid dummy executable payload
         let fake_binary = if cfg!(target_os = "linux") {
             let mut b = vec![0u8; 64];
             b[0..4].copy_from_slice(b"\x7fELF");
@@ -1093,15 +1165,12 @@ mod tests {
             vec![0xcf, 0xfa, 0xed, 0xfe, 0, 0, 0, 0]
         };
 
-        // Package into tar.gz
-        use flate2::write::GzEncoder;
-        use flate2::Compression;
-        let mut tar_bytes = vec![0u8; 1024];
         let bin_name = if cfg!(target_os = "windows") {
             "justui.exe"
         } else {
             "justui"
         };
+        let mut tar_bytes = vec![0u8; 1024];
         tar_bytes[0..bin_name.len()].copy_from_slice(bin_name.as_bytes());
         let octal_size = format!("{:011o} ", fake_binary.len());
         tar_bytes[124..136].copy_from_slice(octal_size.as_bytes());
@@ -1110,22 +1179,55 @@ mod tests {
 
         let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
         encoder.write_all(&tar_bytes).unwrap();
-        let archive_bytes = encoder.finish().unwrap();
+        (encoder.finish().unwrap(), fake_binary, bin_name)
+    }
 
-        // Spawn thread to serve one HTTP response
-        let server_thread = std::thread::spawn(move || {
-            if let Ok((mut stream, _)) = listener.accept() {
+    /// Serves the archive and its `SHA256SUMS` manifest for exactly two requests.
+    fn spawn_release_server(
+        archive: Vec<u8>,
+        manifest: String,
+    ) -> (u16, std::thread::JoinHandle<()>) {
+        use std::io::{Read, Write};
+        use std::net::TcpListener;
+
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let handle = std::thread::spawn(move || {
+            for _ in 0..2 {
+                let Ok((mut stream, _)) = listener.accept() else {
+                    return;
+                };
                 let mut buf = [0u8; 1024];
-                let _ = stream.read(&mut buf);
-                let response = format!(
+                let n = stream.read(&mut buf).unwrap_or(0);
+                let request = String::from_utf8_lossy(&buf[..n]);
+                let body: &[u8] = if request.starts_with("GET /SHA256SUMS ") {
+                    manifest.as_bytes()
+                } else {
+                    &archive
+                };
+                let header = format!(
                     "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
-                    archive_bytes.len()
+                    body.len()
                 );
-                let _ = stream.write_all(response.as_bytes());
-                let _ = stream.write_all(&archive_bytes);
+                let _ = stream.write_all(header.as_bytes());
+                let _ = stream.write_all(body);
                 let _ = stream.flush();
             }
         });
+        (port, handle)
+    }
+
+    #[test]
+    fn test_execute_upgrade_to_path() {
+        use sha2::{Digest, Sha256};
+
+        let (archive_bytes, fake_binary, bin_name) = fake_release_archive();
+        let manifest = format!(
+            "{}  justui-other.tar.gz\n{}  justui.tar.gz\n",
+            "0".repeat(64),
+            hex::encode(Sha256::digest(&archive_bytes))
+        );
+        let (port, server_thread) = spawn_release_server(archive_bytes, manifest);
 
         let client = reqwest::blocking::Client::builder().build().unwrap();
         let download_url = format!("http://127.0.0.1:{}/justui.tar.gz", port);
@@ -1141,6 +1243,79 @@ mod tests {
         assert_eq!(replaced_content, fake_binary);
 
         server_thread.join().unwrap();
+    }
+
+    #[test]
+    fn test_execute_upgrade_rejects_checksum_mismatch() {
+        let (archive_bytes, _, bin_name) = fake_release_archive();
+        let manifest = format!("{}  justui.tar.gz\n", "ab".repeat(32));
+        let (port, server_thread) = spawn_release_server(archive_bytes, manifest);
+
+        let client = reqwest::blocking::Client::builder().build().unwrap();
+        let download_url = format!("http://127.0.0.1:{}/justui.tar.gz", port);
+
+        let temp_dir = tempfile::tempdir().unwrap();
+        let target_exe = temp_dir.path().join(bin_name);
+        std::fs::write(&target_exe, b"old_binary_content").unwrap();
+
+        let res = execute_upgrade_to_path(&client, &download_url, "9.9.9", &target_exe);
+        let err = format!(
+            "{:#}",
+            res.expect_err("mismatched checksum must abort the upgrade")
+        );
+        assert!(
+            err.contains("Checksum mismatch"),
+            "unexpected error: {}",
+            err
+        );
+        assert_eq!(std::fs::read(&target_exe).unwrap(), b"old_binary_content");
+
+        server_thread.join().unwrap();
+    }
+
+    #[test]
+    fn test_checksum_manifest_location() {
+        let (manifest, name) = checksum_manifest_location(
+            "https://github.com/o/r/releases/download/v1.2.3/justui-x86_64-unknown-linux-gnu.tar.gz",
+        )
+        .unwrap();
+        assert_eq!(
+            manifest,
+            "https://github.com/o/r/releases/download/v1.2.3/SHA256SUMS"
+        );
+        assert_eq!(name, "justui-x86_64-unknown-linux-gnu.tar.gz");
+
+        let (manifest, name) =
+            checksum_manifest_location("http://127.0.0.1:1/a/justui.zip?x=1").unwrap();
+        assert_eq!(manifest, "http://127.0.0.1:1/a/SHA256SUMS");
+        assert_eq!(name, "justui.zip");
+
+        assert!(checksum_manifest_location("http://host/dir/").is_err());
+    }
+
+    #[test]
+    fn test_verify_sha256() {
+        use sha2::{Digest, Sha256};
+
+        let data = b"archive-bytes";
+        let hash = hex::encode(Sha256::digest(data));
+
+        let plain = format!("{}  justui.tar.gz\n", hash);
+        assert!(verify_sha256(data, &plain, "justui.tar.gz").is_ok());
+
+        let binary_mode_upper = format!("{} *justui.tar.gz\n", hash.to_uppercase());
+        assert!(verify_sha256(data, &binary_mode_upper, "justui.tar.gz").is_ok());
+
+        let dot_slash = format!("{}  ./justui.tar.gz\n", hash);
+        assert!(verify_sha256(data, &dot_slash, "justui.tar.gz").is_ok());
+
+        let err = verify_sha256(b"tampered", &plain, "justui.tar.gz").unwrap_err();
+        assert!(err.to_string().contains("Checksum mismatch"));
+
+        let err = verify_sha256(data, &plain, "justui.zip").unwrap_err();
+        assert!(err.to_string().contains("not listed"));
+
+        assert!(verify_sha256(data, "", "justui.tar.gz").is_err());
     }
 
     #[test]

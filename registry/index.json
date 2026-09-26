@@ -183,7 +183,10 @@
       "description": "Image avatar with fallback initials generator and presence status indicators.",
       "category": "primitive",
       "hidden": false,
-      "registryDependencies": [],
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -1008,7 +1011,9 @@
       "category": "internal",
       "internal": true,
       "hidden": true,
-      "registryDependencies": [],
+      "registryDependencies": [
+        "tooltip"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -1522,7 +1527,9 @@
       "registryDependencies": [
         "_shared_pressable",
         "_shared_focus_indicator",
-        "_shared_overlay_transition"
+        "_shared_overlay_transition",
+        "dialog",
+        "sheet"
       ],
       "pubDependencies": {},
       "files": {
@@ -1581,8 +1588,7 @@
       "hidden": false,
       "registryDependencies": [
         "date-picker",
-        "_shared_pressable",
-        "_shared_focus_indicator"
+        "_shared_pressable"
       ],
       "pubDependencies": {},
       "files": {
@@ -1621,7 +1627,9 @@
         "input",
         "_shared_pressable",
         "_shared_focus_indicator",
-        "_shared_overlay_transition"
+        "_shared_overlay_transition",
+        "dialog",
+        "sheet"
       ],
       "pubDependencies": {},
       "files": {
