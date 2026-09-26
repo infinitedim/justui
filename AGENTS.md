@@ -164,7 +164,7 @@ dart_target: standard # 'standard' | 'primary' (primary-constructors experiment)
   1. English: `apps/docs/content/docs/en/` (Default)
   2. Indonesian: `apps/docs/content/docs/id/`
 - **Inactive Stubs (`cn`):** The `apps/docs/content/docs/cn/` directory is an unactivated placeholder containing only `.gitkeep`. The active locale list lives in one place, `apps/docs/src/lib/i18n.ts` (`locales`, `isLocale`, `localeStaticParams`); every `[lang]` route derives from it. **Do not author or enforce `cn` files** until Chinese localization is officially activated.
-- **Routing & Proxies:** Redirections and locale resolution are governed by `next.config.ts` rewrite rules, not deprecated middleware.
+- **Routing:** Locale-less URLs are redirected by `next.config.ts` `redirects()`. There is no middleware/proxy file; note that because the app lives in `src/`, Next.js would only pick up `src/proxy.ts`, never a root-level `proxy.ts`.
 
 ### 5.2 Stage Bridge Telemetry Protocol (`stage-bridge.ts`)
 
