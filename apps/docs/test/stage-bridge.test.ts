@@ -75,6 +75,37 @@ describe('stage-bridge', () => {
     });
   });
 
+  it('ignores messages that do not match the event schema', () => {
+    const handler = vi.fn();
+    renderHook(() => useStageListener('justui-theme', handler));
+
+    act(() => {
+      for (const data of [
+        { type: 'justui-theme', preset: 'retro', mode: 'dark' },
+        { type: 'justui-theme', preset: 'default' },
+        { type: 'justui-theme', preset: 'default', mode: 42 },
+        'justui-theme',
+        null,
+      ]) {
+        window.dispatchEvent(new MessageEvent('message', { data }));
+      }
+    });
+    expect(handler).not.toHaveBeenCalled();
+
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { type: 'justui-theme', preset: 'neobrutalism', mode: 'dark' },
+        })
+      );
+    });
+    expect(handler).toHaveBeenCalledWith({
+      type: 'justui-theme',
+      preset: 'neobrutalism',
+      mode: 'dark',
+    });
+  });
+
   it('dispatches telemetry event via emitStageTelemetry', () => {
     const windowSpy = vi.spyOn(window, 'postMessage');
     emitStageTelemetry('canvas-render', { fps: 60 });
