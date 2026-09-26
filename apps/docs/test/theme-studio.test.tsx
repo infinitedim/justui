@@ -8,7 +8,6 @@ import StudioPage, {
 import { ThemeConfigurator } from '@/components/organisms/theme-configurator';
 import { PhoneMockupCanvas } from '@/components/organisms/phone-mockup-canvas';
 import { CodeExportDrawer } from '@/components/organisms/code-export-drawer';
-import { CodeHighlighter } from '@/components/organisms/code-export-drawer/code-highlighter';
 import { ThemeStudioProvider } from '@/lib/theme-studio-context';
 import { hexToHsl } from '@/lib/theme/color-resolver';
 
@@ -44,13 +43,19 @@ describe('Theme Studio Component & Integration Tests', () => {
       expect(screen.getByTestId('theme-configurator')).toBeInTheDocument();
       expect(screen.getByTestId('phone-mockup-canvas')).toBeInTheDocument();
       expect(screen.getByTestId('code-export-drawer')).toBeInTheDocument();
-      expect(screen.getByRole('heading', { level: 1, name: 'Theme Studio' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { level: 1, name: 'Theme Studio' })
+      ).toBeInTheDocument();
     });
 
     it('renders localized content when lang is id (Indonesian)', () => {
       render(<StudioClient lang="id" />);
 
-      expect(screen.getByText('Konfigurasi design token secara visual dan ekspor kode siap produksi.')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Konfigurasi design token secara visual dan ekspor kode siap produksi.'
+        )
+      ).toBeInTheDocument();
       expect(screen.getByText('Warna Dasar')).toBeInTheDocument();
       expect(screen.getByText('Ruang Warna')).toBeInTheDocument();
     });
@@ -114,7 +119,9 @@ describe('Theme Studio Component & Integration Tests', () => {
       // Drag back to 55%
       fireEvent.change(slider, { target: { value: '55' } });
       // Should recover lime tone, not stay black/gray
-      const val = (screen.getByLabelText('Hex color string') as HTMLInputElement).value;
+      const val = (
+        screen.getByLabelText('Hex color string') as HTMLInputElement
+      ).value;
       expect(val).not.toBe('#000000');
       expect(val).not.toBe('#8c8c8c');
       const [recoveredH, recoveredS] = hexToHsl(val);
@@ -217,73 +224,66 @@ describe('Theme Studio Component & Integration Tests', () => {
       fireEvent.click(dartTab);
 
       expect(screen.getByText('theme.dart')).toBeInTheDocument();
-      expect(screen.getByText('JustThemeData')).toBeInTheDocument();
+      expect(screen.getByTestId('code-export-panel')).toHaveTextContent(
+        'JustThemeData.fromSeed('
+      );
 
       const cliTab = screen.getByRole('tab', { name: 'CLI Command' });
       fireEvent.click(cliTab);
 
       expect(screen.getByText('Terminal')).toBeInTheDocument();
-      expect(screen.getByText('justui')).toBeInTheDocument();
+      expect(screen.getByTestId('code-export-panel')).toHaveTextContent(
+        'justui init --preset default --color-space hsl'
+      );
     });
 
-    it('syntax highlighter marks tokens with data-token attributes', () => {
-      const { container } = render(
-        <CodeHighlighter
-          code="final theme = JustThemeData.fromSeed(const Color(0xFFA3E635));"
-          language="dart"
-        />
+    it('links tabs to the code panel with ARIA attributes', () => {
+      render(
+        <ThemeStudioProvider>
+          <CodeExportDrawer lang="en" />
+        </ThemeStudioProvider>
       );
 
-      const keywords = container.querySelectorAll('[data-token="keyword"]');
-      expect(keywords.length).toBeGreaterThanOrEqual(1);
+      const panel = screen.getByRole('tabpanel');
+      const yamlTab = screen.getByRole('tab', { name: 'Config YAML' });
+      const dartTab = screen.getByRole('tab', { name: 'Dart Code' });
 
-      const types = container.querySelectorAll('[data-token="type"]');
-      expect(types.length).toBeGreaterThanOrEqual(1);
+      expect(yamlTab).toHaveAttribute('aria-controls', panel.id);
+      expect(panel).toHaveAttribute('aria-labelledby', yamlTab.id);
+      expect(yamlTab).toHaveAttribute('tabindex', '0');
+      expect(dartTab).toHaveAttribute('tabindex', '-1');
+      expect(panel).toHaveTextContent('preset: default');
     });
 
-    it('syntax highlighter handles YAML keys and comments', () => {
-      const { container } = render(
-        <CodeHighlighter
-          code={`# Config comment\npreset: default\ncolor_space: hsl`}
-          language="yaml"
-        />
+    it('moves between tabs with arrow, Home and End keys', () => {
+      render(
+        <ThemeStudioProvider>
+          <CodeExportDrawer lang="en" />
+        </ThemeStudioProvider>
       );
 
-      const comments = container.querySelectorAll('[data-token="comment"]');
-      expect(comments.length).toBe(1);
+      const yamlTab = screen.getByRole('tab', { name: 'Config YAML' });
+      const dartTab = screen.getByRole('tab', { name: 'Dart Code' });
+      const cliTab = screen.getByRole('tab', { name: 'CLI Command' });
 
-      const keys = container.querySelectorAll('[data-token="key"]');
-      expect(keys.length).toBe(2);
-    });
+      fireEvent.keyDown(yamlTab, { key: 'ArrowRight' });
+      expect(dartTab).toHaveAttribute('aria-selected', 'true');
+      expect(dartTab).toHaveFocus();
 
-    it('syntax highlighter highlights Dart named arguments with key tokens', () => {
-      const { container } = render(
-        <CodeHighlighter
-          code={`final theme = JustThemeData.fromSeed(\n  const Color(0xFFA3E635),\n  isDark: true,\n  preset: .neobrutalism,\n);`}
-          language="dart"
-        />
+      fireEvent.keyDown(dartTab, { key: 'End' });
+      expect(cliTab).toHaveAttribute('aria-selected', 'true');
+
+      fireEvent.keyDown(cliTab, { key: 'ArrowRight' });
+      expect(yamlTab).toHaveAttribute('aria-selected', 'true');
+
+      fireEvent.keyDown(yamlTab, { key: 'ArrowLeft' });
+      expect(cliTab).toHaveAttribute('aria-selected', 'true');
+
+      fireEvent.keyDown(cliTab, { key: 'Home' });
+      expect(yamlTab).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByRole('tabpanel')).toHaveTextContent(
+        'components_dir: lib/widgets'
       );
-
-      const keys = container.querySelectorAll('[data-token="key"]');
-      expect(keys.length).toBe(2);
-      expect(keys[0]?.textContent).toBe('isDark');
-      expect(keys[1]?.textContent).toBe('preset');
-    });
-
-    it('syntax highlighter handles CLI comments and prompt', () => {
-      const { container } = render(
-        <CodeHighlighter
-          code={`# JustUI CLI\n$ justui init --preset default`}
-          language="cli"
-        />
-      );
-
-      const comments = container.querySelectorAll('[data-token="comment"]');
-      expect(comments.length).toBe(1);
-
-      const commands = container.querySelectorAll('[data-token="command"]');
-      expect(commands.length).toBe(1);
-      expect(commands[0]?.textContent).toBe('justui');
     });
   });
 

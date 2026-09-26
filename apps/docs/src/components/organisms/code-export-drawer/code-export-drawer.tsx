@@ -1,17 +1,14 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useId, useMemo, useState } from 'react';
+import { DynamicCodeBlock } from 'fumadocs-ui/components/dynamic-codeblock';
 import { cn } from '@/lib/cn';
 import { useThemeStudio } from '@/lib/theme-studio-context';
 import { getStudioDictionary } from '@/lib/theme-studio-translations';
+import { useRovingTabs } from '@/lib/use-roving-tabs';
 import { CopyButton } from '@/components/molecules/copy-button';
 import { CodeBlockHeader } from '@/components/molecules/code-block-header';
-import {
-  generateYaml,
-  generateDart,
-  generateCli,
-} from './code-generators';
-import { CodeHighlighter } from './code-highlighter';
+import { generateYaml, generateDart, generateCli } from './code-generators';
 import type {
   CodeExportDrawerProps,
   ExportTab,
@@ -57,7 +54,7 @@ export function CodeExportDrawer({
       case 'cli':
         return {
           code: cliCode,
-          language: 'cli' as const,
+          language: 'bash' as const,
           filename: 'Terminal',
           label: t.tabCli,
         };
@@ -69,6 +66,11 @@ export function CodeExportDrawer({
     { id: 'dart', label: t.tabDart },
     { id: 'cli', label: t.tabCli },
   ];
+  const tabIds = useMemo<ExportTab[]>(() => ['yaml', 'dart', 'cli'], []);
+  const { registerTab, onKeyDown } = useRovingTabs(tabIds, tab, setTab);
+  const idPrefix = useId();
+  const tabId = (id: ExportTab) => `${idPrefix}-tab-${id}`;
+  const panelId = `${idPrefix}-panel`;
 
   return (
     <div
@@ -79,19 +81,28 @@ export function CodeExportDrawer({
       data-testid="code-export-drawer"
     >
       {/* Tab Navigation Header */}
-      <div className="border-border flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2 bg-muted/20">
-        <div className="flex items-center gap-1.5" role="tablist" aria-label="Export formats">
+      <div className="border-border bg-muted/20 flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2">
+        <div
+          className="flex items-center gap-1.5"
+          role="tablist"
+          aria-label="Export formats"
+        >
           {tabs.map((item) => (
             <button
               key={item.id}
+              ref={registerTab(item.id)}
+              id={tabId(item.id)}
               type="button"
               role="tab"
               aria-selected={tab === item.id}
+              aria-controls={panelId}
+              tabIndex={tab === item.id ? 0 : -1}
               onClick={() => setTab(item.id)}
+              onKeyDown={onKeyDown}
               className={cn(
-                'rounded-(--just-radius-md) px-3 py-1.5 font-mono text-xs font-medium transition-colors cursor-pointer',
+                'cursor-pointer rounded-(--just-radius-md) px-3 py-1.5 font-mono text-xs font-medium transition-colors',
                 tab === item.id
-                  ? 'border-border bg-card text-foreground shadow-xs border'
+                  ? 'border-border bg-card text-foreground border shadow-xs'
                   : 'text-muted hover:text-foreground hover:bg-muted/40'
               )}
             >
@@ -109,15 +120,25 @@ export function CodeExportDrawer({
       {/* Code Viewer Sub-header */}
       <CodeBlockHeader
         title={currentConfig.filename}
-        className="rounded-none border-t-0 border-x-0 bg-muted/10"
+        className="bg-muted/10 rounded-none border-x-0 border-t-0"
       />
 
-      {/* Syntax Highlighted Code Viewer */}
-      <div className="overflow-hidden">
-        <CodeHighlighter
+      {/* Syntax Highlighted Code Viewer (Shiki via Fumadocs) */}
+      <div
+        id={panelId}
+        role="tabpanel"
+        aria-labelledby={tabId(tab)}
+        className="overflow-hidden"
+        data-testid="code-export-panel"
+      >
+        <DynamicCodeBlock
+          lang={currentConfig.language}
           code={currentConfig.code}
-          language={currentConfig.language}
-          showLineNumbers
+          codeblock={{
+            allowCopy: false,
+            'data-line-numbers': true,
+            className: 'rounded-none border-0 shadow-none',
+          }}
         />
       </div>
     </div>
