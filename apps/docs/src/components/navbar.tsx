@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { githubUrl } from '@/lib/github';
+import { isApplePlatform } from '@/lib/platform';
 import { SearchModal } from '@/components/search-modal';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
 import { usePreset } from '@/components/providers';
@@ -129,8 +130,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
   }, [pathname]);
 
   useEffect(() => {
-    const platform = navigator.userAgentData?.platform.toLowerCase();
-    setShortcut(platform?.includes('mac') ? 'Cmd K' : 'Ctrl K');
+    setShortcut(isApplePlatform(navigator) ? 'Cmd K' : 'Ctrl K');
 
     function onKeyDown(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
