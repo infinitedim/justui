@@ -21,8 +21,6 @@ struct DiffFileStatus {
     status_type: DiffStatusType,
     local_content: String,
     expected_hash: String,
-    #[allow(dead_code)]
-    remote_content: Option<String>,
 }
 
 pub fn run(
@@ -83,26 +81,16 @@ pub fn run(
             component_name
         ));
 
-        let target_dir = if component.category == "tokens" || component.category == "core" {
-            config.tokens_dir.clone()
-        } else if component.name == "_shared_theme_provider" {
-            "lib/theme".to_string()
-        } else if component.internal {
-            config.shared_dir.clone()
-        } else {
-            format!("{}/{}", config.components_dir, component.name)
-        };
+        let target_dir = component.install_dir(
+            &config.components_dir,
+            &config.tokens_dir,
+            &config.shared_dir,
+        );
 
         let mut files_status: Vec<DiffFileStatus> = Vec::new();
 
         for file in component.files_for_preset(&config.preset) {
-            let local_file_name = if component.name == "_shared_theme_provider" {
-                file.name.clone()
-            } else if component.internal {
-                import_rewriter::normalize_shared_file_name(&file.name)
-            } else {
-                file.name.clone()
-            };
+            let local_file_name = component.local_file_name(&file.name);
             let target_path = format!("{}/{}", target_dir, local_file_name);
             let local_file_path = std::path::Path::new(&target_path);
             let expected_hash = file.checksum.replace("sha256:", "").trim().to_string();
@@ -114,7 +102,6 @@ pub fn run(
                     status_type: DiffStatusType::Missing,
                     local_content: String::new(),
                     expected_hash,
-                    remote_content: None,
                 });
                 continue;
             }
@@ -134,7 +121,6 @@ pub fn run(
                             status_type: DiffStatusType::UpToDate,
                             local_content: local_clean,
                             expected_hash,
-                            remote_content: None,
                         }
                     } else {
                         DiffFileStatus {
@@ -143,7 +129,6 @@ pub fn run(
                             status_type: DiffStatusType::UpdateAvailable,
                             local_content: local_clean,
                             expected_hash,
-                            remote_content: None,
                         }
                     }
                 } else {
@@ -154,7 +139,6 @@ pub fn run(
                             status_type: DiffStatusType::LocallyModified,
                             local_content: local_clean,
                             expected_hash,
-                            remote_content: None,
                         }
                     } else {
                         DiffFileStatus {
@@ -163,7 +147,6 @@ pub fn run(
                             status_type: DiffStatusType::Conflict,
                             local_content: local_clean,
                             expected_hash,
-                            remote_content: None,
                         }
                     }
                 }
@@ -176,7 +159,6 @@ pub fn run(
                         status_type: DiffStatusType::UpToDate,
                         local_content,
                         expected_hash,
-                        remote_content: None,
                     }
                 } else {
                     DiffFileStatus {
@@ -185,7 +167,6 @@ pub fn run(
                         status_type: DiffStatusType::LocallyModified,
                         local_content,
                         expected_hash,
-                        remote_content: None,
                     }
                 }
             };
@@ -457,7 +438,6 @@ mod tests {
             local_content: "class Old {}".to_string(),
             target_path: target_file.to_string_lossy().to_string(),
             expected_hash: "hash1".to_string(),
-            remote_content: None,
         };
 
         let dummy_index = crate::registry::RegistryIndex {
@@ -551,7 +531,6 @@ mod tests {
                 .to_string_lossy()
                 .to_string(),
             expected_hash: "hash2".to_string(),
-            remote_content: None,
         };
         show_all_diffs(&[fs_missing], &[0], &std::collections::HashMap::new(), 3);
 

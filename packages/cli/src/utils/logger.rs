@@ -20,7 +20,6 @@ pub fn stdout(msg: &str) {
     println!("{}", msg);
 }
 
-#[allow(dead_code)]
 pub fn panel(msg: &str) {
     let msg_chars = msg.chars().count();
     let inner_width = msg_chars + 4;

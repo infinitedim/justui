@@ -32,25 +32,6 @@ fn import_regex() -> Regex {
     Regex::new(r#"(?m)^\s*(?:import|export)\s+'([^']+)'"#).expect("valid regex")
 }
 
-/// Mirrors the placement rules in `commands/add.rs`.
-fn install_dir(comp: &RegistryComponent) -> String {
-    if comp.category == "tokens" || comp.category == "core" {
-        TOKENS_DIR.to_string()
-    } else if comp.internal {
-        SHARED_DIR.to_string()
-    } else {
-        format!("{}/{}", COMPONENTS_DIR, comp.name)
-    }
-}
-
-fn install_file_name(comp: &RegistryComponent, file_name: &str) -> String {
-    if comp.internal {
-        import_rewriter::normalize_shared_file_name(file_name)
-    } else {
-        file_name.to_string()
-    }
-}
-
 fn normalize(path: &str) -> String {
     let mut out: Vec<&str> = Vec::new();
     for seg in path.split('/') {
@@ -85,12 +66,12 @@ struct Installed<'a> {
 fn installed_files<'a>(index: &'a RegistryIndex, preset: &str) -> Vec<Installed<'a>> {
     let mut out = Vec::new();
     for comp in &index.components {
-        let dir = install_dir(comp);
+        let dir = comp.install_dir(COMPONENTS_DIR, TOKENS_DIR, SHARED_DIR);
         for file in comp.files_for_preset(preset) {
             out.push(Installed {
                 comp,
                 registry_path: file.path.clone(),
-                target_path: format!("{}/{}", dir, install_file_name(comp, &file.name)),
+                target_path: format!("{}/{}", dir, comp.local_file_name(&file.name)),
             });
         }
     }

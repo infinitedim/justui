@@ -2,10 +2,7 @@ use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 use std::process;
 
-mod commands;
-mod config;
-mod registry;
-mod utils;
+use justui_cli::{commands, utils};
 
 /// JustUI CLI - High-performance Flutter UI scaffolding and copy-paste component tool
 #[derive(Parser)]

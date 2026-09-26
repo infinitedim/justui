@@ -217,11 +217,11 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
         .components
         .iter()
         .filter(|c| {
-            let target_dir = if c.internal {
-                config.shared_dir.clone()
-            } else {
-                format!("{}/{}", config.components_dir, c.name)
-            };
+            let target_dir = c.install_dir(
+                &config.components_dir,
+                &config.tokens_dir,
+                &config.shared_dir,
+            );
             std::path::Path::new(&target_dir).exists()
         })
         .map(|c| c.name.clone())

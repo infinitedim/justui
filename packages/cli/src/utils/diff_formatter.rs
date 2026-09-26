@@ -3,14 +3,12 @@ use std::cmp::max;
 
 use crate::utils::logger;
 
-#[allow(dead_code)]
 pub enum DiffKind {
     Unchanged,
     Added,
     Removed,
 }
 
-#[allow(dead_code)]
 pub struct DiffLine {
     pub kind: DiffKind,
     pub text: String,
@@ -20,7 +18,6 @@ pub struct DiffLine {
     pub remote_line_num: usize,
 }
 
-#[allow(dead_code)]
 pub fn calculate_diff(local: &str, remote: &str) -> Vec<DiffLine> {
     let local_norm = local.replace("\r\n", "\n");
     let remote_norm = remote.replace("\r\n", "\n");

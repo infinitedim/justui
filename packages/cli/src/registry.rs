@@ -11,18 +11,15 @@ pub struct RegistryFile {
     pub checksum: String,
 }
 
-#[allow(dead_code)]
 fn default_category() -> String {
     "general".to_string()
 }
 
-#[allow(dead_code)]
 fn default_version() -> String {
     "1".to_string()
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[allow(dead_code)]
 pub struct RegistryComponent {
     pub name: String,
 
@@ -61,10 +58,34 @@ impl RegistryComponent {
         }
         result
     }
+
+    /// Directory (relative to the project root) where this component's files are installed.
+    ///
+    /// Token/core kernel components go to `tokens_dir`, internal shared components are
+    /// placed flat inside `shared_dir`, and every other component gets its own folder
+    /// under `components_dir`.
+    pub fn install_dir(&self, components_dir: &str, tokens_dir: &str, shared_dir: &str) -> String {
+        if self.category == "tokens" || self.category == "core" {
+            tokens_dir.to_string()
+        } else if self.internal {
+            shared_dir.to_string()
+        } else {
+            format!("{}/{}", components_dir, self.name)
+        }
+    }
+
+    /// Local file name for one of this component's registry files. Internal shared files
+    /// have their `_shared_` prefix rewritten to `just_`.
+    pub fn local_file_name(&self, file_name: &str) -> String {
+        if self.internal {
+            crate::utils::import_rewriter::normalize_shared_file_name(file_name)
+        } else {
+            file_name.to_string()
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]
-#[allow(dead_code)]
 pub struct RegistryIndex {
     #[serde(default = "default_version")]
     pub version: String,
@@ -75,8 +96,6 @@ pub struct RegistryIndex {
     #[serde(default)]
     pub components: Vec<RegistryComponent>,
 }
-
-impl RegistryIndex {}
 
 pub struct RegistryClient {
     pub base_url: String,
