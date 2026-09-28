@@ -429,9 +429,7 @@ describe('Theme Studio Component & Integration Tests', () => {
       });
       render(page);
 
-      expect(screen.getByLabelText('Hex color string')).toHaveValue(
-        '#e11d48'
-      );
+      expect(screen.getByLabelText('Hex color string')).toHaveValue('#e11d48');
       // "Dark" (not "Light") confirms the label is already reflecting the
       // resolved isDark=true state on this very first render.
       expect(screen.getByRole('switch', { name: 'Dark' })).toHaveAttribute(

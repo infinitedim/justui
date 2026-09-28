@@ -76,7 +76,7 @@ export function HeroInteractive({
   return (
     <div
       className={cn(
-        'w-full max-w-6xl mx-auto flex flex-col gap-6 lg:gap-8',
+        'mx-auto flex w-full max-w-6xl flex-col gap-6 lg:gap-8',
         className
       )}
     >
@@ -118,7 +118,7 @@ export function HeroInteractive({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch w-full">
+      <div className="grid w-full grid-cols-1 items-stretch gap-8 lg:grid-cols-2">
         <InteractiveTerminal
           lang={lang}
           onMount={handleMount}

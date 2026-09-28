@@ -46,7 +46,10 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
 
   return (
     <div
-      className={cn('mx-auto flex w-full max-w-xl flex-col items-center gap-2.5', className)}
+      className={cn(
+        'mx-auto flex w-full max-w-xl flex-col items-center gap-2.5',
+        className
+      )}
     >
       <div
         role="tablist"

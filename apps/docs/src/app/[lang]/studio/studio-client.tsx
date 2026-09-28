@@ -44,7 +44,10 @@ function StudioContent({ lang }: { lang: string }) {
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="border-border/80 bg-muted/30 mb-2 inline-flex items-center gap-2 rounded-full border px-3 py-1">
-            <span className="bg-accent h-2 w-2 rounded-full" aria-hidden="true" />
+            <span
+              className="bg-accent h-2 w-2 rounded-full"
+              aria-hidden="true"
+            />
             <span className="text-muted font-mono text-xs font-medium">
               Live Token Playground
             </span>
@@ -58,7 +61,7 @@ function StudioContent({ lang }: { lang: string }) {
         </div>
 
         {/* Global Toolbar Actions */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex shrink-0 items-center gap-2.5">
           <Button
             type="button"
             variant="outline"
@@ -102,7 +105,7 @@ function StudioContent({ lang }: { lang: string }) {
         </div>
 
         {/* Right Column: Phone Mockup Canvas (sticky on desktop) */}
-        <div className="order-1 lg:order-2 lg:col-span-6 xl:col-span-7 flex justify-center lg:sticky lg:top-20">
+        <div className="order-1 flex justify-center lg:sticky lg:top-20 lg:order-2 lg:col-span-6 xl:col-span-7">
           <PhoneMockupCanvas lang={lang} />
         </div>
 

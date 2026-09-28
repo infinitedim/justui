@@ -12,11 +12,9 @@ export function StudioTemplate({
   footer,
 }: StudioTemplateProps) {
   return (
-    <div className="bg-background text-foreground min-h-screen flex flex-col">
+    <div className="bg-background text-foreground flex min-h-screen flex-col">
       {navbar}
-      <main className="flex-1">
-        {studioContent}
-      </main>
+      <main className="flex-1">{studioContent}</main>
       {footer}
     </div>
   );
