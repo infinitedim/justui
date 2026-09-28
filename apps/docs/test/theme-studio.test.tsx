@@ -173,6 +173,56 @@ describe('Theme Studio Component & Integration Tests', () => {
       expect(screen.getByText('Primary Text')).toBeInTheDocument();
       expect(screen.getByText('Card Surface')).toBeInTheDocument();
     });
+
+    it('only claims success after the clipboard write actually resolves', async () => {
+      let resolveWrite: () => void = () => {};
+      Object.assign(navigator, {
+        clipboard: {
+          writeText: vi.fn(
+            () => new Promise<void>((resolve) => (resolveWrite = resolve))
+          ),
+        },
+      });
+
+      render(
+        <ThemeStudioProvider>
+          <ThemeConfigurator lang="en" />
+        </ThemeStudioProvider>
+      );
+
+      const copyButton = screen.getAllByRole('button', {
+        name: /^Copy .* color$/,
+      })[0];
+      fireEvent.click(copyButton);
+
+      // Clipboard write hasn't resolved yet: must not claim success early.
+      expect(screen.queryByText('Copied!')).not.toBeInTheDocument();
+
+      resolveWrite();
+      await screen.findByText('Copied!');
+    });
+
+    it('shows a failure state instead of a false "Copied!" when the clipboard write rejects', async () => {
+      Object.assign(navigator, {
+        clipboard: {
+          writeText: vi.fn().mockRejectedValue(new Error('denied')),
+        },
+      });
+
+      render(
+        <ThemeStudioProvider>
+          <ThemeConfigurator lang="en" />
+        </ThemeStudioProvider>
+      );
+
+      const copyButton = screen.getAllByRole('button', {
+        name: /^Copy .* color$/,
+      })[0];
+      fireEvent.click(copyButton);
+
+      await screen.findByText('Copy failed');
+      expect(screen.queryByText('Copied!')).not.toBeInTheDocument();
+    });
   });
 
   describe('PhoneMockupCanvas Organism', () => {
@@ -355,12 +405,42 @@ describe('Theme Studio Component & Integration Tests', () => {
     it('renders server page layout with navbar and footer', async () => {
       const page = await StudioPage({
         params: Promise.resolve({ lang: 'en' }),
+        searchParams: Promise.resolve({}),
       });
       render(page);
 
       expect(screen.getByRole('banner')).toBeInTheDocument();
       expect(screen.getByRole('main')).toBeInTheDocument();
       expect(screen.getByRole('contentinfo')).toBeInTheDocument();
+    });
+
+    it('applies seed/dark/preset/colorSpace from searchParams on the very first render, with no flash of the default theme', async () => {
+      // window.location.search is empty per beforeEach, so the client-side
+      // effect that reads it cannot be what produces this value -- only a
+      // correctly-threaded server prop can.
+      const page = await StudioPage({
+        params: Promise.resolve({ lang: 'en' }),
+        searchParams: Promise.resolve({
+          seed: 'e11d48',
+          dark: '1',
+          preset: 'neo',
+          cs: 'oklch',
+        }),
+      });
+      render(page);
+
+      expect(screen.getByLabelText('Hex color string')).toHaveValue(
+        '#e11d48'
+      );
+      // "Dark" (not "Light") confirms the label is already reflecting the
+      // resolved isDark=true state on this very first render.
+      expect(screen.getByRole('switch', { name: 'Dark' })).toHaveAttribute(
+        'aria-checked',
+        'true'
+      );
+      expect(
+        screen.getByRole('radio', { name: 'Neobrutalism' })
+      ).toHaveAttribute('aria-checked', 'true');
     });
   });
 });

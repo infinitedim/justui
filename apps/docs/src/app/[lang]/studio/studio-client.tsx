@@ -11,9 +11,14 @@ import { PhoneMockupCanvas } from '@/components/organisms/phone-mockup-canvas';
 import { CodeExportDrawer } from '@/components/organisms/code-export-drawer';
 import { getStudioDictionary } from '@/lib/theme-studio-translations';
 import { Button } from '@/components/atoms/button';
+import type { ColorSpace, JustUIPreset } from '@/lib/theme/color-resolver';
 
 interface StudioClientProps {
   lang: string;
+  initialSeedColor?: string;
+  initialIsDark?: boolean;
+  initialPreset?: JustUIPreset;
+  initialColorSpace?: ColorSpace;
 }
 
 function StudioContent({ lang }: { lang: string }) {
@@ -110,9 +115,20 @@ function StudioContent({ lang }: { lang: string }) {
   );
 }
 
-export function StudioClient({ lang }: StudioClientProps) {
+export function StudioClient({
+  lang,
+  initialSeedColor,
+  initialIsDark,
+  initialPreset,
+  initialColorSpace,
+}: StudioClientProps) {
   return (
-    <ThemeStudioProvider>
+    <ThemeStudioProvider
+      initialSeedColor={initialSeedColor}
+      initialIsDark={initialIsDark}
+      initialPreset={initialPreset}
+      initialColorSpace={initialColorSpace}
+    >
       <StudioContent lang={lang} />
     </ThemeStudioProvider>
   );
