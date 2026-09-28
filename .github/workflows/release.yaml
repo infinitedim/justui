@@ -27,7 +27,7 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: "1.3.11"
 
       - name: Install root dependencies
         run: bun install
@@ -35,7 +35,7 @@ jobs:
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          channel: "stable"
+          flutter-version: "3.47.5"
           cache: true
 
       - name: Install Rust toolchain
@@ -126,15 +126,6 @@ jobs:
         env:
           CARGO_TARGET_DIR: ${{ github.workspace }}/target
         run: cross build --release --target ${{ matrix.target }} --manifest-path packages/cli/Cargo.toml
-
-      - name: Debug — find binary
-        run: |
-          echo "=== Searching for justui binary ==="
-          find . -name "justui" -type f 2>/dev/null || echo "No binary named 'justui' found"
-          echo "=== Contents of packages/cli/target (if exists) ==="
-          ls -la packages/cli/target/ 2>/dev/null || echo "packages/cli/target/ does not exist"
-          echo "=== Contents of target/ (if exists) ==="
-          ls -la target/ 2>/dev/null || echo "target/ does not exist at root"
 
       - name: Package archive
         run: |

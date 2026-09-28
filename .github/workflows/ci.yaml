@@ -17,7 +17,7 @@ jobs:
       - name: Set up Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          channel: "stable"
+          flutter-version: "3.47.5"
           cache: true
 
       - name: Install Dart & global tools
@@ -37,6 +37,10 @@ jobs:
           melos exec --flutter -- "flutter analyze ."
           melos exec --no-flutter -- "dart analyze ."
 
+      - name: Verify Registry Checksums
+        run: |
+          dart run tools/generate_checksums.dart --dry-run
+
       - name: Run Tests
         run: |
           melos exec --flutter --dir-exists="test" -- "flutter test"
@@ -52,7 +56,7 @@ jobs:
       - name: Setup Bun Runtime
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: "1.3.11"
 
       - name: Install Dependencies
         run: |
@@ -63,6 +67,11 @@ jobs:
         run: |
           cd apps/docs
           bun run lint
+
+      - name: Type Check
+        run: |
+          cd apps/docs
+          bun run type-check
 
       - name: Run Unit Tests
         run: |

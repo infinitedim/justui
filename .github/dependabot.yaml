@@ -15,19 +15,26 @@ updates:
     directory: "/packages/core"
     schedule:
       interval: "weekly"
-  # Maintain dependencies for just_ui_cli package
+  # Maintain dependencies for just_ui_cli package (Cargo.lock lives at the
+  # workspace root, not packages/cli -- root Cargo.toml lists it as a member)
   - package-ecosystem: "cargo"
-    directory: "/packages/cli"
+    directory: "/"
     schedule:
       interval: "weekly"
-  # Maintain dependencies for docs apps
+  # Maintain dependencies for docs apps (bun.lock lives at the Bun workspace
+  # root, not apps/docs itself)
   - package-ecosystem: "npm"
-    directory: "/apps/docs"
+    directory: "/"
     schedule:
       interval: "weekly"
   # Maintain dependencies for showcase apps
   - package-ecosystem: "pub"
     directory: "/apps/showcase"
+    schedule:
+      interval: "weekly"
+  # Maintain dependencies for preview (Widgetbook workbench)
+  - package-ecosystem: "pub"
+    directory: "/apps/preview"
     schedule:
       interval: "weekly"
   # Maintain dependencies for GitHub Actions
