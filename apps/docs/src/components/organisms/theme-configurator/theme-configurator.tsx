@@ -129,15 +129,60 @@ export function ThemeConfigurator({
   const resolvedList = useMemo(() => {
     const bg = resolvedTokens.background;
     return [
-      { key: 'background', label: t.tokenBackground, value: resolvedTokens.background, target: bg },
-      { key: 'card', label: t.tokenCard, value: resolvedTokens.card, target: resolvedTokens.textPrimary },
-      { key: 'textPrimary', label: t.tokenTextPrimary, value: resolvedTokens.textPrimary, target: bg },
-      { key: 'textSecondary', label: t.tokenTextSecondary, value: resolvedTokens.textSecondary, target: bg },
-      { key: 'accent', label: t.tokenAccent, value: resolvedTokens.accent, target: resolvedTokens.accentForeground },
-      { key: 'border', label: t.tokenBorder, value: resolvedTokens.border, target: bg },
-      { key: 'success', label: t.tokenSuccess, value: resolvedTokens.success, target: bg },
-      { key: 'warning', label: t.tokenWarning, value: resolvedTokens.warning, target: bg },
-      { key: 'error', label: t.tokenError, value: resolvedTokens.error, target: bg },
+      {
+        key: 'background',
+        label: t.tokenBackground,
+        value: resolvedTokens.background,
+        target: bg,
+      },
+      {
+        key: 'card',
+        label: t.tokenCard,
+        value: resolvedTokens.card,
+        target: resolvedTokens.textPrimary,
+      },
+      {
+        key: 'textPrimary',
+        label: t.tokenTextPrimary,
+        value: resolvedTokens.textPrimary,
+        target: bg,
+      },
+      {
+        key: 'textSecondary',
+        label: t.tokenTextSecondary,
+        value: resolvedTokens.textSecondary,
+        target: bg,
+      },
+      {
+        key: 'accent',
+        label: t.tokenAccent,
+        value: resolvedTokens.accent,
+        target: resolvedTokens.accentForeground,
+      },
+      {
+        key: 'border',
+        label: t.tokenBorder,
+        value: resolvedTokens.border,
+        target: bg,
+      },
+      {
+        key: 'success',
+        label: t.tokenSuccess,
+        value: resolvedTokens.success,
+        target: bg,
+      },
+      {
+        key: 'warning',
+        label: t.tokenWarning,
+        value: resolvedTokens.warning,
+        target: bg,
+      },
+      {
+        key: 'error',
+        label: t.tokenError,
+        value: resolvedTokens.error,
+        target: bg,
+      },
     ].map((item) => {
       const ratio =
         item.key === 'background'
@@ -284,13 +329,11 @@ export function ThemeConfigurator({
             {t.resolvedPalette}
           </span>
           {copiedToken ? (
-            <span className="text-accent font-mono text-xs animate-pulse">
+            <span className="text-accent animate-pulse font-mono text-xs">
               {t.copied}
             </span>
           ) : copyFailed ? (
-            <span className="text-error font-mono text-xs">
-              {t.copyFailed}
-            </span>
+            <span className="text-error font-mono text-xs">{t.copyFailed}</span>
           ) : null}
         </div>
 
@@ -307,14 +350,14 @@ export function ThemeConfigurator({
               title={`${token.label} (${token.value}) - Click to copy`}
               aria-label={`Copy ${token.label} color`}
             >
-              <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex min-w-0 items-center gap-2.5">
                 <span
                   className="border-border/60 h-5 w-5 shrink-0 rounded border shadow-xs"
                   style={{ backgroundColor: token.value }}
                   aria-hidden="true"
                 />
                 <div className="flex flex-col truncate">
-                  <span className="text-foreground font-mono text-xs font-medium truncate">
+                  <span className="text-foreground truncate font-mono text-xs font-medium">
                     {token.label}
                   </span>
                   <span className="text-muted font-mono text-[10px]">
@@ -326,7 +369,7 @@ export function ThemeConfigurator({
               {token.key !== 'background' ? (
                 <Badge
                   variant={token.badgeVariant}
-                  className="shrink-0 text-[10px] font-mono px-1.5 py-0"
+                  className="shrink-0 px-1.5 py-0 font-mono text-[10px]"
                 >
                   {token.ratio.toFixed(1)}:1
                 </Badge>

@@ -1,9 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Footer links', () => {
-  test('CLI guide link resolves to cli-setup, not a 404', async ({
-    page,
-  }) => {
+  test('CLI guide link resolves to cli-setup, not a 404', async ({ page }) => {
     await page.goto('/en');
     const cliLink = page.getByRole('link', { name: /cli guide/i });
     await expect(cliLink).toHaveAttribute('href', '/en/docs/cli-setup');

@@ -33,7 +33,8 @@ const FOOTER_TRANSLATIONS: Record<string, FooterDict> = {
     issues: 'Report an Issue',
     changelog: 'Releases & Changelog',
     license: 'MIT License',
-    copyright: '(c) 2026 JustUI. Built for high-performance Flutter engineering.',
+    copyright:
+      '(c) 2026 JustUI. Built for high-performance Flutter engineering.',
     bottomNote: 'Crafted with zero external runtime footprint.',
   },
   id: {
@@ -49,7 +50,8 @@ const FOOTER_TRANSLATIONS: Record<string, FooterDict> = {
     issues: 'Laporkan Masalah',
     changelog: 'Rilis & Changelog',
     license: 'Lisensi MIT',
-    copyright: '(c) 2026 JustUI. Dibuat untuk rekayasa Flutter berkinerja tinggi.',
+    copyright:
+      '(c) 2026 JustUI. Dibuat untuk rekayasa Flutter berkinerja tinggi.',
     bottomNote: 'Direkayasa tanpa jejak dependensi runtime eksternal.',
   },
 };
@@ -84,20 +86,20 @@ export function Footer({ lang, className }: FooterProps) {
             </p>
 
             <div className="border-border/80 bg-background/80 mt-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono text-xs">
-              <span className="bg-accent h-2 w-2 rounded-full animate-pulse" />
+              <span className="bg-accent h-2 w-2 animate-pulse rounded-full" />
               <span className="text-foreground font-medium">v0.14.0</span>
               <span className="text-muted">/</span>
               <span className="text-muted">Flutter 3.29+</span>
             </div>
 
-            <p className="text-muted/80 mt-6 text-xs font-mono">
+            <p className="text-muted/80 mt-6 font-mono text-xs">
               {t.copyright}
             </p>
           </div>
 
           {/* Column 2: Documentation & Resources */}
           <div className="md:col-span-3 lg:col-span-3 lg:col-start-7">
-            <h3 className="text-foreground font-mono text-xs font-semibold uppercase tracking-wider">
+            <h3 className="text-foreground font-mono text-xs font-semibold tracking-wider uppercase">
               {t.resourcesHeading}
             </h3>
             <ul className="mt-4 space-y-2.5 text-sm">
@@ -138,7 +140,7 @@ export function Footer({ lang, className }: FooterProps) {
 
           {/* Column 3: Ecosystem & Community */}
           <div className="md:col-span-3 lg:col-span-3">
-            <h3 className="text-foreground font-mono text-xs font-semibold uppercase tracking-wider">
+            <h3 className="text-foreground font-mono text-xs font-semibold tracking-wider uppercase">
               {t.communityHeading}
             </h3>
             <ul className="mt-4 space-y-2.5 text-sm">
@@ -188,7 +190,7 @@ export function Footer({ lang, className }: FooterProps) {
         </div>
 
         {/* Bottom divider note */}
-        <div className="border-border/60 mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row text-xs text-muted font-mono">
+        <div className="border-border/60 text-muted mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 font-mono text-xs sm:flex-row">
           <span>{t.bottomNote}</span>
           <span>MIT License</span>
         </div>

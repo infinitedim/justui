@@ -35,14 +35,17 @@ describe('Code Generators', () => {
       expect(yaml).toContain('components_dir: lib/widgets');
       expect(yaml).toContain('tokens_dir: lib/tokens');
       expect(yaml).toContain('shared_dir: lib/widgets/shared');
-      expect(yaml).toContain('registry_url: https://raw.githubusercontent.com/infinitedim/justui/main/registry');
+      expect(yaml).toContain(
+        'registry_url: https://raw.githubusercontent.com/infinitedim/justui/main/registry'
+      );
       expect(yaml).toContain('preset: default');
       expect(yaml).toContain('color_space: hsl');
       expect(yaml).toContain('dart_target: standard');
     });
 
     it('embeds custom share URL as a comment', () => {
-      const shareUrl = 'https://justui.dev/en/studio?seed=f43f5e&dark=1&preset=neo&cs=oklch';
+      const shareUrl =
+        'https://justui.dev/en/studio?seed=f43f5e&dark=1&preset=neo&cs=oklch';
       const yaml = generateYaml(
         { preset: 'neobrutalism', colorSpace: 'oklch' },
         shareUrl
@@ -70,8 +73,12 @@ describe('Code Generators', () => {
         colorSpace: 'hsl',
       });
 
-      expect(dart).toContain("import 'package:flutter/widgets.dart' show Color;");
-      expect(dart).toContain("import 'package:just_ui_core/just_ui_core.dart';");
+      expect(dart).toContain(
+        "import 'package:flutter/widgets.dart' show Color;"
+      );
+      expect(dart).toContain(
+        "import 'package:just_ui_core/just_ui_core.dart';"
+      );
       expect(dart).toContain('final theme = JustThemeData.fromSeed(');
       expect(dart).toContain('const Color(0xFFA3E635),');
       expect(dart).not.toContain('isDark:');

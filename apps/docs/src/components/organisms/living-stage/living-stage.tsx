@@ -119,10 +119,10 @@ export function LivingStage({
             id="stage-panel-preview"
             role="tabpanel"
             aria-labelledby="stage-tab-preview"
-            className="flex flex-1 flex-col justify-center w-full"
+            className="flex w-full flex-1 flex-col justify-center"
           >
             {widgets.length === 0 ? (
-              <div className="border-border flex min-h-[280px] flex-1 flex-col items-center justify-center rounded-(--just-radius-md) border-dashed border-(length:--just-border-width) p-8 text-center">
+              <div className="border-border flex min-h-[280px] flex-1 flex-col items-center justify-center rounded-(--just-radius-md) border-(length:--just-border-width) border-dashed p-8 text-center">
                 <p className="text-muted font-mono text-xs">
                   {t.stageEmptyState ||
                     'Run a command in the terminal to see components appear here.'}

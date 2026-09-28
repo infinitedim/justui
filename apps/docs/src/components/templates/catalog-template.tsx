@@ -14,9 +14,9 @@ export function CatalogTemplate({
   footer,
 }: CatalogTemplateProps) {
   return (
-    <div className="bg-background text-foreground min-h-screen flex flex-col">
+    <div className="bg-background text-foreground flex min-h-screen flex-col">
       {navbar}
-      <main className="mx-auto max-w-6xl flex-1 w-full px-4 py-16 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-10">{header}</div>
         {catalog}
       </main>

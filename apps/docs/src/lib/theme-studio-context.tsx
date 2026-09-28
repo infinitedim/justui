@@ -63,7 +63,8 @@ export function ThemeStudioProvider({
   const [seedColor, setSeedColorState] = useState<string>(initialSeedColor);
   const [isDark, setIsDarkState] = useState<boolean>(initialIsDark);
   const [preset, setPresetState] = useState<JustUIPreset>(initialPreset);
-  const [colorSpace, setColorSpaceState] = useState<ColorSpace>(initialColorSpace);
+  const [colorSpace, setColorSpaceState] =
+    useState<ColorSpace>(initialColorSpace);
 
   const isInitialized = useRef(false);
 
@@ -127,7 +128,7 @@ export function ThemeStudioProvider({
   const shareUrl = useMemo(() => {
     const baseUrl =
       typeof window !== 'undefined'
-        ? window.location.href.split('?')[0] ?? window.location.href
+        ? (window.location.href.split('?')[0] ?? window.location.href)
         : 'https://justui.dev/en/studio';
     return buildShareUrl(baseUrl, {
       seedColor,

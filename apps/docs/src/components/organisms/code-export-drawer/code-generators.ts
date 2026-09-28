@@ -53,7 +53,10 @@ export interface GenerateDartOptions {
  * Follows exact Dart signature from JustThemeData.fromSeed.
  */
 export function generateDart(
-  state: Pick<ThemeStudioState, 'seedColor' | 'isDark' | 'preset' | 'colorSpace'>,
+  state: Pick<
+    ThemeStudioState,
+    'seedColor' | 'isDark' | 'preset' | 'colorSpace'
+  >,
   options?: GenerateDartOptions
 ): string {
   const argb = seedToArgbHex(state.seedColor);

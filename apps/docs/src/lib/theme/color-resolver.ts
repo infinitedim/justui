@@ -135,7 +135,9 @@ export function relativeLuminance(hex: string): number {
   const srgb = [r / 255, g / 255, b / 255].map((val) =>
     val <= 0.04045 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4)
   );
-  return 0.2126 * (srgb[0] ?? 0) + 0.7152 * (srgb[1] ?? 0) + 0.0722 * (srgb[2] ?? 0);
+  return (
+    0.2126 * (srgb[0] ?? 0) + 0.7152 * (srgb[1] ?? 0) + 0.0722 * (srgb[2] ?? 0)
+  );
 }
 
 /**
@@ -190,7 +192,10 @@ export function adjustLightnessForContrast(
 /**
  * Generates a subtly tinted dark surface from seed hue and target lightness percentage.
  */
-export function generateDarkSurface(seedHex: string, lightnessPercent = 3): string {
+export function generateDarkSurface(
+  seedHex: string,
+  lightnessPercent = 3
+): string {
   const [h] = hexToHsl(seedHex);
   // Restrained saturation (8%) keeps it dark and elegant with subtle hue character
   return hslToHex(h, 8, Math.max(1, Math.min(25, lightnessPercent)));
@@ -230,9 +235,10 @@ export function resolveTokens(
   const accent = normSeed;
   const contrastWithWhite = contrastRatio(accent, '#ffffff');
   const contrastWithDark = contrastRatio(accent, '#18181b');
-  const accentForeground = contrastWithWhite >= 4.5 || contrastWithWhite > contrastWithDark
-    ? '#ffffff'
-    : '#18181b';
+  const accentForeground =
+    contrastWithWhite >= 4.5 || contrastWithWhite > contrastWithDark
+      ? '#ffffff'
+      : '#18181b';
 
   // Borders & shadows
   let border: string;
