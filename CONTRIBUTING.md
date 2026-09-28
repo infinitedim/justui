@@ -119,7 +119,11 @@ cargo clippy --all-targets -- -D warnings
 
 ## 4. Coding Rules
 
-These rules are enforced in CI and in code review. PRs that violate them will not be merged.
+These are our conventions, checked in code review. CI currently only runs
+`dart format --set-exit-if-changed` and `flutter analyze`/`dart analyze` for
+`packages/core`/`packages/tokens` — neither one checks for rules A–H
+specifically, so a PR that violates one of them can still pass CI. Please
+still follow them; reviewers will ask for changes if you don't.
 
 ### A. No Material imports without `show`
 
