@@ -23,6 +23,40 @@ struct DiffFileStatus {
     expected_hash: String,
 }
 
+/// Classifies a locally-installed file's sync status against the registry.
+///
+/// Uses the `justui-meta: registry=<hash> local=<hash>` header (see
+/// `import_rewriter`) to distinguish a genuine local edit from the fact that
+/// installed content is rewritten (import paths, constructor syntax) and so
+/// never equals the registry's raw checksum by itself. Falls back to a
+/// direct content-hash comparison only for files with no metadata header
+/// (installs predating the header, or hand-added files).
+pub(crate) fn classify_status(local_content: &str, expected_hash: &str) -> DiffStatusType {
+    if let Some(meta) = import_rewriter::parse_metadata(local_content) {
+        let local_clean = import_rewriter::strip_metadata(local_content);
+        let current_local_hash = sha256_hex(local_clean.as_bytes());
+
+        if current_local_hash == meta.local_hash {
+            if meta.registry_hash == expected_hash {
+                DiffStatusType::UpToDate
+            } else {
+                DiffStatusType::UpdateAvailable
+            }
+        } else if meta.registry_hash == expected_hash {
+            DiffStatusType::LocallyModified
+        } else {
+            DiffStatusType::Conflict
+        }
+    } else {
+        let local_hash = sha256_hex(local_content.as_bytes());
+        if local_hash == expected_hash {
+            DiffStatusType::UpToDate
+        } else {
+            DiffStatusType::LocallyModified
+        }
+    }
+}
+
 pub fn run(
     component_name: Option<String>,
     verbose: bool,
@@ -109,68 +143,20 @@ pub fn run(
             let raw = std::fs::read_to_string(local_file_path).unwrap_or_default();
             let local_content = raw.replace("\r\n", "\n");
 
-            let status = if let Some(meta) = import_rewriter::parse_metadata(&local_content) {
-                let local_clean = import_rewriter::strip_metadata(&local_content);
-                let current_local_hash = sha256_hex(local_clean.as_bytes());
-
-                if current_local_hash == meta.local_hash {
-                    if meta.registry_hash == expected_hash {
-                        DiffFileStatus {
-                            file: file.clone(),
-                            target_path: target_path.clone(),
-                            status_type: DiffStatusType::UpToDate,
-                            local_content: local_clean,
-                            expected_hash,
-                        }
-                    } else {
-                        DiffFileStatus {
-                            file: file.clone(),
-                            target_path: target_path.clone(),
-                            status_type: DiffStatusType::UpdateAvailable,
-                            local_content: local_clean,
-                            expected_hash,
-                        }
-                    }
+            let status_type = classify_status(&local_content, &expected_hash);
+            let local_content_for_display =
+                if import_rewriter::parse_metadata(&local_content).is_some() {
+                    import_rewriter::strip_metadata(&local_content)
                 } else {
-                    if meta.registry_hash == expected_hash {
-                        DiffFileStatus {
-                            file: file.clone(),
-                            target_path: target_path.clone(),
-                            status_type: DiffStatusType::LocallyModified,
-                            local_content: local_clean,
-                            expected_hash,
-                        }
-                    } else {
-                        DiffFileStatus {
-                            file: file.clone(),
-                            target_path: target_path.clone(),
-                            status_type: DiffStatusType::Conflict,
-                            local_content: local_clean,
-                            expected_hash,
-                        }
-                    }
-                }
-            } else {
-                let local_hash = sha256_hex(local_content.as_bytes());
-                if local_hash == expected_hash {
-                    DiffFileStatus {
-                        file: file.clone(),
-                        target_path: target_path.clone(),
-                        status_type: DiffStatusType::UpToDate,
-                        local_content,
-                        expected_hash,
-                    }
-                } else {
-                    DiffFileStatus {
-                        file: file.clone(),
-                        target_path: target_path.clone(),
-                        status_type: DiffStatusType::LocallyModified,
-                        local_content,
-                        expected_hash,
-                    }
-                }
-            };
-            files_status.push(status);
+                    local_content
+                };
+            files_status.push(DiffFileStatus {
+                file: file.clone(),
+                target_path: target_path.clone(),
+                status_type,
+                local_content: local_content_for_display,
+                expected_hash,
+            });
         }
 
         for fs in &files_status {

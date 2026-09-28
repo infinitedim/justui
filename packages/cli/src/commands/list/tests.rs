@@ -1,5 +1,6 @@
 use super::ui::{draw_ui, handle_key_code, run_interactive_tui};
 use super::*;
+use crate::commands::add::sha256_hex;
 use crate::registry::RegistryIndex;
 use crate::utils::import_rewriter;
 use crossterm::event::{Event, KeyCode};
@@ -704,6 +705,62 @@ fn test_get_component_status_matrix() {
         get_component_status(&comp_installed, &config_installed),
         "Partially Installed"
     );
+}
+
+#[test]
+fn test_get_component_status_uses_metadata_header_not_raw_registry_hash() {
+    // Simulates real `add` behavior: the registry source is rewritten
+    // (e.g. import paths rewritten to the user's package name) before being
+    // written to disk, so the on-disk content never matches the registry's
+    // raw checksum even when nothing has been modified by the user since
+    // install. Only the `justui-meta` header's hashes should decide status.
+    let temp_dir = tempfile::tempdir().unwrap();
+    let config = JustUIConfig {
+        components_dir: temp_dir.path().to_string_lossy().to_string(),
+        ..Default::default()
+    };
+
+    let comp_dir = temp_dir.path().join("rewritten_comp");
+    std::fs::create_dir_all(&comp_dir).unwrap();
+    let file_path = comp_dir.join("file1.dart");
+
+    // Registry's raw source (what `checksum` in index.json is computed from).
+    let registry_raw = "import 'package:just_ui_core/just_ui_core.dart';\nclass File1 {}";
+    let registry_hash = sha256_hex(registry_raw.as_bytes());
+
+    // What actually gets written to disk after add.rs rewrites the import.
+    let rewritten_local = "import 'package:my_app/core/just_ui_core.dart';\nclass File1 {}";
+    let local_hash = sha256_hex(rewritten_local.as_bytes());
+
+    // Metadata records both hashes, exactly as add.rs does on install.
+    let on_disk_content =
+        import_rewriter::inject_metadata(rewritten_local, &registry_hash, &local_hash);
+    std::fs::write(&file_path, on_disk_content).unwrap();
+
+    let comp = RegistryComponent {
+        name: "rewritten_comp".to_string(),
+        version: "1.0".to_string(),
+        description: "".to_string(),
+        category: "general".to_string(),
+        internal: false,
+        supported_presets: vec![],
+        registry_dependencies: vec![],
+        pub_dependencies: HashMap::new(),
+        files: {
+            let mut map = HashMap::new();
+            map.insert(
+                "default".to_string(),
+                vec![crate::registry::RegistryFile {
+                    name: "file1.dart".to_string(),
+                    path: file_path.to_string_lossy().to_string(),
+                    checksum: format!("sha256:{}", registry_hash),
+                }],
+            );
+            map
+        },
+    };
+
+    assert_eq!(get_component_status(&comp, &config), "Installed");
 }
 
 #[test]
