@@ -112,10 +112,7 @@ describe('Library Helpers', () => {
         options.links?.map((l) => (l as { text: string }).text);
 
       expect(linkText(baseOptions('en'))).toEqual(['Docs', 'Components']);
-      expect(linkText(baseOptions('id'))).toEqual([
-        'Dokumentasi',
-        'Komponen',
-      ]);
+      expect(linkText(baseOptions('id'))).toEqual(['Dokumentasi', 'Komponen']);
     });
   });
 });

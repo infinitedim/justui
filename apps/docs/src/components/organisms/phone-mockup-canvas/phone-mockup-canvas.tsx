@@ -26,7 +26,9 @@ export function PhoneMockupCanvas({
 
   // Internal interactive mockup state
   const [switchOn, setSwitchOn] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<'home' | 'catalog' | 'profile'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'catalog' | 'profile'>(
+    'home'
+  );
   const [buttonPressed, setButtonPressed] = useState<boolean>(false);
 
   const isNeo = preset === 'neobrutalism';
@@ -37,28 +39,31 @@ export function PhoneMockupCanvas({
 
   return (
     <div
-      className={cn('flex w-full items-center justify-center p-2 sm:p-4', className)}
+      className={cn(
+        'flex w-full items-center justify-center p-2 sm:p-4',
+        className
+      )}
       data-testid="phone-mockup-canvas"
     >
       {/* Phone Outer Chassis */}
       <div
         className={cn(
-          'relative w-full max-w-[360px] sm:max-w-[375px] shrink-0 select-none overflow-hidden',
+          'relative w-full max-w-[360px] shrink-0 overflow-hidden select-none sm:max-w-[375px]',
           'rounded-[48px] border-[10px] border-zinc-900 bg-zinc-900',
           'shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.1)]',
           'dark:border-zinc-800 dark:bg-zinc-800'
         )}
       >
         {/* Dynamic Island Pill */}
-        <div className="absolute top-3 left-1/2 z-30 h-6 w-28 -translate-x-1/2 rounded-full bg-black flex items-center justify-between px-2.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-zinc-900 border border-zinc-800" />
+        <div className="absolute top-3 left-1/2 z-30 flex h-6 w-28 -translate-x-1/2 items-center justify-between rounded-full bg-black px-2.5">
+          <span className="h-2.5 w-2.5 rounded-full border border-zinc-800 bg-zinc-900" />
           <span className="h-2 w-2 rounded-full bg-blue-950/80" />
         </div>
 
         {/* Screen Viewport Container */}
         <div
           className={cn(
-            'relative flex flex-col h-[680px] w-full overflow-hidden rounded-[38px]',
+            'relative flex h-[680px] w-full flex-col overflow-hidden rounded-[38px]',
             transitionClass
           )}
           style={{
@@ -86,7 +91,7 @@ export function PhoneMockupCanvas({
 
           {/* App Header */}
           <div
-            className="flex shrink-0 items-center justify-between px-5 py-3 border-b"
+            className="flex shrink-0 items-center justify-between border-b px-5 py-3"
             style={{
               backgroundColor: resolvedTokens.background,
               borderColor: resolvedTokens.border,
@@ -95,7 +100,10 @@ export function PhoneMockupCanvas({
           >
             <div className="flex items-center gap-2">
               <div
-                className={cn('h-6 w-6 flex items-center justify-center rounded', transitionClass)}
+                className={cn(
+                  'flex h-6 w-6 items-center justify-center rounded',
+                  transitionClass
+                )}
                 style={{
                   backgroundColor: resolvedTokens.accent,
                   color: resolvedTokens.accentForeground,
@@ -110,7 +118,7 @@ export function PhoneMockupCanvas({
             </div>
             <button
               type="button"
-              className="relative p-1.5 opacity-80 hover:opacity-100 transition-opacity"
+              className="relative p-1.5 opacity-80 transition-opacity hover:opacity-100"
               aria-label={t.notifications}
             >
               <Bell className="h-4 w-4" />
@@ -122,11 +130,11 @@ export function PhoneMockupCanvas({
           </div>
 
           {/* Main App Content Flow */}
-          <div className="flex flex-1 flex-col gap-4 p-5 overflow-y-auto overflow-x-hidden">
+          <div className="flex flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto p-5">
             {/* Search Input Field */}
             <div
               className={cn(
-                'flex items-center gap-2.5 px-3 py-2 border shadow-xs',
+                'flex items-center gap-2.5 border px-3 py-2 shadow-xs',
                 transitionClass
               )}
               style={{
@@ -136,9 +144,9 @@ export function PhoneMockupCanvas({
                 borderRadius: resolvedTokens.radiusMd,
               }}
             >
-              <Search className="h-3.5 w-3.5 opacity-50 shrink-0" />
+              <Search className="h-3.5 w-3.5 shrink-0 opacity-50" />
               <span
-                className="text-xs truncate opacity-60"
+                className="truncate text-xs opacity-60"
                 style={{ color: resolvedTokens.textSecondary }}
               >
                 {t.searchPlaceholder}
@@ -147,7 +155,7 @@ export function PhoneMockupCanvas({
 
             {/* Featured Hero Card */}
             <div
-              className={cn('flex flex-col gap-3 p-4 border', transitionClass)}
+              className={cn('flex flex-col gap-3 border p-4', transitionClass)}
               style={{
                 backgroundColor: resolvedTokens.card,
                 borderColor: resolvedTokens.border,
@@ -158,7 +166,7 @@ export function PhoneMockupCanvas({
             >
               <div className="flex items-center justify-between">
                 <span
-                  className="font-mono text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5"
+                  className="px-2 py-0.5 font-mono text-[10px] font-semibold tracking-wider uppercase"
                   style={{
                     backgroundColor: resolvedTokens.accent,
                     color: resolvedTokens.accentForeground,
@@ -171,7 +179,7 @@ export function PhoneMockupCanvas({
                   {isNeo ? 'NEOBRUTALISM' : 'PREVIEW'}
                 </span>
                 <span
-                  className="text-[10px] font-mono"
+                  className="font-mono text-[10px]"
                   style={{ color: resolvedTokens.textSecondary }}
                 >
                   v0.13.2
@@ -201,9 +209,11 @@ export function PhoneMockupCanvas({
                 onMouseLeave={() => setButtonPressed(false)}
                 onClick={() => setSwitchOn((prev) => !prev)}
                 className={cn(
-                  'mt-1 flex items-center justify-center font-mono text-xs font-semibold py-2.5 px-4 cursor-pointer',
+                  'mt-1 flex cursor-pointer items-center justify-center px-4 py-2.5 font-mono text-xs font-semibold',
                   buttonPressed
-                    ? (isNeo ? 'translate-x-1 translate-y-1' : 'translate-y-0.5')
+                    ? isNeo
+                      ? 'translate-x-1 translate-y-1'
+                      : 'translate-y-0.5'
                     : '',
                   transitionClass
                 )}
@@ -214,7 +224,9 @@ export function PhoneMockupCanvas({
                   borderStyle: 'solid',
                   borderWidth: resolvedTokens.borderWidth,
                   borderRadius: resolvedTokens.radiusMd,
-                  boxShadow: buttonPressed ? 'none' : resolvedTokens.shadowSolid,
+                  boxShadow: buttonPressed
+                    ? 'none'
+                    : resolvedTokens.shadowSolid,
                 }}
               >
                 {t.getStarted}
@@ -224,7 +236,7 @@ export function PhoneMockupCanvas({
             {/* Interactive Switch and Status Row */}
             <div
               className={cn(
-                'flex items-center justify-between p-3.5 border',
+                'flex items-center justify-between border p-3.5',
                 transitionClass
               )}
               style={{
@@ -260,7 +272,9 @@ export function PhoneMockupCanvas({
                   transitionClass
                 )}
                 style={{
-                  backgroundColor: switchOn ? resolvedTokens.accent : resolvedTokens.background,
+                  backgroundColor: switchOn
+                    ? resolvedTokens.accent
+                    : resolvedTokens.background,
                   borderColor: resolvedTokens.border,
                   borderWidth: resolvedTokens.borderWidth,
                   borderRadius: isNeo ? '0px' : '9999px',
@@ -286,7 +300,10 @@ export function PhoneMockupCanvas({
             {/* Metrics Dual Cards */}
             <div className="grid grid-cols-2 gap-3">
               <div
-                className={cn('flex flex-col gap-1 p-3 border', transitionClass)}
+                className={cn(
+                  'flex flex-col gap-1 border p-3',
+                  transitionClass
+                )}
                 style={{
                   backgroundColor: resolvedTokens.card,
                   borderColor: resolvedTokens.border,
@@ -297,13 +314,13 @@ export function PhoneMockupCanvas({
                 }}
               >
                 <span
-                  className="text-[10px] font-mono uppercase"
+                  className="font-mono text-[10px] uppercase"
                   style={{ color: resolvedTokens.textSecondary }}
                 >
                   FPS
                 </span>
                 <span
-                  className="text-base font-bold font-mono"
+                  className="font-mono text-base font-bold"
                   style={{ color: resolvedTokens.success }}
                 >
                   120 FPS
@@ -317,7 +334,10 @@ export function PhoneMockupCanvas({
               </div>
 
               <div
-                className={cn('flex flex-col gap-1 p-3 border', transitionClass)}
+                className={cn(
+                  'flex flex-col gap-1 border p-3',
+                  transitionClass
+                )}
                 style={{
                   backgroundColor: resolvedTokens.card,
                   borderColor: resolvedTokens.border,
@@ -328,13 +348,13 @@ export function PhoneMockupCanvas({
                 }}
               >
                 <span
-                  className="text-[10px] font-mono uppercase"
+                  className="font-mono text-[10px] uppercase"
                   style={{ color: resolvedTokens.textSecondary }}
                 >
                   COMPONENTS
                 </span>
                 <span
-                  className="text-base font-bold font-mono"
+                  className="font-mono text-base font-bold"
                   style={{ color: resolvedTokens.accent }}
                 >
                   30+
@@ -352,7 +372,7 @@ export function PhoneMockupCanvas({
           {/* Bottom Tab Navigation Bar */}
           <div
             className={cn(
-              'shrink-0 z-20 flex h-14 w-full items-center justify-around border-t px-2',
+              'z-20 flex h-14 w-full shrink-0 items-center justify-around border-t px-2',
               transitionClass
             )}
             style={{
@@ -366,10 +386,15 @@ export function PhoneMockupCanvas({
               onClick={() => setActiveTab('home')}
               className={cn(
                 'flex flex-col items-center gap-0.5 p-1 transition-colors',
-                activeTab === 'home' ? 'opacity-100 font-semibold' : 'opacity-60 hover:opacity-80'
+                activeTab === 'home'
+                  ? 'font-semibold opacity-100'
+                  : 'opacity-60 hover:opacity-80'
               )}
               style={{
-                color: activeTab === 'home' ? resolvedTokens.accent : resolvedTokens.textSecondary,
+                color:
+                  activeTab === 'home'
+                    ? resolvedTokens.accent
+                    : resolvedTokens.textSecondary,
               }}
             >
               <Home className="h-4 w-4" />
@@ -381,10 +406,15 @@ export function PhoneMockupCanvas({
               onClick={() => setActiveTab('catalog')}
               className={cn(
                 'flex flex-col items-center gap-0.5 p-1 transition-colors',
-                activeTab === 'catalog' ? 'opacity-100 font-semibold' : 'opacity-60 hover:opacity-80'
+                activeTab === 'catalog'
+                  ? 'font-semibold opacity-100'
+                  : 'opacity-60 hover:opacity-80'
               )}
               style={{
-                color: activeTab === 'catalog' ? resolvedTokens.accent : resolvedTokens.textSecondary,
+                color:
+                  activeTab === 'catalog'
+                    ? resolvedTokens.accent
+                    : resolvedTokens.textSecondary,
               }}
             >
               <Layers className="h-4 w-4" />
@@ -396,10 +426,15 @@ export function PhoneMockupCanvas({
               onClick={() => setActiveTab('profile')}
               className={cn(
                 'flex flex-col items-center gap-0.5 p-1 transition-colors',
-                activeTab === 'profile' ? 'opacity-100 font-semibold' : 'opacity-60 hover:opacity-80'
+                activeTab === 'profile'
+                  ? 'font-semibold opacity-100'
+                  : 'opacity-60 hover:opacity-80'
               )}
               style={{
-                color: activeTab === 'profile' ? resolvedTokens.accent : resolvedTokens.textSecondary,
+                color:
+                  activeTab === 'profile'
+                    ? resolvedTokens.accent
+                    : resolvedTokens.textSecondary,
               }}
             >
               <User className="h-4 w-4" />

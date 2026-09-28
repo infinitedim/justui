@@ -47,6 +47,7 @@ export function ThemeConfigurator({
   } = useThemeStudio();
 
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
+  const [copyFailed, setCopyFailed] = useState<boolean>(false);
 
   const lastHueSatRef = useRef<[number, number]>([83, 77]);
 
@@ -90,13 +91,20 @@ export function ThemeConfigurator({
   }, [seedColor, setSeedColor]);
 
   // Copy hex to clipboard on swatch click
-  const handleCopyColor = useCallback((tokenName: string, hex: string) => {
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(hex).catch(() => {});
-      setCopiedToken(tokenName);
-      setTimeout(() => setCopiedToken(null), 1500);
-    }
-  }, []);
+  const handleCopyColor = useCallback(
+    async (tokenName: string, hex: string) => {
+      if (typeof navigator === 'undefined' || !navigator.clipboard) return;
+      try {
+        await navigator.clipboard.writeText(hex);
+        setCopiedToken(tokenName);
+        setTimeout(() => setCopiedToken(null), 1500);
+      } catch {
+        setCopyFailed(true);
+        setTimeout(() => setCopyFailed(false), 1500);
+      }
+    },
+    []
+  );
 
   // Preset options
   const presetOptions = useMemo(
@@ -278,6 +286,10 @@ export function ThemeConfigurator({
           {copiedToken ? (
             <span className="text-accent font-mono text-xs animate-pulse">
               {t.copied}
+            </span>
+          ) : copyFailed ? (
+            <span className="text-error font-mono text-xs">
+              {t.copyFailed}
             </span>
           ) : null}
         </div>

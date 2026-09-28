@@ -20,6 +20,7 @@ export interface StudioDictionary {
   reset: string;
   copyCode: string;
   copied: string;
+  copyFailed: string;
   contrastRatio: string;
   tabYaml: string;
   tabDart: string;
@@ -52,7 +53,8 @@ export interface StudioDictionary {
 const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
   en: {
     title: 'Theme Studio',
-    subtitle: 'Configure your design tokens visually and export production-ready code.',
+    subtitle:
+      'Configure your design tokens visually and export production-ready code.',
     seedColor: 'Seed Color',
     mode: 'Mode',
     light: 'Light',
@@ -70,6 +72,7 @@ const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
     reset: 'Reset',
     copyCode: 'Copy code',
     copied: 'Copied!',
+    copyFailed: 'Copy failed',
     contrastRatio: 'Contrast',
     tabYaml: 'Config YAML',
     tabDart: 'Dart Code',
@@ -100,7 +103,8 @@ const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
   },
   id: {
     title: 'Theme Studio',
-    subtitle: 'Konfigurasi design token secara visual dan ekspor kode siap produksi.',
+    subtitle:
+      'Konfigurasi design token secara visual dan ekspor kode siap produksi.',
     seedColor: 'Warna Dasar',
     mode: 'Mode',
     light: 'Terang',
@@ -118,6 +122,7 @@ const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
     reset: 'Reset',
     copyCode: 'Salin kode',
     copied: 'Tersalin!',
+    copyFailed: 'Gagal menyalin',
     contrastRatio: 'Kontras',
     tabYaml: 'Config YAML',
     tabDart: 'Kode Dart',
