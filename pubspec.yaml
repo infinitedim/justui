@@ -2,6 +2,12 @@ name: justui
 environment:
   sdk: ">=3.13.0 <4.0.0"
 
+workspace:
+  - packages/tokens
+  - packages/core
+  - apps/preview
+  - apps/showcase
+
 dev_dependencies:
   melos: ^8.7.0
   flutter_lints: ^6.0.0
@@ -12,3 +18,9 @@ dependencies:
 
   crypto: ^3.0.7
   path: ^1.9.1
+
+melos:
+  command:
+    bootstrap:
+      usePubspecOverrides: true
+

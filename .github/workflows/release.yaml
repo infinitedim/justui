@@ -46,26 +46,35 @@ jobs:
       - name: Check for pending changesets
         id: check-changesets
         run: |
-          COUNT=$(find .changeset -name "*.md" ! -name "README.md" | wc -l | tr -d ' ')
-          echo "count=$COUNT" >> $GITHUB_OUTPUT
-          echo "Pending changesets: $COUNT"
+          NPM_COUNT=$(find .changeset -maxdepth 1 -name "*.md" ! -name "README.md" 2>/dev/null | wc -l | tr -d ' ')
+          POLY_COUNT=$(find .changeset-polyglot -maxdepth 1 -name "*.md" ! -name "README.md" 2>/dev/null | wc -l | tr -d ' ')
+          TOTAL_COUNT=$((NPM_COUNT + POLY_COUNT))
+          echo "npm_count=$NPM_COUNT" >> $GITHUB_OUTPUT
+          echo "poly_count=$POLY_COUNT" >> $GITHUB_OUTPUT
+          echo "total_count=$TOTAL_COUNT" >> $GITHUB_OUTPUT
+          echo "Pending changesets — npm: $NPM_COUNT, polyglot: $POLY_COUNT, total: $TOTAL_COUNT"
 
       - name: Apply Dart package version bumps
-        if: steps.check-changesets.outputs.count != '0'
+        if: steps.check-changesets.outputs.poly_count != '0'
         run: dart run tools/apply_changesets.dart
 
       - name: Apply Rust CLI version bump
-        if: steps.check-changesets.outputs.count != '0'
+        if: steps.check-changesets.outputs.poly_count != '0'
         run: |
           chmod +x tools/apply_changesets_cargo.sh
           bash tools/apply_changesets_cargo.sh
 
+      - name: Clean up polyglot changesets
+        if: steps.check-changesets.outputs.poly_count != '0'
+        run: |
+          find .changeset-polyglot -maxdepth 1 -name "*.md" ! -name "README.md" -delete
+
       - name: Generate changelogs
-        if: steps.check-changesets.outputs.count != '0'
+        if: steps.check-changesets.outputs.npm_count != '0'
         run: bun changeset version
 
       - name: Commit version bumps and changelogs
-        if: steps.check-changesets.outputs.count != '0'
+        if: steps.check-changesets.outputs.total_count != '0'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
