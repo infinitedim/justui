@@ -30,7 +30,7 @@ justui/
 │   └── cli/                # [Rust: justui / justui_cli] Native CLI tool (clap, ratatui, syntect, serde, similar)
 ├── apps/
 │   ├── docs/               # [Next.js 16 + React 19] Fumadocs documentation site & interactive registry portal
-│   ├── preview/            # [Flutter] Widgetbook 3 interactive component workbench (28 use cases)
+│   ├── preview/            # [Flutter] Widgetbook 3 interactive component workbench (30 use cases)
 │   └── showcase/           # [Flutter] CLI sandbox: components installed via `justui add --all` from ../../registry
 ├── registry/               # Generated component distribution definitions & mirrored component files
 ├── tools/                  # Polyglot release scripts, checksum generators, & changeset automations
@@ -61,20 +61,16 @@ To minimize widget tree rebuild overhead when theme properties change, `packages
 
 - Widgets listening to a specific aspect only re-render when that exact aspect mutates.
 - **Consumption Rule inside `build()`**:
-  - `context.justColors` $
-ightarrow$ Re-renders only when color palette changes (e.g., dark/light toggle).
-  - `context.justTypo` $
-ightarrow$ Re-renders only when typography scale changes.
-  - `context.justSpacing` $
-ightarrow$ Re-renders only when spacing changes.
-  - `context.justTheme` $
-ightarrow$ Avoid inside small child widgets; listening to the whole theme causes rebuilds on _any_ aspect mutation.
+  - `context.justColors` → Re-renders only when color palette changes (e.g., dark/light toggle).
+  - `context.justTypo` → Re-renders only when typography scale changes.
+  - `context.justSpacing` → Re-renders only when spacing changes.
+  - `context.justTheme` → Avoid inside small child widgets; listening to the whole theme causes rebuilds on _any_ aspect mutation.
 - **Non-Registering Reads in Callbacks**:
   - Use `context.readTheme()` inside `onPressed`, `onTap`, or gesture callbacks to obtain theme data without subscribing the widget context to rebuilds.
 
 ### 3.2 Expando Lazy-Cached Material `ThemeData`
 
-Converting a `JustThemeData` instance into a Material `ThemeData` can be expensive. JustUI uses an internal `Expando` cache: repeated calls to `themeData.toThemeData()` return the identical cached `ThemeData` reference, eliminating object allocations across build loops.
+Converting a `JustThemeData` instance into a Material `ThemeData` can be expensive. JustUI uses an internal `Expando` cache keyed by object identity: repeated calls to `toThemeData()` on the *same* `JustThemeData` instance return the identical cached `ThemeData` reference. In practice, `JustThemeProviderState.theme` currently returns a freshly `copyWith()`-derived instance on every access, so this cache rarely hits along that path — treat it as a per-instance memoization, not a guarantee of zero allocations across build loops.
 
 ### 3.3 Component Architecture Convention (4-File Standard)
 
@@ -102,12 +98,12 @@ In `packages/core/lib/src/theme/theme_data_material.dart` (inside `ThemeData.ext
 ### 3.5 Perceptual Color & Design Tokens Engine (`packages/tokens`)
 
 - **Perceptual Color Spaces:** Provides native engines for OKLCH (`oklch_engine.dart`) and HSLuv (`hsluv_engine.dart`) with smooth mathematical tweens (`oklch_color_tween.dart`, `hsluv_color_tween.dart`).
-- **WCAG AA Contrast Auditor (`colors_accessibility.dart`):** Extension methods `color.contrastRatioWith(bg)` and `color.isAccessibleWith(bg)`. Enforces $\ge 4.5:1$ for body text and $\ge 3.0:1$ for large components/borders.
+- **WCAG AA Contrast Auditor (`colors_accessibility.dart`):** Extension methods `color.contrastRatioWith(bg)` and `color.isAccessibleWith(bg)`. Enforces ≥4.5:1 for body text and ≥3.0:1 for large components/borders.
 - **Fluid Typography (`typography_fluid.dart`):** Viewport-clamped dynamic font scaling for multi-device support.
 - **Responsive Breakpoints (`breakpoints.dart`):**
-  - Mobile: $< 640	ext{px}$
-  - Tablet: $640	ext{px} - 1024	ext{px}$
-  - Desktop: $> 1024	ext{px}$
+  - Mobile: <640px
+  - Tablet: 640px–1024px
+  - Desktop: >1024px
 - **Reduced Motion Profile (`motion.dart`):** `JustMotionProfile.resolve(context)` automatically detects OS-level accessibility reduce-motion settings and clamps duration to zero.
 
 ---
@@ -194,7 +190,7 @@ export type StageBridgeEvent =
 ### 6.1 `apps/preview` (Widgetbook 3 Workbench)
 
 - Primary visual testing and interactive sandbox for Flutter components.
-- Contains 28 use-case files under `apps/preview/lib/usecases/`.
+- Contains 30 use-case files under `apps/preview/lib/usecases/`.
 - Pre-configured with 4 themes: `Light`, `Dark`, `Neobrutalism Light`, and `Neobrutalism Dark`.
 - **Code Generation Command:**
   ```bash
@@ -245,25 +241,20 @@ The `registry/` directory stores pre-packaged component definitions consumed by 
 
 When installing components, the CLI routes files according to strict precedence:
 
-1. `category == "tokens"` or `"core"` $
-ightarrow$ `config.tokens_dir`
-2. `name == "_shared_theme_provider"` $
-ightarrow$ `lib/theme`
-3. `internal: true` $
-ightarrow$ `config.shared_dir`
-4. All standard components $
-ightarrow$ `{config.components_dir}/{component.name}`
+1. `category == "tokens"` or `"core"` → `config.tokens_dir`
+2. `internal: true` → `config.shared_dir`
+3. All standard components → `{config.components_dir}/{component.name}`
 
 ### 7.3 Checksum Synchronization Tool (`tools/generate_checksums.dart`)
 
 When components in `packages/core` are added or updated, their registry definitions and SHA-256 hashes must be synchronized:
 
 ```bash
-# Dry-run inspection:
-export HOME=/home/yourblooo/development/justui/.home && dart run tools/generate_checksums.dart --dry-run
+# Dry-run inspection (see §9.2 for why HOME needs overriding):
+export HOME=$PWD/.home && dart run tools/generate_checksums.dart --dry-run
 
 # Live write and update registry:
-export HOME=/home/yourblooo/development/justui/.home && dart run tools/generate_checksums.dart
+export HOME=$PWD/.home && dart run tools/generate_checksums.dart
 ```
 
 ---
@@ -310,13 +301,13 @@ When executing tools in this environment, AI Agents must strictly adhere to the 
    - Local package inter-dependencies are pre-configured in `.dart_tool/package_config.json`. **Never delete or regenerate `.dart_tool` carelessly.**
 2. **Dart Telemetry & Read-Only HOME:**
    - Dart CLI commands fail if telemetry writes to the default root home directory.
-   - **Required Solution:** Always prefix Dart commands with `HOME=/home/yourblooo/development/justui/.home`.
+   - **Required Solution:** Always prefix Dart commands with `HOME=$PWD/.home` (substitute a writable directory of your choosing if you're not running from the repo root).
 3. **Verified Static Analysis & Quality Commands:**
 
    ```bash
    # Core Packages (Always verify before completing Dart tasks):
-   export HOME=/home/yourblooo/development/justui/.home && dart analyze packages/core
-   export HOME=/home/yourblooo/development/justui/.home && dart analyze packages/tokens
+   export HOME=$PWD/.home && dart analyze packages/core
+   export HOME=$PWD/.home && dart analyze packages/tokens
 
    # Rust CLI Workspace:
    cargo check --workspace
@@ -349,7 +340,7 @@ JustUI features first-class preset support. When creating or modifying presets (
    - Standard container/component border width is `2.5` (sidebar active border: `3.0`).
    - Enforce border colors to `colors.textPrimary` (solid black in light mode, solid white in dark mode) across all states (normal, hover, focused, error). Never transition border colors to primary or tinted hues.
    - Bypass dynamic HSL contrast adjustments (`_makeAccessible`) for default/focus borders in `neobrutalism`.
-4. **CLI Preset Registration:** Update `init_command.rs` in `packages/cli` when adding new presets and ensure the preset is registered in `operator ==`, `hashCode`, and `copyWith` on `JustThemeData`.
+4. **CLI Preset Registration:** Update `packages/cli/src/commands/init.rs` when adding new presets and ensure the preset is registered in `operator ==`, `hashCode`, and `copyWith` on `JustThemeData`.
 
 ---
 
@@ -360,7 +351,7 @@ JustUI features first-class preset support. When creating or modifying presets (
 | **Tokens Unit Tests**    | Flutter Test (7 modular files)      | `packages/tokens/test/*_test.dart`   | `flutter test packages/tokens`     |
 | **Theming Engine Tests** | Flutter Test                        | `packages/core/test/theme_test.dart` | `flutter test packages/core`       |
 | **Rust CLI Integration** | `assert_cmd`, `predicates`          | `packages/cli/tests/`                | `cargo test --workspace`           |
-| **Docs Unit Tests**      | Vitest 5 + JSDOM (`bun-preload.ts`) | `apps/docs/src/**/__tests__/`        | `cd apps/docs && bun run test`     |
+| **Docs Unit Tests**      | Vitest 5 + JSDOM (`bun-preload.ts`) | `apps/docs/test/*.test.{ts,tsx}`     | `cd apps/docs && bun run test`     |
 | **Docs E2E Tests**       | Playwright 1.63                     | `apps/docs/e2e/`                     | `cd apps/docs && bun run test:e2e` |
 
 ---
@@ -389,7 +380,7 @@ Detailed description of changes following Conventional Commits.
 
 ```bash
 # Update Dart package versions (packages/tokens & packages/core):
-export HOME=/home/yourblooo/development/justui/.home && dart run tools/apply_changesets.dart
+export HOME=$PWD/.home && dart run tools/apply_changesets.dart
 
 # Update Rust CLI version (packages/cli/Cargo.toml):
 bash tools/apply_changesets_cargo.sh
@@ -415,7 +406,7 @@ bun changeset version
    - **4 components are currently missing MDX documentation:** `carousel`, `date-picker`, `resizable`, and `time-picker`.
    - When modifying or finalizing these components, author new MDX files under both `apps/docs/content/docs/en/components/` and `apps/docs/content/docs/id/components/`.
 2. **Conflicting Documentation in `CONTRIBUTING.md`:**
-   - [`CONTRIBUTING.md:264-266`](file:///home/yourblooo/development/justui/CONTRIBUTING.md#L264-L266) instructs contributors to _"Add your component to the barrel export at packages/core/lib/just_ui_core.dart"_.
+   - `CONTRIBUTING.md`, "Step 4 — Export from `packages/core/`" instructs contributors to _"Add your component to the barrel export at packages/core/lib/just_ui_core.dart"_.
    - **DO NOT FOLLOW THIS STEP.** To prevent barrel leakage into user projects, components must never be exported in the public kernel barrel. Follow the rule established in Section 3 and Section 8.1.
 3. **`apps/showcase` is a generated CLI sandbox** (see §6.2). There is no pre-compiled web showcase anymore; do not hand-edit its generated folders.
 
@@ -438,6 +429,9 @@ To ensure optimal engineering quality, prevent hallucinatory patterns, and enfor
 | Security review | `cc-skill-security-review`, `security-scanning-security-dependencies`, `security-scanning-security-sast` |
 
 Unrelated general-purpose skills (image generation, cloud/Vercel optimization, orchestrators, PRD tooling, and so on) were removed; keep such skills in your personal agent setup instead of committing them here.
+
+> [!NOTE]
+> `.agents/skills/senior-architect/` also exists on disk (generic architecture-diagram/dependency-analysis Python scripts, not specific to this repo's stack) and, on this sandbox, is owned by `root` — a normal contributor cannot delete it here. It does not belong in the table above per this section's own policy; treat it as pending removal (with appropriate filesystem permissions) rather than as an active skill for any of the workstreams below.
 
 1. **Mandatory Skill Identification on Every Prompt:**
    - For **every prompt and user task**, AI Agents **must proactively analyze and determine** which specialized skill(s) in `.agents/skills` (or active workspace skills) correspond to the request.
