@@ -298,12 +298,24 @@ pub fn rewrite(
                 );
             }
             if let Some(subpath) = import_path.strip_prefix("package:just_ui_core/") {
+                let local_subpath = local_package_subpath(subpath);
+                // Files the core barrel already re-exports (THEME_SUFFIXES)
+                // must import the barrel directly rather than their specific
+                // subpath, otherwise a sibling barrel import (e.g. from a
+                // rewritten relative theme_provider.dart import below) makes
+                // this one an `unnecessary_import`.
+                if THEME_SUFFIXES
+                    .iter()
+                    .any(|suffix| local_subpath.ends_with(suffix))
+                {
+                    return format!(
+                        "{} 'package:{}/core/just_ui_core.dart'{};",
+                        kw, package_name, trailing
+                    );
+                }
                 return format!(
                     "{} 'package:{}/core/{}'{};",
-                    kw,
-                    package_name,
-                    local_package_subpath(subpath),
-                    trailing
+                    kw, package_name, local_subpath, trailing
                 );
             }
             if import_path == "package:just_ui_core" {
@@ -488,11 +500,59 @@ mod tests {
             "my_app",
         );
 
-        assert!(rewritten.contains("import 'package:my_app/core/theme/preset_tokens.dart';"));
+        // `preset_tokens.dart` is one of the files the core barrel already
+        // re-exports (see THEME_SUFFIXES / just_ui_core.dart), so a direct
+        // package import of it collapses to the barrel import instead of
+        // staying a specific subpath — otherwise it would trigger
+        // `unnecessary_import` wherever the barrel is also imported.
+        assert!(rewritten.contains("import 'package:my_app/core/just_ui_core.dart';"));
+        assert!(!rewritten.contains("import 'package:my_app/core/theme/preset_tokens.dart';"));
+        // Files the barrel does *not* re-export keep their specific subpath.
         assert!(
             rewritten.contains("import 'package:my_app/core/theme/schemes/spacing_scheme.dart';")
         );
         assert!(rewritten.contains("import 'package:my_app/tokens/colors/oklch_engine.dart';"));
+    }
+
+    #[test]
+    fn test_theme_suffix_package_import_collapses_and_dedupes_with_relative_theme_import() {
+        // Mirrors the real just_icon_button.dart / just_avatar_group.dart
+        // shape: a direct `package:just_ui_core/src/theme/...` import for a
+        // barrel-exported file, alongside a *relative* import of another
+        // barrel-exported file (theme_provider.dart). Both must collapse to
+        // the same single barrel import line, not two redundant imports.
+        let index = RegistryIndex {
+            version: "1.0".to_string(),
+            presets: vec!["default".to_string()],
+            components: vec![],
+        };
+
+        let content = "import 'package:just_ui_core/src/theme/preset_tokens.dart';\n\
+                        import 'package:just_ui_core/src/theme/theme_data.dart';\n\
+                        import '../../theme/theme_provider.dart';\n";
+        let rewritten = rewrite(
+            content,
+            "components/icon_button/default/just_icon_button.dart",
+            "icon-button",
+            &index,
+            "lib/widgets",
+            "lib/tokens",
+            "lib/widgets/shared",
+            "default",
+            "my_app",
+        );
+
+        assert!(!rewritten.contains("theme/preset_tokens.dart"));
+        assert!(!rewritten.contains("theme/theme_data.dart'"));
+        let barrel_line = "import 'package:my_app/core/just_ui_core.dart';";
+        let count = rewritten
+            .lines()
+            .filter(|l| l.trim() == barrel_line)
+            .count();
+        assert_eq!(
+            count, 1,
+            "all three theme imports must collapse into exactly one barrel import, got:\n{rewritten}"
+        );
     }
 
     #[test]
