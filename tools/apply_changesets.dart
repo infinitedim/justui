@@ -16,9 +16,10 @@ void main(List<String> args) async {
   final String scriptPath = File(Platform.script.toFilePath()).absolute.path;
   final String projectRoot = p.dirname(p.dirname(scriptPath));
 
-  final Directory changesetDir = Directory(p.join(projectRoot, '.changeset'));
+  final Directory changesetDir =
+      Directory(p.join(projectRoot, '.changeset-polyglot'));
   if (!changesetDir.existsSync()) {
-    print('No .changeset directory found. Nothing to do.');
+    print('No .changeset-polyglot directory found. Nothing to do.');
     return;
   }
 

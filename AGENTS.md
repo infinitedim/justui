@@ -35,7 +35,7 @@ justui/
 ├── registry/               # Generated component distribution definitions & mirrored component files
 ├── tools/                  # Polyglot release scripts, checksum generators, & changeset automations
 ├── .changeset/             # Multi-package changelog & versioning definitions
-├── melos.yaml              # Dart workspace configuration
+├── pubspec.yaml            # Dart/Pub workspace configuration (Melos)
 ├── Cargo.toml              # Rust workspace configuration
 └── package.json            # Bun workspace configuration (apps/docs)
 ```
@@ -371,14 +371,15 @@ JustUI coordinates multi-runtime versioning using **Changesets** paired with cus
 
 ### 12.1 Authoring Changesets
 
-When making user-facing changes to packages, create a changeset markdown file under `.changeset/<name>.md`:
+When making user-facing changes to packages, create a changeset markdown file:
+- **npm / docs packages** (`docs`): create under `.changeset/<name>.md`
+- **Polyglot packages** (`just_ui_core`, `just_ui_tokens`, `justui_cli`): create under `.changeset-polyglot/<name>.md`
 
 ```markdown
 ---
 "just_ui_core": minor
 "just_ui_tokens": minor
 "justui_cli": minor
-"docs": patch
 ---
 
 Detailed description of changes following Conventional Commits.

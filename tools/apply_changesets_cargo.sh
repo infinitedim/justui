@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-CHANGESET_DIR="$PROJECT_ROOT/.changeset"
+CHANGESET_DIR="$PROJECT_ROOT/.changeset-polyglot"
 CARGO_TOML="$PROJECT_ROOT/packages/cli/Cargo.toml"
 DRY_RUN=false
 
@@ -14,7 +14,7 @@ for arg in "$@"; do
 done
 
 if [[ ! -d "$CHANGESET_DIR" ]]; then
-  echo "No .changeset directory found. Nothing to do."
+  echo "No .changeset-polyglot directory found. Nothing to do."
   exit 0
 fi
 

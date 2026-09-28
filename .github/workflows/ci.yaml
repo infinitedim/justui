@@ -24,13 +24,6 @@ jobs:
         run: |
           dart pub global activate melos
 
-      - name: Setup FVM Symlink for Melos
-        run: |
-          mkdir -p .fvm
-          FLUTTER_SDK_PATH="${FLUTTER_ROOT:-$(dirname $(dirname $(which flutter)))}"
-          echo "Setting up FVM symlink to: $FLUTTER_SDK_PATH"
-          ln -sf "$FLUTTER_SDK_PATH" .fvm/flutter_sdk
-
       - name: Bootstrap Monorepo
         run: |
           melos bootstrap
@@ -112,7 +105,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            packages/cli/target
+            target
           key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
@@ -146,7 +139,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            packages/cli/target
+            target
           key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
@@ -200,7 +193,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            packages/cli/target
+            target
           key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
@@ -232,7 +225,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            packages/cli/target
+            target
           key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
@@ -265,7 +258,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            packages/cli/target
+            target
           key: ${{ runner.os }}-cargo-coverage-${{ hashFiles('Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-coverage-

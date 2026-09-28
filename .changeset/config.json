@@ -10,19 +10,5 @@
   "ignore": [],
   "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
     "onlyUpdatePeerDependentsWhenOutOfRange": true
-  },
-  "packages": {
-    "just_ui_tokens": {
-      "path": "packages/tokens",
-      "type": "dart"
-    },
-    "just_ui_core": {
-      "path": "packages/core",
-      "type": "dart"
-    },
-    "justui_cli": {
-      "path": "packages/cli",
-      "type": "rust"
-    }
   }
 }
