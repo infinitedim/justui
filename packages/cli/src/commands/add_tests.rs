@@ -222,6 +222,90 @@ fn test_add_component_execution_flow_all_types() {
 }
 
 #[test]
+fn test_add_writes_dart_format_clean_files_with_matching_local_hash() {
+    let _lock = crate::utils::TEST_MUTEX
+        .lock()
+        .unwrap_or_else(|e| e.into_inner());
+    let temp_dir = tempfile::tempdir().unwrap();
+    let _guard = set_dir(temp_dir.path());
+
+    let reg_dir = temp_dir.path().join("registry");
+    std::fs::create_dir_all(reg_dir.join("components")).unwrap();
+
+    // Deliberately unformatted registry source: extra blank lines and a
+    // missing space, both of which `dart format` would rewrite.
+    let messy_code = "class Messy {\n  final int a;\n\n\n  Messy(this.a,this.a);\n}\n";
+    let messy_hash = sha256_hex(messy_code.as_bytes());
+
+    let index_json = format!(
+        r#"{{
+            "version": "1.0.0",
+            "presets": ["default"],
+            "components": [
+                {{
+                    "name": "messy",
+                    "version": "1.0.0",
+                    "description": "Deliberately unformatted component",
+                    "category": "components",
+                    "internal": false,
+                    "supportedPresets": ["default"],
+                    "registryDependencies": [],
+                    "pubDependencies": {{}},
+                    "files": {{
+                        "default": [
+                            {{
+                                "name": "just_messy.dart",
+                                "path": "components/just_messy.dart",
+                                "checksum": "sha256:{messy_hash}"
+                            }}
+                        ]
+                    }}
+                }}
+            ]
+        }}"#
+    );
+
+    std::fs::write(reg_dir.join("index.json"), index_json).unwrap();
+    std::fs::write(reg_dir.join("components/just_messy.dart"), messy_code).unwrap();
+    std::fs::write("pubspec.yaml", "name: my_app\n").unwrap();
+
+    let config_yaml = format!(
+        "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\ndart_target: standard\nregistry_url: {}\n",
+        reg_dir.display()
+    );
+    std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
+
+    assert!(run(vec!["messy".to_string()], false, false, false, false, true).is_ok());
+
+    let written_path = std::path::Path::new("lib/widgets/messy/just_messy.dart");
+    assert!(written_path.exists());
+
+    // The file on disk must already be `dart format`-clean: running the
+    // real formatter's check-only mode against it must report no changes.
+    let format_check = std::process::Command::new("dart")
+        .arg("format")
+        .arg("--output=none")
+        .arg("--set-exit-if-changed")
+        .arg(written_path)
+        .status();
+    if let Ok(status) = format_check {
+        assert!(
+            status.success(),
+            "written file must already be dart-format-clean"
+        );
+    }
+
+    // The embedded `justui-meta` local hash must match the actual on-disk
+    // (post-format) content, not the pre-format content that was rewritten.
+    let raw = std::fs::read_to_string(written_path).unwrap();
+    let content = raw.replace("\r\n", "\n");
+    let meta = crate::utils::import_rewriter::parse_metadata(&content)
+        .expect("written file must carry a justui-meta header");
+    let clean = crate::utils::import_rewriter::strip_metadata(&content);
+    assert_eq!(meta.local_hash, sha256_hex(clean.as_bytes()));
+}
+
+#[test]
 fn test_add_component_checksum_and_unknown_dependency() {
     let _lock = crate::utils::TEST_MUTEX
         .lock()

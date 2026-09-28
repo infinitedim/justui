@@ -391,6 +391,7 @@ fn apply_file_change(
         std::fs::create_dir_all(parent)?;
     }
     std::fs::write(path, &final_to_write)?;
+    crate::utils::dart_formatter::format_and_refresh_metadata(path);
     logger::stdout(&format!("  - Updated {}", fs.file.name));
     Ok(())
 }
@@ -398,6 +399,57 @@ fn apply_file_change(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_apply_file_change_writes_dart_format_clean_output() {
+        let _lock = crate::utils::lock_test_mutex();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let target_file = temp_dir.path().join("just_messy.dart");
+
+        // Deliberately unformatted, as `import_rewriter::rewrite` output
+        // would be if the registry source itself isn't formatter-clean.
+        let messy = "class Messy {\n  final int a;\n\n\n  Messy(this.a,this.a);\n}\n";
+
+        let fs_status = DiffFileStatus {
+            file: crate::registry::RegistryFile {
+                name: "just_messy.dart".to_string(),
+                path: "components/messy/just_messy.dart".to_string(),
+                checksum: "sha256:irrelevant".to_string(),
+            },
+            status_type: DiffStatusType::UpdateAvailable,
+            local_content: String::new(),
+            target_path: target_file.to_string_lossy().to_string(),
+            expected_hash: "deadbeef".repeat(8),
+        };
+
+        let dummy_index = crate::registry::RegistryIndex {
+            version: "0.1.0".to_string(),
+            presets: vec![],
+            components: vec![],
+        };
+
+        assert!(apply_file_change(&fs_status, messy, "messy", &dummy_index).is_ok());
+
+        let format_check = std::process::Command::new("dart")
+            .arg("format")
+            .arg("--output=none")
+            .arg("--set-exit-if-changed")
+            .arg(&target_file)
+            .status();
+        if let Ok(status) = format_check {
+            assert!(
+                status.success(),
+                "file written by apply_file_change must already be dart-format-clean"
+            );
+        }
+
+        let raw = std::fs::read_to_string(&target_file).unwrap();
+        let content = raw.replace("\r\n", "\n");
+        let meta = import_rewriter::parse_metadata(&content)
+            .expect("written file must carry a justui-meta header");
+        let clean = import_rewriter::strip_metadata(&content);
+        assert_eq!(meta.local_hash, sha256_hex(clean.as_bytes()));
+    }
 
     #[test]
     fn test_diff_helpers_and_uninitialized() {
