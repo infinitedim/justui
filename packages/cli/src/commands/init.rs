@@ -269,6 +269,9 @@ pub fn run(
 
     std::fs::write("lib/core/theme/just_theme.dart", theme_content)
         .map_err(|e| anyhow::anyhow!("Failed to write theme file: {}", e))?;
+    crate::utils::dart_formatter::format_and_refresh_metadata(std::path::Path::new(
+        "lib/core/theme/just_theme.dart",
+    ));
 
     logger::success("Bootstrap theme created at lib/core/theme/just_theme.dart");
 
@@ -326,10 +329,25 @@ mod tests {
         )
         .is_ok());
 
-        let theme_file =
-            std::fs::read_to_string(temp_dir.path().join("lib/core/theme/just_theme.dart"))
-                .unwrap();
+        let theme_path = temp_dir.path().join("lib/core/theme/just_theme.dart");
+        let theme_file = std::fs::read_to_string(&theme_path).unwrap();
         assert!(!theme_file.contains("justThemeExtensions"));
+
+        // The scaffolded theme file must already be dart-format-clean, so it
+        // isn't immediately flagged as "modified" the moment a contributor
+        // (or their editor) runs `dart format` on a fresh project.
+        let format_check = std::process::Command::new("dart")
+            .arg("format")
+            .arg("--output=none")
+            .arg("--set-exit-if-changed")
+            .arg(&theme_path)
+            .status();
+        if let Ok(status) = format_check {
+            assert!(
+                status.success(),
+                "scaffolded theme file must already be dart-format-clean"
+            );
+        }
 
         // 3. Already initialized -> warns and returns Ok
         assert!(run(None, None, None, None, true, None, None).is_ok());

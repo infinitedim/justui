@@ -540,6 +540,7 @@ pub fn add_component(
                 std::fs::create_dir_all(parent)?;
             }
             std::fs::write(&target_path, &final_content)?;
+            crate::utils::dart_formatter::format_and_refresh_metadata(&target_path);
             logger::stdout(&format!(
                 "  - Copied {} to {}/",
                 local_file_name, target_dir
