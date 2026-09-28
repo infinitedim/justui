@@ -34,6 +34,7 @@ export interface StudioDictionary {
   active: string;
   inactive: string;
   notifications: string;
+  mockAppName: string;
   searchPlaceholder: string;
   shareSuccess: string;
   tokenBackground: string;
@@ -83,6 +84,7 @@ const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
     active: 'Active',
     inactive: 'Inactive',
     notifications: 'Notifications',
+    mockAppName: 'JustUI App',
     searchPlaceholder: 'Search components...',
     shareSuccess: 'Shareable URL copied to clipboard!',
     tokenBackground: 'Background',
@@ -130,6 +132,7 @@ const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
     active: 'Aktif',
     inactive: 'Nonaktif',
     notifications: 'Notifikasi',
+    mockAppName: 'Aplikasi JustUI',
     searchPlaceholder: 'Cari komponen...',
     shareSuccess: 'URL tautan berhasil disalin ke papan klip!',
     tokenBackground: 'Latar Belakang',

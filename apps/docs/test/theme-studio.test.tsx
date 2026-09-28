@@ -190,6 +190,19 @@ describe('Theme Studio Component & Integration Tests', () => {
       expect(screen.getByText('120 FPS')).toBeInTheDocument();
     });
 
+    it('localizes the mock app header and notifications button for Indonesian', () => {
+      render(
+        <ThemeStudioProvider>
+          <PhoneMockupCanvas lang="id" />
+        </ThemeStudioProvider>
+      );
+
+      expect(screen.getByText('Aplikasi JustUI')).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Notifikasi' })
+      ).toBeInTheDocument();
+    });
+
     it('supports interactive switch toggle inside phone mockup', () => {
       render(
         <ThemeStudioProvider>

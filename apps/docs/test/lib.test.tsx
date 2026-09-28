@@ -106,5 +106,16 @@ describe('Library Helpers', () => {
       expect(options.i18n).toBe(true);
       expect(options.nav?.url).toBe('/en');
     });
+
+    it('localizes nav link labels instead of hardcoding English', () => {
+      const linkText = (options: ReturnType<typeof baseOptions>) =>
+        options.links?.map((l) => (l as { text: string }).text);
+
+      expect(linkText(baseOptions('en'))).toEqual(['Docs', 'Components']);
+      expect(linkText(baseOptions('id'))).toEqual([
+        'Dokumentasi',
+        'Komponen',
+      ]);
+    });
   });
 });
