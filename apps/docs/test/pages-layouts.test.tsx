@@ -73,6 +73,12 @@ vi.mock('@/lib/github', () => ({
   githubUrl: 'https://github.com/infinitedim/justui',
 }));
 
+// CustomSearchDialog needs a fumadocs FrameworkProvider this unit test
+// doesn't set up; its own behavior is covered by test/search.test.tsx.
+vi.mock('@/components/search', () => ({
+  default: () => null,
+}));
+
 // Mock source loader
 const mockGetPage = vi.fn();
 const mockGenerateParams = vi
@@ -94,9 +100,7 @@ vi.mock('@/lib/source', () => ({
 // Imports of pages and layouts
 import RootLayout from '@/app/layout';
 import LangLayout from '@/app/[lang]/layout';
-import {
-  generateStaticParams as homeStaticParams,
-} from '@/app/[lang]/page';
+import { generateStaticParams as homeStaticParams } from '@/app/[lang]/page';
 import ComponentsPage, {
   generateStaticParams as componentsStaticParams,
 } from '@/app/[lang]/components/page';

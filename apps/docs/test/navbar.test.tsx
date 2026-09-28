@@ -54,7 +54,31 @@ vi.mock('next/link', () => ({
   ),
 }));
 
-describe('Navbar & SearchModal Components', () => {
+// The real CustomSearchDialog renders fumadocs-ui's SearchDialog, which
+// requires a FrameworkProvider this unit test doesn't set up (and performs a
+// real fetch against /api/search). Its own behavior is covered by
+// test/search.test.tsx; here we only need to verify Navbar correctly wires
+// the open state, keyboard shortcut, and lang prop to it.
+vi.mock('@/components/search', () => ({
+  default: ({
+    open,
+    onOpenChange,
+    lang,
+  }: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    lang: string;
+  }) =>
+    open ? (
+      <div data-testid="search-dialog-stub" data-lang={lang}>
+        <button type="button" onClick={() => onOpenChange(false)}>
+          close
+        </button>
+      </div>
+    ) : null,
+}));
+
+describe('Navbar & search dialog wiring', () => {
   it('renders correctly with different stargazer counts', () => {
     // Test null stars
     const { rerender } = render(<Navbar starCount={null} lang="id" />);
@@ -96,85 +120,35 @@ describe('Navbar & SearchModal Components', () => {
     expect(mockSetTheme).toHaveBeenCalledWith('dark');
   });
 
-  it('opens and closes search modal via button clicks, input search and navigation links', () => {
+  it('opens the search dialog via button click, passing the active lang', () => {
     render(<Navbar starCount={100} lang="en" />);
 
-    // Search modal should be closed initially
-    expect(
-      screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId('search-dialog-stub')).not.toBeInTheDocument();
 
-    // Click search button to open
     const searchBtn = screen.getAllByRole('button', {
       name: /open search/i,
     })[0];
     fireEvent.click(searchBtn);
 
-    // Search modal should be open
-    const input = screen.getByPlaceholderText(
-      /Search components, docs\.\.\./i
-    ) as HTMLInputElement;
-    expect(input).toBeInTheDocument();
+    const dialog = screen.getByTestId('search-dialog-stub');
+    expect(dialog).toBeInTheDocument();
+    expect(dialog).toHaveAttribute('data-lang', 'en');
 
-    // Type query to filter results
-    fireEvent.change(input, { target: { value: 'button' } });
-    expect(input.value).toBe('button');
-
-    // Click result link to close
-    const resultLink = screen.getByRole('link', { name: /^JustButton/i });
-    fireEvent.click(resultLink);
-    expect(
-      screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
-    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('close'));
+    expect(screen.queryByTestId('search-dialog-stub')).not.toBeInTheDocument();
   });
 
-  it('opens search modal via Ctrl+K shortcut, and closes via Escape key / overlay click', () => {
+  it('opens the search dialog via Ctrl+K and Cmd+K shortcuts', () => {
     render(<Navbar starCount={100} lang="id" />);
 
-    // Press Ctrl+K
     fireEvent.keyDown(document, { ctrlKey: true, key: 'k' });
-    expect(
-      screen.getByPlaceholderText(/Search components, docs\.\.\./i)
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('search-dialog-stub')).toBeInTheDocument();
 
-    // Press Escape
-    fireEvent.keyDown(document, { key: 'Escape' });
-    expect(
-      screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
-    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('close'));
+    expect(screen.queryByTestId('search-dialog-stub')).not.toBeInTheDocument();
 
-    // Press Cmd+K (metaKey)
     fireEvent.keyDown(document, { metaKey: true, key: 'k' });
-    expect(
-      screen.getByPlaceholderText(/Search components, docs\.\.\./i)
-    ).toBeInTheDocument();
-
-    // Click overlay background to close
-    const overlay = screen.getByTestId('search-overlay');
-    fireEvent.click(overlay);
-    expect(
-      screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
-    ).not.toBeInTheDocument();
-  });
-
-  it('closes search modal via close button and handles keyboard navigation', () => {
-    render(<Navbar starCount={100} lang="en" />);
-    fireEvent.keyDown(document, { ctrlKey: true, key: 'k' });
-
-    const closeBtn = screen.getByRole('button', {
-      name: /close search/i,
-    });
-    fireEvent.click(closeBtn);
-    expect(
-      screen.queryByPlaceholderText(/Search components, docs\.\.\./i)
-    ).not.toBeInTheDocument();
-
-    // Re-open and test keyboard navigation
-    fireEvent.keyDown(document, { ctrlKey: true, key: 'k' });
-    const input = screen.getByPlaceholderText(/Search components, docs\.\.\./i);
-    fireEvent.keyDown(input, { key: 'ArrowDown' });
-    fireEvent.keyDown(input, { key: 'Enter' });
-    expect(mockPush).toHaveBeenCalled();
+    expect(screen.getByTestId('search-dialog-stub')).toBeInTheDocument();
   });
 
   it('renders correct navigation destinations for Docs, Components, and Studio', () => {
@@ -236,4 +210,3 @@ describe('Navbar & SearchModal Components', () => {
     ).not.toBeInTheDocument();
   });
 });
-
