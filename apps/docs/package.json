@@ -12,6 +12,7 @@
     "@swc/helpers": "^0.5.23"
   },
   "scripts": {
+    "postinstall": "fumadocs-mdx",
     "dev": "next dev",
     "dev:clean": "rm -rf .next && next dev",
     "build": "next build",
