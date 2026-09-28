@@ -28,10 +28,16 @@ export function PresetProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Read from localStorage on mount -- avoid SSR mismatch
-    const stored = localStorage.getItem(STORAGE_KEY) as JustUIPreset | null;
-    if (stored === 'neobrutalism' || stored === 'default') {
-      setPresetState(stored);
+    // Read from localStorage on mount -- avoid SSR mismatch. Storage access
+    // can throw (private browsing, blocked cookies/site data, some embedded
+    // webviews); fall back to the default preset rather than crashing.
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY) as JustUIPreset | null;
+      if (stored === 'neobrutalism' || stored === 'default') {
+        setPresetState(stored);
+      }
+    } catch {
+      // Ignore: default preset already applied.
     }
     setMounted(true);
   }, []);
@@ -44,7 +50,11 @@ export function PresetProvider({ children }: { children: React.ReactNode }) {
     } else {
       document.body.classList.remove('theme-neobrutalism');
     }
-    localStorage.setItem(STORAGE_KEY, preset);
+    try {
+      localStorage.setItem(STORAGE_KEY, preset);
+    } catch {
+      // Ignore: preset still applies for this session, just isn't persisted.
+    }
   }, [preset, mounted]);
 
   const setPreset = useCallback((next: JustUIPreset) => {
