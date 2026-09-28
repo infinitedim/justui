@@ -45,11 +45,10 @@ justui/
 │   ├── core/            # Theming engine, InheritedModel, seed generator
 │   └── cli/             # Rust CLI (justui binary)
 ├── registry/            # Component source files + index.json
-├── apps/
-│   ├── docs/            # Next.js + Fumadocs documentation site
-│   ├── preview/         # Widgetbook component workbench
-│   └── showcase/        # CLI sandbox (components installed via `justui add --all`)
-└── docs/                # Phase specs and architecture decisions
+└── apps/
+    ├── docs/            # Next.js + Fumadocs documentation site
+    ├── preview/         # Widgetbook component workbench
+    └── showcase/        # CLI sandbox (components installed via `justui add --all`)
 ```
 
 ---
@@ -135,22 +134,43 @@ The CLI automatically resolves recursive dependencies, verifies SHA-256 checksum
 | `justui diff <component>`    | Compare local files against registry            |
 | `justui update`              | Check for and apply registry updates            |
 | `justui create <name>`       | Scaffold a new custom component                 |
+| `justui preset <list\|apply\|info>` | Inspect or switch the active design preset |
+| `justui upgrade [--check]`   | Check for and install the latest CLI release    |
+| `justui doctor`              | Diagnose Flutter/Dart SDK and project setup     |
 
 ---
 
 ## Available Components
 
+33 components across 7 categories (see `registry/index.json` for the source of truth):
+
 ### Primitives
 
-`button` · `icon-button` · `input` · `badge` · `avatar` · `checkbox` · `radio` · `switch`
+`accordion` · `avatar` · `badge` · `button` · `input` · `progress` · `select` · `table` · `toggle`
+
+### Selection
+
+`checkbox` · `radio` · `switch`
 
 ### Layout
 
-`card` · `separator` · `skeleton` · `scroll-area`
+`card` · `carousel` · `resizable` · `scroll-area` · `separator` · `skeleton`
+
+### Forms
+
+`slider`
 
 ### Navigation
 
-`tabs` · `breadcrumb` · `sidebar` · `bottom-nav`
+`bottom-nav` · `breadcrumb` · `sidebar` · `tabs`
+
+### Overlays
+
+`dialog` · `sheet` · `toast` · `tooltip`
+
+### Composite
+
+`avatar-group` · `date-picker` · `date-range-picker` · `icon-button` · `radio-group` · `time-picker`
 
 ---
 
