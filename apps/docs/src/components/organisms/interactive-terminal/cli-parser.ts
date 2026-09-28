@@ -153,7 +153,7 @@ export function parseCommand(rawInput: string): ParseResult {
       const lines: ParsedLine[] = [
         { kind: 'info', text: 'Initializing JustUI project...' },
         { kind: 'info', text: 'Created justui.config.yaml' },
-        { kind: 'info', text: 'Created lib/theme/just_theme.dart' },
+        { kind: 'info', text: 'Created lib/core/theme/just_theme.dart' },
       ];
 
       if (preset) {

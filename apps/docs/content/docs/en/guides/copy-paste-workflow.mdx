@@ -19,7 +19,7 @@ When you use a UI library from pub.dev, you often encounter customization limita
 - Fork the library repository and maintain it yourself.
 - Submit a pull request to the original repository and wait for maintainer approval.
 
-With JustUI, the component source code lives directly in your project directory (`lib/ui` or your chosen destination folder). That component is entirely yours. You are free to edit, delete, or overhaul that code according to your specific application design needs without any limitations.
+With JustUI, the component source code lives directly in your project directory (`lib/widgets` or your chosen destination folder). That component is entirely yours. You are free to edit, delete, or overhaul that code according to your specific application design needs without any limitations.
 
 ### 2. Zero-Dependency Footprint
 
@@ -53,9 +53,9 @@ justui init --preset default
 This command performs the following steps:
 
 1. **Project Verification**: Ensures the command is called from a Flutter project root folder that has a `pubspec.yaml` file.
-2. **Interactive Configuration**: Prompts you to specify the destination folder for components (default: `lib/ui`), the token folder (default: `lib/tokens`), and your brand seed color code (HEX format).
+2. **Interactive Configuration**: Prompts you to specify the destination folder for components (default: `lib/widgets`), the token folder (default: `lib/tokens`), and your brand seed color code (HEX format).
 3. **Configuration Creation**: Generates a configuration file `justui.config.yaml` that stores your folder preferences.
-4. **Theme Scaffolding**: Creates a theme initialization file `lib/theme/just_theme.dart` according to the preset you choose (`default` or `neobrutalism`).
+4. **Theme Scaffolding**: Creates a theme initialization file `lib/core/theme/just_theme.dart` according to the preset you choose (`default` or `neobrutalism`).
 
 ### 2. Installing Components (`justui add`)
 
