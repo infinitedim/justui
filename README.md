@@ -90,12 +90,12 @@ justui init
 
 The wizard will prompt you for:
 
-- Components directory (default: `lib/ui`)
+- Components directory (default: `lib/widgets`)
 - Tokens directory (default: `lib/tokens`)
 - Brand color hex (e.g. `#3b82f6`)
 - Theme preset (`default` or `neobrutalism`)
 
-This generates `justui.config.yaml` and bootstraps a theme file at `lib/theme/just_theme.dart`.
+This generates `justui.config.yaml` and bootstraps a theme file at `lib/core/theme/just_theme.dart`.
 
 ---
 

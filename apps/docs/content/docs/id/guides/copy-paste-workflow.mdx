@@ -19,7 +19,7 @@ Saat Anda menggunakan pustaka UI dari pub.dev, Anda sering kali terbentur dengan
 - Melakukan _fork_ terhadap repositori pustaka tersebut dan memeliharanya sendiri.
 - Mengajukan _pull request_ ke repositori asli dan menunggu persetujuan pemelihara paket.
 
-Dengan JustUI, kode sumber komponen berada langsung di dalam direktori proyek Anda (`lib/ui` atau folder tujuan pilihan Anda). Komponen tersebut sepenuhnya milik Anda. Anda bebas mengedit, menghapus, atau merombak kode tersebut sesuai dengan kebutuhan spesifik desain aplikasi Anda tanpa batasan apa pun.
+Dengan JustUI, kode sumber komponen berada langsung di dalam direktori proyek Anda (`lib/widgets` atau folder tujuan pilihan Anda). Komponen tersebut sepenuhnya milik Anda. Anda bebas mengedit, menghapus, atau merombak kode tersebut sesuai dengan kebutuhan spesifik desain aplikasi Anda tanpa batasan apa pun.
 
 ### 2. Zero-Dependency Footprint
 
@@ -53,9 +53,9 @@ export HOME=/home/yourblooo/development/justui/.home && justui init --preset def
 Perintah ini akan melakukan langkah-langkah berikut:
 
 1. **Verifikasi Proyek**: Memastikan perintah dipanggil dari folder root proyek Flutter yang memiliki berkas `pubspec.yaml`.
-2. **Konfigurasi Interaktif**: Meminta Anda menentukan folder tujuan untuk komponen (default: `lib/ui`), folder token (default: `lib/tokens`), serta kode warna seed merek (format HEX).
+2. **Konfigurasi Interaktif**: Meminta Anda menentukan folder tujuan untuk komponen (default: `lib/widgets`), folder token (default: `lib/tokens`), serta kode warna seed merek (format HEX).
 3. **Pembuatan Konfigurasi**: Menghasilkan berkas konfigurasi `justui.config.yaml` yang menyimpan preferensi folder Anda.
-4. **Scaffolding Tema**: Membuat berkas inisialisasi tema `lib/theme/just_theme.dart` sesuai dengan preset yang Anda pilih (`default` atau `neobrutalism`).
+4. **Scaffolding Tema**: Membuat berkas inisialisasi tema `lib/core/theme/just_theme.dart` sesuai dengan preset yang Anda pilih (`default` atau `neobrutalism`).
 
 ### 2. Memasang Komponen (`justui add`)
 

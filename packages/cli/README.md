@@ -46,14 +46,14 @@ justui init --preset neobrutalism
 justui init --preset default
 ```
 
-Prompts for components directory, tokens directory, and brand color. Generates `justui.config.yaml` and bootstraps `lib/theme/just_theme.dart`.
+Prompts for components directory, tokens directory, and brand color. Generates `justui.config.yaml` and bootstraps `lib/core/theme/just_theme.dart`.
 
 **Config file generated:**
 
 ```yaml
-components_dir: lib/ui
+components_dir: lib/widgets
 tokens_dir: lib/tokens
-shared_dir: lib/ui/shared
+shared_dir: lib/widgets/shared
 registry_url: https://raw.githubusercontent.com/infinitedim/justui/main/registry
 ```
 
@@ -93,7 +93,7 @@ The CLI will:
 
 ```
 lib/
-  ui/
+  widgets/
     shared/           # Internal shared utilities (_shared_pressable, etc.)
     button/           # Named subfolder per component
       just_button.dart
@@ -214,10 +214,10 @@ my_component/
 
 ```yaml
 # Directory where components are copied
-components_dir: lib/ui
+components_dir: lib/widgets
 
 # Directory where internal shared utilities are placed
-shared_dir: lib/ui/shared
+shared_dir: lib/widgets/shared
 
 # Directory for token files (colors, spacing, typography)
 tokens_dir: lib/tokens
