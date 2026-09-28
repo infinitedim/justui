@@ -635,7 +635,7 @@
       "name": "slider",
       "version": "0.14.0",
       "description": "Accessible and performant slider component for single value and range selection.",
-      "category": "forms",
+      "category": "form",
       "hidden": false,
       "registryDependencies": [
         "_shared_focus_indicator"
