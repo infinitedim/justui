@@ -36,6 +36,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body
         className={`${sans.variable} ${mono.variable} bg-background text-foreground flex min-h-screen flex-col font-sans antialiased`}
       >
+        {/*
+         * Applies the stored preset class before React hydrates, the same
+         * way next-themes avoids a flash for light/dark mode. Without this,
+         * PresetProvider's own useEffect can only apply the class after
+         * mount, so a neobrutalism visitor sees the default preset flash
+         * on every load.
+         */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{if(localStorage.getItem('justui-preset')==='neobrutalism'){document.body.classList.add('theme-neobrutalism')}}catch(e){}})();",
+          }}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
