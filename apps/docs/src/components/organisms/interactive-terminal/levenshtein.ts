@@ -1,38 +1,7 @@
-export const REGISTRY_COMPONENT_NAMES: readonly string[] = [
-  'button',
-  'icon-button',
-  'input',
-  'badge',
-  'avatar',
-  'avatar-group',
-  'checkbox',
-  'radio',
-  'radio-group',
-  'switch',
-  'card',
-  'separator',
-  'scroll-area',
-  'resizable',
-  'carousel',
-  'skeleton',
-  'slider',
-  'breadcrumb',
-  'tabs',
-  'bottom-nav',
-  'sidebar',
-  'toast',
-  'dialog',
-  'sheet',
-  'tooltip',
-  'select',
-  'progress',
-  'accordion',
-  'toggle',
-  'table',
-  'date-picker',
-  'date-range-picker',
-  'time-picker',
-] as const;
+import { GENERATED_COMPONENTS } from '@/lib/components.generated';
+
+export const REGISTRY_COMPONENT_NAMES: readonly string[] =
+  GENERATED_COMPONENTS.map((c) => c.slug);
 
 export function levenshteinDistance(a: string, b: string): number {
   if (a === b) return 0;

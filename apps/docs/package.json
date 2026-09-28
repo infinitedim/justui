@@ -26,7 +26,8 @@
     "test:e2e:ui": "playwright test --ui",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md,mdx}\"",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",
-    "clean": "rm -rf .next node_modules/.cache tsconfig.tsbuildinfo"
+    "clean": "rm -rf .next node_modules/.cache tsconfig.tsbuildinfo",
+    "generate:components": "bun run scripts/generate-components-data.ts"
   },
   "dependencies": {
     "fumadocs-core": "^16.15.7",
