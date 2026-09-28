@@ -105,13 +105,13 @@ export function PhoneMockupCanvas({
                 <Sparkles className="h-3.5 w-3.5" />
               </div>
               <span className="font-mono text-xs font-bold tracking-tight">
-                JustUI App
+                {t.mockAppName}
               </span>
             </div>
             <button
               type="button"
               className="relative p-1.5 opacity-80 hover:opacity-100 transition-opacity"
-              aria-label="Notifications"
+              aria-label={t.notifications}
             >
               <Bell className="h-4 w-4" />
               <span
