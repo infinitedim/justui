@@ -6,13 +6,24 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 
+/// Preset-specific component variants (e.g. `neobrutalism/`) were removed:
+/// `packages/core/lib/src/components/` has no preset-specific source files,
+/// so every `default/`+`neobrutalism/` pair this script ever produced was
+/// byte-identical. Preset appearance is driven entirely by theme/preset
+/// tokens at runtime (see `packages/core/lib/src/theme/preset_tokens.dart`),
+/// not by distinct component source. `RegistryComponent::files_for_preset`
+/// (packages/cli/src/registry.rs) already falls back to the `default`
+/// section for any preset without its own key, so omitting `neobrutalism`
+/// here is a no-op for installs. If a component ever needs a genuinely
+/// different file per preset, add a `neobrutalism` section back for just
+/// that component — do not reintroduce it wholesale.
+///
 /// Where a registry file's bytes originate from.
 ///
-/// - [coreMirrored]: non-internal component preset (default, neobrutalism).
-///   Source of truth lives in packages/core/lib/src/, registry copy is
-///   mirrored from it on every run.
-/// - [registryNative]: internal component. The registry file itself is the
-///   source of truth — nothing to mirror.
+/// - [coreMirrored]: component file mirrored from `packages/core/lib/src/`,
+///   which is its source of truth.
+/// - [registryNative]: internal component with no core-mirrored file. The
+///   registry file itself is the source of truth — nothing to mirror.
 enum FileOrigin { coreMirrored, registryNative }
 
 /// Resolved src/dest pair + origin classification for a single file entry.
@@ -318,6 +329,15 @@ void main(List<String> args) async {
     hasErrors = true;
   }
 
+  final List<String> collisionErrors = _findLocalFileNameCollisions(components);
+  if (collisionErrors.isNotEmpty) {
+    print('Two registry file entries install to the same local file name:');
+    for (final String error in collisionErrors) {
+      print('  - $error');
+    }
+    hasErrors = true;
+  }
+
   if (hasErrors) {
     print('Completed with errors. Fix the problems listed above and re-run.');
     exit(1);
@@ -579,6 +599,50 @@ List<String> _validateRegistryDependencies({
     }
     if (unused.isNotEmpty) {
       errors.add('$name: unused ${unused.toList()..sort()}');
+    }
+  }
+  return errors;
+}
+
+/// Mirrors `import_rewriter::normalize_shared_file_name` on the Rust CLI
+/// side: internal components have their installed file renamed from a
+/// `_shared_` prefix to `just_`. Two registry entries whose names normalize
+/// to the same result would silently overwrite each other on `justui add`.
+String _normalizeLocalFileName(String fileName) {
+  const String prefix = '_shared_';
+  return fileName.startsWith(prefix)
+      ? 'just_${fileName.substring(prefix.length)}'
+      : fileName;
+}
+
+/// Detects registry file entries that would collide once installed. Only
+/// `internal` components go through the `_shared_` → `just_` rename, so only
+/// those are checked; a collision within the same component+preset section
+/// means one file would silently overwrite the other on disk.
+List<String> _findLocalFileNameCollisions(List<dynamic> components) {
+  final List<String> errors = <String>[];
+  for (final dynamic comp in components) {
+    final Map<String, dynamic> compMap = comp as Map<String, dynamic>;
+    if (compMap['internal'] != true) continue;
+    final String name = compMap['name'] as String;
+    final Map<String, dynamic> filesMap =
+        compMap['files'] as Map<String, dynamic>? ?? <String, dynamic>{};
+
+    for (final MapEntry<String, dynamic> section in filesMap.entries) {
+      final Map<String, List<String>> byLocalName = <String, List<String>>{};
+      for (final dynamic f in section.value as List<dynamic>) {
+        final String fileName = (f as Map<String, dynamic>)['name'] as String;
+        byLocalName
+            .putIfAbsent(_normalizeLocalFileName(fileName), () => <String>[])
+            .add(fileName);
+      }
+      for (final MapEntry<String, List<String>> entry in byLocalName.entries) {
+        if (entry.value.length > 1) {
+          errors.add(
+            '$name [${section.key}]: ${entry.value.join(', ')} all install as ${entry.key}',
+          );
+        }
+      }
     }
   }
   return errors;
