@@ -42,13 +42,6 @@
             "path": "components/button/default/just_icon_button.dart",
             "checksum": "sha256:c027ae3cbc314f90d9a84c5908bb60b29b289bbf7d7de579321e9c8466c9b471"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_button.dart",
-            "path": "components/button/neobrutalism/just_button.dart",
-            "checksum": "sha256:6b832e370032d392c6a05c6b27cc4e1c786dd58edd4515ade44a555808bcf7f9"
-          }
         ]
       },
       "supportedPresets": [
@@ -74,13 +67,6 @@
           {
             "name": "just_icon_button.dart",
             "path": "components/button/default/just_icon_button.dart",
-            "checksum": "sha256:c027ae3cbc314f90d9a84c5908bb60b29b289bbf7d7de579321e9c8466c9b471"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_icon_button.dart",
-            "path": "components/button/neobrutalism/just_icon_button.dart",
             "checksum": "sha256:c027ae3cbc314f90d9a84c5908bb60b29b289bbf7d7de579321e9c8466c9b471"
           }
         ]
@@ -122,13 +108,6 @@
             "path": "components/input/default/just_input.dart",
             "checksum": "sha256:81efc6f260c87ee4d97814eb4abeb682246e8045c12896c81f3eecc0e7f8bcc3"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_input.dart",
-            "path": "components/input/neobrutalism/just_input.dart",
-            "checksum": "sha256:81efc6f260c87ee4d97814eb4abeb682246e8045c12896c81f3eecc0e7f8bcc3"
-          }
         ]
       },
       "supportedPresets": [
@@ -161,13 +140,6 @@
           {
             "name": "just_badge.dart",
             "path": "components/badge/default/just_badge.dart",
-            "checksum": "sha256:d6ba9b973d4dfdc26faf7b53adc049fda6f8797914d8593aba8034623774b915"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_badge.dart",
-            "path": "components/badge/neobrutalism/just_badge.dart",
             "checksum": "sha256:d6ba9b973d4dfdc26faf7b53adc049fda6f8797914d8593aba8034623774b915"
           }
         ]
@@ -212,13 +184,6 @@
             "path": "components/avatar/default/just_avatar_group.dart",
             "checksum": "sha256:f8cc37503bc15df57d800a4abee7531f9926dbe958d883bcf81f47ea23fc8fa7"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_avatar.dart",
-            "path": "components/avatar/neobrutalism/just_avatar.dart",
-            "checksum": "sha256:34fc1aedcc40aa394d508a1a9668296a1573efcdb67c6a7d7eb70fa4011206bd"
-          }
         ]
       },
       "supportedPresets": [
@@ -241,13 +206,6 @@
           {
             "name": "just_avatar_group.dart",
             "path": "components/avatar/default/just_avatar_group.dart",
-            "checksum": "sha256:f8cc37503bc15df57d800a4abee7531f9926dbe958d883bcf81f47ea23fc8fa7"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_avatar_group.dart",
-            "path": "components/avatar/neobrutalism/just_avatar_group.dart",
             "checksum": "sha256:f8cc37503bc15df57d800a4abee7531f9926dbe958d883bcf81f47ea23fc8fa7"
           }
         ]
@@ -285,13 +243,6 @@
           {
             "name": "just_checkbox.dart",
             "path": "components/checkbox/default/just_checkbox.dart",
-            "checksum": "sha256:c583f09b961dc6819db5778913d40fa8a2415cfe0c2c59425307c260f1d498a1"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_checkbox.dart",
-            "path": "components/checkbox/neobrutalism/just_checkbox.dart",
             "checksum": "sha256:c583f09b961dc6819db5778913d40fa8a2415cfe0c2c59425307c260f1d498a1"
           }
         ]
@@ -336,13 +287,6 @@
             "path": "components/radio/default/just_radio_group.dart",
             "checksum": "sha256:379b38b4d42a89d5d9258fe5eac352ceca2d403366c5e2f00738023a4ac02d94"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_radio.dart",
-            "path": "components/radio/neobrutalism/just_radio.dart",
-            "checksum": "sha256:3342c365adf93a202307a44bde6e3f6d449ac353bdab720cd09cfd568c00703c"
-          }
         ]
       },
       "supportedPresets": [
@@ -365,13 +309,6 @@
           {
             "name": "just_radio_group.dart",
             "path": "components/radio/default/just_radio_group.dart",
-            "checksum": "sha256:379b38b4d42a89d5d9258fe5eac352ceca2d403366c5e2f00738023a4ac02d94"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_radio_group.dart",
-            "path": "components/radio/neobrutalism/just_radio_group.dart",
             "checksum": "sha256:379b38b4d42a89d5d9258fe5eac352ceca2d403366c5e2f00738023a4ac02d94"
           }
         ]
@@ -411,13 +348,6 @@
             "path": "components/switch/default/just_switch.dart",
             "checksum": "sha256:06af8d1aa9264876ba11390dfa2c04d060479a732fcd05dad85d087f24019e7e"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_switch.dart",
-            "path": "components/switch/neobrutalism/just_switch.dart",
-            "checksum": "sha256:06af8d1aa9264876ba11390dfa2c04d060479a732fcd05dad85d087f24019e7e"
-          }
         ]
       },
       "supportedPresets": [
@@ -455,13 +385,6 @@
             "path": "components/card/default/just_card.dart",
             "checksum": "sha256:3b2d7f4d26e33a7dcdfc2b2ae1a2a5af51d0b4df79c6419caac6dc119cd2707d"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_card.dart",
-            "path": "components/card/neobrutalism/just_card.dart",
-            "checksum": "sha256:3b2d7f4d26e33a7dcdfc2b2ae1a2a5af51d0b4df79c6419caac6dc119cd2707d"
-          }
         ]
       },
       "supportedPresets": [
@@ -494,13 +417,6 @@
           {
             "name": "just_separator.dart",
             "path": "components/separator/default/just_separator.dart",
-            "checksum": "sha256:f41ebe55b7f934ca4f6501fb0b23bd6c1fb5a58e9c16e6a7d829cd990723b252"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_separator.dart",
-            "path": "components/separator/neobrutalism/just_separator.dart",
             "checksum": "sha256:f41ebe55b7f934ca4f6501fb0b23bd6c1fb5a58e9c16e6a7d829cd990723b252"
           }
         ]
@@ -538,13 +454,6 @@
           {
             "name": "just_scroll_area.dart",
             "path": "components/scroll/default/just_scroll_area.dart",
-            "checksum": "sha256:d0a3e7fc3144eb101eff318ffc1ef11cd413823a3db07055d0216ed90a866558"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_scroll_area.dart",
-            "path": "components/scroll/neobrutalism/just_scroll_area.dart",
             "checksum": "sha256:d0a3e7fc3144eb101eff318ffc1ef11cd413823a3db07055d0216ed90a866558"
           }
         ]
@@ -586,13 +495,6 @@
           {
             "name": "just_resizable.dart",
             "path": "components/resizable/default/just_resizable.dart",
-            "checksum": "sha256:bad869e9122f29593e8d4cfcea9e8e540369fbaab75013524b1dcabc7cca4070"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_resizable.dart",
-            "path": "components/resizable/neobrutalism/just_resizable.dart",
             "checksum": "sha256:bad869e9122f29593e8d4cfcea9e8e540369fbaab75013524b1dcabc7cca4070"
           }
         ]
@@ -637,13 +539,6 @@
             "path": "components/carousel/default/just_carousel.dart",
             "checksum": "sha256:0c6e507a1e17c952e315ffd281212d2d248e02b08f5cb41c6f20623f28548f8e"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_carousel.dart",
-            "path": "components/carousel/neobrutalism/just_carousel.dart",
-            "checksum": "sha256:0c6e507a1e17c952e315ffd281212d2d248e02b08f5cb41c6f20623f28548f8e"
-          }
         ]
       },
       "supportedPresets": [
@@ -662,11 +557,6 @@
       "pubDependencies": {},
       "files": {
         "default": [
-          {
-            "name": "just_pressable.dart",
-            "path": "components/shared/default/just_pressable.dart",
-            "checksum": "sha256:0a91c217e0111fa24d406c7b570518b723c4280821d591f6133d129cc9b38db9"
-          },
           {
             "name": "_shared_pressable.dart",
             "path": "components/shared/default/_shared_pressable.dart",
@@ -689,11 +579,6 @@
       "pubDependencies": {},
       "files": {
         "default": [
-          {
-            "name": "just_focus_indicator.dart",
-            "path": "components/shared/default/just_focus_indicator.dart",
-            "checksum": "sha256:ea7aa851710455caaaec043e15cbc50d2773d5a757fa12a5cfd8c22bdcc90f19"
-          },
           {
             "name": "_shared_focus_indicator.dart",
             "path": "components/shared/default/_shared_focus_indicator.dart",
@@ -739,13 +624,6 @@
             "path": "components/skeleton/default/just_skeleton.dart",
             "checksum": "sha256:a9b5a92d7832136ce69efc63850fe09f7d7f21cc603b33259b0b729cbe3c0b1c"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_skeleton.dart",
-            "path": "components/skeleton/neobrutalism/just_skeleton.dart",
-            "checksum": "sha256:a9b5a92d7832136ce69efc63850fe09f7d7f21cc603b33259b0b729cbe3c0b1c"
-          }
         ]
       },
       "supportedPresets": [
@@ -782,13 +660,6 @@
             "path": "components/slider/default/just_slider.dart",
             "checksum": "sha256:f7236cfb5edc123e99b406ffa26ebaf4573264b678853f30b5b5beec69c75bd0"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_slider.dart",
-            "path": "components/slider/neobrutalism/just_slider.dart",
-            "checksum": "sha256:f7236cfb5edc123e99b406ffa26ebaf4573264b678853f30b5b5beec69c75bd0"
-          }
         ]
       },
       "supportedPresets": [
@@ -807,11 +678,6 @@
       "pubDependencies": {},
       "files": {
         "default": [
-          {
-            "name": "just_progress_spinner.dart",
-            "path": "components/shared/default/just_progress_spinner.dart",
-            "checksum": "sha256:ad4b188a0380721b8d6354b01b05444e033402fb2a65a05c94f9d23d0b88eb9b"
-          },
           {
             "name": "_shared_progress_spinner.dart",
             "path": "components/shared/default/_shared_progress_spinner.dart",
@@ -855,13 +721,6 @@
           {
             "name": "just_breadcrumb.dart",
             "path": "components/breadcrumb/default/just_breadcrumb.dart",
-            "checksum": "sha256:3596463be912a1530fd10b795220ab847c0f97ce4c19b763c28a9c6ea82f3b16"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_breadcrumb.dart",
-            "path": "components/breadcrumb/neobrutalism/just_breadcrumb.dart",
             "checksum": "sha256:3596463be912a1530fd10b795220ab847c0f97ce4c19b763c28a9c6ea82f3b16"
           }
         ]
@@ -910,18 +769,6 @@
             "path": "components/tabs/default/just_tab_indicator.dart",
             "checksum": "sha256:3dbbecf80a3fbb69e0f0277ec404d1ea0c456a6f90d617a0a483d5509b0553bd"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_tabs.dart",
-            "path": "components/tabs/neobrutalism/just_tabs.dart",
-            "checksum": "sha256:2f9addd45983d5d42ff643ccd9c8a00961e265b494a9e2eb5b916cdc181277c2"
-          },
-          {
-            "name": "just_tab_indicator.dart",
-            "path": "components/tabs/neobrutalism/just_tab_indicator.dart",
-            "checksum": "sha256:3dbbecf80a3fbb69e0f0277ec404d1ea0c456a6f90d617a0a483d5509b0553bd"
-          }
         ]
       },
       "supportedPresets": [
@@ -963,13 +810,6 @@
             "path": "components/bottom_nav/default/just_bottom_nav.dart",
             "checksum": "sha256:4658bd43ba48bd3ddc4613224ddaee94f81d1ff44d9062decd8f7890333bc5ba"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_bottom_nav.dart",
-            "path": "components/bottom_nav/neobrutalism/just_bottom_nav.dart",
-            "checksum": "sha256:4658bd43ba48bd3ddc4613224ddaee94f81d1ff44d9062decd8f7890333bc5ba"
-          }
         ]
       },
       "supportedPresets": [
@@ -988,11 +828,6 @@
       "pubDependencies": {},
       "files": {
         "default": [
-          {
-            "name": "just_overlay_transition.dart",
-            "path": "components/shared/default/just_overlay_transition.dart",
-            "checksum": "sha256:8c977d96997c11900fdb5c04ac82ada59064cb7d3e9eaf7122b54500abbc518e"
-          },
           {
             "name": "_shared_overlay_transition.dart",
             "path": "components/shared/default/_shared_overlay_transition.dart",
@@ -1017,11 +852,6 @@
       "pubDependencies": {},
       "files": {
         "default": [
-          {
-            "name": "just_tooltip_overlay.dart",
-            "path": "components/shared/default/just_tooltip_overlay.dart",
-            "checksum": "sha256:66dee601399ca4bd94b62308ab8396dbbba379943b91d00a9ff6ec57dba4e063"
-          },
           {
             "name": "_shared_tooltip_overlay.dart",
             "path": "components/shared/default/_shared_tooltip_overlay.dart",
@@ -1068,13 +898,6 @@
             "path": "components/sidebar/default/just_sidebar.dart",
             "checksum": "sha256:59ab3cf9e9a969e1cbe204067906cf40a6daf68a5f915c512200892689d7d7ba"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_sidebar.dart",
-            "path": "components/sidebar/neobrutalism/just_sidebar.dart",
-            "checksum": "sha256:59ab3cf9e9a969e1cbe204067906cf40a6daf68a5f915c512200892689d7d7ba"
-          }
         ]
       },
       "supportedPresets": [
@@ -1112,13 +935,6 @@
           {
             "name": "just_toast.dart",
             "path": "components/toast/default/just_toast.dart",
-            "checksum": "sha256:461bcb41c4f02cbdf75335366f1d7ef1ae063863f427eedacd35cdf7ae54926d"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_toast.dart",
-            "path": "components/toast/neobrutalism/just_toast.dart",
             "checksum": "sha256:461bcb41c4f02cbdf75335366f1d7ef1ae063863f427eedacd35cdf7ae54926d"
           }
         ]
@@ -1160,13 +976,6 @@
             "path": "components/dialog/default/just_dialog.dart",
             "checksum": "sha256:58bea2c349f146ca5a9f44212bec2d3e226e66b4e5136c813d41646c7074c7d2"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_dialog.dart",
-            "path": "components/dialog/neobrutalism/just_dialog.dart",
-            "checksum": "sha256:58bea2c349f146ca5a9f44212bec2d3e226e66b4e5136c813d41646c7074c7d2"
-          }
         ]
       },
       "supportedPresets": [
@@ -1206,13 +1015,6 @@
             "path": "components/sheet/default/just_sheet.dart",
             "checksum": "sha256:ca3d6cc7c80c32e94dc0373396c620d61e26d18fd932e4fdf0e8a0c1cc5e311e"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_sheet.dart",
-            "path": "components/sheet/neobrutalism/just_sheet.dart",
-            "checksum": "sha256:ca3d6cc7c80c32e94dc0373396c620d61e26d18fd932e4fdf0e8a0c1cc5e311e"
-          }
         ]
       },
       "supportedPresets": [
@@ -1250,13 +1052,6 @@
           {
             "name": "just_tooltip.dart",
             "path": "components/tooltip/default/just_tooltip.dart",
-            "checksum": "sha256:8d0f459efd4b41a2adea3bd9736fdffbebb2c0948f4783945dfcfdd24d4dec1d"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_tooltip.dart",
-            "path": "components/tooltip/neobrutalism/just_tooltip.dart",
             "checksum": "sha256:8d0f459efd4b41a2adea3bd9736fdffbebb2c0948f4783945dfcfdd24d4dec1d"
           }
         ]
@@ -1301,13 +1096,6 @@
             "path": "components/select/default/just_select.dart",
             "checksum": "sha256:3b7f97c2dd093405782bc865d671ccba98e45ea6d231036e918bd742a7e175ed"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_select.dart",
-            "path": "components/select/neobrutalism/just_select.dart",
-            "checksum": "sha256:3b7f97c2dd093405782bc865d671ccba98e45ea6d231036e918bd742a7e175ed"
-          }
         ]
       },
       "supportedPresets": [
@@ -1345,13 +1133,6 @@
           {
             "name": "just_progress.dart",
             "path": "components/progress/default/just_progress.dart",
-            "checksum": "sha256:923d07a5b0361a666be96c662b93df53f7915b71e6117c1c556a7b405d2b7428"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_progress.dart",
-            "path": "components/progress/neobrutalism/just_progress.dart",
             "checksum": "sha256:923d07a5b0361a666be96c662b93df53f7915b71e6117c1c556a7b405d2b7428"
           }
         ]
@@ -1394,13 +1175,6 @@
           {
             "name": "just_accordion.dart",
             "path": "components/accordion/default/just_accordion.dart",
-            "checksum": "sha256:094b184d63cf355becae63591fc3e2ee330645f35565223c75b9effc6d0181fa"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_accordion.dart",
-            "path": "components/accordion/neobrutalism/just_accordion.dart",
             "checksum": "sha256:094b184d63cf355becae63591fc3e2ee330645f35565223c75b9effc6d0181fa"
           }
         ]
@@ -1450,18 +1224,6 @@
             "path": "components/toggle/default/just_toggle_group.dart",
             "checksum": "sha256:21a17fb617a3462b62e09cb59e44445412eb5832b1d7eabaa607d7fc2b599eca"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_toggle.dart",
-            "path": "components/toggle/neobrutalism/just_toggle.dart",
-            "checksum": "sha256:fc009f8be3d2aabaa5b1272aa65b72eb45f6f2b4fc492600ad29362e35158776"
-          },
-          {
-            "name": "just_toggle_group.dart",
-            "path": "components/toggle/neobrutalism/just_toggle_group.dart",
-            "checksum": "sha256:21a17fb617a3462b62e09cb59e44445412eb5832b1d7eabaa607d7fc2b599eca"
-          }
         ]
       },
       "supportedPresets": [
@@ -1502,13 +1264,6 @@
           {
             "name": "just_table.dart",
             "path": "components/table/default/just_table.dart",
-            "checksum": "sha256:62394129d54ebe4f198c5eb5ef6acb2bf3618bfe57d33f509552f3c36633b971"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_table.dart",
-            "path": "components/table/neobrutalism/just_table.dart",
             "checksum": "sha256:62394129d54ebe4f198c5eb5ef6acb2bf3618bfe57d33f509552f3c36633b971"
           }
         ]
@@ -1561,18 +1316,6 @@
             "path": "components/date_picker/default/_date_picker_calendar.dart",
             "checksum": "sha256:c1d5fc5f03307d5a102e578b7006b701da5c57650441abf47fb23f1df588cfb1"
           }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_date_picker.dart",
-            "path": "components/date_picker/neobrutalism/just_date_picker.dart",
-            "checksum": "sha256:d534e059113cf69003f0a990a35d3c592ffe9d7c685b8a606fab923936b363da"
-          },
-          {
-            "name": "_date_picker_calendar.dart",
-            "path": "components/date_picker/neobrutalism/_date_picker_calendar.dart",
-            "checksum": "sha256:c1d5fc5f03307d5a102e578b7006b701da5c57650441abf47fb23f1df588cfb1"
-          }
         ]
       },
       "supportedPresets": [
@@ -1596,13 +1339,6 @@
           {
             "name": "just_date_range_picker.dart",
             "path": "components/date_picker/default/just_date_range_picker.dart",
-            "checksum": "sha256:c5a1904e7914ff5d1d639a3a5f3239779e985c003ebf46e5f167b5f364886593"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_date_range_picker.dart",
-            "path": "components/date_picker/neobrutalism/just_date_range_picker.dart",
             "checksum": "sha256:c5a1904e7914ff5d1d639a3a5f3239779e985c003ebf46e5f167b5f364886593"
           }
         ]
@@ -1669,28 +1405,6 @@
           {
             "name": "_time_picker_input.dart",
             "path": "components/time_picker/default/_time_picker_input.dart",
-            "checksum": "sha256:46d7d77ada93e462bc549fce668de0cbb31b801c1f7e5f74810dacd32039aee2"
-          }
-        ],
-        "neobrutalism": [
-          {
-            "name": "just_time_picker.dart",
-            "path": "components/time_picker/neobrutalism/just_time_picker.dart",
-            "checksum": "sha256:a89b060e233004040ce1a637a4b5450e4b84883338779636c6533aa99239613a"
-          },
-          {
-            "name": "_time_picker_dial.dart",
-            "path": "components/time_picker/neobrutalism/_time_picker_dial.dart",
-            "checksum": "sha256:4190957650f770ded05ece53aa6526cc72f32ac22564c7e719f8f493901cd9e3"
-          },
-          {
-            "name": "_time_picker_spinner.dart",
-            "path": "components/time_picker/neobrutalism/_time_picker_spinner.dart",
-            "checksum": "sha256:6e858d95edc45a41609cb5958fcca9100485d6c9026b640b636cad35dc3ea5db"
-          },
-          {
-            "name": "_time_picker_input.dart",
-            "path": "components/time_picker/neobrutalism/_time_picker_input.dart",
             "checksum": "sha256:46d7d77ada93e462bc549fce668de0cbb31b801c1f7e5f74810dacd32039aee2"
           }
         ]
