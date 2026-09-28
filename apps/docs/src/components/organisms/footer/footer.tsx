@@ -111,7 +111,7 @@ export function Footer({ lang, className }: FooterProps) {
               </li>
               <li>
                 <Link
-                  href={`/${lang}/docs/cli`}
+                  href={`/${lang}/docs/cli-setup`}
                   className="text-muted hover:text-foreground transition-colors"
                 >
                   {t.docsCli}

@@ -17,7 +17,7 @@ describe('Footer Organism', () => {
     );
     expect(screen.getByRole('link', { name: /cli guide/i })).toHaveAttribute(
       'href',
-      '/en/docs/cli'
+      '/en/docs/cli-setup'
     );
     expect(
       screen.getByRole('link', { name: /github repository/i })
