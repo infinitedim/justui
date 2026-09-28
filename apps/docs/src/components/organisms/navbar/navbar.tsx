@@ -13,7 +13,7 @@ import { LanguageSwitcher } from '@/components/molecules/language-switcher';
 import { PresetToggle } from '@/components/molecules/preset-toggle';
 import { SearchBar } from '@/components/molecules/search-bar';
 import { ThemeSwitcher } from '@/components/molecules/theme-switcher';
-import { SearchModal } from '@/components/organisms/search-modal';
+import CustomSearchDialog from '@/components/search';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
 
 import type { NavbarProps } from './navbar.types';
@@ -183,7 +183,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
           </div>
         ) : null}
       </header>
-      <SearchModal open={open} onOpenChange={setOpen} lang={lang} />
+      <CustomSearchDialog open={open} onOpenChange={setOpen} lang={lang} />
     </>
   );
 }

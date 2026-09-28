@@ -33,6 +33,12 @@ vi.mock('next/link', () => ({
   ),
 }));
 
+// CustomSearchDialog needs a fumadocs FrameworkProvider this unit test
+// doesn't set up; its own behavior is covered by test/search.test.tsx.
+vi.mock('@/components/search', () => ({
+  default: () => null,
+}));
+
 describe('HomePage Component', () => {
   it('renders the hero heading and description', async () => {
     const page = await HomePage({ params: Promise.resolve({ lang: 'en' }) });

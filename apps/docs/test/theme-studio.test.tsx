@@ -26,6 +26,12 @@ vi.mock('@/lib/github', () => ({
   githubUrl: 'https://github.com/infinitedim/justui',
 }));
 
+// CustomSearchDialog needs a fumadocs FrameworkProvider this unit test
+// doesn't set up; its own behavior is covered by test/search.test.tsx.
+vi.mock('@/components/search', () => ({
+  default: () => null,
+}));
+
 describe('Theme Studio Component & Integration Tests', () => {
   beforeEach(() => {
     window.history.replaceState(null, '', '/en/studio');
