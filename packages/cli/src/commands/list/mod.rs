@@ -4,7 +4,7 @@ use ratatui::{backend::CrosstermBackend, widgets::ListState, Terminal};
 use std::collections::HashSet;
 use std::io;
 
-use crate::commands::add::sha256_hex;
+use crate::commands::diff::classify_status;
 use crate::config::JustUIConfig;
 use crate::registry::{RegistryClient, RegistryComponent};
 use crate::utils::logger;
@@ -171,11 +171,11 @@ fn get_component_status(comp: &RegistryComponent, config: &JustUIConfig) -> Stri
         if path.exists() {
             existing_count += 1;
             if let Ok(content) = std::fs::read_to_string(&path) {
-                let local_clean =
-                    crate::utils::import_rewriter::strip_metadata(&content.replace("\r\n", "\n"));
-                let local_hash = sha256_hex(local_clean.as_bytes());
+                let local_content = content.replace("\r\n", "\n");
                 let expected_hash = file.checksum.replace("sha256:", "").trim().to_string();
-                if local_hash == expected_hash {
+                if classify_status(&local_content, &expected_hash)
+                    == crate::commands::diff::DiffStatusType::UpToDate
+                {
                     matching_count += 1;
                 }
             }
