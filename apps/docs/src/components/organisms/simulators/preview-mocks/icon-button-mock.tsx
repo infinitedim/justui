@@ -22,7 +22,7 @@ export function IconButtonMock({
         className={cn(
           'relative inline-flex h-10 w-10 items-center justify-center transition-all select-none',
           isNeo
-            ? 'bg-surface rounded-md border-2 border-black shadow-[3px_3px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none dark:border-white dark:shadow-[3px_3px_0px_0px_#fff]'
+            ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
             : 'border-border bg-surface hover:border-accent rounded-full border shadow-sm'
         )}
       >

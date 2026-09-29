@@ -23,9 +23,9 @@ export function BottomNavMock({
     <div
       data-testid="mock-bottom-nav"
       className={cn(
-        'flex w-full max-w-[240px] items-center justify-around p-2 select-none',
+        'flex w-full max-w-60 items-center justify-around p-2 select-none',
         isNeo
-          ? 'bg-surface rounded-md border-2 border-black shadow-[3px_3px_0px_0px_#000] dark:border-white dark:shadow-[3px_3px_0px_0px_#fff]'
+          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
           : 'border-border bg-surface rounded-xl border shadow-sm'
       )}
     >

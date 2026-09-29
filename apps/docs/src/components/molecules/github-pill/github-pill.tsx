@@ -9,8 +9,9 @@ function formatStars(stars: number | null): string {
 }
 
 /**
- * GitHub link pill molecule with star count. Server Component.
- * Shows the GitHub icon and formatted star count in a pill-shaped link.
+ * GitHub link molecule with star count. Server Component.
+ * Same box model as the other header controls (28px, preset-aware border,
+ * xs shadow, press effect).
  */
 export function GitHubPill({ href, starCount, className }: GitHubPillProps) {
   return (
@@ -19,9 +20,8 @@ export function GitHubPill({ href, starCount, className }: GitHubPillProps) {
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        'inline-flex items-center gap-2 rounded-full bg-transparent px-3 py-1.5 font-mono text-xs transition-colors',
-        'border-border border-(length:--just-border-width)',
-        'text-muted hover:text-foreground',
+        'just-press bg-card text-foreground inline-flex h-7 items-center gap-2 px-3 font-mono text-xs',
+        'rounded-(--just-radius-md) border-(length:--just-border-width) border-border shadow-xs',
         className
       )}
     >

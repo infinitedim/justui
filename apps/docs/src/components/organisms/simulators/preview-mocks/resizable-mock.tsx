@@ -30,7 +30,7 @@ export function ResizableMock({
       className={cn(
         'flex h-20 w-full max-w-60 cursor-pointer overflow-hidden font-mono text-[11px] select-none',
         isNeo
-          ? 'bg-surface rounded-md border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] dark:border-white dark:shadow-[2.5px_2.5px_0px_0px_#fff]'
+          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
           : 'border-border bg-surface rounded-md border'
       )}
     >
@@ -42,8 +42,8 @@ export function ResizableMock({
       </div>
       <div
         className={cn(
-          'flex w-1.5 items-center justify-center transition-colors',
-          isNeo ? 'bg-black dark:bg-white' : 'bg-border'
+          'flex items-center justify-center transition-colors',
+          isNeo ? 'bg-black dark:bg-white w-[2.5px]' : 'bg-border w-1.5'
         )}
       />
       <div

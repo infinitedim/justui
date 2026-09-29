@@ -24,7 +24,7 @@ export function SelectMock({
         className={cn(
           'flex w-full items-center justify-between px-3 py-1.5 font-mono text-xs transition-all',
           isNeo
-            ? 'bg-surface text-foreground rounded-md border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] dark:border-white dark:shadow-[2.5px_2.5px_0px_0px_#fff]'
+            ? 'bg-surface text-foreground rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
             : 'border-border bg-surface text-foreground rounded-md border shadow-sm'
         )}
       >
@@ -43,7 +43,7 @@ export function SelectMock({
           className={cn(
             'bg-surface absolute top-full left-0 z-20 mt-1.5 w-full overflow-hidden py-1 font-mono text-xs',
             isNeo
-              ? 'rounded-md border-2 border-black shadow-[3px_3px_0px_0px_#000] dark:border-white dark:shadow-[3px_3px_0px_0px_#fff]'
+              ? 'rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
               : 'border-border rounded-md border shadow-md'
           )}
         >
@@ -58,7 +58,9 @@ export function SelectMock({
               className={cn(
                 'w-full px-3 py-1.5 text-left transition-colors',
                 selected === opt
-                  ? 'bg-accent/20 text-accent-deep dark:text-accent font-bold'
+                  ? isNeo
+                    ? 'bg-accent text-black font-bold'
+                    : 'bg-accent/20 text-accent-deep dark:text-accent font-bold'
                   : 'hover:bg-surface-muted'
               )}
             >

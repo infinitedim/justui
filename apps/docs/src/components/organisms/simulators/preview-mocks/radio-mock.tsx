@@ -39,7 +39,7 @@ export function RadioMock({
               className={cn(
                 'flex h-4.5 w-4.5 items-center justify-center rounded-full transition-all',
                 isNeo
-                  ? 'bg-surface border-2 border-black dark:border-white'
+                  ? 'bg-surface border-[2.5px] border-black dark:border-white'
                   : 'border-border bg-surface border',
                 isChecked && (isNeo ? 'border-black' : 'border-accent')
               )}

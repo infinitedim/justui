@@ -35,7 +35,7 @@ export function ProgressMock({
         className={cn(
           'relative h-4 w-full cursor-pointer overflow-hidden transition-all select-none',
           isNeo
-            ? 'bg-surface rounded-md border-2 border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
+            ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
             : 'border-border bg-surface-muted rounded-full border'
         )}
       >
@@ -44,7 +44,7 @@ export function ProgressMock({
           className={cn(
             'h-full transition-all duration-300',
             isNeo
-              ? 'bg-accent border-r-2 border-black dark:border-white'
+              ? 'bg-accent border-r-[2.5px] border-black dark:border-white'
               : 'bg-accent rounded-full'
           )}
         />

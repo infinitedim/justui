@@ -19,7 +19,7 @@ export function DatePickerMock({
         className={cn(
           'flex cursor-pointer items-center justify-between p-2 transition-all',
           isNeo
-            ? 'bg-surface rounded-md border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] dark:border-white dark:shadow-[2.5px_2.5px_0px_0px_#fff]'
+            ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
             : 'border-border bg-surface rounded-md border'
         )}
       >

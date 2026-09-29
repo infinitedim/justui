@@ -64,14 +64,19 @@ export function DartCodeModal({
         className={cn(
           'bg-surface w-full max-w-lg overflow-hidden p-5 font-mono text-xs transition-all',
           isNeo
-            ? 'rounded-md border-2 border-black shadow-[6px_6px_0px_0px_#000] dark:border-white dark:shadow-[6px_6px_0px_0px_#fff]'
+            ? 'rounded-none border-[2.5px] border-black shadow-[6px_6px_0px_0px_#000] dark:border-white dark:shadow-[6px_6px_0px_0px_#fff]'
             : 'border-border rounded-xl border shadow-2xl'
         )}
       >
         <div className="border-border mb-3 flex items-center justify-between border-b pb-3">
           <div className="flex items-center gap-2">
             <span className="text-foreground text-sm font-bold">{name}</span>
-            <span className="text-muted bg-surface-muted rounded px-1.5 py-0.5 text-[10px]">
+            <span
+              className={cn(
+                'text-muted bg-surface-muted px-1.5 py-0.5 text-[10px]',
+                isNeo ? 'rounded-full border border-black dark:border-white' : 'rounded'
+              )}
+            >
               Flutter Dart
             </span>
           </div>
@@ -88,7 +93,12 @@ export function DartCodeModal({
           </div>
         </div>
 
-        <pre className="bg-surface-muted/60 text-foreground overflow-x-auto rounded p-3 leading-relaxed">
+        <pre
+          className={cn(
+            'bg-surface-muted/60 text-foreground overflow-x-auto p-3 leading-relaxed',
+            isNeo ? 'rounded-none border border-black dark:border-white' : 'rounded'
+          )}
+        >
           <code>{code}</code>
         </pre>
       </div>

@@ -26,7 +26,7 @@ export function InteractiveTerminal({
   const [historyIndex, setHistoryIndex] = useState(-1);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const scrollAnchorRef = useRef<HTMLDivElement>(null);
+  const terminalBufferRef = useRef<HTMLDivElement>(null);
   const entryCounterRef = useRef(0);
   const cancelledRef = useRef(false);
   const timeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
@@ -51,7 +51,10 @@ export function InteractiveTerminal({
   }, []);
 
   useEffect(() => {
-    scrollAnchorRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = terminalBufferRef.current;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
   }, [buffer, currentInput]);
 
   const executeCommand = useCallback(
@@ -329,7 +332,10 @@ export function InteractiveTerminal({
       </div>
 
       {/* Terminal Buffer */}
-      <div className="flex min-h-[280px] flex-1 flex-col overflow-y-auto p-4 font-mono text-xs leading-6">
+      <div
+        ref={terminalBufferRef}
+        className="flex min-h-[280px] flex-1 flex-col overflow-y-auto p-4 font-mono text-xs leading-6"
+      >
         {buffer.map((entry) => {
           if (entry.kind === 'prompt') {
             return (
@@ -349,7 +355,6 @@ export function InteractiveTerminal({
 
         {/* Live typing / interactive prompt */}
         <TerminalPrompt prefix="$" command={currentInput} cursor={true} />
-        <div ref={scrollAnchorRef} />
       </div>
 
       {/* Hidden input to capture keyboard events */}

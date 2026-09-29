@@ -27,20 +27,18 @@ export function SwitchMock({
     >
       <div
         className={cn(
-          'relative h-6 w-11 transition-all',
+          'relative h-7 w-12 transition-all',
           isNeo
-            ? 'bg-surface rounded-full border-2 border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
+            ? 'rounded-full border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
             : 'border-border bg-surface-muted rounded-full border',
-          checked && (isNeo ? 'bg-accent' : 'bg-accent')
+          checked ? (isNeo ? 'bg-accent' : 'bg-accent') : 'bg-surface'
         )}
       >
         <div
           className={cn(
-            'absolute top-0.5 h-4 w-4 rounded-full transition-all duration-200',
-            isNeo
-              ? 'border border-black bg-white dark:border-black'
-              : 'bg-foreground shadow-sm',
-            checked ? 'left-5.5' : 'left-0.5'
+            'absolute top-[2.5px] h-[18px] w-[18px] rounded-full transition-all',
+            isNeo ? 'duration-0 border-[2px] border-black bg-white dark:border-black' : 'duration-200 bg-foreground shadow-sm',
+            checked ? 'left-[22px]' : 'left-[2.5px]'
           )}
         />
       </div>

@@ -3,15 +3,17 @@
 import { cn } from '@/lib/cn';
 import type { ButtonProps, ButtonVariant, ButtonSize } from './button.types';
 
+const border = 'border border-[length:var(--just-border-width)] border-border';
+
 const variantClassMap: Record<ButtonVariant, string> = {
   primary:
-    'bg-accent text-[#18181b] hover:bg-accent-dark active:bg-accent-deep font-semibold',
+    `bg-accent text-accent-foreground ${border} hover:opacity-90 font-semibold`,
   secondary:
-    'bg-card text-foreground border border-[length:var(--just-border-width)] border-border hover:bg-elevated',
-  ghost: 'bg-transparent text-secondary hover:bg-card hover:text-foreground',
+    `bg-card text-foreground ${border} hover:bg-elevated`,
+  ghost: 'bg-transparent text-secondary hover:bg-card hover:text-foreground border border-transparent',
   outline:
-    'bg-transparent text-foreground border border-[length:var(--just-border-width)] border-border hover:bg-card',
-  danger: 'bg-error text-white hover:opacity-90 active:opacity-80',
+    `bg-transparent text-foreground ${border} hover:bg-card`,
+  danger: `bg-error text-white ${border} hover:opacity-90 active:opacity-80`,
 };
 
 const sizeClassMap: Record<ButtonSize, string> = {
@@ -41,7 +43,7 @@ export function Button({
       type="button"
       disabled={isDisabled}
       className={cn(
-        'inline-flex items-center justify-center font-medium transition-colors',
+        'just-press inline-flex items-center justify-center font-medium',
         'rounded-(--just-radius-md)',
         'shadow-solid',
         'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2',

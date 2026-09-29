@@ -3,24 +3,25 @@ title: Button
 description: Primary interactive button component with integrated touch animations and dedicated icon buttons.
 ---
 
-# Button
+The main element for triggering actions. `JustButton` carries a label, optional leading and trailing widgets, and a built-in loading state. `JustIconButton` is the icon-only sibling. Neither depends on Material.
 
-The `JustButton` and `JustIconButton` components are the main interactive elements used to trigger actions or navigation. They are designed without external Material dependencies, offering high performance, smooth touch animations, and full accessibility compliance.
+## Playground
 
----
+Change a prop and watch the button and the Dart code update.
 
-## Description
+<ButtonPlayground />
 
-- **`JustButton`**: A standard button with a text label that can be combined with icons at the front (`leading`) or back (`trailing`). This button supports a built-in loading status with a progress spinner.
-- **`JustIconButton`**: A dedicated circular or square button that only displays an icon without a text label. This component requires the `tooltip` parameter to ensure readability by screen readers.
+## Add to your project
 
----
+The CLI writes the source into your components directory. It does not touch `pubspec.yaml`.
+
+```bash
+justui add button
+```
 
 ## Usage
 
-### Basic Usage
-
-Basic usage example for `JustButton` and `JustIconButton`:
+### Basic
 
 ```dart
 import 'package:flutter/material.dart';
@@ -48,9 +49,7 @@ Widget buildBasicButtons(BuildContext context) {
 }
 ```
 
-### Advanced Usage
-
-Advanced usage example showing size variations, icons, loading status, and full-width:
+### Sizes, icons, loading, full width
 
 ```dart
 import 'package:flutter/material.dart';
@@ -90,9 +89,87 @@ Widget buildAdvancedButtons(BuildContext context) {
 }
 ```
 
----
+## Advanced usage
 
-## API Reference (Props)
+A checkout action group: an async pay button that walks through loading and disabled states, a secondary action beside a destructive icon button, and a link button. The preview runs the same state machine as the code.
+
+<Tabs items={['Code', 'Preview']}>
+<Tab value="Code">
+
+```dart
+class CheckoutActions extends StatefulWidget {
+  const CheckoutActions({super.key});
+
+  @override
+  State<CheckoutActions> createState() => _CheckoutActionsState();
+}
+
+class _CheckoutActionsState extends State<CheckoutActions> {
+  bool _paying = false;
+  bool _paid = false;
+
+  Future<void> _pay() async {
+    setState(() => _paying = true);
+    await api.charge(amount: 49.00);
+    setState(() {
+      _paying = false;
+      _paid = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      spacing: context.justSpacing.md,
+      children: [
+        JustButton(
+          label: _paid ? 'Paid' : 'Pay now',
+          isLoading: _paying,
+          isDisabled: _paid,
+          isFullWidth: true,
+          size: .lg,
+          trailing: const Icon(Icons.lock_outline),
+          onPressed: _pay,
+        ),
+        Row(
+          spacing: context.justSpacing.sm,
+          children: [
+            Expanded(
+              child: JustButton(
+                label: 'Save draft',
+                variant: .secondary,
+                isFullWidth: true,
+                onPressed: _saveDraft,
+              ),
+            ),
+            JustIconButton(
+              icon: const Icon(Icons.close),
+              tooltip: 'Discard order',
+              variant: .destructive,
+              onPressed: _confirmDiscard,
+            ),
+          ],
+        ),
+        JustButton(
+          label: 'Need help?',
+          variant: .link,
+          onPressed: _openSupport,
+        ),
+      ],
+    );
+  }
+}
+```
+
+</Tab>
+<Tab value="Preview">
+
+<CheckoutDemo />
+
+</Tab>
+</Tabs>
+
+## API reference
 
 ### JustButton
 
@@ -124,31 +201,9 @@ Widget buildAdvancedButtons(BuildContext context) {
 | `style`        | `JustButtonStyle?`  | `null`        | Overrides the icon button design style specifically.                                      |
 | `enableHaptic` | `bool?`             | `null`        | Enables light haptic feedback when the button is pressed.                                 |
 
----
+## Accessibility
 
-## Theming & Accessibility
-
-### Visual Presets
-
-Button visual styles highly depend on the active theme preset configured through `JustThemeProvider`:
-
-- **Default Preset**:
-  - Buttons have dynamic corner curvature (following `radius.md` or `radius.full`).
-  - Touch animation uses `AnimatedScale` that provides a press-in effect by dynamically shrinking the button size to scale `0.97` during the transition.
-  - Text color contrast with the background is dynamically evaluated using the `_makeAccessible` HSL-based algorithm.
-
-- **Neobrutalism Preset**:
-  - Buttons are forced to have a thick dark black border (`colors.textPrimary`) of `2.5` in all statuses (hover, pressed, focused, disabled) without border color transitioning to the primary color.
-  - Dynamic HSL contrast adjustment is bypassed to preserve the original neobrutalism solid colors.
-  - To prevent visual drift (unsynchronized visual shift) when pressed, the animation duration is set to `animations.instant` (50ms). The button physically moves position (X/Y translation) simultaneously with the instant disappearance of the solid shadow behind it.
-
-### Accessibility (WCAG AA Compliance)
-
-1. **Minimum Touch Targets**:
-   Even when the button size is set to `.xs` or `.sm`, JustUI guarantees the interactive touch target area still has a minimum physical size of **48x48px** according to WCAG AA guidelines. This is implemented internally through a `ConstrainedBox` wrapper and an expanded hit-test area.
-2. **Mandatory Semantic Description**:
-   For `JustIconButton`, the `tooltip` parameter must be provided (`assert(tooltip != null)`). This ensures that screen readers can announce the button function description to users with visual impairments.
-3. **Visual Focus Indicator (Focus Ring)**:
-   When the button is accessed using a keyboard or other controller, a thick, high-contrast focus indicator is displayed around the button through the internal `FocusIndicator` helper widget.
-4. **Automatic Icon Coloring**:
-   Through `IconTheme.merge`, icon colors are automatically adjusted to match the contrast color of the active button status (for example, becoming high-contrast white when the primary button is active, or pale gray when disabled).
+1. **Minimum touch targets.** Even when the button size is set to `.xs` or `.sm`, JustUI guarantees the interactive touch target area still has a minimum physical size of **48x48px** according to WCAG AA guidelines. This is implemented internally through a `ConstrainedBox` wrapper and an expanded hit-test area.
+2. **Mandatory semantic description.** For `JustIconButton`, the `tooltip` parameter must be provided (`assert(tooltip != null)`). This ensures that screen readers can announce the button function description to users with visual impairments.
+3. **Visible focus indicator.** When the button is accessed using a keyboard or other controller, a thick, high-contrast focus indicator is displayed around the button through the internal `FocusIndicator` helper widget.
+4. **Automatic icon coloring.** Through `IconTheme.merge`, icon colors are automatically adjusted to match the contrast color of the active button status (for example, becoming high-contrast white when the primary button is active, or pale gray when disabled).

@@ -22,11 +22,18 @@ export function TableMock({
       className={cn(
         'w-full max-w-60 overflow-hidden font-mono text-[10px] select-none',
         isNeo
-          ? 'bg-surface rounded-md border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] dark:border-white dark:shadow-[2.5px_2.5px_0px_0px_#fff]'
+          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
           : 'border-border bg-surface rounded-md border'
       )}
     >
-      <div className="border-border bg-surface-muted/60 grid grid-cols-3 border-b p-1.5 font-bold">
+      <div
+        className={cn(
+          'bg-surface-muted/60 grid grid-cols-3 p-1.5 font-bold',
+          isNeo
+            ? 'border-b-[2.5px] border-black dark:border-white'
+            : 'border-border border-b'
+        )}
+      >
         <span>Component</span>
         <span>Type</span>
         <span className="text-right">External</span>
@@ -36,7 +43,10 @@ export function TableMock({
           key={r.name}
           className={cn(
             'grid grid-cols-3 p-1.5 transition-colors',
-            i < rows.length - 1 && 'border-border/50 border-b',
+            i < rows.length - 1 &&
+              (isNeo
+                ? 'border-b-[2px] border-black dark:border-white'
+                : 'border-border/50 border-b'),
             'hover:bg-accent/10'
           )}
         >

@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { cn } from '@/lib/cn';
 import { CalendarRange } from 'lucide-react';
 
@@ -12,13 +11,13 @@ export function DateRangePickerMock({
   const isNeo = preset === 'neobrutalism';
 
   return (
-    <div className="w-full max-w-[220px] font-mono text-xs select-none">
+    <div className="w-full max-w-55 font-mono text-xs select-none">
       <div
         data-testid="mock-date-range-picker"
         className={cn(
           'flex cursor-pointer items-center gap-2 p-2 transition-all',
           isNeo
-            ? 'bg-surface rounded-md border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] dark:border-white dark:shadow-[2.5px_2.5px_0px_0px_#fff]'
+            ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
             : 'border-border bg-surface rounded-md border'
         )}
       >

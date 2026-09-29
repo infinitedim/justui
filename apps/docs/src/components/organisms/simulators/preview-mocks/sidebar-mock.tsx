@@ -19,11 +19,18 @@ export function SidebarMock({
         'p-2 font-mono text-xs transition-all select-none',
         collapsed ? 'w-14' : 'w-48',
         isNeo
-          ? 'bg-surface rounded-md border-2 border-black shadow-[3px_3px_0px_0px_#000] dark:border-white dark:shadow-[3px_3px_0px_0px_#fff]'
+          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
           : 'border-border bg-surface rounded-lg border shadow-sm'
       )}
     >
-      <div className="border-border mb-2 flex items-center justify-between border-b pb-2">
+      <div
+        className={cn(
+          'mb-2 flex items-center justify-between pb-2',
+          isNeo
+            ? 'border-b-[2.5px] border-black dark:border-white'
+            : 'border-border border-b'
+        )}
+      >
         {!collapsed ? (
           <span className="text-[11px] font-bold">JustUI Core</span>
         ) : null}
@@ -43,7 +50,14 @@ export function SidebarMock({
       </div>
 
       <div className="space-y-1">
-        <div className="bg-accent/15 text-accent-deep dark:text-accent flex items-center gap-2 rounded p-1.5 font-medium">
+        <div
+          className={cn(
+            'flex items-center gap-2 p-1.5 font-medium',
+            isNeo
+              ? 'bg-accent text-black font-bold border-[2.5px] border-black dark:border-white rounded-none'
+              : 'bg-accent/15 text-accent-deep dark:text-accent rounded'
+          )}
+        >
           <LayoutDashboard className="h-3.5 w-3.5 shrink-0" />
           {!collapsed ? <span className="text-[11px]">Dashboard</span> : null}
         </div>

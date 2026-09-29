@@ -40,11 +40,11 @@ export function RadioGroupMock({
             className={cn(
               'flex cursor-pointer items-center justify-between p-2 transition-all',
               isNeo
-                ? 'bg-surface rounded-md border-2 border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
+                ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
                 : 'border-border bg-surface rounded-md border',
               isChecked &&
                 (isNeo
-                  ? 'bg-accent/20 font-bold'
+                  ? 'bg-accent/30 font-bold'
                   : 'border-accent bg-accent/10')
             )}
           >
@@ -53,7 +53,7 @@ export function RadioGroupMock({
               className={cn(
                 'flex h-3.5 w-3.5 items-center justify-center rounded-full border',
                 isNeo
-                  ? 'border-2 border-black dark:border-white'
+                  ? 'border-[2px] border-black dark:border-white'
                   : 'border-border',
                 isChecked && 'border-accent'
               )}

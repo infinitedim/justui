@@ -7,6 +7,12 @@ import {
 } from 'fumadocs-ui/page';
 import { notFound, redirect } from 'next/navigation';
 
+import defaultMdxComponents from 'fumadocs-ui/mdx';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { ButtonPlayground } from '@/components/docs/button-playground';
+import { CheckoutDemo } from '@/components/docs/checkout-demo';
+import { JustButtonPreview } from '@/components/docs/just-button-preview';
+
 export default async function Page({
   params,
 }: {
@@ -29,7 +35,16 @@ export default async function Page({
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
-        <MDX />
+        <MDX
+          components={{
+            ...defaultMdxComponents,
+            Tabs,
+            Tab,
+            ButtonPlayground,
+            CheckoutDemo,
+            JustButtonPreview,
+          }}
+        />
       </DocsBody>
     </DocsPage>
   );

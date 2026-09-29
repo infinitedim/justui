@@ -51,7 +51,7 @@ export function CardActionBar({
           className={cn(
             'inline-flex items-center gap-1 px-2 py-1 text-[11px] transition-all select-none',
             isNeo
-              ? 'bg-surface hover:bg-accent rounded border border-black hover:text-black dark:border-white'
+              ? 'just-press bg-surface hover:bg-accent rounded-none border-[2px] border-black hover:text-black dark:border-white'
               : 'border-border bg-surface hover:border-accent text-muted hover:text-foreground rounded border'
           )}
         >
@@ -65,7 +65,7 @@ export function CardActionBar({
           className={cn(
             'inline-flex items-center gap-1 px-2 py-1 text-[11px] transition-all select-none',
             isNeo
-              ? 'bg-surface hover:bg-accent rounded border border-black hover:text-black dark:border-white'
+              ? 'just-press bg-surface hover:bg-accent rounded-none border-[2px] border-black hover:text-black dark:border-white'
               : 'border-border bg-surface hover:border-accent text-muted hover:text-foreground rounded border'
           )}
         >

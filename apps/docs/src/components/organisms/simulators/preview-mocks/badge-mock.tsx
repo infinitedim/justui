@@ -39,10 +39,10 @@ export function BadgeMock({
           className={cn(
             'px-2.5 py-1 font-mono text-xs transition-all select-none',
             isNeo
-              ? 'rounded-md border-2 border-black font-bold text-black dark:border-white dark:text-white'
+              ? 'rounded-full border-[2.5px] border-black font-bold text-black dark:border-white dark:text-white'
               : 'rounded-full border text-xs',
             isNeo && activeBadge === idx
-              ? 'bg-accent -translate-x-px -translate-y-px shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]'
+              ? 'bg-accent -translate-x-0.5 -translate-y-0.5 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]'
               : isNeo
                 ? 'bg-surface'
                 : b.color,

@@ -27,7 +27,7 @@ export function SliderMock({
         className={cn(
           'accent-accent w-full cursor-pointer',
           isNeo &&
-            'bg-surface h-3 rounded-none border-2 border-black dark:border-white'
+            'bg-surface h-3.5 rounded-none border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
         )}
       />
     </div>

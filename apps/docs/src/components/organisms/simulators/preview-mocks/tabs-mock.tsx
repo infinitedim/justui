@@ -23,7 +23,7 @@ export function TabsMock({
       className={cn(
         'inline-flex gap-1 p-1 font-mono text-xs select-none',
         isNeo
-          ? 'bg-surface rounded-md border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] dark:border-white dark:shadow-[2.5px_2.5px_0px_0px_#fff]'
+          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
           : 'border-border bg-surface-muted/50 rounded-lg border'
       )}
     >
@@ -37,10 +37,10 @@ export function TabsMock({
             data-testid={`mock-tab-${t.id}`}
             className={cn(
               'px-3 py-1 transition-all',
-              isNeo ? 'rounded' : 'rounded-md',
+              isNeo ? 'rounded-none' : 'rounded-md',
               isSelected
                 ? isNeo
-                  ? 'bg-accent border border-black font-bold text-black dark:border-white'
+                  ? 'bg-accent border-[2px] border-black font-bold text-black dark:border-white'
                   : 'bg-surface text-foreground font-medium shadow-sm'
                 : 'text-muted hover:text-foreground'
             )}

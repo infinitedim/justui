@@ -35,7 +35,7 @@ export function LivingComponentCard({
       className={cn(
         'bg-surface relative flex flex-col justify-between p-4 transition-all select-none focus-within:z-30',
         isNeo
-          ? 'rounded-md border-2 border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
+          ? 'rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
           : 'border-border/80 hover:border-accent rounded-xl border shadow-xs hover:shadow-md',
         className
       )}
@@ -50,7 +50,7 @@ export function LivingComponentCard({
             className={cn(
               'px-2 py-0.5 font-mono text-[10px] tracking-wider uppercase',
               isNeo
-                ? 'bg-surface-muted text-foreground rounded border border-black font-bold dark:border-white'
+                ? 'bg-surface-muted text-foreground rounded-full border-[1.5px] border-black font-bold dark:border-white'
                 : 'border-border bg-surface-muted text-muted rounded-full border'
             )}
           >

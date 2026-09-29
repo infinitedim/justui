@@ -109,14 +109,15 @@ describe('Navbar & search dialog wiring', () => {
   it('toggles theme correctly via ThemeSwitcher', () => {
     mockResolvedTheme = 'dark';
     const { rerender } = render(<Navbar starCount={100} lang="id" />);
-    const themeBtn = screen.getByRole('button', { name: /ubah tema/i });
+    const lightRadio = screen.getByRole('radio', { name: /light/i });
 
-    fireEvent.click(themeBtn);
+    fireEvent.click(lightRadio);
     expect(mockSetTheme).toHaveBeenCalledWith('light');
 
     mockResolvedTheme = 'light';
     rerender(<Navbar starCount={100} lang="id" />);
-    fireEvent.click(themeBtn);
+    const darkRadio = screen.getByRole('radio', { name: /dark/i });
+    fireEvent.click(darkRadio);
     expect(mockSetTheme).toHaveBeenCalledWith('dark');
   });
 
@@ -202,7 +203,7 @@ describe('Navbar & search dialog wiring', () => {
     const studioLink = mobileNav.querySelector('a[href="/en/studio"]');
     expect(studioLink).toBeInTheDocument();
     expect(studioLink).toHaveTextContent('Studio');
-    expect(studioLink).toHaveClass('bg-accent-muted');
+    expect(studioLink).toHaveClass('bg-accent');
 
     fireEvent.click(studioLink!);
     expect(
