@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { cn } from '@/lib/cn';
 import { usePreset } from '@/components/providers';
+import { SegmentedToggle } from '@/components/molecules/segmented-toggle';
 import type { PresetToggleProps } from './preset-toggle.types';
 
 /**
- * Preset toggle molecule. Switches between default and neobrutalism presets.
- * Extracted from the old navbar PresetSwitcher.
+ * Preset toggle molecule. Shows both presets and fills the active one, so the
+ * control states what it does instead of a single ambiguous D / N letter.
  */
 export function PresetToggle({
   label = 'Toggle preset',
@@ -20,26 +20,16 @@ export function PresetToggle({
 
   if (!mounted) return null;
 
-  const isNeo = preset === 'neobrutalism';
-
   return (
-    <button
-      type="button"
-      onClick={() => setPreset(isNeo ? 'default' : 'neobrutalism')}
-      aria-label={label}
-      title={
-        isNeo ? 'Switch to Default preset' : 'Switch to Neobrutalism preset'
-      }
-      className={cn(
-        'inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors',
-        'border-border border-(length:--just-border-width)',
-        'text-muted hover:text-foreground',
-        className
-      )}
-    >
-      <span className="font-mono text-[10px] font-bold">
-        {isNeo ? 'N' : 'D'}
-      </span>
-    </button>
+    <SegmentedToggle
+      label={label}
+      className={className}
+      value={preset}
+      onChange={setPreset}
+      options={[
+        { value: 'default', label: 'default' },
+        { value: 'neobrutalism', label: 'neo' },
+      ]}
+    />
   );
 }

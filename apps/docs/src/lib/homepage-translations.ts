@@ -5,6 +5,8 @@ export type HomepageDictionary = {
   getStarted: string;
   browseComponents: string;
   componentsHeading: string;
+  componentsSubheading: string;
+  componentsAll: string;
   navHome: string;
   navDocs: string;
   navComponents: string;
@@ -25,11 +27,21 @@ export type HomepageDictionary = {
   terminalChipPreset: string;
   installTabCurl: string;
   installTabPowershell: string;
+  installTabCargo: string;
   stageEmptyState: string;
   stagePreviewTab: string;
   stageCodeTab: string;
   presetCleanPrecision: string;
   presetNeobrutalism: string;
+  wygHeading: string;
+  wygDescription: string;
+  wygCard1Title: string;
+  wygCard1Desc: string;
+  wygCard2Title: string;
+  wygCard2Desc: string;
+  wygCard3Title: string;
+  wygCard3Desc: string;
+  /** Legacy bento keys, kept until the bento components are deleted. */
   bentoBadge: string;
   bentoHeading: string;
   bentoDescription: string;
@@ -58,12 +70,14 @@ export const homepageTranslations: Readonly<
 > = {
   en: {
     tagline: 'Copy-paste Flutter components',
-    heroTitle: 'Copy. Paste. Ship.',
+    heroTitle: 'One command. One file. Yours.',
     heroDescription:
-      'A zero-dependency, copy-paste component library for Flutter. No Material. No boilerplate. Just UI.',
+      'Not a dependency. JustUI copies Flutter components into your project as plain source, so there is no package to upgrade, no Material, and nothing beyond the SDK.',
     getStarted: 'Get started',
     browseComponents: 'Browse components',
     componentsHeading: 'Components',
+    componentsSubheading: 'Live previews, rendered with the active preset.',
+    componentsAll: 'All components ->',
     navHome: 'Home',
     navDocs: 'Docs',
     navComponents: 'Components',
@@ -85,12 +99,24 @@ export const homepageTranslations: Readonly<
     terminalChipPreset: 'justui preset apply neobrutalism',
     installTabCurl: 'macOS / Linux',
     installTabPowershell: 'Windows',
+    installTabCargo: 'Cargo',
     stageEmptyState:
       'Run a command in the terminal to see components appear here.',
     stagePreviewTab: 'Preview',
     stageCodeTab: 'Flutter Code',
     presetCleanPrecision: 'Clean Precision',
     presetNeobrutalism: 'Neobrutalism',
+    wygHeading: 'What you actually get',
+    wygDescription: 'Three things the CLI does, shown as they work.',
+    wygCard1Title: 'The source lands in your repo',
+    wygCard1Desc:
+      'Files are checksummed against the registry, then written to your components directory. Edit them freely.',
+    wygCard2Title: 'Presets swap tokens, not components',
+    wygCard2Desc:
+      'The same widgets, rendered with two token sets. Border, shadow, radius and surface colors change; the components do not.',
+    wygCard3Title: 'Text color follows the background',
+    wygCard3Desc:
+      'Drag a surface lightness. The theme picks whichever text color clears WCAG AA, and shows the measured ratio.',
     bentoBadge: 'THE ENGINE ROOM',
     bentoHeading: 'Engineered for Extreme Performance',
     bentoDescription:
@@ -121,12 +147,14 @@ export const homepageTranslations: Readonly<
   },
   id: {
     tagline: 'Komponen Flutter siap salin-tempel',
-    heroTitle: 'Salin. Tempel. Rilis.',
+    heroTitle: 'Satu perintah. Satu file. Milikmu.',
     heroDescription:
-      'Pustaka komponen Flutter tanpa dependensi tambahan, tinggal salin-tempel. Tanpa Material. Tanpa boilerplate. Hanya UI.',
+      'Bukan dependensi. JustUI menyalin komponen Flutter ke proyekmu sebagai source biasa, jadi tidak ada paket yang perlu di-upgrade, tanpa Material, dan tanpa apa pun di luar SDK.',
     getStarted: 'Mulai',
     browseComponents: 'Jelajahi komponen',
     componentsHeading: 'Komponen',
+    componentsSubheading: 'Pratinjau langsung, dirender dengan preset aktif.',
+    componentsAll: 'Semua komponen ->',
     navHome: 'Beranda',
     navDocs: 'Dokumentasi',
     navComponents: 'Komponen',
@@ -148,12 +176,24 @@ export const homepageTranslations: Readonly<
     terminalChipPreset: 'justui preset apply neobrutalism',
     installTabCurl: 'macOS / Linux',
     installTabPowershell: 'Windows',
+    installTabCargo: 'Cargo',
     stageEmptyState:
       'Jalankan perintah di terminal untuk melihat komponen muncul di sini.',
     stagePreviewTab: 'Pratinjau',
     stageCodeTab: 'Kode Flutter',
     presetCleanPrecision: 'Presisi Bersih',
     presetNeobrutalism: 'Neobrutalisme',
+    wygHeading: 'Yang sebenarnya kamu dapat',
+    wygDescription: 'Tiga hal yang dilakukan CLI, ditampilkan langsung.',
+    wygCard1Title: 'Source masuk ke repo-mu',
+    wygCard1Desc:
+      'File diverifikasi checksum terhadap registry, lalu ditulis ke direktori komponenmu. Ubah sesukamu.',
+    wygCard2Title: 'Preset mengganti token, bukan komponen',
+    wygCard2Desc:
+      'Widget yang sama dirender dengan dua set token. Yang berubah adalah border, shadow, radius, dan warna permukaan; komponennya tidak.',
+    wygCard3Title: 'Warna teks mengikuti latar',
+    wygCard3Desc:
+      'Geser tingkat terang permukaan. Tema memilih warna teks yang lolos WCAG AA dan menampilkan rasio yang diukur.',
     bentoBadge: 'RUANG MESIN ARSITEKTUR',
     bentoHeading: 'Direkayasa untuk Performa Ekstrem',
     bentoDescription:

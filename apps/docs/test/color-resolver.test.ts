@@ -167,10 +167,10 @@ describe('Color Resolver Engine', () => {
         'hsl'
       );
 
-      expect(lightTokens.background).toBe('#fffdf5');
-      expect(lightTokens.border).toBe('#18181b');
+      expect(lightTokens.background).toBe('#fff8e7');
+      expect(lightTokens.border).toBe('#000000');
       expect(lightTokens.borderWidth).toBe('2.5px');
-      expect(lightTokens.shadowSolid).toBe('4px 4px 0px #18181b');
+      expect(lightTokens.shadowSolid).toBe('4px 4px 0px #000000');
       expect(lightTokens.radiusMd).toBe('0px');
       expect(lightTokens.radiusLg).toBe('0px');
 

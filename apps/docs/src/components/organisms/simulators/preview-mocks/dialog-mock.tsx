@@ -21,7 +21,7 @@ export function DialogMock({
         className={cn(
           'px-3.5 py-1.5 font-mono text-xs transition-all select-none',
           isNeo
-            ? 'bg-surface text-foreground rounded-md border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 dark:border-white dark:shadow-[2.5px_2.5px_0px_0px_#fff]'
+            ? 'just-press bg-surface text-foreground rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
             : 'border-border bg-surface text-foreground hover:border-accent rounded-md border'
         )}
       >
@@ -34,7 +34,7 @@ export function DialogMock({
           className={cn(
             'bg-surface absolute z-30 w-56 p-3 font-mono text-xs transition-all',
             isNeo
-              ? 'rounded-md border-2 border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
+              ? 'rounded-none border-[2.5px] border-black shadow-[6px_6px_0px_0px_#000] dark:border-white dark:shadow-[6px_6px_0px_0px_#fff]'
               : 'border-border rounded-lg border shadow-xl'
           )}
         >
@@ -59,7 +59,7 @@ export function DialogMock({
               className={cn(
                 'px-2 py-1 text-[10px]',
                 isNeo
-                  ? 'bg-accent border border-black font-bold text-black dark:border-white'
+                  ? 'just-press bg-accent border-[2px] border-black font-bold text-black rounded-none dark:border-white'
                   : 'bg-foreground text-background rounded'
               )}
             >

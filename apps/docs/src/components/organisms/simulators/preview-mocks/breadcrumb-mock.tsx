@@ -18,7 +18,7 @@ export function BreadcrumbMock({
       className={cn(
         'flex items-center gap-1.5 p-2 font-mono text-xs select-none',
         isNeo
-          ? 'bg-surface rounded-md border-2 border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
+          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
           : 'border-border bg-surface rounded-md border'
       )}
     >

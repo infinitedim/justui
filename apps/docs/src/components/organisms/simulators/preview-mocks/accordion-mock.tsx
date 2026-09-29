@@ -18,7 +18,7 @@ export function AccordionMock({
       className={cn(
         'w-full max-w-60 overflow-hidden font-mono text-xs transition-all',
         isNeo
-          ? 'bg-surface rounded-md border-2 border-black shadow-[3px_3px_0px_0px_#000] dark:border-white dark:shadow-[3px_3px_0px_0px_#fff]'
+          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
           : 'border-border bg-surface rounded-md border shadow-sm'
       )}
     >
@@ -37,7 +37,14 @@ export function AccordionMock({
       </button>
 
       {open ? (
-        <div className="border-border text-muted bg-surface-muted/50 border-t p-2.5 text-[11px] leading-relaxed">
+        <div
+          className={cn(
+            'p-2.5 text-[11px] leading-relaxed',
+            isNeo
+              ? 'border-t-[2.5px] border-black text-foreground dark:border-white'
+              : 'border-border text-muted bg-surface-muted/50 border-t'
+          )}
+        >
           Yes. All widgets are copied directly into your workspace.
         </div>
       ) : null}

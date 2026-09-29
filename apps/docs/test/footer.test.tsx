@@ -9,18 +9,23 @@ describe('Footer Organism', () => {
     expect(
       screen.getByRole('contentinfo', { name: /site footer/i })
     ).toBeInTheDocument();
-    expect(screen.getByText('v0.14.0')).toBeInTheDocument();
-    expect(screen.getByText('Flutter 3.29+')).toBeInTheDocument();
+    expect(screen.getByText('Docs')).toBeInTheDocument();
+    expect(screen.getByText('Project')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Flutter components you copy into your project. MIT licensed.'
+      )
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /introduction/i })).toHaveAttribute(
       'href',
       '/en/docs/introduction'
     );
-    expect(screen.getByRole('link', { name: /cli guide/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /cli setup/i })).toHaveAttribute(
       'href',
       '/en/docs/cli-setup'
     );
     expect(
-      screen.getByRole('link', { name: /github repository/i })
+      screen.getByRole('link', { name: /github/i })
     ).toHaveAttribute('href', 'https://github.com/infinitedim/justui');
   });
 
@@ -28,13 +33,18 @@ describe('Footer Organism', () => {
     render(<Footer lang="id" />);
 
     expect(screen.getByText('Dokumentasi')).toBeInTheDocument();
-    expect(screen.getByText('Ekosistem')).toBeInTheDocument();
+    expect(screen.getByText('Proyek')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Komponen Flutter yang kamu salin ke proyekmu. Lisensi MIT.'
+      )
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /pengenalan/i })).toHaveAttribute(
       'href',
       '/id/docs/introduction'
     );
     expect(
-      screen.getByRole('link', { name: /laporkan masalah/i })
+      screen.getByRole('link', { name: /issue/i })
     ).toHaveAttribute('href', 'https://github.com/infinitedim/justui/issues');
   });
 });

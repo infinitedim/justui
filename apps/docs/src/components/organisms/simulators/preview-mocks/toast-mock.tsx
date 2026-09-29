@@ -47,7 +47,7 @@ export function ToastMock({
         className={cn(
           'flex items-center gap-2 px-3 py-1.5 font-mono text-xs transition-all select-none',
           isNeo
-            ? 'bg-surface text-foreground rounded-md border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 dark:border-white dark:shadow-[2.5px_2.5px_0px_0px_#fff]'
+            ? 'bg-surface text-foreground rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
             : 'border-border bg-surface text-foreground hover:border-accent rounded-md border'
         )}
       >
@@ -63,7 +63,7 @@ export function ToastMock({
             'motion-reduce:animate-none',
             isExiting ? 'animate-toast-exit' : 'animate-toast-enter',
             isNeo
-              ? 'bg-accent rounded-md border-2 border-black font-bold text-black shadow-[3px_3px_0px_0px_#000] dark:border-white'
+              ? 'bg-accent rounded-none border-[2.5px] border-black font-bold text-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
               : 'border-border bg-foreground text-background rounded-lg border shadow-lg'
           )}
         >

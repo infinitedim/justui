@@ -17,7 +17,7 @@ export function SkeletonMock({
           className={cn(
             'h-9 w-9 animate-pulse transition-all',
             isNeo
-              ? 'bg-surface-muted rounded-md border-2 border-black dark:border-white'
+              ? 'bg-surface-muted rounded-full border-[2.5px] border-black dark:border-white'
               : 'bg-border rounded-full'
           )}
         />
@@ -26,7 +26,7 @@ export function SkeletonMock({
             className={cn(
               'h-3.5 w-3/4 animate-pulse',
               isNeo
-                ? 'bg-surface-muted border border-black dark:border-white'
+                ? 'bg-surface-muted rounded-none border-[2px] border-black dark:border-white'
                 : 'bg-border rounded'
             )}
           />
@@ -34,7 +34,7 @@ export function SkeletonMock({
             className={cn(
               'h-2.5 w-1/2 animate-pulse',
               isNeo
-                ? 'bg-surface-muted border border-black dark:border-white'
+                ? 'bg-surface-muted rounded-none border-[2px] border-black dark:border-white'
                 : 'bg-border/70 rounded'
             )}
           />
@@ -44,7 +44,7 @@ export function SkeletonMock({
         className={cn(
           'h-8 w-full animate-pulse',
           isNeo
-            ? 'bg-surface-muted rounded-md border-2 border-black dark:border-white'
+            ? 'bg-surface-muted rounded-none border-[2.5px] border-black dark:border-white'
             : 'bg-border/60 rounded-md'
         )}
       />

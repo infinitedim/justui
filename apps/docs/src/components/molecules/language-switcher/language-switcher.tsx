@@ -9,7 +9,7 @@ import type { LanguageSwitcherProps } from './language-switcher.types';
 
 /**
  * Language switcher molecule. Swaps between en/id by rewriting the URL path segment.
- * Extracted from the old navbar LanguageSwitcher.
+ * Styled as a small button so it matches the preset / theme toggles.
  */
 export function LanguageSwitcher({ lang, className }: LanguageSwitcherProps) {
   const pathname = usePathname() ?? '';
@@ -22,9 +22,8 @@ export function LanguageSwitcher({ lang, className }: LanguageSwitcherProps) {
     <Link
       href={otherPath}
       className={cn(
-        'inline-flex h-7 items-center rounded-full px-2.5 font-mono text-[11px] transition-colors',
-        'border-border border-(length:--just-border-width)',
-        'text-muted hover:text-foreground',
+        'just-press bg-card text-foreground inline-flex h-7 items-center px-2.5 font-mono text-xs',
+        'rounded-(--just-radius-md) border-(length:--just-border-width) border-border shadow-xs',
         className
       )}
       aria-label={t.changeLanguage}

@@ -20,14 +20,14 @@ export function SeparatorMock({
         <div
           className={cn(
             'h-3.5 w-px',
-            isNeo ? 'w-0.5 bg-black dark:bg-white' : 'bg-border'
+            isNeo ? 'w-[2.5px] bg-black dark:bg-white' : 'bg-border'
           )}
         />
         <span className="text-foreground font-medium">Tokens</span>
         <div
           className={cn(
             'h-3.5 w-px',
-            isNeo ? 'w-0.5 bg-black dark:bg-white' : 'bg-border'
+            isNeo ? 'w-[2.5px] bg-black dark:bg-white' : 'bg-border'
           )}
         />
         <span className="text-muted">CLI</span>
@@ -35,7 +35,7 @@ export function SeparatorMock({
       <div
         className={cn(
           'h-px w-full',
-          isNeo ? 'h-0.5 bg-black dark:bg-white' : 'bg-border'
+          isNeo ? 'h-[2.5px] bg-black dark:bg-white' : 'bg-border'
         )}
       />
       <span className="text-muted block text-[10px]">Bresenham Partition</span>

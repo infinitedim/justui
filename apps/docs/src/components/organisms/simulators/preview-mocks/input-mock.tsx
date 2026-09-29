@@ -28,7 +28,7 @@ export function InputMock({
         className={cn(
           'w-full px-3 py-1.5 font-mono text-xs transition-all outline-none',
           isNeo
-            ? 'bg-surface text-foreground rounded-md border-2 border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
+            ? 'bg-surface text-foreground rounded-none border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] focus:shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff] dark:focus:shadow-[4px_4px_0px_0px_#fff]'
             : 'bg-surface text-foreground focus:border-accent focus:ring-accent rounded-md border focus:ring-1'
         )}
       />

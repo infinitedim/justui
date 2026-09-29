@@ -44,10 +44,12 @@ export function PresetProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!mounted) return;
-    // Apply/remove theme-neobrutalism class on <body>
+    // Apply/remove theme-neobrutalism class on <html> and <body>
     if (preset === 'neobrutalism') {
+      document.documentElement.classList.add('theme-neobrutalism');
       document.body.classList.add('theme-neobrutalism');
     } else {
+      document.documentElement.classList.remove('theme-neobrutalism');
       document.body.classList.remove('theme-neobrutalism');
     }
     try {

@@ -23,7 +23,7 @@ export function CarouselMock({
       className={cn(
         'w-full max-w-55 p-3 text-center font-mono text-xs transition-all select-none',
         isNeo
-          ? 'bg-surface rounded-md border-2 border-black shadow-[3px_3px_0px_0px_#000] dark:border-white dark:shadow-[3px_3px_0px_0px_#fff]'
+          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
           : 'border-border bg-surface rounded-lg border shadow-sm'
       )}
     >

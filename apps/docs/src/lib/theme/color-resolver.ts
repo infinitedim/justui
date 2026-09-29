@@ -220,23 +220,24 @@ export function resolveTokens(
   let textSecondary: string;
 
   if (isDark) {
-    background = generateDarkSurface(normSeed, 3);
-    card = generateDarkSurface(normSeed, 7);
-    textPrimary = '#f8fafc';
-    textSecondary = '#a1a1aa';
+    background = isNeo ? '#1a1a1a' : generateDarkSurface(normSeed, 3);
+    card = isNeo ? '#262626' : generateDarkSurface(normSeed, 7);
+    textPrimary = isNeo ? '#ffffff' : '#f8fafc';
+    textSecondary = isNeo ? '#cccccc' : '#a1a1aa';
   } else {
-    background = isNeo ? '#fffdf5' : '#f8fafc';
+    background = isNeo ? '#fff8e7' : '#f8fafc';
     card = '#ffffff';
-    textPrimary = '#18181b';
-    textSecondary = '#4f4f4f';
+    textPrimary = isNeo ? '#000000' : '#18181b';
+    textSecondary = isNeo ? '#222222' : '#4f4f4f';
   }
 
   // Accent & readable foreground
   const accent = normSeed;
   const contrastWithWhite = contrastRatio(accent, '#ffffff');
-  const contrastWithDark = contrastRatio(accent, '#18181b');
-  const accentForeground =
-    contrastWithWhite >= 4.5 || contrastWithWhite > contrastWithDark
+  const contrastWithDark = contrastRatio(accent, isNeo ? '#000000' : '#18181b');
+  const accentForeground = isNeo
+    ? '#000000'
+    : contrastWithWhite >= 4.5 || contrastWithWhite > contrastWithDark
       ? '#ffffff'
       : '#18181b';
 
@@ -248,9 +249,9 @@ export function resolveTokens(
   let radiusLg: string;
 
   if (isNeo) {
-    border = isDark ? '#ffffff' : '#18181b';
+    border = isDark ? '#ffffff' : '#000000';
     borderWidth = '2.5px';
-    shadowSolid = isDark ? '4px 4px 0px #ffffff' : '4px 4px 0px #18181b';
+    shadowSolid = isDark ? '4px 4px 0px #ffffff' : '4px 4px 0px #000000';
     radiusMd = '0px';
     radiusLg = '0px';
   } else {

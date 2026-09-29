@@ -1,15 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { cn } from '@/lib/cn';
+import { SegmentedToggle } from '@/components/molecules/segmented-toggle';
 import type { ThemeSwitcherProps } from './theme-switcher.types';
 
 /**
- * Dark/light theme toggle molecule.
- * Extracted from the old navbar ThemeSwitcher.
- * Uses next-themes resolvedTheme for hydration-safe rendering.
+ * Light/dark theme toggle molecule. Both modes are visible; the active one is
+ * filled. Uses next-themes resolvedTheme for hydration-safe rendering.
  */
 export function ThemeSwitcher({
   label = 'Toggle theme',
@@ -23,22 +21,15 @@ export function ThemeSwitcher({
   if (!mounted) return null;
 
   return (
-    <button
-      type="button"
-      onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-      aria-label={label}
-      className={cn(
-        'inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors',
-        'border-border border-(length:--just-border-width)',
-        'text-muted hover:text-foreground',
-        className
-      )}
-    >
-      {resolvedTheme === 'dark' ? (
-        <Sun size={13} aria-hidden="true" />
-      ) : (
-        <Moon size={13} aria-hidden="true" />
-      )}
-    </button>
+    <SegmentedToggle
+      label={label}
+      className={className}
+      value={resolvedTheme === 'dark' ? 'dark' : 'light'}
+      onChange={setTheme}
+      options={[
+        { value: 'light', label: 'light' },
+        { value: 'dark', label: 'dark' },
+      ]}
+    />
   );
 }

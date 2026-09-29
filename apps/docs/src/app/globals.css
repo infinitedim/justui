@@ -5,7 +5,7 @@
 @source '../node_modules/fumadocs-core/dist';
 
 @theme {
-  /* Colors - Mapped to JustUI Primitives */
+  /* Colors - mapped to JustUI primitives */
   --color-background: var(--just-background);
   --color-foreground: var(--just-text-primary);
   --color-secondary: var(--just-text-secondary);
@@ -15,8 +15,10 @@
   --color-surface: var(--just-card-bg);
   --color-surface-muted: var(--just-accent-muted);
   --color-elevated: var(--just-elevated-bg);
+  --color-fill: var(--just-fill);
   --color-accent: var(--just-accent);
   --color-accent-foreground: var(--just-accent-foreground);
+  --color-accent-text: var(--just-accent-text);
   --color-accent-light: var(--just-accent-light);
   --color-accent-dark: var(--just-accent-dark);
   --color-accent-deep: var(--just-accent-deep);
@@ -25,16 +27,32 @@
   --color-warning: var(--just-warning);
   --color-error: var(--just-error);
   --color-destructive: var(--just-error);
+  --color-destructive-solid: var(--just-destructive);
+  --color-on-destructive: var(--just-on-destructive);
   --color-info: var(--just-info);
 
-  /* Border Radius */
+  /* Syntax highlighting (used by docs code blocks and the playground) */
+  --color-syn-keyword: var(--just-syn-keyword);
+  --color-syn-string: var(--just-syn-string);
+  --color-syn-type: var(--just-syn-type);
+  --color-syn-number: var(--just-syn-number);
+  --color-syn-comment: var(--just-syn-comment);
+
+  /* Border radius */
+  --radius: var(--just-radius-sm);
   --radius-xs: var(--just-radius-xs);
   --radius-sm: var(--just-radius-sm);
   --radius-md: var(--just-radius-md);
   --radius-lg: var(--just-radius-lg);
+  --radius-xl: var(--just-radius-xl);
+  --radius-2xl: var(--just-radius-2xl);
 
-  /* Box Shadows */
+  /* Box shadows: one per elevation level, flat-offset in neobrutalism */
   --shadow-solid: var(--just-shadow-solid);
+  --shadow-xs: var(--just-shadow-xs);
+  --shadow-sm: var(--just-shadow-sm);
+  --shadow-md: var(--just-shadow-md);
+  --shadow-lg: var(--just-shadow-lg);
 
   /* Fonts */
   --font-sans: 'IBM Plex Sans', sans-serif;
@@ -42,9 +60,16 @@
   --font-heading: 'IBM Plex Sans', sans-serif;
 }
 
-/* Base Styles & Token Initializations (Default Theme) */
+/* ---------------------------------------------------------------------------
+   Preset token sets.
+   `.preset-default` and `.theme-neobrutalism` are each a COMPLETE token set,
+   so either can be applied to any subtree (a preview scope) regardless of the
+   preset applied to <body>. Values mirror packages/core (preset_tokens.dart,
+   shadow_scheme.dart) and packages/tokens (color_tokens.dart).
+   ------------------------------------------------------------------------- */
+
+/* Raw palette (preset independent) */
 :root {
-  /* === Custom Accent Palette === */
   --color-black: #18181b;
   --color-black-1: #18181b;
   --color-black-2: #27272a;
@@ -54,83 +79,239 @@
   --color-gray-2: #828282;
   --color-gray-3: #bdbdbd;
   --color-gray-4: #e0e0e0;
-  --color-accent: #a3e635;
-  --color-accent-light: #bef264;
-  --color-accent-dark: #84cc16;
-  --color-accent-deep: #65a30d;
-  --color-accent-muted: rgba(163, 230, 53, 0.1);
 
-  /* === JustUI Mapped Tokens (Light Mode) === */
-  --just-background: #f8fafc;
-  --just-text-primary: #18181b;
-  --just-text-secondary: #4f4f4f;
-  --just-text-muted: #828282;
-  --just-border: #e0e0e0;
-  --just-border-width: 1px;
-  --just-card-bg: #ffffff;
-  --just-elevated-bg: #ffffff;
   --just-accent: #a3e635;
-  --just-accent-foreground: #18181b;
   --just-accent-light: #bef264;
   --just-accent-dark: #84cc16;
   --just-accent-deep: #65a30d;
-  --just-accent-muted: rgba(163, 230, 53, 0.1);
-  --just-success: #22c55e;
-  --just-warning: #f59e0b;
-  --just-error: #ef4444;
-  --just-info: #06b6d4;
+  --just-accent-muted: rgba(163, 230, 53, 0.12);
   --just-spacing-sm: 8px;
   --just-spacing-md: 16px;
   --just-spacing-lg: 24px;
+}
+
+/* Default preset, light */
+:root,
+.preset-default {
+  --just-background: #f8fafc;
+  --just-text-primary: #18181b;
+  --just-text-secondary: #4f4f4f;
+  /* was #828282 (3.6:1 on the page background); #6b6b6b clears 4.5:1 */
+  --just-text-muted: #6b6b6b;
+  --just-border: #e0e0e0;
+  --just-border-width: 1px;
+  --just-border-width-emphasis: 2px;
+  --just-card-bg: #ffffff;
+  --just-elevated-bg: #ffffff;
+  --just-fill: #e0e0e0;
+  --just-accent-foreground: #18181b;
+  /* accent used AS TEXT: lime-700, 4.9:1 on white */
+  --just-accent-text: #4d7c0f;
+  --just-success: #16a34a;
+  --just-warning: #d97706;
+  --just-error: #dc2626;
+  --just-info: #0891b2;
+  --just-destructive: #dc2626;
+  --just-on-destructive: #ffffff;
   --just-radius-xs: 2px;
   --just-radius-sm: 4px;
   --just-radius-md: 6px;
   --just-radius-lg: 12px;
-  --just-shadow-solid: 0px 0px 0px 0px transparent;
+  --just-radius-xl: 16px;
+  --just-radius-2xl: 24px;
+  --just-shadow-xs: 0 0 0 0 transparent;
+  --just-shadow-sm: 0 0 0 0 transparent;
+  --just-shadow-md: 0 0 0 0 transparent;
+  --just-shadow-lg: 0 0 0 0 transparent;
+  --just-shadow-solid: var(--just-shadow-sm);
+  --just-press-transform: scale(0.97);
+  --just-press-shadow: none;
+  --just-motion: transform 120ms ease, box-shadow 120ms ease;
+  --just-syn-keyword: #733ea4;
+  --just-syn-string: #0f6a31;
+  --just-syn-type: #005c9b;
+  --just-syn-number: #994a00;
+  --just-syn-comment: #6b6b6b;
 }
 
-/* Dark Mode Token Overrides */
-.dark {
+/* Default preset, dark */
+.dark,
+.dark .preset-default {
   --just-background: #18181b;
   --just-text-primary: #f8fafc;
   --just-text-secondary: #bdbdbd;
-  --just-text-muted: #828282;
+  --just-text-muted: #9a9a9f;
   --just-border: #333333;
   --just-card-bg: #27272a;
   --just-elevated-bg: #27272a;
-  --just-accent: #a3e635;
-  --just-accent-foreground: #18181b;
-  --just-accent-light: #bef264;
-  --just-accent-dark: #84cc16;
-  --just-accent-deep: #65a30d;
-  --just-accent-muted: rgba(163, 230, 53, 0.1);
+  --just-fill: #333333;
+  --just-accent-text: #a3e635;
   --just-success: #4ade80;
   --just-warning: #fbbf24;
   --just-error: #f87171;
   --just-info: #22d3ee;
+  --just-destructive: #b91c1c;
+  --just-on-destructive: #ffffff;
+  --just-radius-xs: 2px;
+  --just-radius-sm: 4px;
+  --just-radius-md: 6px;
+  --just-radius-lg: 12px;
+  --just-radius-xl: 16px;
+  --just-radius-2xl: 24px;
+  --just-syn-keyword: #c9a3f5;
+  --just-syn-string: #83d494;
+  --just-syn-type: #74c2ee;
+  --just-syn-number: #f6ab6b;
+  --just-syn-comment: #8f8f96;
 }
 
-/* Neobrutalism Preset Theme Overrides */
+/* Neobrutalism, light: thick black borders, flat offset shadows, sharp
+   corners (pills and circles stay round), cream background. */
 .theme-neobrutalism {
+  --just-background: #fff8e7;
+  --just-text-primary: #000000;
+  --just-text-secondary: #222222;
+  --just-text-muted: #555555;
+  --just-border: #000000;
   --just-border-width: 2.5px;
-  --just-border: #18181b;
-  --just-shadow-solid: 4px 4px 0px 0px #18181b;
+  --just-border-width-emphasis: 3px;
+  --just-card-bg: #ffffff;
+  --just-elevated-bg: #ffffff;
+  --just-fill: #e6dcc0;
   --just-accent: #a3e635;
   --just-accent-light: #bef264;
   --just-accent-dark: #84cc16;
   --just-accent-deep: #65a30d;
+  --just-accent-foreground: #000000;
+  --just-accent-text: #000000;
+  --just-success: #38e54d;
+  --just-warning: #f59e0b;
+  --just-error: #ff4b4b;
+  --just-info: #4d96ff;
+  --just-destructive: #ff4b4b;
+  --just-on-destructive: #000000;
+  --just-radius-xs: 0px;
+  --just-radius-sm: 0px;
+  --just-radius-md: 0px;
+  --just-radius-lg: 0px;
+  --just-radius-xl: 0px;
+  --just-radius-2xl: 0px;
+  --just-shadow-xs: 2px 2px 0 0 #000;
+  --just-shadow-sm: 4px 4px 0 0 #000;
+  --just-shadow-md: 6px 6px 0 0 #000;
+  --just-shadow-lg: 8px 8px 0 0 #000;
+  --just-shadow-solid: var(--just-shadow-sm);
+  /* press: translate into the surface while the shadow collapses; no easing */
+  --just-press-transform: translate(4px, 4px);
+  --just-press-shadow: none;
+  --just-motion: none;
 }
 
-.theme-neobrutalism-dark,
-.dark .theme-neobrutalism,
-.dark.theme-neobrutalism {
-  --just-border-width: 2.5px;
-  --just-border: #f8fafc;
-  --just-shadow-solid: 4px 4px 0px 0px #f8fafc;
+/* Neobrutalism, dark */
+.dark.theme-neobrutalism,
+.dark .theme-neobrutalism {
+  --just-background: #1a1a1a;
+  --just-text-primary: #ffffff;
+  --just-text-secondary: #cccccc;
+  --just-text-muted: #a8a8a8;
+  --just-border: #ffffff;
+  --just-card-bg: #262626;
+  --just-elevated-bg: #333333;
+  --just-fill: #444444;
   --just-accent: #a3e635;
   --just-accent-light: #bef264;
   --just-accent-dark: #84cc16;
   --just-accent-deep: #65a30d;
+  --just-accent-foreground: #000000;
+  --just-accent-text: #a3e635;
+  --just-success: #4ade80;
+  --just-warning: #fbbf24;
+  --just-error: #ff5353;
+  --just-info: #60a5fa;
+  --just-destructive: #ff5353;
+  --just-on-destructive: #000000;
+  --just-radius-xs: 0px;
+  --just-radius-sm: 0px;
+  --just-radius-md: 0px;
+  --just-radius-lg: 0px;
+  --just-radius-xl: 0px;
+  --just-radius-2xl: 0px;
+  --just-shadow-xs: 2px 2px 0 0 #fff;
+  --just-shadow-sm: 4px 4px 0 0 #fff;
+  --just-shadow-md: 6px 6px 0 0 #fff;
+  --just-shadow-lg: 8px 8px 0 0 #fff;
+  --just-shadow-solid: var(--just-shadow-sm);
+}
+
+/* Neobrutalism interaction is instant (core: focus 50ms, dropdown 80ms linear) */
+.theme-neobrutalism * {
+  transition-duration: 0s !important;
+}
+
+/* Flat-offset solid shadow overrides under Neobrutalism (bypassing blurry framework defaults) */
+.theme-neobrutalism .shadow-xs,
+.theme-neobrutalism.shadow-xs {
+  box-shadow: var(--just-shadow-xs) !important;
+}
+.theme-neobrutalism .shadow-sm,
+.theme-neobrutalism.shadow-sm {
+  box-shadow: var(--just-shadow-sm) !important;
+}
+.theme-neobrutalism .shadow-md,
+.theme-neobrutalism.shadow-md {
+  box-shadow: var(--just-shadow-md) !important;
+}
+.theme-neobrutalism .shadow-lg,
+.theme-neobrutalism.shadow-lg {
+  box-shadow: var(--just-shadow-lg) !important;
+}
+.theme-neobrutalism .shadow-xl,
+.theme-neobrutalism.shadow-xl {
+  box-shadow: 10px 10px 0 0 var(--just-border) !important;
+}
+.theme-neobrutalism .shadow-2xl,
+.theme-neobrutalism.shadow-2xl {
+  box-shadow: 12px 12px 0 0 var(--just-border) !important;
+}
+.theme-neobrutalism .shadow-solid,
+.theme-neobrutalism.shadow-solid {
+  box-shadow: var(--just-shadow-solid) !important;
+}
+
+/* Press effect shared by every solid button. Usage:
+   className="just-press"  (transition + :active transform) */
+.just-press {
+  transition: var(--just-motion);
+}
+.just-press:active:not(:disabled) {
+  transform: var(--just-press-transform);
+  box-shadow: var(--just-press-shadow);
+}
+.theme-neobrutalism .just-press:active:not(:disabled) {
+  transform: translate(4px, 4px) !important;
+  box-shadow: none !important;
+}
+
+/* Fumadocs: route its surface tokens through JustUI tokens so the docs
+   layout follows the active preset and theme. Defined on <body> so that
+   var(--just-*) resolves against body.theme-neobrutalism. */
+body {
+  --color-fd-background: var(--just-background);
+  --color-fd-foreground: var(--just-text-primary);
+  --color-fd-muted: var(--just-card-bg);
+  --color-fd-muted-foreground: var(--just-text-muted);
+  --color-fd-card: var(--just-card-bg);
+  --color-fd-card-foreground: var(--just-text-primary);
+  --color-fd-popover: var(--just-elevated-bg);
+  --color-fd-popover-foreground: var(--just-text-primary);
+  --color-fd-border: var(--just-border);
+  --color-fd-primary: var(--just-accent-text);
+  --color-fd-primary-foreground: var(--just-accent-foreground);
+  --color-fd-secondary: var(--just-card-bg);
+  --color-fd-secondary-foreground: var(--just-text-secondary);
+  --color-fd-accent: var(--just-accent);
+  --color-fd-accent-foreground: var(--just-accent-foreground);
+  --color-fd-ring: var(--just-accent-dark);
 }
 
 /* Stage entrance spring animation for Living Widget Stage */
@@ -173,14 +354,14 @@
 }
 
 .animate-toast-enter {
-  animation: toast-enter 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) both;
+  animation: toast-enter 200ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
 }
 
 .animate-toast-exit {
-  animation: toast-exit 150ms cubic-bezier(0.3, 0.0, 0.8, 0.15) both;
+  animation: toast-exit 150ms cubic-bezier(0.3, 0, 0.8, 0.15) both;
 }
 
-/* Reduced Motion Safeguard */
+/* Reduced motion safeguard */
 @media (prefers-reduced-motion: reduce) {
   *,
   ::before,

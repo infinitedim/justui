@@ -30,7 +30,7 @@ export function AvatarMock({
           className={cn(
             'flex h-12 w-12 items-center justify-center font-mono font-bold transition-all',
             isNeo
-              ? 'bg-accent rounded-md border-2 border-black text-black shadow-[3px_3px_0px_0px_#000] dark:border-white dark:shadow-[3px_3px_0px_0px_#fff]'
+              ? 'bg-accent text-black rounded-full border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
               : 'border-border bg-foreground text-background rounded-full border shadow-sm'
           )}
         >
@@ -38,7 +38,8 @@ export function AvatarMock({
         </div>
         <span
           className={cn(
-            'border-surface absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 rounded-full border-2 transition-colors',
+            'absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 rounded-full border-2 transition-colors',
+            isNeo ? 'border-black dark:border-white' : 'border-surface',
             online ? 'bg-emerald-500' : 'bg-zinc-400'
           )}
         />

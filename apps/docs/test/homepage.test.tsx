@@ -45,11 +45,14 @@ describe('HomePage Component', () => {
     render(page);
 
     expect(
-      screen.getByRole('heading', { level: 1, name: /copy\. paste\. ship\./i })
+      screen.getByRole('heading', {
+        level: 1,
+        name: /one command\. one file\. yours\./i,
+      })
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText(/A zero-dependency, copy-paste component library/i)
+      screen.getByText(/not a dependency\. justui copies flutter components/i)
     ).toBeInTheDocument();
   });
 
@@ -83,9 +86,14 @@ describe('HomePage Component', () => {
       screen.getByRole('radiogroup', { name: /preset spotlight/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { name: /components/i })
+      screen.getByRole('heading', { level: 2, name: /^components$/i })
     ).toBeInTheDocument();
-    expect(screen.getByText('THE ENGINE ROOM')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', {
+        level: 2,
+        name: /what you actually get/i,
+      })
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /JustButton/i })).toHaveAttribute(
       'href',
       '/en/docs/components/button'

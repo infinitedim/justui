@@ -30,7 +30,7 @@ export function CheckboxMock({
         className={cn(
           'flex h-5 w-5 items-center justify-center transition-all',
           isNeo
-            ? 'bg-surface rounded-md border-2 border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
+            ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
             : 'border-border bg-surface rounded border',
           checked && (isNeo ? 'bg-accent' : 'border-accent bg-accent')
         )}

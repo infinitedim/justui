@@ -21,14 +21,13 @@ export function SearchBar({
       onClick={onActivate}
       aria-label={label}
       className={cn(
-        'hidden items-center gap-3 rounded-full bg-transparent px-3 py-1.5 font-mono text-xs transition-colors sm:flex',
-        'border-border border-(length:--just-border-width)',
-        'text-muted hover:text-foreground',
+        'just-press bg-card text-muted hover:text-foreground hidden h-7 items-center gap-3 px-2.5 font-mono text-xs sm:flex',
+        'rounded-(--just-radius-md) border-(length:--just-border-width) border-border shadow-xs',
         className
       )}
     >
-      <span>{placeholder}</span>
-      <Kbd>{shortcut}</Kbd>
+      <span className="whitespace-nowrap">{placeholder}</span>
+      <Kbd className="whitespace-nowrap">{shortcut}</Kbd>
     </button>
   );
 }

@@ -20,7 +20,7 @@ export function TooltipMock({
           className={cn(
             'absolute -top-9 px-2.5 py-1 font-mono text-[10px] whitespace-nowrap transition-all',
             isNeo
-              ? 'bg-accent rounded border border-black font-bold text-black shadow-[2px_2px_0px_0px_#000] dark:border-white'
+              ? 'bg-accent rounded-none border-[2px] border-black font-bold text-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
               : 'bg-foreground text-background rounded shadow-md'
           )}
         >
@@ -38,7 +38,7 @@ export function TooltipMock({
         className={cn(
           'p-2 transition-all select-none',
           isNeo
-            ? 'bg-surface text-foreground rounded-md border-2 border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
+            ? 'bg-surface text-foreground rounded-full border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
             : 'border-border bg-surface hover:border-accent rounded-full border'
         )}
       >

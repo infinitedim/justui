@@ -57,12 +57,12 @@ describe('Molecules Components', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole('button', { name: 'Toggle preset' })
+          screen.getByRole('radiogroup', { name: 'Toggle preset' })
         ).toBeInTheDocument();
       });
 
-      const btn = screen.getByRole('button', { name: 'Toggle preset' });
-      fireEvent.click(btn);
+      const neoBtn = screen.getByRole('radio', { name: 'neo' });
+      fireEvent.click(neoBtn);
     });
   });
 
@@ -79,7 +79,7 @@ describe('Molecules Components', () => {
       render(<ThemeSwitcher label="Toggle theme" />);
       await waitFor(() => {
         expect(
-          screen.getByRole('button', { name: 'Toggle theme' })
+          screen.getByRole('radiogroup', { name: 'Toggle theme' })
         ).toBeInTheDocument();
       });
     });

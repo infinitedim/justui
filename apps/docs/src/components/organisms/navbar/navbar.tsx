@@ -18,8 +18,9 @@ import { getHomepageDictionary } from '@/lib/homepage-translations';
 
 import type { NavbarProps } from './navbar.types';
 
-/** Shared sizing so the molecules keep the navbar's 32px control height. */
-const NAV_PILL = 'h-8 border';
+/** Icon-only header button (mobile search / menu), same box model as the other controls. */
+const ICON_BUTTON =
+  'just-press bg-card text-foreground inline-flex h-7 w-7 items-center justify-center rounded-(--just-radius-md) border-(length:--just-border-width) border-border shadow-xs';
 
 export function Navbar({ starCount, lang }: NavbarProps) {
   const t = getHomepageDictionary(lang);
@@ -74,15 +75,17 @@ export function Navbar({ starCount, lang }: NavbarProps) {
     return '/';
   }, [pathname]);
 
+  const searchLabel = lang === 'en' ? 'Open search' : 'Buka pencarian';
+
   return (
     <>
-      <header className="border-border bg-background/80 sticky top-0 z-40 h-14 border-b backdrop-blur-sm">
+      <header className="border-border bg-background/90 sticky top-0 z-40 h-14 border-b border-b-(length:--just-border-width) backdrop-blur-sm">
         <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href={`/${lang}`} aria-label="JustUI home" className="shrink-0">
             <span className="text-foreground font-mono text-sm font-medium">
               just
             </span>
-            <span className="text-accent font-mono text-sm font-medium">
+            <span className="text-accent-text font-mono text-sm font-medium">
               ui
             </span>
           </Link>
@@ -103,21 +106,15 @@ export function Navbar({ starCount, lang }: NavbarProps) {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher lang={lang} className={NAV_PILL} />
-            <PresetToggle
-              label={t.togglePreset}
-              className={`${NAV_PILL} w-8 justify-center px-0`}
-            />
-            <ThemeSwitcher
-              label={t.toggleTheme}
-              className={`${NAV_PILL} w-8 px-0`}
-            />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <LanguageSwitcher lang={lang} />
+            <PresetToggle label={t.togglePreset} />
+            <ThemeSwitcher label={t.toggleTheme} />
             <button
               type="button"
-              className="border-border text-muted hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-full border bg-transparent transition-colors sm:hidden"
+              className={`${ICON_BUTTON} sm:hidden`}
               onClick={() => setOpen(true)}
-              aria-label={lang === 'en' ? 'Open search' : 'Buka pencarian'}
+              aria-label={searchLabel}
             >
               <Search size={14} aria-hidden="true" />
             </button>
@@ -125,17 +122,12 @@ export function Navbar({ starCount, lang }: NavbarProps) {
               shortcut={shortcut}
               placeholder={t.searchPlaceholder}
               onActivate={() => setOpen(true)}
-              label={lang === 'en' ? 'Open search' : 'Buka pencarian'}
-              className="border"
+              label={searchLabel}
             />
-            <GitHubPill
-              href={githubUrl}
-              starCount={starCount}
-              className="border"
-            />
+            <GitHubPill href={githubUrl} starCount={starCount} />
             <button
               type="button"
-              className="border-border text-muted hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-full border bg-transparent transition-colors md:hidden"
+              className={`${ICON_BUTTON} md:hidden`}
               onClick={() => setMobileOpen((prev) => !prev)}
               aria-label={
                 mobileOpen
@@ -159,7 +151,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
         {mobileOpen ? (
           <div
             data-testid="mobile-navigation-drawer"
-            className="border-border bg-background/95 fixed inset-x-0 top-14 z-40 border-b px-4 py-4 shadow-lg backdrop-blur-md md:hidden"
+            className="border-border bg-background fixed inset-x-0 top-14 z-40 border-b border-b-(length:--just-border-width) px-4 py-4 md:hidden"
           >
             <nav
               className="flex flex-col gap-2 font-mono text-sm"
@@ -172,8 +164,8 @@ export function Navbar({ starCount, lang }: NavbarProps) {
                   onClick={() => setMobileOpen(false)}
                   className={
                     activeHref === link.activeHref
-                      ? 'bg-accent-muted text-accent-dark dark:text-accent-light rounded-md px-3 py-2.5 font-medium transition-colors'
-                      : 'text-muted hover:text-foreground hover:bg-card rounded-md px-3 py-2.5 transition-colors'
+                      ? 'bg-accent text-accent-foreground rounded-(--just-radius-md) px-3 py-2.5 font-medium transition-colors'
+                      : 'text-muted hover:text-foreground hover:bg-card rounded-(--just-radius-md) px-3 py-2.5 transition-colors'
                   }
                 >
                   {link.label}

@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "(function(){try{if(localStorage.getItem('justui-preset')==='neobrutalism'){document.body.classList.add('theme-neobrutalism')}}catch(e){}})();",
+              "(function(){try{if(localStorage.getItem('justui-preset')==='neobrutalism'){document.documentElement.classList.add('theme-neobrutalism');document.body.classList.add('theme-neobrutalism');}}catch(e){}})();",
           }}
         />
         <ThemeProvider

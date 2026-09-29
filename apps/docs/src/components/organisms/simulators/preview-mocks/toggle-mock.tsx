@@ -30,7 +30,7 @@ export function ToggleMock({
       className={cn(
         'inline-flex gap-1 p-1',
         isNeo
-          ? 'bg-surface rounded-md border-2 border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
+          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
           : 'border-border bg-surface rounded-md border shadow-sm'
       )}
     >
@@ -44,10 +44,10 @@ export function ToggleMock({
             data-testid={`mock-toggle-${id}`}
             className={cn(
               'flex h-8 w-8 items-center justify-center transition-all select-none',
-              isNeo ? 'rounded' : 'rounded-sm',
+              isNeo ? 'rounded-none' : 'rounded-sm',
               isSelected
                 ? isNeo
-                  ? 'bg-accent border border-black font-bold text-black dark:border-white'
+                  ? 'bg-accent border-[2px] border-black font-bold text-black dark:border-white'
                   : 'bg-accent/20 text-accent-deep dark:text-accent font-medium'
                 : 'text-muted hover:text-foreground'
             )}
