@@ -71,7 +71,7 @@ describe('HomePage Component', () => {
     render(page);
 
     expect(
-      screen.getByText('curl -fsSL https://justui.dev/install.sh | bash')
+      screen.getByText('curl -fsSL https://justui.vercel.app/install.sh | sh')
     ).toBeInTheDocument();
     expect(
       screen.getByRole('region', { name: /interactive terminal/i })

@@ -16,17 +16,12 @@ const PLATFORMS: readonly PlatformMeta[] = [
   {
     id: 'curl',
     defaultLabel: 'macOS / Linux',
-    command: 'curl -fsSL https://justui.dev/install.sh | bash',
+    command: 'curl -fsSL https://justui.vercel.app/install.sh | sh',
   },
   {
     id: 'powershell',
     defaultLabel: 'Windows',
-    command: 'irm https://justui.dev/install.ps1 | iex',
-  },
-  {
-    id: 'cargo',
-    defaultLabel: 'Cargo',
-    command: 'cargo install justui',
+    command: 'irm https://justui.vercel.app/install.ps1 | iex',
   },
 ] as const;
 
@@ -37,7 +32,6 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
   const getLabel = (platform: InstallPlatform, fallback: string): string => {
     if (platform === 'curl') return t.installTabCurl || fallback;
     if (platform === 'powershell') return t.installTabPowershell || fallback;
-    if (platform === 'cargo') return t.installTabCargo || fallback;
     return fallback;
   };
 

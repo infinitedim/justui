@@ -25,7 +25,6 @@ export type HomepageDictionary = {
   terminalChipPreset: string;
   installTabCurl: string;
   installTabPowershell: string;
-  installTabCargo: string;
   stageEmptyState: string;
   stagePreviewTab: string;
   stageCodeTab: string;
@@ -86,7 +85,6 @@ export const homepageTranslations: Readonly<
     terminalChipPreset: 'justui preset apply neobrutalism',
     installTabCurl: 'macOS / Linux',
     installTabPowershell: 'Windows',
-    installTabCargo: 'Cargo',
     stageEmptyState:
       'Run a command in the terminal to see components appear here.',
     stagePreviewTab: 'Preview',
@@ -150,7 +148,6 @@ export const homepageTranslations: Readonly<
     terminalChipPreset: 'justui preset apply neobrutalism',
     installTabCurl: 'macOS / Linux',
     installTabPowershell: 'Windows',
-    installTabCargo: 'Cargo',
     stageEmptyState:
       'Jalankan perintah di terminal untuk melihat komponen muncul di sini.',
     stagePreviewTab: 'Pratinjau',

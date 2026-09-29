@@ -61,10 +61,10 @@ justui/
 
 ```bash
 # macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/infinitedim/justui/main/packages/cli/install/install.sh | sh
+curl -fsSL https://justui.vercel.app/install.sh | sh
 
 # Windows (PowerShell)
-irm https://raw.githubusercontent.com/infinitedim/justui/main/packages/cli/install/install.ps1 | iex
+irm https://justui.vercel.app/install.ps1 | iex
 ```
 
 > **Security Note:** All binaries downloaded via our install scripts are cryptographically verified against published SHA-256 checksums before installation.

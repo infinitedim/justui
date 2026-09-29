@@ -99,7 +99,10 @@ vi.mock('@/lib/source', () => ({
 
 // Imports of pages and layouts
 import RootLayout from '@/app/layout';
-import LangLayout from '@/app/[lang]/layout';
+import LangLayout, {
+  generateStaticParams as langStaticParams,
+  dynamicParams as langDynamicParams,
+} from '@/app/[lang]/layout';
 import { generateStaticParams as homeStaticParams } from '@/app/[lang]/page';
 import ComponentsPage, {
   generateStaticParams as componentsStaticParams,
@@ -160,6 +163,21 @@ describe('App Router Pages and Layouts', () => {
       render(layout);
       expect(screen.getByTestId('root-provider')).toBeInTheDocument();
       expect(screen.getByTestId('lang-child')).toBeInTheDocument();
+    });
+
+    it('invokes notFound when invalid locale is provided', async () => {
+      await expect(
+        LangLayout({
+          params: Promise.resolve({ lang: 'fr' }),
+          children: <div data-testid="lang-child" />,
+        })
+      ).rejects.toThrow('NEXT_NOT_FOUND');
+      expect(mockNotFound).toHaveBeenCalled();
+    });
+
+    it('exports dynamicParams as false and returns static params for all locales', () => {
+      expect(langDynamicParams).toBe(false);
+      expect(langStaticParams()).toEqual([{ lang: 'en' }, { lang: 'id' }]);
     });
   });
 

@@ -21,7 +21,7 @@ const cspProduction = `
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https://github.com https://raw.githubusercontent.com https://avatars.githubusercontent.com https://opengraph.githubassets.com;
   font-src 'self' data:;
-  connect-src 'self' https://vitals.vercel-insights.com https://api.github.com;
+  connect-src 'self' https://vitals.vercel-insights.com https://api.github.com https://raw.githubusercontent.com;
   frame-src 'self';
   object-src 'none';
   base-uri 'self';
@@ -38,7 +38,7 @@ const cspDevelopment = `
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https:;
   font-src 'self' data:;
-  connect-src 'self' ws: wss: https://api.github.com;
+  connect-src 'self' ws: wss: https://api.github.com https://raw.githubusercontent.com;
   frame-src 'self';
   object-src 'none';
   base-uri 'self';

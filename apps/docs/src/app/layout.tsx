@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
 import { ThemeProvider, PresetProvider } from '@/components/providers';
@@ -15,7 +16,10 @@ const mono = IBM_Plex_Mono({
   variable: '--font-mono',
 });
 
-export const metadata = {
+export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://justui.vercel.app'
+  ),
   title: 'JustUI Documentation',
   description: 'Beautiful, accessible, copy-paste Flutter UI components.',
 };
