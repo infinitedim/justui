@@ -1,4 +1,4 @@
-export type InstallPlatform = 'curl' | 'powershell' | 'cargo';
+export type InstallPlatform = 'curl' | 'powershell';
 
 export interface InstallTabsProps {
   lang?: string;

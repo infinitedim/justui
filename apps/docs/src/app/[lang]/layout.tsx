@@ -2,7 +2,19 @@ import { RootProvider } from 'fumadocs-ui/provider/next';
 import { i18nProvider } from 'fumadocs-ui/i18n';
 import { translations } from '@/lib/layout.shared';
 import { HtmlLang } from '@/components/html-lang';
+import { notFound } from 'next/navigation';
+import { isLocale, localeStaticParams } from '@/lib/i18n';
 import type { ReactNode } from 'react';
+
+/**
+ * Only the statically known locales are valid `[lang]` segments.
+ * Any other value (e.g. `/fr`, `/robots.txt`, `/wp-login.php`) triggers 404.
+ */
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return localeStaticParams();
+}
 
 export default async function LangLayout({
   params,
@@ -12,6 +24,10 @@ export default async function LangLayout({
   children: ReactNode;
 }) {
   const lang = (await params).lang;
+
+  // Belt-and-suspenders guard: dynamicParams=false handles the normal case,
+  // but this protects against edge cases in development/ISR revalidation.
+  if (!isLocale(lang)) notFound();
 
   return (
     <>
