@@ -4,6 +4,36 @@ All notable changes to the JustUI monorepo will be documented in this file.
 
 ---
 
+## [Unreleased]
+### Added
+- Docs site: interactive `ButtonPlayground` (live prop editor with generated Dart source) and `CheckoutDemo` (async pay-button flow showing loading, disabled and paid states), exposed to MDX together with fumadocs `Tabs`/`Tab` and `JustButtonPreview`.
+- Docs site: `justui-shiki-theme.ts` light/dark Shiki themes, wired into `source.config.ts`, so fenced code blocks use the same syntax palette as the playground.
+- Docs site: `SegmentedToggle` molecule (accessible two-option `radiogroup`), used by the preset and theme switchers.
+- Docs site: `ComponentPreviewGrid` homepage organism with miniature, token-driven component previews that follow the active preset and theme.
+- Docs site: `WhatYouGet` homepage organism with three demonstrated claims (CLI writes source into the repo, presets swap tokens not components, text color follows background contrast), including a live `ContrastDemo` and side-by-side default/neobrutalism samples.
+- Docs site: new design tokens `--just-fill`, `--just-accent-text`, `--just-destructive`/`--just-on-destructive`, a four-step shadow scale (`xs`/`sm`/`md`/`lg`), `xl`/`2xl` radii, and `--just-syn-*` syntax colors.
+- Docs site: shared `.just-press` utility giving every solid control the same press feedback (scale in default, translate-into-shadow in neobrutalism).
+- Docs site: fumadocs `--color-fd-*` variables are bridged to `--just-*` tokens so the docs shell follows the active preset and theme.
+- Docs site: English and Indonesian strings for the new homepage sections and the Cargo install tab.
+
+### Changed
+- Docs site: `globals.css` restructured into three complete, independently scopable token sets (default light, default dark, neobrutalism light/dark), so a subtree can be pinned to a preset regardless of what `<body>` uses.
+- Docs site: neobrutalism preset rebuilt to the design rules in `AGENTS.md` §10: 2.5px solid black/white borders, sharp corners (pills and circles stay round), flat 4/6/8px offset shadows, cream light background and a dedicated dark palette, and instant transitions.
+- Docs site: all preview mocks, `LivingComponentCard`, `CardActionBar` and `DartCodeModal` normalized to the same neobrutalism border width, radius and shadow offset.
+- Docs site: `color-resolver.ts` neobrutalism values aligned with the CSS (`#fff8e7` background, `#000000` border and shadow, dedicated dark surfaces, black accent foreground).
+- Docs site: homepage hero copy rewritten ("One command. One file. Yours.") and simplified (no pulse-dot badge or arrow icon); the component grid and bento section replaced by `ComponentPreviewGrid` and `WhatYouGet`. Legacy `bento*` translation keys are kept until the bento components are removed.
+- Docs site: header controls (`GitHubPill`, `LanguageSwitcher`, `SearchBar`, mobile icon buttons) share one 28px box model; `PresetToggle` and `ThemeSwitcher` now show both options and fill the active one instead of a single letter/icon button.
+- Docs site: footer trimmed to a tagline plus two link columns, removing the version badge and copyright/note rows.
+- Docs site: `button.mdx` rewritten around a playground, an "Add to your project" step and a tabbed code/preview "Advanced usage" section; the prose theming section was folded into "Accessibility".
+- Docs site: `PresetProvider` and the anti-flash script now apply `theme-neobrutalism` to both `<html>` and `<body>`.
+- Docs site: `InteractiveTerminal` scrolls its buffer by setting `scrollTop` instead of `scrollIntoView`, removing the smooth-scroll animation on each new line.
+
+### Fixed
+- Docs site: default light `--just-text-muted` raised from `#828282` (3.6:1) to `#6b6b6b` to meet WCAG AA 4.5:1; accent-as-text now uses the dedicated `--just-accent-text` token.
+- Docs site: neobrutalism border/shadow color corrected from `#18181b` to true `#000000`.
+
+---
+
 ## [0.14.0] - 2026-09-13
 ### Added
 - Scaffolded the docs site's atom and molecule component library (`apps/docs`).
