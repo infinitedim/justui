@@ -21,6 +21,8 @@ export type HomepageDictionary = {
   componentsPageDescription: string;
   componentsPageCount: string;
   terminalTitle: string;
+  terminalBadge: string;
+  terminalShortcuts: string;
   terminalChipInit: string;
   terminalChipAddButton: string;
   terminalChipAddMulti: string;
@@ -28,6 +30,12 @@ export type HomepageDictionary = {
   installTabCurl: string;
   installTabPowershell: string;
   installTabCargo: string;
+  stageBadge: string;
+  stageClear: string;
+  stageEmptyTitle: string;
+  stageEmptyDescription: string;
+  stageEmptyCta: string;
+  stageInteractTip: string;
   stageEmptyState: string;
   stagePreviewTab: string;
   stageCodeTab: string;
@@ -93,6 +101,8 @@ export const homepageTranslations: Readonly<
       'All components are ready to use. Copy, paste, and customize directly in your Flutter project.',
     componentsPageCount: 'components available',
     terminalTitle: 'justui@v0.14.0 ~ /my-flutter-app',
+    terminalBadge: 'CLI Simulator',
+    terminalShortcuts: '[Tab] Autocomplete | [Up/Down] History | [Enter] Run',
     terminalChipInit: 'justui init',
     terminalChipAddButton: 'justui add button',
     terminalChipAddMulti: 'justui add switch card',
@@ -100,6 +110,14 @@ export const homepageTranslations: Readonly<
     installTabCurl: 'macOS / Linux',
     installTabPowershell: 'Windows',
     installTabCargo: 'Cargo',
+    stageBadge: 'Live Flutter Canvas',
+    stageClear: 'Clear',
+    stageEmptyTitle: 'Flutter Canvas Ready',
+    stageEmptyDescription:
+      'Run commands in the terminal to copy components into your project and preview them live here.',
+    stageEmptyCta: 'Run: justui add button',
+    stageInteractTip:
+      'Tip: Click or interact with widgets above to test state animations.',
     stageEmptyState:
       'Run a command in the terminal to see components appear here.',
     stagePreviewTab: 'Preview',
@@ -170,6 +188,8 @@ export const homepageTranslations: Readonly<
       'Semua komponen siap pakai. Copy, paste, dan sesuaikan langsung di project Flutter kamu.',
     componentsPageCount: 'komponen tersedia',
     terminalTitle: 'justui@v0.14.0 ~ /my-flutter-app',
+    terminalBadge: 'Simulator CLI',
+    terminalShortcuts: '[Tab] Autocomplete | [Up/Down] History | [Enter] Run',
     terminalChipInit: 'justui init',
     terminalChipAddButton: 'justui add button',
     terminalChipAddMulti: 'justui add switch card',
@@ -177,6 +197,14 @@ export const homepageTranslations: Readonly<
     installTabCurl: 'macOS / Linux',
     installTabPowershell: 'Windows',
     installTabCargo: 'Cargo',
+    stageBadge: 'Kanvas Flutter Live',
+    stageClear: 'Bersihkan',
+    stageEmptyTitle: 'Kanvas Flutter Siap Digunakan',
+    stageEmptyDescription:
+      'Jalankan perintah di terminal untuk menyalin komponen ke proyekmu dan lihat pratinjaunya di sini.',
+    stageEmptyCta: 'Jalankan: justui add button',
+    stageInteractTip:
+      'Tip: Klik atau interaksikan widget di atas untuk mencoba animasinya.',
     stageEmptyState:
       'Jalankan perintah di terminal untuk melihat komponen muncul di sini.',
     stagePreviewTab: 'Pratinjau',

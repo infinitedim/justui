@@ -1,9 +1,13 @@
+import { createRef } from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { InteractiveTerminal } from '@/components/organisms/interactive-terminal';
+import {
+  InteractiveTerminal,
+  type InteractiveTerminalHandle,
+} from '@/components/organisms/interactive-terminal';
 
 describe('InteractiveTerminal', () => {
-  it('renders macOS window chrome with 3 control buttons and title', () => {
+  it('renders macOS window chrome with 3 control buttons, title, and CLI Simulator badge', () => {
     const { container } = render(<InteractiveTerminal />);
 
     const red = container.querySelector('.bg-\\[\\#FF5F57\\]');
@@ -16,6 +20,7 @@ describe('InteractiveTerminal', () => {
     expect(
       screen.getByText('justui@v0.14.0 ~ /my-flutter-app')
     ).toBeInTheDocument();
+    expect(screen.getByText('CLI Simulator')).toBeInTheDocument();
   });
 
   it('renders all 4 action chips', () => {
@@ -116,5 +121,76 @@ describe('InteractiveTerminal', () => {
     fireEvent.keyDown(input, { key: 'Tab' });
 
     expect(input).toHaveValue('justui ');
+  });
+
+  it('orders action chips with high-reward add button first and init last', () => {
+    render(<InteractiveTerminal />);
+
+    const buttons = screen.getAllByRole('button');
+    expect(buttons[0]).toHaveTextContent('justui add button');
+    expect(buttons[1]).toHaveTextContent('justui add switch card');
+    expect(buttons[2]).toHaveTextContent('justui preset apply neobrutalism');
+    expect(buttons[3]).toHaveTextContent('justui init');
+  });
+
+  it('renders keyboard shortcuts footer hints', () => {
+    render(<InteractiveTerminal />);
+    expect(
+      screen.getByText('[Tab] Autocomplete | [Up/Down] History | [Enter] Run')
+    ).toBeInTheDocument();
+  });
+
+  it('exposes runCommand via ref to trigger automated typing and ignores rapid duplicate triggers', async () => {
+    vi.useFakeTimers();
+    const ref = createRef<InteractiveTerminalHandle>();
+    const handleMount = vi.fn();
+    render(<InteractiveTerminal ref={ref} onMount={handleMount} />);
+
+    act(() => {
+      ref.current?.runCommand('justui add button');
+      ref.current?.runCommand('justui add button');
+    });
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(3000);
+    });
+
+    expect(handleMount).toHaveBeenCalledTimes(1);
+    expect(handleMount).toHaveBeenCalledWith(['button']);
+    vi.useRealTimers();
+  });
+
+  it('preserves text selection on container click without focusing input', () => {
+    render(<InteractiveTerminal />);
+    const region = screen.getByRole('region', { name: 'Interactive Terminal' });
+    const input = screen.getByLabelText('Terminal input');
+    const focusSpy = vi.spyOn(input, 'focus');
+
+    const getSelectionSpy = vi
+      .spyOn(window, 'getSelection')
+      .mockReturnValue({
+        toString: () => 'highlighted text',
+      } as unknown as Selection);
+
+    fireEvent.click(region);
+
+    expect(focusSpy).not.toHaveBeenCalled();
+    getSelectionSpy.mockRestore();
+  });
+
+  it('focuses input on container click when matchMedia is unavailable', () => {
+    const originalMatchMedia = window.matchMedia;
+    // @ts-expect-error simulating legacy/unsupported environment
+    delete window.matchMedia;
+
+    render(<InteractiveTerminal />);
+    const region = screen.getByRole('region', { name: 'Interactive Terminal' });
+    const input = screen.getByLabelText('Terminal input');
+    const focusSpy = vi.spyOn(input, 'focus');
+
+    fireEvent.click(region);
+
+    expect(focusSpy).toHaveBeenCalled();
+    window.matchMedia = originalMatchMedia;
   });
 });

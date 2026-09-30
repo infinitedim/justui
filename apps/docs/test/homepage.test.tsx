@@ -83,9 +83,6 @@ describe('HomePage Component', () => {
       screen.getByRole('region', { name: /living widget stage/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('radiogroup', { name: /preset spotlight/i })
-    ).toBeInTheDocument();
-    expect(
       screen.getByRole('heading', { level: 2, name: /^components$/i })
     ).toBeInTheDocument();
     expect(

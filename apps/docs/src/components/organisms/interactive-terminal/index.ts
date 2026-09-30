@@ -1,6 +1,7 @@
 export { InteractiveTerminal } from './interactive-terminal';
 export type {
   InteractiveTerminalProps,
+  InteractiveTerminalHandle,
   TerminalBufferEntry,
 } from './interactive-terminal.types';
 export { parseCommand } from './cli-parser';
