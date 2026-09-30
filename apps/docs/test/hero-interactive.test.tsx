@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { HeroInteractive } from '@/components/organisms/hero-interactive';
+import { PresetProvider } from '@/components/providers';
 
 describe('HeroInteractive', () => {
   it('renders both terminal and living stage organisms side-by-side', () => {
@@ -43,24 +44,64 @@ describe('HeroInteractive', () => {
     expect(
       screen.queryByRole('button', { name: 'Press me' })
     ).not.toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Run a command in the terminal to see components appear here.'
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText('Flutter Canvas Ready')).toBeInTheDocument();
   });
 
-  it('renders centerpiece preset spotlight toggle and switches preset', () => {
+  it('clears living stage when stage Clear button is clicked', () => {
     render(<HeroInteractive />);
 
-    const cleanRadio = screen.getByRole('radio', { name: 'Clean Precision' });
-    const neoRadio = screen.getByRole('radio', { name: 'Neobrutalism' });
+    const input = screen.getByLabelText('Terminal input');
+    fireEvent.change(input, { target: { value: 'justui add button' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
 
-    expect(cleanRadio).toBeInTheDocument();
-    expect(neoRadio).toBeInTheDocument();
-    expect(cleanRadio).toHaveAttribute('aria-checked', 'true');
+    expect(
+      screen.getByRole('button', { name: 'Press me' })
+    ).toBeInTheDocument();
 
-    fireEvent.click(neoRadio);
-    expect(neoRadio).toHaveAttribute('aria-checked', 'true');
+    const clearButton = screen.getByRole('button', { name: 'Clear' });
+    fireEvent.click(clearButton);
+
+    expect(
+      screen.queryByRole('button', { name: 'Press me' })
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('Flutter Canvas Ready')).toBeInTheDocument();
+  });
+
+  it('triggers command simulation and mounts widget when stage CTA is clicked', async () => {
+    vi.useFakeTimers();
+    render(<HeroInteractive />);
+
+    const ctaButton = screen.getByRole('button', {
+      name: /run: justui add button/i,
+    });
+    fireEvent.click(ctaButton);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(3000);
+    });
+
+    expect(
+      screen.getByRole('button', { name: 'Press me' })
+    ).toBeInTheDocument();
+
+    vi.useRealTimers();
+  });
+
+  it('switches preset when preset command is executed in terminal', () => {
+    render(
+      <PresetProvider>
+        <HeroInteractive />
+      </PresetProvider>
+    );
+
+    const input = screen.getByLabelText('Terminal input');
+    fireEvent.change(input, {
+      target: { value: 'justui preset apply neobrutalism' },
+    });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(
+      screen.getByRole('region', { name: /living widget stage/i })
+    ).toHaveAttribute('data-preset', 'neobrutalism');
   });
 });

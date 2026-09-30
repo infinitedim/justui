@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/cn';
 import { usePreset } from '@/components/providers';
 import { InteractiveTerminal } from '@/components/organisms/interactive-terminal';
+import type { InteractiveTerminalHandle } from '@/components/organisms/interactive-terminal';
 import { LivingStage } from '@/components/organisms/living-stage';
 import type { MountedWidget } from '@/components/organisms/living-stage';
 import { dispatchStageEvent } from '@/lib/stage-bridge';
-import { getHomepageDictionary } from '@/lib/homepage-translations';
 import type { HeroInteractiveProps } from './hero-interactive.types';
 
 export function HeroInteractive({
@@ -16,21 +16,12 @@ export function HeroInteractive({
   className,
 }: HeroInteractiveProps) {
   const [widgets, setWidgets] = useState<MountedWidget[]>([]);
-  const { preset: contextPreset, setPreset: setContextPreset } = usePreset();
-  const [preset, setPresetState] = useState<'default' | 'neobrutalism'>(
-    contextPreset || 'default'
-  );
+  const { preset, setPreset } = usePreset();
   const { resolvedTheme } = useTheme();
-  const t = getHomepageDictionary(lang);
+  const terminalRef = useRef<InteractiveTerminalHandle>(null);
 
   const currentMode: 'light' | 'dark' =
     resolvedTheme === 'dark' ? 'dark' : 'light';
-
-  useEffect(() => {
-    if (contextPreset) {
-      setPresetState(contextPreset);
-    }
-  }, [contextPreset]);
 
   useEffect(() => {
     dispatchStageEvent({
@@ -57,20 +48,18 @@ export function HeroInteractive({
 
   const handlePresetChange = useCallback(
     (next: 'default' | 'neobrutalism') => {
-      setPresetState(next);
-      setContextPreset(next);
-      dispatchStageEvent({
-        type: 'justui-theme',
-        preset: next,
-        mode: currentMode,
-      });
+      setPreset(next);
     },
-    [setContextPreset, currentMode]
+    [setPreset]
   );
 
   const handleClear = useCallback(() => {
     setWidgets([]);
     dispatchStageEvent({ type: 'justui-clear' });
+  }, []);
+
+  const handleRunCommand = useCallback((command: string) => {
+    terminalRef.current?.runCommand(command);
   }, []);
 
   return (
@@ -80,46 +69,9 @@ export function HeroInteractive({
         className
       )}
     >
-      {/* Centerpiece Preset Spotlight Toggle */}
-      <div className="flex items-center justify-center">
-        <div
-          role="radiogroup"
-          aria-label="Preset spotlight"
-          className="border-border bg-card shadow-solid inline-flex items-center rounded-full border-(length:--just-border-width) p-1"
-        >
-          <button
-            type="button"
-            role="radio"
-            aria-checked={preset === 'default'}
-            onClick={() => handlePresetChange('default')}
-            className={cn(
-              'rounded-full px-4 py-1.5 font-mono text-xs transition-colors',
-              preset === 'default'
-                ? 'bg-accent text-accent-foreground shadow-solid font-medium'
-                : 'text-muted hover:text-foreground'
-            )}
-          >
-            {t.presetCleanPrecision || 'Clean Precision'}
-          </button>
-          <button
-            type="button"
-            role="radio"
-            aria-checked={preset === 'neobrutalism'}
-            onClick={() => handlePresetChange('neobrutalism')}
-            className={cn(
-              'rounded-full px-4 py-1.5 font-mono text-xs transition-colors',
-              preset === 'neobrutalism'
-                ? 'bg-accent text-accent-foreground shadow-solid font-medium'
-                : 'text-muted hover:text-foreground'
-            )}
-          >
-            {t.presetNeobrutalism || 'Neobrutalism'}
-          </button>
-        </div>
-      </div>
-
       <div className="grid w-full grid-cols-1 items-stretch gap-8 lg:grid-cols-2">
         <InteractiveTerminal
+          ref={terminalRef}
           lang={lang}
           onMount={handleMount}
           onPresetChange={handlePresetChange}
@@ -130,6 +82,8 @@ export function HeroInteractive({
           widgets={widgets}
           preset={preset}
           lang={lang}
+          onClear={handleClear}
+          onRunCommand={handleRunCommand}
           className="h-full"
         />
       </div>

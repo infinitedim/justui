@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { cn } from '@/lib/cn';
 import { TerminalPrompt } from '@/components/molecules/terminal-prompt';
 import { TerminalLine } from '@/components/molecules/terminal-line';
@@ -9,16 +9,23 @@ import { parseCommand } from './cli-parser';
 import { REGISTRY_COMPONENT_NAMES } from './levenshtein';
 import type {
   InteractiveTerminalProps,
+  InteractiveTerminalHandle,
   TerminalBufferEntry,
 } from './interactive-terminal.types';
 
-export function InteractiveTerminal({
-  lang = 'en',
-  onMount,
-  onPresetChange,
-  onClear,
-  className,
-}: InteractiveTerminalProps) {
+export const InteractiveTerminal = forwardRef<
+  InteractiveTerminalHandle,
+  InteractiveTerminalProps
+>(function InteractiveTerminal(
+  {
+    lang = 'en',
+    onMount,
+    onPresetChange,
+    onClear,
+    className,
+  }: InteractiveTerminalProps,
+  ref
+) {
   const [buffer, setBuffer] = useState<TerminalBufferEntry[]>([]);
   const [currentInput, setCurrentInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -29,7 +36,9 @@ export function InteractiveTerminal({
   const terminalBufferRef = useRef<HTMLDivElement>(null);
   const entryCounterRef = useRef(0);
   const cancelledRef = useRef(false);
+  const isTypingRef = useRef(false);
   const timeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+  const resolversRef = useRef<Set<() => void>>(new Set());
 
   const t = getHomepageDictionary(lang);
 
@@ -41,12 +50,17 @@ export function InteractiveTerminal({
   useEffect(() => {
     cancelledRef.current = false;
     const timeouts = timeoutsRef.current;
+    const resolvers = resolversRef.current;
     return () => {
       cancelledRef.current = true;
       for (const id of timeouts) {
         clearTimeout(id);
       }
       timeouts.clear();
+      for (const resolve of resolvers) {
+        resolve();
+      }
+      resolvers.clear();
     };
   }, []);
 
@@ -97,17 +111,21 @@ export function InteractiveTerminal({
 
   const delay = useCallback((ms: number) => {
     return new Promise<void>((resolve) => {
-      const id = setTimeout(() => {
+      const onDone = () => {
         timeoutsRef.current.delete(id);
+        resolversRef.current.delete(onDone);
         resolve();
-      }, ms);
+      };
+      resolversRef.current.add(onDone);
+      const id = setTimeout(onDone, ms);
       timeoutsRef.current.add(id);
     });
   }, []);
 
   const runAutomatedTyping = useCallback(
     async (command: string) => {
-      if (isTyping) return;
+      if (isTypingRef.current) return;
+      isTypingRef.current = true;
       setIsTyping(true);
       setCurrentInput('');
 
@@ -139,14 +157,27 @@ export function InteractiveTerminal({
         executeCommand(command);
         setCurrentInput('');
       } finally {
-        setIsTyping(false);
+        isTypingRef.current = false;
+        if (!cancelledRef.current) {
+          setIsTyping(false);
+        }
       }
     },
-    [delay, executeCommand, isTyping]
+    [delay, executeCommand]
+  );
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      runCommand: (command: string) => {
+        runAutomatedTyping(command);
+      },
+    }),
+    [runAutomatedTyping]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (isTyping) return;
+    if (isTypingRef.current) return;
 
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -256,7 +287,6 @@ export function InteractiveTerminal({
   };
 
   const chips = [
-    { command: 'justui init', label: t.terminalChipInit || 'justui init' },
     {
       command: 'justui add button',
       label: t.terminalChipAddButton || 'justui add button',
@@ -269,6 +299,7 @@ export function InteractiveTerminal({
       command: 'justui preset apply neobrutalism',
       label: t.terminalChipPreset || 'justui preset apply neobrutalism',
     },
+    { command: 'justui init', label: t.terminalChipInit || 'justui init' },
   ];
 
   return (
@@ -276,9 +307,20 @@ export function InteractiveTerminal({
     <div
       role="region"
       aria-label="Interactive Terminal"
-      onClick={() => inputRef.current?.focus()}
+      onClick={() => {
+        const hasSelection =
+          typeof window !== 'undefined' &&
+          Boolean(window.getSelection?.()?.toString());
+        if (hasSelection) return;
+        if (
+          typeof window !== 'undefined' &&
+          (!window.matchMedia || window.matchMedia('(pointer: fine)').matches)
+        ) {
+          inputRef.current?.focus();
+        }
+      }}
       className={cn(
-        'border-border bg-card shadow-solid flex min-h-[440px] flex-1 flex-col rounded-(--just-radius-lg) border-(length:--just-border-width) text-left',
+        'border-border bg-card shadow-solid flex min-h-110 flex-1 flex-col rounded-(--just-radius-lg) border-(length:--just-border-width) text-left',
         className
       )}
     >
@@ -298,9 +340,14 @@ export function InteractiveTerminal({
             aria-hidden="true"
           />
         </div>
-        <span className="text-muted font-mono text-xs select-none">
-          {t.terminalTitle || 'justui@v0.14.0 ~ /my-flutter-app'}
-        </span>
+        <div className="flex items-center gap-2 overflow-hidden">
+          <span className="text-muted font-mono text-xs select-none truncate">
+            {t.terminalTitle || 'justui@v0.14.0 ~ /my-flutter-app'}
+          </span>
+          <span className="border-border bg-accent/40 text-muted-foreground shrink-0 rounded-full border px-1.5 py-0.5 font-mono text-[10px] font-medium tracking-wider">
+            {t.terminalBadge || 'CLI Simulator'}
+          </span>
+        </div>
         <div className="w-11" aria-hidden="true" />
       </div>
 
@@ -317,7 +364,9 @@ export function InteractiveTerminal({
             disabled={isTyping}
             onClick={(e) => {
               e.stopPropagation();
-              runAutomatedTyping(chip.command);
+              if (!isTypingRef.current) {
+                runAutomatedTyping(chip.command);
+              }
             }}
             className={cn(
               'rounded-full px-2.5 py-1 font-mono text-xs transition-colors',
@@ -334,7 +383,7 @@ export function InteractiveTerminal({
       {/* Terminal Buffer */}
       <div
         ref={terminalBufferRef}
-        className="flex min-h-[280px] flex-1 flex-col overflow-y-auto p-4 font-mono text-xs leading-6"
+        className="flex min-h-70 flex-1 flex-col overflow-y-auto p-4 font-mono text-xs leading-6"
       >
         {buffer.map((entry) => {
           if (entry.kind === 'prompt') {
@@ -362,7 +411,11 @@ export function InteractiveTerminal({
         ref={inputRef}
         type="text"
         value={currentInput}
-        onChange={(e) => setCurrentInput(e.target.value)}
+        onChange={(e) => {
+          if (!isTypingRef.current) {
+            setCurrentInput(e.target.value);
+          }
+        }}
         onKeyDown={handleKeyDown}
         disabled={isTyping}
         className="sr-only"
@@ -371,6 +424,16 @@ export function InteractiveTerminal({
         autoCorrect="off"
         spellCheck={false}
       />
+
+      {/* Keyboard hints footer */}
+      <div className="border-border text-muted/70 flex items-center overflow-x-auto whitespace-nowrap border-(length:--just-border-width) border-t px-4 py-2 font-mono text-[11px] select-none">
+        <span>
+          {t.terminalShortcuts ||
+            '[Tab] Autocomplete | [Up/Down] History | [Enter] Run'}
+        </span>
+      </div>
     </div>
   );
-}
+});
+
+InteractiveTerminal.displayName = 'InteractiveTerminal';

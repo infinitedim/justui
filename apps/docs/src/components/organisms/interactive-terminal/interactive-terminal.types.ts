@@ -1,5 +1,9 @@
 import type { TerminalLineKind } from '@/components/molecules/terminal-line';
 
+export interface InteractiveTerminalHandle {
+  runCommand: (command: string) => void;
+}
+
 export interface InteractiveTerminalProps {
   /** Language for i18n labels on action chips. */
   lang?: string;
