@@ -61,8 +61,14 @@ describe('Molecules Components', () => {
         ).toBeInTheDocument();
       });
 
-      const neoBtn = screen.getByRole('radio', { name: 'neo' });
+      // Labels are the CLI preset names, not abbreviations.
+      const neoBtn = screen.getByRole('radio', { name: 'neobrutalism' });
       fireEvent.click(neoBtn);
+      expect(neoBtn).toHaveAttribute('aria-checked', 'true');
+      expect(document.body).toHaveClass('theme-neobrutalism');
+      document.body.classList.remove('theme-neobrutalism');
+      document.documentElement.classList.remove('theme-neobrutalism');
+      localStorage.clear();
     });
   });
 
@@ -98,10 +104,11 @@ describe('Molecules Components', () => {
   });
 
   describe('CategoryFilterPill', () => {
-    it('renders label and count badge', () => {
-      render(<CategoryFilterPill label="Buttons" count={5} active />);
-      expect(screen.getByText('Buttons')).toBeInTheDocument();
-      expect(screen.getByText('5')).toBeInTheDocument();
+    it('renders only its label and exposes the pressed state', () => {
+      render(<CategoryFilterPill label="Layout" active />);
+      const chip = screen.getByRole('button', { name: 'Layout' });
+      expect(chip).toHaveTextContent(/^Layout$/);
+      expect(chip).toHaveAttribute('aria-pressed', 'true');
     });
   });
 

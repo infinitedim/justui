@@ -304,7 +304,7 @@ Tab instalasi di homepage menampilkan dua perintah, dan keduanya tidak bisa dipa
 
 ```ts
 // install-tabs.tsx
-19:    command: 'curl -fsSL https://justui.dev/install.sh | bash',
+19:    command: 'curl -fsSL https://justui.vercel.app/install.sh | bash',
 29:    command: 'cargo install justui',
 ```
 
@@ -320,7 +320,7 @@ curl -fsSL https://raw.githubusercontent.com/infinitedim/justui/main/packages/cl
   {"errors":[{"detail":"crate `justui` does not exist"}]}
   ```
 
-- `https://justui.dev/install.sh`: tidak ada file `install.sh` di app docs, dan tidak ada rewrite. Kalau domain itu melayani app ini, #34 menunjukkan `/install.sh` dijawab **200 text/html** berisi homepage, sehingga yang di-pipe ke `bash` adalah HTML:
+- `https://justui.vercel.app/install.sh`: tidak ada file `install.sh` di app docs, dan tidak ada rewrite. Kalau domain itu melayani app ini, #34 menunjukkan `/install.sh` dijawab **200 text/html** berisi homepage, sehingga yang di-pipe ke `bash` adalah HTML:
 
   ```text
   $ curl -s http://localhost:3470/install.sh | head -c 60
@@ -339,7 +339,7 @@ curl -fsSL https://raw.githubusercontent.com/infinitedim/justui/main/packages/cl
 
 **Pembaruan putaran 5**
 
-Diverifikasi ulang: **belum berubah**. Malah ada tab baru `irm https://justui.dev/install.ps1 | iex` (`install-tabs.tsx:24`), yang bermasalah dengan cara yang sama.
+Diverifikasi ulang: **belum berubah**. Malah ada tab baru `irm https://justui.vercel.app/install.ps1 | iex` (`install-tabs.tsx:24`), yang bermasalah dengan cara yang sama.
 
 ---
 
@@ -1347,7 +1347,7 @@ studio-client.tsx:52         Live Token Playground
 73    const parsed = deserializeStudioState(window.location.search);
 74    if (parsed.seedColor) setSeedColorState(parsed.seedColor);
 …
-131        : 'https://justui.dev/en/studio';          // fallback SSR; README memakai docs.justui.dev
+131        : 'https://justui.vercel.app/en/studio';          // fallback SSR; README memakai docs.justui.dev
 
 // theme-configurator.tsx — "copied" tampil walau gagal
 94    if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -1390,7 +1390,7 @@ Masih tersisa:
 
 - Input hex masih menyimpan draf mentah (`handleHexInputChange` → `setSeedColor(val)`), jadi `#a3` sesaat jatuh ke `#a3e635`.
 - Tombol share masih gagal diam-diam (`studio-client.tsx:35-37`: `catch { // Ignore clipboard failure … }`).
-- Fallback URL masih `https://justui.dev/en/studio` (`theme-studio-context.tsx:132`).
+- Fallback URL masih `https://justui.vercel.app/en/studio` (`theme-studio-context.tsx:132`).
 
 ---
 

@@ -21,9 +21,9 @@ export function FormulaMathBlock({
       )}
       {...rest}
     >
-      <code className="text-accent-deep font-mono text-sm">{formula}</code>
+      <code className="text-accent-text font-mono text-sm">{formula}</code>
       {caption ? (
-        <figcaption className="text-muted text-center font-mono text-[10px]">
+        <figcaption className="text-muted text-center font-mono text-xs">
           {caption}
         </figcaption>
       ) : null}

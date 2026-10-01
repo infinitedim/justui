@@ -1,37 +1,41 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import {
   Wifi,
   Battery,
   Signal,
   Bell,
   Search,
-  Home,
   Layers,
-  User,
-  Sparkles,
+  Users,
+  ListChecks,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useThemeStudio } from '@/lib/theme-studio-context';
 import { getStudioDictionary } from '@/lib/theme-studio-translations';
 import type { PhoneMockupCanvasProps } from './phone-mockup-canvas.types';
 
+type MockTab = 'pipeline' | 'contacts' | 'tasks';
+
 export function PhoneMockupCanvas({
   lang = 'en',
   className,
 }: PhoneMockupCanvasProps) {
   const t = getStudioDictionary(lang);
-  const { resolvedTokens, preset } = useThemeStudio();
+  const { resolvedTokens } = useThemeStudio();
+  const remindersLabelId = useId();
 
   // Internal interactive mockup state
   const [switchOn, setSwitchOn] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<'home' | 'catalog' | 'profile'>(
-    'home'
-  );
+  const [activeTab, setActiveTab] = useState<MockTab>('pipeline');
   const [buttonPressed, setButtonPressed] = useState<boolean>(false);
 
-  const isNeo = preset === 'neobrutalism';
+  const tabs = [
+    { id: 'pipeline', icon: Layers, label: t.mockTabPipeline },
+    { id: 'contacts', icon: Users, label: t.mockTabContacts },
+    { id: 'tasks', icon: ListChecks, label: t.mockTabTasks },
+  ] as const satisfies readonly { id: MockTab; icon: unknown; label: string }[];
 
   // Common transition class for smooth theme interpolation
   const transitionClass =
@@ -50,7 +54,7 @@ export function PhoneMockupCanvas({
         className={cn(
           'relative w-full max-w-[360px] shrink-0 overflow-hidden select-none sm:max-w-[375px]',
           'rounded-[48px] border-[10px] border-zinc-900 bg-zinc-900',
-          'shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.1)]',
+          'shadow-2xl',
           'dark:border-zinc-800 dark:bg-zinc-800'
         )}
       >
@@ -79,9 +83,7 @@ export function PhoneMockupCanvas({
               color: resolvedTokens.textPrimary,
             }}
           >
-            <span className="font-mono text-[11px] font-semibold tracking-tight">
-              9:41
-            </span>
+            <span className="text-xs font-semibold tracking-tight">9:41</span>
             <div className="flex items-center gap-1.5 opacity-90">
               <Signal className="h-3 w-3" />
               <Wifi className="h-3 w-3" />
@@ -99,9 +101,10 @@ export function PhoneMockupCanvas({
             }}
           >
             <div className="flex items-center gap-2">
-              <div
+              <span
+                aria-hidden="true"
                 className={cn(
-                  'flex h-6 w-6 items-center justify-center rounded',
+                  'flex h-6 w-6 items-center justify-center text-xs font-semibold',
                   transitionClass
                 )}
                 style={{
@@ -110,31 +113,28 @@ export function PhoneMockupCanvas({
                   borderRadius: resolvedTokens.radiusMd,
                 }}
               >
-                <Sparkles className="h-3.5 w-3.5" />
-              </div>
-              <span className="font-mono text-xs font-bold tracking-tight">
+                R
+              </span>
+              <span className="text-sm font-semibold tracking-tight">
                 {t.mockAppName}
               </span>
             </div>
             <button
               type="button"
-              className="relative p-1.5 opacity-80 transition-opacity hover:opacity-100"
-              aria-label={t.notifications}
+              className="relative p-1.5"
+              aria-label={t.mockNotifications}
+              style={{ color: resolvedTokens.textSecondary }}
             >
-              <Bell className="h-4 w-4" />
-              <span
-                className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full"
-                style={{ backgroundColor: resolvedTokens.error }}
-              />
+              <Bell className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
 
           {/* Main App Content Flow */}
           <div className="flex flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto p-5">
-            {/* Search Input Field */}
+            {/* Search Field */}
             <div
               className={cn(
-                'flex items-center gap-2.5 border px-3 py-2 shadow-xs',
+                'flex items-center gap-2.5 border px-3 py-2',
                 transitionClass
               )}
               style={{
@@ -142,18 +142,16 @@ export function PhoneMockupCanvas({
                 borderColor: resolvedTokens.border,
                 borderWidth: resolvedTokens.borderWidth,
                 borderRadius: resolvedTokens.radiusMd,
+                color: resolvedTokens.textSecondary,
               }}
             >
-              <Search className="h-3.5 w-3.5 shrink-0 opacity-50" />
-              <span
-                className="truncate text-xs opacity-60"
-                style={{ color: resolvedTokens.textSecondary }}
-              >
-                {t.searchPlaceholder}
+              <Search className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <span className="truncate text-sm">
+                {t.mockSearchPlaceholder}
               </span>
             </div>
 
-            {/* Featured Hero Card */}
+            {/* Follow-ups Card */}
             <div
               className={cn('flex flex-col gap-3 border p-4', transitionClass)}
               style={{
@@ -164,57 +162,28 @@ export function PhoneMockupCanvas({
                 borderRadius: resolvedTokens.radiusLg,
               }}
             >
-              <div className="flex items-center justify-between">
-                <span
-                  className="px-2 py-0.5 font-mono text-[10px] font-semibold tracking-wider uppercase"
-                  style={{
-                    backgroundColor: resolvedTokens.accent,
-                    color: resolvedTokens.accentForeground,
-                    borderRadius: resolvedTokens.radiusMd,
-                    borderStyle: isNeo ? 'solid' : 'none',
-                    borderWidth: isNeo ? resolvedTokens.borderWidth : '0px',
-                    borderColor: resolvedTokens.border,
-                  }}
-                >
-                  {isNeo ? 'NEOBRUTALISM' : 'PREVIEW'}
-                </span>
-                <span
-                  className="font-mono text-[10px]"
-                  style={{ color: resolvedTokens.textSecondary }}
-                >
-                  v0.13.2
-                </span>
-              </div>
-
               <div>
                 <h3
-                  className="text-base font-bold tracking-tight"
+                  className="text-base font-semibold tracking-tight"
                   style={{ color: resolvedTokens.textPrimary }}
                 >
-                  {t.welcomeBack}
+                  {t.mockFollowUpsTitle}
                 </h3>
                 <p
-                  className="mt-1 text-xs leading-relaxed"
+                  className="mt-1 text-sm leading-relaxed"
                   style={{ color: resolvedTokens.textSecondary }}
                 >
-                  {t.exploreComponents}
+                  {t.mockFollowUpsSummary}
                 </p>
               </div>
 
-              {/* Action Button */}
               <button
                 type="button"
-                onMouseDown={() => setButtonPressed(true)}
-                onMouseUp={() => setButtonPressed(false)}
-                onMouseLeave={() => setButtonPressed(false)}
-                onClick={() => setSwitchOn((prev) => !prev)}
+                onPointerDown={() => setButtonPressed(true)}
+                onPointerUp={() => setButtonPressed(false)}
+                onPointerLeave={() => setButtonPressed(false)}
                 className={cn(
-                  'mt-1 flex cursor-pointer items-center justify-center px-4 py-2.5 font-mono text-xs font-semibold',
-                  buttonPressed
-                    ? isNeo
-                      ? 'translate-x-1 translate-y-1'
-                      : 'translate-y-0.5'
-                    : '',
+                  'mt-1 flex cursor-pointer items-center justify-center px-4 py-2.5 text-sm font-medium',
                   transitionClass
                 )}
                 style={{
@@ -224,16 +193,19 @@ export function PhoneMockupCanvas({
                   borderStyle: 'solid',
                   borderWidth: resolvedTokens.borderWidth,
                   borderRadius: resolvedTokens.radiusMd,
+                  transform: buttonPressed
+                    ? resolvedTokens.pressTransform
+                    : undefined,
                   boxShadow: buttonPressed
                     ? 'none'
                     : resolvedTokens.shadowSolid,
                 }}
               >
-                {t.getStarted}
+                {t.mockLogCall}
               </button>
             </div>
 
-            {/* Interactive Switch and Status Row */}
+            {/* Reminder Switch Row */}
             <div
               className={cn(
                 'flex items-center justify-between border p-3.5',
@@ -248,27 +220,31 @@ export function PhoneMockupCanvas({
             >
               <div className="flex flex-col">
                 <span
-                  className="text-xs font-semibold"
+                  id={remindersLabelId}
+                  className="text-sm font-medium"
                   style={{ color: resolvedTokens.textPrimary }}
                 >
-                  {t.notifications}
+                  {t.mockReminders}
                 </span>
                 <span
-                  className="text-[10px]"
+                  className="text-xs"
                   style={{ color: resolvedTokens.textSecondary }}
                 >
-                  {switchOn ? t.active : t.inactive}
+                  {switchOn ? t.mockOn : t.mockOff}
                 </span>
               </div>
 
-              {/* Interactive JustSwitch Mockup */}
+              {/* Switch track: pills stay round in every preset. The thumb
+                  shrinks by twice the border width so a 2.5px border never
+                  overlaps it (inward border, see AGENTS.md section 10). */}
               <button
                 type="button"
                 role="switch"
                 aria-checked={switchOn}
-                onClick={() => setSwitchOn(!switchOn)}
+                aria-labelledby={remindersLabelId}
+                onClick={() => setSwitchOn((prev) => !prev)}
                 className={cn(
-                  'relative h-6 w-11 cursor-pointer border p-0.5',
+                  'relative h-6 w-11 shrink-0 cursor-pointer border p-0.5',
                   transitionClass
                 )}
                 style={{
@@ -277,100 +253,32 @@ export function PhoneMockupCanvas({
                     : resolvedTokens.background,
                   borderColor: resolvedTokens.border,
                   borderWidth: resolvedTokens.borderWidth,
-                  borderRadius: isNeo ? '0px' : '9999px',
+                  borderRadius: '9999px',
                 }}
               >
                 <span
                   className={cn(
-                    'block h-4.5 w-4.5 border transition-transform duration-200',
+                    'block border transition-transform duration-200',
                     switchOn ? 'translate-x-5' : 'translate-x-0'
                   )}
                   style={{
+                    width: `calc(20px - 2 * ${resolvedTokens.borderWidth})`,
+                    height: `calc(20px - 2 * ${resolvedTokens.borderWidth})`,
                     backgroundColor: switchOn
                       ? resolvedTokens.accentForeground
                       : resolvedTokens.textSecondary,
                     borderColor: resolvedTokens.border,
-                    borderWidth: isNeo ? resolvedTokens.borderWidth : '1px',
-                    borderRadius: isNeo ? '0px' : '9999px',
+                    borderWidth: resolvedTokens.borderWidth,
+                    borderRadius: '9999px',
                   }}
                 />
               </button>
             </div>
-
-            {/* Metrics Dual Cards */}
-            <div className="grid grid-cols-2 gap-3">
-              <div
-                className={cn(
-                  'flex flex-col gap-1 border p-3',
-                  transitionClass
-                )}
-                style={{
-                  backgroundColor: resolvedTokens.card,
-                  borderColor: resolvedTokens.border,
-                  borderStyle: 'solid',
-                  borderWidth: resolvedTokens.borderWidth,
-                  boxShadow: resolvedTokens.shadowSolid,
-                  borderRadius: resolvedTokens.radiusMd,
-                }}
-              >
-                <span
-                  className="font-mono text-[10px] uppercase"
-                  style={{ color: resolvedTokens.textSecondary }}
-                >
-                  FPS
-                </span>
-                <span
-                  className="font-mono text-base font-bold"
-                  style={{ color: resolvedTokens.success }}
-                >
-                  120 FPS
-                </span>
-                <span
-                  className="text-[9px]"
-                  style={{ color: resolvedTokens.textSecondary }}
-                >
-                  Zero heap alloc
-                </span>
-              </div>
-
-              <div
-                className={cn(
-                  'flex flex-col gap-1 border p-3',
-                  transitionClass
-                )}
-                style={{
-                  backgroundColor: resolvedTokens.card,
-                  borderColor: resolvedTokens.border,
-                  borderStyle: 'solid',
-                  borderWidth: resolvedTokens.borderWidth,
-                  boxShadow: resolvedTokens.shadowSolid,
-                  borderRadius: resolvedTokens.radiusMd,
-                }}
-              >
-                <span
-                  className="font-mono text-[10px] uppercase"
-                  style={{ color: resolvedTokens.textSecondary }}
-                >
-                  COMPONENTS
-                </span>
-                <span
-                  className="font-mono text-base font-bold"
-                  style={{ color: resolvedTokens.accent }}
-                >
-                  30+
-                </span>
-                <span
-                  className="text-[9px]"
-                  style={{ color: resolvedTokens.textSecondary }}
-                >
-                  Production ready
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Bottom Tab Navigation Bar */}
-          <div
+          <nav
+            aria-label={t.mockTabsLabel}
             className={cn(
               'z-20 flex h-14 w-full shrink-0 items-center justify-around border-t px-2',
               transitionClass
@@ -381,66 +289,30 @@ export function PhoneMockupCanvas({
               borderTopWidth: resolvedTokens.borderWidth,
             }}
           >
-            <button
-              type="button"
-              onClick={() => setActiveTab('home')}
-              className={cn(
-                'flex flex-col items-center gap-0.5 p-1 transition-colors',
-                activeTab === 'home'
-                  ? 'font-semibold opacity-100'
-                  : 'opacity-60 hover:opacity-80'
-              )}
-              style={{
-                color:
-                  activeTab === 'home'
-                    ? resolvedTokens.accent
-                    : resolvedTokens.textSecondary,
-              }}
-            >
-              <Home className="h-4 w-4" />
-              <span className="font-mono text-[9px]">Home</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('catalog')}
-              className={cn(
-                'flex flex-col items-center gap-0.5 p-1 transition-colors',
-                activeTab === 'catalog'
-                  ? 'font-semibold opacity-100'
-                  : 'opacity-60 hover:opacity-80'
-              )}
-              style={{
-                color:
-                  activeTab === 'catalog'
-                    ? resolvedTokens.accent
-                    : resolvedTokens.textSecondary,
-              }}
-            >
-              <Layers className="h-4 w-4" />
-              <span className="font-mono text-[9px]">Catalog</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('profile')}
-              className={cn(
-                'flex flex-col items-center gap-0.5 p-1 transition-colors',
-                activeTab === 'profile'
-                  ? 'font-semibold opacity-100'
-                  : 'opacity-60 hover:opacity-80'
-              )}
-              style={{
-                color:
-                  activeTab === 'profile'
-                    ? resolvedTokens.accent
-                    : resolvedTokens.textSecondary,
-              }}
-            >
-              <User className="h-4 w-4" />
-              <span className="font-mono text-[9px]">Profile</span>
-            </button>
-          </div>
+            {tabs.map(({ id, icon: Icon, label }) => {
+              const active = activeTab === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setActiveTab(id)}
+                  aria-current={active ? 'page' : undefined}
+                  className={cn(
+                    'flex min-w-14 flex-col items-center gap-0.5 p-1 transition-colors',
+                    active && 'font-semibold'
+                  )}
+                  style={{
+                    color: active
+                      ? resolvedTokens.accentText
+                      : resolvedTokens.textSecondary,
+                  }}
+                >
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                  <span className="text-xs">{label}</span>
+                </button>
+              );
+            })}
+          </nav>
         </div>
       </div>
     </div>

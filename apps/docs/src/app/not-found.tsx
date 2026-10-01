@@ -7,7 +7,7 @@ export default function NotFound() {
       <p className="text-muted text-lg">Page not found.</p>
       <Link
         href="/en"
-        className="text-accent hover:text-accent/80 font-mono text-sm underline underline-offset-4 transition-colors"
+        className="text-accent-text hover:text-accent-text/80 font-mono text-sm underline underline-offset-4 transition-colors"
       >
         &larr; Back to home
       </Link>

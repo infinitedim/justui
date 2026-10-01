@@ -81,7 +81,11 @@ export function Navbar({ starCount, lang }: NavbarProps) {
     <>
       <header className="border-border bg-background/90 sticky top-0 z-40 h-14 border-b border-b-(length:--just-border-width) backdrop-blur-sm">
         <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href={`/${lang}`} aria-label="JustUI home" className="shrink-0">
+          <Link
+            href={`/${lang}`}
+            aria-label={t.homeLinkLabel}
+            className="shrink-0"
+          >
             <span className="text-foreground font-mono text-sm font-medium">
               just
             </span>
@@ -90,7 +94,10 @@ export function Navbar({ starCount, lang }: NavbarProps) {
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-6 md:flex" aria-label="Main">
+          <nav
+            className="hidden items-center gap-6 md:flex"
+            aria-label={t.mainNavigation}
+          >
             {links.map((link) => (
               <Link
                 key={link.href}
@@ -108,7 +115,10 @@ export function Navbar({ starCount, lang }: NavbarProps) {
 
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher lang={lang} />
-            <PresetToggle label={t.togglePreset} />
+            <PresetToggle
+              label={t.togglePreset}
+              className="hidden md:inline-flex"
+            />
             <ThemeSwitcher label={t.toggleTheme} />
             <button
               type="button"
@@ -154,8 +164,8 @@ export function Navbar({ starCount, lang }: NavbarProps) {
             className="border-border bg-background fixed inset-x-0 top-14 z-40 border-b border-b-(length:--just-border-width) px-4 py-4 md:hidden"
           >
             <nav
-              className="flex flex-col gap-2 font-mono text-sm"
-              aria-label="Mobile Navigation"
+              className="flex flex-col gap-2 text-sm"
+              aria-label={t.mainNavigation}
             >
               {links.map((link) => (
                 <Link
@@ -172,6 +182,10 @@ export function Navbar({ starCount, lang }: NavbarProps) {
                 </Link>
               ))}
             </nav>
+            <div className="border-border mt-4 flex items-center justify-between gap-3 border-t border-t-(length:--just-border-width) pt-4">
+              <span className="text-muted text-sm">{t.presetLabel}</span>
+              <PresetToggle label={t.togglePreset} />
+            </div>
           </div>
         ) : null}
       </header>

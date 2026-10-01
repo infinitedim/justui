@@ -10,6 +10,7 @@ import { LivingStage } from '@/components/organisms/living-stage';
 import type { MountedWidget } from '@/components/organisms/living-stage';
 import { dispatchStageEvent } from '@/lib/stage-bridge';
 import type { HeroInteractiveProps } from './hero-interactive.types';
+import type { JustUIPreset } from '@/lib/presets';
 
 export function HeroInteractive({
   lang = 'en',
@@ -47,7 +48,7 @@ export function HeroInteractive({
   }, []);
 
   const handlePresetChange = useCallback(
-    (next: 'default' | 'neobrutalism') => {
+    (next: JustUIPreset) => {
       setPreset(next);
     },
     [setPreset]

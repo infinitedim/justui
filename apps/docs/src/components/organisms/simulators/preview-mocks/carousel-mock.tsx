@@ -1,62 +1,74 @@
 'use client';
 
-import React, { useState } from 'react';
-import { cn } from '@/lib/cn';
+import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { neutralControl, surface } from '@/lib/ui-classes';
+import { cn } from '@/lib/cn';
 
-export function CarouselMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
+const arrow = cn(
+  neutralControl,
+  'inline-flex h-8 w-8 shrink-0 items-center justify-center'
+);
+
+export function CarouselMock() {
+  const { crm } = useCatalogI18n();
+  const slides = crm.carousel.slides;
   const [index, setIndex] = useState(0);
-  const isNeo = preset === 'neobrutalism';
+  const slide = slides[index] ?? slides[0];
 
-  const slides = ['Slide A', 'Slide B', 'Slide C'];
-
-  const prev = () => setIndex((i) => (i === 0 ? slides.length - 1 : i - 1));
-  const next = () => setIndex((i) => (i === slides.length - 1 ? 0 : i + 1));
+  const go = (delta: number) => {
+    setIndex((i) => (i + delta + slides.length) % slides.length);
+  };
 
   return (
-    <div
+    <section
+      aria-roledescription="carousel"
+      aria-label={crm.carousel.label}
       data-testid="mock-carousel"
-      className={cn(
-        'w-full max-w-55 p-3 text-center font-mono text-xs transition-all select-none',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-lg border shadow-sm'
-      )}
+      className="w-full max-w-64"
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
         <button
           type="button"
-          onClick={prev}
-          aria-label="Previous"
-          className="hover:text-accent p-1"
+          onClick={() => go(-1)}
+          aria-label={crm.carousel.previous}
+          className={arrow}
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
         </button>
-        <span className="text-foreground font-bold">{slides[index]}</span>
+        <div
+          aria-roledescription="slide"
+          aria-label={crm.carousel.position(index + 1, slides.length)}
+          aria-live="polite"
+          className={cn(surface, 'min-w-0 flex-1 px-3 py-2.5 text-center')}
+        >
+          <p className="text-foreground truncate text-sm font-semibold">
+            {slide?.company}
+          </p>
+          <p className="text-muted truncate text-xs">{slide?.detail}</p>
+        </div>
         <button
           type="button"
-          onClick={next}
-          aria-label="Next"
-          className="hover:text-accent p-1"
+          onClick={() => go(1)}
+          aria-label={crm.carousel.next}
+          className={arrow}
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
-      <div className="mt-2.5 flex justify-center gap-1.5">
-        {slides.map((s, idx) => (
-          <div
-            key={s}
+      {/* Line indicator (JustCarouselIndicator.line). */}
+      <div className="mt-2.5 flex justify-center gap-1" aria-hidden="true">
+        {slides.map((s, i) => (
+          <span
+            key={s.company}
             className={cn(
-              'h-1.5 rounded-full transition-all',
-              idx === index ? 'bg-accent w-4' : 'bg-border w-1.5'
+              'h-1 rounded-(--just-radius-xs) transition-all',
+              i === index ? 'bg-foreground w-5' : 'bg-fill w-2.5'
             )}
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 }

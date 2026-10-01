@@ -8,41 +8,41 @@ describe('HeroInteractive', () => {
     render(<HeroInteractive />);
 
     expect(
-      screen.getByRole('region', { name: /interactive terminal/i })
+      screen.getByRole('region', { name: 'CLI simulator' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('region', { name: /living widget stage/i })
+      screen.getByRole('region', { name: 'Component preview' })
     ).toBeInTheDocument();
   });
 
   it('mounts widgets in living stage when command is typed in terminal', () => {
     render(<HeroInteractive />);
 
-    const input = screen.getByLabelText('Terminal input');
+    const input = screen.getByLabelText('Command');
     fireEvent.change(input, { target: { value: 'justui add button' } });
     fireEvent.keyDown(input, { key: 'Enter' });
 
     expect(
-      screen.getByRole('button', { name: 'Press me' })
+      screen.getByRole('button', { name: 'Log call' })
     ).toBeInTheDocument();
   });
 
   it('clears living stage when justui init is executed', () => {
     render(<HeroInteractive />);
 
-    const input = screen.getByLabelText('Terminal input');
+    const input = screen.getByLabelText('Command');
     fireEvent.change(input, { target: { value: 'justui add button' } });
     fireEvent.keyDown(input, { key: 'Enter' });
 
     expect(
-      screen.getByRole('button', { name: 'Press me' })
+      screen.getByRole('button', { name: 'Log call' })
     ).toBeInTheDocument();
 
     fireEvent.change(input, { target: { value: 'justui init' } });
     fireEvent.keyDown(input, { key: 'Enter' });
 
     expect(
-      screen.queryByRole('button', { name: 'Press me' })
+      screen.queryByRole('button', { name: 'Log call' })
     ).not.toBeInTheDocument();
     expect(screen.getByText('Flutter Canvas Ready')).toBeInTheDocument();
   });
@@ -50,19 +50,19 @@ describe('HeroInteractive', () => {
   it('clears living stage when stage Clear button is clicked', () => {
     render(<HeroInteractive />);
 
-    const input = screen.getByLabelText('Terminal input');
+    const input = screen.getByLabelText('Command');
     fireEvent.change(input, { target: { value: 'justui add button' } });
     fireEvent.keyDown(input, { key: 'Enter' });
 
     expect(
-      screen.getByRole('button', { name: 'Press me' })
+      screen.getByRole('button', { name: 'Log call' })
     ).toBeInTheDocument();
 
     const clearButton = screen.getByRole('button', { name: 'Clear' });
     fireEvent.click(clearButton);
 
     expect(
-      screen.queryByRole('button', { name: 'Press me' })
+      screen.queryByRole('button', { name: 'Log call' })
     ).not.toBeInTheDocument();
     expect(screen.getByText('Flutter Canvas Ready')).toBeInTheDocument();
   });
@@ -81,7 +81,7 @@ describe('HeroInteractive', () => {
     });
 
     expect(
-      screen.getByRole('button', { name: 'Press me' })
+      screen.getByRole('button', { name: 'Log call' })
     ).toBeInTheDocument();
 
     vi.useRealTimers();
@@ -94,14 +94,14 @@ describe('HeroInteractive', () => {
       </PresetProvider>
     );
 
-    const input = screen.getByLabelText('Terminal input');
+    const input = screen.getByLabelText('Command');
     fireEvent.change(input, {
       target: { value: 'justui preset apply neobrutalism' },
     });
     fireEvent.keyDown(input, { key: 'Enter' });
 
     expect(
-      screen.getByRole('region', { name: /living widget stage/i })
+      screen.getByRole('region', { name: 'Component preview' })
     ).toHaveAttribute('data-preset', 'neobrutalism');
   });
 });

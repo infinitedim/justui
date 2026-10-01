@@ -1,57 +1,40 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
 import { cn } from '@/lib/cn';
 
-export function BadgeMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [activeBadge, setActiveBadge] = useState<number>(0);
-  const isNeo = preset === 'neobrutalism';
+/** Soft badge per deal stage; the dot carries the stage color, the label stays readable. */
+const STAGES = [
+  { id: 'lead', tone: 'bg-info/15 border-info/40', dot: 'bg-info' },
+  {
+    id: 'qualified',
+    tone: 'bg-warning/15 border-warning/40',
+    dot: 'bg-warning',
+  },
+  { id: 'won', tone: 'bg-success/15 border-success/40', dot: 'bg-success' },
+] as const;
 
-  const badges = [
-    {
-      label: 'Stable',
-      color:
-        'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
-    },
-    {
-      label: 'WASM Ready',
-      color: 'bg-accent/15 text-accent-deep dark:text-accent border-accent/30',
-    },
-    {
-      label: 'v0.13.2',
-      color:
-        'bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/30',
-    },
-  ];
+export function BadgeMock() {
+  const { crm } = useCatalogI18n();
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-2">
-      {badges.map((b, idx) => (
-        <button
-          key={b.label}
-          type="button"
-          onClick={() => setActiveBadge(idx)}
+    <ul className="flex flex-wrap items-center justify-center gap-2">
+      {STAGES.map((stage, idx) => (
+        <li
+          key={stage.id}
           data-testid={`mock-badge-${idx}`}
           className={cn(
-            'px-2.5 py-1 font-mono text-xs transition-all select-none',
-            isNeo
-              ? 'rounded-full border-[2.5px] border-black font-bold text-black dark:border-white dark:text-white'
-              : 'rounded-full border text-xs',
-            isNeo && activeBadge === idx
-              ? 'bg-accent -translate-x-0.5 -translate-y-0.5 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]'
-              : isNeo
-                ? 'bg-surface'
-                : b.color,
-            !isNeo && activeBadge === idx && 'ring-accent ring-2'
+            'text-foreground inline-flex items-center gap-1.5 rounded-(--just-radius-sm) border-(length:--just-border-width) px-2 py-0.5 text-xs font-medium',
+            stage.tone
           )}
         >
-          {b.label}
-        </button>
+          <span
+            className={cn('h-1.5 w-1.5 rounded-full', stage.dot)}
+            aria-hidden="true"
+          />
+          {crm.stages[stage.id]}
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

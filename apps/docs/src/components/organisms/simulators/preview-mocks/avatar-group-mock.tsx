@@ -1,45 +1,35 @@
 'use client';
 
-import React from 'react';
-import { cn } from '@/lib/cn';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
 
-export function AvatarGroupMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const isNeo = preset === 'neobrutalism';
-  const users = ['JU', 'FL', 'DT'];
+const MEMBERS = [
+  { initials: 'RW', name: 'Rina Wulandari' },
+  { initials: 'BP', name: 'Bagas Pratama' },
+  { initials: 'DL', name: 'Dewi Lestari' },
+] as const;
+const HIDDEN_COUNT = 2;
+
+const avatar =
+  'bg-accent-muted text-foreground border-card flex h-10 w-10 items-center justify-center rounded-full border-2 text-xs font-semibold';
+
+export function AvatarGroupMock() {
+  const { crm } = useCatalogI18n();
 
   return (
-    <div
-      data-testid="mock-avatar-group"
-      className="flex items-center select-none"
-    >
-      {users.map((initials, i) => (
-        <div
-          key={initials}
-          className={cn(
-            'flex h-9 w-9 items-center justify-center font-mono text-xs font-bold transition-all',
-            i > 0 && '-ml-2.5',
-            isNeo
-              ? 'bg-surface text-foreground rounded-full border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
-              : 'border-surface bg-foreground text-background rounded-full border-2 shadow-sm'
-          )}
-        >
-          {initials}
-        </div>
-      ))}
-      <div
-        className={cn(
-          '-ml-2.5 flex h-9 w-9 items-center justify-center font-mono text-[10px] font-bold transition-all',
-          isNeo
-            ? 'bg-accent rounded-full border-[2.5px] border-black text-black shadow-[2px_2px_0px_0px_#000] dark:border-white'
-            : 'border-surface bg-surface-muted text-muted rounded-full border-2 shadow-sm'
-        )}
-      >
-        +30
-      </div>
+    <div className="flex flex-col items-center gap-2">
+      <p className="text-muted text-xs">{crm.avatarGroup.label}</p>
+      <ul data-testid="mock-avatar-group" className="flex -space-x-2">
+        {MEMBERS.map((member) => (
+          <li key={member.initials} className={avatar} title={member.name}>
+            <span aria-hidden="true">{member.initials}</span>
+            <span className="sr-only">{member.name}</span>
+          </li>
+        ))}
+        <li className={`${avatar} bg-card text-muted`}>
+          <span aria-hidden="true">+{HIDDEN_COUNT}</span>
+          <span className="sr-only">{crm.avatarGroup.more(HIDDEN_COUNT)}</span>
+        </li>
+      </ul>
     </div>
   );
 }

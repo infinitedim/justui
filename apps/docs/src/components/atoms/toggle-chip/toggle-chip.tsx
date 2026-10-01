@@ -18,11 +18,11 @@ export function ToggleChip({
       type="button"
       aria-pressed={active}
       className={cn(
-        'inline-flex items-center rounded-full px-3 py-1 font-mono text-xs font-medium transition-colors',
+        'inline-flex items-center rounded-(--just-radius-md) px-3 py-1 text-xs font-medium transition-colors',
         'border-(length:--just-border-width)',
         'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2',
         active
-          ? 'border-accent bg-accent-muted text-accent-deep shadow-solid'
+          ? 'border-accent bg-accent-muted text-accent-text shadow-solid'
           : 'border-border text-muted hover:text-foreground hover:border-foreground/20 bg-transparent',
         className
       )}

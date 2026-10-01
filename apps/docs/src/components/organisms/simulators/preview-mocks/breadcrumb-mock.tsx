@@ -1,36 +1,37 @@
 'use client';
 
-import React from 'react';
-import { cn } from '@/lib/cn';
 import { ChevronRight } from 'lucide-react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
 
-export function BreadcrumbMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const isNeo = preset === 'neobrutalism';
+export function BreadcrumbMock() {
+  const { crm } = useCatalogI18n();
+  const items = crm.breadcrumb.items;
 
   return (
-    <nav
-      aria-label="Breadcrumb"
-      data-testid="mock-breadcrumb"
-      className={cn(
-        'flex items-center gap-1.5 p-2 font-mono text-xs select-none',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-md border'
-      )}
-    >
-      <span className="text-muted hover:text-foreground cursor-pointer">
-        Home
-      </span>
-      <ChevronRight className="text-muted h-3.5 w-3.5" />
-      <span className="text-muted hover:text-foreground cursor-pointer">
-        Docs
-      </span>
-      <ChevronRight className="text-muted h-3.5 w-3.5" />
-      <span className="text-foreground font-bold">Button</span>
+    <nav aria-label={crm.breadcrumb.label} data-testid="mock-breadcrumb">
+      <ol className="flex flex-wrap items-center gap-1.5 text-sm">
+        {items.map((item, index) => {
+          const current = index === items.length - 1;
+          return (
+            <li key={item} className="flex items-center gap-1.5">
+              {index > 0 ? (
+                <ChevronRight
+                  className="text-muted h-3.5 w-3.5"
+                  aria-hidden="true"
+                />
+              ) : null}
+              <span
+                aria-current={current ? 'page' : undefined}
+                className={
+                  current ? 'text-foreground font-medium' : 'text-muted'
+                }
+              >
+                {item}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
     </nav>
   );
 }

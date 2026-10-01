@@ -7,20 +7,16 @@ import {
 } from '@/components/organisms/interactive-terminal';
 
 describe('InteractiveTerminal', () => {
-  it('renders macOS window chrome with 3 control buttons, title, and CLI Simulator badge', () => {
+  it('renders a plain header with the title and no cosmetic window chrome', () => {
     const { container } = render(<InteractiveTerminal />);
 
-    const red = container.querySelector('.bg-\\[\\#FF5F57\\]');
-    const yellow = container.querySelector('.bg-\\[\\#FEBC2E\\]');
-    const green = container.querySelector('.bg-\\[\\#28C840\\]');
-
-    expect(red).toBeInTheDocument();
-    expect(yellow).toBeInTheDocument();
-    expect(green).toBeInTheDocument();
+    expect(container.querySelector('.bg-\\[\\#FF5F57\\]')).toBeNull();
+    expect(container.querySelector('.bg-\\[\\#FEBC2E\\]')).toBeNull();
+    expect(container.querySelector('.bg-\\[\\#28C840\\]')).toBeNull();
     expect(
       screen.getByText('justui@v0.14.0 ~ /my-flutter-app')
     ).toBeInTheDocument();
-    expect(screen.getByText('CLI Simulator')).toBeInTheDocument();
+    expect(screen.queryByText('CLI Simulator')).toBeNull();
   });
 
   it('renders all 4 action chips', () => {
@@ -40,10 +36,11 @@ describe('InteractiveTerminal', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders blinking cursor on empty terminal', () => {
-    const { container } = render(<InteractiveTerminal />);
-    const cursor = container.querySelector('.animate-pulse');
+  it('renders a static (non-blinking) cursor on empty terminal', () => {
+    render(<InteractiveTerminal />);
+    const cursor = screen.getByTestId('terminal-cursor');
     expect(cursor).toBeInTheDocument();
+    expect(cursor).not.toHaveClass('animate-pulse');
   });
 
   it('triggers automated typing and command execution when a chip is clicked', async () => {
@@ -64,7 +61,7 @@ describe('InteractiveTerminal', () => {
       screen.getByText('Initializing JustUI project...')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('Done! Run `justui add <component>` to start.')
+      screen.getByText('Done. Run `justui add <component>` next.')
     ).toBeInTheDocument();
     expect(handleClear).toHaveBeenCalled();
 
@@ -75,7 +72,7 @@ describe('InteractiveTerminal', () => {
     const handleMount = vi.fn();
     render(<InteractiveTerminal onMount={handleMount} />);
 
-    const input = screen.getByLabelText('Terminal input');
+    const input = screen.getByLabelText('Command');
     fireEvent.change(input, { target: { value: 'justui add button' } });
     fireEvent.keyDown(input, { key: 'Enter' });
 
@@ -96,7 +93,7 @@ describe('InteractiveTerminal', () => {
       await vi.advanceTimersByTimeAsync(3000);
     });
 
-    const input = screen.getByLabelText('Terminal input');
+    const input = screen.getByLabelText('Command');
     fireEvent.keyDown(input, { key: 'ArrowUp' });
 
     expect(input).toHaveValue('justui add button');
@@ -106,7 +103,7 @@ describe('InteractiveTerminal', () => {
   it('supports multi-token component Tab autocomplete', () => {
     render(<InteractiveTerminal />);
 
-    const input = screen.getByLabelText('Terminal input');
+    const input = screen.getByLabelText('Command');
     fireEvent.change(input, { target: { value: 'justui add button ca' } });
     fireEvent.keyDown(input, { key: 'Tab' });
 
@@ -116,7 +113,7 @@ describe('InteractiveTerminal', () => {
   it('supports justui prefix Tab autocomplete', () => {
     render(<InteractiveTerminal />);
 
-    const input = screen.getByLabelText('Terminal input');
+    const input = screen.getByLabelText('Command');
     fireEvent.change(input, { target: { value: 'just' } });
     fireEvent.keyDown(input, { key: 'Tab' });
 
@@ -162,15 +159,13 @@ describe('InteractiveTerminal', () => {
 
   it('preserves text selection on container click without focusing input', () => {
     render(<InteractiveTerminal />);
-    const region = screen.getByRole('region', { name: 'Interactive Terminal' });
-    const input = screen.getByLabelText('Terminal input');
+    const region = screen.getByRole('region', { name: 'CLI simulator' });
+    const input = screen.getByLabelText('Command');
     const focusSpy = vi.spyOn(input, 'focus');
 
-    const getSelectionSpy = vi
-      .spyOn(window, 'getSelection')
-      .mockReturnValue({
-        toString: () => 'highlighted text',
-      } as unknown as Selection);
+    const getSelectionSpy = vi.spyOn(window, 'getSelection').mockReturnValue({
+      toString: () => 'highlighted text',
+    } as unknown as Selection);
 
     fireEvent.click(region);
 
@@ -184,8 +179,8 @@ describe('InteractiveTerminal', () => {
     delete window.matchMedia;
 
     render(<InteractiveTerminal />);
-    const region = screen.getByRole('region', { name: 'Interactive Terminal' });
-    const input = screen.getByLabelText('Terminal input');
+    const region = screen.getByRole('region', { name: 'CLI simulator' });
+    const input = screen.getByLabelText('Command');
     const focusSpy = vi.spyOn(input, 'focus');
 
     fireEvent.click(region);

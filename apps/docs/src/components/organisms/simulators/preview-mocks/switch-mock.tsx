@@ -1,50 +1,62 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useId, useState } from 'react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { focusRing } from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
 
-export function SwitchMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
+export interface SwitchMockProps {
+  /** Called with the new value after each toggle (the stage forwards it to the bridge). */
+  onToggle?: (checked: boolean) => void;
+}
+
+/**
+ * Track and thumb follow the preset tokens. Borders paint inward, so the
+ * thumb shrinks by twice the border width and never overlaps a 2.5px border
+ * (AGENTS.md section 10). Pills stay round in every preset.
+ */
+export function SwitchMock({ onToggle }: SwitchMockProps) {
+  const { crm } = useCatalogI18n();
   const [checked, setChecked] = useState(true);
-  const isNeo = preset === 'neobrutalism';
+  const labelId = useId();
+
+  const toggle = () => {
+    const next = !checked;
+    setChecked(next);
+    onToggle?.(next);
+  };
 
   return (
-    <div
-      onClick={() => setChecked(!checked)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          setChecked(!checked);
-        }
-      }}
-      role="button"
-      tabIndex={0}
-      data-testid="mock-switch"
-      className="flex cursor-pointer items-center gap-3 select-none"
-    >
-      <div
+    <div className="flex items-center gap-3">
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        aria-labelledby={labelId}
+        onClick={toggle}
+        data-testid="mock-switch"
         className={cn(
-          'relative h-7 w-12 transition-all',
-          isNeo
-            ? 'rounded-full border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
-            : 'border-border bg-surface-muted rounded-full border',
-          checked ? (isNeo ? 'bg-accent' : 'bg-accent') : 'bg-surface'
+          focusRing,
+          'border-border relative h-7 w-12 shrink-0 rounded-full border-(length:--just-border-width) p-0.5',
+          checked ? 'bg-accent' : 'bg-fill'
         )}
       >
-        <div
+        <span
+          aria-hidden="true"
           className={cn(
-            'absolute top-[2.5px] h-[18px] w-[18px] rounded-full transition-all',
-            isNeo ? 'duration-0 border-[2px] border-black bg-white dark:border-black' : 'duration-200 bg-foreground shadow-sm',
-            checked ? 'left-[22px]' : 'left-[2.5px]'
+            'border-border bg-card block size-[calc(24px_-_2*var(--just-border-width))] rounded-full border-(length:--just-border-width) transition-transform',
+            checked ? 'translate-x-5' : 'translate-x-0'
           )}
         />
+      </button>
+      <div className="flex flex-col">
+        <span id={labelId} className="text-foreground text-sm font-medium">
+          {crm.switchMock.label}
+        </span>
+        <span className="text-muted text-xs">
+          {checked ? crm.switchMock.on : crm.switchMock.off}
+        </span>
       </div>
-      <span className="text-foreground font-mono text-xs font-medium">
-        {checked ? 'Active' : 'Inactive'}
-      </span>
     </div>
   );
 }

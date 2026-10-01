@@ -2,7 +2,12 @@
 
 import { useState, useEffect, type ReactNode } from 'react';
 import { SegmentedToggle } from '@/components/molecules/segmented-toggle';
-import { usePreset, type JustUIPreset } from '@/components/providers/preset-provider';
+import { usePreset } from '@/components/providers/preset-provider';
+import {
+  PRESET_OPTIONS,
+  presetScopeClass,
+  type JustUIPreset,
+} from '@/lib/presets';
 
 /**
  * Local preset for a docs demo. Independent from the site-wide preset: the
@@ -24,16 +29,13 @@ export function usePresetScope(initial?: JustUIPreset): {
 
   return {
     preset,
-    scopeClass: preset === 'neobrutalism' ? 'theme-neobrutalism' : 'preset-default',
+    scopeClass: presetScopeClass(preset),
     toggle: (
       <SegmentedToggle
         label="Preview preset"
         value={preset}
         onChange={setPreset}
-        options={[
-          { value: 'default', label: 'default' },
-          { value: 'neobrutalism', label: 'neobrutalism' },
-        ]}
+        options={PRESET_OPTIONS}
       />
     ),
   };

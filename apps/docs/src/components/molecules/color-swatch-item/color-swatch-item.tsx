@@ -34,8 +34,8 @@ export function ColorSwatchItem({
         aria-hidden="true"
       />
       <span className="flex flex-col">
-        <span className="text-foreground font-mono text-xs">{label}</span>
-        <span className="text-muted font-mono text-[10px]">{value}</span>
+        <span className="text-foreground text-sm">{label}</span>
+        <span className="text-muted font-mono text-xs">{value}</span>
       </span>
     </button>
   );

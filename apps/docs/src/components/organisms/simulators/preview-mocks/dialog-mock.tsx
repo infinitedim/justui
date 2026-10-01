@@ -1,70 +1,91 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import {
+  focusRing,
+  neutralControl,
+  raised,
+  tokenBorder,
+} from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
-import { X } from 'lucide-react';
 
-export function DialogMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
+export function DialogMock() {
+  const { crm } = useCatalogI18n();
   const [open, setOpen] = useState(false);
-  const isNeo = preset === 'neobrutalism';
+  const titleId = useId();
+  const bodyId = useId();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
+
+  // Destructive confirmations start on the safe choice, and focus returns to
+  // the trigger when the dialog closes.
+  useEffect(() => {
+    if (open) cancelRef.current?.focus();
+    else if (wasOpen.current) triggerRef.current?.focus();
+    wasOpen.current = open;
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open]);
+
+  const close = () => setOpen(false);
 
   return (
-    <div className="relative flex w-full flex-col items-center justify-center">
+    <div className="relative flex h-36 w-full max-w-64 items-center justify-center">
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen(true)}
         data-testid="mock-dialog-trigger"
-        className={cn(
-          'px-3.5 py-1.5 font-mono text-xs transition-all select-none',
-          isNeo
-            ? 'just-press bg-surface text-foreground rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-            : 'border-border bg-surface text-foreground hover:border-accent rounded-md border'
-        )}
+        className={cn(neutralControl, 'text-error h-9 px-4 text-sm')}
       >
-        Open Dialog
+        {crm.dialog.trigger}
       </button>
 
       {open ? (
-        <div
-          data-testid="mock-dialog-content"
-          className={cn(
-            'bg-surface absolute z-30 w-56 p-3 font-mono text-xs transition-all',
-            isNeo
-              ? 'rounded-none border-[2.5px] border-black shadow-[6px_6px_0px_0px_#000] dark:border-white dark:shadow-[6px_6px_0px_0px_#fff]'
-              : 'border-border rounded-lg border shadow-xl'
-          )}
-        >
-          <div className="flex items-center justify-between font-bold">
-            <span>Confirm Action</span>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label="Close"
-              className="hover:text-accent"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
-          <p className="text-muted mt-1.5 text-[11px]">
-            Are you sure you want to initialize?
-          </p>
-          <div className="mt-3 flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className={cn(
-                'px-2 py-1 text-[10px]',
-                isNeo
-                  ? 'just-press bg-accent border-[2px] border-black font-bold text-black rounded-none dark:border-white'
-                  : 'bg-foreground text-background rounded'
-              )}
-            >
-              Confirm
-            </button>
+        <div className="bg-background/70 absolute inset-0 z-10 flex items-center justify-center">
+          <div
+            role="alertdialog"
+            aria-labelledby={titleId}
+            aria-describedby={bodyId}
+            data-testid="mock-dialog-content"
+            className={cn(raised, 'w-full p-3.5')}
+          >
+            <h4 id={titleId} className="text-foreground text-sm font-semibold">
+              {crm.dialog.title}
+            </h4>
+            <p id={bodyId} className="text-secondary mt-1 text-sm">
+              {crm.dialog.body}
+            </p>
+            <div className="mt-3 flex justify-end gap-2">
+              <button
+                ref={cancelRef}
+                type="button"
+                onClick={close}
+                className={cn(neutralControl, 'h-8 px-3 text-sm')}
+              >
+                {crm.dialog.cancel}
+              </button>
+              <button
+                type="button"
+                onClick={close}
+                className={cn(
+                  'just-press bg-destructive-solid text-on-destructive h-8 rounded-(--just-radius-md) px-3 text-sm font-medium',
+                  tokenBorder,
+                  focusRing
+                )}
+              >
+                {crm.dialog.confirm}
+              </button>
+            </div>
           </div>
         </div>
       ) : null}

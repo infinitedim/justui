@@ -21,8 +21,8 @@ export async function generateMetadata({
   return {
     title: isId ? 'Theme Studio - JustUI' : 'Theme Studio - JustUI',
     description: isId
-      ? 'Konfigurasi design token secara visual dan ekspor kode siap produksi.'
-      : 'Configure your design tokens visually and export production-ready code.',
+      ? 'Pilih satu warna, lihat palet terang dan gelap yang lolos WCAG AA, lalu salin config untuk justui init.'
+      : 'Pick one color, see light and dark palettes that pass WCAG AA, then copy the config for justui init.',
   };
 }
 
@@ -45,9 +45,9 @@ export default async function StudioPage({
 
   const starCount = await fetchStarCount();
 
-  // Parsed server-side so the studio renders with the shared theme from the
-  // very first paint, instead of flashing the default seed/preset/dark mode
-  // until a client-only effect corrects it after mount.
+  // Parsed server-side so the studio renders with the shared seed, mode and
+  // color space from the very first paint. The preset is site-wide state; the
+  // Studio applies a shared `?preset=` to it on mount.
   const resolvedSearchParams = await searchParams;
   const query = new URLSearchParams();
   for (const [key, value] of Object.entries(resolvedSearchParams)) {
@@ -64,7 +64,6 @@ export default async function StudioPage({
           lang={lang}
           initialSeedColor={initialState.seedColor}
           initialIsDark={initialState.isDark}
-          initialPreset={initialState.preset}
           initialColorSpace={initialState.colorSpace}
         />
       }

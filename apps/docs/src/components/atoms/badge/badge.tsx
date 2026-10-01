@@ -5,7 +5,7 @@ const variantClassMap: Record<BadgeVariant, string> = {
   default:
     'bg-card text-secondary border border-[length:var(--just-border-width)] border-border',
   accent:
-    'bg-accent-muted text-accent-dark dark:text-accent-light border border-[length:var(--just-border-width)] border-accent',
+    'bg-accent-muted text-accent-text border border-[length:var(--just-border-width)] border-accent',
   success:
     'bg-success/10 text-success border border-[length:var(--just-border-width)] border-success/30',
   warning:
@@ -29,7 +29,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-(--just-radius-md) px-2 py-0.5 font-mono text-[11px] font-medium',
+        'inline-flex items-center rounded-(--just-radius-md) px-2 py-0.5 text-xs font-medium',
         'shadow-solid',
         variantClassMap[variant],
         className

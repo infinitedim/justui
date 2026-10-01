@@ -260,7 +260,7 @@ describe('Color Resolver Engine', () => {
     });
 
     it('constructs shareable URL cleanly', () => {
-      const url = buildShareUrl('https://justui.dev/en/studio', {
+      const url = buildShareUrl('https://justui.vercel.app/en/studio', {
         seedColor: '#a3e635',
         isDark: false,
         preset: 'default',
@@ -268,7 +268,7 @@ describe('Color Resolver Engine', () => {
       });
 
       expect(url).toBe(
-        'https://justui.dev/en/studio?seed=a3e635&dark=0&preset=def&cs=hsl'
+        'https://justui.vercel.app/en/studio?seed=a3e635&dark=0&preset=def&cs=hsl'
       );
     });
   });

@@ -81,11 +81,11 @@ export function CodeExportDrawer({
       data-testid="code-export-drawer"
     >
       {/* Tab Navigation Header */}
-      <div className="border-border bg-muted/20 flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2">
+      <div className="border-border bg-background flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2">
         <div
           className="flex items-center gap-1.5"
           role="tablist"
-          aria-label="Export formats"
+          aria-label={t.exportFormatsLabel}
         >
           {tabs.map((item) => (
             <button
@@ -100,10 +100,10 @@ export function CodeExportDrawer({
               onClick={() => setTab(item.id)}
               onKeyDown={onKeyDown}
               className={cn(
-                'cursor-pointer rounded-(--just-radius-md) px-3 py-1.5 font-mono text-xs font-medium transition-colors',
+                'cursor-pointer rounded-(--just-radius-md) px-3 py-1.5 text-xs font-medium transition-colors',
                 tab === item.id
                   ? 'border-border bg-card text-foreground border shadow-xs'
-                  : 'text-muted hover:text-foreground hover:bg-muted/40'
+                  : 'text-muted hover:text-foreground hover:bg-fill'
               )}
             >
               {item.label}
@@ -120,7 +120,7 @@ export function CodeExportDrawer({
       {/* Code Viewer Sub-header */}
       <CodeBlockHeader
         title={currentConfig.filename}
-        className="bg-muted/10 rounded-none border-x-0 border-t-0"
+        className="bg-background rounded-none border-x-0 border-t-0"
       />
 
       {/* Syntax Highlighted Code Viewer (Shiki via Fumadocs) */}

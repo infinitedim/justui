@@ -1,60 +1,76 @@
 'use client';
 
-import React from 'react';
+import { useState } from 'react';
+import { ArrowDown, ArrowUp } from 'lucide-react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { focusRing, surface } from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
 
-export function TableMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const isNeo = preset === 'neobrutalism';
+const DEALS = [
+  { company: 'Hotel Arunika', stage: 'proposal', value: 18_450_000 },
+  { company: 'Kopi Senja', stage: 'qualified', value: 7_200_000 },
+  { company: 'Warung Nusantara', stage: 'lead', value: 3_150_000 },
+] as const;
 
-  const rows = [
-    { name: 'button', category: 'primitive', dep: '0' },
-    { name: 'switch', category: 'selection', dep: '0' },
-    { name: 'sidebar', category: 'navigation', dep: '0' },
-  ];
+const rupiah = new Intl.NumberFormat('id-ID');
+
+export function TableMock() {
+  const { crm } = useCatalogI18n();
+  const [descending, setDescending] = useState(true);
+  const rows = [...DEALS].sort((a, b) =>
+    descending ? b.value - a.value : a.value - b.value
+  );
 
   return (
-    <div
-      data-testid="mock-table"
-      className={cn(
-        'w-full max-w-60 overflow-hidden font-mono text-[10px] select-none',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-md border'
-      )}
-    >
-      <div
-        className={cn(
-          'bg-surface-muted/60 grid grid-cols-3 p-1.5 font-bold',
-          isNeo
-            ? 'border-b-[2.5px] border-black dark:border-white'
-            : 'border-border border-b'
-        )}
-      >
-        <span>Component</span>
-        <span>Type</span>
-        <span className="text-right">External</span>
-      </div>
-      {rows.map((r, i) => (
-        <div
-          key={r.name}
-          className={cn(
-            'grid grid-cols-3 p-1.5 transition-colors',
-            i < rows.length - 1 &&
-              (isNeo
-                ? 'border-b-[2px] border-black dark:border-white'
-                : 'border-border/50 border-b'),
-            'hover:bg-accent/10'
-          )}
-        >
-          <span className="text-foreground font-medium">{r.name}</span>
-          <span className="text-muted">{r.category}</span>
-          <span className="text-accent text-right font-bold">{r.dep}</span>
-        </div>
-      ))}
+    <div className={cn(surface, 'w-full max-w-68 overflow-hidden')}>
+      <table data-testid="mock-table" className="w-full text-left text-xs">
+        <caption className="sr-only">{crm.table.caption}</caption>
+        <thead className="text-muted border-border border-b border-b-(length:--just-border-width)">
+          <tr>
+            <th scope="col" className="px-2.5 py-1.5 font-medium">
+              {crm.table.company}
+            </th>
+            <th scope="col" className="px-2.5 py-1.5 font-medium">
+              {crm.table.stage}
+            </th>
+            <th
+              scope="col"
+              aria-sort={descending ? 'descending' : 'ascending'}
+              className="px-2.5 py-1.5 text-right font-medium"
+            >
+              <button
+                type="button"
+                onClick={() => setDescending((d) => !d)}
+                aria-label={crm.table.sortByValue}
+                className={cn(
+                  focusRing,
+                  'hover:text-foreground inline-flex items-center gap-1 rounded-(--just-radius-xs)'
+                )}
+              >
+                {crm.table.value}
+                {descending ? (
+                  <ArrowDown className="h-3 w-3" aria-hidden="true" />
+                ) : (
+                  <ArrowUp className="h-3 w-3" aria-hidden="true" />
+                )}
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-border text-foreground divide-y">
+          {rows.map((row) => (
+            <tr key={row.company}>
+              <td className="px-2.5 py-1.5">{row.company}</td>
+              <td className="text-muted px-2.5 py-1.5">
+                {crm.stages[row.stage]}
+              </td>
+              <td className="px-2.5 py-1.5 text-right tabular-nums">
+                {rupiah.format(row.value)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

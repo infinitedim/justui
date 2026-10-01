@@ -16,7 +16,7 @@ export function StateToggle({
   return (
     <label
       className={cn(
-        'text-secondary inline-flex cursor-pointer items-center gap-2 font-mono text-xs',
+        'text-secondary inline-flex cursor-pointer items-center gap-2 text-sm',
         className
       )}
     >

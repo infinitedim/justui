@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi, afterEach } from 'vitest';
 import { PresetProvider, usePreset } from '@/components/providers';
@@ -49,5 +50,30 @@ describe('PresetProvider localStorage resilience', () => {
 
     expect(() => fireEvent.click(screen.getByText('switch'))).not.toThrow();
     expect(screen.getByTestId('preset-val')).toHaveTextContent('neobrutalism');
+  });
+
+  it('lets a preset chosen on mount (a shared ?preset= link) win over the stored one', () => {
+    localStorage.setItem('justui-preset', 'default');
+
+    // Child effects run before the provider's own mount effect, which is
+    // exactly how the Studio applies ?preset=neo.
+    function ApplyOnMount() {
+      const { setPreset } = usePreset();
+      useEffect(() => setPreset('neobrutalism'), [setPreset]);
+      return null;
+    }
+
+    render(
+      <PresetProvider>
+        <ApplyOnMount />
+        <Consumer />
+      </PresetProvider>
+    );
+
+    expect(screen.getByTestId('preset-val')).toHaveTextContent('neobrutalism');
+    expect(localStorage.getItem('justui-preset')).toBe('neobrutalism');
+    document.body.classList.remove('theme-neobrutalism');
+    document.documentElement.classList.remove('theme-neobrutalism');
+    localStorage.clear();
   });
 });

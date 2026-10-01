@@ -15,6 +15,7 @@ interface FooterDict {
   issues: string;
   changelog: string;
   license: string;
+  footerLabel: string;
 }
 
 const FOOTER_TRANSLATIONS: Record<string, FooterDict> = {
@@ -30,6 +31,7 @@ const FOOTER_TRANSLATIONS: Record<string, FooterDict> = {
     issues: 'Issues',
     changelog: 'Releases',
     license: 'License',
+    footerLabel: 'Site footer',
   },
   id: {
     tagline: 'Komponen Flutter yang kamu salin ke proyekmu. Lisensi MIT.',
@@ -43,6 +45,7 @@ const FOOTER_TRANSLATIONS: Record<string, FooterDict> = {
     issues: 'Issue',
     changelog: 'Rilis',
     license: 'Lisensi',
+    footerLabel: 'Kaki situs',
   },
 };
 
@@ -56,7 +59,7 @@ export function Footer({ lang, className }: FooterProps) {
   return (
     <footer
       role="contentinfo"
-      aria-label="Site Footer"
+      aria-label={t.footerLabel}
       className={cn(
         'border-border bg-card/60 border-t border-t-(length:--just-border-width)',
         className
@@ -78,10 +81,7 @@ export function Footer({ lang, className }: FooterProps) {
 
         <div className="flex flex-col gap-2.5 text-sm">
           <h3 className={headingClass}>{t.resourcesHeading}</h3>
-          <Link
-            href={`/${lang}/docs/introduction`}
-            className={linkClass}
-          >
+          <Link href={`/${lang}/docs/introduction`} className={linkClass}>
             {t.docsIntro}
           </Link>
           <Link href={`/${lang}/docs/cli-setup`} className={linkClass}>

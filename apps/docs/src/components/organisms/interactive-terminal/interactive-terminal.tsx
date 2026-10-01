@@ -1,6 +1,13 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import { cn } from '@/lib/cn';
 import { TerminalPrompt } from '@/components/molecules/terminal-prompt';
 import { TerminalLine } from '@/components/molecules/terminal-line';
@@ -306,7 +313,7 @@ export const InteractiveTerminal = forwardRef<
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
     <div
       role="region"
-      aria-label="Interactive Terminal"
+      aria-label={t.terminalRegionLabel}
       onClick={() => {
         const hasSelection =
           typeof window !== 'undefined' &&
@@ -324,37 +331,17 @@ export const InteractiveTerminal = forwardRef<
         className
       )}
     >
-      {/* macOS window chrome */}
-      <div className="border-border flex h-12 items-center justify-between border-(length:--just-border-width) border-b px-4">
-        <div className="flex items-center gap-2">
-          <span
-            className="h-3 w-3 rounded-full bg-[#FF5F57]"
-            aria-hidden="true"
-          />
-          <span
-            className="h-3 w-3 rounded-full bg-[#FEBC2E]"
-            aria-hidden="true"
-          />
-          <span
-            className="h-3 w-3 rounded-full bg-[#28C840]"
-            aria-hidden="true"
-          />
-        </div>
-        <div className="flex items-center gap-2 overflow-hidden">
-          <span className="text-muted font-mono text-xs select-none truncate">
-            {t.terminalTitle || 'justui@v0.14.0 ~ /my-flutter-app'}
-          </span>
-          <span className="border-border bg-accent/40 text-muted-foreground shrink-0 rounded-full border px-1.5 py-0.5 font-mono text-[10px] font-medium tracking-wider">
-            {t.terminalBadge || 'CLI Simulator'}
-          </span>
-        </div>
-        <div className="w-11" aria-hidden="true" />
+      {/* Header */}
+      <div className="border-border flex h-12 items-center overflow-hidden border-(length:--just-border-width) border-b px-4">
+        <span className="text-muted font-mono text-xs select-none truncate">
+          {t.terminalTitle || 'justui@v0.14.0 ~ /my-flutter-app'}
+        </span>
       </div>
 
       {/* Action Chips */}
       <div
         role="toolbar"
-        aria-label="Terminal quick commands"
+        aria-label={t.terminalChipsLabel}
         className="border-border flex flex-wrap gap-2 border-(length:--just-border-width) border-b p-2.5"
       >
         {chips.map((chip) => (
@@ -369,7 +356,8 @@ export const InteractiveTerminal = forwardRef<
               }
             }}
             className={cn(
-              'rounded-full px-2.5 py-1 font-mono text-xs transition-colors',
+              'rounded-(--just-radius-sm) px-2.5 py-1 font-mono text-xs transition-colors',
+              'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2',
               'border-border border-(length:--just-border-width)',
               'bg-card text-foreground hover:bg-accent hover:text-accent-foreground hover:shadow-solid',
               'disabled:cursor-not-allowed disabled:opacity-50'
@@ -419,14 +407,14 @@ export const InteractiveTerminal = forwardRef<
         onKeyDown={handleKeyDown}
         disabled={isTyping}
         className="sr-only"
-        aria-label="Terminal input"
+        aria-label={t.terminalInputLabel}
         autoCapitalize="none"
         autoCorrect="off"
         spellCheck={false}
       />
 
       {/* Keyboard hints footer */}
-      <div className="border-border text-muted/70 flex items-center overflow-x-auto whitespace-nowrap border-(length:--just-border-width) border-t px-4 py-2 font-mono text-[11px] select-none">
+      <div className="border-border text-muted flex items-center overflow-x-auto whitespace-nowrap border-(length:--just-border-width) border-t px-4 py-2 text-xs select-none">
         <span>
           {t.terminalShortcuts ||
             '[Tab] Autocomplete | [Up/Down] History | [Enter] Run'}

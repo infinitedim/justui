@@ -1,12 +1,9 @@
 import type { ReactNode } from 'react';
-import { Button } from '@/components/atoms/button';
-import { Badge } from '@/components/atoms/badge';
-import { Slider } from '@/components/atoms/slider';
-import { ToggleChip } from '@/components/atoms/toggle-chip';
-import { ProgressBar } from '@/components/atoms/progress-bar';
-import { Separator } from '@/components/atoms/separator';
 import { dispatchStageEvent } from '@/lib/stage-bridge';
 import { SIMULATOR_REGISTRY } from '../simulators/simulator-registry';
+import { ButtonMock } from '../simulators/preview-mocks/button-mock';
+import { SliderMock } from '../simulators/preview-mocks/slider-mock';
+import { SwitchMock } from '../simulators/preview-mocks/switch-mock';
 import { components } from '@/lib/components-data';
 
 export interface WidgetDef {
@@ -14,103 +11,49 @@ export interface WidgetDef {
   dartCode: string;
 }
 
+function dartSnippet(slug: string): string {
+  return components.find((c) => c.slug === slug)?.dartSnippet ?? '';
+}
+
+/**
+ * The stage renders the same mocks as the catalog. These three entries only
+ * add a bridge event on interaction; every other component falls back to
+ * SIMULATOR_REGISTRY in getWidgetDef. Dart code always comes from
+ * components-data so the stage and the catalog show the same snippet.
+ */
 export const STAGE_WIDGET_REGISTRY: Record<string, WidgetDef> = {
   button: {
     render: () => (
-      <Button
-        variant="primary"
-        size="md"
-        onClick={() =>
+      <ButtonMock
+        onPress={() =>
           dispatchStageEvent({
             type: 'justui-interact',
             component: 'button',
             action: 'press',
           })
         }
-      >
-        Press me
-      </Button>
+      />
     ),
-    dartCode: [
-      'JustButton(',
-      '  label: "Press me",',
-      '  variant: JustButtonVariant.primary,',
-      '  onPressed: () {},',
-      ')',
-    ].join('\n'),
+    dartCode: dartSnippet('button'),
   },
   switch: {
     render: () => (
-      <ToggleChip
-        active
-        onClick={() =>
+      <SwitchMock
+        onToggle={() =>
           dispatchStageEvent({
             type: 'justui-interact',
             component: 'switch',
             action: 'toggle',
           })
         }
-      >
-        Toggle
-      </ToggleChip>
+      />
     ),
-    dartCode: [
-      'JustSwitch(',
-      '  value: true,',
-      '  onChanged: (v) {},',
-      ')',
-    ].join('\n'),
-  },
-  card: {
-    render: () => (
-      <div className="border-border bg-card shadow-solid rounded-(--just-radius-lg) border-(length:--just-border-width) p-4">
-        <p className="text-foreground text-sm font-medium">JustCard</p>
-        <p className="text-muted text-xs">
-          Surface container with optional header
-        </p>
-      </div>
-    ),
-    dartCode: [
-      'JustCard(',
-      '  child: Column(',
-      '    children: [',
-      '      Text("JustCard"),',
-      '      Text("Surface container"),',
-      '    ],',
-      '  ),',
-      ')',
-    ].join('\n'),
-  },
-  input: {
-    render: () => (
-      <div className="border-border bg-card rounded-(--just-radius-md) border-(length:--just-border-width) px-3 py-2 font-mono text-sm">
-        <span className="text-muted">Enter text...</span>
-      </div>
-    ),
-    dartCode: [
-      'JustInput(',
-      '  placeholder: "Enter text...",',
-      '  onChanged: (v) {},',
-      ')',
-    ].join('\n'),
-  },
-  badge: {
-    render: () => <Badge variant="accent">New</Badge>,
-    dartCode: [
-      'JustBadge(',
-      '  label: "New",',
-      '  variant: JustBadgeVariant.accent,',
-      ')',
-    ].join('\n'),
+    dartCode: dartSnippet('switch'),
   },
   slider: {
     render: () => (
-      <Slider
-        min={0}
-        max={100}
-        value={60}
-        label="Volume"
-        onChange={() =>
+      <SliderMock
+        onValueChange={() =>
           dispatchStageEvent({
             type: 'justui-interact',
             component: 'slider',
@@ -119,20 +62,7 @@ export const STAGE_WIDGET_REGISTRY: Record<string, WidgetDef> = {
         }
       />
     ),
-    dartCode: [
-      'JustSlider(',
-      '  value: 0.6,',
-      '  onChanged: (v) {},',
-      ')',
-    ].join('\n'),
-  },
-  progress: {
-    render: () => <ProgressBar value={65} max={100} label="Loading" />,
-    dartCode: ['JustProgress(', '  value: 0.65,', ')'].join('\n'),
-  },
-  separator: {
-    render: () => <Separator className="my-2" />,
-    dartCode: 'JustSeparator()',
+    dartCode: dartSnippet('slider'),
   },
 };
 

@@ -1,76 +1,67 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { CheckCircle2, X } from 'lucide-react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { accentControl, focusRing, raised } from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
-import { Bell, CheckCircle2 } from 'lucide-react';
 
-export function ToastMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [show, setShow] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isNeo = preset === 'neobrutalism';
+const AUTO_DISMISS_MS = 5000;
 
-  const clearTimers = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
-  };
-
-  const triggerToast = () => {
-    clearTimers();
-    setIsExiting(false);
-    setShow(true);
-
-    timerRef.current = setTimeout(() => {
-      setIsExiting(true);
-      exitTimerRef.current = setTimeout(() => {
-        setShow(false);
-        setIsExiting(false);
-      }, 150);
-    }, 2400);
-  };
+export function ToastMock() {
+  const { crm } = useCatalogI18n();
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    return () => clearTimers();
-  }, []);
+    if (!visible) return;
+    const timer = window.setTimeout(() => setVisible(false), AUTO_DISMISS_MS);
+    return () => window.clearTimeout(timer);
+  }, [visible]);
 
   return (
-    <div className="relative flex w-full flex-col items-center justify-center">
+    <div className="flex w-full max-w-64 flex-col items-center gap-3">
       <button
         type="button"
-        onClick={triggerToast}
+        onClick={() => setVisible(true)}
         data-testid="mock-toast-trigger"
-        className={cn(
-          'flex items-center gap-2 px-3 py-1.5 font-mono text-xs transition-all select-none',
-          isNeo
-            ? 'bg-surface text-foreground rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-            : 'border-border bg-surface text-foreground hover:border-accent rounded-md border'
-        )}
+        className={cn(accentControl, 'h-9 px-4 text-sm')}
       >
-        <Bell className="h-3.5 w-3.5" />
-        <span>Trigger Toast</span>
+        {crm.toast.trigger}
       </button>
-
-      {show ? (
-        <div
-          data-testid="mock-toast-popup"
-          className={cn(
-            'absolute -top-2 flex items-center gap-2 px-3 py-1.5 font-mono text-[11px] select-none',
-            'motion-reduce:animate-none',
-            isExiting ? 'animate-toast-exit' : 'animate-toast-enter',
-            isNeo
-              ? 'bg-accent rounded-none border-[2.5px] border-black font-bold text-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-              : 'border-border bg-foreground text-background rounded-lg border shadow-lg'
-          )}
-        >
-          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-          <span>Package installed!</span>
-        </div>
-      ) : null}
+      {/* The live region stays mounted so screen readers announce new content. */}
+      <div role="status" className="w-full">
+        {visible ? (
+          <div
+            data-testid="mock-toast-popup"
+            className={cn(
+              raised,
+              'animate-toast-enter flex w-full items-start gap-2.5 p-3'
+            )}
+          >
+            <CheckCircle2
+              className="text-success mt-0.5 h-4 w-4 shrink-0"
+              aria-hidden="true"
+            />
+            <div className="min-w-0 flex-1">
+              <p className="text-foreground text-sm font-medium">
+                {crm.toast.title}
+              </p>
+              <p className="text-muted text-xs">{crm.toast.body}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setVisible(false)}
+              aria-label={crm.toast.dismiss}
+              className={cn(
+                focusRing,
+                'text-muted hover:text-foreground rounded-(--just-radius-sm) p-0.5'
+              )}
+            >
+              <X className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

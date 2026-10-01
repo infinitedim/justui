@@ -1,37 +1,47 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useId, useState } from 'react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { focusRing, surface } from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
 
-export function InputMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [val, setVal] = useState('Flutter developer');
-  const isNeo = preset === 'neobrutalism';
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export function InputMock() {
+  const { crm } = useCatalogI18n();
+  const [value, setValue] = useState(crm.input.value);
+  const inputId = useId();
+  const errorId = useId();
+  const invalid = value.length > 0 && !EMAIL_PATTERN.test(value);
 
   return (
     <div className="w-full max-w-60 space-y-1.5">
       <label
-        htmlFor="mock-user-handle-input"
-        className="text-muted block font-mono text-xs"
+        htmlFor={inputId}
+        className="text-foreground block text-xs font-medium"
       >
-        User Handle
+        {crm.input.label}
       </label>
       <input
-        id="mock-user-handle-input"
-        type="text"
-        value={val}
-        onChange={(e) => setVal(e.target.value)}
+        id={inputId}
+        type="email"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        aria-invalid={invalid}
+        aria-describedby={invalid ? errorId : undefined}
         data-testid="mock-input"
         className={cn(
-          'w-full px-3 py-1.5 font-mono text-xs transition-all outline-none',
-          isNeo
-            ? 'bg-surface text-foreground rounded-none border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] focus:shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff] dark:focus:shadow-[4px_4px_0px_0px_#fff]'
-            : 'bg-surface text-foreground focus:border-accent focus:ring-accent rounded-md border focus:ring-1'
+          surface,
+          focusRing,
+          'text-foreground h-9 w-full px-3 text-sm',
+          invalid && 'border-error'
         )}
       />
+      {invalid ? (
+        <p id={errorId} className="text-error text-xs">
+          {crm.input.invalid}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -1,64 +1,74 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useId, useState } from 'react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
 import { cn } from '@/lib/cn';
 
-export function RadioMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [selected, setSelected] = useState('pro');
-  const isNeo = preset === 'neobrutalism';
+const CHANNELS = ['phone', 'email'] as const;
+type Channel = (typeof CHANNELS)[number];
 
-  const options = [
-    { id: 'free', label: 'Starter' },
-    { id: 'pro', label: 'Professional' },
-  ];
+/** Native radio inputs keep arrow-key navigation and form semantics. */
+export function RadioMock() {
+  const { crm } = useCatalogI18n();
+  const [selected, setSelected] = useState<Channel>('phone');
+  const name = useId();
 
   return (
-    <div data-testid="mock-radio" className="space-y-2">
-      {options.map((opt) => {
-        const isChecked = selected === opt.id;
-        return (
-          <div
-            key={opt.id}
-            onClick={() => setSelected(opt.id)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setSelected(opt.id);
-              }
-            }}
-            role="button"
-            tabIndex={0}
-            data-testid={`mock-radio-${opt.id}`}
-            className="flex cursor-pointer items-center gap-2.5 select-none"
-          >
-            <div
-              className={cn(
-                'flex h-4.5 w-4.5 items-center justify-center rounded-full transition-all',
-                isNeo
-                  ? 'bg-surface border-[2.5px] border-black dark:border-white'
-                  : 'border-border bg-surface border',
-                isChecked && (isNeo ? 'border-black' : 'border-accent')
-              )}
-            >
-              {isChecked ? (
-                <div
-                  className={cn(
-                    'h-2 w-2 rounded-full',
-                    isNeo ? 'bg-black dark:bg-white' : 'bg-accent'
-                  )}
-                />
-              ) : null}
-            </div>
-            <span className="text-foreground font-mono text-xs font-medium">
-              {opt.label}
-            </span>
-          </div>
-        );
-      })}
-    </div>
+    <fieldset data-testid="mock-radio" className="space-y-2">
+      <legend className="text-foreground mb-1 text-xs font-medium">
+        {crm.radio.label}
+      </legend>
+      {CHANNELS.map((id) => (
+        <RadioOption
+          key={id}
+          name={name}
+          checked={selected === id}
+          onSelect={() => setSelected(id)}
+          label={crm.radio[id]}
+          testId={`mock-radio-${id}`}
+        />
+      ))}
+    </fieldset>
+  );
+}
+
+export function RadioOption({
+  name,
+  checked,
+  onSelect,
+  label,
+  testId,
+}: {
+  name: string;
+  checked: boolean;
+  onSelect: () => void;
+  label: string;
+  testId: string;
+}) {
+  return (
+    <label
+      data-testid={testId}
+      className="flex cursor-pointer items-center gap-2.5"
+    >
+      <input
+        type="radio"
+        name={name}
+        checked={checked}
+        onChange={onSelect}
+        className="peer sr-only"
+      />
+      <span
+        aria-hidden="true"
+        className={cn(
+          'border-border bg-card flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full border-(length:--just-border-width)',
+          'peer-focus-visible:outline-accent peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2'
+        )}
+      >
+        {checked ? (
+          <span className="bg-foreground h-2 w-2 rounded-full" />
+        ) : null}
+      </span>
+      <span className="text-foreground text-sm">{label}</span>
+    </label>
   );
 }

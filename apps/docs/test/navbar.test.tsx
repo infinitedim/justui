@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { Navbar } from '@/components/organisms/navbar';
 
@@ -197,9 +197,13 @@ describe('Navbar & search dialog wiring', () => {
     const drawer = screen.getByTestId('mobile-navigation-drawer');
     expect(drawer).toBeInTheDocument();
 
-    const mobileNav = screen.getByRole('navigation', {
-      name: /mobile navigation/i,
+    const mobileNav = within(drawer).getByRole('navigation', {
+      name: 'Main navigation',
     });
+    // Preset control moves into the drawer on narrow screens.
+    expect(
+      within(drawer).getByRole('radiogroup', { name: 'Toggle preset' })
+    ).toBeInTheDocument();
     const studioLink = mobileNav.querySelector('a[href="/en/studio"]');
     expect(studioLink).toBeInTheDocument();
     expect(studioLink).toHaveTextContent('Studio');

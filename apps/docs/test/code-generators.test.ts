@@ -45,7 +45,7 @@ describe('Code Generators', () => {
 
     it('embeds custom share URL as a comment', () => {
       const shareUrl =
-        'https://justui.dev/en/studio?seed=f43f5e&dark=1&preset=neo&cs=oklch';
+        'https://justui.vercel.app/en/studio?seed=f43f5e&dark=1&preset=neo&cs=oklch';
       const yaml = generateYaml(
         { preset: 'neobrutalism', colorSpace: 'oklch' },
         shareUrl

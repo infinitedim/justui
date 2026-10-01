@@ -20,6 +20,7 @@ import {
   deserializeStudioState,
   serializeStudioState,
 } from './theme/url-serializer';
+import { usePreset } from '@/components/providers/preset-provider';
 
 export interface ThemeStudioState {
   seedColor: string;
@@ -40,7 +41,6 @@ export interface ThemeStudioContextValue extends ThemeStudioState {
 
 const DEFAULT_SEED_COLOR = '#a3e635';
 const DEFAULT_IS_DARK = false;
-const DEFAULT_PRESET: JustUIPreset = 'default';
 const DEFAULT_COLOR_SPACE: ColorSpace = 'hsl';
 
 const ThemeStudioContext = createContext<ThemeStudioContextValue | null>(null);
@@ -49,7 +49,6 @@ export interface ThemeStudioProviderProps {
   children: React.ReactNode;
   initialSeedColor?: string;
   initialIsDark?: boolean;
-  initialPreset?: JustUIPreset;
   initialColorSpace?: ColorSpace;
 }
 
@@ -57,12 +56,12 @@ export function ThemeStudioProvider({
   children,
   initialSeedColor = DEFAULT_SEED_COLOR,
   initialIsDark = DEFAULT_IS_DARK,
-  initialPreset = DEFAULT_PRESET,
   initialColorSpace = DEFAULT_COLOR_SPACE,
 }: ThemeStudioProviderProps) {
   const [seedColor, setSeedColorState] = useState<string>(initialSeedColor);
   const [isDark, setIsDarkState] = useState<boolean>(initialIsDark);
-  const [preset, setPresetState] = useState<JustUIPreset>(initialPreset);
+  // The preset is site-wide (navbar PresetToggle); the Studio only reads it.
+  const { preset, setPreset: setGlobalPreset } = usePreset();
   const [colorSpace, setColorSpaceState] =
     useState<ColorSpace>(initialColorSpace);
 
@@ -74,10 +73,12 @@ export function ThemeStudioProvider({
     const parsed = deserializeStudioState(window.location.search);
     if (parsed.seedColor) setSeedColorState(parsed.seedColor);
     if (parsed.isDark !== undefined) setIsDarkState(parsed.isDark);
-    if (parsed.preset) setPresetState(parsed.preset);
+    // A shared link wins over the viewer's stored preset: they should see
+    // exactly what was shared. `parsed.preset` is whitelisted by the parser.
+    if (parsed.preset) setGlobalPreset(parsed.preset);
     if (parsed.colorSpace) setColorSpaceState(parsed.colorSpace);
     isInitialized.current = true;
-  }, []);
+  }, [setGlobalPreset]);
 
   // Synchronize URL search params with current studio state
   useEffect(() => {
@@ -106,9 +107,12 @@ export function ThemeStudioProvider({
     setIsDarkState(dark);
   }, []);
 
-  const setPreset = useCallback((nextPreset: JustUIPreset) => {
-    setPresetState(nextPreset);
-  }, []);
+  const setPreset = useCallback(
+    (nextPreset: JustUIPreset) => {
+      setGlobalPreset(nextPreset);
+    },
+    [setGlobalPreset]
+  );
 
   const setColorSpace = useCallback((cs: ColorSpace) => {
     setColorSpaceState(cs);
@@ -117,7 +121,6 @@ export function ThemeStudioProvider({
   const reset = useCallback(() => {
     setSeedColorState(DEFAULT_SEED_COLOR);
     setIsDarkState(DEFAULT_IS_DARK);
-    setPresetState(DEFAULT_PRESET);
     setColorSpaceState(DEFAULT_COLOR_SPACE);
   }, []);
 
@@ -125,18 +128,23 @@ export function ThemeStudioProvider({
     return resolveTokens(seedColor, isDark, preset, colorSpace);
   }, [seedColor, isDark, preset, colorSpace]);
 
+  // Derive the base URL after hydration to avoid SSR/client mismatch.
+  // During SSR and the first client render we use the production origin so
+  // the generated YAML comment is deterministic; once mounted we switch to
+  // the real window.location so localhost / preview deploys are reflected.
+  const [baseUrl, setBaseUrl] = useState('https://justui.vercel.app/en/studio');
+  useEffect(() => {
+    setBaseUrl(window.location.href.split('?')[0] ?? window.location.href);
+  }, []);
+
   const shareUrl = useMemo(() => {
-    const baseUrl =
-      typeof window !== 'undefined'
-        ? (window.location.href.split('?')[0] ?? window.location.href)
-        : 'https://justui.dev/en/studio';
     return buildShareUrl(baseUrl, {
       seedColor,
       isDark,
       preset,
       colorSpace,
     });
-  }, [seedColor, isDark, preset, colorSpace]);
+  }, [baseUrl, seedColor, isDark, preset, colorSpace]);
 
   const contextValue = useMemo<ThemeStudioContextValue>(() => {
     return {

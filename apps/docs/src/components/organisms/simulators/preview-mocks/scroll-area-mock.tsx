@@ -1,46 +1,30 @@
 'use client';
+/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- a scrollable region must be focusable so keyboard users can scroll it (WCAG 2.1.1). */
 
-import React from 'react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { focusRing, surface } from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
 
-export function ScrollAreaMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const isNeo = preset === 'neobrutalism';
-  const items = [
-    'Tokens',
-    'Theming',
-    'Bresenham',
-    'Invariance',
-    'InheritedModel',
-    'Contrast AA',
-  ];
+export function ScrollAreaMock() {
+  const { crm } = useCatalogI18n();
 
   return (
-    <div
+    <section
+      aria-label={crm.scrollArea.label}
+      tabIndex={0}
       data-testid="mock-scroll-area"
-      className={cn(
-        'h-28 w-full max-w-50 space-y-1 overflow-y-auto p-2 font-mono text-xs select-none',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-md border'
-      )}
+      className={cn(surface, focusRing, 'h-32 w-full max-w-64 overflow-y-auto')}
     >
-      {items.map((item, i) => (
-        <div
-          key={item}
-          className={cn(
-            'rounded px-2 py-1 text-[11px] transition-colors',
-            i === 0
-              ? 'bg-accent/20 text-accent-deep dark:text-accent font-bold'
-              : 'text-muted hover:text-foreground'
-          )}
-        >
-          {i + 1}. {item}
-        </div>
-      ))}
-    </div>
+      <p className="text-muted bg-card sticky top-0 px-3 pt-2 pb-1 text-xs font-medium">
+        {crm.scrollArea.label}
+      </p>
+      <ul className="divide-border divide-y px-3 text-sm">
+        {crm.scrollArea.items.map((item) => (
+          <li key={item} className="text-foreground py-1.5">
+            {item}
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

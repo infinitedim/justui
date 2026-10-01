@@ -1,41 +1,57 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Mail, Phone, Star } from 'lucide-react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { neutralControl } from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
-import { Heart } from 'lucide-react';
 
-export function IconButtonMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [active, setActive] = useState(false);
-  const isNeo = preset === 'neobrutalism';
+const iconButton = cn(
+  neutralControl,
+  'inline-flex h-10 w-10 items-center justify-center'
+);
+
+export function IconButtonMock() {
+  const { crm } = useCatalogI18n();
+  const [starred, setStarred] = useState(false);
 
   return (
-    <div className="flex items-center gap-3">
-      <button
-        type="button"
-        onClick={() => setActive(!active)}
-        aria-label="Favorite"
-        data-testid="mock-icon-button"
-        className={cn(
-          'relative inline-flex h-10 w-10 items-center justify-center transition-all select-none',
-          isNeo
-            ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-            : 'border-border bg-surface hover:border-accent rounded-full border shadow-sm'
-        )}
-      >
-        <Heart
+    <div className="flex flex-col items-center gap-2">
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          aria-label={crm.iconButton.call}
+          className={iconButton}
+        >
+          <Phone className="h-4 w-4" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          aria-label={crm.iconButton.email}
+          className={iconButton}
+        >
+          <Mail className="h-4 w-4" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          aria-label={crm.iconButton.star}
+          aria-pressed={starred}
+          onClick={() => setStarred((s) => !s)}
+          data-testid="mock-icon-button"
           className={cn(
-            'h-5 w-5 transition-colors',
-            active ? 'fill-red-500 text-red-500' : 'text-foreground'
+            iconButton,
+            starred && 'bg-accent text-accent-foreground'
           )}
-        />
-      </button>
-      <span className="text-muted font-mono text-xs">
-        {active ? 'Liked!' : 'Click to like'}
-      </span>
+        >
+          <Star
+            className={cn('h-4 w-4', starred && 'fill-current')}
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+      <p className="text-muted min-h-4 text-xs" aria-live="polite">
+        {starred ? crm.iconButton.starred : null}
+      </p>
     </div>
   );
 }
