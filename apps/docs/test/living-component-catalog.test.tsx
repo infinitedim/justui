@@ -1,54 +1,53 @@
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { ComponentsCatalogClient } from '@/app/[lang]/components/components-catalog-client';
 import { components } from '@/lib/components-data';
-import { descriptionsId } from '@/lib/catalog-i18n/descriptions';
-import { PresetProvider } from '@/components/providers';
+import { getHomepageDictionary } from '@/lib/homepage-translations';
+import { PresetProvider, usePreset } from '@/components/providers';
+
+function PresetSetter() {
+  const { setPreset } = usePreset();
+  return (
+    <button type="button" onClick={() => setPreset('neobrutalism')}>
+      navbar preset
+    </button>
+  );
+}
 
 describe('Living Component Catalog', () => {
+  const dictionary = getHomepageDictionary('en');
+
   function renderCatalog(lang = 'en') {
     return render(
       <PresetProvider>
-        <ComponentsCatalogClient components={components} lang={lang} />
+        <PresetSetter />
+        <ComponentsCatalogClient
+          components={components}
+          lang={lang}
+          dictionary={getHomepageDictionary(lang)}
+        />
       </PresetProvider>
     );
   }
 
-  it('renders every component and no result count while nothing is filtered', () => {
+  it('renders all 33 components without a redundant result counter', () => {
     renderCatalog();
 
-    expect(screen.getByTestId('components-grid')).toBeInTheDocument();
-    for (const slug of ['button', 'switch', 'table']) {
-      expect(
-        screen.getByTestId(`living-component-card-${slug}`)
-      ).toBeInTheDocument();
-    }
-    expect(screen.getAllByRole('article')).toHaveLength(components.length);
+    expect(screen.getByTestId('components-grid').children).toHaveLength(33);
+    expect(screen.queryByText(/^Showing/)).not.toBeInTheDocument();
     expect(
-      screen.queryByTestId('catalog-result-count')
-    ).not.toBeInTheDocument();
+      screen.getByTestId('living-component-card-table')
+    ).toBeInTheDocument();
   });
 
-  it('has no preset control of its own (the navbar owns the preset)', () => {
-    renderCatalog();
-    expect(
-      screen.queryByTestId('catalog-preset-toggle')
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: /neobrutalism/i })
-    ).not.toBeInTheDocument();
-  });
-
-  it('filters by search query and shows the count once while filtering', () => {
+  it('filters by search query and shows the count only while filtering', () => {
     renderCatalog();
 
     fireEvent.change(screen.getByTestId('catalog-search-input'), {
       target: { value: 'JustSwitch' },
     });
 
-    expect(screen.getByTestId('catalog-result-count')).toHaveTextContent(
-      `1 of ${components.length}`
-    );
+    expect(screen.getByText('Showing 1 of 33')).toBeInTheDocument();
     expect(
       screen.getByTestId('living-component-card-switch')
     ).toBeInTheDocument();
@@ -57,89 +56,95 @@ describe('Living Component Catalog', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('filters by category chip without count badges', () => {
+  it('filters by category, with no count badges on the category buttons', () => {
     renderCatalog();
 
-    const chip = screen.getByRole('button', { name: 'Selection' });
-    expect(chip).toHaveTextContent(/^Selection$/);
-    fireEvent.click(chip);
+    const selection = screen.getByRole('button', { name: 'Selection' });
+    fireEvent.click(selection);
 
-    expect(chip).toHaveAttribute('aria-pressed', 'true');
-    for (const slug of ['checkbox', 'radio', 'switch']) {
-      expect(
-        screen.getByTestId(`living-component-card-${slug}`)
-      ).toBeInTheDocument();
-    }
+    expect(selection).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('Showing 3 of 33')).toBeInTheDocument();
     expect(
-      screen.queryByTestId('living-component-card-button')
-    ).not.toBeInTheDocument();
+      screen.getByTestId('living-component-card-checkbox')
+    ).toBeInTheDocument();
   });
 
-  it('shows a one-line empty state that names the query, with a reset link', () => {
+  it('localizes categories and the search placeholder', () => {
+    renderCatalog('id');
+
+    expect(screen.getByRole('button', { name: 'Pilihan' })).toBeInTheDocument();
+    expect(screen.getByTestId('catalog-search-input')).toHaveAttribute(
+      'placeholder',
+      'Cari komponen'
+    );
+  });
+
+  it('shows a one-line empty state naming the query, with a reset link', () => {
     renderCatalog();
 
     fireEvent.change(screen.getByTestId('catalog-search-input'), {
       target: { value: 'nonexistent-xyz' },
     });
 
-    const empty = screen.getByTestId('catalog-empty-state');
-    expect(empty).toHaveTextContent('Nothing matches "nonexistent-xyz".');
+    expect(screen.getByTestId('catalog-empty-state')).toHaveTextContent(
+      "Nothing matches 'nonexistent-xyz'."
+    );
 
     fireEvent.click(
-      within(empty).getByRole('button', { name: 'Reset filters' })
+      screen.getByRole('button', { name: dictionary.catalogResetFilters })
     );
-    expect(screen.getAllByRole('article')).toHaveLength(components.length);
+    expect(screen.getByTestId('components-grid').children).toHaveLength(33);
   });
 
-  it('links each card to its docs page and offers the install command', () => {
+  it('follows the site-wide preset instead of keeping its own switcher', () => {
+    renderCatalog();
+
+    expect(screen.queryByTestId('catalog-preset-toggle')).toBeNull();
+    const harness = () =>
+      screen
+        .getByTestId('living-component-card-button')
+        .querySelector('[data-testid="simulator-harness"]');
+    expect(harness()).toHaveAttribute('data-preset', 'default');
+
+    fireEvent.click(screen.getByRole('button', { name: 'navbar preset' }));
+    expect(harness()).toHaveAttribute('data-preset', 'neobrutalism');
+    expect(harness()).toHaveClass('theme-neobrutalism');
+  });
+
+  it('links each card to its docs and offers the CLI command as the main action', () => {
     renderCatalog();
 
     const card = screen.getByTestId('living-component-card-button');
-    expect(
-      within(card).getByRole('link', { name: 'JustButton' })
-    ).toHaveAttribute('href', '/en/docs/components/button');
-    expect(within(card).getByText('justui add button')).toBeInTheDocument();
-    expect(
-      within(card).getByRole('button', { name: 'Copy justui add button' })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'JustButton' })).toHaveAttribute(
+      'href',
+      '/en/docs/components/button'
+    );
+    expect(card).toHaveTextContent('justui add button');
+    expect(card.querySelector('.font-mono.text-sm.font-bold')).toBeNull();
   });
 
-  it('renders Indonesian descriptions and labels on /id', () => {
-    renderCatalog('id');
-
-    const card = screen.getByTestId('living-component-card-switch');
-    expect(
-      within(card).getByText(descriptionsId.switch ?? '')
-    ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Semua' })).toBeInTheDocument();
-    expect(
-      screen.getByRole('searchbox', { name: 'Cari komponen' })
-    ).toBeInTheDocument();
-  });
-
-  it('opens the Dart code dialog with focus inside and closes via button, Escape and backdrop', () => {
+  it('opens and closes the Dart example via button, backdrop click and Escape', () => {
     renderCatalog();
 
-    const card = screen.getByTestId('living-component-card-button');
-    const viewCode = within(card).getByTestId('view-code-button');
+    const viewCodeBtn = screen
+      .getByTestId('living-component-card-button')
+      .querySelector('[data-testid="view-code-button"]');
+    expect(viewCodeBtn).toBeInTheDocument();
 
-    fireEvent.click(viewCode);
-    const dialog = screen.getByRole('dialog', { name: 'just_button.dart' });
-    expect(within(dialog).getByText(/JustButton\(/)).toBeInTheDocument();
-    const close = within(dialog).getByRole('button', { name: 'Close' });
-    expect(close).toHaveFocus();
+    fireEvent.click(viewCodeBtn!);
+    expect(screen.getByTestId('dart-code-modal')).toBeInTheDocument();
+    expect(screen.getByText(/JustButton\(/)).toBeInTheDocument();
 
-    fireEvent.click(close);
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(viewCode).toHaveFocus();
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    expect(screen.queryByTestId('dart-code-modal')).not.toBeInTheDocument();
 
-    fireEvent.click(viewCode);
+    fireEvent.click(viewCodeBtn!);
     fireEvent.keyDown(document, { key: 'Escape' });
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('dart-code-modal')).not.toBeInTheDocument();
 
-    fireEvent.click(viewCode);
-    fireEvent.click(screen.getByTestId('dart-code-modal-backdrop'));
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    fireEvent.click(viewCodeBtn!);
+    fireEvent.click(screen.getByTestId('dart-code-modal'));
+    expect(screen.queryByTestId('dart-code-modal')).not.toBeInTheDocument();
   });
 
   it('handles hotkeys "/" and "Escape"', () => {

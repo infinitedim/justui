@@ -2,28 +2,18 @@
 
 import { Monitor, Smartphone, Tablet } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import type {
-  ViewportSwitchLabels,
-  ViewportSwitchProps,
-  Viewport,
-} from './viewport-switch.types';
+import type { ViewportSwitchProps, Viewport } from './viewport-switch.types';
 import type { SVGAttributes } from 'react';
 
-const viewportIcons: {
+const viewportConfig: {
   id: Viewport;
   icon: React.ComponentType<SVGAttributes<SVGSVGElement>>;
+  label: string;
 }[] = [
-  { id: 'mobile', icon: Smartphone },
-  { id: 'tablet', icon: Tablet },
-  { id: 'desktop', icon: Monitor },
+  { id: 'mobile', icon: Smartphone, label: 'Mobile viewport' },
+  { id: 'tablet', icon: Tablet, label: 'Tablet viewport' },
+  { id: 'desktop', icon: Monitor, label: 'Desktop viewport' },
 ];
-
-const defaultLabels: ViewportSwitchLabels = {
-  group: 'Preview width',
-  mobile: 'Mobile viewport',
-  tablet: 'Tablet viewport',
-  desktop: 'Desktop viewport',
-};
 
 /**
  * Viewport size switcher molecule for responsive previews.
@@ -32,26 +22,25 @@ const defaultLabels: ViewportSwitchLabels = {
 export function ViewportSwitch({
   value,
   onChange,
-  labels = defaultLabels,
   className,
 }: ViewportSwitchProps) {
   return (
     <div
       role="radiogroup"
-      aria-label={labels.group}
+      aria-label="Viewport size"
       className={cn(
         'inline-flex items-center rounded-(--just-radius-md) p-0.5',
         'border-border bg-card border-(length:--just-border-width)',
         className
       )}
     >
-      {viewportIcons.map(({ id, icon: IconComp }) => (
+      {viewportConfig.map(({ id, icon: IconComp, label }) => (
         <button
           key={id}
           type="button"
           role="radio"
           aria-checked={value === id}
-          aria-label={labels[id]}
+          aria-label={label}
           onClick={() => onChange(id)}
           className={cn(
             'inline-flex h-7 w-7 items-center justify-center rounded-(--just-radius-sm) transition-colors',

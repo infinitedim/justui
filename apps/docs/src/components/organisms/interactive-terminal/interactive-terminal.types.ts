@@ -1,19 +1,16 @@
 import type { TerminalLineKind } from '@/components/molecules/terminal-line';
-import type { JustUIPreset } from '@/lib/presets';
 
 export interface InteractiveTerminalHandle {
   runCommand: (command: string) => void;
 }
 
 export interface InteractiveTerminalProps {
-  /** Language for i18n labels on action chips. */
+  /** Language for i18n labels. */
   lang?: string;
-  /** Called when a command produces a mount event. */
+  /** Called with the public components a command copied into the project. */
   onMount?: (components: string[]) => void;
   /** Called when a command changes the preset. */
-  onPresetChange?: (preset: JustUIPreset) => void;
-  /** Called when the stage should be cleared. */
-  onClear?: () => void;
+  onPresetChange?: (preset: 'default' | 'neobrutalism') => void;
   className?: string;
 }
 

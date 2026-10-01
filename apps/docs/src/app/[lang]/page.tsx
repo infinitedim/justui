@@ -92,7 +92,7 @@ export default async function HomePage({
       hero={<HeroSection lang={lang} t={t} />}
       workbench={<HeroInteractive lang={lang} />}
       installStrip={<InstallTabs lang={lang} />}
-      bentoGrid={<WhatYouGet lang={lang} />}
+      whatYouGet={<WhatYouGet lang={lang} />}
       componentShowcase={<ComponentShowcase lang={lang} t={t} />}
       footer={<Footer lang={lang} />}
     />

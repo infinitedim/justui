@@ -1,51 +1,43 @@
 'use client';
 
-import { useId, useState } from 'react';
-import { Clock } from 'lucide-react';
-import { useCatalogI18n } from '@/lib/catalog-i18n/context';
-import { neutralControl, raised } from '@/lib/ui-classes';
+import { useState } from 'react';
+import { Info } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { focusRing, raised } from './mock-styles';
 
-/** Opens on hover and on keyboard focus; Escape closes it (WCAG 1.4.13). */
 export function TooltipMock() {
-  const { crm } = useCatalogI18n();
-  const [open, setOpen] = useState(false);
-  const tooltipId = useId();
+  const [visible, setVisible] = useState(false);
 
   return (
-    <div className="relative inline-flex flex-col items-center">
-      {open ? (
+    <div className="relative flex items-center gap-1.5 text-sm">
+      <span className="text-secondary">Shipping $4.00</span>
+      <button
+        type="button"
+        onMouseEnter={() => setVisible(true)}
+        onMouseLeave={() => setVisible(false)}
+        onFocus={() => setVisible(true)}
+        onBlur={() => setVisible(false)}
+        onClick={() => setVisible((v) => !v)}
+        aria-label="About shipping"
+        aria-describedby={visible ? 'mock-tooltip' : undefined}
+        data-testid="mock-tooltip-trigger"
+        className={cn('text-secondary hover:text-foreground', focusRing)}
+      >
+        <Info className="h-4 w-4" aria-hidden="true" />
+      </button>
+      {visible ? (
         <div
-          id={tooltipId}
+          id="mock-tooltip"
           role="tooltip"
           data-testid="mock-tooltip-bubble"
           className={cn(
             raised,
-            'bg-elevated text-foreground absolute bottom-full mb-2 w-max max-w-56 px-2.5 py-1.5 text-xs'
+            'absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1 text-xs whitespace-nowrap'
           )}
         >
-          {crm.tooltip.bubble}
+          Free on orders over $50
         </div>
       ) : null}
-      <button
-        type="button"
-        aria-describedby={open ? tooltipId : undefined}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
-        onKeyDown={(e) => {
-          if (e.key === 'Escape') setOpen(false);
-        }}
-        data-testid="mock-tooltip-trigger"
-        className={cn(
-          neutralControl,
-          'inline-flex h-9 items-center gap-1.5 px-3 text-sm'
-        )}
-      >
-        <Clock className="text-muted h-4 w-4" aria-hidden="true" />
-        {crm.tooltip.trigger}
-      </button>
     </div>
   );
 }

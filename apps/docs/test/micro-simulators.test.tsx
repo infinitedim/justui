@@ -1,9 +1,7 @@
-import { render, screen, fireEvent, within } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 import { MicroSimulator } from '@/components/organisms/simulators/micro-simulator';
 import { SIMULATOR_REGISTRY } from '@/components/organisms/simulators/simulator-registry';
-import { SwitchMock } from '@/components/organisms/simulators/preview-mocks/switch-mock';
-import { CatalogI18nProvider } from '@/lib/catalog-i18n/context';
 import { components } from '@/lib/components-data';
 
 describe('Micro-Simulator System (33 Mocks)', () => {
@@ -14,51 +12,66 @@ describe('Micro-Simulator System (33 Mocks)', () => {
     }
   });
 
-  it('renders every mock in both locales without error', () => {
-    for (const lang of ['en', 'id']) {
-      for (const comp of components) {
-        const { container, unmount } = render(
-          <CatalogI18nProvider lang={lang}>
-            <MicroSimulator slug={comp.slug} />
-          </CatalogI18nProvider>
-        );
-        expect(
-          container.querySelector('[data-testid="simulator-harness"]')
-        ).toBeInTheDocument();
-        unmount();
-      }
+  it('renders every mock in both presets, applying the preset as a token scope', () => {
+    for (const comp of components) {
+      const { container: defContainer, unmount: defUnmount } = render(
+        <MicroSimulator slug={comp.slug} preset="default" />
+      );
+      expect(
+        defContainer.querySelector('[data-testid="simulator-harness"]')
+      ).toHaveAttribute('data-preset', 'default');
+      defUnmount();
+
+      const { container: neoContainer, unmount: neoUnmount } = render(
+        <MicroSimulator slug={comp.slug} preset="neobrutalism" />
+      );
+      const neoHarness = neoContainer.querySelector(
+        '[data-testid="simulator-harness"]'
+      );
+      expect(neoHarness).toHaveAttribute('data-preset', 'neobrutalism');
+      expect(neoHarness).toHaveClass('theme-neobrutalism');
+      neoUnmount();
     }
   });
 
-  it('ButtonMock logs calls', () => {
-    render(<MicroSimulator slug="button" />);
-    const btn = screen.getByTestId('mock-button');
-    expect(btn).toHaveTextContent('Log call');
-
-    fireEvent.click(btn);
-    expect(screen.getByText('1 call logged today')).toBeInTheDocument();
-    fireEvent.click(btn);
-    expect(screen.getByText('2 calls logged today')).toBeInTheDocument();
+  it('keeps preset-specific styling out of the mocks (tokens only)', () => {
+    for (const comp of components) {
+      const { container, unmount } = render(
+        <MicroSimulator slug={comp.slug} preset="neobrutalism" />
+      );
+      const html = container.innerHTML;
+      expect(html).not.toMatch(/border-black|#000\]|shadow-\[\d/);
+      expect(html).not.toMatch(/text-\[(9|10|11)px\]/);
+      expect(container.querySelector('.animate-pulse')).toBeNull();
+      unmount();
+    }
   });
 
-  it('SwitchMock is a real switch and reports each toggle', () => {
-    const onToggle = vi.fn();
-    render(<SwitchMock onToggle={onToggle} />);
-    const sw = screen.getByRole('switch', { name: 'Follow-up reminders' });
+  it('verifies ButtonMock counter interaction', () => {
+    render(<MicroSimulator slug="button" preset="default" />);
+    const btn = screen.getByTestId('mock-button');
+    expect(btn).toHaveTextContent('Add to cart');
+
+    fireEvent.click(btn);
+    expect(btn).toHaveTextContent('In cart (1)');
+    fireEvent.click(btn);
+    expect(btn).toHaveTextContent('In cart (2)');
+  });
+
+  it('verifies SwitchMock toggle interaction', () => {
+    render(<MicroSimulator slug="switch" preset="default" />);
+    const sw = screen.getByTestId('mock-switch');
     expect(sw).toHaveAttribute('aria-checked', 'true');
-    expect(screen.getByText('On')).toBeInTheDocument();
 
     fireEvent.click(sw);
     expect(sw).toHaveAttribute('aria-checked', 'false');
-    expect(screen.getByText('Off')).toBeInTheDocument();
-    expect(onToggle).toHaveBeenLastCalledWith(false);
+    fireEvent.click(sw);
+    expect(sw).toHaveAttribute('aria-checked', 'true');
   });
 
-  it('CheckboxMock toggles aria-checked and its icon', () => {
-    render(<MicroSimulator slug="checkbox" />);
-    const cb = screen.getByRole('checkbox', {
-      name: 'Send proposal to Hotel Arunika',
-    });
+  it('verifies CheckboxMock toggle interaction', () => {
+    render(<MicroSimulator slug="checkbox" preset="default" />);
+    const cb = screen.getByTestId('mock-checkbox');
     expect(cb).toHaveAttribute('aria-checked', 'true');
     expect(cb.querySelector('svg')).toBeInTheDocument();
 
@@ -67,88 +80,67 @@ describe('Micro-Simulator System (33 Mocks)', () => {
     expect(cb.querySelector('svg')).not.toBeInTheDocument();
   });
 
-  it('RadioMock uses native radios', () => {
-    render(<MicroSimulator slug="radio" />);
-    const email = screen.getByRole('radio', { name: 'Email' });
-    expect(screen.getByRole('radio', { name: 'Phone' })).toBeChecked();
-    fireEvent.click(email);
-    expect(email).toBeChecked();
+  it('verifies AccordionMock expand and collapse interaction', () => {
+    render(<MicroSimulator slug="accordion" preset="default" />);
+    const acc = screen.getByTestId('mock-accordion');
+    expect(
+      screen.queryByText(/until the order is packed/i)
+    ).not.toBeInTheDocument();
+
+    const trigger = acc.querySelector('button');
+    fireEvent.click(trigger!);
+    expect(screen.getByText(/until the order is packed/i)).toBeInTheDocument();
+
+    fireEvent.click(trigger!);
+    expect(
+      screen.queryByText(/until the order is packed/i)
+    ).not.toBeInTheDocument();
   });
 
-  it('AccordionMock expands and collapses with aria-expanded', () => {
-    render(<MicroSimulator slug="accordion" />);
-    const trigger = within(screen.getByTestId('mock-accordion')).getByRole(
-      'button',
-      { name: 'Company' }
-    );
-    expect(screen.queryByText(/4 outlets in Bandung/)).not.toBeInTheDocument();
-
-    fireEvent.click(trigger);
-    expect(trigger).toHaveAttribute('aria-expanded', 'true');
-    expect(screen.getByText(/4 outlets in Bandung/)).toBeInTheDocument();
-
-    fireEvent.click(trigger);
-    expect(screen.queryByText(/4 outlets in Bandung/)).not.toBeInTheDocument();
-  });
-
-  it('ToastMock shows a status message', () => {
-    render(<MicroSimulator slug="toast" />);
+  it('verifies ToastMock trigger interaction', () => {
+    render(<MicroSimulator slug="toast" preset="default" />);
     expect(screen.queryByTestId('mock-toast-popup')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId('mock-toast-trigger'));
-    expect(screen.getByRole('status')).toHaveTextContent('Deal moved to Won');
+    const trigger = screen.getByTestId('mock-toast-trigger');
+    fireEvent.click(trigger);
+    expect(screen.getByTestId('mock-toast-popup')).toBeInTheDocument();
   });
 
-  it('DialogMock opens on the safe choice and closes', () => {
-    render(<MicroSimulator slug="dialog" />);
+  it('verifies DialogMock open and close interaction', () => {
+    render(<MicroSimulator slug="dialog" preset="default" />);
     expect(screen.queryByTestId('mock-dialog-content')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId('mock-dialog-trigger'));
-    expect(
-      screen.getByRole('alertdialog', { name: 'Delete this contact?' })
-    ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus();
+    const trigger = screen.getByTestId('mock-dialog-trigger');
+    fireEvent.click(trigger);
+    expect(screen.getByTestId('mock-dialog-content')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    const confirmBtn = screen.getByRole('button', { name: 'Remove' });
+    fireEvent.click(confirmBtn);
     expect(screen.queryByTestId('mock-dialog-content')).not.toBeInTheDocument();
   });
 
-  it('SheetMock opens and closes', () => {
-    render(<MicroSimulator slug="sheet" />);
+  it('verifies SheetMock open and close interaction', () => {
+    render(<MicroSimulator slug="sheet" preset="default" />);
     expect(screen.queryByTestId('mock-sheet-panel')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId('mock-sheet-trigger'));
+    const trigger = screen.getByTestId('mock-sheet-trigger');
+    fireEvent.click(trigger);
     expect(screen.getByTestId('mock-sheet-panel')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    const dismissBtn = screen.getByRole('button', { name: 'Apply' });
+    fireEvent.click(dismissBtn);
     expect(screen.queryByTestId('mock-sheet-panel')).not.toBeInTheDocument();
   });
 
-  it('TooltipMock opens on hover and on keyboard focus', () => {
-    render(<MicroSimulator slug="tooltip" />);
+  it('verifies TooltipMock hover and click interaction', () => {
+    render(<MicroSimulator slug="tooltip" preset="default" />);
+    expect(screen.queryByTestId('mock-tooltip-bubble')).not.toBeInTheDocument();
+
     const trigger = screen.getByTestId('mock-tooltip-trigger');
-
     fireEvent.mouseEnter(trigger);
-    expect(screen.getByRole('tooltip')).toHaveTextContent(
-      'Called 3 days ago by Dewi'
-    );
+    expect(screen.getByTestId('mock-tooltip-bubble')).toBeInTheDocument();
+
     fireEvent.mouseLeave(trigger);
-    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-
-    fireEvent.focus(trigger);
-    expect(screen.getByRole('tooltip')).toBeInTheDocument();
-    fireEvent.keyDown(trigger, { key: 'Escape' });
-    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-  });
-
-  it('renders Indonesian CRM copy under CatalogI18nProvider lang="id"', () => {
-    render(
-      <CatalogI18nProvider lang="id">
-        <MicroSimulator slug="button" />
-      </CatalogI18nProvider>
-    );
-    expect(screen.getByTestId('mock-button')).toHaveTextContent(
-      'Catat panggilan'
-    );
+    expect(screen.queryByTestId('mock-tooltip-bubble')).not.toBeInTheDocument();
   });
 });

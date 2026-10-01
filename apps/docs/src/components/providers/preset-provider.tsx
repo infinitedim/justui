@@ -8,11 +8,11 @@ import {
   useRef,
   useState,
 } from 'react';
-import { DEFAULT_PRESET, isPreset, type JustUIPreset } from '@/lib/presets';
 
-export type { JustUIPreset };
+export type JustUIPreset = 'default' | 'neobrutalism';
 
 const STORAGE_KEY = 'justui-preset';
+const DEFAULT_PRESET: JustUIPreset = 'default';
 
 interface PresetContextValue {
   preset: JustUIPreset;
@@ -27,19 +27,21 @@ const PresetContext = createContext<PresetContextValue>({
 export function PresetProvider({ children }: { children: React.ReactNode }) {
   const [preset, setPresetState] = useState<JustUIPreset>(DEFAULT_PRESET);
   const [mounted, setMounted] = useState(false);
-  // Child effects run before this provider's mount effect. A child that sets
-  // the preset on mount (the Studio applying ?preset= from a shared link)
-  // must win over the stored value, so the stored value is only applied when
-  // nothing chose a preset explicitly first.
-  const explicitRef = useRef(false);
+  // Set when a child picks a preset before this provider has read storage
+  // (child effects run first), e.g. the studio applying ?preset= from a
+  // share link. That choice must win over the stored one.
+  const chosenRef = useRef(false);
 
   useEffect(() => {
     // Read from localStorage on mount -- avoid SSR mismatch. Storage access
     // can throw (private browsing, blocked cookies/site data, some embedded
     // webviews); fall back to the default preset rather than crashing.
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (!explicitRef.current && isPreset(stored)) {
+      const stored = localStorage.getItem(STORAGE_KEY) as JustUIPreset | null;
+      if (
+        !chosenRef.current &&
+        (stored === 'neobrutalism' || stored === 'default')
+      ) {
         setPresetState(stored);
       }
     } catch {
@@ -66,7 +68,7 @@ export function PresetProvider({ children }: { children: React.ReactNode }) {
   }, [preset, mounted]);
 
   const setPreset = useCallback((next: JustUIPreset) => {
-    explicitRef.current = true;
+    chosenRef.current = true;
     setPresetState(next);
   }, []);
 

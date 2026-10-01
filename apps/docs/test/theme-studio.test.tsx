@@ -1,15 +1,15 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { act, render, screen, fireEvent } from '@testing-library/react';
 import { StudioClient } from '@/app/[lang]/studio/studio-client';
 import StudioPage, {
   generateMetadata,
   generateStaticParams,
 } from '@/app/[lang]/studio/page';
 import { ThemeConfigurator } from '@/components/organisms/theme-configurator';
-import { PhoneMockupCanvas } from '@/components/organisms/phone-mockup-canvas';
+import { StudioPreview } from '@/components/organisms/studio-preview';
+import { PresetProvider } from '@/components/providers';
 import { CodeExportDrawer } from '@/components/organisms/code-export-drawer';
 import { ThemeStudioProvider } from '@/lib/theme-studio-context';
-import { PresetProvider } from '@/components/providers/preset-provider';
 import { hexToHsl } from '@/lib/theme/color-resolver';
 
 vi.mock('next/navigation', () => ({
@@ -36,9 +36,6 @@ vi.mock('@/components/search', () => ({
 describe('Theme Studio Component & Integration Tests', () => {
   beforeEach(() => {
     window.history.replaceState(null, '', '/en/studio');
-    localStorage.clear();
-    document.body.classList.remove('theme-neobrutalism');
-    document.documentElement.classList.remove('theme-neobrutalism');
     Object.assign(navigator, {
       clipboard: {
         writeText: vi.fn().mockImplementation(() => Promise.resolve()),
@@ -51,7 +48,11 @@ describe('Theme Studio Component & Integration Tests', () => {
       render(<StudioClient lang="en" />);
 
       expect(screen.getByTestId('theme-configurator')).toBeInTheDocument();
-      expect(screen.getByTestId('phone-mockup-canvas')).toBeInTheDocument();
+      expect(screen.getByTestId('studio-preview')).toBeInTheDocument();
+      expect(screen.queryByText('Live Token Playground')).toBeNull();
+      expect(
+        screen.getByRole('heading', { level: 1, name: 'Theme Studio' })
+      ).toHaveClass('font-medium');
       expect(screen.getByTestId('code-export-drawer')).toBeInTheDocument();
       expect(
         screen.getByRole('heading', { level: 1, name: 'Theme Studio' })
@@ -62,43 +63,58 @@ describe('Theme Studio Component & Integration Tests', () => {
       render(<StudioClient lang="id" />);
 
       expect(
-        screen.getByText(
-          'Pilih satu warna. Studio menurunkan palet terang dan gelap yang lolos WCAG AA, lalu memberi config untuk justui init.'
-        )
+        screen.getByText(/Pilih satu warna\. Studio menurunkan palet/)
       ).toBeInTheDocument();
-      expect(screen.getByText('Warna Dasar')).toBeInTheDocument();
-      expect(screen.getByText('Ruang Warna')).toBeInTheDocument();
+      expect(screen.getByText('Warna dasar')).toBeInTheDocument();
+      expect(screen.getByText('Ruang warna')).toBeInTheDocument();
     });
   });
 
   describe('ThemeConfigurator Organism', () => {
-    it('renders seed color input and preset swatches', () => {
+    it('renders the seed input without a generic Tailwind swatch palette', () => {
       render(
         <ThemeStudioProvider>
           <ThemeConfigurator lang="en" />
         </ThemeStudioProvider>
       );
 
-      expect(screen.getByLabelText('Seed color hex value')).toHaveValue(
-        '#a3e635'
-      );
-      expect(screen.getByText('Lime')).toBeInTheDocument();
-      expect(screen.getByText('Blue')).toBeInTheDocument();
-      expect(screen.getByText('Rose')).toBeInTheDocument();
+      expect(screen.getByLabelText('Seed color as hex')).toHaveValue('#a3e635');
+      expect(screen.queryByText('Violet')).not.toBeInTheDocument();
+      expect(screen.queryByText('Cyan')).not.toBeInTheDocument();
     });
 
-    it('updates seed color when a preset swatch is clicked', () => {
+    it('keeps a history of recently used seeds that can be re-applied', async () => {
+      vi.useFakeTimers();
       render(
         <ThemeStudioProvider>
           <ThemeConfigurator lang="en" />
         </ThemeStudioProvider>
       );
 
-      const blueSwatch = screen.getByText('Blue');
-      fireEvent.click(blueSwatch);
+      const input = screen.getByLabelText('Seed color as hex');
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(700);
+      });
+      fireEvent.change(input, { target: { value: '#3b82f6' } });
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(700);
+      });
 
-      const input = screen.getByLabelText('Seed color hex value');
-      expect(input).toHaveValue('#3b82f6');
+      fireEvent.click(screen.getByRole('button', { name: '#a3e635' }));
+      expect(input).toHaveValue('#a3e635');
+      vi.useRealTimers();
+    });
+
+    it('explains what the color space setting changes', () => {
+      render(
+        <ThemeStudioProvider>
+          <ThemeConfigurator lang="en" />
+        </ThemeStudioProvider>
+      );
+
+      expect(
+        screen.getByText(/Sets color_space for JustThemeData.fromSeed/)
+      ).toBeInTheDocument();
     });
 
     it('normalizes hex input on blur', () => {
@@ -108,7 +124,7 @@ describe('Theme Studio Component & Integration Tests', () => {
         </ThemeStudioProvider>
       );
 
-      const input = screen.getByLabelText('Seed color hex value');
+      const input = screen.getByLabelText('Seed color as hex');
       fireEvent.change(input, { target: { value: '#3b82f6' } });
       fireEvent.blur(input);
 
@@ -126,15 +142,13 @@ describe('Theme Studio Component & Integration Tests', () => {
 
       // Drag to 0%
       fireEvent.change(slider, { target: { value: '0' } });
-      expect(screen.getByLabelText('Seed color hex value')).toHaveValue(
-        '#000000'
-      );
+      expect(screen.getByLabelText('Seed color as hex')).toHaveValue('#000000');
 
       // Drag back to 55%
       fireEvent.change(slider, { target: { value: '55' } });
       // Should recover lime tone, not stay black/gray
       const val = (
-        screen.getByLabelText('Seed color hex value') as HTMLInputElement
+        screen.getByLabelText('Seed color as hex') as HTMLInputElement
       ).value;
       expect(val).not.toBe('#000000');
       expect(val).not.toBe('#8c8c8c');
@@ -157,18 +171,17 @@ describe('Theme Studio Component & Integration Tests', () => {
       expect(toggle).toHaveAttribute('aria-checked', 'true');
     });
 
-    it('shows the site-wide preset read-only instead of a second preset control', () => {
+    it('shows the site-wide preset instead of keeping its own picker', () => {
       render(
         <ThemeStudioProvider>
           <ThemeConfigurator lang="en" />
         </ThemeStudioProvider>
       );
 
-      expect(screen.getByText('default')).toBeInTheDocument();
-      expect(screen.getByText(/change it in the header/)).toBeInTheDocument();
       expect(
-        screen.queryByRole('radio', { name: /neobrutalism/i })
+        screen.queryByRole('radio', { name: 'neobrutalism' })
       ).not.toBeInTheDocument();
+      expect(screen.getByText('default')).toBeInTheDocument();
     });
 
     it('renders resolved palette tokens with WCAG contrast badges', () => {
@@ -178,9 +191,12 @@ describe('Theme Studio Component & Integration Tests', () => {
         </ThemeStudioProvider>
       );
 
-      expect(screen.getByText('Resolved Palette')).toBeInTheDocument();
-      expect(screen.getByText('Primary Text')).toBeInTheDocument();
-      expect(screen.getByText('Card Surface')).toBeInTheDocument();
+      expect(screen.getByText('Resolved palette')).toBeInTheDocument();
+      expect(screen.getByText('colors.textPrimary')).toBeInTheDocument();
+      expect(screen.getByText('colors.borderDefault')).toBeInTheDocument();
+      expect(screen.getAllByText('on background').length).toBeGreaterThan(0);
+      // Background has nothing to be measured against, so no "1.0" badge.
+      expect(screen.queryByText('1.0:1')).not.toBeInTheDocument();
     });
 
     it('only claims success after the clipboard write actually resolves', async () => {
@@ -200,7 +216,7 @@ describe('Theme Studio Component & Integration Tests', () => {
       );
 
       const copyButton = screen.getAllByRole('button', {
-        name: /^Copy .* color$/,
+        name: /^Copy colors\./,
       })[0];
       fireEvent.click(copyButton);
 
@@ -225,7 +241,7 @@ describe('Theme Studio Component & Integration Tests', () => {
       );
 
       const copyButton = screen.getAllByRole('button', {
-        name: /^Copy .* color$/,
+        name: /^Copy colors\./,
       })[0];
       fireEvent.click(copyButton);
 
@@ -234,50 +250,57 @@ describe('Theme Studio Component & Integration Tests', () => {
     });
   });
 
-  describe('PhoneMockupCanvas Organism', () => {
-    it('renders device frame with status bar and app header', () => {
+  describe('StudioPreview Organism', () => {
+    it('shows real components without device chrome, metrics or versions', () => {
       render(
         <ThemeStudioProvider>
-          <PhoneMockupCanvas lang="en" />
+          <StudioPreview lang="en" />
         </ThemeStudioProvider>
       );
 
-      expect(screen.getByText('9:41')).toBeInTheDocument();
-      expect(screen.getByText('Relasi')).toBeInTheDocument();
-      expect(screen.getByText("Today's follow-ups")).toBeInTheDocument();
-      expect(
-        screen.getByRole('button', { name: 'Log call' })
-      ).toBeInTheDocument();
-      // No invented metrics or version labels in the preview.
-      expect(screen.queryByText('120 FPS')).toBeNull();
-      expect(screen.queryByText(/v0\.\d+/)).toBeNull();
+      expect(screen.getByLabelText('Email')).toHaveValue('name@example.com');
+      expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+      expect(screen.queryByText('9:41')).not.toBeInTheDocument();
+      expect(screen.queryByText(/FPS/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/v0\.1/)).not.toBeInTheDocument();
     });
 
-    it('localizes the mock app header and notifications button for Indonesian', () => {
+    it('localizes the preview screen', () => {
       render(
         <ThemeStudioProvider>
-          <PhoneMockupCanvas lang="id" />
+          <StudioPreview lang="id" />
         </ThemeStudioProvider>
       );
 
-      expect(screen.getByText('Tindak lanjut hari ini')).toBeInTheDocument();
+      expect(screen.getByText('Detail pengiriman')).toBeInTheDocument();
       expect(
-        screen.getByRole('button', { name: 'Notifikasi' })
+        screen.getByRole('button', { name: 'Simpan' })
       ).toBeInTheDocument();
     });
 
-    it('supports interactive switch toggle inside phone mockup', () => {
+    it('feeds the resolved palette to the components as --just-* tokens', () => {
       render(
-        <ThemeStudioProvider>
-          <PhoneMockupCanvas lang="en" />
+        <ThemeStudioProvider initialSeedColor="#e11d48">
+          <StudioPreview lang="en" />
         </ThemeStudioProvider>
       );
 
-      const mockupSwitch = screen.getByRole('switch');
-      expect(mockupSwitch).toHaveAttribute('aria-checked', 'true');
+      const scope = screen.getByTestId('studio-preview')
+        .firstElementChild as HTMLElement;
+      expect(scope.style.getPropertyValue('--just-accent')).toBe('#e11d48');
+    });
 
-      fireEvent.click(mockupSwitch);
-      expect(mockupSwitch).toHaveAttribute('aria-checked', 'false');
+    it('supports the switch inside the preview', () => {
+      render(
+        <ThemeStudioProvider>
+          <StudioPreview lang="en" />
+        </ThemeStudioProvider>
+      );
+
+      const previewSwitch = screen.getByRole('switch');
+      expect(previewSwitch).toHaveAttribute('aria-checked', 'true');
+      fireEvent.click(previewSwitch);
+      expect(previewSwitch).toHaveAttribute('aria-checked', 'false');
     });
   });
 
@@ -289,10 +312,15 @@ describe('Theme Studio Component & Integration Tests', () => {
         </ThemeStudioProvider>
       );
 
-      expect(screen.getByText('justui.config.yaml')).toBeInTheDocument();
-      expect(screen.getByText('Config YAML')).toBeInTheDocument();
-      expect(screen.getByText('Dart Code')).toBeInTheDocument();
-      expect(screen.getByText('CLI Command')).toBeInTheDocument();
+      // File names are the tab labels: one header, no second file-name bar.
+      expect(
+        screen.getByRole('tab', { name: 'justui.config.yaml' })
+      ).toHaveAttribute('aria-selected', 'true');
+      expect(
+        screen.getByRole('tab', { name: 'theme.dart' })
+      ).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: 'terminal' })).toBeInTheDocument();
+      expect(screen.getAllByText('justui.config.yaml')).toHaveLength(1);
     });
 
     it('switches between YAML, Dart, and CLI tabs', () => {
@@ -302,18 +330,16 @@ describe('Theme Studio Component & Integration Tests', () => {
         </ThemeStudioProvider>
       );
 
-      const dartTab = screen.getByRole('tab', { name: 'Dart Code' });
+      const dartTab = screen.getByRole('tab', { name: 'theme.dart' });
       fireEvent.click(dartTab);
 
-      expect(screen.getByText('theme.dart')).toBeInTheDocument();
       expect(screen.getByTestId('code-export-panel')).toHaveTextContent(
         'JustThemeData.fromSeed('
       );
 
-      const cliTab = screen.getByRole('tab', { name: 'CLI Command' });
+      const cliTab = screen.getByRole('tab', { name: 'terminal' });
       fireEvent.click(cliTab);
 
-      expect(screen.getByText('Terminal')).toBeInTheDocument();
       expect(screen.getByTestId('code-export-panel')).toHaveTextContent(
         'justui init --preset default --color-space hsl'
       );
@@ -327,8 +353,8 @@ describe('Theme Studio Component & Integration Tests', () => {
       );
 
       const panel = screen.getByRole('tabpanel');
-      const yamlTab = screen.getByRole('tab', { name: 'Config YAML' });
-      const dartTab = screen.getByRole('tab', { name: 'Dart Code' });
+      const yamlTab = screen.getByRole('tab', { name: 'justui.config.yaml' });
+      const dartTab = screen.getByRole('tab', { name: 'theme.dart' });
 
       expect(yamlTab).toHaveAttribute('aria-controls', panel.id);
       expect(panel).toHaveAttribute('aria-labelledby', yamlTab.id);
@@ -344,9 +370,9 @@ describe('Theme Studio Component & Integration Tests', () => {
         </ThemeStudioProvider>
       );
 
-      const yamlTab = screen.getByRole('tab', { name: 'Config YAML' });
-      const dartTab = screen.getByRole('tab', { name: 'Dart Code' });
-      const cliTab = screen.getByRole('tab', { name: 'CLI Command' });
+      const yamlTab = screen.getByRole('tab', { name: 'justui.config.yaml' });
+      const dartTab = screen.getByRole('tab', { name: 'theme.dart' });
+      const cliTab = screen.getByRole('tab', { name: 'terminal' });
 
       fireEvent.keyDown(yamlTab, { key: 'ArrowRight' });
       expect(dartTab).toHaveAttribute('aria-selected', 'true');
@@ -370,39 +396,22 @@ describe('Theme Studio Component & Integration Tests', () => {
   });
 
   describe('Toolbar Actions (Reset & Share)', () => {
-    it('resets the seed color but leaves the site-wide preset alone', () => {
-      window.history.replaceState(null, '', '/en/studio?preset=neo');
+    it('resets state when Reset button is clicked', () => {
       render(
         <PresetProvider>
-          <StudioClient lang="en" />
+          <StudioClient lang="en" initialPreset="neobrutalism" />
         </PresetProvider>
       );
 
-      const input = screen.getByLabelText('Seed color hex value');
-      fireEvent.change(input, { target: { value: '#3b82f6' } });
-      fireEvent.blur(input);
-      expect(input).toHaveValue('#3b82f6');
+      expect(screen.getByText('neobrutalism')).toBeInTheDocument();
+      fireEvent.change(screen.getByLabelText('Seed color as hex'), {
+        target: { value: '#3b82f6' },
+      });
 
       fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
 
-      expect(screen.getByLabelText('Seed color hex value')).toHaveValue(
-        '#a3e635'
-      );
-      expect(screen.getByText('neobrutalism')).toBeInTheDocument();
-    });
-
-    it('applies ?preset= from a shared link to the site-wide preset, over the stored one', () => {
-      localStorage.setItem('justui-preset', 'default');
-      window.history.replaceState(null, '', '/en/studio?preset=neo');
-      render(
-        <PresetProvider>
-          <StudioClient lang="en" />
-        </PresetProvider>
-      );
-
-      expect(document.body).toHaveClass('theme-neobrutalism');
-      expect(localStorage.getItem('justui-preset')).toBe('neobrutalism');
-      expect(screen.getByText('neobrutalism')).toBeInTheDocument();
+      expect(screen.getByLabelText('Seed color as hex')).toHaveValue('#a3e635');
+      expect(screen.getByText('default')).toBeInTheDocument();
     });
 
     it('triggers clipboard write on Share button click', async () => {
@@ -445,7 +454,7 @@ describe('Theme Studio Component & Integration Tests', () => {
       expect(screen.getByRole('contentinfo')).toBeInTheDocument();
     });
 
-    it('applies seed/dark/colorSpace from searchParams on the very first render, with no flash of the default theme', async () => {
+    it('applies seed/dark/preset/colorSpace from searchParams on the very first render, with no flash of the default theme', async () => {
       // window.location.search is empty per beforeEach, so the client-side
       // effect that reads it cannot be what produces this value -- only a
       // correctly-threaded server prop can.
@@ -460,15 +469,14 @@ describe('Theme Studio Component & Integration Tests', () => {
       });
       render(page);
 
-      expect(screen.getByLabelText('Seed color hex value')).toHaveValue(
-        '#e11d48'
-      );
+      expect(screen.getByLabelText('Seed color as hex')).toHaveValue('#e11d48');
       // "Dark" (not "Light") confirms the label is already reflecting the
       // resolved isDark=true state on this very first render.
       expect(screen.getByRole('switch', { name: 'Dark' })).toHaveAttribute(
         'aria-checked',
         'true'
       );
+      expect(screen.getByText('neobrutalism')).toBeInTheDocument();
     });
   });
 });

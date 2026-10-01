@@ -1,35 +1,26 @@
 'use client';
 
-import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { hint } from './mock-styles';
 
-const MEMBERS = [
-  { initials: 'RW', name: 'Rina Wulandari' },
-  { initials: 'BP', name: 'Bagas Pratama' },
-  { initials: 'DL', name: 'Dewi Lestari' },
-] as const;
-const HIDDEN_COUNT = 2;
-
-const avatar =
-  'bg-accent-muted text-foreground border-card flex h-10 w-10 items-center justify-center rounded-full border-2 text-xs font-semibold';
+const people = ['AR', 'MS', 'KT'];
 
 export function AvatarGroupMock() {
-  const { crm } = useCatalogI18n();
-
   return (
-    <div className="flex flex-col items-center gap-2">
-      <p className="text-muted text-xs">{crm.avatarGroup.label}</p>
-      <ul data-testid="mock-avatar-group" className="flex -space-x-2">
-        {MEMBERS.map((member) => (
-          <li key={member.initials} className={avatar} title={member.name}>
-            <span aria-hidden="true">{member.initials}</span>
-            <span className="sr-only">{member.name}</span>
-          </li>
+    <div className="flex items-center gap-3">
+      <div data-testid="mock-avatar-group" className="flex items-center">
+        {people.map((initials, i) => (
+          <span
+            key={initials}
+            className={`bg-fill text-foreground border-card flex h-9 w-9 items-center justify-center rounded-full border-2 text-xs font-semibold ${i > 0 ? '-ml-2.5' : ''}`}
+          >
+            {initials}
+          </span>
         ))}
-        <li className={`${avatar} bg-card text-muted`}>
-          <span aria-hidden="true">+{HIDDEN_COUNT}</span>
-          <span className="sr-only">{crm.avatarGroup.more(HIDDEN_COUNT)}</span>
-        </li>
-      </ul>
+        <span className="bg-card text-secondary border-card -ml-2.5 flex h-9 w-9 items-center justify-center rounded-full border-2 text-xs font-semibold">
+          +4
+        </span>
+      </div>
+      <span className={hint}>Packing this order</span>
     </div>
   );
 }

@@ -33,16 +33,12 @@ import { DatePickerMock } from './preview-mocks/date-picker-mock';
 import { DateRangePickerMock } from './preview-mocks/date-range-picker-mock';
 import { TimePickerMock } from './preview-mocks/time-picker-mock';
 
-/**
- * Mocks take no props: styling comes from the --just-* tokens of the active
- * preset scope, and copy comes from CatalogI18nProvider.
- */
+/** Mocks take no preset prop: they read --just-* tokens from their scope. */
 export type SimulatorMockComponent = React.ComponentType;
 
 export const SIMULATOR_REGISTRY: Record<string, SimulatorMockComponent> = {
   // Primitives (9)
   button: ButtonMock,
-  'icon-button': IconButtonMock,
   input: InputMock,
   badge: BadgeMock,
   avatar: AvatarMock,
@@ -50,6 +46,7 @@ export const SIMULATOR_REGISTRY: Record<string, SimulatorMockComponent> = {
   progress: ProgressMock,
   accordion: AccordionMock,
   toggle: ToggleMock,
+  table: TableMock,
 
   // Selection (3)
   checkbox: CheckboxMock,
@@ -80,9 +77,9 @@ export const SIMULATOR_REGISTRY: Record<string, SimulatorMockComponent> = {
   tooltip: TooltipMock,
 
   // Composite (6)
+  'icon-button': IconButtonMock,
   'avatar-group': AvatarGroupMock,
   'radio-group': RadioGroupMock,
-  table: TableMock,
   'date-picker': DatePickerMock,
   'date-range-picker': DateRangePickerMock,
   'time-picker': TimePickerMock,

@@ -4,6 +4,7 @@ import { CatalogTemplate } from '@/components/templates';
 import { components } from '@/lib/components-data';
 import { fetchStarCount } from '@/lib/github';
 import {
+  formatMessage,
   getHomepageDictionary,
   type HomepageDictionary,
 } from '@/lib/homepage-translations';
@@ -17,7 +18,7 @@ function CatalogHeader({ t, count }: { t: HomepageDictionary; count: number }) {
         {t.componentsPageTitle}
       </h1>
       <p className="text-secondary mt-4 max-w-xl text-base">
-        {t.componentsPageDescription(count)}
+        {formatMessage(t.componentsPageDescription, { count })}
       </p>
     </>
   );
@@ -36,7 +37,13 @@ export default async function ComponentsPage({
     <CatalogTemplate
       navbar={<Navbar starCount={starCount} lang={lang} />}
       header={<CatalogHeader t={t} count={components.length} />}
-      catalog={<ComponentsCatalogClient components={components} lang={lang} />}
+      catalog={
+        <ComponentsCatalogClient
+          components={components}
+          lang={lang}
+          dictionary={t}
+        />
+      }
       footer={<Footer lang={lang} />}
     />
   );

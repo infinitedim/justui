@@ -217,7 +217,7 @@ describe('App Router Pages and Layouts', () => {
             navbar={<div data-testid="landing-navbar" />}
             hero={<div data-testid="landing-hero" />}
             installStrip={<div data-testid="landing-install-strip" />}
-            bentoGrid={<div data-testid="landing-bento-grid" />}
+            whatYouGet={<div data-testid="landing-what-you-get" />}
             componentShowcase={<div data-testid="landing-component-showcase" />}
             footer={<div data-testid="landing-footer" />}
           />
@@ -226,7 +226,7 @@ describe('App Router Pages and Layouts', () => {
         expect(screen.getByTestId('landing-navbar')).toBeInTheDocument();
         expect(screen.getByTestId('landing-hero')).toBeInTheDocument();
         expect(screen.getByTestId('landing-install-strip')).toBeInTheDocument();
-        expect(screen.getByTestId('landing-bento-grid')).toBeInTheDocument();
+        expect(screen.getByTestId('landing-what-you-get')).toBeInTheDocument();
         expect(
           screen.getByTestId('landing-component-showcase')
         ).toBeInTheDocument();
@@ -240,7 +240,7 @@ describe('App Router Pages and Layouts', () => {
             hero={<div data-testid="landing-hero" />}
             workbench={<div data-testid="landing-workbench" />}
             installStrip={<div data-testid="landing-install-strip" />}
-            bentoGrid={<div data-testid="landing-bento-grid" />}
+            whatYouGet={<div data-testid="landing-what-you-get" />}
             componentShowcase={<div data-testid="landing-component-showcase" />}
             footer={<div data-testid="landing-footer" />}
           />

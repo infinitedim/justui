@@ -7,7 +7,6 @@ import { useThemeStudio } from '@/lib/theme-studio-context';
 import { getStudioDictionary } from '@/lib/theme-studio-translations';
 import { useRovingTabs } from '@/lib/use-roving-tabs';
 import { CopyButton } from '@/components/molecules/copy-button';
-import { CodeBlockHeader } from '@/components/molecules/code-block-header';
 import { generateYaml, generateDart, generateCli } from './code-generators';
 import type {
   CodeExportDrawerProps,
@@ -38,32 +37,19 @@ export function CodeExportDrawer({
   const currentConfig = useMemo(() => {
     switch (tab) {
       case 'yaml':
-        return {
-          code: yamlCode,
-          language: 'yaml' as const,
-          filename: 'justui.config.yaml',
-          label: t.tabYaml,
-        };
+        return { code: yamlCode, language: 'yaml' as const };
       case 'dart':
-        return {
-          code: dartCode,
-          language: 'dart' as const,
-          filename: 'theme.dart',
-          label: t.tabDart,
-        };
+        return { code: dartCode, language: 'dart' as const };
       case 'cli':
-        return {
-          code: cliCode,
-          language: 'bash' as const,
-          filename: 'Terminal',
-          label: t.tabCli,
-        };
+        return { code: cliCode, language: 'bash' as const };
     }
-  }, [tab, yamlCode, dartCode, cliCode, t]);
+  }, [tab, yamlCode, dartCode, cliCode]);
 
+  // The file name is the tab label: one header instead of a tab bar plus a
+  // second file-name bar.
   const tabs: Array<{ id: ExportTab; label: string }> = [
-    { id: 'yaml', label: t.tabYaml },
-    { id: 'dart', label: t.tabDart },
+    { id: 'yaml', label: 'justui.config.yaml' },
+    { id: 'dart', label: 'theme.dart' },
     { id: 'cli', label: t.tabCli },
   ];
   const tabIds = useMemo<ExportTab[]>(() => ['yaml', 'dart', 'cli'], []);
@@ -75,17 +61,16 @@ export function CodeExportDrawer({
   return (
     <div
       className={cn(
-        'border-border bg-card flex flex-col overflow-hidden rounded-(--just-radius-lg) border shadow-sm',
+        'border-border bg-card flex flex-col overflow-hidden rounded-(--just-radius-lg) border-(length:--just-border-width) shadow-sm',
         className
       )}
       data-testid="code-export-drawer"
     >
-      {/* Tab Navigation Header */}
-      <div className="border-border bg-background flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2">
+      <div className="border-border flex flex-wrap items-center justify-between gap-2 border-b border-b-(length:--just-border-width) px-4 py-2">
         <div
-          className="flex items-center gap-1.5"
+          className="flex flex-wrap items-center gap-1"
           role="tablist"
-          aria-label={t.exportFormatsLabel}
+          aria-label={t.export}
         >
           {tabs.map((item) => (
             <button
@@ -100,10 +85,10 @@ export function CodeExportDrawer({
               onClick={() => setTab(item.id)}
               onKeyDown={onKeyDown}
               className={cn(
-                'cursor-pointer rounded-(--just-radius-md) px-3 py-1.5 text-xs font-medium transition-colors',
+                'cursor-pointer rounded-(--just-radius-sm) px-3 py-1.5 font-mono text-xs transition-colors',
                 tab === item.id
-                  ? 'border-border bg-card text-foreground border shadow-xs'
-                  : 'text-muted hover:text-foreground hover:bg-fill'
+                  ? 'bg-accent text-accent-foreground font-medium'
+                  : 'text-secondary hover:text-foreground'
               )}
             >
               {item.label}
@@ -111,19 +96,13 @@ export function CodeExportDrawer({
           ))}
         </div>
 
-        {/* Copy Current Tab Code */}
-        <div className="flex items-center gap-2">
-          <CopyButton text={currentConfig.code} label={t.copyCode} />
-        </div>
+        <CopyButton
+          text={currentConfig.code}
+          label={t.copyCode}
+          copiedLabel={t.copied}
+        />
       </div>
 
-      {/* Code Viewer Sub-header */}
-      <CodeBlockHeader
-        title={currentConfig.filename}
-        className="bg-background rounded-none border-x-0 border-t-0"
-      />
-
-      {/* Syntax Highlighted Code Viewer (Shiki via Fumadocs) */}
       <div
         id={panelId}
         role="tabpanel"

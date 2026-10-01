@@ -6,163 +6,156 @@ import {
   type InteractiveTerminalHandle,
 } from '@/components/organisms/interactive-terminal';
 
+const inputLabel = 'Type a justui command';
+
 describe('InteractiveTerminal', () => {
-  it('renders a plain header with the title and no cosmetic window chrome', () => {
+  it('shows a plain path header with no fake window chrome or badge', () => {
     const { container } = render(<InteractiveTerminal />);
 
-    expect(container.querySelector('.bg-\\[\\#FF5F57\\]')).toBeNull();
-    expect(container.querySelector('.bg-\\[\\#FEBC2E\\]')).toBeNull();
-    expect(container.querySelector('.bg-\\[\\#28C840\\]')).toBeNull();
+    expect(screen.getByText('~/my-flutter-app')).toBeInTheDocument();
     expect(
-      screen.getByText('justui@v0.14.0 ~ /my-flutter-app')
+      screen.getByText('simulated, nothing is written to disk')
     ).toBeInTheDocument();
-    expect(screen.queryByText('CLI Simulator')).toBeNull();
+    expect(container.querySelector('[class*="#FF5F57"]')).toBeNull();
+    expect(screen.queryByText('CLI Simulator')).not.toBeInTheDocument();
   });
 
-  it('renders all 4 action chips', () => {
+  it('starts with `justui add button` already run, using the real CLI output', () => {
+    render(<InteractiveTerminal />);
+
+    expect(screen.getByText('justui add button')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Copied just_button.dart to lib\/widgets\/button\//)
+    ).toBeInTheDocument();
+  });
+
+  it('renders the try-commands without the justui prefix', () => {
     render(<InteractiveTerminal />);
 
     expect(
-      screen.getByRole('button', { name: 'justui init' })
+      screen.getByRole('button', { name: 'add switch card' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'justui add button' })
+      screen.getByRole('button', { name: 'preset apply neobrutalism' })
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'justui add switch card' })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'justui preset apply neobrutalism' })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'list' })).toBeInTheDocument();
   });
 
-  it('renders a static (non-blinking) cursor on empty terminal', () => {
+  it('has no infinitely animating cursor (WCAG 2.2.2)', () => {
+    const { container } = render(<InteractiveTerminal />);
+    expect(container.querySelector('.animate-pulse')).toBeNull();
+    expect(container.querySelector('.animate-ping')).toBeNull();
+  });
+
+  it('uses a visible, tappable input instead of an sr-only one', () => {
     render(<InteractiveTerminal />);
-    const cursor = screen.getByTestId('terminal-cursor');
-    expect(cursor).toBeInTheDocument();
-    expect(cursor).not.toHaveClass('animate-pulse');
+    const input = screen.getByLabelText(inputLabel);
+    expect(input).not.toHaveClass('sr-only');
+    expect(input).toHaveAttribute('enterkeyhint', 'go');
   });
 
-  it('triggers automated typing and command execution when a chip is clicked', async () => {
+  it('types and runs a chip command', async () => {
     vi.useFakeTimers();
-
-    const handleClear = vi.fn();
-    render(<InteractiveTerminal onClear={handleClear} />);
-
-    const initChip = screen.getByRole('button', { name: 'justui init' });
-    fireEvent.click(initChip);
-
-    // Fast-forward keystroke typing timers
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(3000);
-    });
-
-    expect(
-      screen.getByText('Initializing JustUI project...')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('Done. Run `justui add <component>` next.')
-    ).toBeInTheDocument();
-    expect(handleClear).toHaveBeenCalled();
-
-    vi.useRealTimers();
-  });
-
-  it('supports direct keyboard typing and Enter submission', async () => {
     const handleMount = vi.fn();
     render(<InteractiveTerminal onMount={handleMount} />);
 
-    const input = screen.getByLabelText('Command');
-    fireEvent.change(input, { target: { value: 'justui add button' } });
-    fireEvent.keyDown(input, { key: 'Enter' });
-
-    expect(screen.getByText('Downloading button...')).toBeInTheDocument();
-    expect(handleMount).toHaveBeenCalledWith(['button']);
-  });
-
-  it('records automated command in history for Up Arrow recall', async () => {
-    vi.useFakeTimers();
-    render(<InteractiveTerminal />);
-
-    const buttonChip = screen.getByRole('button', {
-      name: 'justui add button',
-    });
-    fireEvent.click(buttonChip);
-
+    fireEvent.click(screen.getByRole('button', { name: 'add switch card' }));
     await act(async () => {
       await vi.advanceTimersByTimeAsync(3000);
     });
 
-    const input = screen.getByLabelText('Command');
-    fireEvent.keyDown(input, { key: 'ArrowUp' });
-
-    expect(input).toHaveValue('justui add button');
+    expect(handleMount).toHaveBeenCalledWith(['switch', 'card']);
+    expect(
+      screen.getByText(/Registered JustSwitchTheme.defaults/)
+    ).toBeInTheDocument();
     vi.useRealTimers();
   });
 
-  it('supports multi-token component Tab autocomplete', () => {
+  it('runs typed commands on Enter', () => {
+    const handlePreset = vi.fn();
+    render(<InteractiveTerminal onPresetChange={handlePreset} />);
+
+    const input = screen.getByLabelText(inputLabel);
+    fireEvent.change(input, {
+      target: { value: 'justui preset apply neobrutalism' },
+    });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(handlePreset).toHaveBeenCalledWith('neobrutalism');
+  });
+
+  it('says that machine-specific commands only run locally', () => {
     render(<InteractiveTerminal />);
 
-    const input = screen.getByLabelText('Command');
+    const input = screen.getByLabelText(inputLabel);
+    fireEvent.change(input, { target: { value: 'justui doctor' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(
+      screen.getByText(/can't run in this browser simulation/)
+    ).toBeInTheDocument();
+  });
+
+  it('recalls history with ArrowUp, starting from the pre-run command', () => {
+    render(<InteractiveTerminal />);
+
+    const input = screen.getByLabelText(inputLabel);
+    fireEvent.keyDown(input, { key: 'ArrowUp' });
+    expect(input).toHaveValue('justui add button');
+  });
+
+  it('completes component names with Tab', () => {
+    render(<InteractiveTerminal />);
+
+    const input = screen.getByLabelText(inputLabel);
     fireEvent.change(input, { target: { value: 'justui add button ca' } });
     fireEvent.keyDown(input, { key: 'Tab' });
 
     expect(input).toHaveValue('justui add button card');
   });
 
-  it('supports justui prefix Tab autocomplete', () => {
+  it('completes the justui prefix with Tab', () => {
     render(<InteractiveTerminal />);
 
-    const input = screen.getByLabelText('Command');
+    const input = screen.getByLabelText(inputLabel);
     fireEvent.change(input, { target: { value: 'just' } });
     fireEvent.keyDown(input, { key: 'Tab' });
 
     expect(input).toHaveValue('justui ');
   });
 
-  it('orders action chips with high-reward add button first and init last', () => {
+  it('hides keyboard hints on touch screens', () => {
     render(<InteractiveTerminal />);
-
-    const buttons = screen.getAllByRole('button');
-    expect(buttons[0]).toHaveTextContent('justui add button');
-    expect(buttons[1]).toHaveTextContent('justui add switch card');
-    expect(buttons[2]).toHaveTextContent('justui preset apply neobrutalism');
-    expect(buttons[3]).toHaveTextContent('justui init');
+    expect(screen.getByText('Tab completes, Up/Down for history')).toHaveClass(
+      'hidden',
+      'pointer-fine:inline'
+    );
   });
 
-  it('renders keyboard shortcuts footer hints', () => {
-    render(<InteractiveTerminal />);
-    expect(
-      screen.getByText('[Tab] Autocomplete | [Up/Down] History | [Enter] Run')
-    ).toBeInTheDocument();
-  });
-
-  it('exposes runCommand via ref to trigger automated typing and ignores rapid duplicate triggers', async () => {
+  it('exposes runCommand via ref and ignores a duplicate trigger while typing', async () => {
     vi.useFakeTimers();
     const ref = createRef<InteractiveTerminalHandle>();
     const handleMount = vi.fn();
     render(<InteractiveTerminal ref={ref} onMount={handleMount} />);
 
     act(() => {
-      ref.current?.runCommand('justui add button');
-      ref.current?.runCommand('justui add button');
+      ref.current?.runCommand('justui add card');
+      ref.current?.runCommand('justui add card');
     });
-
     await act(async () => {
       await vi.advanceTimersByTimeAsync(3000);
     });
 
     expect(handleMount).toHaveBeenCalledTimes(1);
-    expect(handleMount).toHaveBeenCalledWith(['button']);
+    expect(handleMount).toHaveBeenCalledWith(['card']);
     vi.useRealTimers();
   });
 
-  it('preserves text selection on container click without focusing input', () => {
+  it('keeps a text selection instead of focusing the input on click', () => {
     render(<InteractiveTerminal />);
     const region = screen.getByRole('region', { name: 'CLI simulator' });
-    const input = screen.getByLabelText('Command');
+    const input = screen.getByLabelText(inputLabel);
     const focusSpy = vi.spyOn(input, 'focus');
-
     const getSelectionSpy = vi.spyOn(window, 'getSelection').mockReturnValue({
       toString: () => 'highlighted text',
     } as unknown as Selection);
@@ -173,19 +166,30 @@ describe('InteractiveTerminal', () => {
     getSelectionSpy.mockRestore();
   });
 
-  it('focuses input on container click when matchMedia is unavailable', () => {
+  it('focuses the input on click when matchMedia is unavailable', () => {
     const originalMatchMedia = window.matchMedia;
     // @ts-expect-error simulating legacy/unsupported environment
     delete window.matchMedia;
 
     render(<InteractiveTerminal />);
     const region = screen.getByRole('region', { name: 'CLI simulator' });
-    const input = screen.getByLabelText('Command');
+    const input = screen.getByLabelText(inputLabel);
     const focusSpy = vi.spyOn(input, 'focus');
 
     fireEvent.click(region);
 
     expect(focusSpy).toHaveBeenCalled();
     window.matchMedia = originalMatchMedia;
+  });
+});
+
+describe('InteractiveTerminal display', () => {
+  it('shows summary boxes without their box-drawing frame', () => {
+    render(<InteractiveTerminal />);
+    const corner = String.fromCharCode(0x256d);
+    expect(screen.queryByText((text) => text.includes(corner))).toBeNull();
+    expect(
+      screen.getByText(/1 component\(s\) added successfully/)
+    ).toBeInTheDocument();
   });
 });

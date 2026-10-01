@@ -1,57 +1,31 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, Phone, Star } from 'lucide-react';
-import { useCatalogI18n } from '@/lib/catalog-i18n/context';
-import { neutralControl } from '@/lib/ui-classes';
+import { Heart } from 'lucide-react';
 import { cn } from '@/lib/cn';
-
-const iconButton = cn(
-  neutralControl,
-  'inline-flex h-10 w-10 items-center justify-center'
-);
+import { hint, outlineButton } from './mock-styles';
 
 export function IconButtonMock() {
-  const { crm } = useCatalogI18n();
-  const [starred, setStarred] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          aria-label={crm.iconButton.call}
-          className={iconButton}
-        >
-          <Phone className="h-4 w-4" aria-hidden="true" />
-        </button>
-        <button
-          type="button"
-          aria-label={crm.iconButton.email}
-          className={iconButton}
-        >
-          <Mail className="h-4 w-4" aria-hidden="true" />
-        </button>
-        <button
-          type="button"
-          aria-label={crm.iconButton.star}
-          aria-pressed={starred}
-          onClick={() => setStarred((s) => !s)}
-          data-testid="mock-icon-button"
-          className={cn(
-            iconButton,
-            starred && 'bg-accent text-accent-foreground'
-          )}
-        >
-          <Star
-            className={cn('h-4 w-4', starred && 'fill-current')}
-            aria-hidden="true"
-          />
-        </button>
-      </div>
-      <p className="text-muted min-h-4 text-xs" aria-live="polite">
-        {starred ? crm.iconButton.starred : null}
-      </p>
+    <div className="flex items-center gap-3">
+      <button
+        type="button"
+        onClick={() => setSaved((s) => !s)}
+        aria-label="Save for later"
+        aria-pressed={saved}
+        data-testid="mock-icon-button"
+        className={cn(outlineButton, 'w-9 px-0')}
+      >
+        <Heart
+          className={cn('h-4 w-4', saved && 'fill-error text-error')}
+          aria-hidden="true"
+        />
+      </button>
+      <span className={hint}>
+        {saved ? 'Saved for later' : 'Save for later'}
+      </span>
     </div>
   );
 }
