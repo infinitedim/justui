@@ -1,44 +1,26 @@
 'use client';
 
-import React from 'react';
-import { cn } from '@/lib/cn';
+const rule = 'bg-border h-(--just-border-width) w-full';
 
-export function SeparatorMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const isNeo = preset === 'neobrutalism';
-
+export function SeparatorMock() {
   return (
     <div
       data-testid="mock-separator"
-      className="w-full max-w-50 space-y-3 text-center font-mono text-xs"
+      className="w-full max-w-56 space-y-2 text-sm"
     >
-      <div className="flex items-center justify-center gap-3">
-        <span className="text-muted">Core</span>
-        <div
-          className={cn(
-            'h-3.5 w-px',
-            isNeo ? 'w-[2.5px] bg-black dark:bg-white' : 'bg-border'
-          )}
-        />
-        <span className="text-foreground font-medium">Tokens</span>
-        <div
-          className={cn(
-            'h-3.5 w-px',
-            isNeo ? 'w-[2.5px] bg-black dark:bg-white' : 'bg-border'
-          )}
-        />
-        <span className="text-muted">CLI</span>
+      <div className="text-secondary flex justify-between">
+        <span>Subtotal</span>
+        <span>$44.00</span>
       </div>
-      <div
-        className={cn(
-          'h-px w-full',
-          isNeo ? 'h-[2.5px] bg-black dark:bg-white' : 'bg-border'
-        )}
-      />
-      <span className="text-muted block text-[10px]">Bresenham Partition</span>
+      <div className="text-secondary flex justify-between">
+        <span>Shipping</span>
+        <span>$4.00</span>
+      </div>
+      <div role="separator" className={rule} />
+      <div className="text-foreground flex justify-between font-semibold">
+        <span>Total</span>
+        <span>$48.00</span>
+      </div>
     </div>
   );
 }

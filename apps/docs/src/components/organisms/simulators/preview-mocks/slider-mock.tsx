@@ -1,34 +1,29 @@
 'use client';
 
-import React, { useState } from 'react';
-import { cn } from '@/lib/cn';
+import { useState } from 'react';
+import { label } from './mock-styles';
 
-export function SliderMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [val, setVal] = useState(75);
-  const isNeo = preset === 'neobrutalism';
+export function SliderMock() {
+  const [value, setValue] = useState(80);
 
   return (
-    <div className="w-full max-w-55 space-y-2">
-      <div className="text-muted flex items-center justify-between font-mono text-xs">
-        <span>Lightness</span>
-        <span className="text-foreground font-bold">{val}%</span>
+    <div className="w-full max-w-56 space-y-2">
+      <div className="flex items-center justify-between">
+        <label htmlFor="mock-max-price" className={label}>
+          Max price
+        </label>
+        <span className="text-foreground text-sm font-medium">${value}</span>
       </div>
       <input
+        id="mock-max-price"
         type="range"
         min={0}
-        max={100}
-        value={val}
-        onChange={(e) => setVal(Number(e.target.value))}
+        max={200}
+        step={5}
+        value={value}
+        onChange={(e) => setValue(Number(e.target.value))}
         data-testid="mock-slider"
-        className={cn(
-          'accent-accent w-full cursor-pointer',
-          isNeo &&
-            'bg-surface h-3.5 rounded-none border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
-        )}
+        className="accent-accent w-full cursor-pointer"
       />
     </div>
   );

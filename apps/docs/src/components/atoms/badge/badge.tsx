@@ -4,14 +4,16 @@ import type { BadgeProps, BadgeVariant } from './badge.types';
 const variantClassMap: Record<BadgeVariant, string> = {
   default:
     'bg-card text-secondary border border-[length:var(--just-border-width)] border-border',
+  // Status variants tint the background and border; the text stays in the
+  // foreground token so small labels keep AA contrast in every theme.
   accent:
-    'bg-accent-muted text-accent-dark dark:text-accent-light border border-[length:var(--just-border-width)] border-accent',
+    'bg-accent-muted text-foreground border border-[length:var(--just-border-width)] border-accent',
   success:
-    'bg-success/10 text-success border border-[length:var(--just-border-width)] border-success/30',
+    'bg-success/10 text-foreground border border-[length:var(--just-border-width)] border-success',
   warning:
-    'bg-warning/10 text-warning border border-[length:var(--just-border-width)] border-warning/30',
+    'bg-warning/10 text-foreground border border-[length:var(--just-border-width)] border-warning',
   error:
-    'bg-error/10 text-error border border-[length:var(--just-border-width)] border-error/30',
+    'bg-error/10 text-foreground border border-[length:var(--just-border-width)] border-error',
   outline:
     'bg-transparent text-foreground border border-[length:var(--just-border-width)] border-border',
 };
@@ -29,7 +31,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-(--just-radius-md) px-2 py-0.5 font-mono text-[11px] font-medium',
+        'inline-flex items-center rounded-(--just-radius-sm) px-2 py-0.5 text-xs font-medium',
         'shadow-solid',
         variantClassMap[variant],
         className

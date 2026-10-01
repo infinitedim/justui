@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://github.com/infinitedim/justui/actions/workflows/ci.yaml"><img src="https://github.com/infinitedim/justui/actions/workflows/ci.yaml/badge.svg" alt="CI" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License" /></a>
-  <a href="https://docs.justui.dev"><img src="https://img.shields.io/badge/docs-justui.dev-lime" alt="Docs" /></a>
+  <a href="https://justui.vercel.app"><img src="https://img.shields.io/badge/docs-justui.vercel.app-lime" alt="Docs" /></a>
 </p>
 
 ---
@@ -229,7 +229,7 @@ CupertinoApp(
 
 ## Documentation
 
-Full documentation at **[docs.justui.dev](https://docs.justui.dev)** — installation, theming, all component APIs, and guides.
+Full documentation at **[justui.vercel.app](https://justui.vercel.app)** — installation, theming, all component APIs, and guides.
 
 ---
 

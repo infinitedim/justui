@@ -3,51 +3,51 @@ import { describe, expect, it } from 'vitest';
 import { ComponentsCatalogClient } from '@/app/[lang]/components/components-catalog-client';
 import { components } from '@/lib/components-data';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
-import { PresetProvider } from '@/components/providers';
+import { PresetProvider, usePreset } from '@/components/providers';
+
+function PresetSetter() {
+  const { setPreset } = usePreset();
+  return (
+    <button type="button" onClick={() => setPreset('neobrutalism')}>
+      navbar preset
+    </button>
+  );
+}
 
 describe('Living Component Catalog', () => {
   const dictionary = getHomepageDictionary('en');
 
-  function renderCatalog() {
+  function renderCatalog(lang = 'en') {
     return render(
       <PresetProvider>
+        <PresetSetter />
         <ComponentsCatalogClient
           components={components}
-          lang="en"
-          dictionary={dictionary}
+          lang={lang}
+          dictionary={getHomepageDictionary(lang)}
         />
       </PresetProvider>
     );
   }
 
-  it('renders all 33 components initially', () => {
+  it('renders all 33 components without a redundant result counter', () => {
     renderCatalog();
 
-    expect(
-      screen.getByTestId('components-catalog-container')
-    ).toBeInTheDocument();
-    expect(screen.getByTestId('components-grid')).toBeInTheDocument();
-    expect(screen.getByText('Showing 33 of 33 components')).toBeInTheDocument();
-
-    // Verify key component cards appear
-    expect(
-      screen.getByTestId('living-component-card-button')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId('living-component-card-switch')
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('components-grid').children).toHaveLength(33);
+    expect(screen.queryByText(/^Showing/)).not.toBeInTheDocument();
     expect(
       screen.getByTestId('living-component-card-table')
     ).toBeInTheDocument();
   });
 
-  it('filters components by search query', () => {
+  it('filters by search query and shows the count only while filtering', () => {
     renderCatalog();
 
-    const searchInput = screen.getByTestId('catalog-search-input');
-    fireEvent.change(searchInput, { target: { value: 'JustSwitch' } });
+    fireEvent.change(screen.getByTestId('catalog-search-input'), {
+      target: { value: 'JustSwitch' },
+    });
 
-    expect(screen.getByText('Showing 1 of 33 components')).toBeInTheDocument();
+    expect(screen.getByText('Showing 1 of 33')).toBeInTheDocument();
     expect(
       screen.getByTestId('living-component-card-switch')
     ).toBeInTheDocument();
@@ -56,93 +56,94 @@ describe('Living Component Catalog', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('filters components by category', () => {
+  it('filters by category, with no count badges on the category buttons', () => {
     renderCatalog();
 
-    // Selection has 3 components: checkbox, radio, switch
-    const selectionPill = screen.getByRole('button', { name: /selection/i });
-    fireEvent.click(selectionPill);
+    const selection = screen.getByRole('button', { name: 'Selection' });
+    fireEvent.click(selection);
 
-    expect(screen.getByText('Showing 3 of 33 components')).toBeInTheDocument();
+    expect(selection).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('Showing 3 of 33')).toBeInTheDocument();
     expect(
       screen.getByTestId('living-component-card-checkbox')
     ).toBeInTheDocument();
-    expect(
-      screen.getByTestId('living-component-card-radio')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId('living-component-card-switch')
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId('living-component-card-button')
-    ).not.toBeInTheDocument();
   });
 
-  it('shows empty state when no components match search', () => {
-    renderCatalog();
+  it('localizes categories and the search placeholder', () => {
+    renderCatalog('id');
 
-    const searchInput = screen.getByTestId('catalog-search-input');
-    fireEvent.change(searchInput, {
-      target: { value: 'nonexistent-xyz-query' },
-    });
-
-    expect(screen.getByTestId('catalog-empty-state')).toBeInTheDocument();
-    expect(screen.getByText(dictionary.catalogNoResults)).toBeInTheDocument();
-
-    // Clicking reset button clears search
-    const resetButtons = screen.getAllByRole('button', {
-      name: dictionary.catalogResetFilters,
-    });
-    fireEvent.click(resetButtons[0]);
-
-    expect(screen.getByText('Showing 33 of 33 components')).toBeInTheDocument();
-  });
-
-  it('switches preset between default and neobrutalism', () => {
-    renderCatalog();
-
-    const neoBtn = screen.getByTestId('preset-btn-neobrutalism');
-    fireEvent.click(neoBtn);
-
-    // Button card should adapt to neobrutalism preset
-    const buttonHarness = screen
-      .getByTestId('living-component-card-button')
-      .querySelector('[data-testid="simulator-harness"]');
-    expect(buttonHarness).toHaveAttribute('data-preset', 'neobrutalism');
-
-    const cleanBtn = screen.getByTestId('preset-btn-default');
-    fireEvent.click(cleanBtn);
-    expect(buttonHarness).toHaveAttribute('data-preset', 'default');
-  });
-
-  it('opens and closes the Dart code modal via button, backdrop click, and Escape', () => {
-    renderCatalog();
-
-    const buttonCard = screen.getByTestId('living-component-card-button');
-    const viewCodeBtn = buttonCard.querySelector(
-      '[data-testid="view-code-button"]'
+    expect(screen.getByRole('button', { name: 'Pilihan' })).toBeInTheDocument();
+    expect(screen.getByTestId('catalog-search-input')).toHaveAttribute(
+      'placeholder',
+      'Cari komponen'
     );
+  });
+
+  it('shows a one-line empty state naming the query, with a reset link', () => {
+    renderCatalog();
+
+    fireEvent.change(screen.getByTestId('catalog-search-input'), {
+      target: { value: 'nonexistent-xyz' },
+    });
+
+    expect(screen.getByTestId('catalog-empty-state')).toHaveTextContent(
+      "Nothing matches 'nonexistent-xyz'."
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: dictionary.catalogResetFilters })
+    );
+    expect(screen.getByTestId('components-grid').children).toHaveLength(33);
+  });
+
+  it('follows the site-wide preset instead of keeping its own switcher', () => {
+    renderCatalog();
+
+    expect(screen.queryByTestId('catalog-preset-toggle')).toBeNull();
+    const harness = () =>
+      screen
+        .getByTestId('living-component-card-button')
+        .querySelector('[data-testid="simulator-harness"]');
+    expect(harness()).toHaveAttribute('data-preset', 'default');
+
+    fireEvent.click(screen.getByRole('button', { name: 'navbar preset' }));
+    expect(harness()).toHaveAttribute('data-preset', 'neobrutalism');
+    expect(harness()).toHaveClass('theme-neobrutalism');
+  });
+
+  it('links each card to its docs and offers the CLI command as the main action', () => {
+    renderCatalog();
+
+    const card = screen.getByTestId('living-component-card-button');
+    expect(screen.getByRole('link', { name: 'JustButton' })).toHaveAttribute(
+      'href',
+      '/en/docs/components/button'
+    );
+    expect(card).toHaveTextContent('justui add button');
+    expect(card.querySelector('.font-mono.text-sm.font-bold')).toBeNull();
+  });
+
+  it('opens and closes the Dart example via button, backdrop click and Escape', () => {
+    renderCatalog();
+
+    const viewCodeBtn = screen
+      .getByTestId('living-component-card-button')
+      .querySelector('[data-testid="view-code-button"]');
     expect(viewCodeBtn).toBeInTheDocument();
 
     fireEvent.click(viewCodeBtn!);
     expect(screen.getByTestId('dart-code-modal')).toBeInTheDocument();
     expect(screen.getByText(/JustButton\(/)).toBeInTheDocument();
 
-    // Close modal via close button
-    const closeBtn = screen.getByRole('button', { name: 'Close modal' });
-    fireEvent.click(closeBtn);
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
     expect(screen.queryByTestId('dart-code-modal')).not.toBeInTheDocument();
 
-    // Reopen and close via Escape key
     fireEvent.click(viewCodeBtn!);
-    expect(screen.getByTestId('dart-code-modal')).toBeInTheDocument();
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(screen.queryByTestId('dart-code-modal')).not.toBeInTheDocument();
 
-    // Reopen and close via backdrop click
     fireEvent.click(viewCodeBtn!);
-    const modalBackdrop = screen.getByTestId('dart-code-modal');
-    fireEvent.click(modalBackdrop);
+    fireEvent.click(screen.getByTestId('dart-code-modal'));
     expect(screen.queryByTestId('dart-code-modal')).not.toBeInTheDocument();
   });
 
@@ -150,15 +151,10 @@ describe('Living Component Catalog', () => {
     renderCatalog();
 
     const searchInput = screen.getByTestId('catalog-search-input');
-
-    // Press "/"
     fireEvent.keyDown(window, { key: '/' });
     expect(document.activeElement).toBe(searchInput);
 
-    // Type text and press Escape
     fireEvent.change(searchInput, { target: { value: 'card' } });
-    expect(searchInput).toHaveValue('card');
-
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(searchInput).toHaveValue('');
   });

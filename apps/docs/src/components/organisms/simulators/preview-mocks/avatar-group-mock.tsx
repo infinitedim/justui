@@ -1,45 +1,26 @@
 'use client';
 
-import React from 'react';
-import { cn } from '@/lib/cn';
+import { hint } from './mock-styles';
 
-export function AvatarGroupMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const isNeo = preset === 'neobrutalism';
-  const users = ['JU', 'FL', 'DT'];
+const people = ['AR', 'MS', 'KT'];
 
+export function AvatarGroupMock() {
   return (
-    <div
-      data-testid="mock-avatar-group"
-      className="flex items-center select-none"
-    >
-      {users.map((initials, i) => (
-        <div
-          key={initials}
-          className={cn(
-            'flex h-9 w-9 items-center justify-center font-mono text-xs font-bold transition-all',
-            i > 0 && '-ml-2.5',
-            isNeo
-              ? 'bg-surface text-foreground rounded-full border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
-              : 'border-surface bg-foreground text-background rounded-full border-2 shadow-sm'
-          )}
-        >
-          {initials}
-        </div>
-      ))}
-      <div
-        className={cn(
-          '-ml-2.5 flex h-9 w-9 items-center justify-center font-mono text-[10px] font-bold transition-all',
-          isNeo
-            ? 'bg-accent rounded-full border-[2.5px] border-black text-black shadow-[2px_2px_0px_0px_#000] dark:border-white'
-            : 'border-surface bg-surface-muted text-muted rounded-full border-2 shadow-sm'
-        )}
-      >
-        +30
+    <div className="flex items-center gap-3">
+      <div data-testid="mock-avatar-group" className="flex items-center">
+        {people.map((initials, i) => (
+          <span
+            key={initials}
+            className={`bg-fill text-foreground border-card flex h-9 w-9 items-center justify-center rounded-full border-2 text-xs font-semibold ${i > 0 ? '-ml-2.5' : ''}`}
+          >
+            {initials}
+          </span>
+        ))}
+        <span className="bg-card text-secondary border-card -ml-2.5 flex h-9 w-9 items-center justify-center rounded-full border-2 text-xs font-semibold">
+          +4
+        </span>
       </div>
+      <span className={hint}>Packing this order</span>
     </div>
   );
 }

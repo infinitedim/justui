@@ -1,67 +1,57 @@
 'use client';
 
-import React, { useState } from 'react';
-import { cn } from '@/lib/cn';
+import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/cn';
+import { label, raised, surface } from './mock-styles';
 
-export function SelectMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [selected, setSelected] = useState('Flutter WASM');
+const options = ['Standard, 3-5 days', 'Express, 1-2 days', 'Store pickup'];
+
+export function SelectMock() {
+  const [selected, setSelected] = useState(options[0]);
   const [open, setOpen] = useState(false);
-  const isNeo = preset === 'neobrutalism';
-
-  const options = ['Flutter WASM', 'CanvasKit', 'HTML Renderer'];
 
   return (
-    <div className="relative w-full max-w-50">
+    <div className="relative w-full max-w-56 space-y-1.5">
+      <span className={cn(label, 'block')}>Shipping</span>
       <button
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
         data-testid="mock-select-trigger"
         className={cn(
-          'flex w-full items-center justify-between px-3 py-1.5 font-mono text-xs transition-all',
-          isNeo
-            ? 'bg-surface text-foreground rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-            : 'border-border bg-surface text-foreground rounded-md border shadow-sm'
+          surface,
+          'flex h-9 w-full items-center justify-between px-3 text-sm',
+          'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-1'
         )}
       >
         <span>{selected}</span>
-        <ChevronDown
-          className={cn(
-            'h-3.5 w-3.5 transition-transform',
-            open && 'rotate-180'
-          )}
-        />
+        <ChevronDown className="text-muted h-4 w-4" aria-hidden="true" />
       </button>
-
       {open ? (
         <div
+          role="listbox"
           data-testid="mock-select-menu"
           className={cn(
-            'bg-surface absolute top-full left-0 z-20 mt-1.5 w-full overflow-hidden py-1 font-mono text-xs',
-            isNeo
-              ? 'rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-              : 'border-border rounded-md border shadow-md'
+            raised,
+            'absolute top-full left-0 z-20 mt-1 w-full p-1'
           )}
         >
           {options.map((opt) => (
             <button
               key={opt}
               type="button"
+              role="option"
+              aria-selected={selected === opt}
               onClick={() => {
                 setSelected(opt);
                 setOpen(false);
               }}
               className={cn(
-                'w-full px-3 py-1.5 text-left transition-colors',
+                'block w-full rounded-(--just-radius-sm) px-2.5 py-1.5 text-left text-sm',
                 selected === opt
-                  ? isNeo
-                    ? 'bg-accent text-black font-bold'
-                    : 'bg-accent/20 text-accent-deep dark:text-accent font-bold'
-                  : 'hover:bg-surface-muted'
+                  ? 'bg-accent-muted text-foreground font-medium'
+                  : 'text-secondary hover:bg-accent-muted'
               )}
             >
               {opt}

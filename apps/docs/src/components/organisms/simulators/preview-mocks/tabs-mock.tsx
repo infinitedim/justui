@@ -1,48 +1,39 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/cn';
 
-export function TabsMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [active, setActive] = useState('preview');
-  const isNeo = preset === 'neobrutalism';
+const tabs = [
+  { id: 'details', label: 'Details' },
+  { id: 'shipping', label: 'Shipping' },
+  { id: 'invoice', label: 'Invoice' },
+];
 
-  const tabs = [
-    { id: 'preview', label: 'Preview' },
-    { id: 'code', label: 'Code' },
-    { id: 'api', label: 'API' },
-  ];
+export function TabsMock() {
+  const [active, setActive] = useState('details');
 
   return (
     <div
+      role="tablist"
+      aria-label="Order"
       data-testid="mock-tabs"
-      className={cn(
-        'inline-flex gap-1 p-1 font-mono text-xs select-none',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface-muted/50 rounded-lg border'
-      )}
+      className="border-border flex gap-4 border-b border-b-(length:--just-border-width)"
     >
       {tabs.map((t) => {
-        const isSelected = active === t.id;
+        const selected = active === t.id;
         return (
           <button
             key={t.id}
             type="button"
+            role="tab"
+            aria-selected={selected}
             onClick={() => setActive(t.id)}
             data-testid={`mock-tab-${t.id}`}
             className={cn(
-              'px-3 py-1 transition-all',
-              isNeo ? 'rounded-none' : 'rounded-md',
-              isSelected
-                ? isNeo
-                  ? 'bg-accent border-[2px] border-black font-bold text-black dark:border-white'
-                  : 'bg-surface text-foreground font-medium shadow-sm'
-                : 'text-muted hover:text-foreground'
+              '-mb-(--just-border-width) border-b-2 pb-2 text-sm',
+              selected
+                ? 'border-foreground text-foreground font-medium'
+                : 'text-secondary hover:text-foreground border-transparent'
             )}
           >
             {t.label}

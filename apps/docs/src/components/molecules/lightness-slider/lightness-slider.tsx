@@ -17,7 +17,7 @@ export function LightnessSlider({
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       <div className="flex items-center justify-between">
-        <span className="text-muted font-mono text-xs">{label}</span>
+        <span className="text-secondary text-xs">{label}</span>
         <span className="text-foreground font-mono text-xs">{value}%</span>
       </div>
       <Slider

@@ -1,0 +1,38 @@
+⚠ Warning: The following components do not support preset "neobrutalism": _shared_pressable, _shared_focus_indicator, _shared_progress_spinner, _shared_overlay_transition, _shared_tooltip_overlay
+⚠ Warning: These components will be skipped and keep their current preset.
+┌──────────────────────────────────┐
+│  Applying preset "neobrutalism"  │
+└──────────────────────────────────┘
+ℹ Adding component "_shared_pressable" (v0.14.0)...
+  - just_pressable.dart is already up-to-date.
+✓ Component "_shared_pressable" added successfully.
+ℹ Adding component "_shared_focus_indicator" (v0.14.0)...
+  - just_focus_indicator.dart is already up-to-date.
+✓ Component "_shared_focus_indicator" added successfully.
+ℹ Adding component "_shared_progress_spinner" (v0.14.0)...
+  - just_progress_spinner.dart is already up-to-date.
+✓ Component "_shared_progress_spinner" added successfully.
+ℹ Adding component "button" (v0.14.0)...
+  - just_button_theme.dart is already up-to-date.
+  - just_button_variants.dart is already up-to-date.
+  - just_button_style.dart is already up-to-date.
+  - just_button.dart is already up-to-date.
+  - just_icon_button.dart is already up-to-date.
+✓ Component "button" added successfully.
+ℹ Adding component "switch" (v0.14.0)...
+  - just_switch_style.dart is already up-to-date.
+  - just_switch_theme.dart is already up-to-date.
+  - just_switch.dart is already up-to-date.
+✓ Component "switch" added successfully.
+ℹ Adding component "card" (v0.14.0)...
+  - just_card_style.dart is already up-to-date.
+  - just_card_theme.dart is already up-to-date.
+  - just_card.dart is already up-to-date.
+✓ Component "card" added successfully.
+╭─────────────────────────────────────────────────╮
+│   ✔  Preset "neobrutalism" applied successfully │
+│                                                 │
+│   →  Succeeded    3 component(s)                │
+│   →  Failed       0 component(s)                │
+│   →  Active preset neobrutalism                 │
+╰─────────────────────────────────────────────────╯

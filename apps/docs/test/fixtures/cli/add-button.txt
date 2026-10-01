@@ -1,0 +1,33 @@
+ℹ Adding component "_shared_pressable" (v0.14.0)...
+  - Copied just_pressable.dart to lib/widgets/shared/
+✓ Component "_shared_pressable" added successfully.
+ℹ Adding component "_shared_focus_indicator" (v0.14.0)...
+  - Copied just_focus_indicator.dart to lib/widgets/shared/
+✓ Component "_shared_focus_indicator" added successfully.
+ℹ Adding component "_shared_progress_spinner" (v0.14.0)...
+  - Copied just_progress_spinner.dart to lib/widgets/shared/
+✓ Component "_shared_progress_spinner" added successfully.
+ℹ Adding component "button" (v0.14.0)...
+  - Copied just_button_theme.dart to lib/widgets/button/
+  - Registered JustButtonTheme.defaults in lib/core/theme/theme_data_material.dart
+  - Copied just_button_variants.dart to lib/widgets/button/
+  - Copied just_button_style.dart to lib/widgets/button/
+  - Copied just_button.dart to lib/widgets/button/
+  - Copied just_icon_button.dart to lib/widgets/button/
+✓ Component "button" added successfully.
+
+✔ 8 file(s) added/updated:
+  ✔ just_pressable.dart (New) -> lib/widgets/shared/just_pressable.dart
+  ✔ just_focus_indicator.dart (New) -> lib/widgets/shared/just_focus_indicator.dart
+  ✔ just_progress_spinner.dart (New) -> lib/widgets/shared/just_progress_spinner.dart
+  ✔ just_button_theme.dart (New) -> lib/widgets/button/just_button_theme.dart
+  ✔ just_button_variants.dart (New) -> lib/widgets/button/just_button_variants.dart
+  ✔ just_button_style.dart (New) -> lib/widgets/button/just_button_style.dart
+  ✔ just_button.dart (New) -> lib/widgets/button/just_button.dart
+  ✔ just_icon_button.dart (New) -> lib/widgets/button/just_icon_button.dart
+✓ Components added successfully
+╭────────────────────────────────────────────╮
+│   ✔  1 component(s) added successfully     │
+│                                            │
+│   →  button       v0.14.0  lib/widgets/button/ │
+╰────────────────────────────────────────────╯

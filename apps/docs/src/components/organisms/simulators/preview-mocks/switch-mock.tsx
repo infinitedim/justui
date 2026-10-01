@@ -1,50 +1,37 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/cn';
+import { focusRing } from './mock-styles';
 
-export function SwitchMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
+export function SwitchMock() {
   const [checked, setChecked] = useState(true);
-  const isNeo = preset === 'neobrutalism';
 
   return (
-    <div
-      onClick={() => setChecked(!checked)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          setChecked(!checked);
-        }
-      }}
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => setChecked((c) => !c)}
       data-testid="mock-switch"
-      className="flex cursor-pointer items-center gap-3 select-none"
+      className={cn('flex items-center gap-3', focusRing)}
     >
-      <div
+      <span
         className={cn(
-          'relative h-7 w-12 transition-all',
-          isNeo
-            ? 'rounded-full border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
-            : 'border-border bg-surface-muted rounded-full border',
-          checked ? (isNeo ? 'bg-accent' : 'bg-accent') : 'bg-surface'
+          'border-border relative inline-block h-7 w-12 rounded-full border-(length:--just-border-width)',
+          checked ? 'bg-accent' : 'bg-fill'
         )}
       >
-        <div
+        <span
           className={cn(
-            'absolute top-[2.5px] h-[18px] w-[18px] rounded-full transition-all',
-            isNeo ? 'duration-0 border-[2px] border-black bg-white dark:border-black' : 'duration-200 bg-foreground shadow-sm',
-            checked ? 'left-[22px]' : 'left-[2.5px]'
+            'bg-foreground absolute top-1/2 h-4.5 w-4.5 -translate-y-1/2 rounded-full',
+            checked ? 'right-0.75' : 'left-0.75'
           )}
         />
-      </div>
-      <span className="text-foreground font-mono text-xs font-medium">
-        {checked ? 'Active' : 'Inactive'}
       </span>
-    </div>
+      <span className="text-foreground text-sm">
+        Order updates {checked ? 'on' : 'off'}
+      </span>
+    </button>
   );
 }

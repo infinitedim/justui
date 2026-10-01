@@ -1,0 +1,29 @@
+justui v0.14.0
+JustUI CLI - High-performance Flutter UI scaffolding and copy-paste component tool
+
+Usage: justui [OPTIONS] [COMMAND]
+
+Commands:
+  version  Print CLI version information and update status
+  init     Initialize JustUI configuration and theme tokens in a Flutter project
+  preset   Manage and apply visual design style presets (e.g. default, neobrutalism)
+  add      Copy one or more components from the registry into your project
+  update   Synchronize local components with upstream registry updates
+  create   Scaffold a new custom component in your local project
+  diff     Inspect local component modifications vs upstream registry source code
+  list     List all available components in the JustUI registry
+  search   Search for components in the registry by keyword or category
+  view     View source code or documentation of a registry component
+  info     Display project configuration, installed components, and system status
+  upgrade  Check for and upgrade JustUI CLI to the latest version
+  doctor   Perform health and environment diagnostics check
+  help     Print this message or the help of the given subcommand(s)
+
+Options:
+  -y, --yes         Skip all interactive confirmation prompts (accept defaults)
+  -c, --cwd <PATH>  Specify target working directory for operation
+  -q, --quiet       Suppress non-essential informational logging output
+      --json        Output results in machine-readable JSON format
+      --no-color    Disable colored ANSI escape code output
+  -V, --version     Display CLI version and check for updates
+  -h, --help        Print help

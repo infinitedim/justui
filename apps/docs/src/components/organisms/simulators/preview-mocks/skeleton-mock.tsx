@@ -1,53 +1,23 @@
 'use client';
 
-import React from 'react';
-import { cn } from '@/lib/cn';
+// Static on purpose: a placeholder that pulses forever fails WCAG 2.2.2.
+const block = 'bg-fill rounded-(--just-radius-sm)';
 
-export function SkeletonMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const isNeo = preset === 'neobrutalism';
-
+export function SkeletonMock() {
   return (
-    <div data-testid="mock-skeleton" className="w-full max-w-55 space-y-2.5">
+    <div
+      data-testid="mock-skeleton"
+      aria-label="Loading order"
+      className="w-full max-w-56 space-y-2.5"
+    >
       <div className="flex items-center gap-2.5">
-        <div
-          className={cn(
-            'h-9 w-9 animate-pulse transition-all',
-            isNeo
-              ? 'bg-surface-muted rounded-full border-[2.5px] border-black dark:border-white'
-              : 'bg-border rounded-full'
-          )}
-        />
-        <div className="flex-1 space-y-1">
-          <div
-            className={cn(
-              'h-3.5 w-3/4 animate-pulse',
-              isNeo
-                ? 'bg-surface-muted rounded-none border-[2px] border-black dark:border-white'
-                : 'bg-border rounded'
-            )}
-          />
-          <div
-            className={cn(
-              'h-2.5 w-1/2 animate-pulse',
-              isNeo
-                ? 'bg-surface-muted rounded-none border-[2px] border-black dark:border-white'
-                : 'bg-border/70 rounded'
-            )}
-          />
+        <div className="bg-fill h-9 w-9 rounded-full" />
+        <div className="flex-1 space-y-1.5">
+          <div className={`${block} h-3.5 w-3/4`} />
+          <div className={`${block} h-3 w-1/2`} />
         </div>
       </div>
-      <div
-        className={cn(
-          'h-8 w-full animate-pulse',
-          isNeo
-            ? 'bg-surface-muted rounded-none border-[2.5px] border-black dark:border-white'
-            : 'bg-border/60 rounded-md'
-        )}
-      />
+      <div className={`${block} h-8 w-full`} />
     </div>
   );
 }

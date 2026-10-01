@@ -1,0 +1,36 @@
+ℹ Adding component "_shared_pressable" (v0.14.0)...
+  - just_pressable.dart is already up-to-date.
+✓ Component "_shared_pressable" added successfully.
+ℹ Adding component "_shared_focus_indicator" (v0.14.0)...
+  - just_focus_indicator.dart is already up-to-date.
+✓ Component "_shared_focus_indicator" added successfully.
+ℹ Adding component "switch" (v0.14.0)...
+  - Copied just_switch_style.dart to lib/widgets/switch/
+  - Copied just_switch_theme.dart to lib/widgets/switch/
+  - Registered JustSwitchTheme.defaults in lib/core/theme/theme_data_material.dart
+  - Copied just_switch.dart to lib/widgets/switch/
+✓ Component "switch" added successfully.
+ℹ Adding component "card" (v0.14.0)...
+  - Copied just_card_style.dart to lib/widgets/card/
+  - Copied just_card_theme.dart to lib/widgets/card/
+  - Registered JustCardTheme.defaults in lib/core/theme/theme_data_material.dart
+  - Copied just_card.dart to lib/widgets/card/
+✓ Component "card" added successfully.
+
+✔ 6 file(s) added/updated:
+  ✔ just_switch_style.dart (New) -> lib/widgets/switch/just_switch_style.dart
+  ✔ just_switch_theme.dart (New) -> lib/widgets/switch/just_switch_theme.dart
+  ✔ just_switch.dart (New) -> lib/widgets/switch/just_switch.dart
+  ✔ just_card_style.dart (New) -> lib/widgets/card/just_card_style.dart
+  ✔ just_card_theme.dart (New) -> lib/widgets/card/just_card_theme.dart
+  ✔ just_card.dart (New) -> lib/widgets/card/just_card.dart
+⚠ 2 file(s) skipped:
+  ⚠ just_pressable.dart (Up-to-date) -> lib/widgets/shared/just_pressable.dart
+  ⚠ just_focus_indicator.dart (Up-to-date) -> lib/widgets/shared/just_focus_indicator.dart
+✓ Components added successfully
+╭────────────────────────────────────────────╮
+│   ✔  2 component(s) added successfully     │
+│                                            │
+│   →  switch       v0.14.0  lib/widgets/switch/ │
+│   →  card         v0.14.0  lib/widgets/card/ │
+╰────────────────────────────────────────────╯

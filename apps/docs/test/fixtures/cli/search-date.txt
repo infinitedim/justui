@@ -1,0 +1,7 @@
+Search results for "date":
+
+  Composite:
+    ● date-picker      (v0.14.0)  Full-featured calendar date picker with inline, modal, and dropdown variants.
+    ● date-range-picker (v0.14.0)  Date range selection picker with quick presets (Today, Last 7 Days, etc.).
+
+2 component(s) found.

@@ -1,18 +1,17 @@
 'use client';
 
-import { useMemo, useState, useCallback, useRef } from 'react';
+import { useMemo, useState, useCallback, useEffect, useRef } from 'react';
 import { cn } from '@/lib/cn';
 import { useThemeStudio } from '@/lib/theme-studio-context';
 import { getStudioDictionary } from '@/lib/theme-studio-translations';
+import { formatMessage } from '@/lib/homepage-translations';
 import {
   contrastRatio,
   hexToHsl,
   hslToHex,
   normalizeHex,
-  type JustUIPreset,
   type ColorSpace,
 } from '@/lib/theme/color-resolver';
-import { ColorSwatchItem } from '@/components/molecules/color-swatch-item';
 import { LightnessSlider } from '@/components/molecules/lightness-slider';
 import { StateToggle } from '@/components/molecules/state-toggle';
 import { VariantPicker } from '@/components/molecules/variant-picker';
@@ -20,14 +19,10 @@ import { Input } from '@/components/atoms/input';
 import { Badge } from '@/components/atoms/badge';
 import type { ThemeConfiguratorProps } from './theme-configurator.types';
 
-const PRESET_SWATCHES = [
-  { name: 'Lime', hex: '#a3e635' },
-  { name: 'Blue', hex: '#3b82f6' },
-  { name: 'Rose', hex: '#f43f5e' },
-  { name: 'Amber', hex: '#f59e0b' },
-  { name: 'Violet', hex: '#8b5cf6' },
-  { name: 'Cyan', hex: '#06b6d4' },
-];
+const HEX_PATTERN = /^#[0-9a-f]{6}$/i;
+const MAX_RECENT = 6;
+
+const sectionTitle = 'text-foreground text-sm font-semibold';
 
 export function ThemeConfigurator({
   lang = 'en',
@@ -42,16 +37,31 @@ export function ThemeConfigurator({
     resolvedTokens,
     setSeedColor,
     setIsDark,
-    setPreset,
     setColorSpace,
   } = useThemeStudio();
 
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [copyFailed, setCopyFailed] = useState<boolean>(false);
+  const [recent, setRecent] = useState<string[]>([]);
 
   const lastHueSatRef = useRef<[number, number]>([83, 77]);
 
-  // Compute lightness from current seed and track non-zero hue/saturation
+  // Remember a seed once it has stayed put for a moment, so dragging the
+  // picker or the slider does not flood the history.
+  useEffect(() => {
+    const normalized = seedColor.toLowerCase();
+    if (!HEX_PATTERN.test(normalized)) return;
+    const id = window.setTimeout(() => {
+      setRecent((prev) =>
+        [normalized, ...prev.filter((c) => c !== normalized)].slice(
+          0,
+          MAX_RECENT
+        )
+      );
+    }, 600);
+    return () => window.clearTimeout(id);
+  }, [seedColor]);
+
   const currentLightness = useMemo(() => {
     const [h, s, l] = hexToHsl(seedColor);
     if (s > 0 && l > 0 && l < 100) {
@@ -60,62 +70,41 @@ export function ThemeConfigurator({
     return l;
   }, [seedColor]);
 
-  // Handle lightness change from slider, retaining hue even if dragging to 0% and back
+  // Keeps the hue even after dragging lightness to 0% or 100% and back.
   const handleLightnessChange = useCallback(
     (newL: number) => {
       const [h, s, l] = hexToHsl(seedColor);
       const [savedH, savedS] =
         s === 0 && (l === 0 || l === 100) ? lastHueSatRef.current : [h, s];
-      const nextHex = hslToHex(savedH, savedS, newL);
-      setSeedColor(nextHex);
+      setSeedColor(hslToHex(savedH, savedS, newL));
     },
     [seedColor, setSeedColor]
   );
 
-  // Handle manual hex text change
   const handleHexInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      let val = e.target.value.trim();
-      if (!val.startsWith('#')) {
-        val = `#${val}`;
-      }
-      setSeedColor(val);
+      const val = e.target.value.trim();
+      setSeedColor(val.startsWith('#') ? val : `#${val}`);
     },
     [setSeedColor]
   );
 
-  // Normalize seed color on blur
   const handleHexInputBlur = useCallback(() => {
-    const normalized = normalizeHex(seedColor);
-    setSeedColor(normalized);
+    setSeedColor(normalizeHex(seedColor));
   }, [seedColor, setSeedColor]);
 
-  // Copy hex to clipboard on swatch click
-  const handleCopyColor = useCallback(
-    async (tokenName: string, hex: string) => {
-      if (typeof navigator === 'undefined' || !navigator.clipboard) return;
-      try {
-        await navigator.clipboard.writeText(hex);
-        setCopiedToken(tokenName);
-        setTimeout(() => setCopiedToken(null), 1500);
-      } catch {
-        setCopyFailed(true);
-        setTimeout(() => setCopyFailed(false), 1500);
-      }
-    },
-    []
-  );
+  const handleCopyColor = useCallback(async (token: string, hex: string) => {
+    if (typeof navigator === 'undefined' || !navigator.clipboard) return;
+    try {
+      await navigator.clipboard.writeText(hex);
+      setCopiedToken(token);
+      setTimeout(() => setCopiedToken(null), 1500);
+    } catch {
+      setCopyFailed(true);
+      setTimeout(() => setCopyFailed(false), 1500);
+    }
+  }, []);
 
-  // Preset options
-  const presetOptions = useMemo(
-    () => [
-      { value: 'default', label: t.presetDefault },
-      { value: 'neobrutalism', label: t.presetNeobrutalism },
-    ],
-    [t.presetDefault, t.presetNeobrutalism]
-  );
-
-  // Color space options
   const colorSpaceOptions = useMemo(
     () => [
       { value: 'hsl', label: t.colorSpaceHsl },
@@ -125,116 +114,94 @@ export function ThemeConfigurator({
     [t.colorSpaceHsl, t.colorSpaceOklch, t.colorSpaceHsluv]
   );
 
-  // Resolved tokens list for display with meaningful contrast pairings
+  // Token names as they appear in packages/tokens (JustColorScheme) and in
+  // JustThemeData.fromSeed, each paired with the surface it is read on.
   const resolvedList = useMemo(() => {
     const bg = resolvedTokens.background;
-    return [
+    const pairs: {
+      token: string;
+      value: string;
+      target?: { token: string; value: string };
+    }[] = [
+      { token: 'colors.background', value: bg },
       {
-        key: 'background',
-        label: t.tokenBackground,
-        value: resolvedTokens.background,
-        target: bg,
-      },
-      {
-        key: 'card',
-        label: t.tokenCard,
+        token: 'colors.card',
         value: resolvedTokens.card,
-        target: resolvedTokens.textPrimary,
+        target: { token: 'textPrimary', value: resolvedTokens.textPrimary },
       },
       {
-        key: 'textPrimary',
-        label: t.tokenTextPrimary,
+        token: 'colors.textPrimary',
         value: resolvedTokens.textPrimary,
-        target: bg,
+        target: { token: 'background', value: bg },
       },
       {
-        key: 'textSecondary',
-        label: t.tokenTextSecondary,
+        token: 'colors.textSecondary',
         value: resolvedTokens.textSecondary,
-        target: bg,
+        target: { token: 'background', value: bg },
       },
       {
-        key: 'accent',
-        label: t.tokenAccent,
+        token: 'seedColor',
         value: resolvedTokens.accent,
-        target: resolvedTokens.accentForeground,
+        target: {
+          token: t.seedTextTarget,
+          value: resolvedTokens.accentForeground,
+        },
       },
       {
-        key: 'border',
-        label: t.tokenBorder,
+        token: 'colors.borderDefault',
         value: resolvedTokens.border,
-        target: bg,
+        target: { token: 'background', value: bg },
       },
       {
-        key: 'success',
-        label: t.tokenSuccess,
+        token: 'colors.success',
         value: resolvedTokens.success,
-        target: bg,
+        target: { token: 'background', value: bg },
       },
       {
-        key: 'warning',
-        label: t.tokenWarning,
+        token: 'colors.warning',
         value: resolvedTokens.warning,
-        target: bg,
+        target: { token: 'background', value: bg },
       },
       {
-        key: 'error',
-        label: t.tokenError,
+        token: 'colors.error',
         value: resolvedTokens.error,
-        target: bg,
+        target: { token: 'background', value: bg },
       },
-    ].map((item) => {
-      const ratio =
-        item.key === 'background'
-          ? 1.0
-          : contrastRatio(item.value, item.target);
-      let badgeVariant: 'success' | 'warning' | 'error' | 'default' = 'default';
-      if (item.key !== 'background') {
-        if (ratio >= 4.5) {
-          badgeVariant = 'success';
-        } else if (ratio >= 3.0) {
-          badgeVariant = 'warning';
-        } else {
-          badgeVariant = 'error';
-        }
-      }
-      return {
-        ...item,
-        ratio,
-        badgeVariant,
-      };
+    ];
+
+    return pairs.map((pair) => {
+      if (!pair.target)
+        return { ...pair, ratio: null, variant: 'default' as const };
+      const ratio = contrastRatio(pair.value, pair.target.value);
+      const variant =
+        ratio >= 4.5
+          ? ('success' as const)
+          : ratio >= 3
+            ? ('warning' as const)
+            : ('error' as const);
+      return { ...pair, ratio, variant };
     });
-  }, [resolvedTokens, t]);
+  }, [resolvedTokens, t.seedTextTarget]);
 
   return (
     <div
       className={cn(
-        'border-border bg-card flex flex-col gap-6 rounded-(--just-radius-lg) border p-6 shadow-sm',
+        'border-border bg-card flex flex-col gap-6 rounded-(--just-radius-lg) border-(length:--just-border-width) p-6 shadow-sm',
         className
       )}
       data-testid="theme-configurator"
     >
-      {/* 1. Seed Color Section */}
       <section className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <label
-            htmlFor="seed-color-input"
-            className="text-foreground text-sm font-semibold tracking-tight"
-          >
-            {t.seedColor}
-          </label>
-          <span className="text-muted font-mono text-xs uppercase">
-            {seedColor}
-          </span>
-        </div>
+        <label htmlFor="seed-color-input" className={sectionTitle}>
+          {t.seedColor}
+        </label>
 
-        {/* Color picker and hex text input */}
         <div className="flex items-center gap-3">
-          <div className="border-border relative h-10 w-12 shrink-0 overflow-hidden rounded-(--just-radius-md) border shadow-inner">
+          <div className="border-border relative h-10 w-12 shrink-0 overflow-hidden rounded-(--just-radius-md) border-(length:--just-border-width)">
             <input
               id="seed-color-picker"
               type="color"
-              value={seedColor.length === 7 ? seedColor : '#a3e635'}
+              value={HEX_PATTERN.test(seedColor) ? seedColor : '#a3e635'}
               onChange={(e) => setSeedColor(e.target.value)}
               className="absolute -top-2 -left-2 h-16 w-16 cursor-pointer border-0 p-0"
               aria-label={t.seedColor}
@@ -249,25 +216,32 @@ export function ThemeConfigurator({
             placeholder="#a3e635"
             maxLength={9}
             className="font-mono text-sm"
-            aria-label="Hex color string"
+            aria-label={t.hexLabel}
           />
         </div>
 
-        {/* Preset Seed Color Swatches */}
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {PRESET_SWATCHES.map((swatch) => (
-            <ColorSwatchItem
-              key={swatch.name}
-              color={swatch.hex}
-              label={swatch.name}
-              value={swatch.hex}
-              active={seedColor.toLowerCase() === swatch.hex.toLowerCase()}
-              onClick={() => setSeedColor(swatch.hex)}
-            />
-          ))}
-        </div>
+        {recent.length > 1 ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-secondary text-xs">{t.recentColors}</span>
+            {recent.map((hex) => (
+              <button
+                key={hex}
+                type="button"
+                onClick={() => setSeedColor(hex)}
+                aria-label={hex}
+                title={hex}
+                className={cn(
+                  'border-border h-6 w-6 rounded-(--just-radius-sm) border-(length:--just-border-width)',
+                  'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2',
+                  hex === seedColor.toLowerCase() &&
+                    'outline-foreground outline-2 outline-offset-2'
+                )}
+                style={{ backgroundColor: hex }}
+              />
+            ))}
+          </div>
+        ) : null}
 
-        {/* Lightness Slider */}
         <LightnessSlider
           value={currentLightness}
           onChange={handleLightnessChange}
@@ -275,108 +249,100 @@ export function ThemeConfigurator({
         />
       </section>
 
-      <div className="border-border border-t" />
+      <hr className="border-border" />
 
-      {/* 2. Mode and Preset Section */}
-      <section className="flex flex-col gap-4">
+      <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <span className="text-foreground text-sm font-semibold tracking-tight">
-            {t.mode}
-          </span>
+          <span className={sectionTitle}>{t.mode}</span>
           <StateToggle
             value={isDark}
             onChange={setIsDark}
             label={isDark ? t.dark : t.light}
           />
         </div>
-
-        <div className="flex flex-col gap-2">
-          <span className="text-foreground text-sm font-semibold tracking-tight">
-            {t.preset}
-          </span>
-          <VariantPicker
-            options={presetOptions}
-            value={preset}
-            onChange={(val) => setPreset(val as JustUIPreset)}
-            label={t.preset}
-          />
+        <div className="flex items-center justify-between gap-3">
+          <span className={sectionTitle}>{t.preset}</span>
+          <code className="text-secondary font-mono text-xs">
+            {preset === 'neobrutalism' ? t.presetNeobrutalism : t.presetDefault}
+          </code>
         </div>
       </section>
 
-      <div className="border-border border-t" />
+      <hr className="border-border" />
 
-      {/* 3. Color Space Section */}
       <section className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <span className="text-foreground text-sm font-semibold tracking-tight">
-            {t.colorSpace}
-          </span>
-        </div>
+        <span className={sectionTitle}>{t.colorSpace}</span>
         <VariantPicker
           options={colorSpaceOptions}
           value={colorSpace}
           onChange={(val) => setColorSpace(val as ColorSpace)}
           label={t.colorSpace}
         />
+        <p className="text-secondary text-xs leading-relaxed">
+          {t.colorSpaceHint}
+        </p>
       </section>
 
-      <div className="border-border border-t" />
+      <hr className="border-border" />
 
-      {/* 4. Resolved Palette Section */}
       <section className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <span className="text-foreground text-sm font-semibold tracking-tight">
-            {t.resolvedPalette}
+        <div className="flex items-baseline justify-between gap-3">
+          <span className={sectionTitle}>{t.resolvedPalette}</span>
+          <span aria-live="polite" className="text-xs">
+            {copiedToken ? (
+              <span className="text-secondary">{t.copied}</span>
+            ) : copyFailed ? (
+              <span className="text-error">{t.copyFailed}</span>
+            ) : (
+              <span className="text-secondary">{t.resolvedPaletteHint}</span>
+            )}
           </span>
-          {copiedToken ? (
-            <span className="text-accent animate-pulse font-mono text-xs">
-              {t.copied}
-            </span>
-          ) : copyFailed ? (
-            <span className="text-error font-mono text-xs">{t.copyFailed}</span>
-          ) : null}
         </div>
 
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {resolvedList.map((token) => (
-            <button
-              key={token.key}
-              type="button"
-              onClick={() => handleCopyColor(token.key, token.value)}
-              className={cn(
-                'border-border hover:bg-muted/40 flex items-center justify-between rounded-(--just-radius-md) border p-2 text-left transition-colors',
-                copiedToken === token.key && 'border-accent bg-accent-muted'
-              )}
-              title={`${token.label} (${token.value}) - Click to copy`}
-              aria-label={`Copy ${token.label} color`}
-            >
-              <div className="flex min-w-0 items-center gap-2.5">
-                <span
-                  className="border-border/60 h-5 w-5 shrink-0 rounded border shadow-xs"
-                  style={{ backgroundColor: token.value }}
-                  aria-hidden="true"
-                />
-                <div className="flex flex-col truncate">
-                  <span className="text-foreground truncate font-mono text-xs font-medium">
-                    {token.label}
+        <ul className="grid gap-2">
+          {resolvedList.map((item) => (
+            <li key={item.token}>
+              <button
+                type="button"
+                onClick={() => handleCopyColor(item.token, item.value)}
+                className={cn(
+                  'border-border hover:bg-background flex w-full items-center justify-between gap-2 rounded-(--just-radius-md) border-(length:--just-border-width) p-2 text-left transition-colors',
+                  copiedToken === item.token && 'bg-accent-muted'
+                )}
+                aria-label={formatMessage(t.copyToken, { token: item.token })}
+              >
+                <span className="flex min-w-0 items-center gap-2.5">
+                  <span
+                    className="border-border h-6 w-6 shrink-0 rounded-(--just-radius-sm) border-(length:--just-border-width)"
+                    style={{ backgroundColor: item.value }}
+                    aria-hidden="true"
+                  />
+                  <span className="flex min-w-0 flex-col">
+                    <span className="text-foreground truncate font-mono text-xs">
+                      {item.token}
+                    </span>
+                    <span className="text-secondary font-mono text-xs">
+                      {item.value}
+                    </span>
                   </span>
-                  <span className="text-muted font-mono text-[10px]">
-                    {token.value}
-                  </span>
-                </div>
-              </div>
+                </span>
 
-              {token.key !== 'background' ? (
-                <Badge
-                  variant={token.badgeVariant}
-                  className="shrink-0 px-1.5 py-0 font-mono text-[10px]"
-                >
-                  {token.ratio.toFixed(1)}:1
-                </Badge>
-              ) : null}
-            </button>
+                {item.ratio !== null && item.target ? (
+                  <span className="flex shrink-0 flex-col items-end gap-0.5">
+                    <Badge variant={item.variant} className="font-mono">
+                      {item.ratio.toFixed(1)}:1
+                    </Badge>
+                    <span className="text-secondary text-xs">
+                      {formatMessage(t.contrastOn, {
+                        target: item.target.token,
+                      })}
+                    </span>
+                  </span>
+                ) : null}
+              </button>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
     </div>
   );

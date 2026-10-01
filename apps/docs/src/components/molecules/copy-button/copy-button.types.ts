@@ -3,5 +3,7 @@ export interface CopyButtonProps {
   text: string;
   /** Accessible label. */
   label?: string;
+  /** Announced to screen readers after a successful copy. */
+  copiedLabel?: string;
   className?: string;
 }

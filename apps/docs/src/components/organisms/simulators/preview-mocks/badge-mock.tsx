@@ -1,57 +1,31 @@
 'use client';
 
-import React, { useState } from 'react';
 import { cn } from '@/lib/cn';
 
-export function BadgeMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [activeBadge, setActiveBadge] = useState<number>(0);
-  const isNeo = preset === 'neobrutalism';
+const badge =
+  'inline-flex items-center rounded-(--just-radius-sm) border-(length:--just-border-width) px-2 py-0.5 text-xs font-medium';
 
-  const badges = [
-    {
-      label: 'Stable',
-      color:
-        'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
-    },
-    {
-      label: 'WASM Ready',
-      color: 'bg-accent/15 text-accent-deep dark:text-accent border-accent/30',
-    },
-    {
-      label: 'v0.13.2',
-      color:
-        'bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/30',
-    },
-  ];
-
+export function BadgeMock() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-2">
-      {badges.map((b, idx) => (
-        <button
-          key={b.label}
-          type="button"
-          onClick={() => setActiveBadge(idx)}
-          data-testid={`mock-badge-${idx}`}
-          className={cn(
-            'px-2.5 py-1 font-mono text-xs transition-all select-none',
-            isNeo
-              ? 'rounded-full border-[2.5px] border-black font-bold text-black dark:border-white dark:text-white'
-              : 'rounded-full border text-xs',
-            isNeo && activeBadge === idx
-              ? 'bg-accent -translate-x-0.5 -translate-y-0.5 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]'
-              : isNeo
-                ? 'bg-surface'
-                : b.color,
-            !isNeo && activeBadge === idx && 'ring-accent ring-2'
-          )}
-        >
-          {b.label}
-        </button>
-      ))}
+      <span
+        data-testid="mock-badge-0"
+        className={cn(badge, 'bg-accent text-accent-foreground border-border')}
+      >
+        Paid
+      </span>
+      <span
+        data-testid="mock-badge-1"
+        className={cn(badge, 'bg-card text-foreground border-border')}
+      >
+        Shipped
+      </span>
+      <span
+        data-testid="mock-badge-2"
+        className={cn(badge, 'bg-fill text-secondary border-transparent')}
+      >
+        Refunded
+      </span>
     </div>
   );
 }

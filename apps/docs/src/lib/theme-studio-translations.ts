@@ -4,6 +4,8 @@ export interface StudioDictionary {
   title: string;
   subtitle: string;
   seedColor: string;
+  hexLabel: string;
+  recentColors: string;
   mode: string;
   light: string;
   dark: string;
@@ -11,42 +13,34 @@ export interface StudioDictionary {
   presetDefault: string;
   presetNeobrutalism: string;
   colorSpace: string;
+  colorSpaceHint: string;
   colorSpaceHsl: string;
   colorSpaceOklch: string;
   colorSpaceHsluv: string;
   resolvedPalette: string;
+  resolvedPaletteHint: string;
+  /** `{target}` is replaced with the token the ratio is measured against. */
+  contrastOn: string;
+  seedTextTarget: string;
+  copyToken: string;
   export: string;
   share: string;
   reset: string;
   copyCode: string;
   copied: string;
   copyFailed: string;
-  contrastRatio: string;
-  tabYaml: string;
-  tabDart: string;
   tabCli: string;
-  preview: string;
-  components: string;
-  button: string;
-  card: string;
-  welcomeBack: string;
-  exploreComponents: string;
-  getStarted: string;
-  active: string;
-  inactive: string;
-  notifications: string;
-  mockAppName: string;
-  searchPlaceholder: string;
-  shareSuccess: string;
-  tokenBackground: string;
-  tokenCard: string;
-  tokenTextPrimary: string;
-  tokenTextSecondary: string;
-  tokenAccent: string;
-  tokenBorder: string;
-  tokenSuccess: string;
-  tokenWarning: string;
-  tokenError: string;
+  previewOrder: string;
+  previewTitle: string;
+  previewEmail: string;
+  previewEmailValue: string;
+  previewNotify: string;
+  previewItem: string;
+  previewItemMeta: string;
+  previewBadge: string;
+  previewSave: string;
+  previewCancel: string;
+  previewToast: string;
   lightness: string;
 }
 
@@ -54,101 +48,89 @@ const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
   en: {
     title: 'Theme Studio',
     subtitle:
-      'Configure your design tokens visually and export production-ready code.',
-    seedColor: 'Seed Color',
+      'Pick one color. The studio derives light and dark palettes that pass AA, then gives you the config for justui init.',
+    seedColor: 'Seed color',
+    hexLabel: 'Seed color as hex',
+    recentColors: 'Recent',
     mode: 'Mode',
     light: 'Light',
     dark: 'Dark',
     preset: 'Preset',
-    presetDefault: 'Default',
-    presetNeobrutalism: 'Neobrutalism',
-    colorSpace: 'Color Space',
+    presetDefault: 'default',
+    presetNeobrutalism: 'neobrutalism',
+    colorSpace: 'Color space',
+    colorSpaceHint:
+      'Sets color_space for JustThemeData.fromSeed in your app, which changes how tints of the seed are mixed. This preview always mixes in HSL.',
     colorSpaceHsl: 'HSL',
     colorSpaceOklch: 'OKLCH',
     colorSpaceHsluv: 'HSLuv',
-    resolvedPalette: 'Resolved Palette',
+    resolvedPalette: 'Resolved palette',
+    resolvedPaletteHint: 'Click a token to copy its hex value.',
+    contrastOn: 'on {target}',
+    seedTextTarget: 'its text',
+    copyToken: 'Copy {token}',
     export: 'Export',
     share: 'Share',
     reset: 'Reset',
     copyCode: 'Copy code',
-    copied: 'Copied!',
+    copied: 'Copied',
     copyFailed: 'Copy failed',
-    contrastRatio: 'Contrast',
-    tabYaml: 'Config YAML',
-    tabDart: 'Dart Code',
-    tabCli: 'CLI Command',
-    preview: 'Device Preview',
-    components: 'Components',
-    button: 'Button',
-    card: 'Card',
-    welcomeBack: 'Welcome back',
-    exploreComponents: 'Explore JustUI components',
-    getStarted: 'Get Started',
-    active: 'Active',
-    inactive: 'Inactive',
-    notifications: 'Notifications',
-    mockAppName: 'JustUI App',
-    searchPlaceholder: 'Search components...',
-    shareSuccess: 'Shareable URL copied to clipboard!',
-    tokenBackground: 'Background',
-    tokenCard: 'Card Surface',
-    tokenTextPrimary: 'Primary Text',
-    tokenTextSecondary: 'Secondary Text',
-    tokenAccent: 'Accent Primary',
-    tokenBorder: 'Border Line',
-    tokenSuccess: 'Success State',
-    tokenWarning: 'Warning State',
-    tokenError: 'Error State',
+    tabCli: 'terminal',
+    previewOrder: 'Order #1042',
+    previewTitle: 'Shipping details',
+    previewEmail: 'Email',
+    previewEmailValue: 'name@example.com',
+    previewNotify: 'Email me order updates',
+    previewItem: 'Ceramic mug x2',
+    previewItemMeta: 'Arrives Friday, $24.00',
+    previewBadge: 'Paid',
+    previewSave: 'Save',
+    previewCancel: 'Cancel',
+    previewToast: 'Address saved',
     lightness: 'Lightness',
   },
   id: {
     title: 'Theme Studio',
     subtitle:
-      'Konfigurasi design token secara visual dan ekspor kode siap produksi.',
-    seedColor: 'Warna Dasar',
+      'Pilih satu warna. Studio menurunkan palet terang/gelap yang lolos AA, lalu memberi config untuk justui init.',
+    seedColor: 'Warna dasar',
+    hexLabel: 'Warna dasar dalam hex',
+    recentColors: 'Terakhir dipakai',
     mode: 'Mode',
     light: 'Terang',
     dark: 'Gelap',
     preset: 'Preset',
-    presetDefault: 'Default',
-    presetNeobrutalism: 'Neobrutalism',
-    colorSpace: 'Ruang Warna',
+    presetDefault: 'default',
+    presetNeobrutalism: 'neobrutalism',
+    colorSpace: 'Ruang warna',
+    colorSpaceHint:
+      'Mengatur color_space untuk JustThemeData.fromSeed di aplikasimu, yang mengubah cara turunan warna dasar dicampur. Pratinjau ini selalu mencampur dalam HSL.',
     colorSpaceHsl: 'HSL',
     colorSpaceOklch: 'OKLCH',
     colorSpaceHsluv: 'HSLuv',
-    resolvedPalette: 'Palet Hasil',
+    resolvedPalette: 'Palet hasil',
+    resolvedPaletteHint: 'Klik token untuk menyalin nilai hex-nya.',
+    contrastOn: 'di atas {target}',
+    seedTextTarget: 'teksnya',
+    copyToken: 'Salin {token}',
     export: 'Ekspor',
     share: 'Bagikan',
-    reset: 'Reset',
+    reset: 'Atur ulang',
     copyCode: 'Salin kode',
-    copied: 'Tersalin!',
+    copied: 'Tersalin',
     copyFailed: 'Gagal menyalin',
-    contrastRatio: 'Kontras',
-    tabYaml: 'Config YAML',
-    tabDart: 'Kode Dart',
-    tabCli: 'Perintah CLI',
-    preview: 'Pratinjau Perangkat',
-    components: 'Komponen',
-    button: 'Tombol',
-    card: 'Kartu',
-    welcomeBack: 'Selamat datang kembali',
-    exploreComponents: 'Jelajahi komponen JustUI',
-    getStarted: 'Mulai Sekarang',
-    active: 'Aktif',
-    inactive: 'Nonaktif',
-    notifications: 'Notifikasi',
-    mockAppName: 'Aplikasi JustUI',
-    searchPlaceholder: 'Cari komponen...',
-    shareSuccess: 'URL tautan berhasil disalin ke papan klip!',
-    tokenBackground: 'Latar Belakang',
-    tokenCard: 'Permukaan Kartu',
-    tokenTextPrimary: 'Teks Utama',
-    tokenTextSecondary: 'Teks Sekunder',
-    tokenAccent: 'Aksen Utama',
-    tokenBorder: 'Garis Batas',
-    tokenSuccess: 'Status Sukses',
-    tokenWarning: 'Status Peringatan',
-    tokenError: 'Status Galat',
+    tabCli: 'terminal',
+    previewOrder: 'Pesanan #1042',
+    previewTitle: 'Detail pengiriman',
+    previewEmail: 'Email',
+    previewEmailValue: 'nama@contoh.com',
+    previewNotify: 'Kirim kabar pesanan lewat email',
+    previewItem: 'Mug keramik x2',
+    previewItemMeta: 'Tiba hari Jumat, Rp 240.000',
+    previewBadge: 'Lunas',
+    previewSave: 'Simpan',
+    previewCancel: 'Batal',
+    previewToast: 'Alamat tersimpan',
     lightness: 'Kecerahan',
   },
 };

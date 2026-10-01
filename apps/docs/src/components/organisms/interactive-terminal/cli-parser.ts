@@ -1,510 +1,641 @@
 import type { TerminalLineKind } from '@/components/molecules/terminal-line';
-import { REGISTRY_COMPONENT_NAMES, findClosestMatch } from './levenshtein';
+import {
+  CLI_DEFAULTS,
+  CLI_VERSION,
+  GENERATED_REGISTRY,
+  REGISTRY_PRESETS,
+  type GeneratedRegistryEntry,
+} from '@/lib/components.generated';
+import { findClosestMatch } from './levenshtein';
+
+/**
+ * A browser-side replay of the real `justui` binary (packages/cli).
+ *
+ * Every line below copies the CLI's own format strings (logger.rs, add.rs,
+ * preset.rs, list/mod.rs, search.rs, diff.rs, update.rs) and every fact
+ * (versions, files, dependencies, theme classes, paths) comes from
+ * `components.generated.ts`, which is generated from registry/index.json and
+ * the CLI sources. test/cli-parser.test.ts compares the output against
+ * transcripts recorded from the binary (test/fixtures/cli/*.txt).
+ *
+ * Commands that inspect the visitor's own machine (doctor, upgrade, info,
+ * view, create) are not simulated; the terminal says so instead of
+ * inventing a result.
+ */
 
 export interface ParsedLine {
   kind: TerminalLineKind;
   text: string;
-  delay?: number;
+}
+
+export type SimPreset = 'default' | 'neobrutalism';
+
+export interface CliSession {
+  /** Registry names installed in the simulated project, internal ones included. */
+  readonly installed: readonly string[];
+  readonly preset: SimPreset;
 }
 
 export interface ParseResult {
   lines: ParsedLine[];
+  /** Public components that the command copied into the project. */
   mountComponents?: string[];
-  presetChange?: 'default' | 'neobrutalism';
-  clearStage?: boolean;
+  presetChange?: SimPreset;
+  session: CliSession;
 }
 
-const SUBCOMMANDS: readonly string[] = [
+/** The simulated project has already run `justui init -y`. */
+export const INITIAL_SESSION: CliSession = { installed: [], preset: 'default' };
+
+// Glyphs exactly as the CLI prints them (kept as escapes so sources stay ASCII).
+const INFO = '\u2139';
+const SUCCESS = '\u2713';
+const CHECK = '\u2714';
+const WARN = '\u26a0';
+const ERROR = '\u2717';
+const ARROW = '\u2192';
+const EM_DASH = '\u2014';
+const DOT = '\u25cf';
+const H = '\u2500';
+
+const THEME_FILE = 'lib/core/theme/theme_data_material.dart';
+
+export const SUBCOMMANDS: readonly string[] = [
+  'version',
   'init',
+  'preset',
   'add',
+  'update',
+  'create',
+  'diff',
   'list',
   'search',
-  'preset',
-  'diff',
-  'update',
+  'view',
+  'info',
+  'upgrade',
   'doctor',
-  'version',
   'help',
-] as const;
+];
 
-function getHelpLines(): ParsedLine[] {
+const LOCAL_ONLY_COMMANDS: Record<string, string> = {
+  doctor: 'checks the Flutter and Dart SDKs on your PATH',
+  upgrade: 'downloads a newer justui binary for your OS',
+  info: 'reads your project config and SDK versions',
+  view: 'opens component source in your terminal pager',
+  create: 'writes a new component scaffold into your project',
+};
+
+const out = (text: string): ParsedLine => ({ kind: 'output', text });
+const info = (text: string): ParsedLine => ({
+  kind: 'info',
+  text: `${INFO} ${text}`,
+});
+const success = (text: string): ParsedLine => ({
+  kind: 'success',
+  text: `${SUCCESS} ${text}`,
+});
+const warning = (text: string): ParsedLine => ({
+  kind: 'warning',
+  text: `${WARN} Warning: ${text}`,
+});
+const error = (text: string): ParsedLine => ({
+  kind: 'error',
+  text: `${ERROR} Error: ${text}`,
+});
+
+function findEntry(name: string): GeneratedRegistryEntry | undefined {
+  return GENERATED_REGISTRY.find((c) => c.name === name);
+}
+
+function installDir(entry: GeneratedRegistryEntry): string {
+  if (entry.category === 'tokens' || entry.category === 'core') {
+    return CLI_DEFAULTS.tokensDir;
+  }
+  if (entry.internal) return CLI_DEFAULTS.sharedDir;
+  return `${CLI_DEFAULTS.componentsDir}/${entry.name}`;
+}
+
+function localFileName(entry: GeneratedRegistryEntry, file: string): string {
+  return entry.internal && file.startsWith('_shared_')
+    ? `just_${file.slice('_shared_'.length)}`
+    : file;
+}
+
+const chars = (s: string) => Array.from(s).length;
+const padEnd = (s: string, width: number) =>
+  s + ' '.repeat(Math.max(0, width - chars(s)));
+
+/** logger::panel */
+function panel(msg: string, kind: TerminalLineKind = 'info'): ParsedLine[] {
+  const width = chars(msg) + 4;
   return [
-    {
-      kind: 'info',
-      text: 'JustUI CLI - Copy-paste Flutter components with zero dependencies',
-    },
-    { kind: 'output', text: '' },
-    { kind: 'output', text: 'USAGE:' },
-    { kind: 'output', text: '  justui <COMMAND> [OPTIONS]' },
-    { kind: 'output', text: '' },
-    { kind: 'output', text: 'COMMANDS:' },
-    {
-      kind: 'output',
-      text: '  init       Initialize JustUI configuration and theme in your Flutter project',
-    },
-    {
-      kind: 'output',
-      text: '  add        Add one or more components to your project',
-    },
-    {
-      kind: 'output',
-      text: '  list       List all available components in the registry',
-    },
-    {
-      kind: 'output',
-      text: '  search     Search for components by name or keyword',
-    },
-    {
-      kind: 'output',
-      text: '  preset     Manage style presets (list, apply)',
-    },
-    {
-      kind: 'output',
-      text: '  diff       Compare local component code with upstream registry',
-    },
-    {
-      kind: 'output',
-      text: '  update     Update local components to latest registry versions',
-    },
-    {
-      kind: 'output',
-      text: '  doctor     Diagnose project configuration and dependencies',
-    },
-    {
-      kind: 'output',
-      text: '  version    Print CLI version',
-    },
-    {
-      kind: 'output',
-      text: '  help       Print this help message',
-    },
+    { kind, text: `\u250c${H.repeat(width)}\u2510` },
+    { kind, text: `\u2502  ${msg}  \u2502` },
+    { kind, text: `\u2514${H.repeat(width)}\u2518` },
   ];
 }
 
-export function parseCommand(rawInput: string): ParseResult {
-  const trimmed = rawInput.trim();
-  if (!trimmed) {
-    return { lines: getHelpLines() };
+/** logger::summary, including its padding arithmetic. */
+function summary(
+  title: string,
+  items: { label: string; value: string }[]
+): ParsedLine[] {
+  const titleLen = chars(title) + 5;
+  const itemMax = Math.max(
+    0,
+    ...items.map((i) => chars(i.label) + chars(i.value) + 8)
+  );
+  const inner = Math.max(titleLen, itemMax, 40);
+  const pad = (s: string) =>
+    `\u2502 ${s}${' '.repeat(Math.max(0, inner - chars(s)))} \u2502`;
+  const lines = [
+    `\u256d${H.repeat(inner + 2)}\u256e`,
+    pad(`  ${CHECK}  ${title}`),
+  ];
+  if (items.length > 0) {
+    lines.push(pad(''));
+    for (const item of items) {
+      lines.push(pad(`  ${ARROW}  ${padEnd(item.label, 12)} ${item.value}`));
+    }
+  }
+  lines.push(`\u2570${H.repeat(inner + 2)}\u256f`);
+  return lines.map((text) => ({ kind: 'success', text }));
+}
+
+/** resolve_dependencies_recursive: dependencies first, each name once. */
+function resolveOrder(
+  name: string,
+  visited: Set<string>,
+  order: string[]
+): void {
+  if (visited.has(name)) return;
+  visited.add(name);
+  const entry = findEntry(name);
+  if (!entry) return;
+  for (const dep of entry.registryDependencies) {
+    resolveOrder(dep, visited, order);
+  }
+  order.push(name);
+}
+
+interface FileDetail {
+  file: string;
+  path: string;
+}
+
+/** One add_component() run: shared by `add` and `preset apply`. */
+function addComponents(
+  names: string[],
+  installed: Set<string>
+): { lines: ParsedLine[]; copied: FileDetail[]; skipped: FileDetail[] } {
+  const order: string[] = [];
+  const visited = new Set<string>();
+  for (const name of names) resolveOrder(name, visited, order);
+
+  const lines: ParsedLine[] = [];
+  const copied: FileDetail[] = [];
+  const skipped: FileDetail[] = [];
+
+  for (const name of order) {
+    const entry = findEntry(name);
+    if (!entry) continue;
+    const dir = installDir(entry);
+    const wasInstalled = installed.has(name);
+    lines.push(info(`Adding component "${name}" (v${CLI_VERSION})...`));
+    for (const file of entry.files) {
+      const local = localFileName(entry, file);
+      const detail = { file: local, path: `${dir}/${local}` };
+      if (wasInstalled) {
+        lines.push(out(`  - ${local} is already up-to-date.`));
+        skipped.push(detail);
+        continue;
+      }
+      lines.push(out(`  - Copied ${local} to ${dir}/`));
+      copied.push(detail);
+      if (file.endsWith('_theme.dart') && entry.themeClass) {
+        lines.push(
+          out(`  - Registered ${entry.themeClass}.defaults in ${THEME_FILE}`)
+        );
+      }
+    }
+    installed.add(name);
+    lines.push(success(`Component "${name}" added successfully.`));
   }
 
-  const tokens = trimmed.split(/\s+/);
-  let subcommand = tokens[0];
-  let args = tokens.slice(1);
+  return { lines, copied, skipped };
+}
 
-  if (subcommand === 'justui') {
-    if (tokens.length === 1) {
-      return { lines: getHelpLines() };
+function runAdd(args: string[], session: CliSession): ParseResult {
+  const all = args.includes('--all');
+  const requested = all
+    ? GENERATED_REGISTRY.map((c) => c.name)
+    : args.filter((a) => !a.startsWith('-'));
+
+  if (requested.length === 0) {
+    return {
+      lines: [
+        out('error: no components given (the real CLI opens a picker here).'),
+        out(''),
+        out('Usage: justui add [OPTIONS] [COMPONENTS]...'),
+      ],
+      session,
+    };
+  }
+
+  const unknown = requested.find((name) => !findEntry(name));
+  if (unknown) {
+    return {
+      lines: [
+        error(
+          `Dependency resolution error: Component "${unknown}" not found in registry`
+        ),
+      ],
+      session,
+    };
+  }
+
+  const installed = new Set(session.installed);
+  const { lines, copied, skipped } = addComponents(requested, installed);
+
+  lines.push(out(''));
+  if (copied.length > 0) {
+    lines.push({
+      kind: 'success',
+      text: `${CHECK} ${copied.length} file(s) added/updated:`,
+    });
+    for (const d of copied) {
+      lines.push(out(`  ${CHECK} ${d.file} (New) -> ${d.path}`));
     }
-    subcommand = tokens[1];
-    args = tokens.slice(2);
+  }
+  if (skipped.length > 0) {
+    lines.push({
+      kind: 'warning',
+      text: `${WARN} ${skipped.length} file(s) skipped:`,
+    });
+    for (const d of skipped) {
+      lines.push(out(`  ${WARN} ${d.file} (Up-to-date) -> ${d.path}`));
+    }
+  }
+
+  lines.push(success('Components added successfully'));
+  const summaryItems = requested.flatMap((name) => {
+    const entry = findEntry(name);
+    return entry
+      ? [{ label: name, value: `v${CLI_VERSION}  ${installDir(entry)}/` }]
+      : [];
+  });
+  lines.push(
+    ...summary(
+      `${summaryItems.length} component(s) added successfully`,
+      summaryItems
+    )
+  );
+
+  return {
+    lines,
+    mountComponents: requested.filter((name) => !findEntry(name)?.internal),
+    session: { ...session, installed: [...installed] },
+  };
+}
+
+function installedInRegistryOrder(session: CliSession): string[] {
+  return GENERATED_REGISTRY.filter((c) =>
+    session.installed.includes(c.name)
+  ).map((c) => c.name);
+}
+
+function runPreset(args: string[], session: CliSession): ParseResult {
+  const action = args[0];
+
+  if (!action || action === 'list') {
+    return {
+      lines: [
+        ...panel('Available Presets'),
+        ...REGISTRY_PRESETS.map((preset) => {
+          const count = GENERATED_REGISTRY.filter((c) =>
+            c.supportedPresets.includes(preset)
+          ).length;
+          const active = preset === session.preset ? ' (active)' : '';
+          return out(`  ${preset}${active}  ${EM_DASH}  ${count} component(s)`);
+        }),
+      ],
+      session,
+    };
+  }
+
+  if (action !== 'apply') {
+    return {
+      lines: [
+        out(`error: unrecognized subcommand '${action}'`),
+        out(''),
+        out('Usage: justui preset [OPTIONS] [COMMAND]'),
+        out(''),
+        out("For more information, try '--help'."),
+      ],
+      session,
+    };
+  }
+
+  const name = args.slice(1).find((a) => !a.startsWith('-'));
+  if (!name) {
+    return {
+      lines: [
+        out('error: the following required arguments were not provided:'),
+        out('  <NAME>'),
+        out(''),
+        out('Usage: justui preset apply <NAME>'),
+        out(''),
+        out("For more information, try '--help'."),
+      ],
+      session,
+    };
+  }
+
+  if (!REGISTRY_PRESETS.includes(name)) {
+    return {
+      lines: [
+        error(
+          `Preset "${name}" not found in registry. Run "justui preset list" to see available presets.`
+        ),
+      ],
+      session,
+    };
+  }
+
+  // preset.rs treats a component as installed when its install directory
+  // exists, so every internal entry counts once the shared dir exists.
+  const existingDirs = new Set(
+    session.installed.flatMap((n) => {
+      const e = findEntry(n);
+      return e ? [installDir(e)] : [];
+    })
+  );
+  const installedNames = GENERATED_REGISTRY.filter((c) =>
+    existingDirs.has(installDir(c))
+  ).map((c) => c.name);
+  if (installedNames.length === 0) {
+    return {
+      lines: [
+        warning('No installed components found. Run "justui add" first.'),
+      ],
+      session,
+    };
+  }
+
+  const supports = (n: string) =>
+    findEntry(n)?.supportedPresets.includes(name) ?? false;
+  const unsupported = installedNames.filter((n) => !supports(n));
+  const toApply = installedNames.filter(supports);
+
+  const lines: ParsedLine[] = [];
+  if (unsupported.length > 0) {
+    lines.push(
+      warning(
+        `The following components do not support preset "${name}": ${unsupported.join(', ')}`
+      ),
+      warning('These components will be skipped and keep their current preset.')
+    );
+  }
+  if (toApply.length === 0) {
+    lines.push(error(`No installed components support preset "${name}".`));
+    return { lines, session };
+  }
+
+  lines.push(...panel(`Applying preset "${name}"`));
+  const installed = new Set(session.installed);
+  lines.push(...addComponents(toApply, installed).lines);
+  lines.push(
+    ...summary(`Preset "${name}" applied successfully`, [
+      { label: 'Succeeded', value: `${toApply.length} component(s)` },
+      { label: 'Failed', value: '0 component(s)' },
+      { label: 'Active preset', value: name },
+    ])
+  );
+
+  const preset: SimPreset =
+    name === 'neobrutalism' ? 'neobrutalism' : 'default';
+  return {
+    lines,
+    presetChange: preset,
+    session: { installed: [...installed], preset },
+  };
+}
+
+function runList(session: CliSession): ParseResult {
+  return {
+    lines: [
+      out('=== JustUI Registry Components ==='),
+      ...GENERATED_REGISTRY.map((c) => {
+        const status = session.installed.includes(c.name)
+          ? 'Installed'
+          : 'Not Installed';
+        return out(
+          `  ${padEnd(c.name, 20)} v${padEnd(CLI_VERSION, 8)} [${padEnd(status, 12)}] (${c.category})`
+        );
+      }),
+    ],
+    session,
+  };
+}
+
+function runSearch(args: string[], session: CliSession): ParseResult {
+  const query = args.filter((a) => !a.startsWith('-')).join(' ');
+  if (!query) {
+    return {
+      lines: [
+        out('error: the following required arguments were not provided:'),
+        out('  <QUERY>'),
+        out(''),
+        out('Usage: justui search <QUERY>'),
+        out(''),
+        out("For more information, try '--help'."),
+      ],
+      session,
+    };
+  }
+
+  const q = query.toLowerCase();
+  const byName = GENERATED_REGISTRY.filter((c) => c.name.includes(q));
+  const byOther = GENERATED_REGISTRY.filter(
+    (c) =>
+      !c.name.includes(q) &&
+      (c.description.toLowerCase().includes(q) ||
+        c.category.toLowerCase().includes(q))
+  );
+  const results = [...byName, ...byOther];
+  if (results.length === 0) {
+    return {
+      lines: [out(`No components found matching "${query}".`)],
+      session,
+    };
+  }
+
+  const lines: ParsedLine[] = [out(`Search results for "${query}":`), out('')];
+  const categories = [...new Set(results.map((c) => c.category))];
+  for (const category of categories) {
+    lines.push(
+      out(`  ${category.charAt(0).toUpperCase()}${category.slice(1)}:`)
+    );
+    for (const c of results.filter((r) => r.category === category)) {
+      lines.push(
+        out(
+          `    ${DOT} ${padEnd(c.name, 16)} ${padEnd(`(v${CLI_VERSION})`, 10)} ${c.description}`
+        )
+      );
+    }
+  }
+  lines.push(out(''), out(`${results.length} component(s) found.`));
+  return { lines, session };
+}
+
+function runDiff(args: string[], session: CliSession): ParseResult {
+  const requested =
+    args.find((a) => !a.startsWith('-')) ??
+    installedInRegistryOrder(session).find((n) => !findEntry(n)?.internal);
+  if (!requested) {
+    return { lines: [warning('No installed components found.')], session };
+  }
+  const entry = findEntry(requested);
+  if (!entry) {
+    return {
+      lines: [error(`Component "${requested}" not found in registry.`)],
+      session,
+    };
+  }
+
+  const lines: ParsedLine[] = [
+    info(`Comparing component "${requested}" with registry...`),
+  ];
+  const isInstalled = session.installed.includes(requested);
+  for (const file of entry.files) {
+    lines.push(
+      isInstalled
+        ? success(`${file}: Up to date.`)
+        : warning(`File ${file} is missing locally (needs to be added).`)
+    );
+  }
+  return { lines, session };
+}
+
+function runUpdate(session: CliSession): ParseResult {
+  if (session.installed.length === 0) {
+    return { lines: [warning('No installed components found.')], session };
+  }
+  return { lines: [success('All components are up-to-date!')], session };
+}
+
+const HELP_LINES = [
+  `justui v${CLI_VERSION}`,
+  'JustUI CLI - High-performance Flutter UI scaffolding and copy-paste component tool',
+  '',
+  'Usage: justui [OPTIONS] [COMMAND]',
+  '',
+  'Commands:',
+  '  version  Print CLI version information and update status',
+  '  init     Initialize JustUI configuration and theme tokens in a Flutter project',
+  '  preset   Manage and apply visual design style presets (e.g. default, neobrutalism)',
+  '  add      Copy one or more components from the registry into your project',
+  '  update   Synchronize local components with upstream registry updates',
+  '  create   Scaffold a new custom component in your local project',
+  '  diff     Inspect local component modifications vs upstream registry source code',
+  '  list     List all available components in the JustUI registry',
+  '  search   Search for components in the registry by keyword or category',
+  '  view     View source code or documentation of a registry component',
+  '  info     Display project configuration, installed components, and system status',
+  '  upgrade  Check for and upgrade JustUI CLI to the latest version',
+  '  doctor   Perform health and environment diagnostics check',
+  '  help     Print this message or the help of the given subcommand(s)',
+  '',
+  'Options:',
+  '  -y, --yes         Skip all interactive confirmation prompts (accept defaults)',
+  '  -c, --cwd <PATH>  Specify target working directory for operation',
+  '  -q, --quiet       Suppress non-essential informational logging output',
+  '      --json        Output results in machine-readable JSON format',
+  '      --no-color    Disable colored ANSI escape code output',
+  '  -V, --version     Display CLI version and check for updates',
+  '  -h, --help        Print help',
+];
+
+function unknownSubcommand(name: string): ParsedLine[] {
+  const lines = [out(`error: unrecognized subcommand '${name}'`), out('')];
+  // clap only suggests near-identical names; distance 1 approximates that.
+  const match = findClosestMatch(name, SUBCOMMANDS, 1);
+  if (match) {
+    lines.push(
+      out(`  tip: a similar subcommand exists: '${match.match}'`),
+      out('')
+    );
+  }
+  lines.push(
+    out('Usage: justui [OPTIONS] [COMMAND]'),
+    out(''),
+    out("For more information, try '--help'.")
+  );
+  return lines;
+}
+
+export function parseCommand(
+  rawInput: string,
+  session: CliSession = INITIAL_SESSION
+): ParseResult {
+  const tokens = rawInput.trim().split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return { lines: [], session };
+
+  if (tokens[0] !== 'justui') {
+    return {
+      lines: [out(`sh: ${tokens[0]}: command not found`)],
+      session,
+    };
+  }
+
+  const subcommand = tokens[1];
+  const args = tokens.slice(2);
+
+  if (!subcommand || ['help', '--help', '-h'].includes(subcommand)) {
+    return { lines: HELP_LINES.map(out), session };
   }
 
   switch (subcommand) {
-    case 'help':
-    case '--help':
-    case '-h':
-      return { lines: getHelpLines() };
-
     case 'version':
     case '--version':
-    case '-v':
+    case '-V':
       return {
-        lines: [
-          {
-            kind: 'output',
-            text: 'justui v0.14.0 (rustc 1.87.0)',
-          },
-        ],
+        lines: [out(`Current JustUI CLI version: v${CLI_VERSION}`)],
+        session,
       };
-
-    case 'init': {
-      const presetFlagIndex = args.findIndex(
-        (a) => a === '--preset' || a === '-p'
-      );
-      let preset: 'default' | 'neobrutalism' | undefined;
-      if (presetFlagIndex !== -1) {
-        const candidate = args[presetFlagIndex + 1]?.toLowerCase();
-        if (!candidate) {
-          return {
-            lines: [
-              {
-                kind: 'error',
-                text: 'error: Preset name required for --preset flag. Available presets: default, neobrutalism',
-              },
-            ],
-          };
-        }
-        if (candidate === 'neobrutalism' || candidate === 'neo') {
-          preset = 'neobrutalism';
-        } else if (candidate === 'default' || candidate === 'd') {
-          preset = 'default';
-        } else {
-          return {
-            lines: [
-              {
-                kind: 'error',
-                text: `error: Invalid preset '${candidate}'. Available presets: default, neobrutalism`,
-              },
-            ],
-          };
-        }
-      }
-
-      const lines: ParsedLine[] = [
-        { kind: 'info', text: 'Initializing JustUI project...' },
-        { kind: 'info', text: 'Created justui.config.yaml' },
-        { kind: 'info', text: 'Created lib/core/theme/just_theme.dart' },
-      ];
-
-      if (preset) {
-        lines.push({
-          kind: 'info',
-          text: `Applied preset: ${preset}`,
-        });
-      }
-
-      lines.push({
-        kind: 'success',
-        text: 'Done! Run `justui add <component>` to start.',
-      });
-
+    case 'init':
       return {
-        lines,
-        clearStage: true,
-        ...(preset ? { presetChange: preset } : {}),
+        lines: [warning('justui.config.yaml already exists in this project.')],
+        session,
       };
-    }
-
-    case 'add': {
-      if (args.length === 0) {
-        return {
-          lines: [
-            {
-              kind: 'error',
-              text: 'error: No components specified. Usage: justui add <component...>',
-            },
-          ],
-        };
-      }
-
-      if (args.includes('--all') || args.includes('-a')) {
-        return {
-          lines: [
-            {
-              kind: 'info',
-              text: 'Installing all 33 components...',
-            },
-            {
-              kind: 'output',
-              text: 'Downloading specifications and building widget tree...',
-            },
-            {
-              kind: 'success',
-              text: 'Done! 33 components installed.',
-            },
-          ],
-          mountComponents: ['button', 'switch', 'card'],
-        };
-      }
-
-      const componentNames = args.filter((a) => !a.startsWith('-'));
-      if (componentNames.length === 0) {
-        return {
-          lines: [
-            {
-              kind: 'error',
-              text: 'error: No components specified. Usage: justui add <component...>',
-            },
-          ],
-        };
-      }
-
-      const invalidComponents: { name: string; match?: string }[] = [];
-
-      for (const name of componentNames) {
-        if (!REGISTRY_COMPONENT_NAMES.includes(name)) {
-          const match = findClosestMatch(name, REGISTRY_COMPONENT_NAMES);
-          invalidComponents.push({ name, match: match?.match });
-        }
-      }
-
-      if (invalidComponents.length > 0) {
-        const errorLines: ParsedLine[] = invalidComponents.map(
-          ({ name, match }) => ({
-            kind: 'error',
-            text: match
-              ? `error: Component '${name}' not found. Did you mean '${match}'?`
-              : `error: Component '${name}' not found in registry.`,
-          })
-        );
-        return { lines: errorLines };
-      }
-
-      const lines: ParsedLine[] = [];
-      for (const name of componentNames) {
-        lines.push({
-          kind: 'info',
-          text: `Downloading ${name}...`,
-        });
-        lines.push({
-          kind: 'output',
-          text: `Installing ${name}...`,
-        });
-        lines.push({
-          kind: 'success',
-          text: `Created lib/widgets/${name}/just_${name}.dart`,
-        });
-      }
-
-      lines.push({
-        kind: 'success',
-        text: `Done! ${componentNames.length} component(s) added successfully.`,
-      });
-
-      return {
-        lines,
-        mountComponents: componentNames,
-      };
-    }
-
-    case 'preset': {
-      const action = args[0];
-      if (action === 'list') {
-        return {
-          lines: [
-            { kind: 'info', text: 'Available presets:' },
-            {
-              kind: 'output',
-              text: '  default        - Clean, modern aesthetic with subtle borders and shadows',
-            },
-            {
-              kind: 'output',
-              text: '  neobrutalism   - High-contrast, bold 2.5px borders and solid drop shadows',
-            },
-          ],
-        };
-      }
-
-      if (action === 'apply') {
-        const target = args[1]?.toLowerCase();
-        if (!target) {
-          return {
-            lines: [
-              {
-                kind: 'error',
-                text: 'error: Preset name required. Usage: justui preset apply <default|neobrutalism>',
-              },
-            ],
-          };
-        }
-
-        const resolvedPreset =
-          target === 'neobrutalism' || target === 'neo'
-            ? 'neobrutalism'
-            : target === 'default' || target === 'd'
-              ? 'default'
-              : undefined;
-
-        if (resolvedPreset) {
-          return {
-            lines: [
-              {
-                kind: 'info',
-                text: `Applying preset: ${resolvedPreset}...`,
-              },
-              {
-                kind: 'output',
-                text: 'Updated justui.config.yaml',
-              },
-              {
-                kind: 'output',
-                text: 'Regenerated just_theme.dart',
-              },
-              {
-                kind: 'success',
-                text: 'Done!',
-              },
-            ],
-            presetChange: resolvedPreset,
-          };
-        }
-
-        return {
-          lines: [
-            {
-              kind: 'error',
-              text: `error: Unknown preset '${target}'. Available presets: default, neobrutalism`,
-            },
-          ],
-        };
-      }
-
-      return {
-        lines: [
-          {
-            kind: 'output',
-            text: 'Usage: justui preset <list|apply> [preset-name]',
-          },
-        ],
-      };
-    }
-
+    case 'add':
+      return runAdd(args, session);
+    case 'preset':
+      return runPreset(args, session);
     case 'list':
-      return {
-        lines: [
-          { kind: 'info', text: 'Available components (33 total):' },
-          {
-            kind: 'output',
-            text: '  Buttons:       button, icon-button, toggle',
-          },
-          {
-            kind: 'output',
-            text: '  Form Controls: input, checkbox, radio, radio-group, switch, slider, select, date-picker, date-range-picker, time-picker',
-          },
-          {
-            kind: 'output',
-            text: '  Layout:        card, separator, scroll-area, resizable, carousel',
-          },
-          {
-            kind: 'output',
-            text: '  Feedback:      badge, skeleton, progress, toast',
-          },
-          {
-            kind: 'output',
-            text: '  Navigation:    breadcrumb, tabs, bottom-nav, sidebar',
-          },
-          {
-            kind: 'output',
-            text: '  Overlay:       dialog, sheet, tooltip, accordion',
-          },
-          {
-            kind: 'output',
-            text: '  Data Display:  avatar, avatar-group, table',
-          },
-        ],
-      };
-
-    case 'search': {
-      const query = args[0]?.toLowerCase()?.trim();
-      if (!query) {
-        return {
-          lines: [
-            {
-              kind: 'error',
-              text: 'error: Search query required. Usage: justui search <query>',
-            },
-          ],
-        };
-      }
-      const matches = REGISTRY_COMPONENT_NAMES.filter((c) => c.includes(query));
-      if (matches.length === 0) {
-        return {
-          lines: [
-            {
-              kind: 'info',
-              text: `No components found matching '${query}'.`,
-            },
-          ],
-        };
-      }
-      return {
-        lines: [
-          {
-            kind: 'info',
-            text: `Found ${matches.length} matching component(s):`,
-          },
-          ...matches.map((m) => ({
-            kind: 'output' as const,
-            text: `  ${m}`,
-          })),
-        ],
-      };
-    }
-
-    case 'diff': {
-      const component = args[0]?.toLowerCase() || 'all';
-      if (
-        component !== 'all' &&
-        !REGISTRY_COMPONENT_NAMES.includes(component)
-      ) {
-        const match = findClosestMatch(component, REGISTRY_COMPONENT_NAMES);
-        return {
-          lines: [
-            {
-              kind: 'error',
-              text: match
-                ? `error: Component '${component}' not found. Did you mean '${match.match}'?`
-                : `error: Component '${component}' not found in registry.`,
-            },
-          ],
-        };
-      }
-      return {
-        lines: [
-          {
-            kind: 'info',
-            text: `Comparing local vs registry for ${component}...`,
-          },
-          {
-            kind: 'success',
-            text: 'No changes detected.',
-          },
-        ],
-      };
-    }
-
+      return runList(session);
+    case 'search':
+      return runSearch(args, session);
+    case 'diff':
+      return runDiff(args, session);
     case 'update':
-      return {
-        lines: [
-          {
-            kind: 'info',
-            text: 'Checking for component updates...',
-          },
-          {
-            kind: 'success',
-            text: 'All components up to date.',
-          },
-        ],
-      };
-
-    case 'doctor':
-      return {
-        lines: [
-          {
-            kind: 'info',
-            text: 'Running JustUI system diagnostics...',
-          },
-          { kind: 'success', text: '[OK] Dart SDK: found (v3.10+)' },
-          { kind: 'success', text: '[OK] Flutter SDK: found' },
-          { kind: 'success', text: '[OK] Config: valid (justui.config.yaml)' },
-          {
-            kind: 'success',
-            text: '[OK] Registry: connected (https://justui.dev/registry)',
-          },
-          { kind: 'success', text: '[OK] All systems operational.' },
-        ],
-      };
-
+      return runUpdate(session);
     default: {
-      const match = findClosestMatch(subcommand, SUBCOMMANDS);
-      if (match) {
+      const localOnly = LOCAL_ONLY_COMMANDS[subcommand];
+      if (localOnly) {
         return {
           lines: [
-            {
-              kind: 'error',
-              text: `error: Unknown command '${subcommand}'. Did you mean '${match.match}'?`,
-            },
+            out(
+              `justui ${subcommand} ${localOnly}, so it can't run in this browser simulation.`
+            ),
+            out(
+              'Install the CLI and run it in your project for the real result.'
+            ),
           ],
+          session,
         };
       }
-      return {
-        lines: [
-          {
-            kind: 'error',
-            text: `error: Unknown command '${subcommand}'. Run 'justui help' for usage.`,
-          },
-        ],
-      };
+      return { lines: unknownSubcommand(subcommand), session };
     }
   }
 }

@@ -1,44 +1,40 @@
 'use client';
 
-import React from 'react';
 import { cn } from '@/lib/cn';
+import { surface } from './mock-styles';
 
-export function ScrollAreaMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const isNeo = preset === 'neobrutalism';
-  const items = [
-    'Tokens',
-    'Theming',
-    'Bresenham',
-    'Invariance',
-    'InheritedModel',
-    'Contrast AA',
-  ];
+const lines = [
+  ['Ceramic mug', '2 x $12.00'],
+  ['Pour-over kettle', '$14.00'],
+  ['Paper filters (100)', '$6.00'],
+  ['Coffee beans 250g', '$9.00'],
+  ['Cleaning brush', '$3.00'],
+  ['Gift wrap', '$2.00'],
+];
 
+export function ScrollAreaMock() {
   return (
+    // A scrollable region must be focusable so keyboard users can scroll it
+    // (axe: scrollable-region-focusable).
     <div
       data-testid="mock-scroll-area"
+      role="region"
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+      tabIndex={0}
+      aria-label="Order items"
       className={cn(
-        'h-28 w-full max-w-50 space-y-1 overflow-y-auto p-2 font-mono text-xs select-none',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-md border'
+        surface,
+        'h-32 w-full max-w-56 overflow-y-auto p-1',
+        'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-1'
       )}
     >
-      {items.map((item, i) => (
+      {lines.map(([item, price]) => (
         <div
           key={item}
-          className={cn(
-            'rounded px-2 py-1 text-[11px] transition-colors',
-            i === 0
-              ? 'bg-accent/20 text-accent-deep dark:text-accent font-bold'
-              : 'text-muted hover:text-foreground'
-          )}
+          className="flex justify-between gap-2 px-2.5 py-1.5 text-sm"
         >
-          {i + 1}. {item}
+          <span className="text-foreground">{item}</span>
+          <span className="text-secondary shrink-0">{price}</span>
         </div>
       ))}
     </div>

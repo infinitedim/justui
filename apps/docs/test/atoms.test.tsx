@@ -5,10 +5,7 @@ import { Badge } from '@/components/atoms/badge';
 import { Input } from '@/components/atoms/input';
 import { Kbd } from '@/components/atoms/kbd';
 import { Code } from '@/components/atoms/code';
-import { Separator } from '@/components/atoms/separator';
-import { ProgressBar } from '@/components/atoms/progress-bar';
 import { Slider } from '@/components/atoms/slider';
-import { ToggleChip } from '@/components/atoms/toggle-chip';
 
 describe('Atoms Components', () => {
   describe('Button', () => {
@@ -58,27 +55,6 @@ describe('Atoms Components', () => {
     });
   });
 
-  describe('Separator', () => {
-    it('renders decorative separator by default', () => {
-      const { container } = render(<Separator />);
-      expect(container.firstChild).toHaveAttribute('role', 'none');
-    });
-
-    it('renders semantic separator when decorative is false', () => {
-      render(<Separator decorative={false} orientation="vertical" />);
-      const sep = screen.getByRole('separator');
-      expect(sep).toHaveAttribute('aria-orientation', 'vertical');
-    });
-  });
-
-  describe('ProgressBar', () => {
-    it('renders progressbar role with percentage', () => {
-      render(<ProgressBar value={40} max={100} label="Upload progress" />);
-      const bar = screen.getByRole('progressbar', { name: 'Upload progress' });
-      expect(bar).toHaveAttribute('aria-valuenow', '40');
-    });
-  });
-
   describe('Slider', () => {
     it('renders range slider', () => {
       render(
@@ -92,13 +68,6 @@ describe('Atoms Components', () => {
       );
       const slider = screen.getByRole('slider', { name: 'Volume' });
       expect(slider).toBeInTheDocument();
-    });
-  });
-
-  describe('ToggleChip', () => {
-    it('renders pressed state correctly', () => {
-      render(<ToggleChip active>Filter</ToggleChip>);
-      expect(screen.getByRole('button', { pressed: true })).toBeInTheDocument();
     });
   });
 });

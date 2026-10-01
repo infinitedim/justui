@@ -1,73 +1,48 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/cn';
+import { focusRing } from './mock-styles';
 
-export function RadioGroupMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
+const methods = [
+  { id: 'card', name: 'Card' },
+  { id: 'transfer', name: 'Bank transfer' },
+  { id: 'cod', name: 'Pay on delivery' },
+];
+
+export function RadioGroupMock() {
   const [selected, setSelected] = useState('card');
-  const isNeo = preset === 'neobrutalism';
-
-  const methods = [
-    { id: 'card', name: 'Credit Card' },
-    { id: 'paypal', name: 'PayPal' },
-    { id: 'crypto', name: 'Crypto (WASM)' },
-  ];
 
   return (
     <div
+      role="radiogroup"
+      aria-label="Payment method"
       data-testid="mock-radio-group"
-      className="w-full max-w-52.5 space-y-1.5 font-mono text-xs select-none"
+      className="w-full max-w-56 space-y-1.5"
     >
       {methods.map((m) => {
-        const isChecked = selected === m.id;
+        const checked = selected === m.id;
         return (
-          <div
+          <button
             key={m.id}
+            type="button"
+            role="radio"
+            aria-checked={checked}
             onClick={() => setSelected(m.id)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setSelected(m.id);
-              }
-            }}
-            role="button"
-            tabIndex={0}
             data-testid={`mock-radio-group-${m.id}`}
             className={cn(
-              'flex cursor-pointer items-center justify-between p-2 transition-all',
-              isNeo
-                ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
-                : 'border-border bg-surface rounded-md border',
-              isChecked &&
-                (isNeo
-                  ? 'bg-accent/30 font-bold'
-                  : 'border-accent bg-accent/10')
+              'border-border flex w-full items-center justify-between rounded-(--just-radius-md) border-(length:--just-border-width) px-3 py-2 text-sm',
+              checked ? 'bg-accent-muted font-medium' : 'bg-card',
+              focusRing
             )}
           >
             <span className="text-foreground">{m.name}</span>
-            <div
-              className={cn(
-                'flex h-3.5 w-3.5 items-center justify-center rounded-full border',
-                isNeo
-                  ? 'border-[2px] border-black dark:border-white'
-                  : 'border-border',
-                isChecked && 'border-accent'
-              )}
-            >
-              {isChecked ? (
-                <div
-                  className={cn(
-                    'h-1.5 w-1.5 rounded-full',
-                    isNeo ? 'bg-black dark:bg-white' : 'bg-accent'
-                  )}
-                />
+            <span className="bg-card border-border flex h-4 w-4 items-center justify-center rounded-full border-(length:--just-border-width)">
+              {checked ? (
+                <span className="bg-foreground h-2 w-2 rounded-full" />
               ) : null}
-            </div>
-          </div>
+            </span>
+          </button>
         );
       })}
     </div>

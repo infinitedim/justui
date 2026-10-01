@@ -5,14 +5,12 @@ export interface InteractiveTerminalHandle {
 }
 
 export interface InteractiveTerminalProps {
-  /** Language for i18n labels on action chips. */
+  /** Language for i18n labels. */
   lang?: string;
-  /** Called when a command produces a mount event. */
+  /** Called with the public components a command copied into the project. */
   onMount?: (components: string[]) => void;
   /** Called when a command changes the preset. */
   onPresetChange?: (preset: 'default' | 'neobrutalism') => void;
-  /** Called when the stage should be cleared. */
-  onClear?: () => void;
   className?: string;
 }
 

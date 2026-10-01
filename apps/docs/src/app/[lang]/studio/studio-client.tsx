@@ -7,7 +7,7 @@ import {
   useThemeStudio,
 } from '@/lib/theme-studio-context';
 import { ThemeConfigurator } from '@/components/organisms/theme-configurator';
-import { PhoneMockupCanvas } from '@/components/organisms/phone-mockup-canvas';
+import { StudioPreview } from '@/components/organisms/studio-preview';
 import { CodeExportDrawer } from '@/components/organisms/code-export-drawer';
 import { getStudioDictionary } from '@/lib/theme-studio-translations';
 import { Button } from '@/components/atoms/button';
@@ -39,23 +39,13 @@ function StudioContent({ lang }: { lang: string }) {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Studio Header Toolbar */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+      <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <div className="border-border/80 bg-muted/30 mb-2 inline-flex items-center gap-2 rounded-full border px-3 py-1">
-            <span
-              className="bg-accent h-2 w-2 rounded-full"
-              aria-hidden="true"
-            />
-            <span className="text-muted font-mono text-xs font-medium">
-              Live Token Playground
-            </span>
-          </div>
-          <h1 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="text-foreground text-4xl font-medium tracking-tight sm:text-5xl">
             {t.title}
           </h1>
-          <p className="text-secondary mt-1 max-w-2xl text-sm leading-relaxed sm:text-base">
+          <p className="text-secondary mt-4 max-w-xl text-base leading-relaxed">
             {t.subtitle}
           </p>
         </div>
@@ -98,19 +88,19 @@ function StudioContent({ lang }: { lang: string }) {
       </div>
 
       {/* Main Studio Interactive Grid */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
+      <div className="grid gap-8 lg:grid-cols-12 lg:items-start">
         {/* Left Column: Configurator Panel */}
         <div className="order-2 lg:order-1 lg:col-span-6 xl:col-span-5">
           <ThemeConfigurator lang={lang} />
         </div>
 
-        {/* Right Column: Phone Mockup Canvas (sticky on desktop) */}
+        {/* Right column: the resolved palette applied to real components */}
         <div className="order-1 flex justify-center lg:sticky lg:top-20 lg:order-2 lg:col-span-6 xl:col-span-7">
-          <PhoneMockupCanvas lang={lang} />
+          <StudioPreview lang={lang} />
         </div>
 
         {/* Bottom Full Width: Code Export Drawer */}
-        <div className="order-3 col-span-12 mt-4">
+        <div className="order-3 mt-4 lg:col-span-12">
           <CodeExportDrawer lang={lang} />
         </div>
       </div>

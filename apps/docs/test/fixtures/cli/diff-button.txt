@@ -1,0 +1,6 @@
+ℹ Comparing component "button" with registry...
+✓ just_button_theme.dart: Up to date.
+✓ just_button_variants.dart: Up to date.
+✓ just_button_style.dart: Up to date.
+✓ just_button.dart: Up to date.
+✓ just_icon_button.dart: Up to date.

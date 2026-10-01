@@ -1,46 +1,34 @@
 'use client';
 
-import React, { useState } from 'react';
-import { cn } from '@/lib/cn';
+import { useState } from 'react';
 import { Clock } from 'lucide-react';
+import { cn } from '@/lib/cn';
+import { label, surface } from './mock-styles';
 
-export function TimePickerMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
+export function TimePickerMock() {
   const [period, setPeriod] = useState<'AM' | 'PM'>('PM');
-  const [hours] = useState(18);
-  const [minutes] = useState(30);
-  const isNeo = preset === 'neobrutalism';
-
-  const displayHours = hours % 12 === 0 ? 12 : hours % 12;
-  const formattedTime = `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
   return (
-    <div
-      data-testid="mock-time-picker"
-      className={cn(
-        'inline-flex items-center gap-2 p-2 font-mono text-xs select-none',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-md border'
-      )}
-    >
-      <Clock className="text-muted h-4 w-4" />
-      <span className="text-foreground font-bold">{formattedTime}</span>
-      <button
-        type="button"
-        onClick={() => setPeriod(period === 'AM' ? 'PM' : 'AM')}
+    <div className="space-y-1.5">
+      <span className={cn(label, 'block')}>Pickup time</span>
+      <div
+        data-testid="mock-time-picker"
         className={cn(
-          'px-1.5 py-0.5 text-[10px] font-bold transition-all',
-          isNeo
-            ? 'bg-accent border-[2px] border-black text-black dark:border-white rounded-none'
-            : 'bg-surface-muted text-accent rounded'
+          surface,
+          'inline-flex h-9 items-center gap-2 pr-1 pl-3 text-sm'
         )}
       >
-        {period}
-      </button>
+        <Clock className="text-muted h-4 w-4" aria-hidden="true" />
+        <span>06:30</span>
+        <button
+          type="button"
+          onClick={() => setPeriod((p) => (p === 'AM' ? 'PM' : 'AM'))}
+          aria-label={`Switch to ${period === 'AM' ? 'PM' : 'AM'}`}
+          className="bg-fill text-foreground rounded-(--just-radius-sm) px-2 py-0.5 text-xs font-medium"
+        >
+          {period}
+        </button>
+      </div>
     </div>
   );
 }

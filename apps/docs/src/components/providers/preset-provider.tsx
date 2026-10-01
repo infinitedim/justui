@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
@@ -26,6 +27,10 @@ const PresetContext = createContext<PresetContextValue>({
 export function PresetProvider({ children }: { children: React.ReactNode }) {
   const [preset, setPresetState] = useState<JustUIPreset>(DEFAULT_PRESET);
   const [mounted, setMounted] = useState(false);
+  // Set when a child picks a preset before this provider has read storage
+  // (child effects run first), e.g. the studio applying ?preset= from a
+  // share link. That choice must win over the stored one.
+  const chosenRef = useRef(false);
 
   useEffect(() => {
     // Read from localStorage on mount -- avoid SSR mismatch. Storage access
@@ -33,7 +38,10 @@ export function PresetProvider({ children }: { children: React.ReactNode }) {
     // webviews); fall back to the default preset rather than crashing.
     try {
       const stored = localStorage.getItem(STORAGE_KEY) as JustUIPreset | null;
-      if (stored === 'neobrutalism' || stored === 'default') {
+      if (
+        !chosenRef.current &&
+        (stored === 'neobrutalism' || stored === 'default')
+      ) {
         setPresetState(stored);
       }
     } catch {
@@ -60,6 +68,7 @@ export function PresetProvider({ children }: { children: React.ReactNode }) {
   }, [preset, mounted]);
 
   const setPreset = useCallback((next: JustUIPreset) => {
+    chosenRef.current = true;
     setPresetState(next);
   }, []);
 

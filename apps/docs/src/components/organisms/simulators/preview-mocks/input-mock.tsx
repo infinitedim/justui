@@ -1,35 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/cn';
+import { label, surface } from './mock-styles';
 
-export function InputMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [val, setVal] = useState('Flutter developer');
-  const isNeo = preset === 'neobrutalism';
+export function InputMock() {
+  const [value, setValue] = useState('Leave it at the front desk');
 
   return (
     <div className="w-full max-w-60 space-y-1.5">
-      <label
-        htmlFor="mock-user-handle-input"
-        className="text-muted block font-mono text-xs"
-      >
-        User Handle
+      <label htmlFor="mock-delivery-note" className={cn(label, 'block')}>
+        Delivery note
       </label>
       <input
-        id="mock-user-handle-input"
+        id="mock-delivery-note"
         type="text"
-        value={val}
-        onChange={(e) => setVal(e.target.value)}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
         data-testid="mock-input"
         className={cn(
-          'w-full px-3 py-1.5 font-mono text-xs transition-all outline-none',
-          isNeo
-            ? 'bg-surface text-foreground rounded-none border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] focus:shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff] dark:focus:shadow-[4px_4px_0px_0px_#fff]'
-            : 'bg-surface text-foreground focus:border-accent focus:ring-accent rounded-md border focus:ring-1'
+          surface,
+          'h-9 w-full px-3 text-sm outline-none',
+          'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-1'
         )}
       />
     </div>

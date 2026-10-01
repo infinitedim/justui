@@ -1,56 +1,49 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Home, Package, Search, User } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { Home, Search, Bell, User } from 'lucide-react';
+import { raised } from './mock-styles';
 
-export function BottomNavMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [active, setActive] = useState(0);
-  const isNeo = preset === 'neobrutalism';
+const items = [
+  { icon: Home, label: 'Home' },
+  { icon: Search, label: 'Search' },
+  { icon: Package, label: 'Orders' },
+  { icon: User, label: 'Account' },
+];
 
-  const items = [
-    { icon: Home, label: 'Home' },
-    { icon: Search, label: 'Search' },
-    { icon: Bell, label: 'Alerts' },
-    { icon: User, label: 'Profile' },
-  ];
+export function BottomNavMock() {
+  const [active, setActive] = useState(2);
 
   return (
-    <div
+    <nav
+      aria-label="App"
       data-testid="mock-bottom-nav"
       className={cn(
-        'flex w-full max-w-60 items-center justify-around p-2 select-none',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-xl border shadow-sm'
+        raised,
+        'flex w-full max-w-64 items-center justify-around p-1.5'
       )}
     >
       {items.map(({ icon: Icon, label }, idx) => {
-        const isSelected = active === idx;
+        const selected = active === idx;
         return (
           <button
             key={label}
             type="button"
             onClick={() => setActive(idx)}
-            aria-label={label}
+            aria-current={selected ? 'page' : undefined}
             className={cn(
-              'flex flex-col items-center gap-0.5 p-1 transition-all',
-              isSelected
-                ? isNeo
-                  ? 'font-bold text-black dark:text-white'
-                  : 'text-accent'
+              'flex flex-col items-center gap-0.5 rounded-(--just-radius-sm) px-2 py-1',
+              selected
+                ? 'text-foreground font-medium'
                 : 'text-muted hover:text-foreground'
             )}
           >
-            <Icon className="h-4 w-4" />
-            <span className="font-mono text-[9px]">{label}</span>
+            <Icon className="h-4 w-4" aria-hidden="true" />
+            <span className="text-xs">{label}</span>
           </button>
         );
       })}
-    </div>
+    </nav>
   );
 }

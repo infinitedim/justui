@@ -1,60 +1,43 @@
 'use client';
 
-import React from 'react';
 import { cn } from '@/lib/cn';
+import { surface } from './mock-styles';
 
-export function TableMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const isNeo = preset === 'neobrutalism';
+const rows = [
+  { id: '#1042', status: 'Shipped', total: '$48.00' },
+  { id: '#1038', status: 'Delivered', total: '$19.50' },
+  { id: '#1031', status: 'Refunded', total: '$12.00' },
+];
 
-  const rows = [
-    { name: 'button', category: 'primitive', dep: '0' },
-    { name: 'switch', category: 'selection', dep: '0' },
-    { name: 'sidebar', category: 'navigation', dep: '0' },
-  ];
-
+export function TableMock() {
   return (
     <div
       data-testid="mock-table"
-      className={cn(
-        'w-full max-w-60 overflow-hidden font-mono text-[10px] select-none',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-md border'
-      )}
+      className={cn(surface, 'w-full max-w-64 overflow-hidden')}
     >
-      <div
-        className={cn(
-          'bg-surface-muted/60 grid grid-cols-3 p-1.5 font-bold',
-          isNeo
-            ? 'border-b-[2.5px] border-black dark:border-white'
-            : 'border-border border-b'
-        )}
-      >
-        <span>Component</span>
-        <span>Type</span>
-        <span className="text-right">External</span>
-      </div>
-      {rows.map((r, i) => (
-        <div
-          key={r.name}
-          className={cn(
-            'grid grid-cols-3 p-1.5 transition-colors',
-            i < rows.length - 1 &&
-              (isNeo
-                ? 'border-b-[2px] border-black dark:border-white'
-                : 'border-border/50 border-b'),
-            'hover:bg-accent/10'
-          )}
-        >
-          <span className="text-foreground font-medium">{r.name}</span>
-          <span className="text-muted">{r.category}</span>
-          <span className="text-accent text-right font-bold">{r.dep}</span>
-        </div>
-      ))}
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-border text-secondary border-b border-b-(length:--just-border-width) text-left text-xs">
+            <th className="px-3 py-2 font-medium">Order</th>
+            <th className="px-3 py-2 font-medium">Status</th>
+            <th className="px-3 py-2 text-right font-medium">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr
+              key={r.id}
+              className="border-border border-b border-b-(length:--just-border-width) last:border-b-0"
+            >
+              <td className="text-foreground px-3 py-2 font-medium">{r.id}</td>
+              <td className="text-secondary px-3 py-2">{r.status}</td>
+              <td className="text-foreground px-3 py-2 text-right">
+                {r.total}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

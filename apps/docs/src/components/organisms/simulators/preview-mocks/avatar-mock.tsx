@@ -1,52 +1,37 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/cn';
+import { focusRing, hint } from './mock-styles';
 
-export function AvatarMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
+export function AvatarMock() {
   const [online, setOnline] = useState(true);
-  const isNeo = preset === 'neobrutalism';
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div
-        onClick={() => setOnline(!online)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            setOnline(!online);
-          }
-        }}
-        role="button"
-        tabIndex={0}
-        data-testid="mock-avatar"
-        className="relative cursor-pointer select-none"
-      >
-        <div
-          className={cn(
-            'flex h-12 w-12 items-center justify-center font-mono font-bold transition-all',
-            isNeo
-              ? 'bg-accent text-black rounded-full border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-              : 'border-border bg-foreground text-background rounded-full border shadow-sm'
-          )}
-        >
-          JU
-        </div>
+    <button
+      type="button"
+      onClick={() => setOnline((o) => !o)}
+      data-testid="mock-avatar"
+      className={cn('flex items-center gap-3 text-left', focusRing)}
+    >
+      <span className="relative">
+        <span className="bg-fill text-foreground border-border flex h-11 w-11 items-center justify-center rounded-full border-(length:--just-border-width) text-sm font-semibold">
+          AR
+        </span>
         <span
           className={cn(
-            'absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 rounded-full border-2 transition-colors',
-            isNeo ? 'border-black dark:border-white' : 'border-surface',
-            online ? 'bg-emerald-500' : 'bg-zinc-400'
+            'border-card absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 rounded-full border-2',
+            online ? 'bg-success' : 'bg-fill'
           )}
+          aria-hidden="true"
         />
-      </div>
-      <span className="text-muted font-mono text-[11px]">
-        {online ? 'Online (Click to toggle)' : 'Offline (Click to toggle)'}
       </span>
-    </div>
+      <span>
+        <span className="text-foreground block text-sm font-medium">
+          Alex Rivera
+        </span>
+        <span className={hint}>{online ? 'Online' : 'Away'}</span>
+      </span>
+    </button>
   );
 }

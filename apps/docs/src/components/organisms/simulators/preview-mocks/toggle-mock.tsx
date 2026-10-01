@@ -1,58 +1,47 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/cn';
-import { Bold, Italic, Underline } from 'lucide-react';
+import { surface } from './mock-styles';
 
-export function ToggleMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [active, setActive] = useState<string[]>(['bold']);
-  const isNeo = preset === 'neobrutalism';
+const filters = [
+  { id: 'paid', label: 'Paid' },
+  { id: 'shipped', label: 'Shipped' },
+  { id: 'refunded', label: 'Refunded' },
+];
 
-  const toggle = (val: string) => {
+export function ToggleMock() {
+  const [active, setActive] = useState<string[]>(['paid']);
+
+  const toggle = (id: string) =>
     setActive((prev) =>
-      prev.includes(val) ? prev.filter((x) => x !== val) : [...prev, val]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
-  };
-
-  const items = [
-    { id: 'bold', icon: Bold },
-    { id: 'italic', icon: Italic },
-    { id: 'underline', icon: Underline },
-  ];
 
   return (
     <div
       data-testid="mock-toggle"
-      className={cn(
-        'inline-flex gap-1 p-1',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-md border shadow-sm'
-      )}
+      role="group"
+      aria-label="Filter orders"
+      className={cn(surface, 'inline-flex gap-1 p-1')}
     >
-      {items.map(({ id, icon: Icon }) => {
-        const isSelected = active.includes(id);
+      {filters.map(({ id, label }) => {
+        const pressed = active.includes(id);
         return (
           <button
             key={id}
             type="button"
+            aria-pressed={pressed}
             onClick={() => toggle(id)}
             data-testid={`mock-toggle-${id}`}
             className={cn(
-              'flex h-8 w-8 items-center justify-center transition-all select-none',
-              isNeo ? 'rounded-none' : 'rounded-sm',
-              isSelected
-                ? isNeo
-                  ? 'bg-accent border-[2px] border-black font-bold text-black dark:border-white'
-                  : 'bg-accent/20 text-accent-deep dark:text-accent font-medium'
-                : 'text-muted hover:text-foreground'
+              'h-8 rounded-(--just-radius-sm) px-3 text-sm',
+              pressed
+                ? 'bg-accent text-accent-foreground font-medium'
+                : 'text-secondary hover:text-foreground'
             )}
           >
-            <Icon className="h-4 w-4" />
+            {label}
           </button>
         );
       })}

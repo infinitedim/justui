@@ -1,34 +1,24 @@
 'use client';
 
-import { cn } from '@/lib/cn';
 import { CalendarRange } from 'lucide-react';
+import { cn } from '@/lib/cn';
+import { hint, label, surface } from './mock-styles';
 
-export function DateRangePickerMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const isNeo = preset === 'neobrutalism';
-
+export function DateRangePickerMock() {
   return (
-    <div className="w-full max-w-55 font-mono text-xs select-none">
+    <div className="w-full max-w-56 space-y-1.5">
+      <span className={cn(label, 'block')}>Sales report</span>
       <div
         data-testid="mock-date-range-picker"
-        className={cn(
-          'flex cursor-pointer items-center gap-2 p-2 transition-all',
-          isNeo
-            ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-            : 'border-border bg-surface rounded-md border'
-        )}
+        className={cn(surface, 'flex h-9 items-center gap-2 px-3 text-sm')}
       >
-        <CalendarRange className="text-muted h-4 w-4 shrink-0" />
-        <span className="text-foreground text-[11px] font-medium">
-          Sep 01 - Sep 15
-        </span>
+        <CalendarRange
+          className="text-muted h-4 w-4 shrink-0"
+          aria-hidden="true"
+        />
+        <span>1 Oct - 15 Oct 2026</span>
       </div>
-      <p className="text-muted mt-1.5 text-center text-[10px]">
-        14 Days Selected
-      </p>
+      <p className={hint}>15 days, 212 orders</p>
     </div>
   );
 }

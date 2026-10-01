@@ -1,16 +1,16 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { cn } from '@/lib/cn';
-import { CopyButton } from '@/components/molecules/copy-button';
+import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+import { CopyButton } from '@/components/molecules/copy-button';
 
 export interface DartCodeModalProps {
   name: string;
   code: string;
   isOpen: boolean;
   onClose: () => void;
-  preset?: 'default' | 'neobrutalism';
+  title?: string;
+  closeLabel?: string;
 }
 
 export function DartCodeModal({
@@ -18,19 +18,24 @@ export function DartCodeModal({
   code,
   isOpen,
   onClose,
-  preset = 'default',
+  title = 'Example',
+  closeLabel = 'Close',
 }: DartCodeModalProps) {
-  // Lock body scroll when modal is open
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  // Lock body scroll and move focus into the dialog while it is open.
   useEffect(() => {
     if (!isOpen) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    closeRef.current?.focus();
     return () => {
       document.body.style.overflow = prevOverflow;
+      previouslyFocused?.focus?.();
     };
   }, [isOpen]);
 
-  // Handle Escape key
   useEffect(() => {
     if (!isOpen) return;
     function onKeyDown(e: KeyboardEvent) {
@@ -44,61 +49,42 @@ export function DartCodeModal({
 
   if (!isOpen) return null;
 
-  const isNeo = preset === 'neobrutalism';
-
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={`${name} Dart Code`}
+      aria-labelledby={`dart-code-title-${name}`}
       data-testid="dart-code-modal"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
         }
       }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
     >
-      <div
-        className={cn(
-          'bg-surface w-full max-w-lg overflow-hidden p-5 font-mono text-xs transition-all',
-          isNeo
-            ? 'rounded-none border-[2.5px] border-black shadow-[6px_6px_0px_0px_#000] dark:border-white dark:shadow-[6px_6px_0px_0px_#fff]'
-            : 'border-border rounded-xl border shadow-2xl'
-        )}
-      >
-        <div className="border-border mb-3 flex items-center justify-between border-b pb-3">
-          <div className="flex items-center gap-2">
-            <span className="text-foreground text-sm font-bold">{name}</span>
-            <span
-              className={cn(
-                'text-muted bg-surface-muted px-1.5 py-0.5 text-[10px]',
-                isNeo ? 'rounded-full border border-black dark:border-white' : 'rounded'
-              )}
-            >
-              Flutter Dart
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CopyButton text={code} label="Copy Dart code" />
+      <div className="bg-card border-border w-full max-w-lg overflow-hidden rounded-(--just-radius-lg) border-(length:--just-border-width) shadow-lg">
+        <div className="border-border flex items-center justify-between gap-3 border-b border-b-(length:--just-border-width) px-4 py-2.5">
+          <h2
+            id={`dart-code-title-${name}`}
+            className="text-foreground text-sm font-medium"
+          >
+            {name} <span className="text-muted font-normal">{title}</span>
+          </h2>
+          <div className="flex items-center gap-1.5">
+            <CopyButton text={code} label={`Copy ${name} example`} />
             <button
+              ref={closeRef}
               type="button"
               onClick={onClose}
-              aria-label="Close modal"
-              className="text-muted hover:text-foreground p-1 transition-colors"
+              aria-label={closeLabel}
+              className="text-muted hover:text-foreground focus-visible:outline-accent inline-flex h-7 w-7 items-center justify-center rounded-(--just-radius-md) focus-visible:outline-2"
             >
-              <X className="h-4 w-4" />
+              <X className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         </div>
-
-        <pre
-          className={cn(
-            'bg-surface-muted/60 text-foreground overflow-x-auto p-3 leading-relaxed',
-            isNeo ? 'rounded-none border border-black dark:border-white' : 'rounded'
-          )}
-        >
+        <pre className="text-foreground overflow-x-auto p-4 font-mono text-xs leading-relaxed">
           <code>{code}</code>
         </pre>
       </div>

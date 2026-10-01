@@ -30,7 +30,7 @@ export function Code({
   return (
     <code
       className={cn(
-        'bg-card text-accent-deep rounded px-1.5 py-0.5 font-mono text-[13px]',
+        'bg-card text-accent-text rounded-(--just-radius-sm) px-1.5 py-0.5 font-mono text-[13px]',
         'border-border border-(length:--just-border-width)',
         className
       )}

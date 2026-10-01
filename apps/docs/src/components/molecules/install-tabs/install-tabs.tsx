@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/cn';
 import { CopyButton } from '@/components/molecules/copy-button';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
+import { SITE_URL } from '@/lib/site';
 import type { InstallPlatform, InstallTabsProps } from './install-tabs.types';
 
 interface PlatformMeta {
@@ -16,12 +17,12 @@ const PLATFORMS: readonly PlatformMeta[] = [
   {
     id: 'curl',
     defaultLabel: 'macOS / Linux',
-    command: 'curl -fsSL https://justui.vercel.app/install.sh | sh',
+    command: `curl -fsSL ${SITE_URL}/install.sh | sh`,
   },
   {
     id: 'powershell',
     defaultLabel: 'Windows',
-    command: 'irm https://justui.vercel.app/install.ps1 | iex',
+    command: `irm ${SITE_URL}/install.ps1 | iex`,
   },
 ] as const;
 
@@ -62,7 +63,7 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
               aria-controls={`install-tabpanel-${platform.id}`}
               onClick={() => setActivePlatform(platform.id)}
               className={cn(
-                'rounded-full px-3 py-1 font-mono text-xs transition-colors',
+                'rounded-(--just-radius-sm) px-3 py-1 text-xs transition-colors',
                 'border-(length:--just-border-width)',
                 isSelected
                   ? 'border-border bg-accent text-accent-foreground shadow-solid font-medium'

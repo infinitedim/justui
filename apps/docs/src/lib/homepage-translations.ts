@@ -1,3 +1,5 @@
+import type { GeneratedComponentCategory } from './components.generated';
+
 export type HomepageDictionary = {
   tagline: string;
   heroTitle: string;
@@ -18,29 +20,21 @@ export type HomepageDictionary = {
   copied: string;
   togglePreset: string;
   componentsPageTitle: string;
+  /** `{count}` is replaced with the number of components in the registry. */
   componentsPageDescription: string;
-  componentsPageCount: string;
-  terminalTitle: string;
-  terminalBadge: string;
+  terminalRegionLabel: string;
+  terminalNote: string;
+  terminalTry: string;
+  terminalInputLabel: string;
   terminalShortcuts: string;
-  terminalChipInit: string;
-  terminalChipAddButton: string;
-  terminalChipAddMulti: string;
-  terminalChipPreset: string;
   installTabCurl: string;
   installTabPowershell: string;
   installTabCargo: string;
-  stageBadge: string;
-  stageClear: string;
-  stageEmptyTitle: string;
-  stageEmptyDescription: string;
-  stageEmptyCta: string;
-  stageInteractTip: string;
-  stageEmptyState: string;
+  stageRegionLabel: string;
+  stageViewLabel: string;
   stagePreviewTab: string;
-  stageCodeTab: string;
-  presetCleanPrecision: string;
-  presetNeobrutalism: string;
+  stageCopyCode: string;
+  stageEmpty: string;
   wygHeading: string;
   wygDescription: string;
   wygCard1Title: string;
@@ -49,28 +43,24 @@ export type HomepageDictionary = {
   wygCard2Desc: string;
   wygCard3Title: string;
   wygCard3Desc: string;
-  /** Legacy bento keys, kept until the bento components are deleted. */
-  bentoBadge: string;
-  bentoHeading: string;
-  bentoDescription: string;
-  bentoCard1Title: string;
-  bentoCard1Desc: string;
-  bentoCard2Title: string;
-  bentoCard2Desc: string;
-  bentoCard3Title: string;
-  bentoCard3Desc: string;
-  bentoCard4Title: string;
-  bentoCard4Desc: string;
-  bentoCard5Title: string;
-  bentoCard5Desc: string;
   catalogSearchPlaceholder: string;
+  catalogSearchLabel: string;
+  catalogCategoryLabel: string;
   catalogAllCategories: string;
+  catalogCategories: Record<GeneratedComponentCategory, string>;
+  /** `{query}` is replaced with what the visitor typed. */
   catalogNoResults: string;
+  /** `{shown}` and `{total}` are replaced with counts. */
+  catalogShowing: string;
   catalogResetFilters: string;
   catalogCopyCli: string;
   catalogViewCode: string;
   catalogViewDocs: string;
-  catalogPresetLabel: string;
+  catalogCodeTitle: string;
+  catalogCloseCode: string;
+  notFoundTitle: string;
+  notFoundBody: string;
+  notFoundHome: string;
 };
 
 export const homepageTranslations: Readonly<
@@ -94,36 +84,24 @@ export const homepageTranslations: Readonly<
     toggleTheme: 'Toggle theme',
     changeLanguage: 'Switch to Indonesian',
     copyCommand: 'Copy install command',
-    copied: 'Copied!',
+    copied: 'Copied',
     togglePreset: 'Toggle preset',
     componentsPageTitle: 'Components',
     componentsPageDescription:
-      'All components are ready to use. Copy, paste, and customize directly in your Flutter project.',
-    componentsPageCount: 'components available',
-    terminalTitle: 'justui@v0.14.0 ~ /my-flutter-app',
-    terminalBadge: 'CLI Simulator',
-    terminalShortcuts: '[Tab] Autocomplete | [Up/Down] History | [Enter] Run',
-    terminalChipInit: 'justui init',
-    terminalChipAddButton: 'justui add button',
-    terminalChipAddMulti: 'justui add switch card',
-    terminalChipPreset: 'justui preset apply neobrutalism',
+      '{count} components. Each one is a few Dart files the CLI copies into your project; after that the code is yours to change.',
+    terminalRegionLabel: 'CLI simulator',
+    terminalNote: 'simulated, nothing is written to disk',
+    terminalTry: 'try:',
+    terminalInputLabel: 'Type a justui command',
+    terminalShortcuts: 'Tab completes, Up/Down for history',
     installTabCurl: 'macOS / Linux',
     installTabPowershell: 'Windows',
     installTabCargo: 'Cargo',
-    stageBadge: 'Live Flutter Canvas',
-    stageClear: 'Clear',
-    stageEmptyTitle: 'Flutter Canvas Ready',
-    stageEmptyDescription:
-      'Run commands in the terminal to copy components into your project and preview them live here.',
-    stageEmptyCta: 'Run: justui add button',
-    stageInteractTip:
-      'Tip: Click or interact with widgets above to test state animations.',
-    stageEmptyState:
-      'Run a command in the terminal to see components appear here.',
+    stageRegionLabel: 'Component preview',
+    stageViewLabel: 'Preview or source',
     stagePreviewTab: 'Preview',
-    stageCodeTab: 'Flutter Code',
-    presetCleanPrecision: 'Clean Precision',
-    presetNeobrutalism: 'Neobrutalism',
+    stageCopyCode: 'Copy widget.dart',
+    stageEmpty: 'Nothing added yet. Run justui add <name> in the terminal.',
     wygHeading: 'What you actually get',
     wygDescription: 'Three things the CLI does, shown as they work.',
     wygCard1Title: 'The source lands in your repo',
@@ -135,33 +113,30 @@ export const homepageTranslations: Readonly<
     wygCard3Title: 'Text color follows the background',
     wygCard3Desc:
       'Drag a surface lightness. The theme picks whichever text color clears WCAG AA, and shows the measured ratio.',
-    bentoBadge: 'THE ENGINE ROOM',
-    bentoHeading: 'Engineered for Extreme Performance',
-    bentoDescription:
-      'Built with core Flutter principles: zero-allocation paint loops, aspect-based InheritedModel isolation, and WCAG AA contrast compliance.',
-    bentoCard1Title: 'Zero-Dependency Footprint',
-    bentoCard1Desc:
-      'No pub.dev dependency bloat. Pure Flutter primitives directly copied into your workspace.',
-    bentoCard2Title: 'Dynamic Contrast Auditor',
-    bentoCard2Desc:
-      'Real-time WCAG AA ratio calculation with OKLCH gamut awareness and lightness correction.',
-    bentoCard3Title: 'Aspect-Based Rebuilds',
-    bentoCard3Desc:
-      'InheritedModel aspect isolation ensures widgets only rebuild when their targeted properties mutate.',
-    bentoCard4Title: 'Neobrutalism Zero-Drift',
-    bentoCard4Desc:
-      'Offset-compensated inward borders and instant animation timing to prevent visual jitter.',
-    bentoCard5Title: 'Dart 3 Expressive DX',
-    bentoCard5Desc:
-      'Dot-shorthand syntax and concise constructors for clean, idiomatic Flutter code.',
-    catalogSearchPlaceholder: 'Search 33 components... (press "/" to focus)',
+    catalogSearchPlaceholder: 'Search components',
+    catalogSearchLabel: 'Search components',
+    catalogCategoryLabel: 'Category',
     catalogAllCategories: 'All',
-    catalogNoResults: 'No components found matching your query.',
+    catalogCategories: {
+      primitive: 'Primitives',
+      selection: 'Selection',
+      layout: 'Layout',
+      form: 'Forms',
+      navigation: 'Navigation',
+      overlay: 'Overlays',
+      composite: 'Composite',
+    },
+    catalogNoResults: "Nothing matches '{query}'.",
+    catalogShowing: 'Showing {shown} of {total}',
     catalogResetFilters: 'Reset filters',
     catalogCopyCli: 'Copy CLI command',
-    catalogViewCode: 'View Dart code',
-    catalogViewDocs: 'Documentation',
-    catalogPresetLabel: 'Preset',
+    catalogViewCode: 'Code',
+    catalogViewDocs: 'Docs',
+    catalogCodeTitle: 'Example',
+    catalogCloseCode: 'Close',
+    notFoundTitle: 'Page not found.',
+    notFoundBody: 'The link may be old, or the page moved. Try one of these:',
+    notFoundHome: 'Home',
   },
   id: {
     tagline: 'Komponen Flutter siap salin-tempel',
@@ -181,36 +156,25 @@ export const homepageTranslations: Readonly<
     toggleTheme: 'Ubah tema',
     changeLanguage: 'Ganti ke Bahasa Inggris',
     copyCommand: 'Salin perintah instalasi',
-    copied: 'Tersalin!',
+    copied: 'Tersalin',
     togglePreset: 'Ganti preset',
     componentsPageTitle: 'Komponen',
     componentsPageDescription:
-      'Semua komponen siap pakai. Copy, paste, dan sesuaikan langsung di project Flutter kamu.',
-    componentsPageCount: 'komponen tersedia',
-    terminalTitle: 'justui@v0.14.0 ~ /my-flutter-app',
-    terminalBadge: 'Simulator CLI',
-    terminalShortcuts: '[Tab] Autocomplete | [Up/Down] History | [Enter] Run',
-    terminalChipInit: 'justui init',
-    terminalChipAddButton: 'justui add button',
-    terminalChipAddMulti: 'justui add switch card',
-    terminalChipPreset: 'justui preset apply neobrutalism',
+      '{count} komponen. Masing-masing berupa beberapa file Dart yang disalin CLI ke proyekmu; setelah itu kodenya milikmu untuk diubah.',
+    terminalRegionLabel: 'Simulator CLI',
+    terminalNote: 'simulasi, tidak menyentuh disk',
+    terminalTry: 'coba:',
+    terminalInputLabel: 'Ketik perintah justui',
+    terminalShortcuts: 'Tab melengkapi, Atas/Bawah untuk riwayat',
     installTabCurl: 'macOS / Linux',
     installTabPowershell: 'Windows',
     installTabCargo: 'Cargo',
-    stageBadge: 'Kanvas Flutter Live',
-    stageClear: 'Bersihkan',
-    stageEmptyTitle: 'Kanvas Flutter Siap Digunakan',
-    stageEmptyDescription:
-      'Jalankan perintah di terminal untuk menyalin komponen ke proyekmu dan lihat pratinjaunya di sini.',
-    stageEmptyCta: 'Jalankan: justui add button',
-    stageInteractTip:
-      'Tip: Klik atau interaksikan widget di atas untuk mencoba animasinya.',
-    stageEmptyState:
-      'Jalankan perintah di terminal untuk melihat komponen muncul di sini.',
+    stageRegionLabel: 'Pratinjau komponen',
+    stageViewLabel: 'Pratinjau atau source',
     stagePreviewTab: 'Pratinjau',
-    stageCodeTab: 'Kode Flutter',
-    presetCleanPrecision: 'Presisi Bersih',
-    presetNeobrutalism: 'Neobrutalisme',
+    stageCopyCode: 'Salin widget.dart',
+    stageEmpty:
+      'Belum ada yang ditambahkan. Jalankan justui add <nama> di terminal.',
     wygHeading: 'Yang sebenarnya kamu dapat',
     wygDescription: 'Tiga hal yang dilakukan CLI, ditampilkan langsung.',
     wygCard1Title: 'Source masuk ke repo-mu',
@@ -222,36 +186,44 @@ export const homepageTranslations: Readonly<
     wygCard3Title: 'Warna teks mengikuti latar',
     wygCard3Desc:
       'Geser tingkat terang permukaan. Tema memilih warna teks yang lolos WCAG AA dan menampilkan rasio yang diukur.',
-    bentoBadge: 'RUANG MESIN ARSITEKTUR',
-    bentoHeading: 'Direkayasa untuk Performa Ekstrem',
-    bentoDescription:
-      'Dibangun dengan prinsip inti Flutter: paint loop bebas alokasi, isolasi InheritedModel berbasis aspek, dan kepatuhan kontras WCAG AA.',
-    bentoCard1Title: 'Jejak Nol-Dependensi',
-    bentoCard1Desc:
-      'Bebas dari beban dependensi pub.dev pihak ketiga. Primitif murni Flutter disalin langsung ke proyekmu.',
-    bentoCard2Title: 'Auditor Kontras Dinamis',
-    bentoCard2Desc:
-      'Kalkulasi rasio WCAG AA seketika dengan kesadaran gamut OKLCH dan koreksi lightness otomatis.',
-    bentoCard3Title: 'Rebuild Berbasis Aspek',
-    bentoCard3Desc:
-      'Isolasi aspek InheritedModel memastikan widget hanya render ulang saat properti targetnya berubah.',
-    bentoCard4Title: 'Fisika Zero-Drift Neobrutalisme',
-    bentoCard4Desc:
-      'Kompensasi border ke dalam dan timing animasi instan untuk mencegah jitter visual saat ditekan.',
-    bentoCard5Title: 'Pengalaman Pengembang Dart 3',
-    bentoCard5Desc:
-      'Sintaksis dot-shorthand dan konstruktor ringkas untuk kode Flutter yang bersih dan idiomatis.',
-    catalogSearchPlaceholder: 'Cari 33 komponen... (tekan "/" untuk fokus)',
+    catalogSearchPlaceholder: 'Cari komponen',
+    catalogSearchLabel: 'Cari komponen',
+    catalogCategoryLabel: 'Kategori',
     catalogAllCategories: 'Semua',
-    catalogNoResults: 'Tidak ada komponen yang cocok dengan pencarian Anda.',
+    catalogCategories: {
+      primitive: 'Primitif',
+      selection: 'Pilihan',
+      layout: 'Tata letak',
+      form: 'Formulir',
+      navigation: 'Navigasi',
+      overlay: 'Overlay',
+      composite: 'Komposit',
+    },
+    catalogNoResults: "Tidak ada yang cocok dengan '{query}'.",
+    catalogShowing: 'Menampilkan {shown} dari {total}',
     catalogResetFilters: 'Atur ulang filter',
     catalogCopyCli: 'Salin perintah CLI',
-    catalogViewCode: 'Lihat kode Dart',
-    catalogViewDocs: 'Dokumentasi',
-    catalogPresetLabel: 'Preset',
+    catalogViewCode: 'Kode',
+    catalogViewDocs: 'Docs',
+    catalogCodeTitle: 'Contoh',
+    catalogCloseCode: 'Tutup',
+    notFoundTitle: 'Halaman tidak ditemukan.',
+    notFoundBody:
+      'Mungkin tautannya sudah lama, atau halamannya pindah. Coba salah satu ini:',
+    notFoundHome: 'Beranda',
   },
 } as const;
 
 export function getHomepageDictionary(lang: string): HomepageDictionary {
   return homepageTranslations[lang] ?? homepageTranslations.en;
+}
+
+/** Replaces `{name}` placeholders in a dictionary string. */
+export function formatMessage(
+  template: string,
+  values: Record<string, string | number>
+): string {
+  return template.replace(/\{(\w+)\}/g, (whole, key: string) =>
+    key in values ? String(values[key]) : whole
+  );
 }

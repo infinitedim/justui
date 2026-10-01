@@ -20,6 +20,8 @@ import {
   deserializeStudioState,
   serializeStudioState,
 } from './theme/url-serializer';
+import { SITE_URL } from './site';
+import { usePreset } from '@/components/providers';
 
 export interface ThemeStudioState {
   seedColor: string;
@@ -62,7 +64,24 @@ export function ThemeStudioProvider({
 }: ThemeStudioProviderProps) {
   const [seedColor, setSeedColorState] = useState<string>(initialSeedColor);
   const [isDark, setIsDarkState] = useState<boolean>(initialIsDark);
-  const [preset, setPresetState] = useState<JustUIPreset>(initialPreset);
+  // The preset is site-wide state (navbar toggle); the studio reads and
+  // writes the same value instead of keeping a copy that can disagree.
+  const { preset: sitePreset, setPreset: setPresetState } = usePreset();
+  // A preset from the share link (server prop or ?preset=) is shown from the
+  // first render and handed to the site-wide state once that has caught up.
+  const [pendingPreset, setPendingPreset] = useState<JustUIPreset | null>(
+    initialPreset !== DEFAULT_PRESET ? initialPreset : null
+  );
+  const preset = pendingPreset ?? sitePreset;
+
+  useEffect(() => {
+    if (pendingPreset === null) return;
+    if (sitePreset === pendingPreset) {
+      setPendingPreset(null);
+    } else {
+      setPresetState(pendingPreset);
+    }
+  }, [pendingPreset, sitePreset, setPresetState]);
   const [colorSpace, setColorSpaceState] =
     useState<ColorSpace>(initialColorSpace);
 
@@ -74,7 +93,7 @@ export function ThemeStudioProvider({
     const parsed = deserializeStudioState(window.location.search);
     if (parsed.seedColor) setSeedColorState(parsed.seedColor);
     if (parsed.isDark !== undefined) setIsDarkState(parsed.isDark);
-    if (parsed.preset) setPresetState(parsed.preset);
+    if (parsed.preset) setPendingPreset(parsed.preset);
     if (parsed.colorSpace) setColorSpaceState(parsed.colorSpace);
     isInitialized.current = true;
   }, []);
@@ -106,9 +125,13 @@ export function ThemeStudioProvider({
     setIsDarkState(dark);
   }, []);
 
-  const setPreset = useCallback((nextPreset: JustUIPreset) => {
-    setPresetState(nextPreset);
-  }, []);
+  const setPreset = useCallback(
+    (nextPreset: JustUIPreset) => {
+      setPendingPreset(null);
+      setPresetState(nextPreset);
+    },
+    [setPresetState]
+  );
 
   const setColorSpace = useCallback((cs: ColorSpace) => {
     setColorSpaceState(cs);
@@ -117,26 +140,26 @@ export function ThemeStudioProvider({
   const reset = useCallback(() => {
     setSeedColorState(DEFAULT_SEED_COLOR);
     setIsDarkState(DEFAULT_IS_DARK);
+    setPendingPreset(null);
     setPresetState(DEFAULT_PRESET);
     setColorSpaceState(DEFAULT_COLOR_SPACE);
-  }, []);
+  }, [setPresetState]);
 
   const resolvedTokens = useMemo(() => {
     return resolveTokens(seedColor, isDark, preset, colorSpace);
   }, [seedColor, isDark, preset, colorSpace]);
 
-  const shareUrl = useMemo(() => {
-    const baseUrl =
-      typeof window !== 'undefined'
-        ? (window.location.href.split('?')[0] ?? window.location.href)
-        : 'https://justui.dev/en/studio';
-    return buildShareUrl(baseUrl, {
-      seedColor,
-      isDark,
-      preset,
-      colorSpace,
-    });
-  }, [seedColor, isDark, preset, colorSpace]);
+  // Server and first client render agree on the canonical site URL; the
+  // real page URL (preview deployments, localhost) replaces it after mount.
+  const [pageUrl, setPageUrl] = useState(`${SITE_URL}/en/studio`);
+  useEffect(() => {
+    setPageUrl(window.location.href.split('?')[0] ?? window.location.href);
+  }, []);
+
+  const shareUrl = useMemo(
+    () => buildShareUrl(pageUrl, { seedColor, isDark, preset, colorSpace }),
+    [pageUrl, seedColor, isDark, preset, colorSpace]
+  );
 
   const contextValue = useMemo<ThemeStudioContextValue>(() => {
     return {

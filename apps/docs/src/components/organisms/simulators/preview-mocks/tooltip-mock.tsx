@@ -1,49 +1,43 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Info } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { HelpCircle } from 'lucide-react';
+import { focusRing, raised } from './mock-styles';
 
-export function TooltipMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [hover, setHover] = useState(false);
-  const isNeo = preset === 'neobrutalism';
+export function TooltipMock() {
+  const [visible, setVisible] = useState(false);
 
   return (
-    <div className="relative flex flex-col items-center justify-center">
-      {hover ? (
-        <div
-          data-testid="mock-tooltip-bubble"
-          className={cn(
-            'absolute -top-9 px-2.5 py-1 font-mono text-[10px] whitespace-nowrap transition-all',
-            isNeo
-              ? 'bg-accent rounded-none border-[2px] border-black font-bold text-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-              : 'bg-foreground text-background rounded shadow-md'
-          )}
-        >
-          WCAG AA 4.5:1 compliant
-        </div>
-      ) : null}
-
+    <div className="relative flex items-center gap-1.5 text-sm">
+      <span className="text-secondary">Shipping $4.00</span>
       <button
         type="button"
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        onClick={() => setHover(!hover)}
-        aria-label="Information"
+        onMouseEnter={() => setVisible(true)}
+        onMouseLeave={() => setVisible(false)}
+        onFocus={() => setVisible(true)}
+        onBlur={() => setVisible(false)}
+        onClick={() => setVisible((v) => !v)}
+        aria-label="About shipping"
+        aria-describedby={visible ? 'mock-tooltip' : undefined}
         data-testid="mock-tooltip-trigger"
-        className={cn(
-          'p-2 transition-all select-none',
-          isNeo
-            ? 'bg-surface text-foreground rounded-full border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
-            : 'border-border bg-surface hover:border-accent rounded-full border'
-        )}
+        className={cn('text-secondary hover:text-foreground', focusRing)}
       >
-        <HelpCircle className="h-4 w-4" />
+        <Info className="h-4 w-4" aria-hidden="true" />
       </button>
+      {visible ? (
+        <div
+          id="mock-tooltip"
+          role="tooltip"
+          data-testid="mock-tooltip-bubble"
+          className={cn(
+            raised,
+            'absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1 text-xs whitespace-nowrap'
+          )}
+        >
+          Free on orders over $50
+        </div>
+      ) : null}
     </div>
   );
 }

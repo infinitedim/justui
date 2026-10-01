@@ -1,52 +1,33 @@
 'use client';
 
-import React, { useState } from 'react';
-import { cn } from '@/lib/cn';
+import { useState } from 'react';
 import { Check } from 'lucide-react';
+import { cn } from '@/lib/cn';
+import { focusRing } from './mock-styles';
 
-export function CheckboxMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
+export function CheckboxMock() {
   const [checked, setChecked] = useState(true);
-  const isNeo = preset === 'neobrutalism';
 
   return (
-    <div
-      onClick={() => setChecked(!checked)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          setChecked(!checked);
-        }
-      }}
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={checked}
+      onClick={() => setChecked((c) => !c)}
       data-testid="mock-checkbox"
-      className="flex cursor-pointer items-center gap-2.5 select-none"
+      className={cn('flex items-center gap-2.5 text-left', focusRing)}
     >
-      <div
+      <span
         className={cn(
-          'flex h-5 w-5 items-center justify-center transition-all',
-          isNeo
-            ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
-            : 'border-border bg-surface rounded border',
-          checked && (isNeo ? 'bg-accent' : 'border-accent bg-accent')
+          'border-border flex h-5 w-5 items-center justify-center rounded-(--just-radius-sm) border-(length:--just-border-width)',
+          checked ? 'bg-accent text-accent-foreground' : 'bg-card'
         )}
       >
         {checked ? (
-          <Check
-            className={cn(
-              'h-3.5 w-3.5',
-              isNeo ? 'font-bold text-black' : 'text-foreground'
-            )}
-          />
+          <Check className="h-3.5 w-3.5 stroke-3" aria-hidden="true" />
         ) : null}
-      </div>
-      <span className="text-foreground font-mono text-xs font-medium">
-        Enable Telemetry
       </span>
-    </div>
+      <span className="text-foreground text-sm">Email me when it ships</span>
+    </button>
   );
 }

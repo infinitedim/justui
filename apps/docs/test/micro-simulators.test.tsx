@@ -12,7 +12,7 @@ describe('Micro-Simulator System (33 Mocks)', () => {
     }
   });
 
-  it('renders every single mock in default and neobrutalism presets without error', () => {
+  it('renders every mock in both presets, applying the preset as a token scope', () => {
     for (const comp of components) {
       const { container: defContainer, unmount: defUnmount } = render(
         <MicroSimulator slug={comp.slug} preset="default" />
@@ -25,58 +25,75 @@ describe('Micro-Simulator System (33 Mocks)', () => {
       const { container: neoContainer, unmount: neoUnmount } = render(
         <MicroSimulator slug={comp.slug} preset="neobrutalism" />
       );
-      expect(
-        neoContainer.querySelector('[data-testid="simulator-harness"]')
-      ).toHaveAttribute('data-preset', 'neobrutalism');
+      const neoHarness = neoContainer.querySelector(
+        '[data-testid="simulator-harness"]'
+      );
+      expect(neoHarness).toHaveAttribute('data-preset', 'neobrutalism');
+      expect(neoHarness).toHaveClass('theme-neobrutalism');
       neoUnmount();
+    }
+  });
+
+  it('keeps preset-specific styling out of the mocks (tokens only)', () => {
+    for (const comp of components) {
+      const { container, unmount } = render(
+        <MicroSimulator slug={comp.slug} preset="neobrutalism" />
+      );
+      const html = container.innerHTML;
+      expect(html).not.toMatch(/border-black|#000\]|shadow-\[\d/);
+      expect(html).not.toMatch(/text-\[(9|10|11)px\]/);
+      expect(container.querySelector('.animate-pulse')).toBeNull();
+      unmount();
     }
   });
 
   it('verifies ButtonMock counter interaction', () => {
     render(<MicroSimulator slug="button" preset="default" />);
     const btn = screen.getByTestId('mock-button');
-    expect(btn).toHaveTextContent('Click Me');
+    expect(btn).toHaveTextContent('Add to cart');
 
     fireEvent.click(btn);
-    expect(btn).toHaveTextContent('Click Me (1)');
+    expect(btn).toHaveTextContent('In cart (1)');
     fireEvent.click(btn);
-    expect(btn).toHaveTextContent('Click Me (2)');
+    expect(btn).toHaveTextContent('In cart (2)');
   });
 
   it('verifies SwitchMock toggle interaction', () => {
     render(<MicroSimulator slug="switch" preset="default" />);
     const sw = screen.getByTestId('mock-switch');
-    expect(sw).toHaveTextContent('Active');
+    expect(sw).toHaveAttribute('aria-checked', 'true');
 
     fireEvent.click(sw);
-    expect(sw).toHaveTextContent('Inactive');
+    expect(sw).toHaveAttribute('aria-checked', 'false');
     fireEvent.click(sw);
-    expect(sw).toHaveTextContent('Active');
+    expect(sw).toHaveAttribute('aria-checked', 'true');
   });
 
   it('verifies CheckboxMock toggle interaction', () => {
     render(<MicroSimulator slug="checkbox" preset="default" />);
     const cb = screen.getByTestId('mock-checkbox');
-    expect(cb.querySelector('svg')).toBeInTheDocument(); // Checked has check icon
+    expect(cb).toHaveAttribute('aria-checked', 'true');
+    expect(cb.querySelector('svg')).toBeInTheDocument();
 
     fireEvent.click(cb);
-    expect(cb.querySelector('svg')).not.toBeInTheDocument(); // Unchecked
+    expect(cb).toHaveAttribute('aria-checked', 'false');
+    expect(cb.querySelector('svg')).not.toBeInTheDocument();
   });
 
   it('verifies AccordionMock expand and collapse interaction', () => {
     render(<MicroSimulator slug="accordion" preset="default" />);
     const acc = screen.getByTestId('mock-accordion');
     expect(
-      screen.queryByText(/All widgets are copied/i)
+      screen.queryByText(/until the order is packed/i)
     ).not.toBeInTheDocument();
 
     const trigger = acc.querySelector('button');
     fireEvent.click(trigger!);
-    expect(screen.getByText(/All widgets are copied/i)).toBeInTheDocument();
+    expect(screen.getByText(/until the order is packed/i)).toBeInTheDocument();
 
     fireEvent.click(trigger!);
     expect(
-      screen.queryByText(/All widgets are copied/i)
+      screen.queryByText(/until the order is packed/i)
     ).not.toBeInTheDocument();
   });
 
@@ -97,7 +114,7 @@ describe('Micro-Simulator System (33 Mocks)', () => {
     fireEvent.click(trigger);
     expect(screen.getByTestId('mock-dialog-content')).toBeInTheDocument();
 
-    const confirmBtn = screen.getByRole('button', { name: 'Confirm' });
+    const confirmBtn = screen.getByRole('button', { name: 'Remove' });
     fireEvent.click(confirmBtn);
     expect(screen.queryByTestId('mock-dialog-content')).not.toBeInTheDocument();
   });
@@ -110,7 +127,7 @@ describe('Micro-Simulator System (33 Mocks)', () => {
     fireEvent.click(trigger);
     expect(screen.getByTestId('mock-sheet-panel')).toBeInTheDocument();
 
-    const dismissBtn = screen.getByRole('button', { name: 'Dismiss' });
+    const dismissBtn = screen.getByRole('button', { name: 'Apply' });
     fireEvent.click(dismissBtn);
     expect(screen.queryByTestId('mock-sheet-panel')).not.toBeInTheDocument();
   });

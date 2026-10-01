@@ -1,52 +1,35 @@
 'use client';
 
-import React, { useState } from 'react';
-import { cn } from '@/lib/cn';
+import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/cn';
+import { raised } from './mock-styles';
 
-export function AccordionMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
+export function AccordionMock() {
   const [open, setOpen] = useState(false);
-  const isNeo = preset === 'neobrutalism';
 
   return (
     <div
       data-testid="mock-accordion"
-      className={cn(
-        'w-full max-w-60 overflow-hidden font-mono text-xs transition-all',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-md border shadow-sm'
-      )}
+      className={cn(raised, 'w-full max-w-60 overflow-hidden')}
     >
       <button
         type="button"
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between p-2.5 text-left font-medium select-none"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm font-medium"
       >
-        <span>Zero-Dependency?</span>
+        <span>Can I change the address?</span>
         <ChevronDown
-          className={cn(
-            'h-4 w-4 transition-transform duration-200',
-            open && 'rotate-180'
-          )}
+          className={cn('h-4 w-4 shrink-0', open && 'rotate-180')}
+          aria-hidden="true"
         />
       </button>
-
       {open ? (
-        <div
-          className={cn(
-            'p-2.5 text-[11px] leading-relaxed',
-            isNeo
-              ? 'border-t-[2.5px] border-black text-foreground dark:border-white'
-              : 'border-border text-muted bg-surface-muted/50 border-t'
-          )}
-        >
-          Yes. All widgets are copied directly into your workspace.
-        </div>
+        <p className="text-secondary border-border border-t border-t-(length:--just-border-width) px-3 py-2.5 text-sm leading-relaxed">
+          Yes, until the order is packed. Open the order and choose Edit
+          address.
+        </p>
       ) : null}
     </div>
   );

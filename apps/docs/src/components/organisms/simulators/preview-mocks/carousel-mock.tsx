@@ -1,58 +1,57 @@
 'use client';
 
-import React, { useState } from 'react';
-import { cn } from '@/lib/cn';
+import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/cn';
+import { focusRing, raised } from './mock-styles';
 
-export function CarouselMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
+const products = [
+  { name: 'Ceramic mug', price: '$12.00' },
+  { name: 'Pour-over kettle', price: '$14.00' },
+  { name: 'Paper filters', price: '$6.00' },
+];
+
+export function CarouselMock() {
   const [index, setIndex] = useState(0);
-  const isNeo = preset === 'neobrutalism';
-
-  const slides = ['Slide A', 'Slide B', 'Slide C'];
-
-  const prev = () => setIndex((i) => (i === 0 ? slides.length - 1 : i - 1));
-  const next = () => setIndex((i) => (i === slides.length - 1 ? 0 : i + 1));
+  const product = products[index] ?? products[0];
+  const step = (delta: number) =>
+    setIndex((i) => (i + delta + products.length) % products.length);
 
   return (
     <div
       data-testid="mock-carousel"
-      className={cn(
-        'w-full max-w-55 p-3 text-center font-mono text-xs transition-all select-none',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-lg border shadow-sm'
-      )}
+      aria-roledescription="carousel"
+      className={cn(raised, 'w-full max-w-56 p-3')}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <button
           type="button"
-          onClick={prev}
-          aria-label="Previous"
-          className="hover:text-accent p-1"
+          onClick={() => step(-1)}
+          aria-label="Previous product"
+          className={cn('text-secondary hover:text-foreground p-1', focusRing)}
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
         </button>
-        <span className="text-foreground font-bold">{slides[index]}</span>
+        <div className="text-center" aria-live="polite">
+          <div className="text-sm font-medium">{product?.name}</div>
+          <div className="text-secondary text-xs">{product?.price}</div>
+        </div>
         <button
           type="button"
-          onClick={next}
-          aria-label="Next"
-          className="hover:text-accent p-1"
+          onClick={() => step(1)}
+          aria-label="Next product"
+          className={cn('text-secondary hover:text-foreground p-1', focusRing)}
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
-      <div className="mt-2.5 flex justify-center gap-1.5">
-        {slides.map((s, idx) => (
-          <div
-            key={s}
+      <div className="mt-3 flex justify-center gap-1.5" aria-hidden="true">
+        {products.map((p, i) => (
+          <span
+            key={p.name}
             className={cn(
-              'h-1.5 rounded-full transition-all',
-              idx === index ? 'bg-accent w-4' : 'bg-border w-1.5'
+              'h-1.5 rounded-full',
+              i === index ? 'bg-foreground w-4' : 'bg-fill w-1.5'
             )}
           />
         ))}

@@ -29,7 +29,7 @@ export function ViewportSwitch({
       role="radiogroup"
       aria-label="Viewport size"
       className={cn(
-        'inline-flex items-center rounded-full p-0.5',
+        'inline-flex items-center rounded-(--just-radius-md) p-0.5',
         'border-border bg-card border-(length:--just-border-width)',
         className
       )}
@@ -43,7 +43,7 @@ export function ViewportSwitch({
           aria-label={label}
           onClick={() => onChange(id)}
           className={cn(
-            'inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors',
+            'inline-flex h-7 w-7 items-center justify-center rounded-(--just-radius-sm) transition-colors',
             value === id
               ? 'bg-accent text-accent-foreground shadow-solid'
               : 'text-muted hover:text-foreground'

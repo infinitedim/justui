@@ -7,18 +7,12 @@ import { LanguageSwitcher } from '@/components/molecules/language-switcher';
 import { ThemeSwitcher } from '@/components/molecules/theme-switcher';
 import { GitHubPill } from '@/components/molecules/github-pill';
 import { CategoryFilterPill } from '@/components/molecules/category-filter-pill';
-import { ColorSwatchItem } from '@/components/molecules/color-swatch-item';
 import { TerminalLine } from '@/components/molecules/terminal-line';
 import { TerminalPrompt } from '@/components/molecules/terminal-prompt';
 import { ViewportSwitch } from '@/components/molecules/viewport-switch';
-import { FormulaMathBlock } from '@/components/molecules/formula-math-block';
-import { CodeBlockHeader } from '@/components/molecules/code-block-header';
 import { VariantPicker } from '@/components/molecules/variant-picker';
 import { StateToggle } from '@/components/molecules/state-toggle';
-import { StatCounter } from '@/components/molecules/stat-counter';
 import { LightnessSlider } from '@/components/molecules/lightness-slider';
-import { SearchResultItem } from '@/components/molecules/search-result-item';
-import { localizedHref } from '@/lib/i18n';
 import { PresetProvider } from '@/components/providers';
 
 describe('Molecules Components', () => {
@@ -98,20 +92,11 @@ describe('Molecules Components', () => {
   });
 
   describe('CategoryFilterPill', () => {
-    it('renders label and count badge', () => {
-      render(<CategoryFilterPill label="Buttons" count={5} active />);
-      expect(screen.getByText('Buttons')).toBeInTheDocument();
-      expect(screen.getByText('5')).toBeInTheDocument();
-    });
-  });
-
-  describe('ColorSwatchItem', () => {
-    it('renders label and value', () => {
-      render(
-        <ColorSwatchItem color="#ffffff" label="Background" value="#fff" />
-      );
-      expect(screen.getByText('Background')).toBeInTheDocument();
-      expect(screen.getByText('#fff')).toBeInTheDocument();
+    it('renders a pressed label with no count badge', () => {
+      render(<CategoryFilterPill label="Layout" active />);
+      expect(
+        screen.getByRole('button', { name: 'Layout', pressed: true })
+      ).toBeInTheDocument();
     });
   });
 
@@ -125,11 +110,22 @@ describe('Molecules Components', () => {
       expect(screen.getByText('Task completed')).toBeInTheDocument();
       expect(screen.getByText('12:00')).toBeInTheDocument();
     });
+
+    it('colors only the leading CLI glyph and keeps the words in foreground', () => {
+      render(
+        <TerminalLine kind="success">
+          {'\u2713 Component "card" added successfully.'}
+        </TerminalLine>
+      );
+      const glyph = screen.getByText('\u2713');
+      expect(glyph).toHaveClass('text-success');
+      expect(glyph.parentElement?.parentElement).toHaveClass('text-foreground');
+    });
   });
 
   describe('TerminalPrompt', () => {
     it('renders prefix and command', () => {
-      render(<TerminalPrompt prefix=">" command="justui add button" cursor />);
+      render(<TerminalPrompt prefix=">" command="justui add button" />);
       expect(screen.getByText('>')).toBeInTheDocument();
       expect(screen.getByText('justui add button')).toBeInTheDocument();
     });
@@ -144,29 +140,6 @@ describe('Molecules Components', () => {
       });
       fireEvent.click(tabletRadio);
       expect(onChange).toHaveBeenCalledWith('tablet');
-    });
-  });
-
-  describe('FormulaMathBlock', () => {
-    it('renders formula code and caption', () => {
-      render(
-        <FormulaMathBlock formula="V(G) <= 3" caption="Cyclomatic Complexity" />
-      );
-      expect(screen.getByText('V(G) <= 3')).toBeInTheDocument();
-      expect(screen.getByText('Cyclomatic Complexity')).toBeInTheDocument();
-    });
-  });
-
-  describe('CodeBlockHeader', () => {
-    it('renders title and actions slot', () => {
-      render(
-        <CodeBlockHeader
-          title="button.dart"
-          actions={<button type="button">Copy</button>}
-        />
-      );
-      expect(screen.getByText('button.dart')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Copy' })).toBeInTheDocument();
     });
   });
 
@@ -201,15 +174,6 @@ describe('Molecules Components', () => {
     });
   });
 
-  describe('StatCounter', () => {
-    it('renders value, unit, and label', () => {
-      render(<StatCounter value="120" unit="FPS" label="Render Target" />);
-      expect(screen.getByText('120')).toBeInTheDocument();
-      expect(screen.getByText('FPS')).toBeInTheDocument();
-      expect(screen.getByText('Render Target')).toBeInTheDocument();
-    });
-  });
-
   describe('LightnessSlider', () => {
     it('renders slider and handles change', () => {
       const onChange = vi.fn();
@@ -219,20 +183,6 @@ describe('Molecules Components', () => {
       const slider = screen.getByRole('slider', { name: 'Lightness' });
       fireEvent.change(slider, { target: { value: '70' } });
       expect(onChange).toHaveBeenCalledWith(70);
-    });
-  });
-
-  describe('SearchResultItem', () => {
-    it('renders item with label, type and href', () => {
-      render(
-        <SearchResultItem
-          label="Button"
-          type="Component"
-          href={localizedHref('en', '/docs/components/button')}
-        />
-      );
-      expect(screen.getByText('Button')).toBeInTheDocument();
-      expect(screen.getByText('Component')).toBeInTheDocument();
     });
   });
 });
