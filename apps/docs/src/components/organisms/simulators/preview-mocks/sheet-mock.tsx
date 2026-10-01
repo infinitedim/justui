@@ -1,59 +1,88 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import { Phone, X } from 'lucide-react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import {
+  focusRing,
+  neutralControl,
+  surface,
+  tokenBorder,
+} from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
-import { PanelRightClose, PanelRightOpen } from 'lucide-react';
 
-export function SheetMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
+export function SheetMock() {
+  const { crm } = useCatalogI18n();
   const [open, setOpen] = useState(false);
-  const isNeo = preset === 'neobrutalism';
+  const titleId = useId();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
+
+  useEffect(() => {
+    if (open) closeRef.current?.focus();
+    else if (wasOpen.current) triggerRef.current?.focus();
+    wasOpen.current = open;
+  }, [open]);
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        data-testid="mock-sheet-trigger"
-        className={cn(
-          'flex items-center gap-1.5 px-3 py-1.5 font-mono text-xs transition-all select-none',
-          isNeo
-            ? 'bg-surface text-foreground rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-            : 'border-border bg-surface text-foreground hover:border-accent rounded-md border'
-        )}
-      >
-        {open ? (
-          <PanelRightClose className="h-3.5 w-3.5" />
-        ) : (
-          <PanelRightOpen className="h-3.5 w-3.5" />
-        )}
-        <span>{open ? 'Close Sheet' : 'Open Sheet'}</span>
-      </button>
+    <div
+      className={cn(surface, 'relative h-36 w-full max-w-64 overflow-hidden')}
+    >
+      <div className="flex items-center justify-between gap-2 p-3">
+        <div className="min-w-0">
+          <p className="text-foreground truncate text-sm font-medium">
+            {crm.sheet.title}
+          </p>
+          <p className="text-muted truncate text-xs">Warung Nusantara</p>
+        </div>
+        <button
+          ref={triggerRef}
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-expanded={open}
+          data-testid="mock-sheet-trigger"
+          className={cn(neutralControl, 'h-8 shrink-0 px-3 text-xs')}
+        >
+          {crm.sheet.trigger}
+        </button>
+      </div>
 
       {open ? (
         <div
+          role="dialog"
+          aria-labelledby={titleId}
           data-testid="mock-sheet-panel"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setOpen(false);
+          }}
           className={cn(
-            'bg-surface absolute top-0 right-0 bottom-0 z-20 flex w-36 flex-col justify-between p-2.5 font-mono text-[11px] transition-all',
-            isNeo
-              ? 'border-l-[2.5px] border-black shadow-[-4px_0px_0px_0px_#000] dark:border-white dark:shadow-[-4px_0px_0px_0px_#fff]'
-              : 'border-border border-l shadow-md'
+            'bg-elevated absolute inset-y-0 right-0 flex w-3/4 flex-col gap-1.5 border-l-(length:--just-border-width) p-3 shadow-md',
+            tokenBorder
           )}
         >
-          <div>
-            <div className="text-foreground font-bold">Drawer Panel</div>
-            <p className="text-muted mt-1">Contextual options</p>
+          <div className="flex items-center justify-between">
+            <h4 id={titleId} className="text-foreground text-sm font-semibold">
+              {crm.sheet.title}
+            </h4>
+            <button
+              ref={closeRef}
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label={crm.sheet.dismiss}
+              className={cn(
+                focusRing,
+                'text-muted hover:text-foreground rounded-(--just-radius-sm) p-0.5'
+              )}
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="text-accent text-left hover:underline"
-          >
-            Dismiss
-          </button>
+          <p className="text-foreground flex items-center gap-1.5 text-sm tabular-nums">
+            <Phone className="text-muted h-3.5 w-3.5" aria-hidden="true" />
+            {crm.sheet.phone}
+          </p>
+          <p className="text-muted text-xs">{crm.sheet.lastContact}</p>
         </div>
       ) : null}
     </div>

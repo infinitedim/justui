@@ -1,34 +1,32 @@
 'use client';
 
-import React from 'react';
-import { cn } from '@/lib/cn';
+import { useId } from 'react';
 import { Calendar } from 'lucide-react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { surface } from '@/lib/ui-classes';
+import { cn } from '@/lib/cn';
 
-export function DatePickerMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const date = '2026-09-13';
-  const isNeo = preset === 'neobrutalism';
+export function DatePickerMock() {
+  const { crm } = useCatalogI18n();
+  const labelId = useId();
 
   return (
-    <div className="w-full max-w-50 font-mono text-xs select-none">
+    <div className="w-full max-w-56 space-y-1.5">
+      <p id={labelId} className="text-foreground text-xs font-medium">
+        {crm.datePicker.label}
+      </p>
       <div
+        role="group"
+        aria-labelledby={labelId}
         data-testid="mock-date-picker"
         className={cn(
-          'flex cursor-pointer items-center justify-between p-2 transition-all',
-          isNeo
-            ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-            : 'border-border bg-surface rounded-md border'
+          surface,
+          'text-foreground flex h-9 items-center gap-2 px-3 text-sm'
         )}
       >
-        <div className="flex items-center gap-2">
-          <Calendar className="text-muted h-4 w-4" />
-          <span className="text-foreground font-medium">{date}</span>
-        </div>
+        <Calendar className="text-muted h-4 w-4" aria-hidden="true" />
+        <time dateTime="2026-09-17">{crm.datePicker.value}</time>
       </div>
-      <p className="text-muted mt-1.5 text-center text-[10px]">ISO-8601 UTC</p>
     </div>
   );
 }

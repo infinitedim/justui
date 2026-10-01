@@ -1,4 +1,6 @@
-export type JustUIPreset = 'default' | 'neobrutalism';
+import type { JustUIPreset } from '../presets';
+
+export type { JustUIPreset };
 export type ColorSpace = 'hsl' | 'oklch' | 'hsluv';
 
 export interface ResolvedTokens {
@@ -8,6 +10,8 @@ export interface ResolvedTokens {
   textSecondary: string;
   accent: string;
   accentForeground: string;
+  /** Accent used as text on `card`; always >= 4.5:1 (WCAG AA body text). */
+  accentText: string;
   border: string;
   borderWidth: string;
   shadowSolid: string;
@@ -16,6 +20,8 @@ export interface ResolvedTokens {
   error: string;
   radiusMd: string;
   radiusLg: string;
+  /** Transform applied while a solid control is pressed. */
+  pressTransform: string;
 }
 
 /**
@@ -241,12 +247,21 @@ export function resolveTokens(
       ? '#ffffff'
       : '#18181b';
 
+  // Neobrutalism light prints accent text in the primary text color (mirrors
+  // --just-accent-text in globals.css); otherwise darken/lighten the seed
+  // until it clears 4.5:1 against the card surface.
+  const accentText =
+    isNeo && !isDark
+      ? textPrimary
+      : adjustLightnessForContrast(accent, card, 4.5);
+
   // Borders & shadows
   let border: string;
   let borderWidth: string;
   let shadowSolid: string;
   let radiusMd: string;
   let radiusLg: string;
+  let pressTransform: string;
 
   if (isNeo) {
     border = isDark ? '#ffffff' : '#000000';
@@ -254,12 +269,14 @@ export function resolveTokens(
     shadowSolid = isDark ? '4px 4px 0px #ffffff' : '4px 4px 0px #000000';
     radiusMd = '0px';
     radiusLg = '0px';
+    pressTransform = 'translate(4px, 4px)';
   } else {
     border = isDark ? '#27272a' : '#e0e0e0';
     borderWidth = '1px';
     shadowSolid = 'none';
     radiusMd = '8px';
     radiusLg = '12px';
+    pressTransform = 'scale(0.97)';
   }
 
   // State colors (guaranteed accessible against background matching JustThemeData.fromSeed)
@@ -278,6 +295,7 @@ export function resolveTokens(
     textSecondary,
     accent,
     accentForeground,
+    accentText,
     border,
     borderWidth,
     shadowSolid,
@@ -286,5 +304,6 @@ export function resolveTokens(
     error,
     radiusMd,
     radiusLg,
+    pressTransform,
   };
 }

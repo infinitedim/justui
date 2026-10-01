@@ -33,9 +33,11 @@ import { DatePickerMock } from './preview-mocks/date-picker-mock';
 import { DateRangePickerMock } from './preview-mocks/date-range-picker-mock';
 import { TimePickerMock } from './preview-mocks/time-picker-mock';
 
-export type SimulatorMockComponent = React.ComponentType<{
-  preset?: 'default' | 'neobrutalism';
-}>;
+/**
+ * Mocks take no props: styling comes from the --just-* tokens of the active
+ * preset scope, and copy comes from CatalogI18nProvider.
+ */
+export type SimulatorMockComponent = React.ComponentType;
 
 export const SIMULATOR_REGISTRY: Record<string, SimulatorMockComponent> = {
   // Primitives (9)

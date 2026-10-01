@@ -77,10 +77,10 @@ describe('HomePage Component', () => {
       screen.getByText('curl -fsSL https://justui.vercel.app/install.sh | sh')
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('region', { name: /interactive terminal/i })
+      screen.getByRole('region', { name: 'CLI simulator' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('region', { name: /living widget stage/i })
+      screen.getByRole('region', { name: 'Component preview' })
     ).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { level: 2, name: /^components$/i })

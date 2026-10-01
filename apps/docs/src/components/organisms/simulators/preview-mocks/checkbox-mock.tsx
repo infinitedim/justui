@@ -1,51 +1,43 @@
 'use client';
 
-import React, { useState } from 'react';
-import { cn } from '@/lib/cn';
+import { useId, useState } from 'react';
 import { Check } from 'lucide-react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { focusRing } from '@/lib/ui-classes';
+import { cn } from '@/lib/cn';
 
-export function CheckboxMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
+export function CheckboxMock() {
+  const { crm } = useCatalogI18n();
   const [checked, setChecked] = useState(true);
-  const isNeo = preset === 'neobrutalism';
+  const labelId = useId();
 
   return (
-    <div
-      onClick={() => setChecked(!checked)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          setChecked(!checked);
-        }
-      }}
-      role="button"
-      tabIndex={0}
-      data-testid="mock-checkbox"
-      className="flex cursor-pointer items-center gap-2.5 select-none"
-    >
-      <div
+    <div className="flex items-center gap-2.5">
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={checked}
+        aria-labelledby={labelId}
+        onClick={() => setChecked((c) => !c)}
+        data-testid="mock-checkbox"
         className={cn(
-          'flex h-5 w-5 items-center justify-center transition-all',
-          isNeo
-            ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
-            : 'border-border bg-surface rounded border',
-          checked && (isNeo ? 'bg-accent' : 'border-accent bg-accent')
+          focusRing,
+          'border-border flex h-5 w-5 shrink-0 items-center justify-center rounded-(--just-radius-sm) border-(length:--just-border-width)',
+          checked ? 'bg-accent text-accent-foreground' : 'bg-card'
         )}
       >
         {checked ? (
-          <Check
-            className={cn(
-              'h-3.5 w-3.5',
-              isNeo ? 'font-bold text-black' : 'text-foreground'
-            )}
-          />
+          <Check className="h-3.5 w-3.5 stroke-[3]" aria-hidden="true" />
         ) : null}
-      </div>
-      <span className="text-foreground font-mono text-xs font-medium">
-        Enable Telemetry
+      </button>
+      <span
+        id={labelId}
+        className={cn(
+          'text-sm',
+          checked ? 'text-muted line-through' : 'text-foreground'
+        )}
+      >
+        {crm.checkbox.label}
       </span>
     </div>
   );

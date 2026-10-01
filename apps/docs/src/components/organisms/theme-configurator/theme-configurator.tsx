@@ -9,7 +9,6 @@ import {
   hexToHsl,
   hslToHex,
   normalizeHex,
-  type JustUIPreset,
   type ColorSpace,
 } from '@/lib/theme/color-resolver';
 import { ColorSwatchItem } from '@/components/molecules/color-swatch-item';
@@ -42,7 +41,6 @@ export function ThemeConfigurator({
     resolvedTokens,
     setSeedColor,
     setIsDark,
-    setPreset,
     setColorSpace,
   } = useThemeStudio();
 
@@ -104,15 +102,6 @@ export function ThemeConfigurator({
       }
     },
     []
-  );
-
-  // Preset options
-  const presetOptions = useMemo(
-    () => [
-      { value: 'default', label: t.presetDefault },
-      { value: 'neobrutalism', label: t.presetNeobrutalism },
-    ],
-    [t.presetDefault, t.presetNeobrutalism]
   );
 
   // Color space options
@@ -249,7 +238,7 @@ export function ThemeConfigurator({
             placeholder="#a3e635"
             maxLength={9}
             className="font-mono text-sm"
-            aria-label="Hex color string"
+            aria-label={t.hexInputLabel}
           />
         </div>
 
@@ -290,16 +279,14 @@ export function ThemeConfigurator({
           />
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between gap-3">
           <span className="text-foreground text-sm font-semibold tracking-tight">
             {t.preset}
           </span>
-          <VariantPicker
-            options={presetOptions}
-            value={preset}
-            onChange={(val) => setPreset(val as JustUIPreset)}
-            label={t.preset}
-          />
+          <span className="text-muted text-sm">
+            <code className="text-foreground font-mono">{preset}</code>{' '}
+            {t.presetHint}
+          </span>
         </div>
       </section>
 
@@ -329,11 +316,9 @@ export function ThemeConfigurator({
             {t.resolvedPalette}
           </span>
           {copiedToken ? (
-            <span className="text-accent animate-pulse font-mono text-xs">
-              {t.copied}
-            </span>
+            <span className="text-accent-text text-xs">{t.copied}</span>
           ) : copyFailed ? (
-            <span className="text-error font-mono text-xs">{t.copyFailed}</span>
+            <span className="text-error text-xs">{t.copyFailed}</span>
           ) : null}
         </div>
 
@@ -344,11 +329,11 @@ export function ThemeConfigurator({
               type="button"
               onClick={() => handleCopyColor(token.key, token.value)}
               className={cn(
-                'border-border hover:bg-muted/40 flex items-center justify-between rounded-(--just-radius-md) border p-2 text-left transition-colors',
+                'border-border hover:bg-fill flex items-center justify-between rounded-(--just-radius-md) border p-2 text-left transition-colors',
                 copiedToken === token.key && 'border-accent bg-accent-muted'
               )}
               title={`${token.label} (${token.value}) - Click to copy`}
-              aria-label={`Copy ${token.label} color`}
+              aria-label={t.copyTokenColor(token.label)}
             >
               <div className="flex min-w-0 items-center gap-2.5">
                 <span
@@ -357,10 +342,10 @@ export function ThemeConfigurator({
                   aria-hidden="true"
                 />
                 <div className="flex flex-col truncate">
-                  <span className="text-foreground truncate font-mono text-xs font-medium">
+                  <span className="text-foreground truncate text-sm font-medium">
                     {token.label}
                   </span>
-                  <span className="text-muted font-mono text-[10px]">
+                  <span className="text-muted font-mono text-xs">
                     {token.value}
                   </span>
                 </div>
@@ -369,7 +354,7 @@ export function ThemeConfigurator({
               {token.key !== 'background' ? (
                 <Badge
                   variant={token.badgeVariant}
-                  className="shrink-0 px-1.5 py-0 font-mono text-[10px]"
+                  className="shrink-0 px-1.5 py-0 font-mono text-xs"
                 >
                   {token.ratio.toFixed(1)}:1
                 </Badge>

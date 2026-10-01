@@ -1,5 +1,6 @@
 import type { TerminalLineKind } from '@/components/molecules/terminal-line';
 import { REGISTRY_COMPONENT_NAMES, findClosestMatch } from './levenshtein';
+import { parsePresetAlias, type JustUIPreset } from '@/lib/presets';
 
 export interface ParsedLine {
   kind: TerminalLineKind;
@@ -10,7 +11,7 @@ export interface ParsedLine {
 export interface ParseResult {
   lines: ParsedLine[];
   mountComponents?: string[];
-  presetChange?: 'default' | 'neobrutalism';
+  presetChange?: JustUIPreset;
   clearStage?: boolean;
 }
 
@@ -121,7 +122,7 @@ export function parseCommand(rawInput: string): ParseResult {
       const presetFlagIndex = args.findIndex(
         (a) => a === '--preset' || a === '-p'
       );
-      let preset: 'default' | 'neobrutalism' | undefined;
+      let preset: JustUIPreset | undefined;
       if (presetFlagIndex !== -1) {
         const candidate = args[presetFlagIndex + 1]?.toLowerCase();
         if (!candidate) {
@@ -134,11 +135,8 @@ export function parseCommand(rawInput: string): ParseResult {
             ],
           };
         }
-        if (candidate === 'neobrutalism' || candidate === 'neo') {
-          preset = 'neobrutalism';
-        } else if (candidate === 'default' || candidate === 'd') {
-          preset = 'default';
-        } else {
+        preset = parsePresetAlias(candidate);
+        if (!preset) {
           return {
             lines: [
               {
@@ -165,7 +163,7 @@ export function parseCommand(rawInput: string): ParseResult {
 
       lines.push({
         kind: 'success',
-        text: 'Done! Run `justui add <component>` to start.',
+        text: 'Done. Run `justui add <component>` next.',
       });
 
       return {
@@ -200,7 +198,7 @@ export function parseCommand(rawInput: string): ParseResult {
             },
             {
               kind: 'success',
-              text: 'Done! 33 components installed.',
+              text: 'Done. 33 components written; the stage shows 3 of them.',
             },
           ],
           mountComponents: ['button', 'switch', 'card'],
@@ -258,7 +256,7 @@ export function parseCommand(rawInput: string): ParseResult {
 
       lines.push({
         kind: 'success',
-        text: `Done! ${componentNames.length} component(s) added successfully.`,
+        text: `Done. ${componentNames.length} ${componentNames.length === 1 ? 'component' : 'components'} added.`,
       });
 
       return {
@@ -275,11 +273,11 @@ export function parseCommand(rawInput: string): ParseResult {
             { kind: 'info', text: 'Available presets:' },
             {
               kind: 'output',
-              text: '  default        - Clean, modern aesthetic with subtle borders and shadows',
+              text: '  default        1px border, 6px radius, no shadow',
             },
             {
               kind: 'output',
-              text: '  neobrutalism   - High-contrast, bold 2.5px borders and solid drop shadows',
+              text: '  neobrutalism   2.5px border, square corners, 4px offset shadow',
             },
           ],
         };
@@ -298,12 +296,7 @@ export function parseCommand(rawInput: string): ParseResult {
           };
         }
 
-        const resolvedPreset =
-          target === 'neobrutalism' || target === 'neo'
-            ? 'neobrutalism'
-            : target === 'default' || target === 'd'
-              ? 'default'
-              : undefined;
+        const resolvedPreset = parsePresetAlias(target);
 
         if (resolvedPreset) {
           return {
@@ -322,7 +315,7 @@ export function parseCommand(rawInput: string): ParseResult {
               },
               {
                 kind: 'success',
-                text: 'Done!',
+                text: 'Done.',
               },
             ],
             presetChange: resolvedPreset,
@@ -479,7 +472,7 @@ export function parseCommand(rawInput: string): ParseResult {
           { kind: 'success', text: '[OK] Config: valid (justui.config.yaml)' },
           {
             kind: 'success',
-            text: '[OK] Registry: connected (https://justui.dev/registry)',
+            text: '[OK] Registry: connected (https://justui.vercel.app/registry)',
           },
           { kind: 'success', text: '[OK] All systems operational.' },
         ],

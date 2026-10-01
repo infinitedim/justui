@@ -1,73 +1,85 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useId, useState, type KeyboardEvent } from 'react';
+import { Check, ChevronDown } from 'lucide-react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { focusRing, raised, surface } from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
-import { ChevronDown } from 'lucide-react';
 
-export function SelectMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [selected, setSelected] = useState('Flutter WASM');
+const STAGE_IDS = ['lead', 'qualified', 'proposal', 'won'] as const;
+type StageId = (typeof STAGE_IDS)[number];
+
+export function SelectMock() {
+  const { crm } = useCatalogI18n();
+  const [selected, setSelected] = useState<StageId>('qualified');
   const [open, setOpen] = useState(false);
-  const isNeo = preset === 'neobrutalism';
+  const labelId = useId();
+  const listId = useId();
 
-  const options = ['Flutter WASM', 'CanvasKit', 'HTML Renderer'];
+  const choose = (id: StageId) => {
+    setSelected(id);
+    setOpen(false);
+  };
+
+  const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Escape') setOpen(false);
+  };
 
   return (
-    <div className="relative w-full max-w-50">
+    <div className="relative w-full max-w-50" onKeyDown={onKeyDown}>
+      <p id={labelId} className="text-foreground mb-1.5 text-xs font-medium">
+        {crm.select.label}
+      </p>
       <button
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={open ? listId : undefined}
+        aria-labelledby={labelId}
         data-testid="mock-select-trigger"
         className={cn(
-          'flex w-full items-center justify-between px-3 py-1.5 font-mono text-xs transition-all',
-          isNeo
-            ? 'bg-surface text-foreground rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-            : 'border-border bg-surface text-foreground rounded-md border shadow-sm'
+          surface,
+          focusRing,
+          'text-foreground flex h-9 w-full items-center justify-between px-3 text-sm'
         )}
       >
-        <span>{selected}</span>
+        <span>{crm.stages[selected]}</span>
         <ChevronDown
-          className={cn(
-            'h-3.5 w-3.5 transition-transform',
-            open && 'rotate-180'
-          )}
+          className={cn('h-4 w-4 transition-transform', open && 'rotate-180')}
+          aria-hidden="true"
         />
       </button>
 
       {open ? (
-        <div
+        <ul
+          id={listId}
+          role="listbox"
+          aria-labelledby={labelId}
           data-testid="mock-select-menu"
           className={cn(
-            'bg-surface absolute top-full left-0 z-20 mt-1.5 w-full overflow-hidden py-1 font-mono text-xs',
-            isNeo
-              ? 'rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-              : 'border-border rounded-md border shadow-md'
+            raised,
+            'absolute top-full left-0 z-20 mt-1.5 w-full py-1 text-sm'
           )}
         >
-          {options.map((opt) => (
-            <button
-              key={opt}
-              type="button"
-              onClick={() => {
-                setSelected(opt);
-                setOpen(false);
-              }}
-              className={cn(
-                'w-full px-3 py-1.5 text-left transition-colors',
-                selected === opt
-                  ? isNeo
-                    ? 'bg-accent text-black font-bold'
-                    : 'bg-accent/20 text-accent-deep dark:text-accent font-bold'
-                  : 'hover:bg-surface-muted'
-              )}
-            >
-              {opt}
-            </button>
+          {STAGE_IDS.map((id) => (
+            <li key={id} role="option" aria-selected={selected === id}>
+              <button
+                type="button"
+                onClick={() => choose(id)}
+                className="hover:bg-accent-muted text-foreground flex w-full items-center justify-between px-3 py-1.5 text-left"
+              >
+                {crm.stages[id]}
+                {selected === id ? (
+                  <Check
+                    className="text-accent-text h-4 w-4"
+                    aria-hidden="true"
+                  />
+                ) : null}
+              </button>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : null}
     </div>
   );

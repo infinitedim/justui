@@ -13,14 +13,11 @@ import { localeStaticParams } from '@/lib/i18n';
 function CatalogHeader({ t, count }: { t: HomepageDictionary; count: number }) {
   return (
     <>
-      <p className="text-accent mb-3 font-mono text-sm">
-        {count} {t.componentsPageCount}
-      </p>
       <h1 className="text-foreground text-4xl font-medium tracking-tight sm:text-5xl">
         {t.componentsPageTitle}
       </h1>
       <p className="text-secondary mt-4 max-w-xl text-base">
-        {t.componentsPageDescription}
+        {t.componentsPageDescription(count)}
       </p>
     </>
   );
@@ -39,13 +36,7 @@ export default async function ComponentsPage({
     <CatalogTemplate
       navbar={<Navbar starCount={starCount} lang={lang} />}
       header={<CatalogHeader t={t} count={components.length} />}
-      catalog={
-        <ComponentsCatalogClient
-          components={components}
-          lang={lang}
-          dictionary={t}
-        />
-      }
+      catalog={<ComponentsCatalogClient components={components} lang={lang} />}
       footer={<Footer lang={lang} />}
     />
   );

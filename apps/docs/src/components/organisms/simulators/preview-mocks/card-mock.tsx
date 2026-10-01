@@ -1,42 +1,32 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { raised } from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
 
-export function CardMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [clicked, setClicked] = useState(false);
-  const isNeo = preset === 'neobrutalism';
+export function CardMock() {
+  const { crm } = useCatalogI18n();
 
   return (
     <div
       data-testid="mock-card"
-      className={cn(
-        'w-full max-w-[220px] p-3 font-mono text-xs transition-all',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-lg border shadow-sm'
-      )}
+      className={cn(raised, 'w-full max-w-64 p-3.5')}
     >
-      <div className="text-foreground font-bold">Memory Heap</div>
-      <p className="text-muted mt-1 text-[11px]">
-        Zero ephemeral allocations during tick.
+      <header className="flex items-start justify-between gap-2">
+        <h4 className="text-foreground text-sm font-semibold">
+          {crm.card.company}
+        </h4>
+        <span className="bg-warning/15 border-warning/40 text-foreground rounded-(--just-radius-sm) border-(length:--just-border-width) px-1.5 py-0.5 text-xs">
+          {crm.stages.proposal}
+        </span>
+      </header>
+      <p className="text-foreground mt-1 text-base font-semibold tabular-nums">
+        {crm.card.value}
       </p>
-      <button
-        type="button"
-        onClick={() => setClicked(!clicked)}
-        className={cn(
-          'mt-2.5 px-2 py-1 text-[10px] font-medium transition-all select-none',
-          isNeo
-            ? 'just-press bg-accent border-[2px] border-black font-bold text-black dark:border-white rounded-none'
-            : 'border-border bg-surface-muted text-foreground hover:border-accent rounded border'
-        )}
-      >
-        {clicked ? 'Optimized' : 'Profile'}
-      </button>
+      <footer className="border-border text-muted mt-2.5 flex flex-col gap-0.5 border-t border-t-(length:--just-border-width) pt-2 text-xs">
+        <span>{crm.card.owner}</span>
+        <span>{crm.card.due}</span>
+      </footer>
     </div>
   );
 }

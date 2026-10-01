@@ -8,8 +8,10 @@ export interface StudioDictionary {
   light: string;
   dark: string;
   preset: string;
-  presetDefault: string;
-  presetNeobrutalism: string;
+  presetHint: string;
+  exportFormatsLabel: string;
+  hexInputLabel: string;
+  copyTokenColor: (token: string) => string;
   colorSpace: string;
   colorSpaceHsl: string;
   colorSpaceOklch: string;
@@ -25,18 +27,19 @@ export interface StudioDictionary {
   tabYaml: string;
   tabDart: string;
   tabCli: string;
-  preview: string;
-  components: string;
-  button: string;
-  card: string;
-  welcomeBack: string;
-  exploreComponents: string;
-  getStarted: string;
-  active: string;
-  inactive: string;
-  notifications: string;
   mockAppName: string;
-  searchPlaceholder: string;
+  mockSearchPlaceholder: string;
+  mockNotifications: string;
+  mockFollowUpsTitle: string;
+  mockFollowUpsSummary: string;
+  mockLogCall: string;
+  mockReminders: string;
+  mockOn: string;
+  mockOff: string;
+  mockTabsLabel: string;
+  mockTabPipeline: string;
+  mockTabContacts: string;
+  mockTabTasks: string;
   shareSuccess: string;
   tokenBackground: string;
   tokenCard: string;
@@ -54,14 +57,16 @@ const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
   en: {
     title: 'Theme Studio',
     subtitle:
-      'Configure your design tokens visually and export production-ready code.',
+      'Pick one color. The studio derives light and dark palettes that pass WCAG AA, then gives you the config for justui init.',
     seedColor: 'Seed Color',
     mode: 'Mode',
     light: 'Light',
     dark: 'Dark',
     preset: 'Preset',
-    presetDefault: 'Default',
-    presetNeobrutalism: 'Neobrutalism',
+    presetHint: '(change it in the header)',
+    exportFormatsLabel: 'Export format',
+    hexInputLabel: 'Seed color hex value',
+    copyTokenColor: (token) => `Copy ${token} color`,
     colorSpace: 'Color Space',
     colorSpaceHsl: 'HSL',
     colorSpaceOklch: 'OKLCH',
@@ -71,25 +76,26 @@ const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
     share: 'Share',
     reset: 'Reset',
     copyCode: 'Copy code',
-    copied: 'Copied!',
+    copied: 'Copied',
     copyFailed: 'Copy failed',
     contrastRatio: 'Contrast',
     tabYaml: 'Config YAML',
     tabDart: 'Dart Code',
     tabCli: 'CLI Command',
-    preview: 'Device Preview',
-    components: 'Components',
-    button: 'Button',
-    card: 'Card',
-    welcomeBack: 'Welcome back',
-    exploreComponents: 'Explore JustUI components',
-    getStarted: 'Get Started',
-    active: 'Active',
-    inactive: 'Inactive',
-    notifications: 'Notifications',
-    mockAppName: 'JustUI App',
-    searchPlaceholder: 'Search components...',
-    shareSuccess: 'Shareable URL copied to clipboard!',
+    mockAppName: 'Relasi',
+    mockSearchPlaceholder: 'Search contacts',
+    mockNotifications: 'Notifications',
+    mockFollowUpsTitle: "Today's follow-ups",
+    mockFollowUpsSummary: '3 calls and 1 proposal due before 17:00.',
+    mockLogCall: 'Log call',
+    mockReminders: 'Follow-up reminders',
+    mockOn: 'On',
+    mockOff: 'Off',
+    mockTabsLabel: 'Sections',
+    mockTabPipeline: 'Pipeline',
+    mockTabContacts: 'Contacts',
+    mockTabTasks: 'Tasks',
+    shareSuccess: 'Share link copied',
     tokenBackground: 'Background',
     tokenCard: 'Card Surface',
     tokenTextPrimary: 'Primary Text',
@@ -104,14 +110,16 @@ const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
   id: {
     title: 'Theme Studio',
     subtitle:
-      'Konfigurasi design token secara visual dan ekspor kode siap produksi.',
+      'Pilih satu warna. Studio menurunkan palet terang dan gelap yang lolos WCAG AA, lalu memberi config untuk justui init.',
     seedColor: 'Warna Dasar',
     mode: 'Mode',
     light: 'Terang',
     dark: 'Gelap',
     preset: 'Preset',
-    presetDefault: 'Default',
-    presetNeobrutalism: 'Neobrutalism',
+    presetHint: '(ubah lewat header)',
+    exportFormatsLabel: 'Format ekspor',
+    hexInputLabel: 'Nilai hex warna seed',
+    copyTokenColor: (token) => `Salin warna ${token}`,
     colorSpace: 'Ruang Warna',
     colorSpaceHsl: 'HSL',
     colorSpaceOklch: 'OKLCH',
@@ -121,25 +129,27 @@ const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
     share: 'Bagikan',
     reset: 'Reset',
     copyCode: 'Salin kode',
-    copied: 'Tersalin!',
+    copied: 'Tersalin',
     copyFailed: 'Gagal menyalin',
     contrastRatio: 'Kontras',
     tabYaml: 'Config YAML',
     tabDart: 'Kode Dart',
     tabCli: 'Perintah CLI',
-    preview: 'Pratinjau Perangkat',
-    components: 'Komponen',
-    button: 'Tombol',
-    card: 'Kartu',
-    welcomeBack: 'Selamat datang kembali',
-    exploreComponents: 'Jelajahi komponen JustUI',
-    getStarted: 'Mulai Sekarang',
-    active: 'Aktif',
-    inactive: 'Nonaktif',
-    notifications: 'Notifikasi',
-    mockAppName: 'Aplikasi JustUI',
-    searchPlaceholder: 'Cari komponen...',
-    shareSuccess: 'URL tautan berhasil disalin ke papan klip!',
+    mockAppName: 'Relasi',
+    mockSearchPlaceholder: 'Cari kontak',
+    mockNotifications: 'Notifikasi',
+    mockFollowUpsTitle: 'Tindak lanjut hari ini',
+    mockFollowUpsSummary:
+      '3 panggilan dan 1 penawaran jatuh tempo sebelum 17.00.',
+    mockLogCall: 'Catat panggilan',
+    mockReminders: 'Pengingat tindak lanjut',
+    mockOn: 'Aktif',
+    mockOff: 'Mati',
+    mockTabsLabel: 'Bagian',
+    mockTabPipeline: 'Pipeline',
+    mockTabContacts: 'Kontak',
+    mockTabTasks: 'Tugas',
+    shareSuccess: 'Tautan berbagi tersalin',
     tokenBackground: 'Latar Belakang',
     tokenCard: 'Permukaan Kartu',
     tokenTextPrimary: 'Teks Utama',

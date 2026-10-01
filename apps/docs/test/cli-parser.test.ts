@@ -134,4 +134,29 @@ describe('cli-parser', () => {
       result.lines.some((l) => l.text.includes("Did you mean 'button'?"))
     ).toBe(true);
   });
+
+  it('prints the canonical preset name even when an alias is typed', () => {
+    const result = parseCommand('justui preset apply neo');
+    expect(result.lines.some((l) => l.text.includes('neobrutalism'))).toBe(
+      true
+    );
+    expect(result.lines.some((l) => /\bneo\b/.test(l.text))).toBe(false);
+  });
+
+  it('describes presets by their tokens and prints no exclamation marks', () => {
+    const commands = [
+      'justui init',
+      'justui add button',
+      'justui add --all',
+      'justui preset list',
+      'justui preset apply default',
+    ];
+    for (const command of commands) {
+      for (const line of parseCommand(command).lines) {
+        expect(line.text).not.toMatch(/!/);
+      }
+    }
+    const list = parseCommand('justui preset list').lines.map((l) => l.text);
+    expect(list.join('\n')).toContain('2.5px border');
+  });
 });

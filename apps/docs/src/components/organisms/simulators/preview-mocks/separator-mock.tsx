@@ -1,44 +1,36 @@
 'use client';
 
-import React from 'react';
-import { cn } from '@/lib/cn';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
 
-export function SeparatorMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const isNeo = preset === 'neobrutalism';
+const COUNTS = { open: 12, won: 7, lost: 3 } as const;
+
+export function SeparatorMock() {
+  const { crm } = useCatalogI18n();
+  const stats = [
+    { id: 'open', label: crm.separator.open, value: COUNTS.open },
+    { id: 'won', label: crm.separator.won, value: COUNTS.won },
+    { id: 'lost', label: crm.separator.lost, value: COUNTS.lost },
+  ] as const;
 
   return (
-    <div
-      data-testid="mock-separator"
-      className="w-full max-w-50 space-y-3 text-center font-mono text-xs"
-    >
-      <div className="flex items-center justify-center gap-3">
-        <span className="text-muted">Core</span>
-        <div
-          className={cn(
-            'h-3.5 w-px',
-            isNeo ? 'w-[2.5px] bg-black dark:bg-white' : 'bg-border'
-          )}
-        />
-        <span className="text-foreground font-medium">Tokens</span>
-        <div
-          className={cn(
-            'h-3.5 w-px',
-            isNeo ? 'w-[2.5px] bg-black dark:bg-white' : 'bg-border'
-          )}
-        />
-        <span className="text-muted">CLI</span>
-      </div>
-      <div
-        className={cn(
-          'h-px w-full',
-          isNeo ? 'h-[2.5px] bg-black dark:bg-white' : 'bg-border'
-        )}
-      />
-      <span className="text-muted block text-[10px]">Bresenham Partition</span>
+    <div data-testid="mock-separator" className="flex items-stretch gap-4">
+      {stats.map((stat, index) => (
+        <div key={stat.id} className="flex items-stretch gap-4">
+          {index > 0 ? (
+            <div
+              role="separator"
+              aria-orientation="vertical"
+              className="bg-border w-(--just-border-width)"
+            />
+          ) : null}
+          <div className="flex flex-col items-center">
+            <span className="text-foreground text-xl font-semibold tabular-nums">
+              {stat.value}
+            </span>
+            <span className="text-muted text-xs">{stat.label}</span>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

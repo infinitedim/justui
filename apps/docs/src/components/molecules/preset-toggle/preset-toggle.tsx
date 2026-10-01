@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react';
 import { usePreset } from '@/components/providers';
 import { SegmentedToggle } from '@/components/molecules/segmented-toggle';
+import { PRESET_OPTIONS } from '@/lib/presets';
 import type { PresetToggleProps } from './preset-toggle.types';
 
 /**
- * Preset toggle molecule. Shows both presets and fills the active one, so the
- * control states what it does instead of a single ambiguous D / N letter.
+ * The one preset control on the site. Shows both presets by their CLI names
+ * and fills the active one; the catalog, stage and Studio all read the same
+ * global preset.
  */
 export function PresetToggle({
   label = 'Toggle preset',
@@ -26,10 +28,7 @@ export function PresetToggle({
       className={className}
       value={preset}
       onChange={setPreset}
-      options={[
-        { value: 'default', label: 'default' },
-        { value: 'neobrutalism', label: 'neo' },
-      ]}
+      options={PRESET_OPTIONS}
     />
   );
 }

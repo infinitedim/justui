@@ -1,34 +1,36 @@
 'use client';
 
-import { cn } from '@/lib/cn';
+import { useId } from 'react';
 import { CalendarRange } from 'lucide-react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { surface } from '@/lib/ui-classes';
+import { cn } from '@/lib/cn';
 
-export function DateRangePickerMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const isNeo = preset === 'neobrutalism';
+export function DateRangePickerMock() {
+  const { crm } = useCatalogI18n();
+  const labelId = useId();
 
   return (
-    <div className="w-full max-w-55 font-mono text-xs select-none">
+    <div className="w-full max-w-60 space-y-1.5">
+      <p id={labelId} className="text-foreground text-xs font-medium">
+        {crm.dateRangePicker.label}
+      </p>
       <div
+        role="group"
+        aria-labelledby={labelId}
         data-testid="mock-date-range-picker"
         className={cn(
-          'flex cursor-pointer items-center gap-2 p-2 transition-all',
-          isNeo
-            ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-            : 'border-border bg-surface rounded-md border'
+          surface,
+          'text-foreground flex h-9 items-center gap-2 px-3 text-sm'
         )}
       >
-        <CalendarRange className="text-muted h-4 w-4 shrink-0" />
-        <span className="text-foreground text-[11px] font-medium">
-          Sep 01 - Sep 15
-        </span>
+        <CalendarRange
+          className="text-muted h-4 w-4 shrink-0"
+          aria-hidden="true"
+        />
+        <span className="flex-1">{crm.dateRangePicker.value}</span>
+        <span className="text-muted text-xs">{crm.dateRangePicker.days}</span>
       </div>
-      <p className="text-muted mt-1.5 text-center text-[10px]">
-        14 Days Selected
-      </p>
     </div>
   );
 }

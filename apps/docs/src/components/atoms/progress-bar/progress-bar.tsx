@@ -22,7 +22,7 @@ export function ProgressBar({
       aria-valuemax={max}
       aria-label={label}
       className={cn(
-        'bg-border h-2 w-full overflow-hidden rounded-full',
+        'bg-border h-2 w-full overflow-hidden rounded-(--just-radius-sm)',
         'border-border border-(length:--just-border-width)',
         className
       )}

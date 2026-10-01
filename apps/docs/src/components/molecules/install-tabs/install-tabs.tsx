@@ -47,7 +47,7 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
     >
       <div
         role="tablist"
-        aria-label="Installation platform"
+        aria-label={t.installTabsLabel}
         className="flex items-center justify-center gap-1 pb-1"
       >
         {PLATFORMS.map((platform) => {
@@ -62,7 +62,7 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
               aria-controls={`install-tabpanel-${platform.id}`}
               onClick={() => setActivePlatform(platform.id)}
               className={cn(
-                'rounded-full px-3 py-1 font-mono text-xs transition-colors',
+                'rounded-(--just-radius-md) px-3 py-1 text-xs transition-colors',
                 'border-(length:--just-border-width)',
                 isSelected
                   ? 'border-border bg-accent text-accent-foreground shadow-solid font-medium'
@@ -86,7 +86,8 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
         </code>
         <CopyButton
           text={activeMeta.command}
-          label={`Copy ${activeMeta.command}`}
+          label={t.copyInstallCommand}
+          copiedLabel={t.copied}
           className="shrink-0"
         />
       </div>

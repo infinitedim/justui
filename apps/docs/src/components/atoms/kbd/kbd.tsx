@@ -9,8 +9,8 @@ export function Kbd({ className, children, ...rest }: KbdProps) {
   return (
     <kbd
       className={cn(
-        'border-border inline-flex items-center rounded border-(length:--just-border-width)',
-        'bg-card text-muted px-1.5 py-0.5 font-mono text-[10px]',
+        'border-border inline-flex items-center rounded-(--just-radius-sm) border-(length:--just-border-width)',
+        'bg-card text-muted px-1.5 py-0.5 font-mono text-xs',
         'shadow-solid',
         className
       )}

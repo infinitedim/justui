@@ -1,46 +1,52 @@
 'use client';
 
-import React, { useState } from 'react';
-import { cn } from '@/lib/cn';
+import { useId, useState } from 'react';
 import { Clock } from 'lucide-react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { neutralControl, surface } from '@/lib/ui-classes';
+import { cn } from '@/lib/cn';
 
-export function TimePickerMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [period, setPeriod] = useState<'AM' | 'PM'>('PM');
-  const [hours] = useState(18);
-  const [minutes] = useState(30);
-  const isNeo = preset === 'neobrutalism';
+const HOURS = 14;
+const MINUTES = 30;
 
-  const displayHours = hours % 12 === 0 ? 12 : hours % 12;
-  const formattedTime = `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+/** Toggles between JustTimeFormat.twentyFourHour and .twelveHour. */
+export function TimePickerMock() {
+  const { crm } = useCatalogI18n();
+  const [twelveHour, setTwelveHour] = useState(false);
+  const labelId = useId();
+
+  const minutes = String(MINUTES).padStart(2, '0');
+  const time = twelveHour
+    ? `${HOURS % 12 || 12}:${minutes} ${HOURS < 12 ? 'AM' : 'PM'}`
+    : `${HOURS}:${minutes}`;
 
   return (
-    <div
-      data-testid="mock-time-picker"
-      className={cn(
-        'inline-flex items-center gap-2 p-2 font-mono text-xs select-none',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-md border'
-      )}
-    >
-      <Clock className="text-muted h-4 w-4" />
-      <span className="text-foreground font-bold">{formattedTime}</span>
-      <button
-        type="button"
-        onClick={() => setPeriod(period === 'AM' ? 'PM' : 'AM')}
-        className={cn(
-          'px-1.5 py-0.5 text-[10px] font-bold transition-all',
-          isNeo
-            ? 'bg-accent border-[2px] border-black text-black dark:border-white rounded-none'
-            : 'bg-surface-muted text-accent rounded'
-        )}
-      >
-        {period}
-      </button>
+    <div className="w-full max-w-56 space-y-1.5">
+      <p id={labelId} className="text-foreground text-xs font-medium">
+        {crm.timePicker.label}
+      </p>
+      <div className="flex items-center gap-2">
+        <div
+          role="group"
+          aria-labelledby={labelId}
+          data-testid="mock-time-picker"
+          className={cn(
+            surface,
+            'text-foreground flex h-9 flex-1 items-center gap-2 px-3 text-sm tabular-nums'
+          )}
+        >
+          <Clock className="text-muted h-4 w-4" aria-hidden="true" />
+          <time dateTime={`${HOURS}:${minutes}`}>{time}</time>
+        </div>
+        <button
+          type="button"
+          onClick={() => setTwelveHour((t) => !t)}
+          aria-pressed={twelveHour}
+          className={cn(neutralControl, 'h-9 px-2.5 font-mono text-xs')}
+        >
+          {twelveHour ? '12h' : '24h'}
+        </button>
+      </div>
     </div>
   );
 }

@@ -23,7 +23,7 @@ describe('LivingStage', () => {
     expect(handleRunCommand).toHaveBeenCalledWith('justui add button');
   });
 
-  it('renders toolbar badge, theme indicator, micro-hint, and handles clear button', () => {
+  it('renders no decorative status indicators and handles clear button', () => {
     const handleClear = vi.fn();
     render(
       <LivingStage
@@ -39,13 +39,9 @@ describe('LivingStage', () => {
       />
     );
 
-    expect(screen.getByText('Live Flutter Canvas')).toBeInTheDocument();
-    expect(screen.getByText('Theme: neobrutalism')).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Tip: Click or interact with widgets above to test state animations.'
-      )
-    ).toBeInTheDocument();
+    expect(screen.queryByText('Live Flutter Canvas')).toBeNull();
+    expect(screen.queryByText('Theme: neobrutalism')).toBeNull();
+    expect(screen.queryByText(/^Tip:/)).toBeNull();
 
     const clearButton = screen.getByRole('button', { name: 'Clear' });
     expect(clearButton).toBeInTheDocument();
@@ -67,8 +63,28 @@ describe('LivingStage', () => {
     );
 
     expect(
-      screen.getByRole('button', { name: 'Press me' })
+      screen.getByRole('button', { name: 'Log call' })
     ).toBeInTheDocument();
+  });
+
+  it('renders the switch widget with the same SwitchMock as the catalog', () => {
+    render(
+      <LivingStage
+        widgets={[
+          {
+            id: 'widget-1',
+            component: 'switch',
+            mountedAt: Date.now(),
+          },
+        ]}
+      />
+    );
+
+    const sw = screen.getByTestId('mock-switch');
+    expect(sw).toHaveAttribute('role', 'switch');
+    expect(sw).toHaveAttribute('aria-checked', 'true');
+    fireEvent.click(sw);
+    expect(sw).toHaveAttribute('aria-checked', 'false');
   });
 
   it('updates container max-width class when viewport is switched to mobile', () => {
@@ -100,7 +116,8 @@ describe('LivingStage', () => {
     fireEvent.click(codeTab);
 
     expect(screen.getByText(/JustButton\(/)).toBeInTheDocument();
-    expect(screen.getByText(/JustButtonVariant\.primary/)).toBeInTheDocument();
+    // Same dot-shorthand snippet as the catalog (lib/components-data.ts).
+    expect(screen.getByText(/variant: \.primary/)).toBeInTheDocument();
   });
 
   it('generates fallback Dart source for components outside preview registry', () => {

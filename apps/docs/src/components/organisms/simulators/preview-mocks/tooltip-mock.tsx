@@ -1,48 +1,50 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useId, useState } from 'react';
+import { Clock } from 'lucide-react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { neutralControl, raised } from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
-import { HelpCircle } from 'lucide-react';
 
-export function TooltipMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [hover, setHover] = useState(false);
-  const isNeo = preset === 'neobrutalism';
+/** Opens on hover and on keyboard focus; Escape closes it (WCAG 1.4.13). */
+export function TooltipMock() {
+  const { crm } = useCatalogI18n();
+  const [open, setOpen] = useState(false);
+  const tooltipId = useId();
 
   return (
-    <div className="relative flex flex-col items-center justify-center">
-      {hover ? (
+    <div className="relative inline-flex flex-col items-center">
+      {open ? (
         <div
+          id={tooltipId}
+          role="tooltip"
           data-testid="mock-tooltip-bubble"
           className={cn(
-            'absolute -top-9 px-2.5 py-1 font-mono text-[10px] whitespace-nowrap transition-all',
-            isNeo
-              ? 'bg-accent rounded-none border-[2px] border-black font-bold text-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-              : 'bg-foreground text-background rounded shadow-md'
+            raised,
+            'bg-elevated text-foreground absolute bottom-full mb-2 w-max max-w-56 px-2.5 py-1.5 text-xs'
           )}
         >
-          WCAG AA 4.5:1 compliant
+          {crm.tooltip.bubble}
         </div>
       ) : null}
-
       <button
         type="button"
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        onClick={() => setHover(!hover)}
-        aria-label="Information"
+        aria-describedby={open ? tooltipId : undefined}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') setOpen(false);
+        }}
         data-testid="mock-tooltip-trigger"
         className={cn(
-          'p-2 transition-all select-none',
-          isNeo
-            ? 'bg-surface text-foreground rounded-full border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
-            : 'border-border bg-surface hover:border-accent rounded-full border'
+          neutralControl,
+          'inline-flex h-9 items-center gap-1.5 px-3 text-sm'
         )}
       >
-        <HelpCircle className="h-4 w-4" />
+        <Clock className="text-muted h-4 w-4" aria-hidden="true" />
+        {crm.tooltip.trigger}
       </button>
     </div>
   );

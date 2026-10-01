@@ -1,57 +1,36 @@
 'use client';
 
-import React, { useState } from 'react';
-import { cn } from '@/lib/cn';
+import { useId } from 'react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
 
-export function ProgressMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [val, setVal] = useState(68);
-  const isNeo = preset === 'neobrutalism';
+/** Rp 412 jt of Rp 600 jt. */
+const PERCENT = Math.round((412 / 600) * 1000) / 10;
 
-  const stepProgress = () => {
-    setVal((v) => (v >= 100 ? 25 : v + 15));
-  };
+export function ProgressMock() {
+  const { crm } = useCatalogI18n();
+  const labelId = useId();
 
   return (
-    <div className="w-full max-w-[220px] space-y-2">
-      <div className="text-muted flex items-center justify-between font-mono text-[11px]">
-        <span>Build Progress</span>
-        <span>{val}%</span>
+    <div className="w-full max-w-60 space-y-2">
+      <div className="flex items-baseline justify-between gap-2">
+        <span id={labelId} className="text-foreground text-xs font-medium">
+          {crm.progress.label}
+        </span>
+        <span className="text-muted text-xs tabular-nums">{PERCENT}%</span>
       </div>
       <div
-        onClick={stepProgress}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            stepProgress();
-          }
-        }}
-        role="button"
-        tabIndex={0}
+        role="progressbar"
+        aria-labelledby={labelId}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={PERCENT}
+        aria-valuetext={crm.progress.detail}
         data-testid="mock-progress"
-        className={cn(
-          'relative h-4 w-full cursor-pointer overflow-hidden transition-all select-none',
-          isNeo
-            ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] dark:border-white dark:shadow-[2px_2px_0px_0px_#fff]'
-            : 'border-border bg-surface-muted rounded-full border'
-        )}
+        className="bg-fill border-border h-2.5 w-full overflow-hidden rounded-(--just-radius-sm) border-(length:--just-border-width)"
       >
-        <div
-          style={{ width: `${val}%` }}
-          className={cn(
-            'h-full transition-all duration-300',
-            isNeo
-              ? 'bg-accent border-r-[2.5px] border-black dark:border-white'
-              : 'bg-accent rounded-full'
-          )}
-        />
+        <div className="bg-accent h-full" style={{ width: `${PERCENT}%` }} />
       </div>
-      <p className="text-muted text-center font-mono text-[10px]">
-        Click bar to advance
-      </p>
+      <p className="text-muted text-xs">{crm.progress.detail}</p>
     </div>
   );
 }

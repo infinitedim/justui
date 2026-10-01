@@ -9,6 +9,7 @@ import { ThemeConfigurator } from '@/components/organisms/theme-configurator';
 import { PhoneMockupCanvas } from '@/components/organisms/phone-mockup-canvas';
 import { CodeExportDrawer } from '@/components/organisms/code-export-drawer';
 import { ThemeStudioProvider } from '@/lib/theme-studio-context';
+import { PresetProvider } from '@/components/providers/preset-provider';
 import { hexToHsl } from '@/lib/theme/color-resolver';
 
 vi.mock('next/navigation', () => ({
@@ -35,6 +36,9 @@ vi.mock('@/components/search', () => ({
 describe('Theme Studio Component & Integration Tests', () => {
   beforeEach(() => {
     window.history.replaceState(null, '', '/en/studio');
+    localStorage.clear();
+    document.body.classList.remove('theme-neobrutalism');
+    document.documentElement.classList.remove('theme-neobrutalism');
     Object.assign(navigator, {
       clipboard: {
         writeText: vi.fn().mockImplementation(() => Promise.resolve()),
@@ -59,7 +63,7 @@ describe('Theme Studio Component & Integration Tests', () => {
 
       expect(
         screen.getByText(
-          'Konfigurasi design token secara visual dan ekspor kode siap produksi.'
+          'Pilih satu warna. Studio menurunkan palet terang dan gelap yang lolos WCAG AA, lalu memberi config untuk justui init.'
         )
       ).toBeInTheDocument();
       expect(screen.getByText('Warna Dasar')).toBeInTheDocument();
@@ -75,7 +79,9 @@ describe('Theme Studio Component & Integration Tests', () => {
         </ThemeStudioProvider>
       );
 
-      expect(screen.getByLabelText('Hex color string')).toHaveValue('#a3e635');
+      expect(screen.getByLabelText('Seed color hex value')).toHaveValue(
+        '#a3e635'
+      );
       expect(screen.getByText('Lime')).toBeInTheDocument();
       expect(screen.getByText('Blue')).toBeInTheDocument();
       expect(screen.getByText('Rose')).toBeInTheDocument();
@@ -91,7 +97,7 @@ describe('Theme Studio Component & Integration Tests', () => {
       const blueSwatch = screen.getByText('Blue');
       fireEvent.click(blueSwatch);
 
-      const input = screen.getByLabelText('Hex color string');
+      const input = screen.getByLabelText('Seed color hex value');
       expect(input).toHaveValue('#3b82f6');
     });
 
@@ -102,7 +108,7 @@ describe('Theme Studio Component & Integration Tests', () => {
         </ThemeStudioProvider>
       );
 
-      const input = screen.getByLabelText('Hex color string');
+      const input = screen.getByLabelText('Seed color hex value');
       fireEvent.change(input, { target: { value: '#3b82f6' } });
       fireEvent.blur(input);
 
@@ -120,13 +126,15 @@ describe('Theme Studio Component & Integration Tests', () => {
 
       // Drag to 0%
       fireEvent.change(slider, { target: { value: '0' } });
-      expect(screen.getByLabelText('Hex color string')).toHaveValue('#000000');
+      expect(screen.getByLabelText('Seed color hex value')).toHaveValue(
+        '#000000'
+      );
 
       // Drag back to 55%
       fireEvent.change(slider, { target: { value: '55' } });
       // Should recover lime tone, not stay black/gray
       const val = (
-        screen.getByLabelText('Hex color string') as HTMLInputElement
+        screen.getByLabelText('Seed color hex value') as HTMLInputElement
       ).value;
       expect(val).not.toBe('#000000');
       expect(val).not.toBe('#8c8c8c');
@@ -149,17 +157,18 @@ describe('Theme Studio Component & Integration Tests', () => {
       expect(toggle).toHaveAttribute('aria-checked', 'true');
     });
 
-    it('allows switching presets between default and neobrutalism', () => {
+    it('shows the site-wide preset read-only instead of a second preset control', () => {
       render(
         <ThemeStudioProvider>
           <ThemeConfigurator lang="en" />
         </ThemeStudioProvider>
       );
 
-      const neoRadio = screen.getByRole('radio', { name: 'Neobrutalism' });
-      fireEvent.click(neoRadio);
-
-      expect(neoRadio).toHaveAttribute('aria-checked', 'true');
+      expect(screen.getByText('default')).toBeInTheDocument();
+      expect(screen.getByText(/change it in the header/)).toBeInTheDocument();
+      expect(
+        screen.queryByRole('radio', { name: /neobrutalism/i })
+      ).not.toBeInTheDocument();
     });
 
     it('renders resolved palette tokens with WCAG contrast badges', () => {
@@ -196,13 +205,13 @@ describe('Theme Studio Component & Integration Tests', () => {
       fireEvent.click(copyButton);
 
       // Clipboard write hasn't resolved yet: must not claim success early.
-      expect(screen.queryByText('Copied!')).not.toBeInTheDocument();
+      expect(screen.queryByText('Copied')).not.toBeInTheDocument();
 
       resolveWrite();
-      await screen.findByText('Copied!');
+      await screen.findByText('Copied');
     });
 
-    it('shows a failure state instead of a false "Copied!" when the clipboard write rejects', async () => {
+    it('shows a failure state instead of a false "Copied" when the clipboard write rejects', async () => {
       Object.assign(navigator, {
         clipboard: {
           writeText: vi.fn().mockRejectedValue(new Error('denied')),
@@ -221,7 +230,7 @@ describe('Theme Studio Component & Integration Tests', () => {
       fireEvent.click(copyButton);
 
       await screen.findByText('Copy failed');
-      expect(screen.queryByText('Copied!')).not.toBeInTheDocument();
+      expect(screen.queryByText('Copied')).not.toBeInTheDocument();
     });
   });
 
@@ -234,10 +243,14 @@ describe('Theme Studio Component & Integration Tests', () => {
       );
 
       expect(screen.getByText('9:41')).toBeInTheDocument();
-      expect(screen.getByText('JustUI App')).toBeInTheDocument();
-      expect(screen.getByText('Welcome back')).toBeInTheDocument();
-      expect(screen.getByText('Get Started')).toBeInTheDocument();
-      expect(screen.getByText('120 FPS')).toBeInTheDocument();
+      expect(screen.getByText('Relasi')).toBeInTheDocument();
+      expect(screen.getByText("Today's follow-ups")).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Log call' })
+      ).toBeInTheDocument();
+      // No invented metrics or version labels in the preview.
+      expect(screen.queryByText('120 FPS')).toBeNull();
+      expect(screen.queryByText(/v0\.\d+/)).toBeNull();
     });
 
     it('localizes the mock app header and notifications button for Indonesian', () => {
@@ -247,7 +260,7 @@ describe('Theme Studio Component & Integration Tests', () => {
         </ThemeStudioProvider>
       );
 
-      expect(screen.getByText('Aplikasi JustUI')).toBeInTheDocument();
+      expect(screen.getByText('Tindak lanjut hari ini')).toBeInTheDocument();
       expect(
         screen.getByRole('button', { name: 'Notifikasi' })
       ).toBeInTheDocument();
@@ -357,21 +370,39 @@ describe('Theme Studio Component & Integration Tests', () => {
   });
 
   describe('Toolbar Actions (Reset & Share)', () => {
-    it('resets state when Reset button is clicked', () => {
-      render(<StudioClient lang="en" />);
+    it('resets the seed color but leaves the site-wide preset alone', () => {
+      window.history.replaceState(null, '', '/en/studio?preset=neo');
+      render(
+        <PresetProvider>
+          <StudioClient lang="en" />
+        </PresetProvider>
+      );
 
-      // Change preset to neobrutalism
-      const neoRadio = screen.getByRole('radio', { name: 'Neobrutalism' });
-      fireEvent.click(neoRadio);
-      expect(neoRadio).toHaveAttribute('aria-checked', 'true');
+      const input = screen.getByLabelText('Seed color hex value');
+      fireEvent.change(input, { target: { value: '#3b82f6' } });
+      fireEvent.blur(input);
+      expect(input).toHaveValue('#3b82f6');
 
-      // Click Reset button in top toolbar
-      const resetButton = screen.getByRole('button', { name: 'Reset' });
-      fireEvent.click(resetButton);
+      fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
 
-      // Verify preset returned to default
-      const defaultRadio = screen.getByRole('radio', { name: 'Default' });
-      expect(defaultRadio).toHaveAttribute('aria-checked', 'true');
+      expect(screen.getByLabelText('Seed color hex value')).toHaveValue(
+        '#a3e635'
+      );
+      expect(screen.getByText('neobrutalism')).toBeInTheDocument();
+    });
+
+    it('applies ?preset= from a shared link to the site-wide preset, over the stored one', () => {
+      localStorage.setItem('justui-preset', 'default');
+      window.history.replaceState(null, '', '/en/studio?preset=neo');
+      render(
+        <PresetProvider>
+          <StudioClient lang="en" />
+        </PresetProvider>
+      );
+
+      expect(document.body).toHaveClass('theme-neobrutalism');
+      expect(localStorage.getItem('justui-preset')).toBe('neobrutalism');
+      expect(screen.getByText('neobrutalism')).toBeInTheDocument();
     });
 
     it('triggers clipboard write on Share button click', async () => {
@@ -414,7 +445,7 @@ describe('Theme Studio Component & Integration Tests', () => {
       expect(screen.getByRole('contentinfo')).toBeInTheDocument();
     });
 
-    it('applies seed/dark/preset/colorSpace from searchParams on the very first render, with no flash of the default theme', async () => {
+    it('applies seed/dark/colorSpace from searchParams on the very first render, with no flash of the default theme', async () => {
       // window.location.search is empty per beforeEach, so the client-side
       // effect that reads it cannot be what produces this value -- only a
       // correctly-threaded server prop can.
@@ -429,16 +460,15 @@ describe('Theme Studio Component & Integration Tests', () => {
       });
       render(page);
 
-      expect(screen.getByLabelText('Hex color string')).toHaveValue('#e11d48');
+      expect(screen.getByLabelText('Seed color hex value')).toHaveValue(
+        '#e11d48'
+      );
       // "Dark" (not "Light") confirms the label is already reflecting the
       // resolved isDark=true state on this very first render.
       expect(screen.getByRole('switch', { name: 'Dark' })).toHaveAttribute(
         'aria-checked',
         'true'
       );
-      expect(
-        screen.getByRole('radio', { name: 'Neobrutalism' })
-      ).toHaveAttribute('aria-checked', 'true');
     });
   });
 });

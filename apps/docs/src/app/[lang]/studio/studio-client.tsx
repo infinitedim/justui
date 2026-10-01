@@ -11,13 +11,12 @@ import { PhoneMockupCanvas } from '@/components/organisms/phone-mockup-canvas';
 import { CodeExportDrawer } from '@/components/organisms/code-export-drawer';
 import { getStudioDictionary } from '@/lib/theme-studio-translations';
 import { Button } from '@/components/atoms/button';
-import type { ColorSpace, JustUIPreset } from '@/lib/theme/color-resolver';
+import type { ColorSpace } from '@/lib/theme/color-resolver';
 
 interface StudioClientProps {
   lang: string;
   initialSeedColor?: string;
   initialIsDark?: boolean;
-  initialPreset?: JustUIPreset;
   initialColorSpace?: ColorSpace;
 }
 
@@ -43,16 +42,7 @@ function StudioContent({ lang }: { lang: string }) {
       {/* Studio Header Toolbar */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="border-border/80 bg-muted/30 mb-2 inline-flex items-center gap-2 rounded-full border px-3 py-1">
-            <span
-              className="bg-accent h-2 w-2 rounded-full"
-              aria-hidden="true"
-            />
-            <span className="text-muted font-mono text-xs font-medium">
-              Live Token Playground
-            </span>
-          </div>
-          <h1 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="text-foreground text-3xl font-medium tracking-tight sm:text-4xl">
             {t.title}
           </h1>
           <p className="text-secondary mt-1 max-w-2xl text-sm leading-relaxed sm:text-base">
@@ -122,14 +112,12 @@ export function StudioClient({
   lang,
   initialSeedColor,
   initialIsDark,
-  initialPreset,
   initialColorSpace,
 }: StudioClientProps) {
   return (
     <ThemeStudioProvider
       initialSeedColor={initialSeedColor}
       initialIsDark={initialIsDark}
-      initialPreset={initialPreset}
       initialColorSpace={initialColorSpace}
     >
       <StudioContent lang={lang} />

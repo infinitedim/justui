@@ -1,29 +1,37 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import type { CopyButtonProps } from './copy-button.types';
 
+const FEEDBACK_MS = 2000;
+
 /**
- * Copy-to-clipboard molecule. Composes the Button atom pattern with
- * a transient "copied" feedback state (2s timeout).
+ * Copy-to-clipboard molecule. Shows a check for two seconds after a
+ * successful write and announces it to screen readers; a failed write shows
+ * nothing, so the UI never claims a copy that did not happen.
  */
 export function CopyButton({
   text,
   label = 'Copy to clipboard',
+  copiedLabel = 'Copied',
   className,
 }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!copied) return;
+    const id = window.setTimeout(() => setCopied(false), FEEDBACK_MS);
+    return () => window.clearTimeout(id);
+  }, [copied]);
 
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      const id = window.setTimeout(() => setCopied(false), 2000);
-      return () => window.clearTimeout(id);
     } catch {
-      // Ignore clipboard permission errors in non-secure or restricted contexts
+      // Clipboard can be blocked (insecure context, permissions); stay silent.
     }
   }, [text]);
 
@@ -41,10 +49,13 @@ export function CopyButton({
       )}
     >
       {copied ? (
-        <Check size={14} className="text-accent" aria-hidden="true" />
+        <Check size={14} className="text-accent-text" aria-hidden="true" />
       ) : (
         <Copy size={14} aria-hidden="true" />
       )}
+      <span className="sr-only" aria-live="polite">
+        {copied ? copiedLabel : ''}
+      </span>
     </button>
   );
 }

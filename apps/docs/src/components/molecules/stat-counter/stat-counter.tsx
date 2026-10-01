@@ -3,7 +3,7 @@ import type { StatCounterProps } from './stat-counter.types';
 
 /**
  * Statistic counter molecule. Server Component.
- * Displays a large numeric value with label, used in hero sections and bento cards.
+ * Displays a large value with its unit and a short label.
  */
 export function StatCounter({
   value,
@@ -19,7 +19,7 @@ export function StatCounter({
           <span className="text-muted ml-0.5 text-sm font-normal">{unit}</span>
         ) : null}
       </span>
-      <span className="text-muted font-mono text-xs">{label}</span>
+      <span className="text-muted text-sm">{label}</span>
     </div>
   );
 }

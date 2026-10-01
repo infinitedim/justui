@@ -1,58 +1,51 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { neutralControl } from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
-import { Bold, Italic, Underline } from 'lucide-react';
 
-export function ToggleMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [active, setActive] = useState<string[]>(['bold']);
-  const isNeo = preset === 'neobrutalism';
+const FILTERS = ['mine', 'overdue', 'starred'] as const;
+type Filter = (typeof FILTERS)[number];
 
-  const toggle = (val: string) => {
-    setActive((prev) =>
-      prev.includes(val) ? prev.filter((x) => x !== val) : [...prev, val]
-    );
+export function ToggleMock() {
+  const { crm } = useCatalogI18n();
+  const [active, setActive] = useState<ReadonlySet<Filter>>(
+    () => new Set<Filter>(['mine'])
+  );
+
+  const toggle = (id: Filter) => {
+    setActive((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
-
-  const items = [
-    { id: 'bold', icon: Bold },
-    { id: 'italic', icon: Italic },
-    { id: 'underline', icon: Underline },
-  ];
 
   return (
     <div
+      role="group"
+      aria-label={crm.toggle.label}
       data-testid="mock-toggle"
-      className={cn(
-        'inline-flex gap-1 p-1',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-md border shadow-sm'
-      )}
+      className="flex gap-1.5"
     >
-      {items.map(({ id, icon: Icon }) => {
-        const isSelected = active.includes(id);
+      {FILTERS.map((id) => {
+        const pressed = active.has(id);
         return (
           <button
             key={id}
             type="button"
+            aria-pressed={pressed}
             onClick={() => toggle(id)}
             data-testid={`mock-toggle-${id}`}
             className={cn(
-              'flex h-8 w-8 items-center justify-center transition-all select-none',
-              isNeo ? 'rounded-none' : 'rounded-sm',
-              isSelected
-                ? isNeo
-                  ? 'bg-accent border-[2px] border-black font-bold text-black dark:border-white'
-                  : 'bg-accent/20 text-accent-deep dark:text-accent font-medium'
-                : 'text-muted hover:text-foreground'
+              neutralControl,
+              'h-8 px-3 text-xs font-medium',
+              pressed ? 'bg-accent text-accent-foreground' : 'text-muted'
             )}
           >
-            <Icon className="h-4 w-4" />
+            {crm.toggle[id]}
           </button>
         );
       })}

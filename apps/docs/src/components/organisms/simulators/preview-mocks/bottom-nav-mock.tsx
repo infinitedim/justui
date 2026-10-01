@@ -1,56 +1,45 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Layers, ListChecks, Users } from 'lucide-react';
+import { useCatalogI18n } from '@/lib/catalog-i18n/context';
+import { focusRing, surface } from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
-import { Home, Search, Bell, User } from 'lucide-react';
 
-export function BottomNavMock({
-  preset = 'default',
-}: {
-  preset?: 'default' | 'neobrutalism';
-}) {
-  const [active, setActive] = useState(0);
-  const isNeo = preset === 'neobrutalism';
+const ICONS = { pipeline: Layers, contacts: Users, tasks: ListChecks } as const;
 
-  const items = [
-    { icon: Home, label: 'Home' },
-    { icon: Search, label: 'Search' },
-    { icon: Bell, label: 'Alerts' },
-    { icon: User, label: 'Profile' },
-  ];
+export function BottomNavMock() {
+  const { crm } = useCatalogI18n();
+  const [active, setActive] = useState('pipeline');
 
   return (
-    <div
+    <nav
+      aria-label={crm.bottomNav.label}
       data-testid="mock-bottom-nav"
-      className={cn(
-        'flex w-full max-w-60 items-center justify-around p-2 select-none',
-        isNeo
-          ? 'bg-surface rounded-none border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] dark:border-white dark:shadow-[4px_4px_0px_0px_#fff]'
-          : 'border-border bg-surface rounded-xl border shadow-sm'
-      )}
+      className={cn(surface, 'flex w-full max-w-64 justify-around px-1 py-1.5')}
     >
-      {items.map(({ icon: Icon, label }, idx) => {
-        const isSelected = active === idx;
+      {crm.bottomNav.items.map((item) => {
+        const Icon = ICONS[item.id as keyof typeof ICONS] ?? Layers;
+        const current = item.id === active;
         return (
           <button
-            key={label}
+            key={item.id}
             type="button"
-            onClick={() => setActive(idx)}
-            aria-label={label}
+            onClick={() => setActive(item.id)}
+            aria-current={current ? 'page' : undefined}
             className={cn(
-              'flex flex-col items-center gap-0.5 p-1 transition-all',
-              isSelected
-                ? isNeo
-                  ? 'font-bold text-black dark:text-white'
-                  : 'text-accent'
+              focusRing,
+              'flex min-w-16 flex-col items-center gap-0.5 rounded-(--just-radius-sm) px-2 py-1 text-xs',
+              current
+                ? 'text-accent-text font-semibold'
                 : 'text-muted hover:text-foreground'
             )}
           >
-            <Icon className="h-4 w-4" />
-            <span className="font-mono text-[9px]">{label}</span>
+            <Icon className="h-4 w-4" aria-hidden="true" />
+            {item.label}
           </button>
         );
       })}
-    </div>
+    </nav>
   );
 }

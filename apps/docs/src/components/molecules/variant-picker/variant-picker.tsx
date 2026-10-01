@@ -28,11 +28,11 @@ export function VariantPicker({
           aria-checked={value === opt.value}
           onClick={() => onChange(opt.value)}
           className={cn(
-            'rounded-(--just-radius-md) px-2.5 py-1 font-mono text-[11px] transition-colors',
+            'rounded-(--just-radius-md) px-2.5 py-1 font-mono text-xs transition-colors',
             'border-(length:--just-border-width)',
             'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2',
             value === opt.value
-              ? 'border-accent bg-accent-muted text-accent-deep'
+              ? 'border-accent bg-accent-muted text-accent-text'
               : 'border-border text-muted hover:text-foreground'
           )}
         >
