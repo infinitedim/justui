@@ -1,108 +1,123 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { ComponentMeta } from '@/lib/components-data';
 import {
-  CatalogFilterBar,
-  type CategoryFilter,
-} from '@/components/molecules/catalog-filter-bar/catalog-filter-bar';
+  formatMessage,
+  type HomepageDictionary,
+} from '@/lib/homepage-translations';
+import { CatalogFilterBar } from '@/components/molecules/catalog-filter-bar/catalog-filter-bar';
 import { LivingComponentCard } from '@/components/organisms/living-component-card/living-component-card';
-import { getCatalogDictionary } from '@/lib/catalog-i18n';
-import { CatalogI18nProvider } from '@/lib/catalog-i18n/context';
-import { accentLink } from '@/lib/ui-classes';
+import { usePreset } from '@/components/providers';
 
 export interface ComponentsCatalogClientProps {
   components: ComponentMeta[];
   lang: string;
+  dictionary: HomepageDictionary;
 }
 
 export function ComponentsCatalogClient({
   components,
   lang,
+  dictionary,
 }: ComponentsCatalogClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<CategoryFilter>('all');
-  const { ui, descriptions } = getCatalogDictionary(lang);
-
-  const query = searchQuery.trim();
-  const filtering = query.length > 0 || activeCategory !== 'all';
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+  // The preset is changed in the navbar only; the catalog just follows it.
+  const { preset } = usePreset();
 
   const filteredComponents = useMemo(() => {
-    const needle = query.toLowerCase();
+    const query = searchQuery.trim().toLowerCase();
     return components.filter((c) => {
-      if (activeCategory !== 'all' && c.category !== activeCategory)
+      if (activeCategory !== 'all' && c.category !== activeCategory) {
         return false;
-      if (!needle) return true;
+      }
+      if (!query) return true;
       return (
-        c.name.toLowerCase().includes(needle) ||
-        c.slug.includes(needle) ||
-        (descriptions[c.slug] ?? '').toLowerCase().includes(needle)
+        c.name.toLowerCase().includes(query) ||
+        c.slug.toLowerCase().includes(query) ||
+        c.description.toLowerCase().includes(query)
       );
     });
-  }, [components, activeCategory, query, descriptions]);
+  }, [components, activeCategory, searchQuery]);
+
+  const isFiltering = searchQuery.trim() !== '' || activeCategory !== 'all';
 
   const resetFilters = () => {
     setSearchQuery('');
     setActiveCategory('all');
   };
 
+  const resetButton = (
+    <button
+      type="button"
+      onClick={resetFilters}
+      className="text-accent-text font-medium underline-offset-4 hover:underline"
+    >
+      {dictionary.catalogResetFilters}
+    </button>
+  );
+
   return (
-    <CatalogI18nProvider lang={lang}>
-      <div data-testid="components-catalog-container" className="space-y-6">
-        <CatalogFilterBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          activeCategory={activeCategory}
-          onCategoryChange={setActiveCategory}
-          ui={ui}
-        />
+    <div data-testid="components-catalog-container" className="space-y-6">
+      <CatalogFilterBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        activeCategory={activeCategory}
+        onCategoryChange={setActiveCategory}
+        searchPlaceholder={dictionary.catalogSearchPlaceholder}
+        searchLabel={dictionary.catalogSearchLabel}
+        categoryLabel={dictionary.catalogCategoryLabel}
+        allLabel={dictionary.catalogAllCategories}
+        categoryLabels={dictionary.catalogCategories}
+      />
 
-        {/* Announced to screen readers; visible only while filtering. */}
-        <div
-          aria-live="polite"
-          className="text-muted flex min-h-5 items-center gap-3 text-sm"
-        >
-          {filtering && filteredComponents.length > 0 ? (
-            <>
-              <span data-testid="catalog-result-count">
-                {ui.resultCount(filteredComponents.length, components.length)}
-              </span>
-              <button
-                type="button"
-                onClick={resetFilters}
-                className={accentLink}
-              >
-                {ui.resetFilters}
-              </button>
-            </>
-          ) : null}
-        </div>
-
-        {filteredComponents.length > 0 ? (
-          <div
-            data-testid="components-grid"
-            className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3"
-          >
-            {filteredComponents.map((component) => (
-              <LivingComponentCard
-                key={component.slug}
-                component={component}
-                lang={lang}
-              />
-            ))}
-          </div>
-        ) : (
-          <p
-            data-testid="catalog-empty-state"
-            className="text-secondary py-12 text-center text-sm"
-          >
-            {query ? ui.noResults(query) : ui.noResultsInCategory}{' '}
-            <button type="button" onClick={resetFilters} className={accentLink}>
-              {ui.resetFilters}
-            </button>
+      <div aria-live="polite" className="min-h-5 text-sm">
+        {isFiltering && filteredComponents.length > 0 ? (
+          <p className="text-secondary flex items-center gap-3">
+            <span>
+              {formatMessage(dictionary.catalogShowing, {
+                shown: filteredComponents.length,
+                total: components.length,
+              })}
+            </span>
+            {resetButton}
           </p>
-        )}
+        ) : null}
       </div>
-    </CatalogI18nProvider>
+
+      {filteredComponents.length > 0 ? (
+        <div
+          data-testid="components-grid"
+          className="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
+        >
+          {filteredComponents.map((component) => (
+            <LivingComponentCard
+              key={component.slug}
+              component={component}
+              preset={preset}
+              lang={lang}
+              categoryLabel={dictionary.catalogCategories[component.category]}
+              copyCliLabel={dictionary.catalogCopyCli}
+              copiedLabel={dictionary.copied}
+              viewCodeLabel={dictionary.catalogViewCode}
+              docsLabel={dictionary.catalogViewDocs}
+              codeTitle={dictionary.catalogCodeTitle}
+              closeLabel={dictionary.catalogCloseCode}
+            />
+          ))}
+        </div>
+      ) : (
+        <p
+          data-testid="catalog-empty-state"
+          className="text-secondary py-12 text-center text-sm"
+        >
+          {formatMessage(dictionary.catalogNoResults, {
+            query: searchQuery.trim(),
+          })}{' '}
+          {resetButton}
+        </p>
+      )}
+    </div>
   );
 }

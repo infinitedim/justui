@@ -5,6 +5,4 @@ export interface TerminalPromptProps extends HTMLAttributes<HTMLDivElement> {
   prefix?: string;
   /** The command text to display. */
   command: string;
-  /** Whether to show a static block cursor. */
-  cursor?: boolean;
 }

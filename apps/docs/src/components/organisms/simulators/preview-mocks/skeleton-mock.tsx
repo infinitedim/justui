@@ -1,58 +1,23 @@
 'use client';
 
-import { useState } from 'react';
-import { useCatalogI18n } from '@/lib/catalog-i18n/context';
-import { neutralControl } from '@/lib/ui-classes';
-import { cn } from '@/lib/cn';
+// Static on purpose: a placeholder that pulses forever fails WCAG 2.2.2.
+const block = 'bg-fill rounded-(--just-radius-sm)';
 
-const CONTACTS = ['Rina Wulandari', 'Bagas Pratama', 'Dewi Lestari'] as const;
-
-/**
- * The pulse runs twice and stops, so the preview never animates for more
- * than about four seconds (WCAG 2.2.2). The button flips `loading` the way
- * JustSkeleton's `loading` prop does.
- */
 export function SkeletonMock() {
-  const { crm } = useCatalogI18n();
-  const [loading, setLoading] = useState(true);
-
   return (
-    <div className="flex w-full max-w-60 flex-col gap-2.5">
-      <ul
-        aria-busy={loading}
-        aria-label={crm.skeleton.label}
-        data-testid="mock-skeleton"
-        className="space-y-2"
-      >
-        {CONTACTS.map((name) => (
-          <li key={name} className="flex items-center gap-2.5">
-            {loading ? (
-              <>
-                <span className="bg-fill h-7 w-7 shrink-0 animate-pulse rounded-full [animation-iteration-count:2]" />
-                <span className="bg-fill h-3 flex-1 animate-pulse rounded-(--just-radius-xs) [animation-iteration-count:2]" />
-              </>
-            ) : (
-              <>
-                <span className="bg-accent-muted text-foreground flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
-                  {name
-                    .split(' ')
-                    .map((part) => part[0])
-                    .join('')}
-                </span>
-                <span className="text-foreground text-sm">{name}</span>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
-      <button
-        type="button"
-        onClick={() => setLoading((l) => !l)}
-        aria-pressed={loading}
-        className={cn(neutralControl, 'h-8 self-start px-3 font-mono text-xs')}
-      >
-        loading: {String(loading)}
-      </button>
+    <div
+      data-testid="mock-skeleton"
+      aria-label="Loading order"
+      className="w-full max-w-56 space-y-2.5"
+    >
+      <div className="flex items-center gap-2.5">
+        <div className="bg-fill h-9 w-9 rounded-full" />
+        <div className="flex-1 space-y-1.5">
+          <div className={`${block} h-3.5 w-3/4`} />
+          <div className={`${block} h-3 w-1/2`} />
+        </div>
+      </div>
+      <div className={`${block} h-8 w-full`} />
     </div>
   );
 }

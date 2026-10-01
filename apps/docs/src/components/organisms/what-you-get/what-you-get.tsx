@@ -1,4 +1,5 @@
 import { cn } from '@/lib/cn';
+import { CLI_DEFAULTS, GENERATED_REGISTRY } from '@/lib/components.generated';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
 import { ContrastDemo } from './contrast-demo';
 
@@ -37,6 +38,27 @@ function PresetSample({
   );
 }
 
+/**
+ * What `justui add button card` writes, from the registry: one folder per
+ * component under the CLI's default components_dir, shared helpers in
+ * shared/. Same paths the terminal simulator prints.
+ */
+function addTree(names: string[]): string {
+  const shared = new Set<string>();
+  const rows = names.map((name) => {
+    const entry = GENERATED_REGISTRY.find((c) => c.name === name);
+    for (const dep of entry?.registryDependencies ?? []) {
+      if (dep.startsWith('_shared_')) shared.add(dep);
+    }
+    const count = entry?.files.length ?? 0;
+    return `|-- ${name}/  (${count} files)`;
+  });
+  rows.push(`\\-- shared/  (${shared.size} files)`);
+  return `${rows.join('\n')}\n`;
+}
+
+const tree = addTree(['button', 'card']);
+
 export function WhatYouGet({ lang = 'en', className }: WhatYouGetProps) {
   const t = getHomepageDictionary(lang);
 
@@ -63,12 +85,8 @@ export function WhatYouGet({ lang = 'en', className }: WhatYouGetProps) {
           <pre className="border-border bg-background text-foreground overflow-x-auto rounded-(--just-radius-md) border p-3.5 font-mono text-[12.5px] leading-7">
             <code>
               {'$ justui add button card\n'}
-              <span className="text-muted">
-                {'lib/\n|-- theme/just_theme.dart\n\\-- ui/\n'}
-              </span>
-              <span className="text-accent-text">
-                {'   |-- just_button.dart\n   \\-- just_card.dart\n'}
-              </span>
+              <span className="text-muted">{`${CLI_DEFAULTS.componentsDir}/\n`}</span>
+              <span className="text-accent-text">{tree}</span>
               <span className="text-muted">{'pubspec.yaml  (unchanged)'}</span>
             </code>
           </pre>

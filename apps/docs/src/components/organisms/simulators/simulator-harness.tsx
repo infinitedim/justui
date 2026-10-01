@@ -1,28 +1,35 @@
-import type { ReactNode } from 'react';
+'use client';
+
+import React from 'react';
 import { cn } from '@/lib/cn';
 
 export interface SimulatorHarnessProps {
-  children: ReactNode;
+  preset?: 'default' | 'neobrutalism';
+  children: React.ReactNode;
   className?: string;
 }
 
 /**
- * Plain stage for one preview mock. The background is the page background
- * token, so the component is judged against the surface it will sit on.
+ * Preview frame for one catalog mock. The preset is applied as a token
+ * scope class (each preset class is a complete --just-* set), so neither the
+ * frame nor the mock inside needs to know which preset is active.
  */
 export function SimulatorHarness({
+  preset = 'default',
   children,
   className,
 }: SimulatorHarnessProps) {
   return (
     <div
       data-testid="simulator-harness"
+      data-preset={preset}
       className={cn(
-        'bg-background relative flex h-48 w-full items-center justify-center p-4 focus-within:z-20',
+        preset === 'neobrutalism' ? 'theme-neobrutalism' : 'preset-default',
+        'bg-background text-foreground relative flex h-44 w-full items-center justify-center overflow-visible p-4 select-none focus-within:z-20',
         className
       )}
     >
-      <div className="flex w-full max-w-72 items-center justify-center">
+      <div className="flex w-full max-w-70 items-center justify-center">
         {children}
       </div>
     </div>

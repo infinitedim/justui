@@ -20,7 +20,8 @@ import {
   deserializeStudioState,
   serializeStudioState,
 } from './theme/url-serializer';
-import { usePreset } from '@/components/providers/preset-provider';
+import { SITE_URL } from './site';
+import { usePreset } from '@/components/providers';
 
 export interface ThemeStudioState {
   seedColor: string;
@@ -41,6 +42,7 @@ export interface ThemeStudioContextValue extends ThemeStudioState {
 
 const DEFAULT_SEED_COLOR = '#a3e635';
 const DEFAULT_IS_DARK = false;
+const DEFAULT_PRESET: JustUIPreset = 'default';
 const DEFAULT_COLOR_SPACE: ColorSpace = 'hsl';
 
 const ThemeStudioContext = createContext<ThemeStudioContextValue | null>(null);
@@ -49,6 +51,7 @@ export interface ThemeStudioProviderProps {
   children: React.ReactNode;
   initialSeedColor?: string;
   initialIsDark?: boolean;
+  initialPreset?: JustUIPreset;
   initialColorSpace?: ColorSpace;
 }
 
@@ -56,12 +59,29 @@ export function ThemeStudioProvider({
   children,
   initialSeedColor = DEFAULT_SEED_COLOR,
   initialIsDark = DEFAULT_IS_DARK,
+  initialPreset = DEFAULT_PRESET,
   initialColorSpace = DEFAULT_COLOR_SPACE,
 }: ThemeStudioProviderProps) {
   const [seedColor, setSeedColorState] = useState<string>(initialSeedColor);
   const [isDark, setIsDarkState] = useState<boolean>(initialIsDark);
-  // The preset is site-wide (navbar PresetToggle); the Studio only reads it.
-  const { preset, setPreset: setGlobalPreset } = usePreset();
+  // The preset is site-wide state (navbar toggle); the studio reads and
+  // writes the same value instead of keeping a copy that can disagree.
+  const { preset: sitePreset, setPreset: setPresetState } = usePreset();
+  // A preset from the share link (server prop or ?preset=) is shown from the
+  // first render and handed to the site-wide state once that has caught up.
+  const [pendingPreset, setPendingPreset] = useState<JustUIPreset | null>(
+    initialPreset !== DEFAULT_PRESET ? initialPreset : null
+  );
+  const preset = pendingPreset ?? sitePreset;
+
+  useEffect(() => {
+    if (pendingPreset === null) return;
+    if (sitePreset === pendingPreset) {
+      setPendingPreset(null);
+    } else {
+      setPresetState(pendingPreset);
+    }
+  }, [pendingPreset, sitePreset, setPresetState]);
   const [colorSpace, setColorSpaceState] =
     useState<ColorSpace>(initialColorSpace);
 
@@ -73,12 +93,10 @@ export function ThemeStudioProvider({
     const parsed = deserializeStudioState(window.location.search);
     if (parsed.seedColor) setSeedColorState(parsed.seedColor);
     if (parsed.isDark !== undefined) setIsDarkState(parsed.isDark);
-    // A shared link wins over the viewer's stored preset: they should see
-    // exactly what was shared. `parsed.preset` is whitelisted by the parser.
-    if (parsed.preset) setGlobalPreset(parsed.preset);
+    if (parsed.preset) setPendingPreset(parsed.preset);
     if (parsed.colorSpace) setColorSpaceState(parsed.colorSpace);
     isInitialized.current = true;
-  }, [setGlobalPreset]);
+  }, []);
 
   // Synchronize URL search params with current studio state
   useEffect(() => {
@@ -109,9 +127,10 @@ export function ThemeStudioProvider({
 
   const setPreset = useCallback(
     (nextPreset: JustUIPreset) => {
-      setGlobalPreset(nextPreset);
+      setPendingPreset(null);
+      setPresetState(nextPreset);
     },
-    [setGlobalPreset]
+    [setPresetState]
   );
 
   const setColorSpace = useCallback((cs: ColorSpace) => {
@@ -121,30 +140,26 @@ export function ThemeStudioProvider({
   const reset = useCallback(() => {
     setSeedColorState(DEFAULT_SEED_COLOR);
     setIsDarkState(DEFAULT_IS_DARK);
+    setPendingPreset(null);
+    setPresetState(DEFAULT_PRESET);
     setColorSpaceState(DEFAULT_COLOR_SPACE);
-  }, []);
+  }, [setPresetState]);
 
   const resolvedTokens = useMemo(() => {
     return resolveTokens(seedColor, isDark, preset, colorSpace);
   }, [seedColor, isDark, preset, colorSpace]);
 
-  // Derive the base URL after hydration to avoid SSR/client mismatch.
-  // During SSR and the first client render we use the production origin so
-  // the generated YAML comment is deterministic; once mounted we switch to
-  // the real window.location so localhost / preview deploys are reflected.
-  const [baseUrl, setBaseUrl] = useState('https://justui.vercel.app/en/studio');
+  // Server and first client render agree on the canonical site URL; the
+  // real page URL (preview deployments, localhost) replaces it after mount.
+  const [pageUrl, setPageUrl] = useState(`${SITE_URL}/en/studio`);
   useEffect(() => {
-    setBaseUrl(window.location.href.split('?')[0] ?? window.location.href);
+    setPageUrl(window.location.href.split('?')[0] ?? window.location.href);
   }, []);
 
-  const shareUrl = useMemo(() => {
-    return buildShareUrl(baseUrl, {
-      seedColor,
-      isDark,
-      preset,
-      colorSpace,
-    });
-  }, [baseUrl, seedColor, isDark, preset, colorSpace]);
+  const shareUrl = useMemo(
+    () => buildShareUrl(pageUrl, { seedColor, isDark, preset, colorSpace }),
+    [pageUrl, seedColor, isDark, preset, colorSpace]
+  );
 
   const contextValue = useMemo<ThemeStudioContextValue>(() => {
     return {

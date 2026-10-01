@@ -1,10 +1,10 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 import { HeroInteractive } from '@/components/organisms/hero-interactive';
 import { PresetProvider } from '@/components/providers';
 
 describe('HeroInteractive', () => {
-  it('renders both terminal and living stage organisms side-by-side', () => {
+  it('renders the terminal and the stage side by side', () => {
     render(<HeroInteractive />);
 
     expect(
@@ -15,86 +15,30 @@ describe('HeroInteractive', () => {
     ).toBeInTheDocument();
   });
 
-  it('mounts widgets in living stage when command is typed in terminal', () => {
+  it('starts with the button the pre-run command added', () => {
     render(<HeroInteractive />);
-
-    const input = screen.getByLabelText('Command');
-    fireEvent.change(input, { target: { value: 'justui add button' } });
-    fireEvent.keyDown(input, { key: 'Enter' });
-
-    expect(
-      screen.getByRole('button', { name: 'Log call' })
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('stage-widget-button')).toBeInTheDocument();
   });
 
-  it('clears living stage when justui init is executed', () => {
+  it('mounts components added in the terminal, without duplicates', () => {
     render(<HeroInteractive />);
 
-    const input = screen.getByLabelText('Command');
-    fireEvent.change(input, { target: { value: 'justui add button' } });
+    const input = screen.getByLabelText('Type a justui command');
+    fireEvent.change(input, { target: { value: 'justui add button switch' } });
     fireEvent.keyDown(input, { key: 'Enter' });
 
-    expect(
-      screen.getByRole('button', { name: 'Log call' })
-    ).toBeInTheDocument();
-
-    fireEvent.change(input, { target: { value: 'justui init' } });
-    fireEvent.keyDown(input, { key: 'Enter' });
-
-    expect(
-      screen.queryByRole('button', { name: 'Log call' })
-    ).not.toBeInTheDocument();
-    expect(screen.getByText('Flutter Canvas Ready')).toBeInTheDocument();
+    expect(screen.getAllByTestId('stage-widget-button')).toHaveLength(1);
+    expect(screen.getByTestId('stage-widget-switch')).toBeInTheDocument();
   });
 
-  it('clears living stage when stage Clear button is clicked', () => {
-    render(<HeroInteractive />);
-
-    const input = screen.getByLabelText('Command');
-    fireEvent.change(input, { target: { value: 'justui add button' } });
-    fireEvent.keyDown(input, { key: 'Enter' });
-
-    expect(
-      screen.getByRole('button', { name: 'Log call' })
-    ).toBeInTheDocument();
-
-    const clearButton = screen.getByRole('button', { name: 'Clear' });
-    fireEvent.click(clearButton);
-
-    expect(
-      screen.queryByRole('button', { name: 'Log call' })
-    ).not.toBeInTheDocument();
-    expect(screen.getByText('Flutter Canvas Ready')).toBeInTheDocument();
-  });
-
-  it('triggers command simulation and mounts widget when stage CTA is clicked', async () => {
-    vi.useFakeTimers();
-    render(<HeroInteractive />);
-
-    const ctaButton = screen.getByRole('button', {
-      name: /run: justui add button/i,
-    });
-    fireEvent.click(ctaButton);
-
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(3000);
-    });
-
-    expect(
-      screen.getByRole('button', { name: 'Log call' })
-    ).toBeInTheDocument();
-
-    vi.useRealTimers();
-  });
-
-  it('switches preset when preset command is executed in terminal', () => {
+  it('applies the preset chosen in the terminal to the stage', () => {
     render(
       <PresetProvider>
         <HeroInteractive />
       </PresetProvider>
     );
 
-    const input = screen.getByLabelText('Command');
+    const input = screen.getByLabelText('Type a justui command');
     fireEvent.change(input, {
       target: { value: 'justui preset apply neobrutalism' },
     });

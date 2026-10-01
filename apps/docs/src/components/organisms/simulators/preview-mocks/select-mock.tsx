@@ -1,85 +1,63 @@
 'use client';
 
-import { useId, useState, type KeyboardEvent } from 'react';
-import { Check, ChevronDown } from 'lucide-react';
-import { useCatalogI18n } from '@/lib/catalog-i18n/context';
-import { focusRing, raised, surface } from '@/lib/ui-classes';
+import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { label, raised, surface } from './mock-styles';
 
-const STAGE_IDS = ['lead', 'qualified', 'proposal', 'won'] as const;
-type StageId = (typeof STAGE_IDS)[number];
+const options = ['Standard, 3-5 days', 'Express, 1-2 days', 'Store pickup'];
 
 export function SelectMock() {
-  const { crm } = useCatalogI18n();
-  const [selected, setSelected] = useState<StageId>('qualified');
+  const [selected, setSelected] = useState(options[0]);
   const [open, setOpen] = useState(false);
-  const labelId = useId();
-  const listId = useId();
-
-  const choose = (id: StageId) => {
-    setSelected(id);
-    setOpen(false);
-  };
-
-  const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-    if (event.key === 'Escape') setOpen(false);
-  };
 
   return (
-    <div className="relative w-full max-w-50" onKeyDown={onKeyDown}>
-      <p id={labelId} className="text-foreground mb-1.5 text-xs font-medium">
-        {crm.select.label}
-      </p>
+    <div className="relative w-full max-w-56 space-y-1.5">
+      <span className={cn(label, 'block')}>Shipping</span>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        aria-haspopup="listbox"
         aria-expanded={open}
-        aria-controls={open ? listId : undefined}
-        aria-labelledby={labelId}
         data-testid="mock-select-trigger"
         className={cn(
           surface,
-          focusRing,
-          'text-foreground flex h-9 w-full items-center justify-between px-3 text-sm'
+          'flex h-9 w-full items-center justify-between px-3 text-sm',
+          'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-1'
         )}
       >
-        <span>{crm.stages[selected]}</span>
-        <ChevronDown
-          className={cn('h-4 w-4 transition-transform', open && 'rotate-180')}
-          aria-hidden="true"
-        />
+        <span>{selected}</span>
+        <ChevronDown className="text-muted h-4 w-4" aria-hidden="true" />
       </button>
-
       {open ? (
-        <ul
-          id={listId}
+        <div
           role="listbox"
-          aria-labelledby={labelId}
           data-testid="mock-select-menu"
           className={cn(
             raised,
-            'absolute top-full left-0 z-20 mt-1.5 w-full py-1 text-sm'
+            'absolute top-full left-0 z-20 mt-1 w-full p-1'
           )}
         >
-          {STAGE_IDS.map((id) => (
-            <li key={id} role="option" aria-selected={selected === id}>
-              <button
-                type="button"
-                onClick={() => choose(id)}
-                className="hover:bg-accent-muted text-foreground flex w-full items-center justify-between px-3 py-1.5 text-left"
-              >
-                {crm.stages[id]}
-                {selected === id ? (
-                  <Check
-                    className="text-accent-text h-4 w-4"
-                    aria-hidden="true"
-                  />
-                ) : null}
-              </button>
-            </li>
+          {options.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              role="option"
+              aria-selected={selected === opt}
+              onClick={() => {
+                setSelected(opt);
+                setOpen(false);
+              }}
+              className={cn(
+                'block w-full rounded-(--just-radius-sm) px-2.5 py-1.5 text-left text-sm',
+                selected === opt
+                  ? 'bg-accent-muted text-foreground font-medium'
+                  : 'text-secondary hover:bg-accent-muted'
+              )}
+            >
+              {opt}
+            </button>
           ))}
-        </ul>
+        </div>
       ) : null}
     </div>
   );

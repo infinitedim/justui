@@ -1,47 +1,29 @@
 'use client';
 
-import { useId, useState } from 'react';
-import { useCatalogI18n } from '@/lib/catalog-i18n/context';
-import { focusRing, surface } from '@/lib/ui-classes';
+import { useState } from 'react';
 import { cn } from '@/lib/cn';
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { label, surface } from './mock-styles';
 
 export function InputMock() {
-  const { crm } = useCatalogI18n();
-  const [value, setValue] = useState(crm.input.value);
-  const inputId = useId();
-  const errorId = useId();
-  const invalid = value.length > 0 && !EMAIL_PATTERN.test(value);
+  const [value, setValue] = useState('Leave it at the front desk');
 
   return (
     <div className="w-full max-w-60 space-y-1.5">
-      <label
-        htmlFor={inputId}
-        className="text-foreground block text-xs font-medium"
-      >
-        {crm.input.label}
+      <label htmlFor="mock-delivery-note" className={cn(label, 'block')}>
+        Delivery note
       </label>
       <input
-        id={inputId}
-        type="email"
+        id="mock-delivery-note"
+        type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        aria-invalid={invalid}
-        aria-describedby={invalid ? errorId : undefined}
         data-testid="mock-input"
         className={cn(
           surface,
-          focusRing,
-          'text-foreground h-9 w-full px-3 text-sm',
-          invalid && 'border-error'
+          'h-9 w-full px-3 text-sm outline-none',
+          'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-1'
         )}
       />
-      {invalid ? (
-        <p id={errorId} className="text-error text-xs">
-          {crm.input.invalid}
-        </p>
-      ) : null}
     </div>
   );
 }

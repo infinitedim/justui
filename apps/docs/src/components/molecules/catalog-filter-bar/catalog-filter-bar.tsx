@@ -1,51 +1,55 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { CATEGORY_ORDER, type ComponentCategory } from '@/lib/components-data';
+import { CATEGORIES } from '@/lib/components-data';
+import type { ComponentCategory } from '@/lib/components-data';
 import { CategoryFilterPill } from '@/components/molecules/category-filter-pill';
 import { Kbd } from '@/components/atoms/kbd';
-import type { CatalogUiStrings } from '@/lib/catalog-i18n';
-import { focusRing, surface } from '@/lib/ui-classes';
-
-export type CategoryFilter = ComponentCategory | 'all';
 
 export interface CatalogFilterBarProps {
   searchQuery: string;
-  onSearchChange: (query: string) => void;
-  activeCategory: CategoryFilter;
-  onCategoryChange: (category: CategoryFilter) => void;
-  ui: CatalogUiStrings;
+  onSearchChange: (q: string) => void;
+  activeCategory: string;
+  onCategoryChange: (cat: string) => void;
+  searchPlaceholder: string;
+  searchLabel: string;
+  categoryLabel: string;
+  allLabel: string;
+  categoryLabels: Record<ComponentCategory, string>;
   className?: string;
 }
 
-/**
- * Search field and category chips. "/" focuses the search, Escape clears it.
- * The active preset is not controlled here: it is the navbar's PresetToggle.
- */
 export function CatalogFilterBar({
   searchQuery,
   onSearchChange,
   activeCategory,
   onCategoryChange,
-  ui,
+  searchPlaceholder,
+  searchLabel,
+  categoryLabel,
+  allLabel,
+  categoryLabels,
   className,
 }: CatalogFilterBarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // "/" focuses the search field, Escape clears it.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const typing =
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement ||
-        (e.target instanceof HTMLElement && e.target.isContentEditable);
-      if (e.key === '/' && !typing) {
+      if (
+        e.key === '/' &&
+        document.activeElement !== inputRef.current &&
+        !(e.target instanceof HTMLInputElement) &&
+        !(e.target instanceof HTMLTextAreaElement)
+      ) {
         e.preventDefault();
         inputRef.current?.focus();
-        return;
-      }
-      if (e.key === 'Escape' && document.activeElement === inputRef.current) {
+      } else if (
+        e.key === 'Escape' &&
+        document.activeElement === inputRef.current
+      ) {
         onSearchChange('');
         inputRef.current?.blur();
       }
@@ -58,14 +62,9 @@ export function CatalogFilterBar({
   return (
     <div
       data-testid="catalog-filter-bar"
-      className={cn('space-y-4', className)}
+      className={cn('space-y-3', className)}
     >
-      <div
-        className={cn(
-          surface,
-          'focus-within:outline-accent relative flex max-w-xl items-center focus-within:outline-2 focus-within:outline-offset-2'
-        )}
-      >
+      <div className="bg-card border-border focus-within:outline-accent relative flex h-10 items-center rounded-(--just-radius-md) border-(length:--just-border-width) focus-within:outline-2 focus-within:outline-offset-2 sm:max-w-md">
         <Search
           className="text-muted ml-3 h-4 w-4 shrink-0"
           aria-hidden="true"
@@ -75,10 +74,10 @@ export function CatalogFilterBar({
           type="search"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={ui.searchPlaceholder}
-          aria-label={ui.searchLabel}
+          placeholder={searchPlaceholder}
+          aria-label={searchLabel}
           data-testid="catalog-search-input"
-          className="placeholder:text-muted text-foreground w-full bg-transparent px-3 py-2 text-sm outline-none [&::-webkit-search-cancel-button]:hidden"
+          className="placeholder:text-muted w-full bg-transparent px-3 text-sm outline-none [&::-webkit-search-cancel-button]:hidden"
         />
         {searchQuery ? (
           <button
@@ -87,13 +86,10 @@ export function CatalogFilterBar({
               onSearchChange('');
               inputRef.current?.focus();
             }}
-            aria-label={ui.clearSearch}
-            className={cn(
-              focusRing,
-              'text-muted hover:text-foreground mr-2 rounded-(--just-radius-sm) p-1'
-            )}
+            aria-label="Clear search"
+            className="text-muted hover:text-foreground mr-2 p-1"
           >
-            <X className="h-3.5 w-3.5" aria-hidden="true" />
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         ) : (
           <Kbd className="mr-3 hidden sm:inline-flex" aria-hidden="true">
@@ -104,20 +100,20 @@ export function CatalogFilterBar({
 
       <div
         role="group"
-        aria-label={ui.categoriesLabel}
-        className="flex flex-wrap items-center gap-1.5"
+        aria-label={categoryLabel}
+        className="flex flex-wrap items-center gap-1"
       >
         <CategoryFilterPill
-          label={ui.allCategories}
+          label={allLabel}
           active={activeCategory === 'all'}
           onClick={() => onCategoryChange('all')}
         />
-        {CATEGORY_ORDER.map((id) => (
+        {CATEGORIES.map((cat) => (
           <CategoryFilterPill
-            key={id}
-            label={ui.categories[id]}
-            active={activeCategory === id}
-            onClick={() => onCategoryChange(id)}
+            key={cat}
+            label={categoryLabels[cat]}
+            active={activeCategory === cat}
+            onClick={() => onCategoryChange(cat)}
           />
         ))}
       </div>

@@ -1,16 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import type { CopyButtonProps } from './copy-button.types';
 
-const FEEDBACK_MS = 2000;
-
 /**
- * Copy-to-clipboard molecule. Shows a check for two seconds after a
- * successful write and announces it to screen readers; a failed write shows
- * nothing, so the UI never claims a copy that did not happen.
+ * Copy-to-clipboard molecule. Swaps the icon for a check for 2s after a
+ * successful copy and announces it to screen readers.
  */
 export function CopyButton({
   text,
@@ -19,19 +16,18 @@ export function CopyButton({
   className,
 }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
+  const timeoutRef = useRef<number | undefined>(undefined);
 
-  useEffect(() => {
-    if (!copied) return;
-    const id = window.setTimeout(() => setCopied(false), FEEDBACK_MS);
-    return () => window.clearTimeout(id);
-  }, [copied]);
+  useEffect(() => () => window.clearTimeout(timeoutRef.current), []);
 
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Clipboard can be blocked (insecure context, permissions); stay silent.
+      // Ignore clipboard permission errors in non-secure or restricted contexts
     }
   }, [text]);
 

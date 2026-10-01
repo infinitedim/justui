@@ -1,40 +1,31 @@
 'use client';
 
-import { useCatalogI18n } from '@/lib/catalog-i18n/context';
 import { cn } from '@/lib/cn';
 
-/** Soft badge per deal stage; the dot carries the stage color, the label stays readable. */
-const STAGES = [
-  { id: 'lead', tone: 'bg-info/15 border-info/40', dot: 'bg-info' },
-  {
-    id: 'qualified',
-    tone: 'bg-warning/15 border-warning/40',
-    dot: 'bg-warning',
-  },
-  { id: 'won', tone: 'bg-success/15 border-success/40', dot: 'bg-success' },
-] as const;
+const badge =
+  'inline-flex items-center rounded-(--just-radius-sm) border-(length:--just-border-width) px-2 py-0.5 text-xs font-medium';
 
 export function BadgeMock() {
-  const { crm } = useCatalogI18n();
-
   return (
-    <ul className="flex flex-wrap items-center justify-center gap-2">
-      {STAGES.map((stage, idx) => (
-        <li
-          key={stage.id}
-          data-testid={`mock-badge-${idx}`}
-          className={cn(
-            'text-foreground inline-flex items-center gap-1.5 rounded-(--just-radius-sm) border-(length:--just-border-width) px-2 py-0.5 text-xs font-medium',
-            stage.tone
-          )}
-        >
-          <span
-            className={cn('h-1.5 w-1.5 rounded-full', stage.dot)}
-            aria-hidden="true"
-          />
-          {crm.stages[stage.id]}
-        </li>
-      ))}
-    </ul>
+    <div className="flex flex-wrap items-center justify-center gap-2">
+      <span
+        data-testid="mock-badge-0"
+        className={cn(badge, 'bg-accent text-accent-foreground border-border')}
+      >
+        Paid
+      </span>
+      <span
+        data-testid="mock-badge-1"
+        className={cn(badge, 'bg-card text-foreground border-border')}
+      >
+        Shipped
+      </span>
+      <span
+        data-testid="mock-badge-2"
+        className={cn(badge, 'bg-fill text-secondary border-transparent')}
+      >
+        Refunded
+      </span>
+    </div>
   );
 }

@@ -12,7 +12,12 @@ import { cn } from '@/lib/cn';
 import { TerminalPrompt } from '@/components/molecules/terminal-prompt';
 import { TerminalLine } from '@/components/molecules/terminal-line';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
-import { parseCommand } from './cli-parser';
+import {
+  INITIAL_SESSION,
+  SUBCOMMANDS,
+  parseCommand,
+  type CliSession,
+} from './cli-parser';
 import { REGISTRY_COMPONENT_NAMES } from './levenshtein';
 import type {
   InteractiveTerminalProps,
@@ -20,39 +25,89 @@ import type {
   TerminalBufferEntry,
 } from './interactive-terminal.types';
 
+/** Already run when the page loads, so the stage starts with a result. */
+export const INITIAL_COMMAND = 'justui add button';
+
+const TRY_COMMANDS = [
+  'justui add switch card',
+  'justui preset apply neobrutalism',
+  'justui list',
+] as const;
+
+// Box-drawing frames from logger::panel/summary. Web mono fonts lack these
+// glyphs, so the fallback font misaligns the frame; the browser shows the
+// framed text without its border (the parser output itself stays exact).
+const FRAME_ONLY = /^[\s\u2500-\u257f]+$/;
+const FRAME_SIDES = /^\u2502 ?(.*?)\s*\u2502$/;
+
+function forDisplay(
+  lines: { kind: TerminalBufferEntry['lineKind']; text: string }[]
+) {
+  return lines
+    .filter((line) => !FRAME_ONLY.test(line.text))
+    .map((line) => {
+      const inner = FRAME_SIDES.exec(line.text);
+      return inner ? { ...line, text: inner[1] ?? '' } : line;
+    })
+    .filter(
+      (line, i, all) =>
+        line.text.trim() !== '' || all[i - 1]?.text.trim() !== ''
+    );
+}
+
+function toEntries(
+  command: string,
+  lines: { kind: TerminalBufferEntry['lineKind']; text: string }[],
+  nextId: () => string
+): TerminalBufferEntry[] {
+  return [
+    { id: nextId(), kind: 'prompt', promptPrefix: '$', text: command },
+    ...forDisplay(lines).map((line) => ({
+      id: nextId(),
+      kind: 'output' as const,
+      text: line.text,
+      lineKind: line.kind,
+    })),
+  ];
+}
+
 export const InteractiveTerminal = forwardRef<
   InteractiveTerminalHandle,
   InteractiveTerminalProps
 >(function InteractiveTerminal(
-  {
-    lang = 'en',
-    onMount,
-    onPresetChange,
-    onClear,
-    className,
-  }: InteractiveTerminalProps,
+  { lang = 'en', onMount, onPresetChange, className }: InteractiveTerminalProps,
   ref
 ) {
-  const [buffer, setBuffer] = useState<TerminalBufferEntry[]>([]);
+  const entryCounterRef = useRef(0);
+  const nextId = useCallback(() => {
+    entryCounterRef.current += 1;
+    return `term-${entryCounterRef.current}`;
+  }, []);
+
+  const [initial] = useState(() => {
+    const result = parseCommand(INITIAL_COMMAND, INITIAL_SESSION);
+    return {
+      result,
+      entries: toEntries(INITIAL_COMMAND, result.lines, nextId),
+    };
+  });
+  const [buffer, setBuffer] = useState<TerminalBufferEntry[]>(initial.entries);
+  const sessionRef = useRef<CliSession>(initial.result.session);
   const [currentInput, setCurrentInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [commandHistory, setCommandHistory] = useState<string[]>([
+    INITIAL_COMMAND,
+  ]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalBufferRef = useRef<HTMLDivElement>(null);
-  const entryCounterRef = useRef(0);
   const cancelledRef = useRef(false);
   const isTypingRef = useRef(false);
   const timeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
   const resolversRef = useRef<Set<() => void>>(new Set());
 
   const t = getHomepageDictionary(lang);
-
-  const nextId = useCallback(() => {
-    entryCounterRef.current += 1;
-    return `term-${entryCounterRef.current}`;
-  }, []);
 
   useEffect(() => {
     cancelledRef.current = false;
@@ -76,44 +131,22 @@ export const InteractiveTerminal = forwardRef<
     if (el) {
       el.scrollTop = el.scrollHeight;
     }
-  }, [buffer, currentInput]);
+  }, [buffer]);
 
   const executeCommand = useCallback(
     (cmd: string) => {
-      const promptId = nextId();
-      const result = parseCommand(cmd);
+      const result = parseCommand(cmd, sessionRef.current);
+      sessionRef.current = result.session;
+      setBuffer((prev) => [...prev, ...toEntries(cmd, result.lines, nextId)]);
 
-      const newEntries: TerminalBufferEntry[] = [
-        {
-          id: promptId,
-          kind: 'prompt',
-          promptPrefix: '$',
-          text: cmd,
-        },
-      ];
-
-      for (const line of result.lines) {
-        newEntries.push({
-          id: nextId(),
-          kind: 'output',
-          text: line.text,
-          lineKind: line.kind,
-        });
-      }
-
-      setBuffer((prev) => [...prev, ...newEntries]);
-
-      if (result.clearStage) {
-        onClear?.();
-      }
       if (result.presetChange) {
         onPresetChange?.(result.presetChange);
       }
-      if (result.mountComponents) {
+      if (result.mountComponents && result.mountComponents.length > 0) {
         onMount?.(result.mountComponents);
       }
     },
-    [nextId, onClear, onMount, onPresetChange]
+    [nextId, onMount, onPresetChange]
   );
 
   const delay = useCallback((ms: number) => {
@@ -137,21 +170,14 @@ export const InteractiveTerminal = forwardRef<
       setCurrentInput('');
 
       try {
+        // Typing a chip finishes in about 100ms: enough to read as typed,
+        // short enough not to make anyone wait.
+        const charDelay = Math.max(2, Math.floor(100 / (command.length || 1)));
+
         let typedSoFar = '';
-        // Fast-path budget: action-chip automated typing completes under 200ms
-        const AUTOMATED_BUDGET_MS = 100;
-        const charDelay = Math.max(
-          2,
-          Math.floor(AUTOMATED_BUDGET_MS / (command.length || 1))
-        );
-
-        for (let i = 0; i < command.length; i++) {
-          if (cancelledRef.current) return;
-          const char = command[i];
+        for (const char of command) {
           await delay(charDelay);
-
           if (cancelledRef.current) return;
-
           typedSoFar += char;
           setCurrentInput(typedSoFar);
         }
@@ -259,31 +285,13 @@ export const InteractiveTerminal = forwardRef<
           c.startsWith(lastToken)
         );
         if (match) {
-          if (currentInput.endsWith(' ')) {
-            setCurrentInput(`${currentInput}${match}`);
-          } else {
-            const prefix = currentInput.slice(
-              0,
-              currentInput.length - lastToken.length
-            );
-            setCurrentInput(`${prefix}${match}`);
-          }
+          setCurrentInput(
+            `${currentInput.slice(0, currentInput.length - lastToken.length)}${match}`
+          );
         }
       } else if (trimmedStart.startsWith('justui ')) {
         const prefix = trimmedStart.slice('justui '.length).trim();
-        const subcommands = [
-          'init',
-          'add',
-          'list',
-          'search',
-          'preset',
-          'diff',
-          'update',
-          'doctor',
-          'version',
-          'help',
-        ];
-        const match = subcommands.find((s) => s.startsWith(prefix));
+        const match = SUBCOMMANDS.find((s) => s.startsWith(prefix));
         if (match) {
           setCurrentInput(`justui ${match}`);
         }
@@ -292,22 +300,6 @@ export const InteractiveTerminal = forwardRef<
       }
     }
   };
-
-  const chips = [
-    {
-      command: 'justui add button',
-      label: t.terminalChipAddButton || 'justui add button',
-    },
-    {
-      command: 'justui add switch card',
-      label: t.terminalChipAddMulti || 'justui add switch card',
-    },
-    {
-      command: 'justui preset apply neobrutalism',
-      label: t.terminalChipPreset || 'justui preset apply neobrutalism',
-    },
-    { command: 'justui init', label: t.terminalChipInit || 'justui init' },
-  ];
 
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
@@ -319,6 +311,8 @@ export const InteractiveTerminal = forwardRef<
           typeof window !== 'undefined' &&
           Boolean(window.getSelection?.()?.toString());
         if (hasSelection) return;
+        // On touch screens only a tap on the prompt itself should raise the
+        // keyboard, not every tap that scrolls the output.
         if (
           typeof window !== 'undefined' &&
           (!window.matchMedia || window.matchMedia('(pointer: fine)').matches)
@@ -331,93 +325,77 @@ export const InteractiveTerminal = forwardRef<
         className
       )}
     >
-      {/* Header */}
-      <div className="border-border flex h-12 items-center overflow-hidden border-(length:--just-border-width) border-b px-4">
-        <span className="text-muted font-mono text-xs select-none truncate">
-          {t.terminalTitle || 'justui@v0.14.0 ~ /my-flutter-app'}
+      <div className="border-border flex min-h-11 flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-b-(length:--just-border-width) px-4 py-2">
+        <span className="text-foreground font-mono text-xs">
+          ~/my-flutter-app
         </span>
+        <span className="text-muted text-xs">{t.terminalNote}</span>
       </div>
 
-      {/* Action Chips */}
       <div
-        role="toolbar"
-        aria-label={t.terminalChipsLabel}
-        className="border-border flex flex-wrap gap-2 border-(length:--just-border-width) border-b p-2.5"
+        ref={terminalBufferRef}
+        className="flex max-h-105 min-h-70 flex-1 flex-col overflow-y-auto p-4"
       >
-        {chips.map((chip) => (
+        {buffer.map((entry) =>
+          entry.kind === 'prompt' ? (
+            <TerminalPrompt
+              key={entry.id}
+              prefix={entry.promptPrefix ?? '$'}
+              command={entry.text}
+            />
+          ) : (
+            <TerminalLine key={entry.id} kind={entry.lineKind}>
+              {entry.text}
+            </TerminalLine>
+          )
+        )}
+
+        <label className="flex items-center gap-2 font-mono text-xs leading-6">
+          <span className="text-accent-text shrink-0 select-none">$</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={currentInput}
+            onChange={(e) => {
+              if (!isTypingRef.current) {
+                setCurrentInput(e.target.value);
+              }
+            }}
+            onKeyDown={handleKeyDown}
+            aria-label={t.terminalInputLabel}
+            readOnly={isTyping}
+            enterKeyHint="go"
+            autoCapitalize="none"
+            autoCorrect="off"
+            autoComplete="off"
+            spellCheck={false}
+            className="text-foreground caret-accent-text min-w-0 flex-1 bg-transparent outline-none"
+          />
+        </label>
+      </div>
+
+      <div className="border-border flex flex-wrap items-center gap-2 border-t border-t-(length:--just-border-width) px-4 py-2.5">
+        <span className="text-muted text-xs">{t.terminalTry}</span>
+        {TRY_COMMANDS.map((command) => (
           <button
-            key={chip.command}
+            key={command}
             type="button"
             disabled={isTyping}
             onClick={(e) => {
               e.stopPropagation();
-              if (!isTypingRef.current) {
-                runAutomatedTyping(chip.command);
-              }
+              runAutomatedTyping(command);
             }}
             className={cn(
-              'rounded-(--just-radius-sm) px-2.5 py-1 font-mono text-xs transition-colors',
-              'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2',
-              'border-border border-(length:--just-border-width)',
-              'bg-card text-foreground hover:bg-accent hover:text-accent-foreground hover:shadow-solid',
+              'just-press border-border bg-card text-foreground rounded-(--just-radius-sm) border-(length:--just-border-width) px-2 py-1 font-mono text-xs',
+              'hover:bg-accent-muted focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2',
               'disabled:cursor-not-allowed disabled:opacity-50'
             )}
           >
-            {chip.label}
+            {command.slice('justui '.length)}
           </button>
         ))}
-      </div>
-
-      {/* Terminal Buffer */}
-      <div
-        ref={terminalBufferRef}
-        className="flex min-h-70 flex-1 flex-col overflow-y-auto p-4 font-mono text-xs leading-6"
-      >
-        {buffer.map((entry) => {
-          if (entry.kind === 'prompt') {
-            return (
-              <TerminalPrompt
-                key={entry.id}
-                prefix={entry.promptPrefix ?? '$'}
-                command={entry.text}
-              />
-            );
-          }
-          return (
-            <TerminalLine key={entry.id} kind={entry.lineKind}>
-              {entry.text}
-            </TerminalLine>
-          );
-        })}
-
-        {/* Live typing / interactive prompt */}
-        <TerminalPrompt prefix="$" command={currentInput} cursor={true} />
-      </div>
-
-      {/* Hidden input to capture keyboard events */}
-      <input
-        ref={inputRef}
-        type="text"
-        value={currentInput}
-        onChange={(e) => {
-          if (!isTypingRef.current) {
-            setCurrentInput(e.target.value);
-          }
-        }}
-        onKeyDown={handleKeyDown}
-        disabled={isTyping}
-        className="sr-only"
-        aria-label={t.terminalInputLabel}
-        autoCapitalize="none"
-        autoCorrect="off"
-        spellCheck={false}
-      />
-
-      {/* Keyboard hints footer */}
-      <div className="border-border text-muted flex items-center overflow-x-auto whitespace-nowrap border-(length:--just-border-width) border-t px-4 py-2 text-xs select-none">
-        <span>
-          {t.terminalShortcuts ||
-            '[Tab] Autocomplete | [Up/Down] History | [Enter] Run'}
+        <span className="text-muted ml-auto hidden text-xs pointer-fine:inline">
+          {t.terminalShortcuts}
         </span>
       </div>
     </div>

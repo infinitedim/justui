@@ -1,6 +1,6 @@
 # JustUI CLI
 
-A fast, interactive Rust CLI for the [JustUI](https://docs.justui.dev) Flutter component library. Copy components from the registry into your project, resolve dependencies, check for updates, and manage your setup — all from the terminal.
+A fast, interactive Rust CLI for the [JustUI](https://justui.vercel.app) Flutter component library. Copy components from the registry into your project, resolve dependencies, check for updates, and manage your setup — all from the terminal.
 
 ---
 

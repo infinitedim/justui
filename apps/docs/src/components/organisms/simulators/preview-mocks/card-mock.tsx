@@ -1,32 +1,26 @@
 'use client';
 
-import { useCatalogI18n } from '@/lib/catalog-i18n/context';
-import { raised } from '@/lib/ui-classes';
+import { useState } from 'react';
 import { cn } from '@/lib/cn';
+import { hint, outlineButton, raised } from './mock-styles';
 
 export function CardMock() {
-  const { crm } = useCatalogI18n();
+  const [tracking, setTracking] = useState(false);
 
   return (
-    <div
-      data-testid="mock-card"
-      className={cn(raised, 'w-full max-w-64 p-3.5')}
-    >
-      <header className="flex items-start justify-between gap-2">
-        <h4 className="text-foreground text-sm font-semibold">
-          {crm.card.company}
-        </h4>
-        <span className="bg-warning/15 border-warning/40 text-foreground rounded-(--just-radius-sm) border-(length:--just-border-width) px-1.5 py-0.5 text-xs">
-          {crm.stages.proposal}
-        </span>
-      </header>
-      <p className="text-foreground mt-1 text-base font-semibold tabular-nums">
-        {crm.card.value}
-      </p>
-      <footer className="border-border text-muted mt-2.5 flex flex-col gap-0.5 border-t border-t-(length:--just-border-width) pt-2 text-xs">
-        <span>{crm.card.owner}</span>
-        <span>{crm.card.due}</span>
-      </footer>
+    <div data-testid="mock-card" className={cn(raised, 'w-full max-w-56 p-4')}>
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="text-sm font-semibold">Order #1042</span>
+        <span className="text-sm">$48.00</span>
+      </div>
+      <p className={cn(hint, 'mt-1')}>2 items, arriving Friday</p>
+      <button
+        type="button"
+        onClick={() => setTracking((t) => !t)}
+        className={cn(outlineButton, 'mt-3 h-8 px-3 text-xs')}
+      >
+        {tracking ? 'In transit: Jakarta hub' : 'Track parcel'}
+      </button>
     </div>
   );
 }

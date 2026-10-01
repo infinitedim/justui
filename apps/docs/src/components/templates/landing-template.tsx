@@ -5,7 +5,7 @@ export interface LandingTemplateProps {
   hero: ReactNode;
   workbench?: ReactNode;
   installStrip: ReactNode;
-  bentoGrid: ReactNode;
+  whatYouGet: ReactNode;
   componentShowcase: ReactNode;
   footer: ReactNode;
 }
@@ -15,7 +15,7 @@ export function LandingTemplate({
   hero,
   workbench,
   installStrip,
-  bentoGrid,
+  whatYouGet,
   componentShowcase,
   footer,
 }: LandingTemplateProps) {
@@ -40,9 +40,9 @@ export function LandingTemplate({
           </section>
         )}
 
-        {/* Bento Grid */}
+        {/* What you actually get */}
         <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
-          {bentoGrid}
+          {whatYouGet}
         </section>
 
         {/* Component Showcase Grid */}

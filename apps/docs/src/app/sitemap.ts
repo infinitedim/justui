@@ -1,9 +1,9 @@
 import type { MetadataRoute } from 'next';
+import { SITE_URL } from '@/lib/site';
 import { source } from '@/lib/source';
 import { locales, defaultLocale } from '@/lib/i18n';
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://justui.vercel.app';
+const BASE_URL = SITE_URL;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const entries: MetadataRoute.Sitemap = [];

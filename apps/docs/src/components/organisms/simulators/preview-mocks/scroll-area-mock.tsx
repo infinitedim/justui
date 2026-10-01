@@ -1,30 +1,42 @@
 'use client';
-/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- a scrollable region must be focusable so keyboard users can scroll it (WCAG 2.1.1). */
 
-import { useCatalogI18n } from '@/lib/catalog-i18n/context';
-import { focusRing, surface } from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
+import { surface } from './mock-styles';
+
+const lines = [
+  ['Ceramic mug', '2 x $12.00'],
+  ['Pour-over kettle', '$14.00'],
+  ['Paper filters (100)', '$6.00'],
+  ['Coffee beans 250g', '$9.00'],
+  ['Cleaning brush', '$3.00'],
+  ['Gift wrap', '$2.00'],
+];
 
 export function ScrollAreaMock() {
-  const { crm } = useCatalogI18n();
-
   return (
-    <section
-      aria-label={crm.scrollArea.label}
-      tabIndex={0}
+    // A scrollable region must be focusable so keyboard users can scroll it
+    // (axe: scrollable-region-focusable).
+    <div
       data-testid="mock-scroll-area"
-      className={cn(surface, focusRing, 'h-32 w-full max-w-64 overflow-y-auto')}
+      role="region"
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+      tabIndex={0}
+      aria-label="Order items"
+      className={cn(
+        surface,
+        'h-32 w-full max-w-56 overflow-y-auto p-1',
+        'focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-1'
+      )}
     >
-      <p className="text-muted bg-card sticky top-0 px-3 pt-2 pb-1 text-xs font-medium">
-        {crm.scrollArea.label}
-      </p>
-      <ul className="divide-border divide-y px-3 text-sm">
-        {crm.scrollArea.items.map((item) => (
-          <li key={item} className="text-foreground py-1.5">
-            {item}
-          </li>
-        ))}
-      </ul>
-    </section>
+      {lines.map(([item, price]) => (
+        <div
+          key={item}
+          className="flex justify-between gap-2 px-2.5 py-1.5 text-sm"
+        >
+          <span className="text-foreground">{item}</span>
+          <span className="text-secondary shrink-0">{price}</span>
+        </div>
+      ))}
+    </div>
   );
 }

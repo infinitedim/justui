@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/cn';
 import { CopyButton } from '@/components/molecules/copy-button';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
+import { SITE_URL } from '@/lib/site';
 import type { InstallPlatform, InstallTabsProps } from './install-tabs.types';
 
 interface PlatformMeta {
@@ -16,12 +17,12 @@ const PLATFORMS: readonly PlatformMeta[] = [
   {
     id: 'curl',
     defaultLabel: 'macOS / Linux',
-    command: 'curl -fsSL https://justui.vercel.app/install.sh | sh',
+    command: `curl -fsSL ${SITE_URL}/install.sh | sh`,
   },
   {
     id: 'powershell',
     defaultLabel: 'Windows',
-    command: 'irm https://justui.vercel.app/install.ps1 | iex',
+    command: `irm ${SITE_URL}/install.ps1 | iex`,
   },
 ] as const;
 
@@ -47,7 +48,7 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
     >
       <div
         role="tablist"
-        aria-label={t.installTabsLabel}
+        aria-label="Installation platform"
         className="flex items-center justify-center gap-1 pb-1"
       >
         {PLATFORMS.map((platform) => {
@@ -62,7 +63,7 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
               aria-controls={`install-tabpanel-${platform.id}`}
               onClick={() => setActivePlatform(platform.id)}
               className={cn(
-                'rounded-(--just-radius-md) px-3 py-1 text-xs transition-colors',
+                'rounded-(--just-radius-sm) px-3 py-1 text-xs transition-colors',
                 'border-(length:--just-border-width)',
                 isSelected
                   ? 'border-border bg-accent text-accent-foreground shadow-solid font-medium'
@@ -86,8 +87,7 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
         </code>
         <CopyButton
           text={activeMeta.command}
-          label={t.copyInstallCommand}
-          copiedLabel={t.copied}
+          label={`Copy ${activeMeta.command}`}
           className="shrink-0"
         />
       </div>

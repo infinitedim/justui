@@ -8,12 +8,13 @@ export type ComponentCategory = GeneratedComponentCategory;
 export interface ComponentMeta {
   name: string;
   slug: string;
+  description: string;
   category: ComponentCategory;
   dartSnippet: string;
 }
 
-/** Display order of the catalog filter; labels live in lib/catalog-i18n. */
-export const CATEGORY_ORDER: readonly ComponentCategory[] = [
+/** Category order in the catalog filter. Labels live in the dictionaries. */
+export const CATEGORIES: readonly ComponentCategory[] = [
   'primitive',
   'selection',
   'layout',
@@ -24,248 +25,319 @@ export const CATEGORY_ORDER: readonly ComponentCategory[] = [
 ];
 
 /**
- * Hand-authored example snippets, keyed by slug. Name/slug/category come
- * from `registry/index.json` via `components.generated.ts`; descriptions are
- * localized in `lib/catalog-i18n/descriptions.ts`. Snippet strings follow the
- * same CRM scenario as the catalog previews.
+ * Hand-authored catalog copy, keyed by slug. Name/slug/category come from
+ * `registry/index.json` via `components.generated.ts`; this overlay only
+ * supplies what a generator can't derive.
+ *
+ * Rules: the description is one sentence saying what the widget does, no
+ * adjectives; a special capability is named by its prop. Snippets use the
+ * real constructors in packages/core/lib/src/components.
  */
-const CATALOG_OVERLAY: Record<string, { dartSnippet: string }> = {
+const CATALOG_OVERLAY: Record<
+  string,
+  { description: string; dartSnippet: string }
+> = {
   button: {
+    description:
+      'Runs an action; variants primary, secondary, ghost, destructive and link, with isLoading.',
     dartSnippet: `JustButton(
-  label: 'Log call',
+  label: 'Place order',
   variant: .primary,
-  onPressed: () => logCall(contact),
+  onPressed: () {},
 )`,
   },
   'icon-button': {
+    description: 'A button with only an icon; tooltip is required.',
     dartSnippet: `JustIconButton(
-  icon: const Icon(Icons.share),
-  tooltip: 'Call Rina Wulandari',
-  onPressed: () => call(contact),
+  icon: const Icon(Icons.favorite_border),
+  tooltip: 'Save for later',
+  onPressed: () {},
 )`,
   },
   input: {
+    description:
+      'Single-line or multi-line text field with label, hint, helper and errorText.',
     dartSnippet: `JustInput(
-  label: 'Work email',
-  placeholder: 'name@company.com',
-  onChanged: (val) => print(val),
+  label: 'Delivery note',
+  hint: 'Leave it at the front desk',
+  onChanged: (value) {},
 )`,
   },
   badge: {
+    description: 'Short status label; variants solid, outline, soft and dot.',
     dartSnippet: `JustBadge(
-  label: 'Qualified',
-  variant: .outline,
+  label: 'Shipped',
+  color: .success,
+  variant: .soft,
 )`,
   },
   avatar: {
+    description:
+      'Shows a photo, initials from name, or an icon, with an optional statusDot.',
     dartSnippet: `JustAvatar(
-  name: 'Rina Wulandari',
-  size: .md,
+  name: 'Alex Rivera',
+  statusDot: .online,
 )`,
   },
   select: {
+    description:
+      'Picks one option from a dropdown list; set searchable for long lists.',
     dartSnippet: `JustSelect<String>(
-  value: 'qualified',
-  items: [
-    JustSelectItem(value: 'lead', label: 'Lead'),
-    JustSelectItem(value: 'qualified', label: 'Qualified'),
-    JustSelectItem(value: 'won', label: 'Won'),
+  label: 'Shipping',
+  value: 'standard',
+  options: const [
+    JustSelectOption(value: 'standard', label: 'Standard, 3-5 days'),
+    JustSelectOption(value: 'express', label: 'Express, 1-2 days'),
   ],
-  onChanged: (val) => print(val),
+  onChanged: (value) {},
 )`,
   },
   progress: {
+    description:
+      'Shows how far a task has got, from min to max; leave value null for indeterminate.',
     dartSnippet: `JustProgress(
-  value: 0.68,
-  variant: .primary,
+  value: 0.75,
+  showLabel: true,
 )`,
   },
   accordion: {
+    description:
+      'Stack of sections that expand and collapse; allowMultiple keeps several open.',
     dartSnippet: `JustAccordion(
-  items: [
+  items: const [
     JustAccordionItem(
-      title: 'Company',
-      content: Text('Kopi Senja, 4 outlets in Bandung.'),
+      title: 'Can I change the address?',
+      content: Text('Yes, until the order is packed.'),
     ),
   ],
 )`,
   },
   toggle: {
+    description:
+      'A button that stays pressed or not; JustToggleGroup combines several.',
     dartSnippet: `JustToggle(
-  isSelected: true,
-  child: Icon(Icons.format_bold),
-  onChanged: (val) => print(val),
+  selected: true,
+  onPressed: () {},
+  child: const Text('Paid'),
+)`,
+  },
+  table: {
+    description:
+      'Rows and columns of data, with optional sorting and row selection.',
+    dartSnippet: `JustTable<Order>(
+  columns: [
+    JustTableColumn(header: 'Order', cell: (o) => Text(o.id)),
+    JustTableColumn(header: 'Total', cell: (o) => Text(o.total)),
+  ],
+  rows: orders,
 )`,
   },
   checkbox: {
+    description:
+      'On, off, or mixed (value: null) choice with an optional label.',
     dartSnippet: `JustCheckbox(
   value: true,
-  label: 'Send proposal to Hotel Arunika',
-  onChanged: (val) => print(val),
+  label: const Text('Email me when it ships'),
+  onChanged: (value) {},
 )`,
   },
   radio: {
+    description:
+      'One option out of a set; selected when value equals groupValue.',
     dartSnippet: `JustRadio<String>(
-  value: 'phone',
-  groupValue: 'phone',
-  label: 'Phone',
-  onChanged: (val) => print(val),
+  value: 'standard',
+  groupValue: delivery,
+  label: const Text('Standard delivery'),
+  onChanged: (value) {},
 )`,
   },
   switch: {
+    description: 'Turns a setting on or off; supports tap and drag.',
     dartSnippet: `JustSwitch(
   value: true,
-  onChanged: (val) => print(val),
+  label: const Text('Order updates'),
+  onChanged: (value) {},
 )`,
   },
   card: {
+    description:
+      'Groups related content on a surface; variants elevated, outlined and filled.',
     dartSnippet: `JustCard(
-  title: Text('Hotel Arunika'),
-  child: Text('Rp 18.450.000, Proposal stage'),
+  header: const Text('Order #1042'),
+  child: const Text('2 items, arriving Friday'),
 )`,
   },
   separator: {
+    description:
+      'A line between sections, horizontal or vertical, with an optional label.',
     dartSnippet: `JustSeparator(
-  orientation: .horizontal,
+  direction: .horizontal,
 )`,
   },
   'scroll-area': {
+    description:
+      'Scrolling region with a scrollbar that follows the theme tokens.',
     dartSnippet: `JustScrollArea(
-  child: Column(children: items),
+  maxHeight: 240,
+  child: Column(children: orderLines),
 )`,
   },
   resizable: {
+    description:
+      'Panels split by draggable handles, with min, max and snap sizes per panel.',
     dartSnippet: `JustResizable(
   direction: .horizontal,
-  left: LeftPanel(),
-  right: RightPanel(),
+  children: [
+    JustResizablePanel(initialSize: 0.4, child: OrderList()),
+    JustResizablePanel(initialSize: 0.6, child: OrderDetails()),
+  ],
 )`,
   },
   carousel: {
+    description:
+      'Pages through children one at a time; arrows, dots and autoScroll are optional.',
     dartSnippet: `JustCarousel(
-  itemCount: 5,
-  itemBuilder: (context, index) => SlideWidget(index),
+  children: productPhotos,
 )`,
   },
   skeleton: {
+    description:
+      'Shows a placeholder in the shape of its child while loading is true.',
     dartSnippet: `JustSkeleton(
-  width: double.infinity,
-  height: 24,
-  borderRadius: .all(Radius.circular(6)),
+  loading: isLoading,
+  child: OrderCard(order),
 )`,
   },
   slider: {
+    description: 'Picks a number between min and max; divisions makes it step.',
     dartSnippet: `JustSlider(
-  value: 75.0,
-  min: 0.0,
-  max: 100.0,
-  onChanged: (val) => print(val),
+  value: 80,
+  min: 0,
+  max: 200,
+  onChanged: (value) {},
 )`,
   },
   breadcrumb: {
+    description:
+      'Shows where the current page sits in a hierarchy; maxItems collapses long trails.',
     dartSnippet: `JustBreadcrumb(
   items: [
-    JustBreadcrumbItem(label: 'Contacts', onTap: openContacts),
-    JustBreadcrumbItem(label: 'Kopi Senja', onTap: openCompany),
-    JustBreadcrumbItem(label: 'Deals'),
+    JustBreadcrumbItem(label: 'Shop', onTap: () {}),
+    JustBreadcrumbItem(label: 'Orders', onTap: () {}),
+    const JustBreadcrumbItem(label: '#1042'),
   ],
 )`,
   },
   tabs: {
+    description:
+      'Switches between panels; variants line, enclosed, pill and vertical.',
     dartSnippet: `JustTabs(
-  tabs: ['Overview', 'Deals', 'Notes'],
-  selectedIndex: 0,
-  onChanged: (idx) => print(idx),
+  tabs: const [
+    JustTab(label: 'Details', content: OrderDetails()),
+    JustTab(label: 'Shipping', content: ShippingInfo()),
+  ],
 )`,
   },
   'bottom-nav': {
+    description:
+      'Top-level navigation for phones; variants fixed, shifting and floating.',
     dartSnippet: `JustBottomNav(
-  currentIndex: 0,
-  items: [
-    JustBottomNavItem(icon: Icons.view_kanban, label: 'Pipeline'),
-    JustBottomNavItem(icon: Icons.people, label: 'Contacts'),
-    JustBottomNavItem(icon: Icons.checklist, label: 'Tasks'),
+  selectedIndex: 2,
+  items: const [
+    JustBottomNavItem(icon: Icon(Icons.home), label: 'Home'),
+    JustBottomNavItem(icon: Icon(Icons.search), label: 'Search'),
+    JustBottomNavItem(icon: Icon(Icons.inventory_2), label: 'Orders'),
   ],
-  onTap: (idx) => print(idx),
+  onItemSelected: (index) {},
 )`,
   },
   sidebar: {
+    description: 'Side navigation for wide screens that can collapse to icons.',
     dartSnippet: `JustSidebar(
-  isCollapsed: false,
-  items: navItems,
+  selectedIndex: 0,
+  items: const [
+    JustSidebarItem(label: 'Orders', icon: Icon(Icons.inventory_2)),
+    JustSidebarItem(label: 'Settings', icon: Icon(Icons.settings)),
+  ],
 )`,
   },
   toast: {
-    dartSnippet: `JustToast.show(
-  context,
-  title: 'Deal moved to Won',
-  message: 'Hotel Arunika, Rp 18.450.000',
+    description:
+      'Brief message that dismisses itself; shown through JustToastScope.',
+    dartSnippet: `JustToastScope.of(context).show(
+  message: 'Order #1042 shipped',
   variant: .success,
 )`,
   },
   dialog: {
-    dartSnippet: `JustDialog(
-  title: 'Delete this contact?',
-  content: Text('Rina Wulandari and 3 notes will be removed.'),
-  actions: [
-    JustButton(label: 'Cancel', variant: .ghost),
-    JustButton(label: 'Delete', variant: .destructive),
-  ],
+    description: 'Modal content above the page; shown through JustDialogScope.',
+    dartSnippet: `JustDialogScope.of(context).show(
+  content: const RemoveAddressDialog(),
 )`,
   },
   sheet: {
-    dartSnippet: `JustSheet(
-  side: .right,
-  title: 'Bagas Pratama',
-  child: FilterForm(),
+    description:
+      'Panel that slides in from any edge; shown through JustSheetScope.',
+    dartSnippet: `JustSheetScope.of(context).show(
+  direction: .right,
+  content: const OrderFilters(),
 )`,
   },
   tooltip: {
+    description: 'Short hint shown on hover or long press.',
     dartSnippet: `JustTooltip(
-  message: 'Called 3 days ago by Dewi',
-  child: Icon(Icons.info_outline),
+  message: 'Free on orders over $50',
+  child: const Icon(Icons.info_outline),
 )`,
   },
   'avatar-group': {
+    description:
+      'Overlapping avatars that collapse into a +N count after maxDisplay.',
     dartSnippet: `JustAvatarGroup(
-  avatars: [
-    JustAvatar(name: 'Rina Wulandari'),
-    JustAvatar(name: 'Bagas Pratama'),
-    JustAvatar(name: 'Dewi Lestari'),
+  maxDisplay: 3,
+  avatars: const [
+    JustAvatar(name: 'Alex Rivera'),
+    JustAvatar(name: 'Mia Santoso'),
+    JustAvatar(name: 'Kai Tan'),
+    JustAvatar(name: 'Rina Putri'),
   ],
-  max: 3,
 )`,
   },
   'radio-group': {
+    description:
+      'A labelled set of radios laid out vertically or horizontally.',
     dartSnippet: `JustRadioGroup<String>(
-  value: selectedMethod,
-  options: ['Low', 'Medium', 'High'],
-  onChanged: (val) => print(val),
-)`,
-  },
-  table: {
-    dartSnippet: `JustTable(
-  columns: ['Company', 'Stage', 'Value'],
-  rows: tableRows,
+  value: 'card',
+  options: const [
+    JustRadioOption(value: 'card', label: Text('Card')),
+    JustRadioOption(value: 'cod', label: Text('Pay on delivery')),
+  ],
+  onChanged: (value) {},
 )`,
   },
   'date-picker': {
+    description:
+      'Picks one date; variants inline, modal, dropdown and responsive.',
     dartSnippet: `JustDatePicker(
-  selectedDate: DateTime.now(),
-  onDateSelected: (date) => print(date),
+  label: 'Delivery date',
+  value: deliveryDate,
+  onChanged: (date) {},
 )`,
   },
   'date-range-picker': {
+    description: 'Picks a start and end date, with optional quick presets.',
     dartSnippet: `JustDateRangePicker(
-  startDate: start,
-  endDate: end,
-  onRangeSelected: (range) => print(range),
+  value: reportRange,
+  onChanged: (range) {},
 )`,
   },
   'time-picker': {
+    description:
+      'Picks a time with a dial, a spinner or typed input, in 12- or 24-hour format.',
     dartSnippet: `JustTimePicker(
-  initialTime: TimeOfDay.now(),
-  onTimeChanged: (time) => print(time),
+  label: 'Pickup time',
+  value: pickupTime,
+  onChanged: (time) {},
 )`,
   },
 };

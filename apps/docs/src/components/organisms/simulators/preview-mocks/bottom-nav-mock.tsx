@@ -1,42 +1,46 @@
 'use client';
 
 import { useState } from 'react';
-import { Layers, ListChecks, Users } from 'lucide-react';
-import { useCatalogI18n } from '@/lib/catalog-i18n/context';
-import { focusRing, surface } from '@/lib/ui-classes';
+import { Home, Package, Search, User } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { raised } from './mock-styles';
 
-const ICONS = { pipeline: Layers, contacts: Users, tasks: ListChecks } as const;
+const items = [
+  { icon: Home, label: 'Home' },
+  { icon: Search, label: 'Search' },
+  { icon: Package, label: 'Orders' },
+  { icon: User, label: 'Account' },
+];
 
 export function BottomNavMock() {
-  const { crm } = useCatalogI18n();
-  const [active, setActive] = useState('pipeline');
+  const [active, setActive] = useState(2);
 
   return (
     <nav
-      aria-label={crm.bottomNav.label}
+      aria-label="App"
       data-testid="mock-bottom-nav"
-      className={cn(surface, 'flex w-full max-w-64 justify-around px-1 py-1.5')}
+      className={cn(
+        raised,
+        'flex w-full max-w-64 items-center justify-around p-1.5'
+      )}
     >
-      {crm.bottomNav.items.map((item) => {
-        const Icon = ICONS[item.id as keyof typeof ICONS] ?? Layers;
-        const current = item.id === active;
+      {items.map(({ icon: Icon, label }, idx) => {
+        const selected = active === idx;
         return (
           <button
-            key={item.id}
+            key={label}
             type="button"
-            onClick={() => setActive(item.id)}
-            aria-current={current ? 'page' : undefined}
+            onClick={() => setActive(idx)}
+            aria-current={selected ? 'page' : undefined}
             className={cn(
-              focusRing,
-              'flex min-w-16 flex-col items-center gap-0.5 rounded-(--just-radius-sm) px-2 py-1 text-xs',
-              current
-                ? 'text-accent-text font-semibold'
+              'flex flex-col items-center gap-0.5 rounded-(--just-radius-sm) px-2 py-1',
+              selected
+                ? 'text-foreground font-medium'
                 : 'text-muted hover:text-foreground'
             )}
           >
             <Icon className="h-4 w-4" aria-hidden="true" />
-            {item.label}
+            <span className="text-xs">{label}</span>
           </button>
         );
       })}

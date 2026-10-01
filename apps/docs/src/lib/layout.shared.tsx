@@ -32,7 +32,7 @@ export function baseOptions(lang: string): BaseLayoutProps {
       title: (
         <span className="font-mono text-sm font-medium">
           <span className="text-foreground">just</span>
-          <span className="text-accent">ui</span>
+          <span className="text-accent-text">ui</span>
         </span>
       ),
       url: `/${lang}`,

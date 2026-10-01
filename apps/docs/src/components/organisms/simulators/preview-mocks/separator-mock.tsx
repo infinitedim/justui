@@ -1,36 +1,26 @@
 'use client';
 
-import { useCatalogI18n } from '@/lib/catalog-i18n/context';
-
-const COUNTS = { open: 12, won: 7, lost: 3 } as const;
+const rule = 'bg-border h-(--just-border-width) w-full';
 
 export function SeparatorMock() {
-  const { crm } = useCatalogI18n();
-  const stats = [
-    { id: 'open', label: crm.separator.open, value: COUNTS.open },
-    { id: 'won', label: crm.separator.won, value: COUNTS.won },
-    { id: 'lost', label: crm.separator.lost, value: COUNTS.lost },
-  ] as const;
-
   return (
-    <div data-testid="mock-separator" className="flex items-stretch gap-4">
-      {stats.map((stat, index) => (
-        <div key={stat.id} className="flex items-stretch gap-4">
-          {index > 0 ? (
-            <div
-              role="separator"
-              aria-orientation="vertical"
-              className="bg-border w-(--just-border-width)"
-            />
-          ) : null}
-          <div className="flex flex-col items-center">
-            <span className="text-foreground text-xl font-semibold tabular-nums">
-              {stat.value}
-            </span>
-            <span className="text-muted text-xs">{stat.label}</span>
-          </div>
-        </div>
-      ))}
+    <div
+      data-testid="mock-separator"
+      className="w-full max-w-56 space-y-2 text-sm"
+    >
+      <div className="text-secondary flex justify-between">
+        <span>Subtotal</span>
+        <span>$44.00</span>
+      </div>
+      <div className="text-secondary flex justify-between">
+        <span>Shipping</span>
+        <span>$4.00</span>
+      </div>
+      <div role="separator" className={rule} />
+      <div className="text-foreground flex justify-between font-semibold">
+        <span>Total</span>
+        <span>$48.00</span>
+      </div>
     </div>
   );
 }

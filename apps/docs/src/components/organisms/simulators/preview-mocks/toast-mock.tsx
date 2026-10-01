@@ -1,67 +1,62 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { CheckCircle2, X } from 'lucide-react';
-import { useCatalogI18n } from '@/lib/catalog-i18n/context';
-import { accentControl, focusRing, raised } from '@/lib/ui-classes';
+import { useState, useRef, useEffect } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/cn';
-
-const AUTO_DISMISS_MS = 5000;
+import { outlineButton, raised } from './mock-styles';
 
 export function ToastMock() {
-  const { crm } = useCatalogI18n();
-  const [visible, setVisible] = useState(false);
+  const [show, setShow] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    if (!visible) return;
-    const timer = window.setTimeout(() => setVisible(false), AUTO_DISMISS_MS);
-    return () => window.clearTimeout(timer);
-  }, [visible]);
+  const clearTimers = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
+  };
+
+  const triggerToast = () => {
+    clearTimers();
+    setIsExiting(false);
+    setShow(true);
+    timerRef.current = setTimeout(() => {
+      setIsExiting(true);
+      exitTimerRef.current = setTimeout(() => {
+        setShow(false);
+        setIsExiting(false);
+      }, 150);
+    }, 4000);
+  };
+
+  useEffect(() => clearTimers, []);
 
   return (
-    <div className="flex w-full max-w-64 flex-col items-center gap-3">
+    <div className="relative flex w-full flex-col items-center justify-center">
       <button
         type="button"
-        onClick={() => setVisible(true)}
+        onClick={triggerToast}
         data-testid="mock-toast-trigger"
-        className={cn(accentControl, 'h-9 px-4 text-sm')}
+        className={outlineButton}
       >
-        {crm.toast.trigger}
+        Mark as shipped
       </button>
-      {/* The live region stays mounted so screen readers announce new content. */}
-      <div role="status" className="w-full">
-        {visible ? (
-          <div
-            data-testid="mock-toast-popup"
-            className={cn(
-              raised,
-              'animate-toast-enter flex w-full items-start gap-2.5 p-3'
-            )}
-          >
-            <CheckCircle2
-              className="text-success mt-0.5 h-4 w-4 shrink-0"
-              aria-hidden="true"
-            />
-            <div className="min-w-0 flex-1">
-              <p className="text-foreground text-sm font-medium">
-                {crm.toast.title}
-              </p>
-              <p className="text-muted text-xs">{crm.toast.body}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setVisible(false)}
-              aria-label={crm.toast.dismiss}
-              className={cn(
-                focusRing,
-                'text-muted hover:text-foreground rounded-(--just-radius-sm) p-0.5'
-              )}
-            >
-              <X className="h-3.5 w-3.5" aria-hidden="true" />
-            </button>
-          </div>
-        ) : null}
-      </div>
+
+      {show ? (
+        <div
+          role="status"
+          data-testid="mock-toast-popup"
+          className={cn(
+            raised,
+            'absolute -top-12 flex items-center gap-2 px-3 py-2 text-sm whitespace-nowrap',
+            'motion-reduce:animate-none',
+            isExiting ? 'animate-toast-exit' : 'animate-toast-enter'
+          )}
+        >
+          <CheckCircle2 className="text-success h-4 w-4" aria-hidden="true" />
+          <span>Order #1042 shipped</span>
+        </div>
+      ) : null}
     </div>
   );
 }

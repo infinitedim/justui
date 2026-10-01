@@ -1,38 +1,37 @@
 'use client';
 
 import { useState } from 'react';
-import { useCatalogI18n } from '@/lib/catalog-i18n/context';
-import { focusRing } from '@/lib/ui-classes';
 import { cn } from '@/lib/cn';
+import { focusRing, hint } from './mock-styles';
 
 export function AvatarMock() {
-  const { crm } = useCatalogI18n();
   const [online, setOnline] = useState(true);
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <button
-        type="button"
-        onClick={() => setOnline((o) => !o)}
-        aria-label={crm.avatar.toggle}
-        aria-pressed={online}
-        data-testid="mock-avatar"
-        className={cn('relative rounded-full', focusRing)}
-      >
-        <span className="bg-accent-muted text-foreground border-border flex h-12 w-12 items-center justify-center rounded-full border-(length:--just-border-width) text-sm font-semibold">
-          RW
+    <button
+      type="button"
+      onClick={() => setOnline((o) => !o)}
+      data-testid="mock-avatar"
+      className={cn('flex items-center gap-3 text-left', focusRing)}
+    >
+      <span className="relative">
+        <span className="bg-fill text-foreground border-border flex h-11 w-11 items-center justify-center rounded-full border-(length:--just-border-width) text-sm font-semibold">
+          AR
         </span>
         <span
-          aria-hidden="true"
           className={cn(
             'border-card absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 rounded-full border-2',
             online ? 'bg-success' : 'bg-fill'
           )}
+          aria-hidden="true"
         />
-      </button>
-      <p className="text-muted text-xs" aria-live="polite">
-        {online ? crm.avatar.online : crm.avatar.offline}
-      </p>
-    </div>
+      </span>
+      <span>
+        <span className="text-foreground block text-sm font-medium">
+          Alex Rivera
+        </span>
+        <span className={hint}>{online ? 'Online' : 'Away'}</span>
+      </span>
+    </button>
   );
 }

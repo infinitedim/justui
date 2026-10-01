@@ -1,3 +1,5 @@
+import type { GeneratedComponentCategory } from './components.generated';
+
 export type HomepageDictionary = {
   tagline: string;
   heroTitle: string;
@@ -15,23 +17,24 @@ export type HomepageDictionary = {
   toggleTheme: string;
   changeLanguage: string;
   copyCommand: string;
+  copied: string;
   togglePreset: string;
   componentsPageTitle: string;
-  terminalTitle: string;
+  /** `{count}` is replaced with the number of components in the registry. */
+  componentsPageDescription: string;
+  terminalRegionLabel: string;
+  terminalNote: string;
+  terminalTry: string;
+  terminalInputLabel: string;
   terminalShortcuts: string;
-  terminalChipInit: string;
-  terminalChipAddButton: string;
-  terminalChipAddMulti: string;
-  terminalChipPreset: string;
   installTabCurl: string;
   installTabPowershell: string;
   installTabCargo: string;
-  stageClear: string;
-  stageEmptyTitle: string;
-  stageEmptyDescription: string;
-  stageEmptyCta: string;
+  stageRegionLabel: string;
+  stageViewLabel: string;
   stagePreviewTab: string;
-  stageCodeTab: string;
+  stageCopyCode: string;
+  stageEmpty: string;
   wygHeading: string;
   wygDescription: string;
   wygCard1Title: string;
@@ -40,22 +43,24 @@ export type HomepageDictionary = {
   wygCard2Desc: string;
   wygCard3Title: string;
   wygCard3Desc: string;
-  copied: string;
-  componentsPageDescription: (count: number) => string;
-  mainNavigation: string;
-  homeLinkLabel: string;
-  installTabsLabel: string;
-  copyInstallCommand: string;
-  presetLabel: string;
-  terminalRegionLabel: string;
-  terminalChipsLabel: string;
-  terminalInputLabel: string;
-  stageRegionLabel: string;
-  stageViewModeLabel: string;
-  viewportGroupLabel: string;
-  viewportMobile: string;
-  viewportTablet: string;
-  viewportDesktop: string;
+  catalogSearchPlaceholder: string;
+  catalogSearchLabel: string;
+  catalogCategoryLabel: string;
+  catalogAllCategories: string;
+  catalogCategories: Record<GeneratedComponentCategory, string>;
+  /** `{query}` is replaced with what the visitor typed. */
+  catalogNoResults: string;
+  /** `{shown}` and `{total}` are replaced with counts. */
+  catalogShowing: string;
+  catalogResetFilters: string;
+  catalogCopyCli: string;
+  catalogViewCode: string;
+  catalogViewDocs: string;
+  catalogCodeTitle: string;
+  catalogCloseCode: string;
+  notFoundTitle: string;
+  notFoundBody: string;
+  notFoundHome: string;
 };
 
 export const homepageTranslations: Readonly<
@@ -79,24 +84,24 @@ export const homepageTranslations: Readonly<
     toggleTheme: 'Toggle theme',
     changeLanguage: 'Switch to Indonesian',
     copyCommand: 'Copy install command',
+    copied: 'Copied',
     togglePreset: 'Toggle preset',
     componentsPageTitle: 'Components',
-    terminalTitle: 'justui@v0.14.0 ~ /my-flutter-app',
-    terminalShortcuts: '[Tab] Autocomplete | [Up/Down] History | [Enter] Run',
-    terminalChipInit: 'justui init',
-    terminalChipAddButton: 'justui add button',
-    terminalChipAddMulti: 'justui add switch card',
-    terminalChipPreset: 'justui preset apply neobrutalism',
+    componentsPageDescription:
+      '{count} components. Each one is a few Dart files the CLI copies into your project; after that the code is yours to change.',
+    terminalRegionLabel: 'CLI simulator',
+    terminalNote: 'simulated, nothing is written to disk',
+    terminalTry: 'try:',
+    terminalInputLabel: 'Type a justui command',
+    terminalShortcuts: 'Tab completes, Up/Down for history',
     installTabCurl: 'macOS / Linux',
     installTabPowershell: 'Windows',
     installTabCargo: 'Cargo',
-    stageClear: 'Clear',
-    stageEmptyTitle: 'Flutter Canvas Ready',
-    stageEmptyDescription:
-      'Run commands in the terminal to copy components into your project and preview them live here.',
-    stageEmptyCta: 'Run: justui add button',
+    stageRegionLabel: 'Component preview',
+    stageViewLabel: 'Preview or source',
     stagePreviewTab: 'Preview',
-    stageCodeTab: 'Flutter Code',
+    stageCopyCode: 'Copy widget.dart',
+    stageEmpty: 'Nothing added yet. Run justui add <name> in the terminal.',
     wygHeading: 'What you actually get',
     wygDescription: 'Three things the CLI does, shown as they work.',
     wygCard1Title: 'The source lands in your repo',
@@ -108,23 +113,30 @@ export const homepageTranslations: Readonly<
     wygCard3Title: 'Text color follows the background',
     wygCard3Desc:
       'Drag a surface lightness. The theme picks whichever text color clears WCAG AA, and shows the measured ratio.',
-    copied: 'Copied',
-    componentsPageDescription: (count) =>
-      `${count} Flutter components. Copy one into your project and change it however you like.`,
-    mainNavigation: 'Main navigation',
-    homeLinkLabel: 'JustUI home',
-    installTabsLabel: 'Installation platform',
-    copyInstallCommand: 'Copy install command',
-    presetLabel: 'Preset',
-    terminalRegionLabel: 'CLI simulator',
-    terminalChipsLabel: 'Example commands',
-    terminalInputLabel: 'Command',
-    stageRegionLabel: 'Component preview',
-    stageViewModeLabel: 'Preview or code',
-    viewportGroupLabel: 'Preview width',
-    viewportMobile: 'Mobile viewport',
-    viewportTablet: 'Tablet viewport',
-    viewportDesktop: 'Desktop viewport',
+    catalogSearchPlaceholder: 'Search components',
+    catalogSearchLabel: 'Search components',
+    catalogCategoryLabel: 'Category',
+    catalogAllCategories: 'All',
+    catalogCategories: {
+      primitive: 'Primitives',
+      selection: 'Selection',
+      layout: 'Layout',
+      form: 'Forms',
+      navigation: 'Navigation',
+      overlay: 'Overlays',
+      composite: 'Composite',
+    },
+    catalogNoResults: "Nothing matches '{query}'.",
+    catalogShowing: 'Showing {shown} of {total}',
+    catalogResetFilters: 'Reset filters',
+    catalogCopyCli: 'Copy CLI command',
+    catalogViewCode: 'Code',
+    catalogViewDocs: 'Docs',
+    catalogCodeTitle: 'Example',
+    catalogCloseCode: 'Close',
+    notFoundTitle: 'Page not found.',
+    notFoundBody: 'The link may be old, or the page moved. Try one of these:',
+    notFoundHome: 'Home',
   },
   id: {
     tagline: 'Komponen Flutter siap salin-tempel',
@@ -144,24 +156,25 @@ export const homepageTranslations: Readonly<
     toggleTheme: 'Ubah tema',
     changeLanguage: 'Ganti ke Bahasa Inggris',
     copyCommand: 'Salin perintah instalasi',
+    copied: 'Tersalin',
     togglePreset: 'Ganti preset',
     componentsPageTitle: 'Komponen',
-    terminalTitle: 'justui@v0.14.0 ~ /my-flutter-app',
-    terminalShortcuts: '[Tab] Autocomplete | [Up/Down] History | [Enter] Run',
-    terminalChipInit: 'justui init',
-    terminalChipAddButton: 'justui add button',
-    terminalChipAddMulti: 'justui add switch card',
-    terminalChipPreset: 'justui preset apply neobrutalism',
+    componentsPageDescription:
+      '{count} komponen. Masing-masing berupa beberapa file Dart yang disalin CLI ke proyekmu; setelah itu kodenya milikmu untuk diubah.',
+    terminalRegionLabel: 'Simulator CLI',
+    terminalNote: 'simulasi, tidak menyentuh disk',
+    terminalTry: 'coba:',
+    terminalInputLabel: 'Ketik perintah justui',
+    terminalShortcuts: 'Tab melengkapi, Atas/Bawah untuk riwayat',
     installTabCurl: 'macOS / Linux',
     installTabPowershell: 'Windows',
     installTabCargo: 'Cargo',
-    stageClear: 'Bersihkan',
-    stageEmptyTitle: 'Kanvas Flutter Siap Digunakan',
-    stageEmptyDescription:
-      'Jalankan perintah di terminal untuk menyalin komponen ke proyekmu dan lihat pratinjaunya di sini.',
-    stageEmptyCta: 'Jalankan: justui add button',
+    stageRegionLabel: 'Pratinjau komponen',
+    stageViewLabel: 'Pratinjau atau source',
     stagePreviewTab: 'Pratinjau',
-    stageCodeTab: 'Kode Flutter',
+    stageCopyCode: 'Salin widget.dart',
+    stageEmpty:
+      'Belum ada yang ditambahkan. Jalankan justui add <nama> di terminal.',
     wygHeading: 'Yang sebenarnya kamu dapat',
     wygDescription: 'Tiga hal yang dilakukan CLI, ditampilkan langsung.',
     wygCard1Title: 'Source masuk ke repo-mu',
@@ -173,26 +186,44 @@ export const homepageTranslations: Readonly<
     wygCard3Title: 'Warna teks mengikuti latar',
     wygCard3Desc:
       'Geser tingkat terang permukaan. Tema memilih warna teks yang lolos WCAG AA dan menampilkan rasio yang diukur.',
-    copied: 'Tersalin',
-    componentsPageDescription: (count) =>
-      `${count} komponen Flutter. Salin satu ke proyekmu, lalu ubah sesukamu.`,
-    mainNavigation: 'Navigasi utama',
-    homeLinkLabel: 'Beranda JustUI',
-    installTabsLabel: 'Platform instalasi',
-    copyInstallCommand: 'Salin perintah instalasi',
-    presetLabel: 'Preset',
-    terminalRegionLabel: 'Simulator CLI',
-    terminalChipsLabel: 'Contoh perintah',
-    terminalInputLabel: 'Perintah',
-    stageRegionLabel: 'Pratinjau komponen',
-    stageViewModeLabel: 'Pratinjau atau kode',
-    viewportGroupLabel: 'Lebar pratinjau',
-    viewportMobile: 'Tampilan ponsel',
-    viewportTablet: 'Tampilan tablet',
-    viewportDesktop: 'Tampilan desktop',
+    catalogSearchPlaceholder: 'Cari komponen',
+    catalogSearchLabel: 'Cari komponen',
+    catalogCategoryLabel: 'Kategori',
+    catalogAllCategories: 'Semua',
+    catalogCategories: {
+      primitive: 'Primitif',
+      selection: 'Pilihan',
+      layout: 'Tata letak',
+      form: 'Formulir',
+      navigation: 'Navigasi',
+      overlay: 'Overlay',
+      composite: 'Komposit',
+    },
+    catalogNoResults: "Tidak ada yang cocok dengan '{query}'.",
+    catalogShowing: 'Menampilkan {shown} dari {total}',
+    catalogResetFilters: 'Atur ulang filter',
+    catalogCopyCli: 'Salin perintah CLI',
+    catalogViewCode: 'Kode',
+    catalogViewDocs: 'Docs',
+    catalogCodeTitle: 'Contoh',
+    catalogCloseCode: 'Tutup',
+    notFoundTitle: 'Halaman tidak ditemukan.',
+    notFoundBody:
+      'Mungkin tautannya sudah lama, atau halamannya pindah. Coba salah satu ini:',
+    notFoundHome: 'Beranda',
   },
 } as const;
 
 export function getHomepageDictionary(lang: string): HomepageDictionary {
   return homepageTranslations[lang] ?? homepageTranslations.en;
+}
+
+/** Replaces `{name}` placeholders in a dictionary string. */
+export function formatMessage(
+  template: string,
+  values: Record<string, string | number>
+): string {
+  return template.replace(/\{(\w+)\}/g, (whole, key: string) =>
+    key in values ? String(values[key]) : whole
+  );
 }

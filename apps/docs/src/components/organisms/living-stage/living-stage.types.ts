@@ -1,5 +1,3 @@
-import type { JustUIPreset } from '@/lib/presets';
-
 export type StageView = 'preview' | 'code';
 
 export interface MountedWidget {
@@ -12,11 +10,7 @@ export interface LivingStageProps {
   /** Currently mounted widgets. */
   widgets: MountedWidget[];
   /** Current active preset. */
-  preset?: JustUIPreset;
+  preset?: 'default' | 'neobrutalism';
   lang?: string;
   className?: string;
-  /** Called when the Clear button in the toolbar is clicked. */
-  onClear?: () => void;
-  /** Called when a command CTA (like in empty state) is clicked. */
-  onRunCommand?: (command: string) => void;
 }
