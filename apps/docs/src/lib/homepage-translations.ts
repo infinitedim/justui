@@ -13,6 +13,9 @@ export type HomepageDictionary = {
   navDocs: string;
   navComponents: string;
   navStudio: string;
+  homeLinkLabel: string;
+  mainNavigation: string;
+  presetLabel: string;
   searchPlaceholder: string;
   toggleTheme: string;
   changeLanguage: string;
@@ -80,6 +83,9 @@ export const homepageTranslations: Readonly<
     navDocs: 'Docs',
     navComponents: 'Components',
     navStudio: 'Studio',
+    homeLinkLabel: 'JustUI homepage',
+    mainNavigation: 'Main navigation',
+    presetLabel: 'Preset',
     searchPlaceholder: 'Search...',
     toggleTheme: 'Toggle theme',
     changeLanguage: 'Switch to Indonesian',
@@ -152,6 +158,9 @@ export const homepageTranslations: Readonly<
     navDocs: 'Dokumentasi',
     navComponents: 'Komponen',
     navStudio: 'Studio',
+    homeLinkLabel: 'Beranda JustUI',
+    mainNavigation: 'Navigasi utama',
+    presetLabel: 'Preset',
     searchPlaceholder: 'Cari...',
     toggleTheme: 'Ubah tema',
     changeLanguage: 'Ganti ke Bahasa Inggris',

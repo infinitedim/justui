@@ -3,7 +3,7 @@ import { GENERATED_COMPONENTS } from '@/lib/components.generated';
 import { catalogDictionaries, getCatalogDictionary } from '@/lib/catalog-i18n';
 
 /** Collects the keys of an object tree, so en and id can be compared shape to shape. */
-function keyPaths(value: unknown, prefix = ''): string[] {
+function keyPaths(value: unknown, prefix = ''): Array<string> {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     return [prefix];
   }

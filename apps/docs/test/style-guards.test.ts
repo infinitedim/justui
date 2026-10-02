@@ -10,7 +10,7 @@ import * as path from 'node:path';
 
 const srcDir = path.resolve(__dirname, '..', 'src');
 
-function listFiles(dir: string): string[] {
+function listFiles(dir: string): Array<string> {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) return listFiles(full);
@@ -30,30 +30,30 @@ const uiFiles = files.filter(
 
 /**
  * rounded-full is reserved for circles: switch track and thumb, avatar,
- * radio, slider thumb, spinner, color swatch, semantic status dot. The phone
- * chassis in the Studio is pending its own redesign.
+ * radio, slider thumb, spinner, color swatch, semantic status dot.
  */
 const ROUNDED_FULL_ALLOWED = new Set([
   'components/organisms/simulators/preview-mocks/switch-mock.tsx',
   'components/organisms/simulators/preview-mocks/avatar-mock.tsx',
   'components/organisms/simulators/preview-mocks/avatar-group-mock.tsx',
+  'components/organisms/simulators/preview-mocks/carousel-mock.tsx',
+  'components/organisms/simulators/preview-mocks/progress-mock.tsx',
+  'components/organisms/simulators/preview-mocks/radio-group-mock.tsx',
   'components/organisms/simulators/preview-mocks/radio-mock.tsx',
   'components/organisms/simulators/preview-mocks/badge-mock.tsx',
   'components/organisms/simulators/preview-mocks/skeleton-mock.tsx',
   'components/organisms/component-preview-grid/component-preview-grid.tsx',
-  'components/organisms/phone-mockup-canvas/phone-mockup-canvas.tsx',
+  'components/organisms/studio-preview/studio-preview.tsx',
   'components/molecules/state-toggle/state-toggle.tsx',
   'components/molecules/color-swatch-item/color-swatch-item.tsx',
   'components/atoms/slider/slider.tsx',
   'components/atoms/button/button.tsx',
 ]);
 
-/** Raw Tailwind palette colors bypass the tokens; only the phone chassis keeps them for now. */
-const RAW_PALETTE_ALLOWED = new Set([
-  'components/organisms/phone-mockup-canvas/phone-mockup-canvas.tsx',
-]);
+/** Raw Tailwind palette colors bypass the tokens. */
+const RAW_PALETTE_ALLOWED = new Set<string>();
 
-const BANNED: { name: string; pattern: RegExp }[] = [
+const BANNED: Array<{ name: string; pattern: RegExp }> = [
   { name: 'isNeo branching', pattern: /\bisNeo\b/ },
   { name: 'hard-coded black border', pattern: /\bborder-black\b/ },
   { name: 'hard-coded offset shadow', pattern: /shadow-\[\d/ },
