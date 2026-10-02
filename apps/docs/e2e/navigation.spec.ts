@@ -5,7 +5,7 @@ test.describe('Navigation Flow', () => {
     await page.goto('/');
 
     await expect(
-      page.getByRole('heading', { name: /Copy\. Paste\. Ship\./i })
+      page.getByRole('heading', { name: /One command\. One file\. Yours\./i })
     ).toBeVisible();
     await expect(
       page.getByRole('tablist', { name: /installation platform/i })
