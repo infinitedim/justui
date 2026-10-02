@@ -42,7 +42,12 @@ export function ThemeConfigurator({
 
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [copyFailed, setCopyFailed] = useState<boolean>(false);
-  const [recent, setRecent] = useState<string[]>([]);
+  const [recent, setRecent] = useState<Array<string>>([]);
+  const [inputHex, setInputHex] = useState(seedColor);
+
+  useEffect(() => {
+    setInputHex(seedColor);
+  }, [seedColor]);
 
   const lastHueSatRef = useRef<[number, number]>([83, 77]);
 
@@ -84,14 +89,26 @@ export function ThemeConfigurator({
   const handleHexInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const val = e.target.value.trim();
-      setSeedColor(val.startsWith('#') ? val : `#${val}`);
+      setInputHex(val);
+      const candidate = val.startsWith('#') ? val : `#${val}`;
+      if (HEX_PATTERN.test(candidate)) {
+        setSeedColor(candidate.toLowerCase());
+      }
     },
     [setSeedColor]
   );
 
   const handleHexInputBlur = useCallback(() => {
-    setSeedColor(normalizeHex(seedColor));
-  }, [seedColor, setSeedColor]);
+    const candidate = inputHex.startsWith('#') ? inputHex : `#${inputHex}`;
+    const clean = candidate.replace(/^#/, '').trim();
+    if (/^[0-9a-fA-F]{3}$/.test(clean) || /^[0-9a-fA-F]{6}$/.test(clean)) {
+      const normalized = normalizeHex(candidate);
+      setSeedColor(normalized);
+      setInputHex(normalized);
+    } else {
+      setInputHex(seedColor);
+    }
+  }, [inputHex, seedColor, setSeedColor]);
 
   const handleCopyColor = useCallback(async (token: string, hex: string) => {
     if (typeof navigator === 'undefined' || !navigator.clipboard) return;
@@ -210,7 +227,7 @@ export function ThemeConfigurator({
           <Input
             id="seed-color-input"
             type="text"
-            value={seedColor}
+            value={inputHex}
             onChange={handleHexInputChange}
             onBlur={handleHexInputBlur}
             placeholder="#a3e635"

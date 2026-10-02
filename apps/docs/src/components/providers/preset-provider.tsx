@@ -9,10 +9,14 @@ import {
   useState,
 } from 'react';
 
-export type JustUIPreset = 'default' | 'neobrutalism';
+import {
+  type JustUIPreset,
+  DEFAULT_PRESET,
+} from '@/lib/presets';
+
+export type { JustUIPreset };
 
 const STORAGE_KEY = 'justui-preset';
-const DEFAULT_PRESET: JustUIPreset = 'default';
 
 interface PresetContextValue {
   preset: JustUIPreset;

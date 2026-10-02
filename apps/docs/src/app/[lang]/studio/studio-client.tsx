@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { RotateCcw, Share2, Check } from 'lucide-react';
+import { RotateCcw, Share2, Check, AlertCircle } from 'lucide-react';
 import {
   ThemeStudioProvider,
   useThemeStudio,
@@ -25,6 +25,7 @@ function StudioContent({ lang }: { lang: string }) {
   const t = getStudioDictionary(lang);
   const { reset, shareUrl } = useThemeStudio();
   const [copiedShare, setCopiedShare] = useState<boolean>(false);
+  const [copyFailed, setCopyFailed] = useState<boolean>(false);
 
   const handleShare = async () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -33,8 +34,12 @@ function StudioContent({ lang }: { lang: string }) {
         setCopiedShare(true);
         setTimeout(() => setCopiedShare(false), 2000);
       } catch {
-        // Ignore clipboard failure in restricted environments
+        setCopyFailed(true);
+        setTimeout(() => setCopyFailed(false), 2000);
       }
+    } else {
+      setCopyFailed(true);
+      setTimeout(() => setCopyFailed(false), 2000);
     }
   };
 
@@ -76,6 +81,11 @@ function StudioContent({ lang }: { lang: string }) {
               <>
                 <Check className="h-3.5 w-3.5" />
                 <span>{t.copied}</span>
+              </>
+            ) : copyFailed ? (
+              <>
+                <AlertCircle className="h-3.5 w-3.5" />
+                <span>{t.copyFailed}</span>
               </>
             ) : (
               <>
