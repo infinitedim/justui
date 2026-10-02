@@ -270,6 +270,10 @@ pub fn rewrite(
         "theme_aspects.dart",
         "theme_data_material.dart",
         "preset_tokens.dart",
+        "spacing_scheme.dart",
+        "shadow_scheme.dart",
+        "radius_scheme.dart",
+        "typography_scheme.dart",
         "just_overlay_controller.dart",
         "just_overlay_scope.dart",
         "just_theme.dart",
@@ -307,6 +311,7 @@ pub fn rewrite(
                 if THEME_SUFFIXES
                     .iter()
                     .any(|suffix| local_subpath.ends_with(suffix))
+                    || local_subpath.contains("schemes/")
                 {
                     return format!(
                         "{} 'package:{}/core/just_ui_core.dart'{};",
@@ -337,6 +342,7 @@ pub fn rewrite(
             let is_theme_import = resolved_flat_path.starts_with("components/theme/")
                 || resolved_flat_path.starts_with("theme/")
                 || resolved_flat_path.starts_with("overlay/")
+                || resolved_flat_path.contains("schemes/")
                 || THEME_SUFFIXES
                     .iter()
                     .any(|suffix| resolved_flat_path.ends_with(suffix));
@@ -381,40 +387,81 @@ pub fn rewrite(
         })
         .into_owned();
 
-    let core_import_prefix = format!("'package:{}/core/just_ui_core.dart'", package_name);
-    let tokens_import_prefix = format!("'package:{}/tokens/just_ui_tokens.dart'", package_name);
+    let full_core_target = format!("package:{}/core/just_ui_core.dart", package_name);
+    let tokens_target = format!("package:{}/tokens/just_ui_tokens.dart", package_name);
+    let core_theme_prefix = format!("package:{}/core/theme/", package_name);
+    let core_overlay_prefix = format!("package:{}/core/overlay/", package_name);
 
-    let raw_lines: Vec<&str> = rewritten.lines().collect();
-    let has_full_core_import = raw_lines.iter().any(|line| {
-        let trimmed = line.trim();
-        trimmed.starts_with("import ")
-            && trimmed.contains(&core_import_prefix)
-            && !trimmed.contains(" show ")
+    let has_full_core_import = import_regex().captures_iter(&rewritten).any(|caps| {
+        &caps[1] == "import" && caps[2] == full_core_target && !caps[3].contains("show")
     });
 
     let mut seen_imports = std::collections::HashSet::new();
-    let mut lines = Vec::new();
+    let mut seen_core_barrel = false;
 
-    for line in raw_lines {
+    let pruned = import_regex()
+        .replace_all(&rewritten, |caps: &regex::Captures| {
+            let kw = &caps[1];
+            let import_path = &caps[2];
+            let trailing = &caps[3];
+
+            if kw == "import" {
+                // If core/just_ui_core.dart is imported in full, tokens/just_ui_tokens.dart is
+                // completely redundant (including multi-line show clauses) because the core
+                // barrel already re-exports the tokens library.
+                if has_full_core_import && import_path == tokens_target {
+                    return String::new();
+                }
+
+                // Subpaths inside core/theme and core/overlay are also redundant when the barrel is present.
+                if has_full_core_import
+                    && (import_path.starts_with(&core_theme_prefix)
+                        || import_path.starts_with(&core_overlay_prefix))
+                {
+                    return String::new();
+                }
+
+                // Collapse duplicate core barrel imports into a single one
+                if import_path == full_core_target && !trailing.contains("show") {
+                    if seen_core_barrel {
+                        return String::new();
+                    }
+                    seen_core_barrel = true;
+                    return caps[0].to_string();
+                }
+
+                // General deduplication of identical import statements (whitespace-normalized)
+                let normalized = format!(
+                    "{} '{}'{};",
+                    kw,
+                    import_path,
+                    trailing.split_whitespace().collect::<Vec<_>>().join(" ")
+                );
+                if seen_imports.contains(&normalized) {
+                    return String::new();
+                }
+                seen_imports.insert(normalized);
+            }
+            caps[0].to_string()
+        })
+        .into_owned();
+
+    let mut cleaned_lines = Vec::new();
+    let mut prev_empty = false;
+    for line in pruned.lines() {
         let trimmed = line.trim();
-        if (trimmed.starts_with("import ") || trimmed.starts_with("export "))
-            && trimmed.ends_with(';')
-        {
-            if seen_imports.contains(trimmed) {
-                continue;
+        if trimmed.is_empty() {
+            if !prev_empty && !cleaned_lines.is_empty() {
+                cleaned_lines.push("");
+                prev_empty = true;
             }
-            if has_full_core_import
-                && trimmed.starts_with("import ")
-                && trimmed.contains(&tokens_import_prefix)
-            {
-                continue;
-            }
-            seen_imports.insert(trimmed.to_string());
+        } else {
+            cleaned_lines.push(line);
+            prev_empty = false;
         }
-        lines.push(line);
     }
 
-    let mut final_result = lines.join("\n");
+    let mut final_result = cleaned_lines.join("\n");
     if clean_content.ends_with('\n') && !final_result.ends_with('\n') {
         final_result.push('\n');
     }
@@ -507,10 +554,7 @@ mod tests {
         // `unnecessary_import` wherever the barrel is also imported.
         assert!(rewritten.contains("import 'package:my_app/core/just_ui_core.dart';"));
         assert!(!rewritten.contains("import 'package:my_app/core/theme/preset_tokens.dart';"));
-        // Files the barrel does *not* re-export keep their specific subpath.
-        assert!(
-            rewritten.contains("import 'package:my_app/core/theme/schemes/spacing_scheme.dart';")
-        );
+        assert!(!rewritten.contains("import 'package:my_app/core/theme/schemes/spacing_scheme.dart';"));
         assert!(rewritten.contains("import 'package:my_app/tokens/colors/oklch_engine.dart';"));
     }
 
@@ -617,6 +661,37 @@ export 'just_carousel_style.dart';
         );
 
         assert!(rewritten.contains("import 'package:my_app/tokens/just_ui_tokens.dart';"));
+    }
+
+    #[test]
+    fn test_multiline_tokens_import_pruned_when_core_barrel_imported() {
+        let index = RegistryIndex {
+            version: "1.0".to_string(),
+            presets: vec!["default".to_string()],
+            components: vec![],
+        };
+
+        let content = r#"import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/src/theme/theme_data.dart';
+import 'package:just_ui_tokens/just_ui_tokens.dart'
+    show JustColorScheme, JustMotionProfile;
+"#;
+
+        let rewritten = rewrite(
+            content,
+            "components/button/default/just_button.dart",
+            "button",
+            &index,
+            "lib/widgets",
+            "lib/tokens",
+            "lib/widgets/shared",
+            "default",
+            "my_app",
+        );
+
+        assert!(rewritten.contains("import 'package:my_app/core/just_ui_core.dart';"));
+        assert!(!rewritten.contains("tokens/just_ui_tokens.dart"));
+        assert!(!rewritten.contains("JustColorScheme"));
     }
 
     #[test]
