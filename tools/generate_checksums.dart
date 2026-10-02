@@ -352,11 +352,12 @@ void main(List<String> args) async {
 
   if (isDryRun) {
     print('\nDry-run completed.');
-    print(
-      driftedFiles.isEmpty
-          ? 'Status: All files in sync.'
-          : 'Status: Differences detected between registry and core source.',
-    );
+    if (driftedFiles.isEmpty) {
+      print('Status: All files in sync.');
+    } else {
+      print('Status: Differences detected between registry and core source.');
+      exit(1);
+    }
   } else {
     // Collect all valid registry file paths from updated indexJson
     final Set<String> validAbsolutePaths = <String>{};
