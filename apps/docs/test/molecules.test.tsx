@@ -73,7 +73,7 @@ describe('Molecules Components', () => {
       render(<ThemeSwitcher label="Toggle theme" />);
       await waitFor(() => {
         expect(
-          screen.getByRole('radiogroup', { name: 'Toggle theme' })
+          screen.getByRole('switch', { name: 'Toggle theme' })
         ).toBeInTheDocument();
       });
     });
