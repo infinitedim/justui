@@ -108,6 +108,38 @@ describe('Color Resolver Engine', () => {
       expect(contrastRatio('#a3e635', '#a3e635')).toBe(1);
     });
 
+    it('calculates unrounded contrast ratio precisely', () => {
+      const l1 = relativeLuminance('#ffffff');
+      const l2 = relativeLuminance('#000000');
+      const exactRatio = (l1 + 0.05) / (l2 + 0.05);
+      expect(exactRatio).toBeCloseTo(21.0, 2);
+    });
+
+    it('guarantees >= 4.5:1 contrast for accentText against card across diverse seeds', () => {
+      const testSeeds = [
+        '#a3e635',
+        '#3b82f6',
+        '#ef4444',
+        '#eab308',
+        '#ec4899',
+        '#8b5cf6',
+        '#10b981',
+        '#000000',
+        '#ffffff',
+      ];
+      for (const seed of testSeeds) {
+        const lightTokens = resolveTokens(seed, false, 'default', 'hsl');
+        expect(
+          contrastRatio(lightTokens.accentText, lightTokens.card)
+        ).toBeGreaterThanOrEqual(4.5);
+
+        const darkTokens = resolveTokens(seed, true, 'default', 'hsl');
+        expect(
+          contrastRatio(darkTokens.accentText, darkTokens.card)
+        ).toBeGreaterThanOrEqual(4.5);
+      }
+    });
+
     it('adjusts lightness dynamically to meet target contrast ratio', () => {
       const lightBg = '#ffffff';
       const lowContrastFg = '#bef264';

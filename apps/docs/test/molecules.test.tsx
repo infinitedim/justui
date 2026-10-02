@@ -55,7 +55,7 @@ describe('Molecules Components', () => {
         ).toBeInTheDocument();
       });
 
-      const neoBtn = screen.getByRole('radio', { name: 'neo' });
+      const neoBtn = screen.getByRole('radio', { name: 'neobrutalism' });
       fireEvent.click(neoBtn);
     });
   });
