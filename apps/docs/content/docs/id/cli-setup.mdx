@@ -21,8 +21,8 @@ Contoh isi berkas konfigurasi default:
 # JustUI CLI Configuration
 preset: default # Pilihan: default, neobrutalism
 seed_color: '#3B82F6' # Warna dasar utama untuk kalkulasi kontras dinamis
-components_dir: lib/components/ui # Lokasi penyimpanan kode komponen
-tokens_dir: lib/theme # Lokasi penyimpanan file primitive token
+components_dir: lib/widgets # Lokasi penyimpanan kode komponen
+tokens_dir: lib/tokens # Lokasi penyimpanan file primitive token
 ```
 
 ---
@@ -128,7 +128,7 @@ Perlu diperhatikan bahwa perintah **`remove`** dan **`doctor`** tidak didukung s
 
 Karena JustUI menggunakan model penyalinan kode sumber langsung (bukan sebagai library package read-only), Anda dapat menghapus komponen secara manual tanpa memengaruhi stabilitas SDK:
 
-1. Hapus file `.dart` terkait komponen tersebut di dalam folder komponen Anda (misalnya `lib/components/ui/button.dart`).
+1. Hapus file `.dart` terkait komponen tersebut di dalam folder komponen Anda (misalnya `lib/widgets/button/just_button.dart`).
 2. Jika ada dependensi eksternal di `pubspec.yaml` yang hanya digunakan oleh komponen tersebut, hapus baris dependensi tersebut secara manual lalu jalankan `flutter pub get`.
 
 ### Solusi untuk `justui doctor` (Mendiagnosis Masalah)

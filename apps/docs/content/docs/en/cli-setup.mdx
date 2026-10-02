@@ -21,8 +21,8 @@ Example of the default configuration file contents:
 # JustUI CLI Configuration
 preset: default # Options: default, neobrutalism
 seed_color: '#3B82F6' # Base primary color for dynamic contrast calculation
-components_dir: lib/components/ui # Component code storage location
-tokens_dir: lib/theme # Primitive token file storage location
+components_dir: lib/widgets # Component code storage location
+tokens_dir: lib/tokens # Primitive token file storage location
 ```
 
 ---
@@ -128,7 +128,7 @@ Please note that the **`remove`** and **`doctor`** commands are not directly sup
 
 Because JustUI uses a direct source code copying model (not as a read-only library package), you can delete components manually without affecting SDK stability:
 
-1. Delete the `.dart` file(s) related to that component in your component folder (for example, `lib/components/ui/button.dart`).
+1. Delete the `.dart` file(s) related to that component in your component folder (for example, `lib/widgets/button/just_button.dart`).
 2. If there are external dependencies in `pubspec.yaml` that are only used by that component, manually delete those dependency lines and then run `flutter pub get`.
 
 ### Workaround for `justui doctor` (Diagnosing Issues)
