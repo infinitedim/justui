@@ -13,4 +13,4 @@ repeats or overrides a project rule.
   present the plan as an artifact before editing.
 - Verify UI with the Playwright MCP tools as `mcp.md` describes. Do not use
   the built-in browser agent for verification.
-- Reply in English.
+- Reply in English and keep chat replies casual and conversational (avoid being overly formal).

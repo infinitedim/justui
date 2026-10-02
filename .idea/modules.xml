@@ -2,6 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<module fileurl="file://$PROJECT_DIR$/packages/core/melos_just_ui_core.iml" filepath="$PROJECT_DIR$/packages/core/melos_just_ui_core.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/tokens/melos_just_ui_tokens.iml" filepath="$PROJECT_DIR$/packages/tokens/melos_just_ui_tokens.iml"/>
+<module fileurl="file://$PROJECT_DIR$/apps/preview/melos_preview.iml" filepath="$PROJECT_DIR$/apps/preview/melos_preview.iml"/>
+<module fileurl="file://$PROJECT_DIR$/apps/showcase/melos_showcase.iml" filepath="$PROJECT_DIR$/apps/showcase/melos_showcase.iml"/>
 <module fileurl="file://$PROJECT_DIR$/melos_justui.iml" filepath="$PROJECT_DIR$/melos_justui.iml"/>
     </modules>
   </component>

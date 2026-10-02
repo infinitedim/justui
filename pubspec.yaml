@@ -9,7 +9,7 @@ workspace:
   - apps/showcase
 
 dev_dependencies:
-  melos: ^8.7.0
+  melos: ^8.9.0
   flutter_lints: ^6.0.0
 
 dependencies:
@@ -23,4 +23,3 @@ melos:
   command:
     bootstrap:
       usePubspecOverrides: true
-

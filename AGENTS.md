@@ -4,6 +4,7 @@ This file is always active. It holds the rules that apply to every task.
 Area rules live in `.agents/rules/` and load by file path or by task type.
 Write and reply in English (chat replies, commits, code comments, docs).
 Use plain ASCII in everything you write: no em dashes, curly quotes or emoji.
+Keep chat replies casual and conversational (avoid being overly formal).
 
 ## 1. What JustUI is
 
@@ -11,29 +12,29 @@ JustUI is a Flutter UI component library distributed shadcn-style: users run the
 `justui` CLI, which copies component source into their own project. It is a
 polyglot monorepo:
 
-| Path | Stack | Role |
-| --- | --- | --- |
-| `packages/tokens` | Dart | Tokens, OKLCH/HSLuv color engines, motion, typography |
-| `packages/core` | Flutter | Theme engine and components (4-file convention) |
-| `packages/cli` | Rust | `justui` CLI: init, add, diff, update, preset, create, doctor, upgrade |
-| `apps/docs` | Next.js 16, React 19, Fumadocs, Tailwind 4, Bun | Docs site, catalog, Studio |
-| `apps/preview` | Flutter + Widgetbook | Component workbench |
-| `apps/showcase` | Flutter | CLI sandbox; `lib/core`, `lib/tokens`, `lib/widgets` are generated |
-| `registry/` | JSON + Dart | What the CLI downloads; generated from `packages/core` |
-| `tools/` | Dart, Bash | Checksums, changesets |
+| Path              | Stack                                           | Role                                                                   |
+| ----------------- | ----------------------------------------------- | ---------------------------------------------------------------------- |
+| `packages/tokens` | Dart                                            | Tokens, OKLCH/HSLuv color engines, motion, typography                  |
+| `packages/core`   | Flutter                                         | Theme engine and components (4-file convention)                        |
+| `packages/cli`    | Rust                                            | `justui` CLI: init, add, diff, update, preset, create, doctor, upgrade |
+| `apps/docs`       | Next.js 16, React 19, Fumadocs, Tailwind 4, Bun | Docs site, catalog, Studio                                             |
+| `apps/preview`    | Flutter + Widgetbook                            | Component workbench                                                    |
+| `apps/showcase`   | Flutter                                         | CLI sandbox; `lib/core`, `lib/tokens`, `lib/widgets` are generated     |
+| `registry/`       | JSON + Dart                                     | What the CLI downloads; generated from `packages/core`                 |
+| `tools/`          | Dart, Bash                                      | Checksums, changesets                                                  |
 
 ## 2. Area rules (read the matching file before you edit)
 
-| File | Loads when |
-| --- | --- |
-| `.agents/rules/workflow.md` | Always |
-| `.agents/rules/mcp.md` | Always |
-| `.agents/rules/flutter.md` | Files under `packages/core`, `packages/tokens`, `apps/preview`, `apps/showcase` |
-| `.agents/rules/rust-cli.md` | Files under `packages/cli` |
-| `.agents/rules/docs-web.md` | Files under `apps/docs` |
-| `.agents/rules/design.md` | Any UI, visual, copy or layout work |
-| `.agents/rules/security.md` | Input handling, headers, CSP, install/upgrade/registry, deps, CI |
-| `.agents/rules/sandbox.md` | Only when you run in an offline or read-only-HOME sandbox |
+| File                        | Loads when                                                                      |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| `.agents/rules/workflow.md` | Always                                                                          |
+| `.agents/rules/mcp.md`      | Always                                                                          |
+| `.agents/rules/flutter.md`  | Files under `packages/core`, `packages/tokens`, `apps/preview`, `apps/showcase` |
+| `.agents/rules/rust-cli.md` | Files under `packages/cli`                                                      |
+| `.agents/rules/docs-web.md` | Files under `apps/docs`                                                         |
+| `.agents/rules/design.md`   | Any UI, visual, copy or layout work                                             |
+| `.agents/rules/security.md` | Input handling, headers, CSP, install/upgrade/registry, deps, CI                |
+| `.agents/rules/sandbox.md`  | Only when you run in an offline or read-only-HOME sandbox                       |
 
 If a task spans areas, read every matching file.
 
@@ -42,18 +43,18 @@ If a task spans areas, read every matching file.
 Pick skills by the path and the kind of task. Use at most 2 skills per task.
 Do not load a skill "just in case".
 
-| Task | Skills |
-| --- | --- |
-| Flutter component or token work | `flutter-expert`, `ui-a11y` |
-| Any UI or visual work (Flutter or web) | `justui-design` |
-| Rust CLI | `rust-pro` |
-| Docs site code | `typescript-expert` or `senior-frontend` (one) |
-| Docs i18n or copy | `i18n-localization` |
-| SEO, metadata, sitemap | `nextjs-seo-indexing` |
-| Security review | `cc-skill-security-review` |
-| Dependency audit | `security-scanning-security-dependencies` |
-| Release, changelog | `changelog-generator` |
-| Monorepo structure | `monorepo-architect` |
+| Task                                   | Skills                                         |
+| -------------------------------------- | ---------------------------------------------- |
+| Flutter component or token work        | `flutter-expert`, `ui-a11y`                    |
+| Any UI or visual work (Flutter or web) | `justui-design`                                |
+| Rust CLI                               | `rust-pro`                                     |
+| Docs site code                         | `typescript-expert` or `senior-frontend` (one) |
+| Docs i18n or copy                      | `i18n-localization`                            |
+| SEO, metadata, sitemap                 | `nextjs-seo-indexing`                          |
+| Security review                        | `cc-skill-security-review`                     |
+| Dependency audit                       | `security-scanning-security-dependencies`      |
+| Release, changelog                     | `changelog-generator`                          |
+| Monorepo structure                     | `monorepo-architect`                           |
 
 `taste-skill` is a generic landing-page skill and is not used in this repo.
 `justui-design` is its JustUI fork.
@@ -107,16 +108,16 @@ paste the command and its result in your summary. If a check cannot run in
 your environment, say "not verified: <check> (<reason>)". Never claim a check
 passed that you did not run.
 
-| Area | Commands (run from repo root unless noted) |
-| --- | --- |
-| Dart/Flutter | `melos exec --flutter -- "flutter analyze ."` and `melos exec --flutter --dir-exists="test" -- "flutter test"` |
-| Tokens (pure Dart tests) | `melos exec --no-flutter --dir-exists="test" -- "dart test"` |
-| Registry sync | `dart run tools/generate_checksums.dart --dry-run` (read the output: it can report drift and still exit 0) |
-| Formatting | `dart format --set-exit-if-changed .` |
-| Rust CLI | `cargo clippy --all-targets --all-features -- -D warnings` and `cargo test --all-targets` |
-| Docs | in `apps/docs`: `bun run lint`, `bun run type-check`, `bun run test`, `bun run build` |
-| Docs UI | in `apps/docs`: `bun run test:e2e` |
-| Generated docs data | in `apps/docs`: `bun run generate:components -- --check` |
+| Area                     | Commands (run from repo root unless noted)                                                                     |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| Dart/Flutter             | `melos exec --flutter -- "flutter analyze ."` and `melos exec --flutter --dir-exists="test" -- "flutter test"` |
+| Tokens (pure Dart tests) | `melos exec --no-flutter --dir-exists="test" -- "dart test"`                                                   |
+| Registry sync            | `dart run tools/generate_checksums.dart --dry-run` (read the output: it can report drift and still exit 0)     |
+| Formatting               | `dart format --set-exit-if-changed .`                                                                          |
+| Rust CLI                 | `cargo clippy --all-targets --all-features -- -D warnings` and `cargo test --all-targets`                      |
+| Docs                     | in `apps/docs`: `bun run lint`, `bun run type-check`, `bun run test`, `bun run build`                          |
+| Docs UI                  | in `apps/docs`: `bun run test:e2e`                                                                             |
+| Generated docs data      | in `apps/docs`: `bun run generate:components -- --check`                                                       |
 
 ## 7. Summary format at the end of every task
 
