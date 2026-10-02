@@ -86,7 +86,7 @@ export function generateDart(
   const paramsBlock = params.length > 0 ? `\n${params.join('\n')}\n` : '';
 
   return `import 'package:flutter/widgets.dart' show Color;
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 final theme = JustThemeData.fromSeed(
   const Color(${argb}),${paramsBlock});

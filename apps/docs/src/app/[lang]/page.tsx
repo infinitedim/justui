@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ComponentPreviewGrid } from '@/components/organisms/component-preview-grid';
 import { WhatYouGet } from '@/components/organisms/what-you-get';
@@ -12,6 +13,31 @@ import {
   type HomepageDictionary,
 } from '@/lib/homepage-translations';
 import { localeStaticParams } from '@/lib/i18n';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  const t = getHomepageDictionary(lang);
+  return {
+    title: t.heroTitle,
+    description: t.heroDescription,
+    alternates: {
+      canonical: `/${lang}`,
+      languages: {
+        en: '/en',
+        id: '/id',
+      },
+    },
+    openGraph: {
+      title: `${t.heroTitle} | JustUI`,
+      description: t.heroDescription,
+      url: `/${lang}`,
+    },
+  };
+}
 
 const ctaBase =
   'just-press inline-flex h-11 items-center justify-center rounded-(--just-radius-md) border-(length:--just-border-width) border-border px-6 text-sm font-medium whitespace-nowrap';

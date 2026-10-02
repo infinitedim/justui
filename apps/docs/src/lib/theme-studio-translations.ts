@@ -42,6 +42,7 @@ export interface StudioDictionary {
   previewCancel: string;
   previewToast: string;
   lightness: string;
+  livePlayground: string;
 }
 
 const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
@@ -88,6 +89,7 @@ const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
     previewCancel: 'Cancel',
     previewToast: 'Address saved',
     lightness: 'Lightness',
+    livePlayground: 'Live Token Playground',
   },
   id: {
     title: 'Theme Studio',
@@ -132,6 +134,7 @@ const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
     previewCancel: 'Batal',
     previewToast: 'Alamat tersimpan',
     lightness: 'Kecerahan',
+    livePlayground: 'Playground Token Interaktif',
   },
 };
 

@@ -19,7 +19,10 @@ const mono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: 'JustUI Documentation',
+  title: {
+    template: '%s | JustUI',
+    default: 'JustUI Documentation',
+  },
   description: 'Beautiful, accessible, copy-paste Flutter UI components.',
 };
 

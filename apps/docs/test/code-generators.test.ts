@@ -77,7 +77,7 @@ describe('Code Generators', () => {
         "import 'package:flutter/widgets.dart' show Color;"
       );
       expect(dart).toContain(
-        "import 'package:just_ui_core/just_ui_core.dart';"
+        "import 'package:your_app/core/just_ui_core.dart';"
       );
       expect(dart).toContain('final theme = JustThemeData.fromSeed(');
       expect(dart).toContain('const Color(0xFFA3E635),');

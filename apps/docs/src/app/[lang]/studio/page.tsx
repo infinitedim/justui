@@ -23,6 +23,20 @@ export async function generateMetadata({
     description: isId
       ? 'Pilih satu warna, lihat palet terang dan gelap yang lolos WCAG AA, lalu salin config untuk justui init.'
       : 'Pick one color, see light and dark palettes that pass WCAG AA, then copy the config for justui init.',
+    alternates: {
+      canonical: `/${lang}/studio`,
+      languages: {
+        en: '/en/studio',
+        id: '/id/studio',
+      },
+    },
+    openGraph: {
+      title: 'Theme Studio | JustUI',
+      description: isId
+        ? 'Pilih satu warna, lihat palet terang dan gelap yang lolos WCAG AA, lalu salin config untuk justui init.'
+        : 'Pick one color, see light and dark palettes that pass WCAG AA, then copy the config for justui init.',
+      url: `/${lang}/studio`,
+    },
   };
 }
 
