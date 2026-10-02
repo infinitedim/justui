@@ -341,7 +341,69 @@ mod cli_integration {
             .current_dir(dir.path())
             .args(["init"])
             .assert()
+            .failure()
+            .code(1)
             .stderr(predicate::str::contains("No pubspec.yaml found"));
+    }
+
+    #[test]
+    fn commands_fail_without_init_with_exit_code_1() {
+        let dir = TempDir::new().unwrap();
+        justui()
+            .current_dir(dir.path())
+            .args(["add", "button", "-y"])
+            .assert()
+            .failure()
+            .code(1);
+
+        justui()
+            .current_dir(dir.path())
+            .args(["diff"])
+            .assert()
+            .failure()
+            .code(1);
+
+        justui()
+            .current_dir(dir.path())
+            .args(["preset", "list"])
+            .assert()
+            .failure()
+            .code(1);
+
+        justui()
+            .current_dir(dir.path())
+            .args(["update", "-y"])
+            .assert()
+            .failure()
+            .code(1);
+    }
+
+    #[test]
+    fn global_quiet_flag_suppresses_logs() {
+        let dir = TempDir::new().unwrap();
+        std::fs::write(dir.path().join("pubspec.yaml"), "name: test").unwrap();
+
+        justui()
+            .current_dir(dir.path())
+            .args(["--quiet", "init", "-y"])
+            .assert()
+            .success()
+            .stderr(predicate::str::contains("Bootstrap theme created").not());
+    }
+
+    #[test]
+    fn global_no_color_flag_strips_ansi() {
+        let dir = TempDir::new().unwrap();
+        let assert = justui()
+            .current_dir(dir.path())
+            .args(["--no-color", "init"])
+            .assert()
+            .failure()
+            .code(1);
+
+        let output = assert.get_output();
+        let stderr_str = String::from_utf8_lossy(&output.stderr);
+        assert!(!stderr_str.contains("\x1B["));
     }
 
     #[test]
@@ -1377,6 +1439,8 @@ mod cli_integration {
         // Test `justui add button --diff`
         let registry_dir = temp_dir.path().join("mock_registry");
         std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+        let button_code = "class JustButton {}";
+        let button_hash = justui_cli::commands::add::sha256_hex(button_code.as_bytes());
         std::fs::write(
             registry_dir.join("index.json"),
             serde_json::to_string(&serde_json::json!({
@@ -1394,7 +1458,7 @@ mod cli_integration {
                         "default": [{
                             "name": "just_button.dart",
                             "path": "components/button/just_button.dart",
-                            "checksum": "sha256:111"
+                            "checksum": format!("sha256:{}", button_hash)
                         }]
                     }
                 }]
@@ -1404,7 +1468,7 @@ mod cli_integration {
         .unwrap();
         std::fs::write(
             registry_dir.join("components/button/just_button.dart"),
-            "class JustButton {}",
+            button_code,
         )
         .unwrap();
         std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: my_app").unwrap();
@@ -1419,21 +1483,23 @@ mod cli_integration {
             .assert()
             .success();
 
-        // Test `justui diff missing_component`
+        // Test `justui diff missing_component` exits with failure (1)
         justui()
             .current_dir(temp_dir.path())
             .args(["diff", "nonexistent_component"])
             .assert()
-            .success();
+            .failure()
+            .code(1);
 
-        // Test `justui preset info invalid_preset`
+        // Test `justui preset info invalid_preset` exits with failure (1)
         justui()
             .current_dir(temp_dir.path())
             .args(["preset", "info", "invalid_preset"])
             .assert()
-            .success();
+            .failure()
+            .code(1);
 
-        // Test `justui search nonexistent_query`
+        // Test `justui search nonexistent_query` succeeds with 0 matches
         justui()
             .current_dir(temp_dir.path())
             .args(["search", "nonexistent_query_12345"])

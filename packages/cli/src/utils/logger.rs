@@ -1,6 +1,23 @@
+use std::sync::atomic::{AtomicBool, Ordering};
 use colored::Colorize;
 
+static QUIET: AtomicBool = AtomicBool::new(false);
+
+pub fn init(quiet: bool, no_color: bool) {
+    QUIET.store(quiet, Ordering::Relaxed);
+    if no_color || std::env::var("NO_COLOR").is_ok() {
+        colored::control::set_override(false);
+    }
+}
+
+pub fn is_quiet() -> bool {
+    QUIET.load(Ordering::Relaxed)
+}
+
 pub fn success(msg: &str) {
+    if is_quiet() {
+        return;
+    }
     eprintln!("{}", format!("✓ {}", msg).green());
 }
 
@@ -9,10 +26,16 @@ pub fn error(msg: &str) {
 }
 
 pub fn warning(msg: &str) {
+    if is_quiet() {
+        return;
+    }
     eprintln!("{}", format!("⚠ Warning: {}", msg).yellow());
 }
 
 pub fn info(msg: &str) {
+    if is_quiet() {
+        return;
+    }
     eprintln!("{}", format!("ℹ {}", msg).cyan());
 }
 
@@ -21,6 +44,9 @@ pub fn stdout(msg: &str) {
 }
 
 pub fn panel(msg: &str) {
+    if is_quiet() {
+        return;
+    }
     let msg_chars = msg.chars().count();
     let inner_width = msg_chars + 4;
     let top = format!("┌{}┐", "─".repeat(inner_width));
@@ -32,6 +58,9 @@ pub fn panel(msg: &str) {
 }
 
 pub fn summary(title: &str, items: &[SummaryItem]) {
+    if is_quiet() {
+        return;
+    }
     let title_len = title.chars().count() + 5;
     let item_max_len = items
         .iter()
@@ -80,5 +109,19 @@ mod tests {
                 value: "Value A".to_string(),
             }],
         );
+    }
+
+    #[test]
+    fn test_logger_init_quiet_and_no_color() {
+        init(true, true);
+        assert!(is_quiet());
+        // Should not panic or print errors
+        info("quiet info message");
+        warning("quiet warning message");
+        success("quiet success message");
+        panel("quiet panel message");
+
+        init(false, false);
+        assert!(!is_quiet());
     }
 }

@@ -57,21 +57,19 @@ pub fn run(
 
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
-        logger::error(
-            "Project not initialized. Please run \"justui init\" in the root directory first.",
+        anyhow::bail!(
+            "Project not initialized. Please run \"justui init\" in the root directory first."
         );
-        return Ok(());
     }
 
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
-            logger::error(&format!(
+            anyhow::bail!(
                 "Failed to parse {}: {}",
                 JustUIConfig::CONFIG_FILE_NAME,
                 e
-            ));
-            return Ok(());
+            );
         }
     };
 
@@ -98,8 +96,7 @@ pub fn run(
         }
         Err(e) => {
             pb_index.finish_and_clear();
-            logger::error(&format!("Failed to add components: {}", e));
-            return Ok(());
+            anyhow::bail!("Failed to add components: {}", e);
         }
     };
 
@@ -113,8 +110,7 @@ pub fn run(
             .collect();
 
         if component_names.is_empty() {
-            logger::error("No components found in the registry.");
-            return Ok(());
+            anyhow::bail!("No components found in the registry.");
         }
 
         if auto_yes {
@@ -150,8 +146,7 @@ pub fn run(
             &mut dep_visited,
             &mut resolved_components,
         ) {
-            logger::error(&format!("Dependency resolution error: {}", e));
-            return Ok(());
+            anyhow::bail!("Dependency resolution error: {}", e);
         }
     }
 
@@ -220,7 +215,7 @@ pub fn run(
     }
 
     if let Some(e) = last_error {
-        logger::error(&format!("Failed to add components: {}", e));
+        anyhow::bail!("Failed to add components: {}", e);
     }
 
     if effective_dry_run {

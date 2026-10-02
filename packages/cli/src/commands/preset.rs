@@ -64,15 +64,13 @@ pub fn run(
 fn run_list() -> Result<()> {
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
-        logger::error("Project not initialized. Run \"justui init\" first.");
-        return Ok(());
+        anyhow::bail!("Project not initialized. Run \"justui init\" first.");
     }
 
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
-            logger::error(&format!("Failed to read config: {}", e));
-            return Ok(());
+            anyhow::bail!("Failed to read config: {}", e);
         }
     };
 
@@ -80,8 +78,7 @@ fn run_list() -> Result<()> {
     let index = match client.fetch_index() {
         Ok(idx) => idx,
         Err(e) => {
-            logger::error(&format!("Failed to fetch registry: {}", e));
-            return Ok(());
+            anyhow::bail!("Failed to fetch registry: {}", e);
         }
     };
 
@@ -111,15 +108,13 @@ fn run_list() -> Result<()> {
 fn run_info(preset_name: &str) -> Result<()> {
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
-        logger::error("Project not initialized. Run \"justui init\" first.");
-        return Ok(());
+        anyhow::bail!("Project not initialized. Run \"justui init\" first.");
     }
 
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
-            logger::error(&format!("Failed to read config: {}", e));
-            return Ok(());
+            anyhow::bail!("Failed to read config: {}", e);
         }
     };
 
@@ -127,17 +122,15 @@ fn run_info(preset_name: &str) -> Result<()> {
     let index = match client.fetch_index() {
         Ok(idx) => idx,
         Err(e) => {
-            logger::error(&format!("Failed to fetch registry: {}", e));
-            return Ok(());
+            anyhow::bail!("Failed to fetch registry: {}", e);
         }
     };
 
     if !index.presets.contains(&preset_name.to_string()) {
-        logger::error(&format!(
+        anyhow::bail!(
             "Preset \"{}\" not found in registry. Run \"justui preset list\" to see available presets.",
             preset_name
-        ));
-        return Ok(());
+        );
     }
 
     let supported: Vec<&str> = index
@@ -179,15 +172,13 @@ fn run_info(preset_name: &str) -> Result<()> {
 fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
-        logger::error("Project not initialized. Run \"justui init\" first.");
-        return Ok(());
+        anyhow::bail!("Project not initialized. Run \"justui init\" first.");
     }
 
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
-            logger::error(&format!("Failed to read config: {}", e));
-            return Ok(());
+            anyhow::bail!("Failed to read config: {}", e);
         }
     };
 
@@ -195,17 +186,15 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
     let index = match client.fetch_index() {
         Ok(idx) => idx,
         Err(e) => {
-            logger::error(&format!("Failed to fetch registry: {}", e));
-            return Ok(());
+            anyhow::bail!("Failed to fetch registry: {}", e);
         }
     };
 
     if !index.presets.contains(&preset_name.to_string()) {
-        logger::error(&format!(
+        anyhow::bail!(
             "Preset \"{}\" not found in registry. Run \"justui preset list\" to see available presets.",
             preset_name
-        ));
-        return Ok(());
+        );
     }
 
     if config.preset == preset_name {
@@ -267,11 +256,10 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
         .collect();
 
     if to_apply.is_empty() {
-        logger::error(&format!(
+        anyhow::bail!(
             "No installed components support preset \"{}\".",
             preset_name
-        ));
-        return Ok(());
+        );
     }
 
     if !auto_yes {
@@ -345,12 +333,11 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
 
     let new_yaml = new_config.to_yaml_string();
     if let Err(e) = std::fs::write(config_path, new_yaml) {
-        logger::error(&format!(
+        anyhow::bail!(
             "Failed to update {}: {}",
             JustUIConfig::CONFIG_FILE_NAME,
             e
-        ));
-        return Ok(());
+        );
     }
 
     logger::summary(
@@ -394,13 +381,13 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = crate::utils::set_dir(temp_dir.path());
 
-        // Without config file, preset commands return Ok without erroring out
-        assert!(run_list().is_ok());
-        assert!(run_info("default").is_ok());
-        assert!(run_apply("default", true).is_ok());
-        assert!(run(None, Some("default".to_string()), true, false, None, true).is_ok());
-        assert!(run(None, None, false, true, None, true).is_ok());
-        assert!(run(None, None, false, false, Some("default".to_string()), true).is_ok());
+        // Without config file, preset commands return Err
+        assert!(run_list().is_err());
+        assert!(run_info("default").is_err());
+        assert!(run_apply("default", true).is_err());
+        assert!(run(None, Some("default".to_string()), true, false, None, true).is_err());
+        assert!(run(None, None, false, true, None, true).is_err());
+        assert!(run(None, None, false, false, Some("default".to_string()), true).is_err());
     }
 
     #[test]
@@ -465,7 +452,7 @@ mod tests {
         assert!(run_info("default").is_ok());
 
         // 3. run_info (non-existent preset)
-        assert!(run_info("invalid_preset").is_ok());
+        assert!(run_info("invalid_preset").is_err());
 
         // 4. run_apply (to same active preset -> notice info)
         assert!(run_apply("default", true).is_ok());
@@ -474,6 +461,6 @@ mod tests {
         assert!(run_apply("neobrutalism", true).is_ok());
 
         // 6. run_apply (to non-existent preset -> error notice)
-        assert!(run_apply("nonexistent_preset", true).is_ok());
+        assert!(run_apply("nonexistent_preset", true).is_err());
     }
 }

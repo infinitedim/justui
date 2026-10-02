@@ -50,8 +50,7 @@ pub fn run(category: Option<String>, json: bool) -> Result<()> {
         }
         Err(e) => {
             pb_index.finish_and_clear();
-            logger::error(&format!("Failed to list components: {}", e));
-            return Ok(());
+            anyhow::bail!("Failed to list components: {}", e);
         }
     };
 

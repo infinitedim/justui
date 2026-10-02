@@ -66,21 +66,19 @@ pub fn run(
     let auto_yes = auto_yes || accept;
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
-        logger::error(
-            "Project not initialized. Please run \"justui init\" in the root directory first.",
+        anyhow::bail!(
+            "Project not initialized. Please run \"justui init\" in the root directory first."
         );
-        return Ok(());
     }
 
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
-            logger::error(&format!(
+            anyhow::bail!(
                 "Failed to parse {}: {}",
                 JustUIConfig::CONFIG_FILE_NAME,
                 e
-            ));
-            return Ok(());
+            );
         }
     };
 
@@ -88,8 +86,7 @@ pub fn run(
     let index = match client.fetch_index() {
         Ok(idx) => idx,
         Err(e) => {
-            logger::error(&format!("Failed to run diff: {}", e));
-            return Ok(());
+            anyhow::bail!("Failed to run diff: {}", e);
         }
     };
 
@@ -97,11 +94,10 @@ pub fn run(
         match index.components.iter().find(|c| c.name == *name) {
             Some(c) => vec![c],
             None => {
-                logger::error(&format!(
+                anyhow::bail!(
                     "Failed to run diff for \"{}\": Component \"{}\" not found in registry",
                     name, name
-                ));
-                return Ok(());
+                );
             }
         }
     } else {
@@ -461,8 +457,8 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = crate::utils::set_dir(temp_dir.path());
 
-        // Uninitialized project returns Ok without crashing
-        assert!(run(Some("button".to_string()), false, false, true).is_ok());
+        // Uninitialized project returns Err
+        assert!(run(Some("button".to_string()), false, false, true).is_err());
 
         // Test apply_file_change
         let target_file = temp_dir.path().join("lib/ui/just_button.dart");
@@ -548,7 +544,7 @@ mod tests {
         assert!(run(Some("button".to_string()), false, false, true).is_ok());
 
         // Test missing component in registry
-        assert!(run(Some("nonexistent_comp".to_string()), false, false, true).is_ok());
+        assert!(run(Some("nonexistent_comp".to_string()), false, false, true).is_err());
 
         // Test run(None, ...) -> diff all components
         assert!(run(None, false, false, true).is_ok());

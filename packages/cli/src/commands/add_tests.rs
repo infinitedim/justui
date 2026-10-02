@@ -36,8 +36,8 @@ fn test_add_run_uninitialized_and_conflict_resolution() {
     let temp_dir = tempfile::tempdir().unwrap();
     let _guard = set_dir(temp_dir.path());
 
-    // 1. Uninitialized project returns Ok with warning
-    assert!(run(vec![], false, false, false, false, true).is_ok());
+    // 1. Uninitialized project returns Err
+    assert!(run(vec![], false, false, false, false, true).is_err());
 
     // 2. Test resolve_conflict when target file exists with metadata up-to-date
     let file_path = temp_dir.path().join("just_button.dart");
@@ -74,15 +74,15 @@ fn test_add_run_malformed_config_and_unusual_dirs() {
     let temp_dir = tempfile::tempdir().unwrap();
     let _guard = set_dir(temp_dir.path());
 
-    // 1. Config with invalid YAML returns Ok without erroring out
+    // 1. Config with invalid YAML returns Err
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, "::invalid::yaml::").unwrap();
-    assert!(run(vec![], false, false, false, false, true).is_ok());
+    assert!(run(vec![], false, false, false, false, true).is_err());
 
     // 2. Config with unusual shared_dir (not nested under components_dir)
     let config_yaml =
         "components_dir: lib/components\nshared_dir: lib/shared\nregistry_url: /invalid/registry\n";
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
-    assert!(run(vec![], false, false, false, false, true).is_ok());
+    assert!(run(vec![], false, false, false, false, true).is_err());
 }
 
 #[test]
@@ -106,11 +106,11 @@ fn test_add_run_empty_registry_and_selection() {
         );
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
-    // Prompting components with auto_yes when registry has 0 components -> logs error and returns Ok
-    assert!(run(vec![], false, false, false, false, true).is_ok());
+    // Prompting components with auto_yes when registry has 0 components -> returns Err
+    assert!(run(vec![], false, false, false, false, true).is_err());
 
-    // Non-interactive fallback when components vector is empty -> returns Ok
-    assert!(run(vec![], false, false, false, false, false).is_ok());
+    // Non-interactive fallback when components vector is empty -> returns Err
+    assert!(run(vec![], false, false, false, false, false).is_err());
 }
 
 #[test]
@@ -372,7 +372,7 @@ fn test_add_component_checksum_and_unknown_dependency() {
         false,
         true
     )
-    .is_ok());
+    .is_err());
 
     // 2. Unknown dependency error
     assert!(run(
@@ -383,7 +383,7 @@ fn test_add_component_checksum_and_unknown_dependency() {
         false,
         true
     )
-    .is_ok());
+    .is_err());
 }
 
 #[test]
@@ -733,7 +733,7 @@ fn test_add_progress_bar_and_theme_file_candidates_and_error_handling() {
     // Test HTTP index error path: invalid registry URL in config
     let bad_config = "components_dir: lib/widgets\nregistry_url: http://127.0.0.1:1/invalid\n";
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, bad_config).unwrap();
-    assert!(run(vec!["custom".to_string()], false, false, false, false, true).is_ok());
+    assert!(run(vec!["custom".to_string()], false, false, false, false, true).is_err());
 }
 
 #[test]
@@ -1097,7 +1097,7 @@ fn test_add_missing_dependency_and_empty_selection() {
         false,
         true
     )
-    .is_ok());
+    .is_err());
 }
 
 #[test]
@@ -1205,9 +1205,11 @@ fn test_add_run_initialized_all_flags() {
 
     let button_code = "class JustButton {}";
     let button_hash = sha256_hex(button_code.as_bytes());
+    let base_code = "class JustBase {}";
+    let base_hash = sha256_hex(base_code.as_bytes());
 
     std::fs::write(reg_dir.join("just_button.dart"), button_code).unwrap();
-    std::fs::write(reg_dir.join("_shared_base.dart"), "class JustBase {}").unwrap();
+    std::fs::write(reg_dir.join("_shared_base.dart"), base_code).unwrap();
 
     std::fs::write(
         reg_dir.join("index.json"),
@@ -1245,7 +1247,7 @@ fn test_add_run_initialized_all_flags() {
                         "default": [{
                             "name": "_shared_base.dart",
                             "path": "_shared_base.dart",
-                            "checksum": "sha256:abc"
+                            "checksum": format!("sha256:{}", base_hash)
                         }]
                     }
                 }
@@ -1287,7 +1289,7 @@ fn test_add_run_initialized_all_flags() {
         false,
         true
     )
-    .is_ok());
+    .is_err());
 
     // 6. Run add empty names without --all and auto_yes = true
     assert!(run(vec![], false, false, false, false, true).is_ok());

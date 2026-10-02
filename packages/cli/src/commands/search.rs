@@ -17,8 +17,7 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
     let index = match client.fetch_index() {
         Ok(idx) => idx,
         Err(e) => {
-            logger::error(&format!("Failed to fetch registry: {}", e));
-            return Ok(());
+            anyhow::bail!("Failed to fetch registry: {}", e);
         }
     };
 
@@ -145,6 +144,46 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = crate::utils::set_dir(temp_dir.path());
 
+        assert!(run("button".to_string(), None).is_err());
+    }
+
+    #[test]
+    fn test_search_run_initialized_with_local_registry() {
+        let _lock = crate::utils::lock_test_mutex();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = crate::utils::set_dir(temp_dir.path());
+
+        let registry_dir = temp_dir.path().join("registry");
+        std::fs::create_dir_all(&registry_dir).unwrap();
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "0.1.0",
+                "presets": ["default"],
+                "components": [
+                    {
+                        "name": "button",
+                        "version": "0.1.0",
+                        "description": "Button component",
+                        "category": "primitives",
+                        "supportedPresets": ["default"],
+                        "registryDependencies": [],
+                        "pubDependencies": {},
+                        "files": {}
+                    }
+                ]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(
+            "justui.config.yaml",
+            format!("registry_url: {}\n", registry_dir.display()),
+        )
+        .unwrap();
+
         assert!(run("button".to_string(), None).is_ok());
+        assert!(run("nonexistent".to_string(), None).is_ok());
     }
 }
