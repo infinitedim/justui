@@ -263,6 +263,7 @@ use commands::preset::PresetSubcommands;
 
 fn main() {
     let cli = Cli::parse();
+    utils::logger::init(cli.quiet, cli.no_color);
     let auto_yes = cli.auto_yes;
 
     if let Some(ref path) = cli.cwd {

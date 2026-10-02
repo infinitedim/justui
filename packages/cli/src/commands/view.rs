@@ -26,18 +26,14 @@ pub fn run(
     let index = match client.fetch_index() {
         Ok(idx) => idx,
         Err(e) => {
-            logger::error(&format!("Failed to fetch registry: {}", e));
-            return Ok(());
+            anyhow::bail!("Failed to fetch registry: {}", e);
         }
     };
 
     let comp = match index.components.iter().find(|c| c.name == component) {
         Some(c) => c,
         None => {
-            logger::stdout(&format!(
-                "Component \"{}\" not found in registry.",
-                component
-            ));
+            let mut msg = format!("Component \"{}\" not found in registry.", component);
 
             let query_lc = component.to_lowercase();
             let suggestions: Vec<&str> = index
@@ -48,13 +44,13 @@ pub fn run(
                 .collect();
 
             if !suggestions.is_empty() {
-                logger::stdout("Did you mean one of these?");
+                msg.push_str("\nDid you mean one of these?");
                 for s in &suggestions {
-                    logger::stdout(&format!("  - {}", s));
+                    msg.push_str(&format!("\n  - {}", s));
                 }
             }
 
-            return Ok(());
+            anyhow::bail!(msg);
         }
     };
 
@@ -101,11 +97,10 @@ pub fn run(
         match found {
             Some(f) => vec![f],
             None => {
-                logger::error(&format!(
+                anyhow::bail!(
                     "File \"{}\" not found in component \"{}\".",
                     name_filter, comp.name
-                ));
-                return Ok(());
+                );
             }
         }
     } else {
@@ -117,8 +112,7 @@ pub fn run(
         let content = match client.fetch_file_content(&file.path) {
             Ok(c) => c,
             Err(e) => {
-                logger::error(&format!("Failed to fetch \"{}\": {}", file.name, e));
-                return Ok(());
+                anyhow::bail!("Failed to fetch \"{}\": {}", file.name, e);
             }
         };
 
@@ -176,7 +170,7 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = crate::utils::set_dir(temp_dir.path());
 
-        assert!(run("button".to_string(), None, false, true).is_ok());
+        assert!(run("button".to_string(), None, false, true).is_err());
 
         // Initialized with local registry
         let registry_dir = temp_dir.path().join("registry");
@@ -276,15 +270,15 @@ mod tests {
             false,
             true
         )
-        .is_ok());
+        .is_err());
 
         // 5. View component not found with suggestion
-        assert!(run("btn".to_string(), None, false, true).is_ok());
+        assert!(run("btn".to_string(), None, false, true).is_err());
 
         // 6. View component not found without suggestion
-        assert!(run("xyz_123_456".to_string(), None, false, true).is_ok());
+        assert!(run("xyz_123_456".to_string(), None, false, true).is_err());
 
         // 7. View component with empty deps and missing file on disk
-        assert!(run("empty_dep_comp".to_string(), None, false, true).is_ok());
+        assert!(run("empty_dep_comp".to_string(), None, false, true).is_err());
     }
 }

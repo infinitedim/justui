@@ -9,21 +9,19 @@ use crate::utils::{import_rewriter, logger, prompt};
 pub fn run(auto_yes: bool) -> Result<()> {
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
-        logger::error(
-            "Project not initialized. Please run \"justui init\" in the root directory first.",
+        anyhow::bail!(
+            "Project not initialized. Please run \"justui init\" in the root directory first."
         );
-        return Ok(());
     }
 
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
-            logger::error(&format!(
+            anyhow::bail!(
                 "Failed to parse {}: {}",
                 JustUIConfig::CONFIG_FILE_NAME,
                 e
-            ));
-            return Ok(());
+            );
         }
     };
 
@@ -39,8 +37,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
         }
         Err(e) => {
             pb_index.finish_and_clear();
-            logger::error(&format!("Failed to perform update: {}", e));
-            return Ok(());
+            anyhow::bail!("Failed to perform update: {}", e);
         }
     };
 
@@ -57,8 +54,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
     let entries = match std::fs::read_dir(components_dir) {
         Ok(e) => e,
         Err(e) => {
-            logger::error(&format!("Failed to perform update: {}", e));
-            return Ok(());
+            anyhow::bail!("Failed to perform update: {}", e);
         }
     };
     for entry in entries.flatten() {
@@ -148,6 +144,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
     };
 
     let mut visited: HashSet<String> = HashSet::new();
+    let mut has_error = false;
     for idx in selected_indices {
         let comp_name = &outdated_components[idx];
         logger::info(&format!("Updating component \"{}\"...", comp_name));
@@ -167,7 +164,12 @@ pub fn run(auto_yes: bool) -> Result<()> {
             config.dart_target,
         ) {
             logger::error(&format!("Failed to update \"{}\": {}", comp_name, e));
+            has_error = true;
         }
+    }
+
+    if has_error {
+        anyhow::bail!("One or more components failed to update");
     }
 
     Ok(())
@@ -183,7 +185,7 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = crate::utils::set_dir(temp_dir.path());
 
-        assert!(run(true).is_ok());
+        assert!(run(true).is_err());
     }
 
     #[test]
@@ -197,7 +199,7 @@ mod tests {
             "invalid: [yaml: :",
         )
         .unwrap();
-        assert!(run(true).is_ok());
+        assert!(run(true).is_err());
     }
 
     #[test]

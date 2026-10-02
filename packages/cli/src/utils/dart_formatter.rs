@@ -92,10 +92,17 @@ mod tests {
         // The local hash must match the *formatted* content actually on disk,
         // not the pre-format content that was originally written.
         assert_eq!(meta.local_hash, sha256_hex(clean.as_bytes()));
-        assert_ne!(
-            meta.local_hash, pre_format_hash,
-            "dart format must have changed this deliberately-unformatted input"
-        );
+        if dart_available() {
+            assert_ne!(
+                meta.local_hash, pre_format_hash,
+                "dart format must have changed this deliberately-unformatted input"
+            );
+        } else {
+            assert_eq!(
+                meta.local_hash, pre_format_hash,
+                "dart is not installed; content and local hash remain unformatted"
+            );
+        }
     }
 
     #[test]

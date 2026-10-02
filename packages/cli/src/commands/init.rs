@@ -45,11 +45,10 @@ pub fn run(
     dart_target_arg: Option<String>,
 ) -> Result<()> {
     if !std::path::Path::new("pubspec.yaml").exists() {
-        logger::error(
+        anyhow::bail!(
             "No pubspec.yaml found in the current directory.\n\
-             Please run \"justui init\" from the root of your Flutter project.",
+             Please run \"justui init\" from the root of your Flutter project."
         );
-        return Ok(());
     }
 
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
@@ -313,8 +312,8 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = set_dir(temp_dir.path());
 
-        // 1. Without pubspec -> fails cleanly
-        assert!(run(None, None, None, None, true, None, None).is_ok());
+        // 1. Without pubspec -> fails with error
+        assert!(run(None, None, None, None, true, None, None).is_err());
 
         // 2. With pubspec -> succeeds in auto_yes mode
         std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: test_app").unwrap();
