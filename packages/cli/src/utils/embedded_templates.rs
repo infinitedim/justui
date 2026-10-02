@@ -46,6 +46,7 @@ pub fn extract_tokens(
                 std::fs::create_dir_all(parent)?;
             }
             std::fs::write(&dest_path, file_content)?;
+            crate::utils::dart_formatter::format_and_refresh_metadata(&dest_path);
         }
     }
 
@@ -93,6 +94,7 @@ pub fn extract_core(
                 std::fs::create_dir_all(parent)?;
             }
             std::fs::write(&dest_path, file_content)?;
+            crate::utils::dart_formatter::format_and_refresh_metadata(&dest_path);
         }
     }
 
