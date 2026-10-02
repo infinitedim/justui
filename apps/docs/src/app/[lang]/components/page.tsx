@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Navbar } from '@/components/organisms/navbar';
 import { Footer } from '@/components/organisms/footer';
 import { CatalogTemplate } from '@/components/templates';
@@ -10,6 +11,37 @@ import {
 } from '@/lib/homepage-translations';
 import { ComponentsCatalogClient } from './components-catalog-client';
 import { localeStaticParams } from '@/lib/i18n';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  const t = getHomepageDictionary(lang);
+  const url = `/${lang}/components`;
+
+  return {
+    title: t.componentsPageTitle,
+    description: formatMessage(t.componentsPageDescription, {
+      count: components.length,
+    }),
+    alternates: {
+      canonical: url,
+      languages: {
+        en: '/en/components',
+        id: '/id/components',
+      },
+    },
+    openGraph: {
+      title: `${t.componentsPageTitle} | JustUI`,
+      description: formatMessage(t.componentsPageDescription, {
+        count: components.length,
+      }),
+      url,
+    },
+  };
+}
 
 function CatalogHeader({ t, count }: { t: HomepageDictionary; count: number }) {
   return (
