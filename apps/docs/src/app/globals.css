@@ -296,8 +296,10 @@
 
 /* Fumadocs: route its surface tokens through JustUI tokens so the docs
    layout follows the active preset and theme. Defined on <body> so that
-   var(--just-*) resolves against body.theme-neobrutalism. */
 body {
+  background-color: var(--just-background);
+  color: var(--just-text-primary);
+  transition: background-color 200ms ease, color 200ms ease;
   --color-fd-background: var(--just-background);
   --color-fd-foreground: var(--just-text-primary);
   --color-fd-muted: var(--just-card-bg);
@@ -362,6 +364,13 @@ body {
 
 .animate-toast-exit {
   animation: toast-exit 150ms cubic-bezier(0.3, 0, 0.8, 0.15) both;
+}
+
+/* Smooth View Transition for theme toggles */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+  animation-timing-function: ease;
 }
 
 /* Reduced motion safeguard */

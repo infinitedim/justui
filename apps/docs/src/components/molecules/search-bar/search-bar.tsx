@@ -1,5 +1,6 @@
 'use client';
 
+import { Search } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { Kbd } from '@/components/atoms/kbd';
 import type { SearchBarProps } from './search-bar.types';
@@ -21,11 +22,12 @@ export function SearchBar({
       onClick={onActivate}
       aria-label={label}
       className={cn(
-        'just-press bg-card text-muted hover:text-foreground hidden h-7 items-center gap-3 px-2.5 font-mono text-xs sm:flex',
+        'just-press bg-card text-muted hover:text-foreground flex max-sm:hidden h-7 items-center gap-2.5 px-2.5 font-mono text-xs',
         'rounded-(--just-radius-md) border-(length:--just-border-width) border-border shadow-xs',
         className
       )}
     >
+      <Search size={13} className="text-muted shrink-0" aria-hidden="true" />
       <span className="whitespace-nowrap">{placeholder}</span>
       <Kbd className="whitespace-nowrap">{shortcut}</Kbd>
     </button>

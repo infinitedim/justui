@@ -109,15 +109,19 @@ describe('Navbar & search dialog wiring', () => {
   it('toggles theme correctly via ThemeSwitcher', () => {
     mockResolvedTheme = 'dark';
     const { rerender } = render(<Navbar starCount={100} lang="id" />);
-    const lightRadio = screen.getByRole('radio', { name: /light/i });
+    const themeSwitch = screen.getByRole('switch', {
+      name: /toggle theme|ubah tema/i,
+    });
 
-    fireEvent.click(lightRadio);
+    fireEvent.click(themeSwitch);
     expect(mockSetTheme).toHaveBeenCalledWith('light');
 
     mockResolvedTheme = 'light';
     rerender(<Navbar starCount={100} lang="id" />);
-    const darkRadio = screen.getByRole('radio', { name: /dark/i });
-    fireEvent.click(darkRadio);
+    const updatedSwitch = screen.getByRole('switch', {
+      name: /toggle theme|ubah tema/i,
+    });
+    fireEvent.click(updatedSwitch);
     expect(mockSetTheme).toHaveBeenCalledWith('dark');
   });
 

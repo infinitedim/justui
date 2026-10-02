@@ -35,6 +35,7 @@ test.describe('Search dialog', () => {
 
   test('focus moves into the dialog input when opened', async ({ page }) => {
     await page.goto('/en');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     await page.keyboard.press('Control+k');
 
     const input = page.getByRole('dialog').locator('input');

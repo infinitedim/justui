@@ -6,6 +6,7 @@ import { Input } from '@/components/atoms/input';
 import { Kbd } from '@/components/atoms/kbd';
 import { Code } from '@/components/atoms/code';
 import { Slider } from '@/components/atoms/slider';
+import { LogoMark } from '@/components/atoms/logo-mark';
 
 describe('Atoms Components', () => {
   describe('Button', () => {
@@ -68,6 +69,16 @@ describe('Atoms Components', () => {
       );
       const slider = screen.getByRole('slider', { name: 'Volume' });
       expect(slider).toBeInTheDocument();
+    });
+  });
+
+  describe('LogoMark', () => {
+    it('renders svg with custom size', () => {
+      const { container } = render(<LogoMark size={32} />);
+      const svg = container.querySelector('svg');
+      expect(svg).toBeInTheDocument();
+      expect(svg).toHaveAttribute('width', '32');
+      expect(svg).toHaveAttribute('height', '32');
     });
   });
 });
