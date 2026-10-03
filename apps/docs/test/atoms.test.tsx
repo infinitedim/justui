@@ -7,6 +7,7 @@ import { Kbd } from '@/components/atoms/kbd';
 import { Code } from '@/components/atoms/code';
 import { Slider } from '@/components/atoms/slider';
 import { LogoMark } from '@/components/atoms/logo-mark';
+import { GitHubMark } from '@/components/atoms/github-mark';
 
 describe('Atoms Components', () => {
   describe('Button', () => {
@@ -79,6 +80,29 @@ describe('Atoms Components', () => {
       expect(svg).toBeInTheDocument();
       expect(svg).toHaveAttribute('width', '32');
       expect(svg).toHaveAttribute('height', '32');
+    });
+  });
+
+  describe('GitHubMark', () => {
+    it('renders svg with custom size and default aria-hidden', () => {
+      const { container } = render(
+        <GitHubMark size={14} className="custom-class" />
+      );
+      const svg = container.querySelector('svg');
+      expect(svg).toBeInTheDocument();
+      expect(svg).toHaveAttribute('width', '14');
+      expect(svg).toHaveAttribute('height', '14');
+      expect(svg).toHaveAttribute('aria-hidden', 'true');
+      expect(svg).toHaveAttribute('fill', 'currentColor');
+      expect(svg).toHaveClass('custom-class');
+    });
+
+    it('renders with default size when not specified', () => {
+      const { container } = render(<GitHubMark />);
+      const svg = container.querySelector('svg');
+      expect(svg).toBeInTheDocument();
+      expect(svg).toHaveAttribute('width', '16');
+      expect(svg).toHaveAttribute('height', '16');
     });
   });
 });

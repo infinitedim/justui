@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FaGithub } from 'react-icons/fa';
+import { GitHubMark } from '@/components/atoms/github-mark';
 import { cn } from '@/lib/cn';
 import type { FooterProps } from './footer.types';
 
@@ -103,7 +103,7 @@ export function Footer({ lang, className }: FooterProps) {
             rel="noopener noreferrer"
             className={cn(linkClass, 'inline-flex items-center gap-1.5')}
           >
-            <FaGithub className="h-3.5 w-3.5" aria-hidden="true" />
+            <GitHubMark className="h-3.5 w-3.5" aria-hidden="true" />
             <span>{t.github}</span>
           </a>
           <a
