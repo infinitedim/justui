@@ -554,7 +554,9 @@ mod tests {
         // `unnecessary_import` wherever the barrel is also imported.
         assert!(rewritten.contains("import 'package:my_app/core/just_ui_core.dart';"));
         assert!(!rewritten.contains("import 'package:my_app/core/theme/preset_tokens.dart';"));
-        assert!(!rewritten.contains("import 'package:my_app/core/theme/schemes/spacing_scheme.dart';"));
+        assert!(
+            !rewritten.contains("import 'package:my_app/core/theme/schemes/spacing_scheme.dart';")
+        );
         assert!(rewritten.contains("import 'package:my_app/tokens/colors/oklch_engine.dart';"));
     }
 

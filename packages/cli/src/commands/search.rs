@@ -52,10 +52,7 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
     let results: Vec<&RegistryComponent> = name_matches.into_iter().chain(other_matches).collect();
 
     if results.is_empty() {
-        logger::stdout(&format!(
-            "No components found matching \"{}\".",
-            query
-        ));
+        logger::stdout(&format!("No components found matching \"{}\".", query));
         return Ok(());
     }
 
