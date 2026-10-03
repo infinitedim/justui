@@ -1,4 +1,4 @@
-import { FaGithub } from 'react-icons/fa';
+import { GitHubMark } from '@/components/atoms/github-mark';
 import { cn } from '@/lib/cn';
 import type { GitHubPillProps } from './github-pill.types';
 
@@ -21,11 +21,11 @@ export function GitHubPill({ href, starCount, className }: GitHubPillProps) {
       rel="noopener noreferrer"
       className={cn(
         'just-press bg-card text-foreground inline-flex h-7 items-center gap-2 px-3 font-mono text-xs',
-        'rounded-(--just-radius-md) border-(length:--just-border-width) border-border shadow-xs',
+        'border-border rounded-(--just-radius-md) border-(length:--just-border-width) shadow-xs',
         className
       )}
     >
-      <FaGithub size={14} aria-hidden="true" />
+      <GitHubMark size={14} aria-hidden="true" />
       <span>{formatStars(starCount)}</span>
     </a>
   );
