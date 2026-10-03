@@ -74,11 +74,7 @@ pub fn run(
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
-            anyhow::bail!(
-                "Failed to parse {}: {}",
-                JustUIConfig::CONFIG_FILE_NAME,
-                e
-            );
+            anyhow::bail!("Failed to parse {}: {}", JustUIConfig::CONFIG_FILE_NAME, e);
         }
     };
 
@@ -96,7 +92,8 @@ pub fn run(
             None => {
                 anyhow::bail!(
                     "Failed to run diff for \"{}\": Component \"{}\" not found in registry",
-                    name, name
+                    name,
+                    name
                 );
             }
         }

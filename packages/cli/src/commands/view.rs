@@ -99,7 +99,8 @@ pub fn run(
             None => {
                 anyhow::bail!(
                     "File \"{}\" not found in component \"{}\".",
-                    name_filter, comp.name
+                    name_filter,
+                    comp.name
                 );
             }
         }

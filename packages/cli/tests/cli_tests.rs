@@ -1141,9 +1141,7 @@ mod cli_integration {
             .args(["update"])
             .assert()
             .success()
-            .stderr(predicates::str::contains(
-                "All components are up-to-date!",
-            ));
+            .stderr(predicates::str::contains("All components are up-to-date!"));
 
         // Test `upgrade --check`
         justui()

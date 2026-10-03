@@ -333,11 +333,7 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
 
     let new_yaml = new_config.to_yaml_string();
     if let Err(e) = std::fs::write(config_path, new_yaml) {
-        anyhow::bail!(
-            "Failed to update {}: {}",
-            JustUIConfig::CONFIG_FILE_NAME,
-            e
-        );
+        anyhow::bail!("Failed to update {}: {}", JustUIConfig::CONFIG_FILE_NAME, e);
     }
 
     logger::summary(
