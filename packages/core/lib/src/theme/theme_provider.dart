@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
+import 'preset_tokens.dart';
 import 'theme_aspects.dart';
 export 'theme_aspects.dart';
 import 'theme_data.dart';
@@ -84,8 +85,16 @@ class JustThemeProviderState extends State<JustThemeProvider>
   /// The easing curve used when switching themes.
   Curve get transitionCurve => widget.transitionCurve;
 
-  /// Retrieves the active resolved [JustThemeData] based on [themeMode] and system brightness.
-  JustThemeData get theme {
+  JustThemeData? _cachedResolvedTheme;
+  double? _cachedWidth;
+  bool? _cachedHighContrast;
+  Brightness? _cachedPlatformBrightness;
+
+  void _invalidateThemeCache() {
+    _cachedResolvedTheme = null;
+  }
+
+  JustThemeData _computeResolvedTheme() {
     final JustThemeData baseTheme;
     switch (_themeMode) {
       case .light:
@@ -124,6 +133,34 @@ class JustThemeProviderState extends State<JustThemeProvider>
     );
   }
 
+  /// Retrieves the active resolved [JustThemeData] based on [themeMode] and system brightness.
+  JustThemeData get theme {
+    final double width = MediaQuery.maybeSizeOf(context)?.width ?? 1024.0;
+    final bool isHighContrast =
+        WidgetsBinding
+            .instance
+            .platformDispatcher
+            .accessibilityFeatures
+            .highContrast ||
+        (MediaQuery.maybeHighContrastOf(context) ?? false);
+    final Brightness brightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
+
+    if (_cachedResolvedTheme != null &&
+        _cachedWidth == width &&
+        _cachedHighContrast == isHighContrast &&
+        _cachedPlatformBrightness == brightness) {
+      return _cachedResolvedTheme!;
+    }
+
+    final JustThemeData newTheme = _computeResolvedTheme();
+    _cachedResolvedTheme = newTheme;
+    _cachedWidth = width;
+    _cachedHighContrast = isHighContrast;
+    _cachedPlatformBrightness = brightness;
+    return newTheme;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -140,25 +177,35 @@ class JustThemeProviderState extends State<JustThemeProvider>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _invalidateThemeCache();
+  }
+
+  @override
   void didUpdateWidget(covariant JustThemeProvider oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.lightTheme != oldWidget.lightTheme) {
       _lightTheme = widget.lightTheme ?? .light;
+      _invalidateThemeCache();
     }
     if (widget.darkTheme != oldWidget.darkTheme) {
       _darkTheme = widget.darkTheme ?? .dark;
+      _invalidateThemeCache();
     }
   }
 
   @override
   void didChangePlatformBrightness() {
     if (_themeMode == .system) {
+      _invalidateThemeCache();
       setState(() {});
     }
   }
 
   @override
   void didChangeAccessibilityFeatures() {
+    _invalidateThemeCache();
     setState(() {});
   }
 
@@ -167,6 +214,7 @@ class JustThemeProviderState extends State<JustThemeProvider>
   /// Triggers [JustThemeProvider.onThemeChanged] if provided.
   void setThemeMode(ThemeMode mode) {
     if (_themeMode == mode) return;
+    _invalidateThemeCache();
     setState(() {
       _themeMode = mode;
     });
@@ -180,6 +228,7 @@ class JustThemeProviderState extends State<JustThemeProvider>
 
   /// Replaces the active light/dark themes dynamically.
   void applyTheme({JustThemeData? light, JustThemeData? dark}) {
+    _invalidateThemeCache();
     setState(() {
       if (light != null) _lightTheme = light;
       if (dark != null) _darkTheme = dark;
@@ -225,4 +274,71 @@ class const _JustThemeModel({
       },
     );
   }
+}
+
+/// Extension methods on [BuildContext] to simplify access to JustUI themes.
+extension JustThemeContext on BuildContext {
+  /// Retrieves the active [JustThemeData] configuration and subscribes the context
+  /// to rebuild on any theme updates.
+  JustThemeData get justTheme => JustThemeProvider.of(this).theme;
+
+  /// Retrieves the active [JustColorScheme] and subscribes the context
+  /// to rebuild *only* when the color aspect changes.
+  JustColorScheme get justColors =>
+      JustThemeProvider.of(this, aspect: JustThemeAspect.colors).theme.colors;
+
+  /// Retrieves the active [JustTypographyScheme] and subscribes the context
+  /// to rebuild *only* when the typography aspect changes.
+  JustTypographyScheme get justTypo => JustThemeProvider.of(
+    this,
+    aspect: JustThemeAspect.typography,
+  ).theme.typography;
+
+  /// Retrieves the active [JustSpacingScheme] and subscribes the context
+  /// to rebuild *only* when the spacing aspect changes.
+  JustSpacingScheme get justSpacing =>
+      JustThemeProvider.of(this, aspect: JustThemeAspect.spacing).theme.spacing;
+
+  /// Retrieves the active [JustRadiusScheme] and subscribes the context
+  /// to rebuild *only* when the radius aspect changes.
+  JustRadiusScheme get justRadius =>
+      JustThemeProvider.of(this, aspect: JustThemeAspect.radius).theme.radius;
+
+  /// Retrieves the active [JustShadowScheme] and subscribes the context
+  /// to rebuild *only* when the shadows aspect changes.
+  JustShadowScheme get justShadows =>
+      JustThemeProvider.of(this, aspect: JustThemeAspect.shadows).theme.shadows;
+
+  /// Retrieves the active [JustMotionProfile] and subscribes the context
+  /// to rebuild *only* when the animations aspect changes.
+  JustMotionProfile get justAnimations => JustThemeProvider.of(
+    this,
+    aspect: JustThemeAspect.animations,
+  ).theme.animations;
+
+  /// Retrieves the active resolved [JustMotionProfile] and subscribes the context
+  /// to rebuild *only* when the animations aspect changes.
+  JustMotionProfile get justMotion => justAnimations.resolve(this);
+
+  /// Retrieves the active [JustPresetTokens] configuration and subscribes the context
+  /// to rebuild *only* when the preset aspect changes.
+  JustPresetTokens get justPresetTokens => JustThemeProvider.of(
+    this,
+    aspect: JustThemeAspect.preset,
+  ).theme.presetTokens;
+
+  /// Retrieves the active [JustThemePreset] enum value.
+  JustThemePreset get justPreset =>
+      JustThemeProvider.of(this, aspect: JustThemeAspect.preset).theme.preset;
+
+  /// Returns true if the active theme background is dark (luminance < 0.5).
+  bool get isDarkMode =>
+      JustThemeProvider.of(
+        this,
+        aspect: JustThemeAspect.colors,
+      ).theme.colors.background.computeLuminance() <
+      0.5;
+
+  /// Reads the active theme configuration without registering a rebuild dependency.
+  JustThemeData readTheme() => JustThemeProvider.read(this).theme;
 }

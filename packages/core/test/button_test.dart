@@ -960,7 +960,7 @@ void main() {
       'Theme Extension defaults, copyWith, lerp, equality, and hashCode',
       () {
         const JustButtonTheme defaultTheme = JustButtonTheme.defaults;
-        expect(defaultTheme.enableHaptic, isFalse);
+        expect(defaultTheme.enableHaptic, isNull);
         expect(defaultTheme.primaryStyle, isNull);
 
         const JustButtonStyle customPrimary = JustButtonStyle(

@@ -63,21 +63,19 @@ class JustIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustPresetTokens presetTokens = context.justPresetTokens;
     final JustButtonTheme? buttonTheme = Theme.of(context)
         .extension<JustButtonTheme>();
     final JustButtonStyle? themeStyle = buttonTheme?.styleFor(variant);
     final bool finalEnableHaptic =
         enableHaptic ??
         buttonTheme?.enableHaptic ??
-        customTheme.presetTokens.showsDefaultBorder;
+        presetTokens.selectionHapticDefault;
 
-    final JustColorScheme colors = JustThemeProvider.of(
-      context,
-      aspect: .colors,
-    ).theme.colors;
-    final JustRadiusScheme radius = customTheme.radius;
-    final JustMotionProfile animations = customTheme.animations;
+    final JustColorScheme colors = context.justColors;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustShadowScheme shadows = context.justShadows;
+    final JustMotionProfile animations = context.justAnimations;
 
     final bool isInteractive = onPressed != null && !isDisabled && !isLoading;
 
@@ -123,7 +121,6 @@ class JustIconButton extends StatelessWidget {
             builder: (BuildContext context, JustInteractionState state) {
               final bool isHovered = state.isHovered;
               final bool isPressed = state.isPressed;
-              final JustPresetTokens presetTokens = customTheme.presetTokens;
               final JustButtonColors resolved = resolveJustButtonColors(
                 variant: variant,
                 colors: colors,
@@ -164,34 +161,44 @@ class JustIconButton extends StatelessWidget {
               final double scale = isPressed ? 0.97 : 1.0;
 
               // Shadows resolution (flat solid offset shadow for neobrutalism)
-              List<BoxShadow> defaultShadows;
-              if (presetTokens.showsDefaultBorder &&
-                  variant != JustButtonVariant.link &&
-                  variant != JustButtonVariant.ghost) {
-                defaultShadows = size == JustButtonSize.xs
-                    ? customTheme.shadows.xs
-                    : customTheme.shadows.sm;
-              } else {
-                defaultShadows = const <BoxShadow>[];
-              }
+              final JustShadowLevel shadowLevel = size == JustButtonSize.xs
+                  ? JustShadowLevel.xs
+                  : JustShadowLevel.sm;
 
               final double? styleElevation =
                   style?.elevation ?? themeStyle?.elevation;
-              List<BoxShadow> resolvedShadows;
-              if (styleElevation != null) {
-                resolvedShadows = styleElevation > 0.0
-                    ? (styleElevation <= 1.5
-                          ? customTheme.shadows.xs
-                          : customTheme.shadows.sm)
-                    : const <BoxShadow>[];
-              } else {
-                resolvedShadows = defaultShadows;
-              }
+              final JustShadowLevel level = styleElevation != null
+                  ? (styleElevation <= 1.5
+                        ? JustShadowLevel.xs
+                        : JustShadowLevel.sm)
+                  : shadowLevel;
 
-              resolvedShadows = customTheme.resolveShadows(
-                resolvedShadows,
-                isPressed: isPressed,
-              );
+              final bool hasShadow = styleElevation != null
+                  ? styleElevation > 0.0
+                  : (presetTokens.showsDefaultBorder &&
+                        variant != JustButtonVariant.link &&
+                        variant != JustButtonVariant.ghost);
+
+              final List<BoxShadow> resolvedShadows;
+              final Offset? pressOffset;
+              if (hasShadow) {
+                resolvedShadows = presetTokens.resolveShadow(
+                  shadows,
+                  level,
+                  isPressed: isPressed,
+                );
+                final List<BoxShadow> unpressed = presetTokens.resolveShadow(
+                  shadows,
+                  level,
+                  isPressed: false,
+                );
+                pressOffset = unpressed.isNotEmpty
+                    ? unpressed.first.offset
+                    : null;
+              } else {
+                resolvedShadows = const <BoxShadow>[];
+                pressOffset = null;
+              }
 
               final double finalBorderWidth =
                   presetTokens.showsDefaultBorder &&
@@ -199,13 +206,15 @@ class JustIconButton extends StatelessWidget {
                   ? presetTokens.borderWidth
                   : (finalBorder != const Color(0x00000000) ? 1.0 : 0.0);
 
-              return customTheme.buildPressEffect(
+              return presetTokens.buildPressEffect(
                 isPressed: isPressed,
-                scaleFactor: scale,
+                animations: animations,
+                customOffset: pressOffset,
+                customScale: scale,
                 child: AnimatedContainer(
                   duration: presetTokens.showsDefaultBorder
-                      ? customTheme.animations.instant
-                      : customTheme.animations.fast,
+                      ? animations.instant
+                      : animations.fast,
                   curve: animations.defaultCurve,
                   width: sizeDimension,
                   height: sizeDimension,
