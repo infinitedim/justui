@@ -282,3 +282,36 @@ fn standard_target_removes_every_primary_constructor() {
         failures.into_iter().collect::<Vec<_>>().join("\n")
     );
 }
+
+#[test]
+fn test_registry_signature_validity() {
+    let index_path = registry_root().join("index.json");
+    let sig_path = registry_root().join("index.json.sig");
+
+    let index_bytes = std::fs::read(&index_path).expect("registry/index.json must exist");
+    let sig_content =
+        std::fs::read_to_string(&sig_path).expect("registry/index.json.sig must exist");
+
+    let verify_res = justui_cli::utils::crypto::verify_signature(
+        &index_bytes,
+        &sig_content,
+        justui_cli::utils::crypto::JUSTUI_REGISTRY_PUBKEY,
+    );
+    assert!(
+        verify_res.is_ok(),
+        "registry/index.json.sig does not verify against index.json: {:?}",
+        verify_res.err()
+    );
+
+    let mut tampered = index_bytes.clone();
+    tampered.push(b' ');
+    let fail_res = justui_cli::utils::crypto::verify_signature(
+        &tampered,
+        &sig_content,
+        justui_cli::utils::crypto::JUSTUI_REGISTRY_PUBKEY,
+    );
+    assert!(
+        fail_res.is_err(),
+        "Tampered index bytes must fail verification"
+    );
+}

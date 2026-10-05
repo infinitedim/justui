@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CLI_DEFAULTS } from '@/lib/components.generated';
 import {
   generateYaml,
   generateDart,
@@ -36,7 +37,7 @@ describe('Code Generators', () => {
       expect(yaml).toContain('tokens_dir: lib/tokens');
       expect(yaml).toContain('shared_dir: lib/widgets/shared');
       expect(yaml).toContain(
-        'registry_url: https://raw.githubusercontent.com/infinitedim/justui/main/registry'
+        `registry_url: ${CLI_DEFAULTS.registryUrl}`
       );
       expect(yaml).toContain('preset: default');
       expect(yaml).toContain('color_space: hsl');

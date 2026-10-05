@@ -65,11 +65,7 @@ pub fn run(
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
-            anyhow::bail!(
-                "Failed to parse {}: {}",
-                JustUIConfig::CONFIG_FILE_NAME,
-                e
-            );
+            anyhow::bail!("Failed to parse {}: {}", JustUIConfig::CONFIG_FILE_NAME, e);
         }
     };
 

@@ -1,3 +1,4 @@
+use anyhow::Context;
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 use std::process;
@@ -263,6 +264,14 @@ enum Commands {
         after_help = "EXAMPLES:\n  justui doctor"
     )]
     Doctor,
+
+    /// Sign registry index.json using the release keypair (internal utility)
+    #[command(hide = true)]
+    SignRegistry {
+        /// Optional path to registry directory
+        #[arg(long)]
+        dir: Option<PathBuf>,
+    },
 }
 
 use commands::preset::PresetSubcommands;
@@ -367,6 +376,7 @@ fn main() {
             info,
         } => commands::preset::run(subcommand, name, apply, list, info, auto_yes),
         Commands::Doctor => commands::doctor::run(),
+        Commands::SignRegistry { dir } => sign_registry_command(dir),
     };
 
     if let Err(e) = result {
@@ -376,4 +386,32 @@ fn main() {
 
     use std::io::Write;
     let _ = std::io::stdout().flush();
+}
+
+fn sign_registry_command(dir: Option<PathBuf>) -> anyhow::Result<()> {
+    let registry_dir = dir.unwrap_or_else(|| {
+        if std::path::Path::new("registry/index.json").exists() {
+            PathBuf::from("registry")
+        } else if std::path::Path::new("../../registry/index.json").exists() {
+            PathBuf::from("../../registry")
+        } else {
+            PathBuf::from("registry")
+        }
+    });
+    let index_path = registry_dir.join("index.json");
+    let sig_path = registry_dir.join("index.json.sig");
+
+    let content =
+        std::fs::read(&index_path).with_context(|| format!("Reading {}", index_path.display()))?;
+    let keypair = utils::crypto::official_keypair();
+    let sig_hex = utils::crypto::sign_content(&content, &keypair);
+    std::fs::write(&sig_path, format!("{}\n", sig_hex))
+        .with_context(|| format!("Writing {}", sig_path.display()))?;
+
+    utils::logger::success(&format!(
+        "Signed {} -> {}",
+        index_path.display(),
+        sig_path.display()
+    ));
+    Ok(())
 }

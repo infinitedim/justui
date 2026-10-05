@@ -17,8 +17,11 @@ pub struct JustUIConfig {
 
 impl JustUIConfig {
     pub const CONFIG_FILE_NAME: &'static str = "justui.config.yaml";
-    pub const DEFAULT_REGISTRY_URL: &'static str =
-        "https://raw.githubusercontent.com/infinitedim/justui/main/registry";
+    pub const DEFAULT_REGISTRY_URL: &'static str = concat!(
+        "https://raw.githubusercontent.com/infinitedim/justui/v",
+        env!("CARGO_PKG_VERSION"),
+        "/registry"
+    );
 
     pub fn from_yaml(content: &str) -> Self {
         let parsed: serde_yaml::Value = match serde_yaml::from_str(content) {

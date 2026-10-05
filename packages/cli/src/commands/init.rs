@@ -266,7 +266,11 @@ pub fn run(args: InitArgs) -> Result<()> {
         _ => "",
     };
 
-    let default_theme_ref = if args.dark { "justThemeDark" } else { "justThemeLight" };
+    let default_theme_ref = if args.dark {
+        "justThemeDark"
+    } else {
+        "justThemeLight"
+    };
     let theme_content = format!(
         "import 'package:flutter/material.dart' show Color;\n\
          import '../just_ui_core.dart';\n\

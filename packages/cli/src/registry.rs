@@ -130,7 +130,33 @@ impl RegistryClient {
     }
 
     pub fn fetch_index(&self) -> Result<RegistryIndex> {
+        if !crate::utils::crypto::is_official_registry(&self.base_url) {
+            crate::utils::logger::warning(&format!(
+                "Using non-default registry URL: {}. Ensure this source is trusted.",
+                self.base_url
+            ));
+        }
+
         let content = self.fetch_file_content("index.json")?;
+
+        match self.fetch_file_content("index.json.sig") {
+            Ok(sig_str) => {
+                crate::utils::crypto::verify_signature(
+                    content.as_bytes(),
+                    &sig_str,
+                    crate::utils::crypto::JUSTUI_REGISTRY_PUBKEY,
+                )?;
+            }
+            Err(err) => {
+                if self.is_remote() && crate::utils::crypto::is_official_registry(&self.base_url) {
+                    return Err(anyhow::anyhow!(
+                        "Official registry is missing cryptographic signature (index.json.sig): {}",
+                        err
+                    ));
+                }
+            }
+        }
+
         let index: RegistryIndex =
             serde_json::from_str(&content).context("Failed to parse registry index.json")?;
         Ok(index)
@@ -163,10 +189,21 @@ impl RegistryClient {
                 ))
                 .build()
                 .unwrap_or_default();
-            let response = client
+            let mut response = client
                 .get(&url)
                 .send()
                 .with_context(|| format!("Failed to fetch from registry ({})", url))?;
+
+            let tag_pattern = format!("/v{}/", env!("CARGO_PKG_VERSION"));
+            if response.status() == reqwest::StatusCode::NOT_FOUND && url.contains(&tag_pattern) {
+                let fallback_url = url.replace(&tag_pattern, "/main/");
+                if let Ok(fallback_resp) = client.get(&fallback_url).send() {
+                    if fallback_resp.status().is_success() {
+                        response = fallback_resp;
+                    }
+                }
+            }
+
             if !response.status().is_success() {
                 return Err(anyhow::anyhow!(
                     "Failed to fetch from registry ({}): HTTP {}",
@@ -242,5 +279,39 @@ mod tests {
             files: HashMap::new(),
         };
         assert!(comp.files_for_preset("unknown_preset").is_empty());
+    }
+
+    #[test]
+    fn test_registry_signature_verification_success_and_tampered() {
+        let dir = tempdir().unwrap();
+        let client = RegistryClient::new(dir.path().to_string_lossy().to_string());
+        let index_path = dir.path().join("index.json");
+        let sig_path = dir.path().join("index.json.sig");
+
+        let content = r#"{"version": "1.0", "presets": ["default"], "components": []}"#;
+        std::fs::write(&index_path, content).unwrap();
+
+        let keypair = crate::utils::crypto::official_keypair();
+        let sig = crate::utils::crypto::sign_content(content.as_bytes(), &keypair);
+        std::fs::write(&sig_path, &sig).unwrap();
+
+        // Valid signature verifies cleanly
+        let fetched = client.fetch_index();
+        assert!(fetched.is_ok());
+
+        // Tampering with content causes signature verification to fail
+        let tampered_content =
+            r#"{"version": "1.0", "presets": ["default"], "components": [{"name": "evil"}]}"#;
+        std::fs::write(&index_path, tampered_content).unwrap();
+        let fail_res = client.fetch_index();
+        assert!(fail_res.is_err());
+        let err = fail_res.unwrap_err().to_string();
+        assert!(err.contains("tampered with"));
+
+        // Malformed signature hex fails
+        std::fs::write(&sig_path, "not-a-valid-hex-signature").unwrap();
+        let bad_hex_res = client.fetch_index();
+        assert!(bad_hex_res.is_err());
+        assert!(bad_hex_res.unwrap_err().to_string().contains("Invalid hex"));
     }
 }
