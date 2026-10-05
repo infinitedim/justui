@@ -65,7 +65,7 @@ export const REGISTRY_PRESETS: readonly string[] = ['default', 'neobrutalism'];
 /** Defaults from packages/cli/src/config.rs (`justui init -y`). */
 export const CLI_DEFAULTS = {
   registryUrl:
-    'https://raw.githubusercontent.com/infinitedim/justui/main/registry',
+    'https://raw.githubusercontent.com/infinitedim/justui/v0.14.0/registry',
   componentsDir: 'lib/widgets',
   sharedDir: 'lib/widgets/shared',
   tokensDir: 'lib/tokens',

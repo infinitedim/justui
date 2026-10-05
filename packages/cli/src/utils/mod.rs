@@ -1,4 +1,5 @@
 pub mod constructor_transpiler;
+pub mod crypto;
 pub mod dart_formatter;
 pub mod diff_formatter;
 pub mod embedded_templates;

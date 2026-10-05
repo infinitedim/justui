@@ -62,13 +62,20 @@ function matchOrThrow(source: string, pattern: RegExp, what: string): string {
 function readCliFacts(cliRoot: string): CliFacts {
   const cargo = readFileSync(path.join(cliRoot, 'Cargo.toml'), 'utf-8');
   const config = readFileSync(path.join(cliRoot, 'src/config.rs'), 'utf-8');
+  const version = matchOrThrow(cargo, /^version\s*=\s*"([^"]+)"/m, 'version');
+  const concatMatch = config.match(
+    /DEFAULT_REGISTRY_URL:[^=]*=\s*concat!\(\s*"([^"]+)",\s*env!\("CARGO_PKG_VERSION"\),\s*"([^"]+)"\s*\);/
+  );
+  const registryUrl = concatMatch
+    ? `${concatMatch[1]}${version}${concatMatch[2]}`
+    : matchOrThrow(
+        config,
+        /DEFAULT_REGISTRY_URL:[^=]*=\s*"([^"]+)"/,
+        'DEFAULT_REGISTRY_URL'
+      );
   return {
-    version: matchOrThrow(cargo, /^version\s*=\s*"([^"]+)"/m, 'version'),
-    registryUrl: matchOrThrow(
-      config,
-      /DEFAULT_REGISTRY_URL:[^=]*=\s*"([^"]+)"/,
-      'DEFAULT_REGISTRY_URL'
-    ),
+    version,
+    registryUrl,
     componentsDir: matchOrThrow(
       config,
       /components_dir:\s*"([^"]+)"\.to_string\(\)/,

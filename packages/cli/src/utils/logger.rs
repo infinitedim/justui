@@ -1,5 +1,5 @@
-use std::sync::atomic::{AtomicBool, Ordering};
 use colored::Colorize;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 static QUIET: AtomicBool = AtomicBool::new(false);
 

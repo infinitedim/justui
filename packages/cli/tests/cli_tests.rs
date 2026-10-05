@@ -1589,7 +1589,7 @@ mod cli_integration {
 
         // Update registry_url in config
         let updated_config = config_file.replace(
-            "https://raw.githubusercontent.com/infinitedim/justui/main/registry",
+            justui_cli::config::JustUIConfig::DEFAULT_REGISTRY_URL,
             &registry_dir.display().to_string(),
         );
         std::fs::write(temp_dir.path().join("justui.config.yaml"), updated_config).unwrap();
@@ -1645,7 +1645,8 @@ mod cli_integration {
             .success();
 
         let theme_file =
-            std::fs::read_to_string(temp_dir.path().join("lib/core/theme/just_theme.dart")).unwrap();
+            std::fs::read_to_string(temp_dir.path().join("lib/core/theme/just_theme.dart"))
+                .unwrap();
         assert!(theme_file.contains("0xFFE11D48"));
         assert!(theme_file.contains("final JustThemeData justTheme = justThemeDark;"));
     }
