@@ -56,6 +56,15 @@ describe('Code Generators', () => {
       expect(yaml).toContain('color_space: oklch');
     });
 
+    it('supports custom dart_target override', () => {
+      const yaml = generateYaml({
+        preset: 'default',
+        colorSpace: 'hsl',
+        dartTarget: 'primary',
+      });
+      expect(yaml).toContain('dart_target: primary');
+    });
+
     it('produces only pure ASCII characters', () => {
       const yaml = generateYaml({ preset: 'default', colorSpace: 'hsl' });
       for (let i = 0; i < yaml.length; i++) {
@@ -143,11 +152,29 @@ describe('Code Generators', () => {
       expect(cli).toBe('justui init --preset neobrutalism --color-space oklch');
     });
 
+    it('includes seed and dark flags when provided', () => {
+      const cli = generateCli({
+        preset: 'default',
+        colorSpace: 'hsl',
+        seedColor: '#e11d48',
+        isDark: true,
+      });
+      expect(cli).toBe(
+        'justui init --preset default --color-space hsl --seed "#e11d48" --dark'
+      );
+    });
+
     it('produces only pure ASCII characters', () => {
-      const cli = generateCli({ preset: 'neobrutalism', colorSpace: 'hsluv' });
+      const cli = generateCli({
+        preset: 'neobrutalism',
+        colorSpace: 'hsluv',
+        seedColor: '#3b82f6',
+        isDark: true,
+      });
       for (let i = 0; i < cli.length; i++) {
         expect(cli.charCodeAt(i)).toBeLessThanOrEqual(127);
       }
     });
   });
 });
+

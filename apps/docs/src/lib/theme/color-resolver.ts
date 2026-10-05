@@ -1,7 +1,26 @@
 import type { JustUIPreset } from '../presets';
+import {
+  type ColorSpace,
+  fromPerceptual,
+  hexToHsl,
+  hexToRgb,
+  hslToHex,
+  normalizeHex,
+  rgbToHex,
+  toPerceptual,
+} from './perceptual';
 
 export type { JustUIPreset };
-export type ColorSpace = 'hsl' | 'oklch' | 'hsluv';
+export type { ColorSpace, PerceptualColor } from './perceptual';
+export {
+  normalizeHex,
+  hexToRgb,
+  rgbToHex,
+  hexToHsl,
+  hslToHex,
+  toPerceptual,
+  fromPerceptual,
+};
 
 export interface ResolvedTokens {
   background: string;
@@ -25,115 +44,6 @@ export interface ResolvedTokens {
 }
 
 /**
- * Normalizes a hex string to standard 6-digit lowercase #rrggbb format.
- */
-export function normalizeHex(hex: string): string {
-  const clean = hex.replace(/^#/, '').trim();
-  if (clean.length === 3 && /^[0-9a-fA-F]{3}$/.test(clean)) {
-    const [r, g, b] = clean;
-    return `#${r}${r}${g}${g}${b}${b}`.toLowerCase();
-  }
-  if (clean.length === 6 && /^[0-9a-fA-F]{6}$/.test(clean)) {
-    return `#${clean}`.toLowerCase();
-  }
-  if (clean.length === 8 && /^[0-9a-fA-F]{8}$/.test(clean)) {
-    return `#${clean.slice(2)}`.toLowerCase();
-  }
-  return '#a3e635';
-}
-
-/**
- * Converts a hex color string to RGB [r, g, b] with range 0..255.
- */
-export function hexToRgb(hex: string): [number, number, number] {
-  const normalized = normalizeHex(hex).slice(1);
-  const r = parseInt(normalized.slice(0, 2), 16);
-  const g = parseInt(normalized.slice(2, 4), 16);
-  const b = parseInt(normalized.slice(4, 6), 16);
-  return [r, g, b];
-}
-
-/**
- * Converts RGB components [0..255] to a #rrggbb hex string.
- */
-export function rgbToHex(r: number, g: number, b: number): string {
-  const clamp = (val: number) => Math.max(0, Math.min(255, Math.round(val)));
-  const toHex = (c: number) => clamp(c).toString(16).padStart(2, '0');
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
-
-/**
- * Converts a hex color string to HSL [h, s, l].
- * h in range 0..360, s in range 0..100, l in range 0..100.
- */
-export function hexToHsl(hex: string): [number, number, number] {
-  const [rRaw, gRaw, bRaw] = hexToRgb(hex);
-  const r = rRaw / 255;
-  const g = gRaw / 255;
-  const b = bRaw / 255;
-
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const delta = max - min;
-
-  let h = 0;
-  let s = 0;
-  const l = (max + min) / 2;
-
-  if (delta !== 0) {
-    s = l > 0.5 ? delta / (2 - max - min) : delta / (max + min);
-
-    switch (max) {
-      case r:
-        h = ((g - b) / delta + (g < b ? 6 : 0)) * 60;
-        break;
-      case g:
-        h = ((b - r) / delta + 2) * 60;
-        break;
-      case b:
-        h = ((r - g) / delta + 4) * 60;
-        break;
-    }
-  }
-
-  return [Math.round(h), Math.round(s * 100), Math.round(l * 100)];
-}
-
-/**
- * Converts HSL components to a #rrggbb hex string.
- * h: 0..360, s: 0..100, l: 0..100.
- */
-export function hslToHex(h: number, s: number, l: number): string {
-  const hNorm = (((h % 360) + 360) % 360) / 360;
-  const sNorm = Math.max(0, Math.min(100, s)) / 100;
-  const lNorm = Math.max(0, Math.min(100, l)) / 100;
-
-  if (sNorm === 0) {
-    const val = Math.round(lNorm * 255);
-    return rgbToHex(val, val, val);
-  }
-
-  const hue2rgb = (p: number, q: number, t: number): number => {
-    let tNorm = t;
-    if (tNorm < 0) tNorm += 1;
-    if (tNorm > 1) tNorm -= 1;
-    if (tNorm < 1 / 6) return p + (q - p) * 6 * tNorm;
-    if (tNorm < 1 / 2) return q;
-    if (tNorm < 2 / 3) return p + (q - p) * (2 / 3 - tNorm) * 6;
-    return p;
-  };
-
-  const q = lNorm < 0.5 ? lNorm * (1 + sNorm) : lNorm + sNorm - lNorm * sNorm;
-  const p = 2 * lNorm - q;
-
-  const r = Math.round(hue2rgb(p, q, hNorm + 1 / 3) * 255);
-  const g = Math.round(hue2rgb(p, q, hNorm) * 255);
-  const b = Math.round(hue2rgb(p, q, hNorm - 1 / 3) * 255);
-
-  return rgbToHex(r, g, b);
-}
-
-/**
  * Computes standard WCAG 2.0 relative luminance of a color.
  */
 export function relativeLuminance(hex: string): number {
@@ -148,63 +58,79 @@ export function relativeLuminance(hex: string): number {
 
 /**
  * Computes WCAG 2.0 contrast ratio between two colors (range 1.0 to 21.0).
+ * Returns exact floating-point ratio without premature rounding to avoid
+ * false-positive accessibility validations.
  */
 export function contrastRatio(color1: string, color2: string): number {
   const l1 = relativeLuminance(color1);
   const l2 = relativeLuminance(color2);
-  const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
-  return Math.round(ratio * 10) / 10;
+  return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 }
 
 /**
  * Adjusts lightness of fg color to guarantee at least minRatio contrast against bg.
+ * Uses binary search in the selected perceptual color space.
  */
 export function adjustLightnessForContrast(
   fg: string,
   bg: string,
-  minRatio = 3.0
+  minRatio = 3.0,
+  engine: ColorSpace = 'hsl'
 ): string {
   if (contrastRatio(fg, bg) >= minRatio) {
     return normalizeHex(fg);
   }
 
-  const [h, s, startL] = hexToHsl(fg);
   const bgLum = relativeLuminance(bg);
-  const shouldLighten = bgLum < 0.5;
+  const pc = toPerceptual(fg, engine);
+  const makeLighter = bgLum < 0.5;
 
+  let low = makeLighter ? pc.l : 0.0;
+  let high = makeLighter ? 1.0 : pc.l;
   let bestHex = normalizeHex(fg);
-  let bestRatio = contrastRatio(bestHex, bg);
 
-  // Search starting from current lightness towards target lightness
-  for (let step = 1; step <= 50; step++) {
-    const lAttempt = shouldLighten
-      ? Math.min(100, Math.round(startL + (100 - startL) * (step / 50)))
-      : Math.max(0, Math.round(startL * (1 - step / 50)));
-    const candidateHex = hslToHex(h, s, lAttempt);
-    const candidateRatio = contrastRatio(candidateHex, bg);
+  for (let i = 0; i < 16; i++) {
+    const mid = (low + high) / 2;
+    const testHex = fromPerceptual({ l: mid, c: pc.c, h: pc.h }, engine);
+    const ratio = contrastRatio(testHex, bg);
 
-    if (candidateRatio >= minRatio) {
-      return candidateHex;
-    }
-    if (candidateRatio > bestRatio) {
-      bestRatio = candidateRatio;
-      bestHex = candidateHex;
+    if (ratio >= minRatio) {
+      bestHex = testHex;
+      if (makeLighter) {
+        high = mid;
+      } else {
+        low = mid;
+      }
+    } else {
+      if (makeLighter) {
+        low = mid;
+      } else {
+        high = mid;
+      }
     }
   }
 
-  return bestHex;
+  if (contrastRatio(bestHex, bg) >= minRatio) {
+    return bestHex;
+  }
+
+  // Fallback to pure white or black if target ratio cannot be reached in-gamut
+  return makeLighter ? '#ffffff' : '#000000';
 }
 
 /**
  * Generates a subtly tinted dark surface from seed hue and target lightness percentage.
+ * Damps chroma in the selected color space matching Flutter JustDynamicSurfaces.
  */
 export function generateDarkSurface(
   seedHex: string,
-  lightnessPercent = 3
+  lightnessPercent = 3,
+  engine: ColorSpace = 'hsl'
 ): string {
-  const [h] = hexToHsl(seedHex);
-  // Restrained saturation (8%) keeps it dark and elegant with subtle hue character
-  return hslToHex(h, 8, Math.max(1, Math.min(25, lightnessPercent)));
+  const pc = toPerceptual(seedHex, engine);
+  const dampedC = Math.max(0.0, Math.min(0.12, pc.c * 0.2));
+  const lightness = Math.max(0.01, Math.min(0.25, lightnessPercent / 100.0));
+  return fromPerceptual({ l: lightness, c: dampedC, h: pc.h }, engine);
 }
 
 /**
@@ -214,7 +140,7 @@ export function resolveTokens(
   seedColor: string,
   isDark: boolean,
   preset: JustUIPreset = 'default',
-  _colorSpace: ColorSpace = 'hsl'
+  colorSpace: ColorSpace = 'hsl'
 ): ResolvedTokens {
   const normSeed = normalizeHex(seedColor);
   const isNeo = preset === 'neobrutalism';
@@ -226,8 +152,8 @@ export function resolveTokens(
   let textSecondary: string;
 
   if (isDark) {
-    background = isNeo ? '#1a1a1a' : generateDarkSurface(normSeed, 3);
-    card = isNeo ? '#262626' : generateDarkSurface(normSeed, 7);
+    background = isNeo ? '#1a1a1a' : generateDarkSurface(normSeed, 3, colorSpace);
+    card = isNeo ? '#262626' : generateDarkSurface(normSeed, 7, colorSpace);
     textPrimary = isNeo ? '#ffffff' : '#f8fafc';
     textSecondary = isNeo ? '#cccccc' : '#a1a1aa';
   } else {
@@ -253,7 +179,7 @@ export function resolveTokens(
   const accentText =
     isNeo && !isDark
       ? textPrimary
-      : adjustLightnessForContrast(accent, card, 4.5);
+      : adjustLightnessForContrast(accent, card, 4.5, colorSpace);
 
   // Borders & shadows
   let border: string;
@@ -284,9 +210,24 @@ export function resolveTokens(
   const warningBase = isDark ? '#fbbf24' : '#f59e0b';
   const errorBase = isDark ? '#f87171' : '#ef4444';
 
-  const success = adjustLightnessForContrast(successBase, background, 4.5);
-  const warning = adjustLightnessForContrast(warningBase, background, 3.0);
-  const error = adjustLightnessForContrast(errorBase, background, 4.5);
+  const success = adjustLightnessForContrast(
+    successBase,
+    background,
+    4.5,
+    colorSpace
+  );
+  const warning = adjustLightnessForContrast(
+    warningBase,
+    background,
+    3.0,
+    colorSpace
+  );
+  const error = adjustLightnessForContrast(
+    errorBase,
+    background,
+    4.5,
+    colorSpace
+  );
 
   return {
     background,

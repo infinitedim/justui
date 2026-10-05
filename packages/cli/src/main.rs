@@ -87,6 +87,12 @@ enum Commands {
             value_parser = clap::builder::PossibleValuesParser::new(["primary", "standard"])
         )]
         dart_target: Option<String>,
+        /// Primary brand seed color in hex format (e.g. #3b82f6 or 3b82f6)
+        #[arg(long = "seed")]
+        seed: Option<String>,
+        /// Configure dark mode by default
+        #[arg(long = "dark")]
+        dark: bool,
         /// Enable experimental features (e.g. auto-detect-flutter-version)
         #[arg(
             long = "experimental",
@@ -313,7 +319,9 @@ fn main() {
             tokens_dir,
             experimental,
             dart_target,
-        } => commands::init::run(
+            seed,
+            dark,
+        } => commands::init::run(commands::init::InitArgs {
             preset,
             color_space,
             components_dir,
@@ -321,7 +329,9 @@ fn main() {
             auto_yes,
             experimental,
             dart_target,
-        ),
+            seed,
+            dark,
+        }),
         Commands::Add {
             components,
             dry_run,
