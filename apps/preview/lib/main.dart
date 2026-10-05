@@ -38,10 +38,13 @@ class WidgetbookApp extends StatelessWidget {
                   lightTheme: theme,
                   darkTheme: theme,
                   initialThemeMode: .light,
-                  child: ColoredBox(
-                    color: theme.colors.background,
-                    child: Center(
-                      child: Padding(padding: const .all(16.0), child: child),
+                  child: Theme(
+                    data: theme.toThemeData(),
+                    child: ColoredBox(
+                      color: theme.colors.background,
+                      child: Center(
+                        child: Padding(padding: const .all(16.0), child: child),
+                      ),
                     ),
                   ),
                 );

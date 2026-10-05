@@ -25,6 +25,30 @@ void main() {
       expect(identical(first, second), isTrue);
     });
 
+    testWidgets(
+      'JustThemeProvider theme getter returns cached identical instance across repeat accesses',
+      (WidgetTester tester) async {
+        late JustThemeProviderState state;
+        await tester.pumpWidget(
+          JustThemeProvider(
+            lightTheme: JustThemeData.light,
+            darkTheme: JustThemeData.dark,
+            child: Builder(
+              builder: (BuildContext context) {
+                state = JustThemeProvider.of(context);
+                return const SizedBox();
+              },
+            ),
+          ),
+        );
+        expect(identical(state.theme, state.theme), isTrue);
+        expect(
+          identical(state.theme.toThemeData(), state.theme.toThemeData()),
+          isTrue,
+        );
+      },
+    );
+
     test(
       'ThemeData cache is cleared/rebuilt when copied with modifications',
       () {

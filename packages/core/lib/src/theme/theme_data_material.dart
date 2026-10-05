@@ -8,8 +8,16 @@ final Expando<ThemeData> _themeDataCache = Expando<ThemeData>();
 extension JustThemeDataMaterialExtension on JustThemeData {
   /// Converts this [JustThemeData] configuration into Flutter [ThemeData].
   /// Caches the created [ThemeData] instance to prevent recalculation overhead.
-  ThemeData toThemeData() {
-    return _themeDataCache[this] ??= _buildMaterialTheme();
+  ThemeData toThemeData({
+    Iterable<ThemeExtension<dynamic>>? additionalExtensions,
+  }) {
+    if (additionalExtensions == null || additionalExtensions.isEmpty) {
+      return _themeDataCache[this] ??= _buildMaterialTheme();
+    }
+    final ThemeData base = _themeDataCache[this] ??= _buildMaterialTheme();
+    final List<ThemeExtension<dynamic>> combined =
+        base.extensions.values.toList()..addAll(additionalExtensions);
+    return base.copyWith(extensions: combined);
   }
 
   ThemeData _buildMaterialTheme() {
