@@ -351,11 +351,81 @@ abstract final class OklchEngine {
   /// At C=0, all channels equal L³ (achromatic gray).
   /// As C increases, channels diverge — some toward 0, others toward 1.
   ///
-  /// Uses a linear initial guess followed by 2 iterations of Halley's method
-  /// (cubic convergence: error ∝ errorⁿ³ per iteration).
+  /// Finds the minimum positive root for `channel(C) == target` by solving
+  /// the cubic polynomial analytically (Cardano / trigonometric method).
+  static double _findMinPositiveCubicRoot(
+    double a,
+    double b,
+    double c,
+    double d,
+    double currentMin,
+  ) {
+    double minC = currentMin;
+
+    if (a.abs() < 1e-12) {
+      if (b.abs() < 1e-12) {
+        if (c.abs() > 1e-12) {
+          final double r = -d / c;
+          if (r > 1e-6 && r < minC) minC = r;
+        }
+      } else {
+        final double disc = c * c - 4.0 * b * d;
+        if (disc >= 0.0) {
+          final double s = math.sqrt(disc);
+          final double r1 = (-c + s) / (2.0 * b);
+          final double r2 = (-c - s) / (2.0 * b);
+          if (r1 > 1e-6 && r1 < minC) minC = r1;
+          if (r2 > 1e-6 && r2 < minC) minC = r2;
+        }
+      }
+      return minC;
+    }
+
+    final double pa = b / a;
+    final double qa = c / a;
+    final double ra = d / a;
+
+    final double p = qa - (pa * pa) / 3.0;
+    final double q = (2.0 * pa * pa * pa) / 27.0 - (pa * qa) / 3.0 + ra;
+    final double p3 = p / 3.0;
+    final double q2 = q / 2.0;
+    final double delta = q2 * q2 + p3 * p3 * p3;
+    final double shift = pa / 3.0;
+
+    if (delta > 1e-14) {
+      final double sDelta = math.sqrt(delta);
+      final double u = _cbrt(-q2 + sDelta);
+      final double v = _cbrt(-q2 - sDelta);
+      final double r = u + v - shift;
+      if (r > 1e-6 && r < minC) minC = r;
+    } else {
+      final double phi = -p3 <= 0.0 ? 0.0 : math.sqrt(-p3);
+      if (phi > 1e-14) {
+        final double ratio = (-q2 / (phi * phi * phi)).clamp(-1.0, 1.0);
+        final double theta = math.acos(ratio) / 3.0;
+        final double r1 = 2.0 * phi * math.cos(theta) - shift;
+        final double r2 =
+            2.0 * phi * math.cos(theta - 2.0 * math.pi / 3.0) - shift;
+        final double r3 =
+            2.0 * phi * math.cos(theta - 4.0 * math.pi / 3.0) - shift;
+        if (r1 > 1e-6 && r1 < minC) minC = r1;
+        if (r2 > 1e-6 && r2 < minC) minC = r2;
+        if (r3 > 1e-6 && r3 < minC) minC = r3;
+      } else {
+        final double r = -shift;
+        if (r > 1e-6 && r < minC) minC = r;
+      }
+    }
+    return minC;
+  }
+
+  /// Calculates the maximum chroma where an RGB channel exits the [0, 1] range.
   ///
-  /// Returns [.infinity] if the channel is not a binding constraint
-  /// at this hue (its rate of change is negligible).
+  /// Channel value as a function of chroma C is an exact cubic:
+  /// `channel(C) = c3*C³ + c2*C² + c1*C + c0`
+  ///
+  /// Solves for boundaries `channel(C) == 0` and `channel(C) == 1` using
+  /// closed-form cubic roots.
   static double _channelMaxChroma(
     double L,
     double l2,
@@ -367,65 +437,15 @@ abstract final class OklchEngine {
     double wm,
     double ws,
   ) {
-    // Rate of change of channel value w.r.t. chroma at C=0:
-    // dChannel/dC|_{C=0} = 3·L²·(wl·kl + wm·km + ws·ks)
-    final double dK = wl * kl + wm * km + ws * ks;
+    final double c0 = l3;
+    final double c1 = 3.0 * l2 * (wl * kl + wm * km + ws * ks);
+    final double c2 = 3.0 * L * (wl * kl * kl + wm * km * km + ws * ks * ks);
+    final double c3 = wl * kl * kl * kl + wm * km * km * km + ws * ks * ks * ks;
 
-    double target;
-    double C;
-
-    if (dK < -1e-10) {
-      // Channel decreases with chroma → will exit gamut at 0
-      target = 0.0;
-      // Linear approximation: L³ + 3·L²·dK·C = 0  →  C = −L/(3·dK)
-      C = -L / (3.0 * dK);
-    } else if (dK > 1e-10) {
-      // Channel increases with chroma → will exit gamut at 1
-      target = 1.0;
-      // Linear approximation: L³ + 3·L²·dK·C = 1  →  C = (1−L³)/(3·L²·dK)
-      C = (1.0 - l3) / (3.0 * l2 * dK);
-    } else {
-      // Channel barely changes with chroma — not a binding constraint
-      return .infinity;
-    }
-
-    if (C <= 0.0) return .infinity;
-
-    // 2 iterations of Halley's method for cubic convergence.
-    //
-    // Halley's update formula:
-    //   C_{n+1} = C_n − 2·f·f' / (2·f'² − f·f'')
-    //
-    // Convergence rate: |error_{n+1}| ≈ |error_n|³
-    // After 2 iterations from linear guess: precision ≈ 10⁻⁸
-    for (int i = 0; i < 2; i++) {
-      final double p = L + C * kl;
-      final double q = L + C * km;
-      final double r = L + C * ks;
-
-      final double p2 = p * p;
-      final double q2 = q * q;
-      final double r2 = r * r;
-
-      // f(C) = channel(C) − target
-      final double f = wl * p2 * p + wm * q2 * q + ws * r2 * r - target;
-
-      // f'(C) = 3·Σ(wi·ki·pi²)
-      final double f1 = 3.0 * (wl * kl * p2 + wm * km * q2 + ws * ks * r2);
-
-      // f''(C) = 6·Σ(wi·ki²·pi)
-      final double f2 =
-          6.0 * (wl * kl * kl * p + wm * km * km * q + ws * ks * ks * r);
-
-      // Halley update with denominator guard
-      final double denom = 2.0 * f1 * f1 - f * f2;
-      if (denom.abs() < 1e-12) break;
-
-      C -= 2.0 * f * f1 / denom;
-      if (C < 0.0) return .infinity;
-    }
-
-    return C > 0.0 ? C : .infinity;
+    double minC = double.infinity;
+    minC = _findMinPositiveCubicRoot(c3, c2, c1, c0, minC);
+    minC = _findMinPositiveCubicRoot(c3, c2, c1, c0 - 1.0, minC);
+    return minC;
   }
 
   // ---------------------------------------------------------------------------

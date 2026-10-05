@@ -534,10 +534,11 @@ void main() {
         expect(controller.offset, equals(0.0));
 
         // Dispatch mouse wheel pointer scroll event
-        tester.binding.handlePointerEvent(
-          const PointerScrollEvent(
-            position: Offset(200, 200),
-            scrollDelta: Offset(0, 150),
+        final Offset center = tester.getCenter(find.text('Item 0'));
+        await tester.sendEventToBinding(
+          PointerScrollEvent(
+            position: center,
+            scrollDelta: const Offset(0, 150),
           ),
         );
 
@@ -570,11 +571,9 @@ void main() {
         );
 
         // Rapid micro-events typical of precision trackpads (< 20ms apart, < 15px delta)
-        tester.binding.handlePointerEvent(
-          const PointerScrollEvent(
-            position: Offset(200, 200),
-            scrollDelta: Offset(0, 8),
-          ),
+        final Offset center = tester.getCenter(find.text('Item 0'));
+        await tester.sendEventToBinding(
+          PointerScrollEvent(position: center, scrollDelta: const Offset(0, 8)),
         );
 
         await tester.pump(const Duration(milliseconds: 16));
@@ -603,10 +602,11 @@ void main() {
           ),
         );
 
-        tester.binding.handlePointerEvent(
-          const PointerScrollEvent(
-            position: Offset(200, 200),
-            scrollDelta: Offset(100, 0),
+        final Offset center = tester.getCenter(find.text('HItem 0'));
+        await tester.sendEventToBinding(
+          PointerScrollEvent(
+            position: center,
+            scrollDelta: const Offset(100, 0),
           ),
         );
 
@@ -675,7 +675,10 @@ void main() {
       );
 
       // Focus the scroll area
-      final Finder focusFinder = find.byType(Focus);
+      final Finder focusFinder = find.descendant(
+        of: find.byType(JustScrollArea),
+        matching: find.byType(Focus),
+      );
       expect(focusFinder, findsWidgets);
       final Focus focusWidget = tester.widget<Focus>(focusFinder.first);
       focusWidget.focusNode?.requestFocus();
@@ -726,7 +729,10 @@ void main() {
         ),
       );
 
-      final Finder focusFinder = find.byType(Focus);
+      final Finder focusFinder = find.descendant(
+        of: find.byType(JustScrollArea),
+        matching: find.byType(Focus),
+      );
       final Focus focusWidget = tester.widget<Focus>(focusFinder.first);
       focusWidget.focusNode?.requestFocus();
       await tester.pumpAndSettle();
@@ -770,7 +776,10 @@ void main() {
         ),
       );
 
-      final Finder focusFinder = find.byType(Focus);
+      final Finder focusFinder = find.descendant(
+        of: find.byType(JustScrollArea),
+        matching: find.byType(Focus),
+      );
       final Focus focusWidget = tester.widget<Focus>(focusFinder.first);
       focusWidget.focusNode?.requestFocus();
       await tester.pumpAndSettle();

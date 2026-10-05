@@ -342,6 +342,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
       focusNode: _focusNode,
       onKeyEvent: _handleKeyEvent,
       child: Container(
+        constraints: const BoxConstraints(maxWidth: 340.0),
         padding: widget.showContainer ? padding : .zero,
         decoration: widget.showContainer
             ? BoxDecoration(

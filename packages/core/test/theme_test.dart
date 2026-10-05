@@ -78,7 +78,16 @@ void main() {
         );
 
         expect(seededLight.colors.background, equals(JustColors.neutral50));
-        expect(seededDark.colors.background, equals(JustColors.neutral950));
+        expect(
+          seededDark.colors.background,
+          equals(
+            JustDynamicSurfaces.generateDarkSurface(
+              seedColor,
+              lightness: 0.03,
+              engine: JustColorSpaceEngine.hsl,
+            ),
+          ),
+        );
 
         // Contrast audits: focus border must meet WCAG AA large text/component contrast (>= 3.0)
         final double lightContrast = seededLight.colors.borderFocus

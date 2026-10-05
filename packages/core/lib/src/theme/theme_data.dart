@@ -291,13 +291,16 @@ class const JustThemeData({
   /// and WCAG contrast ratios against the active background surface.
   JustThemeData applyHighContrastOverrides() {
     final bool isBgDark = colors.background.computeLuminance() < 0.5;
+    final Color highContrastBg = isBgDark
+        ? const Color(0xFF000000)
+        : const Color(0xFFFFFFFF);
     final Color highContrastText = isBgDark
         ? const Color(0xFFFFFFFF)
         : const Color(0xFF000000);
     final Color highContrastBorder = highContrastText;
 
     final CustomColorScheme updatedColors = CustomColorScheme(
-      background: colors.background,
+      background: highContrastBg,
       card: colors.card,
       elevated: colors.elevated,
       muted: colors.muted,

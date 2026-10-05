@@ -36,6 +36,9 @@ void main() {
         matchesSemantics(
           isButton: true,
           isEnabled: true,
+          hasEnabledState: true,
+          isFocusable: true,
+          hasFocusAction: true,
           label: 'Submit Action',
           hasTapAction: true,
         ),
@@ -63,7 +66,12 @@ void main() {
           tester.getSemantics(find.byType(JustSwitch)),
           matchesSemantics(
             isToggled: true,
+            hasToggledState: true,
             isEnabled: true,
+            hasEnabledState: true,
+            isFocusable: true,
+            hasFocusAction: true,
+            label: 'Switch',
             hasTapAction: true,
           ),
         );
@@ -89,7 +97,16 @@ void main() {
 
       expect(
         tester.getSemantics(find.byType(JustCheckbox)),
-        matchesSemantics(isChecked: false, isEnabled: true, hasTapAction: true),
+        matchesSemantics(
+          isChecked: false,
+          hasCheckedState: true,
+          isEnabled: true,
+          hasEnabledState: true,
+          isFocusable: true,
+          hasFocusAction: true,
+          label: 'Checkbox',
+          hasTapAction: true,
+        ),
       );
 
       handle.dispose();
@@ -115,10 +132,21 @@ void main() {
         expect(
           tester.getSemantics(find.byType(JustSlider)),
           matchesSemantics(
+            isSlider: true,
             isEnabled: true,
-            value: '30%',
+            hasEnabledState: true,
+            isFocusable: true,
+            hasFocusAction: true,
+            hasTapAction: true,
+            value: '30.0',
+            increasedValue: '35.0',
+            decreasedValue: '25.0',
             hasIncreaseAction: true,
             hasDecreaseAction: true,
+            hasScrollDownAction: true,
+            hasScrollLeftAction: true,
+            hasScrollRightAction: true,
+            hasScrollUpAction: true,
           ),
         );
 

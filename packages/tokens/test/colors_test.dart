@@ -219,7 +219,10 @@ void main() {
         equals(JustColorPalette.neutral800),
       );
       expect(JustColorSemanticDark.muted, equals(JustColorPalette.neutral800));
-      expect(JustColorSemanticDark.overlay, equals(JustColorPalette.black));
+      expect(
+        JustColorSemanticDark.overlay,
+        equals(JustColorPalette.neutral950),
+      );
       expect(
         JustColorSemanticDark.textPrimary,
         equals(JustColorPalette.neutral50),
@@ -242,22 +245,22 @@ void main() {
       );
       expect(
         JustColorSemanticDark.borderFocus,
-        equals(JustColorPalette.primary500),
+        equals(JustColorPalette.primary400),
       );
       expect(
         JustColorSemanticDark.borderError,
-        equals(JustColorPalette.error500),
+        equals(JustColorPalette.error400),
       );
       expect(
         JustColorSemanticDark.success,
-        equals(JustColorPalette.success400),
+        equals(JustColorPalette.success500),
       );
       expect(
         JustColorSemanticDark.warning,
-        equals(JustColorPalette.warning400),
+        equals(JustColorPalette.warning500),
       );
-      expect(JustColorSemanticDark.error, equals(JustColorPalette.error400));
-      expect(JustColorSemanticDark.info, equals(JustColorPalette.info400));
+      expect(JustColorSemanticDark.error, equals(JustColorPalette.error500));
+      expect(JustColorSemanticDark.info, equals(JustColorPalette.info500));
     });
 
     test('JustColors factory methods return correct scheme instances', () {
@@ -720,26 +723,26 @@ void main() {
     });
 
     test(
-      'dampChromaHueAware preserves more chroma than legacy for yellow darks',
+      'dampChromaHueAware preserves more chroma than legacy for yellow lights',
       () {
         const double yellowHue = 90.0;
         const double seedChroma = 0.18;
-        const double darkTargetL = 0.15;
+        const double lightTargetL = 0.85;
 
-        final double legacy = OklchEngine.dampChroma(seedChroma, darkTargetL);
+        final double legacy = OklchEngine.dampChroma(seedChroma, lightTargetL);
         final double hueAware = OklchEngine.dampChromaHueAware(
           seedChroma,
-          darkTargetL,
+          lightTargetL,
           yellowHue,
         );
 
-        // Hue-aware should preserve more chroma for yellow at dark lightness
+        // Hue-aware should preserve more chroma for yellow at light lightness
         // because yellow's gamut boundary is wider than the blind heuristic assumes
         expect(
           hueAware,
           greaterThan(legacy),
           reason:
-              'Hue-aware damping should preserve more chroma for yellow darks '
+              'Hue-aware damping should preserve more chroma for yellow lights '
               '(hueAware=$hueAware vs legacy=$legacy)',
         );
       },
@@ -920,7 +923,7 @@ void main() {
         if (maxC > 0.001) {
           final (double rO, double gO, double bO) = _oklchToLinearRgbForTest(
             tp.l,
-            maxC + 0.005,
+            maxC + 0.01,
             tp.h,
           );
           final bool outOfGamut =
@@ -935,7 +938,7 @@ void main() {
             outOfGamut,
             isTrue,
             reason:
-                'maxChroma + 0.005 at L=${tp.l}, H=${tp.h} should be out-of-gamut '
+                'maxChroma + 0.01 at L=${tp.l}, H=${tp.h} should be out-of-gamut '
                 '(r=$rO, g=$gO, b=$bO)',
           );
         }

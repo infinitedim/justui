@@ -260,7 +260,12 @@ void main() {
       expect(capturedState.isFocused, isFalse);
 
       final MouseRegion mouseRegion = tester.widget<MouseRegion>(
-        find.byType(MouseRegion),
+        find
+            .descendant(
+              of: find.byType(JustPressable),
+              matching: find.byType(MouseRegion),
+            )
+            .first,
       );
       expect(mouseRegion.cursor, equals(SystemMouseCursors.basic));
     });
@@ -309,6 +314,9 @@ void main() {
         matchesSemantics(
           isButton: true,
           isEnabled: true,
+          hasEnabledState: true,
+          isFocusable: true,
+          hasFocusAction: true,
           label: 'Action Label',
           hasTapAction: true,
         ),
@@ -500,6 +508,7 @@ void main() {
 
         // Mouse exit
         await gesture.moveTo(const Offset(500, 500));
+        await tester.pump(const Duration(milliseconds: 200));
         await tester.pumpAndSettle();
 
         expect(find.text('Helper Information'), findsNothing);

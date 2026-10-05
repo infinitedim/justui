@@ -18,15 +18,15 @@ void main() {
     JustThemeData? theme,
     JustDialogTheme? dialogTheme,
   }) {
-    return MaterialApp(
-      theme: ThemeData(
-        extensions: <ThemeExtension<dynamic>>[
-          dialogTheme ?? const JustDialogTheme(),
-        ],
-      ),
-      home: JustThemeProvider(
-        lightTheme: theme ?? JustThemeData.light,
-        child: JustDialogScope(
+    return JustThemeProvider(
+      lightTheme: theme ?? JustThemeData.light,
+      child: MaterialApp(
+        theme: ThemeData(
+          extensions: <ThemeExtension<dynamic>>[
+            dialogTheme ?? const JustDialogTheme(),
+          ],
+        ),
+        home: JustDialogScope(
           controller: controller,
           child: Scaffold(body: child),
         ),
@@ -199,6 +199,7 @@ void main() {
           child: const Text('Page 2'),
         ),
       );
+      await tester.pump();
 
       // controller1 should have been force dismissed
       expect(controller1.isVisible, isFalse);

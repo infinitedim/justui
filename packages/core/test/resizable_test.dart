@@ -700,7 +700,7 @@ void main() {
       expect(controller.isCollapsed(0), isFalse);
 
       // Double-tap the splitter
-      final Finder splitterFinder = find.byType(GestureDetector).at(1);
+      final Finder splitterFinder = find.byType(GestureDetector).first;
       await tester.tap(splitterFinder);
       await tester.pump(const Duration(milliseconds: 50));
       await tester.tap(splitterFinder);
@@ -790,7 +790,7 @@ void main() {
       expect(controller.fractions[0], closeTo(0.6, 0.01));
 
       // Double-tap splitter
-      final Finder splitterFinder = find.byType(GestureDetector).at(1);
+      final Finder splitterFinder = find.byType(GestureDetector).first;
       await tester.tap(splitterFinder);
       await tester.pump(const Duration(milliseconds: 50));
       await tester.tap(splitterFinder);
@@ -825,7 +825,7 @@ void main() {
         ),
       );
 
-      final Finder splitterFinder = find.byType(GestureDetector).at(1);
+      final Finder splitterFinder = find.byType(GestureDetector).first;
       await tester.tap(splitterFinder);
       await tester.pump(const Duration(milliseconds: 50));
       await tester.tap(splitterFinder);
@@ -860,9 +860,13 @@ void main() {
       );
 
       // Focus the splitter Focus widget
-      final Finder focusFinder = find.byType(Focus).first;
-      await tester.tap(focusFinder);
-      await tester.pump();
+      final Finder focusFinder = find.descendant(
+        of: find.byType(JustResizable),
+        matching: find.byType(Focus),
+      );
+      final Focus focusWidget = tester.widget<Focus>(focusFinder.first);
+      focusWidget.focusNode?.requestFocus();
+      await tester.pumpAndSettle();
 
       // Send ArrowRight
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
@@ -901,9 +905,13 @@ void main() {
         ),
       );
 
-      final Finder focusFinder = find.byType(Focus).first;
-      await tester.tap(focusFinder);
-      await tester.pump();
+      final Finder focusFinder = find.descendant(
+        of: find.byType(JustResizable),
+        matching: find.byType(Focus),
+      );
+      final Focus focusWidget = tester.widget<Focus>(focusFinder.first);
+      focusWidget.focusNode?.requestFocus();
+      await tester.pumpAndSettle();
 
       // Send Home key -> snaps to min
       await tester.sendKeyEvent(LogicalKeyboardKey.home);
@@ -939,9 +947,13 @@ void main() {
         ),
       );
 
-      final Finder focusFinder = find.byType(Focus).first;
-      await tester.tap(focusFinder);
-      await tester.pump();
+      final Finder focusFinder = find.descendant(
+        of: find.byType(JustResizable),
+        matching: find.byType(Focus),
+      );
+      final Focus focusWidget = tester.widget<Focus>(focusFinder.first);
+      focusWidget.focusNode?.requestFocus();
+      await tester.pumpAndSettle();
 
       // Press Enter -> collapse
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);

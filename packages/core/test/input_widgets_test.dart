@@ -6,7 +6,6 @@ import 'package:just_ui_core/src/components/checkbox/just_checkbox.dart';
 import 'package:just_ui_core/src/components/dialog/just_dialog.dart';
 import 'package:just_ui_core/src/components/input/just_input.dart';
 import 'package:just_ui_core/src/components/select/just_select.dart';
-import 'package:just_ui_core/src/components/shared/_shared_pressable.dart';
 import 'package:just_ui_core/src/components/slider/just_slider.dart';
 import 'package:just_ui_core/src/components/switch/just_switch.dart';
 
@@ -14,10 +13,10 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   Widget buildTestApp(Widget child, {JustThemeData? theme}) {
-    return MaterialApp(
-      home: JustThemeProvider(
-        lightTheme: theme ?? JustThemeData.light,
-        child: Scaffold(body: Center(child: child)),
+    return JustThemeProvider(
+      lightTheme: theme ?? JustThemeData.light,
+      child: MaterialApp(
+        home: Scaffold(body: Center(child: child)),
       ),
     );
   }
@@ -29,8 +28,8 @@ void main() {
       final TextEditingController controller = TextEditingController();
       await tester.pumpWidget(buildTestApp(JustInput(controller: controller)));
 
-      expect(find.byType(TextField), findsOneWidget);
-      await tester.enterText(find.byType(TextField), 'Hello JustUI');
+      expect(find.byType(EditableText), findsOneWidget);
+      await tester.enterText(find.byType(EditableText), 'Hello JustUI');
       expect(controller.text, equals('Hello JustUI'));
     });
 
@@ -45,7 +44,7 @@ void main() {
       );
 
       expect(controller.text, equals('Initial Text'));
-      await tester.tap(find.byType(JustPressable));
+      await tester.tap(find.byIcon(Icons.close_rounded));
       await tester.pumpAndSettle();
       expect(controller.text, isEmpty);
     });
@@ -60,10 +59,8 @@ void main() {
         buildTestApp(JustInput(controller: controller, enabled: false)),
       );
 
-      final TextField textField = tester.widget<TextField>(
-        find.byType(TextField),
-      );
-      expect(textField.enabled, isFalse);
+      final JustInput input = tester.widget<JustInput>(find.byType(JustInput));
+      expect(input.enabled, isFalse);
     });
   });
 
@@ -215,10 +212,10 @@ void main() {
       final JustDialogController dialogController = JustDialogController();
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: JustThemeProvider(
-            lightTheme: JustThemeData.light,
-            child: JustDialogScope(
+        JustThemeProvider(
+          lightTheme: JustThemeData.light,
+          child: MaterialApp(
+            home: JustDialogScope(
               controller: dialogController,
               child: Scaffold(
                 body: Builder(

@@ -24,7 +24,7 @@ class const JustButtonTheme({
   final JustButtonStyle? linkStyle,
 
   /// Whether to enable haptic feedback on button presses by default.
-  final bool enableHaptic = false,
+  final bool? enableHaptic,
 }) extends ThemeExtension<JustButtonTheme> {
   /// Default configuration for the theme.
   static const JustButtonTheme defaults = JustButtonTheme();

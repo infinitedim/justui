@@ -934,8 +934,7 @@ void main() {
         );
 
         // Focus carousel
-        final Finder focusFinder = find.byType(Focus).first;
-        await tester.tap(focusFinder);
+        await tester.tap(find.byType(JustCarousel));
         await tester.pump();
 
         // Press ArrowRight -> next
