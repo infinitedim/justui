@@ -35,15 +35,20 @@ fn resolve_shared_dir(raw_input: &str, components_dir: &str, default_full_path: 
     format!("{}/{}", components_dir, trimmed)
 }
 
-pub fn run(
-    preset_arg: Option<String>,
-    color_space_arg: Option<String>,
-    components_dir_arg: Option<String>,
-    tokens_dir_arg: Option<String>,
-    auto_yes: bool,
-    experimental: Option<String>,
-    dart_target_arg: Option<String>,
-) -> Result<()> {
+#[derive(Debug, Clone, Default)]
+pub struct InitArgs {
+    pub preset: Option<String>,
+    pub color_space: Option<String>,
+    pub components_dir: Option<String>,
+    pub tokens_dir: Option<String>,
+    pub auto_yes: bool,
+    pub experimental: Option<String>,
+    pub dart_target: Option<String>,
+    pub seed: Option<String>,
+    pub dark: bool,
+}
+
+pub fn run(args: InitArgs) -> Result<()> {
     if !std::path::Path::new("pubspec.yaml").exists() {
         anyhow::bail!(
             "No pubspec.yaml found in the current directory.\n\
@@ -62,9 +67,9 @@ pub fn run(
 
     logger::stdout("=== JustUI Initialization Wizard ===");
 
-    let preset = if let Some(p) = preset_arg {
+    let preset = if let Some(p) = args.preset {
         normalize_preset(&p)
-    } else if auto_yes {
+    } else if args.auto_yes {
         logger::stdout("[auto] Using preset: default");
         "default".to_string()
     } else {
@@ -82,9 +87,9 @@ pub fn run(
         }
     };
 
-    let color_space = if let Some(cs) = color_space_arg {
+    let color_space = if let Some(cs) = args.color_space {
         cs.to_lowercase()
-    } else if auto_yes {
+    } else if args.auto_yes {
         logger::stdout("[auto] Using color space: hsl");
         "hsl".to_string()
     } else {
@@ -106,9 +111,9 @@ pub fn run(
         }
     };
 
-    let components_dir = if let Some(d) = components_dir_arg {
+    let components_dir = if let Some(d) = args.components_dir {
         to_lib_path(&d)
-    } else if auto_yes {
+    } else if args.auto_yes {
         let dir = "lib/widgets".to_string();
         logger::stdout(&format!("[auto] Using components dir: {}", dir));
         dir
@@ -126,9 +131,9 @@ pub fn run(
         }
     };
 
-    let tokens_dir = if let Some(t) = tokens_dir_arg {
+    let tokens_dir = if let Some(t) = args.tokens_dir {
         to_lib_path(&t)
-    } else if auto_yes {
+    } else if args.auto_yes {
         let dir = "lib/tokens".to_string();
         logger::stdout(&format!("[auto] Using tokens dir: {}", dir));
         dir
@@ -139,7 +144,7 @@ pub fn run(
     };
 
     let shared_dir_default = format!("{}/shared", components_dir);
-    let shared_dir = if auto_yes {
+    let shared_dir = if args.auto_yes {
         logger::stdout(&format!("[auto] Using shared dir: {}", shared_dir_default));
         shared_dir_default
     } else {
@@ -155,7 +160,20 @@ pub fn run(
     };
 
     let hex_regex = Regex::new(r"^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$").unwrap();
-    let brand_color = if auto_yes {
+    let brand_color = if let Some(ref s) = args.seed {
+        let trimmed = s.trim();
+        if !hex_regex.is_match(trimmed) {
+            anyhow::bail!(
+                "Invalid HEX color format: \"{}\". Expected format e.g. #3b82f6 or 3b82f6.",
+                trimmed
+            );
+        }
+        if trimmed.starts_with('#') {
+            trimmed.to_string()
+        } else {
+            format!("#{}", trimmed)
+        }
+    } else if args.auto_yes {
         let color = "#3b82f6".to_string();
         logger::stdout(&format!("[auto] Using brand color: {}", color));
         color
@@ -175,7 +193,7 @@ pub fn run(
     }
     let hex_code = format!("0xFF{}", clean_hex);
 
-    if let Some(ref feat) = experimental {
+    if let Some(ref feat) = args.experimental {
         if feat != "auto-detect-flutter-version" {
             logger::warning(&format!(
                 "Unknown experimental feature: \"{}\". Ignoring.",
@@ -184,7 +202,7 @@ pub fn run(
         }
     }
 
-    let dart_target = if let Some(dt) = dart_target_arg {
+    let dart_target = if let Some(dt) = args.dart_target {
         match dt.to_lowercase().as_str() {
             "primary" => crate::utils::env_resolver::DartTarget::Primary,
             "standard" => crate::utils::env_resolver::DartTarget::Standard,
@@ -248,6 +266,7 @@ pub fn run(
         _ => "",
     };
 
+    let default_theme_ref = if args.dark { "justThemeDark" } else { "justThemeLight" };
     let theme_content = format!(
         "import 'package:flutter/material.dart' show Color;\n\
          import '../just_ui_core.dart';\n\
@@ -262,8 +281,17 @@ pub fn run(
          final JustThemeData justThemeDark = JustThemeData.fromSeed(\n\
            const Color({}),\n\
            isDark: true,{}{}\n\
-         );\n",
-        hex_code, preset_param, color_space_param, hex_code, preset_param, color_space_param
+         );\n\
+         \n\
+         /// Default bootstrap theme matching configuration.\n\
+         final JustThemeData justTheme = {};\n",
+        hex_code,
+        preset_param,
+        color_space_param,
+        hex_code,
+        preset_param,
+        color_space_param,
+        default_theme_ref
     );
 
     std::fs::write("lib/core/theme/just_theme.dart", theme_content)
@@ -313,19 +341,20 @@ mod tests {
         let _guard = set_dir(temp_dir.path());
 
         // 1. Without pubspec -> fails with error
-        assert!(run(None, None, None, None, true, None, None).is_err());
+        assert!(run(InitArgs {
+            auto_yes: true,
+            ..Default::default()
+        })
+        .is_err());
 
         // 2. With pubspec -> succeeds in auto_yes mode
         std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: test_app").unwrap();
-        assert!(run(
-            Some("neo".to_string()),
-            Some("oklch".to_string()),
-            None,
-            None,
-            true,
-            None,
-            None
-        )
+        assert!(run(InitArgs {
+            preset: Some("neo".to_string()),
+            color_space: Some("oklch".to_string()),
+            auto_yes: true,
+            ..Default::default()
+        })
         .is_ok());
 
         let theme_path = temp_dir.path().join("lib/core/theme/just_theme.dart");
@@ -349,7 +378,11 @@ mod tests {
         }
 
         // 3. Already initialized -> warns and returns Ok
-        assert!(run(None, None, None, None, true, None, None).is_ok());
+        assert!(run(InitArgs {
+            auto_yes: true,
+            ..Default::default()
+        })
+        .is_ok());
     }
 
     #[test]
@@ -364,15 +397,11 @@ mod tests {
         )
         .unwrap();
 
-        let result = run(
-            Some("default".to_string()),
-            None,
-            None,
-            None,
-            true,
-            None,
-            None,
-        );
+        let result = run(InitArgs {
+            preset: Some("default".to_string()),
+            auto_yes: true,
+            ..Default::default()
+        });
         assert!(result.is_ok());
 
         let config_content =
@@ -392,15 +421,11 @@ mod tests {
         )
         .unwrap();
 
-        let result = run(
-            Some("default".to_string()),
-            None,
-            None,
-            None,
-            true,
-            None,
-            None,
-        );
+        let result = run(InitArgs {
+            preset: Some("default".to_string()),
+            auto_yes: true,
+            ..Default::default()
+        });
         assert!(result.is_ok());
 
         let config_content =
@@ -421,15 +446,12 @@ mod tests {
         )
         .unwrap();
 
-        let result = run(
-            Some("default".to_string()),
-            None,
-            None,
-            None,
-            true,
-            None,
-            Some("primary".to_string()),
-        );
+        let result = run(InitArgs {
+            preset: Some("default".to_string()),
+            dart_target: Some("primary".to_string()),
+            auto_yes: true,
+            ..Default::default()
+        });
         assert!(result.is_ok());
 
         let config_content =
@@ -445,19 +467,40 @@ mod tests {
 
         std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: test_app").unwrap();
 
-        let result = run(
-            Some("default".to_string()),
-            None,
-            None,
-            None,
-            true,
-            Some("unknown-feature".to_string()),
-            None,
-        );
+        let result = run(InitArgs {
+            preset: Some("default".to_string()),
+            experimental: Some("unknown-feature".to_string()),
+            auto_yes: true,
+            ..Default::default()
+        });
         assert!(result.is_ok());
 
         let config_content =
             std::fs::read_to_string(temp_dir.path().join("justui.config.yaml")).unwrap();
         assert!(config_content.contains("dart_target: standard"));
+    }
+
+    #[test]
+    fn test_init_with_seed_and_dark_flags() {
+        let _lock = crate::utils::lock_test_mutex();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = set_dir(temp_dir.path());
+
+        std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: test_app").unwrap();
+
+        let result = run(InitArgs {
+            preset: Some("default".to_string()),
+            color_space: Some("hsl".to_string()),
+            seed: Some("#e11d48".to_string()),
+            dark: true,
+            auto_yes: true,
+            ..Default::default()
+        });
+        assert!(result.is_ok());
+
+        let theme_path = temp_dir.path().join("lib/core/theme/just_theme.dart");
+        let theme_content = std::fs::read_to_string(&theme_path).unwrap();
+        assert!(theme_content.contains("0xFFE11D48"));
+        assert!(theme_content.contains("final JustThemeData justTheme = justThemeDark;"));
     }
 }

@@ -115,6 +115,12 @@ describe('Color Resolver Engine', () => {
       expect(exactRatio).toBeCloseTo(21.0, 2);
     });
 
+    it('returns exact unrounded contrast ratio and prevents false positive rounding', () => {
+      const ratio = contrastRatio('#777777', '#ffffff');
+      expect(ratio).toBeLessThan(4.5);
+      expect(ratio).toBeCloseTo(4.478, 3);
+    });
+
     it('guarantees >= 4.5:1 contrast for accentText against card across diverse seeds', () => {
       const testSeeds = [
         '#a3e635',
@@ -233,6 +239,42 @@ describe('Color Resolver Engine', () => {
       expect(
         contrastRatio(darkTokens.error, darkTokens.background)
       ).toBeGreaterThanOrEqual(4.5);
+    });
+
+    it('produces distinct tokens across hsl, oklch, and hsluv color spaces', () => {
+      const hslTokens = resolveTokens('#3b82f6', true, 'default', 'hsl');
+      const oklchTokens = resolveTokens('#3b82f6', true, 'default', 'oklch');
+      const hsluvTokens = resolveTokens('#3b82f6', true, 'default', 'hsluv');
+
+      expect(hslTokens.background).not.toBe(oklchTokens.background);
+      expect(hslTokens.background).not.toBe(hsluvTokens.background);
+      expect(oklchTokens.background).not.toBe(hsluvTokens.background);
+    });
+
+    it('guarantees WCAG AA (>= 4.5) for error and success, and >= 3.0 for warning across color spaces', () => {
+      for (const cs of ['hsl', 'oklch', 'hsluv'] as const) {
+        const lightTokens = resolveTokens('#3b82f6', false, 'default', cs);
+        expect(
+          contrastRatio(lightTokens.error, lightTokens.background)
+        ).toBeGreaterThanOrEqual(4.5);
+        expect(
+          contrastRatio(lightTokens.success, lightTokens.background)
+        ).toBeGreaterThanOrEqual(4.5);
+        expect(
+          contrastRatio(lightTokens.warning, lightTokens.background)
+        ).toBeGreaterThanOrEqual(3.0);
+
+        const darkTokens = resolveTokens('#3b82f6', true, 'default', cs);
+        expect(
+          contrastRatio(darkTokens.error, darkTokens.background)
+        ).toBeGreaterThanOrEqual(4.5);
+        expect(
+          contrastRatio(darkTokens.success, darkTokens.background)
+        ).toBeGreaterThanOrEqual(4.5);
+        expect(
+          contrastRatio(darkTokens.warning, darkTokens.background)
+        ).toBeGreaterThanOrEqual(3.0);
+      }
     });
   });
 

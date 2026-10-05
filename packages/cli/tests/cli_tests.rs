@@ -1631,4 +1631,22 @@ mod cli_integration {
             std::fs::read_to_string(temp_dir.path().join("justui.config.yaml")).unwrap();
         assert!(config_file.contains("dart_target: standard"));
     }
+
+    #[test]
+    fn test_init_seed_and_dark_flags() {
+        let temp_dir = tempfile::TempDir::new().unwrap();
+        let pubspec_content = "name: test_app\nenvironment:\n  sdk: '>=3.13.0 <4.0.0'\n";
+        std::fs::write(temp_dir.path().join("pubspec.yaml"), pubspec_content).unwrap();
+
+        justui()
+            .current_dir(temp_dir.path())
+            .args(["init", "--seed", "#e11d48", "--dark", "-y"])
+            .assert()
+            .success();
+
+        let theme_file =
+            std::fs::read_to_string(temp_dir.path().join("lib/core/theme/just_theme.dart")).unwrap();
+        assert!(theme_file.contains("0xFFE11D48"));
+        assert!(theme_file.contains("final JustThemeData justTheme = justThemeDark;"));
+    }
 }
