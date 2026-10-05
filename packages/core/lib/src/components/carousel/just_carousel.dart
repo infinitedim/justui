@@ -1,4 +1,4 @@
-import 'dart:async' show Timer;
+import 'dart:async' show Timer, unawaited;
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -248,12 +248,22 @@ class _JustCarouselState extends State<JustCarousel> {
     _pageController.addListener(_onPageScroll);
   }
 
+  bool _controllerInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_controllerInitialized) {
+      _controllerInitialized = true;
+      _initPageController();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _focusNode = FocusNode();
     _focusNode.addListener(_onFocusChange);
-    _initPageController();
     _effectiveController._attach(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _startAutoScroll();
@@ -304,6 +314,9 @@ class _JustCarouselState extends State<JustCarousel> {
     final int effectiveIndex = widget.children.isEmpty
         ? 0
         : currentIndex.clamp(0, widget.children.length - 1);
+    if (effectiveIndex != currentIndex) {
+      _effectiveController._updateIndex(effectiveIndex);
+    }
 
     final double effectiveFraction =
         widget.style?.viewportFraction ??
@@ -417,20 +430,24 @@ class _JustCarouselState extends State<JustCarousel> {
     if (_isLooping) {
       final int currentV =
           _pageController.page?.round() ?? _pageController.initialPage;
-      await _pageController.animateToPage(
-        currentV + 1,
-        duration: animDuration,
-        curve: animCurve,
+      unawaited(
+        _pageController.animateToPage(
+          currentV + 1,
+          duration: animDuration,
+          curve: animCurve,
+        ),
       );
       return;
     }
 
     final int currentReal = _effectiveController.currentIndex;
     if (currentReal < widget.children.length - 1) {
-      await _pageController.animateToPage(
-        currentReal + 1,
-        duration: animDuration,
-        curve: animCurve,
+      unawaited(
+        _pageController.animateToPage(
+          currentReal + 1,
+          duration: animDuration,
+          curve: animCurve,
+        ),
       );
     }
   }
@@ -457,20 +474,24 @@ class _JustCarouselState extends State<JustCarousel> {
     if (_isLooping) {
       final int currentV =
           _pageController.page?.round() ?? _pageController.initialPage;
-      await _pageController.animateToPage(
-        currentV - 1,
-        duration: animDuration,
-        curve: animCurve,
+      unawaited(
+        _pageController.animateToPage(
+          currentV - 1,
+          duration: animDuration,
+          curve: animCurve,
+        ),
       );
       return;
     }
 
     final int currentReal = _effectiveController.currentIndex;
     if (currentReal > 0) {
-      await _pageController.animateToPage(
-        currentReal - 1,
-        duration: animDuration,
-        curve: animCurve,
+      unawaited(
+        _pageController.animateToPage(
+          currentReal - 1,
+          duration: animDuration,
+          curve: animCurve,
+        ),
       );
     }
   }
@@ -521,10 +542,12 @@ class _JustCarouselState extends State<JustCarousel> {
         theme.animationCurve;
 
     final int targetV = _calculateTargetVirtualPage(page);
-    await _pageController.animateToPage(
-      targetV,
-      duration: animDuration,
-      curve: animCurve,
+    unawaited(
+      _pageController.animateToPage(
+        targetV,
+        duration: animDuration,
+        curve: animCurve,
+      ),
     );
   }
 
@@ -949,7 +972,7 @@ class _JustCarouselState extends State<JustCarousel> {
         : widget.children.length;
 
     final Widget pageView = PageView.builder(
-      key: widget.key,
+      key: ValueKey<PageController>(_pageController),
       scrollDirection: widget.orientation,
       controller: _pageController,
       physics: widget.physics,
@@ -1059,6 +1082,12 @@ class _JustCarouselState extends State<JustCarousel> {
           _isHovered = false;
         },
         child: Listener(
+          behavior: HitTestBehavior.opaque,
+          onPointerDown: (_) {
+            if (!_focusNode.hasFocus) {
+              _focusNode.requestFocus();
+            }
+          },
           onPointerSignal: _handlePointerSignal,
           child: Focus(
             focusNode: _focusNode,

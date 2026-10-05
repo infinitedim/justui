@@ -315,13 +315,17 @@ class const JustButton({
               // Link decoration
               final bool isLinkWithHover = variant == .link && isHovered;
 
-              final Text labelWidget = Text(
-                label,
-                style: isLinkWithHover
-                    ? finalTextStyle.copyWith(decoration: .underline)
-                    : finalTextStyle,
-                maxLines: 1,
-                overflow: .ellipsis,
+              final Widget labelWidget = ExcludeSemantics(
+                child: Text(
+                  label,
+                  style: isLinkWithHover
+                      ? finalTextStyle.copyWith(
+                          decoration: TextDecoration.underline,
+                        )
+                      : finalTextStyle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               );
 
               // Layout children inside button

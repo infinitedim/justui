@@ -618,6 +618,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
     // Wrap with Listener to intercept pointer signal events (mouse wheel/trackpad)
     if (smoothEnabled) {
       scrollView = Listener(
+        behavior: HitTestBehavior.opaque,
         onPointerSignal: _handlePointerSignal,
         child: scrollView,
       );
@@ -798,6 +799,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
           ValueListenableBuilder<bool>(
             valueListenable: _showScrollToTop,
             builder: (BuildContext context, bool visible, Widget? child) {
+              if (!visible) return const SizedBox.shrink();
               return Align(
                 alignment: widget.scrollToTopAlignment,
                 child: Padding(

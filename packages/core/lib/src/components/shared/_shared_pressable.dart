@@ -170,7 +170,7 @@ class _JustPressableState extends State<JustPressable> {
           child: AnimatedBuilder(
             animation: _statesListenable,
             builder: (BuildContext context, _) {
-              return widget.builder(
+              final Widget builtChild = widget.builder(
                 context,
                 JustInteractionState(
                   widget.enabled && _isHovered.value,
@@ -180,6 +180,10 @@ class _JustPressableState extends State<JustPressable> {
                   _focusNode,
                 ),
               );
+              if (widget.semanticLabel != null) {
+                return ExcludeSemantics(child: builtChild);
+              }
+              return builtChild;
             },
           ),
         ),

@@ -222,11 +222,22 @@ class const _JustDialogWidget({
 }
 
 class _JustDialogWidgetState extends State<_JustDialogWidget> {
-  final FocusNode _focusNode = FocusNode();
+  late final FocusScopeNode _scopeNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _scopeNode = FocusScopeNode(canRequestFocus: true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _scopeNode.requestFocus();
+      }
+    });
+  }
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _scopeNode.dispose();
     // Restore focus asynchronously after the frame to prevent layout/focus conflicts
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.previousFocus?.requestFocus();
@@ -419,34 +430,33 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
     // Wrap with focus trapping and keyboard navigation
     return RepaintBoundary(
       child: FocusScope(
+        node: _scopeNode,
         autofocus: true,
-        child: KeyboardListener(
-          focusNode: _focusNode,
-          onKeyEvent: (KeyEvent event) {
-            if (event is KeyDownEvent &&
-                event.logicalKey == LogicalKeyboardKey.escape) {
-              widget.onDismiss(null);
-            }
-          },
-          child: Stack(
-            children: <Widget>[
-              Align(
-                alignment: alignment,
-                child: Padding(
-                  padding: widget.position == .center
-                      ? .all(spacing.lg)
-                      : .zero,
-                  child: Semantics(
-                    scopesRoute: true,
-                    namesRoute: true,
-                    explicitChildNodes: true,
-                    label: 'Dialog',
-                    child: animatedChild,
-                  ),
+        canRequestFocus: true,
+        onKeyEvent: (FocusNode node, KeyEvent event) {
+          if (event is KeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.escape) {
+            widget.onDismiss(null);
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: Stack(
+          children: <Widget>[
+            Align(
+              alignment: alignment,
+              child: Padding(
+                padding: widget.position == .center ? .all(spacing.lg) : .zero,
+                child: Semantics(
+                  scopesRoute: true,
+                  namesRoute: true,
+                  explicitChildNodes: true,
+                  label: 'Dialog',
+                  child: animatedChild,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
