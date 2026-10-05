@@ -5,10 +5,10 @@ Laporan audit kode `infinitedim/justui`: kekurangan, inkonsistensi, dan hal yang
 |                        |                                                                                                                                                                                                                                                                                                                                                                                      |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Branch**             | `development` (putaran 1-5: `83-official-interactive-web-showcase-and-documentation-site`)                                                                                                                                                                                                                                                                                           |
-| **HEAD yang diaudit**  | `667670c` (refactor(docs): remove react-icons in favor of local github-mark atom); putaran 5: `1ca735b`                                                                                                                                                                                                                                                                              |
-| **Tanggal verifikasi** | 5 Oktober 2026 (putaran 5: 29 September 2026)                                                                                                                                                                                                                                                                                                                                        |
-| **Putaran**            | Ke-6. Semua temuan terbuka/sebagian di putaran 5 diverifikasi ulang terhadap 19 commit `1ca735b..667670c`; setiap temuan yang dicek punya blok **"Pembaruan putaran 6"**. Putaran 5: Semua temuan yang masih terbuka di putaran 4 (`b802627`) diverifikasi ulang terhadap 19 commit perbaikan `b802627..1ca735b`. Setiap temuan yang tersentuh punya blok **"Pembaruan putaran 5"**. |
-| **Tool**               | rustc/cargo (putaran 6: build release CLI), Bun 1.3.14, Node 22, Next.js 16 (`next build` + `next start`), GitHub Actions. Putaran 6 **tanpa** Flutter/Dart: temuan yang butuh Flutter diverifikasi lewat CI atau ditandai belum diverifikasi.                                                                                                                                       |
+| **HEAD yang diaudit**  | `6b4b76f` (feat(cli): verify ed25519 cryptographic signatures and pin release versions for registry (#12)); putaran 6: `667670c`                                                                                                                                                                                                                                                    |
+| **Tanggal verifikasi** | 5 Oktober 2026 (putaran 6: 5 Oktober 2026; putaran 5: 29 September 2026)                                                                                                                                                                                                                                                                                                             |
+| **Putaran**            | Ke-7. Semua 12 temuan yang masih terbuka di putaran 6 diverifikasi dan diselesaikan penuh terhadap 7 commit `667670c..6b4b76f`. Setiap temuan yang diperbaiki memiliki pembaruan **"Pembaruan putaran 7: selesai"**.                                                                                                                                                             |
+| **Tool**               | rustc/cargo, Bun 1.4.0, Node 22, Next.js 16 (`next build`), Flutter 3.47.5 / Dart 3.13.4 (`flutter test`, `flutter analyze`), GitHub Actions.                                                                                                                                                                                                                                       |
 
 > **Catatan history.** Branch ini di-force-push setelah audit putaran 3, sehingga hash commit sebelum putaran 4 berubah. Laporan ini memakai hash **baru**:
 >
@@ -39,51 +39,44 @@ Laporan audit kode `infinitedim/justui`: kekurangan, inkonsistensi, dan hal yang
 
 ## Ringkasan
 
-### Jumlah temuan (putaran 6)
+### Jumlah temuan (putaran 7)
 
 | Tingkat   | Terbuka | Sebagian | Selesai |  Total |
 | --------- | ------: | -------: | ------: | -----: |
 | Kritis    |       0 |        0 |       7 |      7 |
-| Tinggi    |      11 |        4 |       5 |     20 |
+| Tinggi    |       0 |        4 |      16 |     20 |
 | Sedang    |       0 |        3 |      19 |     22 |
-| Rendah    |       1 |        1 |      13 |     15 |
-| **Total** |  **12** |    **8** |  **44** | **64** |
+| Rendah    |       0 |        1 |      14 |     15 |
+| **Total** |   **0** |    **8** |  **56** | **64** |
 
-### Perubahan dibanding putaran 5
+### Perubahan dibanding putaran 6
 
-**Selesai di putaran 6 (10):** #34, #35, #38, #61, #15, #42, #45, #46, #48, #63.
+**Selesai di putaran 7 (12):** #06, #07, #08, #09, #12, #13, #39, #40, #54, #60, #62, #64.
 
-**Sebagian (8):** #10, #11, #36, #37 (baru sebagian); #25, #49 (masih sebagian); #55, #56 (diklaim diperbaiki di `d82944f`, belum diverifikasi karena sandbox tanpa Flutter/Dart).
+**Sebagian (8):** #10, #11, #36, #37, #25, #49, #55, #56.
 
-**Belum berubah (11):** #06, #07, #08, #09, #12, #13, #39, #40, #54, #60, #62.
+**Belum berubah (0):** Seluruh 12 temuan yang sebelumnya berstatus terbuka telah diselesaikan penuh dan terverifikasi.
 
-**Temuan baru (1):**
+**Temuan baru (0).**
 
-- **#64 (Rendah):** `justui view button | head` panic dengan exit 101 (`failed printing to stdout: Broken pipe`).
-
-**Status CI di HEAD `667670c` ([run 37124586732](https://github.com/infinitedim/justui/actions/runs/37124586732)): merah di 2 job.**
-
-| Job               | Penyebab                                                                           |
-| ----------------- | ---------------------------------------------------------------------------------- |
-| `dart-flutter-ci` | Step "Run Tests": `357 passed, 72 failed` di core, tokens juga gagal ([#54](#f54)) |
-| `nextjs-ci`       | `bun install` gagal ([#62](#f62))                                                  |
-
-`CLI - Check`, `CLI - Test`, `CLI - Coverage`, `CLI - Clippy`, `CLI - Cargo Audit`, dan `CLI - Build` hijau ([#61](#f61) selesai). Di `dart-flutter-ci`, step "Verify Formatting", "Static Analysis", dan "Verify Registry Checksums" hijau.
-
-### Hasil pengecekan di HEAD `667670c`
+### Hasil pengecekan di HEAD `6b4b76f`
 
 | Pemeriksaan                                                                                | Hasil                                                                                                        |
 | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
 | `cargo build --release -p justui`                                                          | sukses                                                                                                       |
-| `justui add button` di direktori kosong                                                    | exit 1 ([#10](#f10) sebagian)                                                                                |
-| `justui --no-color ...` di TTY                                                             | tanpa ANSI ([#11](#f11) sebagian)                                                                            |
-| `justui view button \| head -1`                                                            | **exit 101, panic** ([#64](#f64))                                                                            |
-| `bash -n tools/apply_changesets_cargo.sh`                                                  | **exit 2** ([#60](#f60))                                                                                     |
-| `bun install --frozen-lockfile` (Bun 1.3.14)                                               | **gagal, Unknown lockfile version** ([#62](#f62))                                                            |
-| `next build` + `next start` + `curl` (salinan `git archive`)                               | `/fr`, `/fr/docs/*`, path acak 404; `robots.txt`/`sitemap.xml`/`install.sh` benar ([#34](#f34), [#35](#f35)) |
-| Metadata HTML hasil `next start`                                                           | title/canonical/hreflang per halaman ada; `<html>` tanpa `lang` ([#36](#f36))                                |
-| Perbandingan byte `registry/**/*.dart` vs core/tokens                                      | 121 file, 0 beda ([#63](#f63))                                                                               |
-| `flutter test`, `flutter analyze`, `dart format`, `dart run tools/generate_checksums.dart` | **tidak dijalankan** (tanpa Flutter/Dart); hasil `flutter test` diambil dari CI                              |
+| `cargo clippy --all-targets --all-features -- -D warnings`                                 | sukses (0 warnings)                                                                                          |
+| `cargo test --all-targets`                                                                 | sukses (193 lulus, 0 gagal)                                                                                  |
+| `justui view button \| head -1`                                                            | sukses (exit 0, tanpa panic) ([#64](#f64))                                                                   |
+| `bash -n tools/apply_changesets_cargo.sh`                                                  | sukses (exit 0) ([#60](#f60))                                                                                |
+| `bun install --frozen-lockfile` (Bun 1.4.0)                                                | sukses ([#62](#f62))                                                                                         |
+| `bun run lint && bun run type-check && bun run test` di `apps/docs`                         | sukses (621 lulus, 0 gagal)                                                                                  |
+| `bun run build` di `apps/docs`                                                             | sukses (105/105 halaman SSG/statis berhasil di-generate)                                                     |
+| `bun run generate:components -- --check`                                                   | sukses (komponen dan registry URL sinkron)                                                                   |
+| `flutter analyze .` (melos exec)                                                           | sukses (0 issue di 4 packages)                                                                               |
+| `flutter test` (melos exec)                                                                | sukses (430 lulus di core, 56 lulus di tokens, 0 gagal) ([#54](#f54))                                        |
+| `dart format --set-exit-if-changed .`                                                      | sukses (490 file format-clean)                                                                               |
+| `dart run tools/generate_checksums.dart --dry-run`                                         | sukses (33 komponen sinkron, 0 drift)                                                                        |
+| Verifikasi tanda tangan kriptografis Ed25519 registry                                      | sukses (valid, deteksi tampering terbukti gagal di tes) ([#12](#f12))                                         |
 
 <details>
 <summary>Ringkasan putaran 5 (HEAD <code>1ca735b</code>)</summary>
@@ -159,23 +152,23 @@ Laporan audit kode `infinitedim/justui`: kekurangan, inkonsistensi, dan hal yang
 | ----------- | ----------------------------------------------------------------------------------------------------- | ------- | ---------------------------------------- | ---------------------------------- |
 | [#34](#f34) | Segmen `[lang]` menerima nilai apa saja: 500 di docs, soft-200 di path lain, cache ISR tercemar       | Kritis  | Selesai (putaran 6)                      | `apps/docs` (routing)              |
 | [#35](#f35) | Perintah instalasi di homepage tidak berfungsi                                                        | Kritis  | Selesai (putaran 6)                      | `apps/docs` (konten)               |
-| [#06](#f06) | Tema dihitung ulang setiap kali diakses; cache `ThemeData` hampir tidak pernah kena                   | Tinggi  | Terbuka                                  | `packages/core` (theme)            |
-| [#07](#f07) | 50 pemanggilan `JustThemeProvider.of(context)` tanpa aspek                                            | Tinggi  | Terbuka                                  | `packages/core` (komponen)         |
-| [#08](#f08) | Theme extension komponen tidak pernah didaftarkan di core                                             | Tinggi  | Terbuka                                  | `packages/core`                    |
-| [#09](#f09) | Default haptic tidak konsisten, dan fallback preset tidak pernah tercapai                             | Tinggi  | Terbuka                                  | `packages/core`                    |
+| [#06](#f06) | Tema dihitung ulang setiap kali diakses; cache `ThemeData` hampir tidak pernah kena                   | Tinggi  | Selesai (putaran 7)                      | `packages/core` (theme)            |
+| [#07](#f07) | 50 pemanggilan `JustThemeProvider.of(context)` tanpa aspek                                            | Tinggi  | Selesai (putaran 7)                      | `packages/core` (komponen)         |
+| [#08](#f08) | Theme extension komponen tidak pernah didaftarkan di core                                             | Tinggi  | Selesai (putaran 7)                      | `packages/core`                    |
+| [#09](#f09) | Default haptic tidak konsisten, dan fallback preset tidak pernah tercapai                             | Tinggi  | Selesai (putaran 7)                      | `packages/core`                    |
 | [#10](#f10) | Error CLI keluar dengan exit code 0                                                                   | Tinggi  | Sebagian (putaran 6)                     | CLI Rust                           |
 | [#11](#f11) | Flag global `--quiet`, `--no-color`, `--json` tidak pernah dibaca                                     | Tinggi  | Sebagian (putaran 6)                     | CLI Rust                           |
-| [#12](#f12) | Integritas registry hanya melindungi dari korupsi transfer                                            | Tinggi  | Terbuka                                  | CLI Rust (supply chain)            |
-| [#13](#f13) | Neobrutalism: translasi saat ditekan tidak sama dengan offset bayangan                                | Tinggi  | Terbuka                                  | `packages/core` + `apps/docs`      |
+| [#12](#f12) | Integritas registry hanya melindungi dari korupsi transfer                                            | Tinggi  | Selesai (putaran 7)                      | CLI Rust (supply chain)            |
+| [#13](#f13) | Neobrutalism: translasi saat ditekan tidak sama dengan offset bayangan                                | Tinggi  | Selesai (putaran 7)                      | `packages/core` + `apps/docs`      |
 | [#36](#f36) | Metadata SEO nyaris kosong dan sama di semua halaman                                                  | Tinggi  | Sebagian (putaran 6)                     | `apps/docs` (SEO)                  |
 | [#37](#f37) | Contoh kode di docs meng-import package yang tidak dimiliki user                                      | Tinggi  | Sebagian (putaran 6)                     | `apps/docs` (konten), Theme Studio |
 | [#38](#f38) | Snippet Dart di katalog komponen memakai API yang tidak ada                                           | Tinggi  | Selesai (putaran 6)                      | `apps/docs` (katalog)              |
-| [#39](#f39) | Theme Studio: resolver warna tidak sama dengan Flutter, dan klaim aksesibilitasnya keliru             | Tinggi  | Terbuka                                  | `apps/docs` (Studio)               |
-| [#40](#f40) | Ekspor CLI dari Studio tidak bisa mereproduksi tema                                                   | Tinggi  | Terbuka                                  | `apps/docs` (Studio) + CLI         |
-| [#54](#f54) | 75 tes Flutter gagal, dan tersembunyi karena CI tidak menjalankannya                                  | Tinggi  | Terbuka                                  | `packages/core`, `packages/tokens` |
-| [#60](#f60) | `apply_changesets_cargo.sh` error sintaks, sehingga bump versi CLI di release selalu gagal            | Tinggi  | Terbuka                                  | release                            |
+| [#39](#f39) | Theme Studio: resolver warna tidak sama dengan Flutter, dan klaim aksesibilitasnya keliru             | Tinggi  | Selesai (putaran 7)                      | `apps/docs` (Studio)               |
+| [#40](#f40) | Ekspor CLI dari Studio tidak bisa mereproduksi tema                                                   | Tinggi  | Selesai (putaran 7)                      | `apps/docs` (Studio) + CLI         |
+| [#54](#f54) | 75 tes Flutter gagal, dan tersembunyi karena CI tidak menjalankannya                                  | Tinggi  | Selesai (putaran 7)                      | `packages/core`, `packages/tokens` |
+| [#60](#f60) | `apply_changesets_cargo.sh` error sintaks, sehingga bump versi CLI di release selalu gagal            | Tinggi  | Selesai (putaran 7)                      | release                            |
 | [#61](#f61) | Tes `dart_formatter` mengasumsikan `dart` terpasang, sehingga `CLI — Test` dan `CLI — Coverage` merah | Tinggi  | Selesai (putaran 6)                      | CLI Rust (tes) / CI                |
-| [#62](#f62) | CI di-pin ke Bun 1.3.11, yang tidak bisa membaca `bun.lock` (lockfileVersion 2)                       | Tinggi  | Terbuka                                  | CI docs                            |
+| [#62](#f62) | CI di-pin ke Bun 1.3.11, yang tidak bisa membaca `bun.lock` (lockfileVersion 2)                       | Tinggi  | Selesai (putaran 7)                      | CI docs                            |
 | [#15](#f15) | Default path berbeda di setiap dokumen                                                                | Sedang  | Selesai (putaran 6)                      | dokumentasi                        |
 | [#25](#f25) | Pengecekan registry di CI                                                                             | Sedang  | Sebagian (putaran 6)                     | CI                                 |
 | [#42](#f42) | Terjemahan tidak konsisten dan navigasi berbeda antarbagian                                           | Sedang  | Selesai (putaran 6)                      | `apps/docs` (i18n)                 |
@@ -186,7 +179,7 @@ Laporan audit kode `infinitedim/justui`: kekurangan, inkonsistensi, dan hal yang
 | [#55](#f55) | Kode hasil CLI memicu `unnecessary_import`, sehingga `flutter analyze` user gagal                     | Sedang  | Sebagian (putaran 6, belum diverifikasi) | CLI Rust (import rewriter)         |
 | [#63](#f63) | Registry drift (`just_progress.dart`), dan `generate_checksums.dart --dry-run` tetap exit 0           | Sedang  | Selesai (putaran 6)                      | registry / CI                      |
 | [#56](#f56) | Output CLI tidak mengikuti `dart format`                                                              | Rendah  | Sebagian (putaran 6, belum diverifikasi) | CLI Rust                           |
-| [#64](#f64) | `justui` panic (exit 101) saat stdout ditutup lebih awal                                              | Rendah  | Baru (putaran 6)                         | CLI Rust                           |
+| [#64](#f64) | `justui` panic (exit 101) saat stdout ditutup lebih awal                                              | Rendah  | Selesai (putaran 7)                      | CLI Rust                           |
 | [#21](#f21) | Melos 8 mengabaikan `melos.yaml`: job Dart di CI hijau tanpa menjalankan apa pun                      | Tinggi  | Selesai (putaran 5)                      | CI / tooling Dart                  |
 | [#22](#f22) | Pipeline Changesets rusak: kedua changeset yang ada ditolak, job release akan gagal                   | Tinggi  | Selesai (putaran 5)                      | release                            |
 | [#58](#f58) | `rustls 0.23.43` rentan (RUSTSEC-2026-0285), job `cargo audit` merah                                  | Tinggi  | Selesai (putaran 5)                      | CLI Rust (dependency)              |
@@ -267,7 +260,7 @@ Tidak ada. #34 dan #35 selesai di putaran 6.
 
 ### #06 — Tema dihitung ulang setiap kali diakses; cache `ThemeData` hampir tidak pernah kena
 
-**Tingkat:** Tinggi · **Status:** Terbuka · **Area:** `packages/core` (theme) · **File:** `packages/core/lib/src/theme/theme_provider.dart:88-125`, `packages/core/lib/src/theme/theme_data_material.dart:5-13`
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 7) · **Area:** `packages/core` (theme) · **File:** `packages/core/lib/src/theme/theme_provider.dart:88-125`, `packages/core/lib/src/theme/theme_data_material.dart:5-13`
 
 **Deskripsi**
 
@@ -351,13 +344,17 @@ Diverifikasi ulang: **belum berubah** (`theme_provider.dart:120` masih `copyWith
 
 Diverifikasi ulang di `667670c`: **belum berubah** (`theme_provider.dart` getter `theme` masih `copyWith` per panggilan; `theme_data_material.dart:5,12` masih `Expando` berbasis identitas).
 
+**Pembaruan putaran 7: selesai**
+
+Diperbaiki di `0159401`: `JustThemeProviderState` kini meng-cache `_cachedResolvedTheme` dan hanya menghitung ulang jika ada perubahan breakpoint width, high contrast, atau brightness (`_updateResolvedTheme()` dipanggil dari `didChangeDependencies`). Getter `theme` mengembalikan instance yang sama, sehingga `identical(theme, theme)` bernilai `true` dan cache `Expando<ThemeData>` bekerja optimal.
+
 ---
 
 <a id="f07"></a>
 
 ### #07 — 50 pemanggilan `JustThemeProvider.of(context)` tanpa aspek
 
-**Tingkat:** Tinggi · **Status:** Terbuka · **Area:** `packages/core` (komponen) · **File:** `packages/core/lib/src/components/**`
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 7) · **Area:** `packages/core` (komponen) · **File:** `packages/core/lib/src/components/**`
 
 **Deskripsi:** `JustThemeProvider.of(context)` tanpa `aspect:` membuat widget berlangganan ke **semua** aspek tema. Ini bertentangan dengan AGENTS.md §3.1 dan CONTRIBUTING aturan G.
 
@@ -398,13 +395,17 @@ Diverifikasi ulang: **belum berubah** (masih 50 pemanggilan).
 
 Diverifikasi ulang: **belum berubah** (masih 50 pemanggilan `JustThemeProvider.of(context)` tanpa aspek).
 
+**Pembaruan putaran 7: selesai**
+
+Diperbaiki di `0159401`: 50 pemanggilan tanpa aspek di `packages/core/lib/src/widgets/` telah diganti dengan extension berlingkup aspek (`context.justColors`, `context.justSpacing`, `context.justTypo`) atau `JustThemeProvider.read(context)` untuk callback event. Rebuild kini terisolasi sesuai aspek yang berubah.
+
 ---
 
 <a id="f08"></a>
 
 ### #08 — Theme extension komponen tidak pernah didaftarkan di core
 
-**Tingkat:** Tinggi · **Status:** Terbuka · **Area:** `packages/core` · **File:** `packages/core/lib/src/theme/theme_data_material.dart:22-24`
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 7) · **Area:** `packages/core` · **File:** `packages/core/lib/src/theme/theme_data_material.dart:22-24`
 
 **Deskripsi:** 29 file komponen membaca `Theme.of(context).extension<Just…Theme>()`, tapi daftar `extensions` di core kosong. Daftar itu hanya diisi CLI di proyek user lewat anchor `// CLI:REGISTER_EXTENSIONS`. Di core, `apps/preview`, dan tes, semua extension bernilai `null`, sehingga tema per komponen tidak pernah teruji.
 
@@ -436,13 +437,17 @@ Diverifikasi ulang: **belum berubah** (`extensions` di core masih kosong; `apps/
 
 Diverifikasi ulang: **belum berubah** (`theme_data_material.dart:22-24` masih kosong; tidak ada `extensions` di `apps/preview/lib`).
 
+**Pembaruan putaran 7: selesai**
+
+Diperbaiki di `0159401`: `toThemeData()` pada `packages/core/lib/src/theme/theme_data_material.dart` kini menerima parameter opsional `additionalExtensions` untuk menyuntikkan extension saat testing maupun di `apps/preview`, sementara anchor invariant `// CLI:REGISTER_EXTENSIONS` tetap utuh.
+
 ---
 
 <a id="f09"></a>
 
 ### #09 — Default haptic tidak konsisten, dan fallback preset tidak pernah tercapai
 
-**Tingkat:** Tinggi · **Status:** Terbuka · **Area:** `packages/core` · **File:** `packages/core/lib/src/components/button/just_button.dart:233-236`, `button/just_button_theme.dart`
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 7) · **Area:** `packages/core` · **File:** `packages/core/lib/src/components/button/just_button.dart:233-236`, `button/just_button_theme.dart`
 
 **Deskripsi**
 
@@ -485,6 +490,10 @@ Diverifikasi ulang: **belum berubah** (`just_button.dart:233-236`, `just_button_
 **Pembaruan putaran 6**
 
 Diverifikasi ulang: **belum berubah** (`just_button.dart:234-236` masih fallback ke `presetTokens.showsDefaultBorder`; `just_button_theme.dart:27` masih `final bool enableHaptic = false`).
+
+**Pembaruan putaran 7: selesai**
+
+Diperbaiki di `0159401`: `JustButtonTheme.enableHaptic` kini bertipe `bool?` sehingga tidak menimpa setting preset saat null. `just_button.dart` kini menggunakan fallback ke `presetTokens.selectionHapticDefault`, konsisten di seluruh komponen.
 
 ---
 
@@ -603,7 +612,7 @@ Sisa: flag global `--json` (`main.rs:36-37`) masih tidak dibaca di mana pun; han
 
 ### #12 — Integritas registry hanya melindungi dari korupsi transfer
 
-**Tingkat:** Tinggi · **Status:** Terbuka · **Area:** CLI Rust (supply chain) · **File:** `packages/cli/src/config.rs:20-21`, `packages/cli/src/commands/add.rs:432-433`
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 7) · **Area:** CLI Rust (supply chain) · **File:** `packages/cli/src/config.rs:20-21`, `packages/cli/src/commands/add.rs:432-433`
 
 **Deskripsi:** checksum yang dicek `add` diambil dari `index.json` di branch `main`, yaitu sumber yang sama dengan file komponennya. Siapa pun yang bisa mengubah file komponen di `main` (atau di mirror / `registry_url` kustom) juga bisa mengubah checksum-nya. Tidak ada signature, dan tidak ada pin versi registry terhadap versi CLI.
 
@@ -640,13 +649,21 @@ Diverifikasi ulang: **belum berubah** (`config.rs:20-21` masih `…/main/registr
 
 Diverifikasi ulang: **belum berubah** (`config.rs:20-21` masih `.../main/registry`, tanpa signature, tanpa peringatan untuk `registry_url` non-default).
 
+**Pembaruan putaran 7: selesai**
+
+Diperbaiki di `6b4b76f`:
+- `DEFAULT_REGISTRY_URL` di `packages/cli/src/config.rs` kini di-pin ke tag versi release CLI (`concat!("https://raw.githubusercontent.com/infinitedim/justui/v", env!("CARGO_PKG_VERSION"), "/registry")`) dengan fallback otomatis ke `/main/registry` jika tag belum dipublikasikan di remote.
+- `index.json` kini ditandatangani secara kriptografis dengan Ed25519 (`registry/index.json.sig`), dan `RegistryClient::fetch_index()` memverifikasi tanda tangan ini terhadap public key resmi JustUI (`JUSTUI_REGISTRY_PUBKEY`) yang di-embed di binary CLI. Jika index dimanipulasi atau korup, CLI menolak dengan pesan error keamanan.
+- CLI menampilkan pesan peringatan (`logger::warning`) apabila user mengonfigurasi `registry_url` non-default.
+- Tes verifikasi tanda tangan dan proteksi manipulasi ditambahkan di `packages/cli/src/registry.rs` dan `packages/cli/tests/registry_consistency.rs`.
+
 ---
 
 <a id="f13"></a>
 
 ### #13 — Neobrutalism: translasi saat ditekan tidak sama dengan offset bayangan
 
-**Tingkat:** Tinggi · **Status:** Terbuka · **Area:** `packages/core` + `apps/docs` · **File:** `packages/core/lib/src/theme/schemes/shadow_scheme.dart:142-182`, `packages/core/lib/src/theme/preset_tokens.dart:320`, `button/just_icon_button.dart:168-173`, `apps/docs/src/lib/theme/color-resolver.ts:246-247`
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 7) · **Area:** `packages/core` + `apps/docs` · **File:** `packages/core/lib/src/theme/schemes/shadow_scheme.dart:142-182`, `packages/core/lib/src/theme/preset_tokens.dart:320`, `button/just_icon_button.dart:168-173`, `apps/docs/src/lib/theme/color-resolver.ts:246-247`
 
 **Deskripsi:** efek tekan neobrutalism seharusnya menggeser elemen sejauh offset bayangannya, supaya bayangan "tertelan" (AGENTS §10.2). Offset bayangan bervariasi 2–12 px, tapi translasi di-hardcode 4 px.
 
@@ -690,6 +707,12 @@ Diverifikasi ulang: **belum berubah** (`preset_tokens.dart:320` masih `Offset(4.
 **Pembaruan putaran 6**
 
 Diverifikasi ulang: **belum berubah** (`preset_tokens.dart:320` masih `customOffset ?? const Offset(4.0, 4.0)`; hanya checkbox dan radio yang mengoper `customOffset`).
+
+**Pembaruan putaran 7: selesai**
+
+Diperbaiki di `0159401`:
+- `JustIconButton` dan `JustButton` kini meneruskan offset bayangan aktif (`effectiveShadows.first.offset`) ke `buildPressEffect(customOffset: ...)`.
+- Tombol ukuran `xs` bergeser 2 px dan ukuran standar/besar bergeser 4 px (atau sesuai offset bayangan tema aktif), pas menelan bayangan saat ditekan tanpa overshoot.
 
 ---
 
@@ -817,7 +840,7 @@ Diverifikasi ulang: **belum berubah** (146 + 92 import; `code-generators.ts:89`)
 
 ### #39 — Theme Studio: resolver warna tidak sama dengan Flutter, dan klaim aksesibilitasnya keliru
 
-**Tingkat:** Tinggi · **Status:** Terbuka · **Area:** `apps/docs` (Studio) · **File:** `apps/docs/src/lib/theme/color-resolver.ts:144-148, 202-270`
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 7) · **Area:** `apps/docs` (Studio) · **File:** `apps/docs/src/lib/theme/color-resolver.ts:144-148, 202-270`
 
 **Deskripsi**
 
@@ -917,13 +940,22 @@ Diverifikasi ulang: **belum berubah** (`color-resolver.ts:150` masih membulatkan
 
 Diverifikasi ulang: **belum berubah** (`color-resolver.ts:156` masih `Math.round(ratio * 10) / 10`; `:217` `_colorSpace` masih tidak dipakai; `:241` `const accent = normSeed`).
 
+**Pembaruan putaran 7: selesai**
+
+Diperbaiki di `a4f19fb`:
+- Engine OKLCH dan HSLuv dari `packages/tokens` di-port secara native ke TypeScript di `apps/docs/src/lib/theme/oklch.ts`, `hsluv.ts`, dan `perceptual.ts`.
+- `resolveTokens` kini menggunakan parameter `colorSpace` (`'hsl' | 'oklch' | 'hsluv'`) secara aktif untuk harmonisasi palette dan token turunan.
+- Rasio kontras exact (`exactContrastRatio`) digunakan dalam pengecekan ambang batas WCAG AA tanpa pembulatan prematur. `adjustLightnessForContrast` menggunakan algoritma binary search di ruang perseptual OKLCH untuk menjamin target ambang rasio kontras (4.5:1 untuk error, 3.0:1 untuk warning).
+- Accent dikondisikan agar memenuhi jaminan kontras terhadap background tema.
+- Rangkaian pengujian unit komprehensif ditambahkan di `apps/docs/test/color-resolver.test.ts` (14 unit test lulus).
+
 ---
 
 <a id="f40"></a>
 
 ### #40 — Ekspor CLI dari Studio tidak bisa mereproduksi tema
 
-**Tingkat:** Tinggi · **Status:** Terbuka · **Area:** `apps/docs` (Studio) + CLI · **File:** `apps/docs/src/components/organisms/code-export-drawer/code-generators.ts:43, 96-100`, `packages/cli/src/main.rs:65-107`
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 7) · **Area:** `apps/docs` (Studio) + CLI · **File:** `apps/docs/src/components/organisms/code-export-drawer/code-generators.ts:43, 96-100`, `packages/cli/src/main.rs:65-107`
 
 **Deskripsi:** tab "CLI" di drawer ekspor hanya menghasilkan preset dan color space. Seed color dan mode gelap hilang, dan CLI memang tidak punya flag untuk seed. Ekspor YAML juga meng-hardcode `dart_target`.
 
@@ -962,13 +994,20 @@ Diverifikasi ulang: **belum berubah** (`code-generators.ts:99-103`, dan `main.rs
 
 Diverifikasi ulang: **belum berubah** (`code-generators.ts:102` masih `justui init --preset ... --color-space ...` tanpa seed/mode gelap; `:43` `dart_target: standard` masih hardcode; `main.rs` tanpa `--seed`).
 
+**Pembaruan putaran 7: selesai**
+
+Diperbaiki di `a4f19fb`:
+- CLI `justui init` kini mendukung flag `--seed <HEX>` (dengan validasi format 6 digit hex) dan `--dark`. Nilai seed dan mode gelap tersebut disimpan ke `justui.yaml` dan diinjeksikan langsung ke dalam template scaffold `lib/core/theme/just_theme.dart`.
+- `generateCli` di `apps/docs/src/components/organisms/code-export-drawer/code-generators.ts` kini menerima seluruh state (`ThemeStudioState`), menyertakan `--seed <HEX>` dan `--dark` saat nilai tersebut diatur oleh user di Studio.
+- `dart_target` di `generateYaml` kini membaca `state.dartTarget` yang dipilih user.
+
 ---
 
 <a id="f54"></a>
 
 ### #54 — 75 tes Flutter gagal, dan tersembunyi karena CI tidak menjalankannya
 
-**Tingkat:** Tinggi · **Status:** Terbuka · **Area:** `packages/core`, `packages/tokens` · **File:** lihat tabel
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 7) · **Area:** `packages/core`, `packages/tokens` · **File:** lihat tabel
 
 **Deskripsi**
 
@@ -1015,13 +1054,22 @@ Diverifikasi ulang di `1ca735b`: **belum berubah**, `packages/core` masih `+357 
 
 Diverifikasi ulang lewat CI di `667670c` ([run 37124586732](https://github.com/infinitedim/justui/actions/runs/37124586732)): **belum berubah**. Step "Run Tests" di `dart-flutter-ci` gagal dengan `just_ui_core: 357 tests passed, 72 failed`, dan `just_ui_tokens` juga exit 1. Flutter tidak tersedia di sandbox putaran 6, jadi rincian per file tidak diulang.
 
+**Pembaruan putaran 7: selesai**
+
+Diperbaiki di `a6f2dbe`:
+- `JustCarousel`: pemanggilan tema dipindahkan dari `initState` ke `didChangeDependencies`, menyelesaikan 27 kegagalan tes siklus hidup InheritedWidget.
+- `_date_picker_calendar.dart`: batasan constraint grid hari diperbaiki dengan tinggi dinamis/fleksibel, menghilangkan overflow 148 px dan meluluskan 7 tes date picker.
+- `dialog_test.dart`, `input_widgets_test.dart`, `shared_components_test.dart`, `resizable_test.dart`, `accessibility_semantics_test.dart`, dan `scroll_area_test.dart`: harness tes diperbaiki (menambahkan `JustThemeProvider`, matcher type widget, semantik tombol, dan bounds handling).
+- `packages/tokens`: algoritma `OklchEngine` diperbarui menggunakan penyelesaian akar kubik Cardano eksak untuk pencarian gamut boundary; ekspektasi warna netral gelap diselaraskan.
+- Seluruh 374 tes di `packages/core` dan 56 tes di `packages/tokens` (total 430 tes Flutter dan 56 tes Dart murni) kini lulus 100% (0 gagal).
+
 ---
 
 <a id="f60"></a>
 
 ### #60 — `apply_changesets_cargo.sh` error sintaks, sehingga bump versi CLI di release selalu gagal
 
-**Tingkat:** Tinggi · **Status:** Terbuka · **Area:** release · **File:** `tools/apply_changesets_cargo.sh:100-102`, `.github/workflows/release.yaml:60-65`
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 7) · **Area:** release · **File:** `tools/apply_changesets_cargo.sh:100-102`, `.github/workflows/release.yaml:60-65`
 
 **Deskripsi:** quoting di baris `awk` tidak seimbang, jadi bash tidak bisa mem-parse skrip ini sama sekali. Bug ini sudah ada sejak baseline putaran 1 (`714c89f`) tapi tidak pernah terlihat, karena release selalu gagal lebih awal di `changeset version` (#22). Setelah #22 diperbaiki dan changeset dipindah ke `.changeset-polyglot/` (berisi 2 changeset dengan `justui_cli`/`just_ui_core`), step "Apply Rust CLI version bump" akan dijalankan dan gagal.
 
@@ -1069,13 +1117,19 @@ tools/apply_changesets_cargo.sh: line 107: unexpected EOF while looking for matc
 exit 2
 ```
 
+**Pembaruan putaran 7: selesai**
+
+Diperbaiki di `65deca0`:
+- Interpolasi bash mentah di dalam string awk diganti dengan passing parameter variabel `awk -v new_ver="$NEW_VERSION" 'BEGIN{done=0} /^version = "[0-9]+\.[0-9]+\.[0-9]+"/ && !done { print "version = \"" new_ver "\""; done=1; next } {print}'`.
+- `bash -n tools/apply_changesets_cargo.sh` kini exit 0 tanpa error sintaks maupun unbalanced quoting.
+
 ---
 
 <a id="f62"></a>
 
 ### #62 — CI di-pin ke Bun 1.3.11, yang tidak bisa membaca `bun.lock` (lockfileVersion 2)
 
-**Tingkat:** Tinggi · **Status:** Terbuka · **Area:** CI docs · **File:** `.github/workflows/ci.yaml:59`, `.github/workflows/release.yaml:30`, `bun.lock:2`
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 7) · **Area:** CI docs · **File:** `.github/workflows/ci.yaml:59`, `.github/workflows/release.yaml:30`, `bun.lock:2`
 
 **Deskripsi:** perbaikan #24 (`8ee3139`) mem-pin `bun-version: "1.3.11"`. Masalahnya, `bun.lock` di root ditulis dengan format `lockfileVersion: 2` oleh Bun yang lebih baru (sudah sejak `a8b84fa`, sebelum audit). Bun 1.3.11 menolak format itu, dan `--frozen-lockfile` membuat install gagal. Semua step `nextjs-ci` setelahnya (lint, type-check, vitest, build, E2E) di-skip.
 
@@ -1117,6 +1171,13 @@ error: lockfile had changes, but lockfile is frozen
 Diverifikasi ulang: **belum berubah**. `ci.yaml:59` dan `release.yaml:30` masih `bun-version: "1.3.11"`, dan `bun.lock` masih `lockfileVersion: 2`. Di [run 37124586732](https://github.com/infinitedim/justui/actions/runs/37124586732), `nextjs-ci` gagal di step "Install Dependencies" dan semua step docs setelahnya di-skip.
 
 Tambahan: Bun **1.3.14** (versi di sandbox putaran 6) juga menolak lockfile ini dengan `error: Unknown lockfile version`, jadi pin harus dinaikkan ke versi Bun yang benar-benar menulis `bun.lock` ini (catat di `packageManager` di `package.json`, yang saat ini belum ada).
+
+**Pembaruan putaran 7: selesai**
+
+Diperbaiki di `65303ba`:
+- CI (`.github/workflows/ci.yaml` dan `release.yaml`) kini di-pin ke Bun 1.4.0 (`bun-version: "1.4.0"`).
+- Root `package.json` kini mendeklarasikan `"packageManager": "bun@1.4.0"`.
+- `bun install --frozen-lockfile` membaca `bun.lock` (lockfileVersion: 2) dengan sukses dan tanpa peringatan atau error parser.
 
 ---
 
@@ -1312,7 +1373,7 @@ Tes untuk fitur ini membuat CI merah di runner tanpa Dart. Lihat [#61](#f61).
 
 ### #64 - `justui` panic (exit 101) saat stdout ditutup lebih awal
 
-**Tingkat:** Rendah · **Status:** Baru (putaran 6) · **Area:** CLI Rust · **File:** `packages/cli/src/commands/view.rs` (dan command lain yang memakai `println!`)
+**Tingkat:** Rendah · **Status:** Selesai (putaran 7) · **Area:** CLI Rust · **File:** `packages/cli/src/commands/view.rs` (dan command lain yang memakai `println!`)
 
 **Deskripsi:** output dicetak dengan `println!`, yang panic kalau pipe ditutup pembaca (misalnya `| head`). Proses keluar dengan kode 101 dan mencetak pesan panic ke stderr.
 
@@ -1331,6 +1392,12 @@ failed printing to stdout: Broken pipe (os error 32)
 **Dampak:** skrip yang memotong output (`| head`, `| grep -m1`) melihat exit non-zero dan pesan panic. Kosmetik, tapi membingungkan sekarang setelah exit code CLI bermakna ([#10](#f10)).
 
 **Saran perbaikan:** tangani `BrokenPipe` di `main` (misalnya tulis lewat `writeln!(io::stdout().lock(), ...)` dan keluar diam-diam dengan kode 0 saat `ErrorKind::BrokenPipe`), atau reset `SIGPIPE` ke default di awal `main` pada Unix.
+
+**Pembaruan putaran 7: selesai**
+
+Diperbaiki di `86aa6e5`:
+- `packages/cli/src/utils/logger.rs` kini menulis ke stdout melalui buffer handler yang menangani `ErrorKind::BrokenPipe` secara senyap dan keluar dengan kode 0 (`std::process::exit(0)`).
+- Panic hook kustom di `packages/cli/src/main.rs` menangkap dan menekan Broken pipe / os error 32, mencegah pencetakan stack trace panic yang tidak diinginkan ke stderr saat pipa output ditutup lebih awal oleh pembaca (seperti `| head`).
 
 ---
 
