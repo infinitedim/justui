@@ -97,8 +97,8 @@ fi
 # Update hanya baris pertama `version = "..."` di Cargo.toml
 # Menggunakan temp file untuk kompatibilitas macOS dan Linux
 TEMP_FILE=$(mktemp)
-awk 'BEGIN{done=0} /^version = "[0-9]+\.[0-9]+\.[0-9]+"/ && !done {
-  print "version = \"'"$NEW_VERSION"\""; done=1; next
+awk -v new_ver="$NEW_VERSION" 'BEGIN{done=0} /^version = "[0-9]+\.[0-9]+\.[0-9]+"/ && !done {
+  print "version = \"" new_ver "\""; done=1; next
 } {print}' "$CARGO_TOML" > "$TEMP_FILE"
 
 mv "$TEMP_FILE" "$CARGO_TOML"
