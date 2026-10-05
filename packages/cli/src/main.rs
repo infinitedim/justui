@@ -262,6 +262,15 @@ enum Commands {
 use commands::preset::PresetSubcommands;
 
 fn main() {
+    let default_panic = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        let payload = info.to_string();
+        if payload.contains("Broken pipe") || payload.contains("os error 32") {
+            process::exit(0);
+        }
+        default_panic(info);
+    }));
+
     let cli = Cli::parse();
     utils::logger::init(cli.quiet, cli.no_color);
     let auto_yes = cli.auto_yes;
@@ -290,7 +299,7 @@ fn main() {
         None => {
             use clap::CommandFactory;
             Cli::command().print_help().ok();
-            println!();
+            utils::logger::stdout("");
             return;
         }
     };
@@ -354,4 +363,7 @@ fn main() {
         utils::logger::error(&e.to_string());
         process::exit(1);
     }
+
+    use std::io::Write;
+    let _ = std::io::stdout().flush();
 }

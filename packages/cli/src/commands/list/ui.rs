@@ -154,7 +154,10 @@ pub(super) fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Even
 
                         guard.leave_temporarily()?;
 
-                        println!("\nInstalling {} component(s)...", resolved_components.len());
+                        crate::utils::logger::stdout(&format!(
+                            "\nInstalling {} component(s)...",
+                            resolved_components.len()
+                        ));
 
                         let pb_files = if total_files > 0 {
                             let pb = indicatif::ProgressBar::new(total_files as u64);

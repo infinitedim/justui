@@ -1,5 +1,5 @@
 use anyhow::Result;
-use std::io::{self, Write};
+use std::io::{self, IsTerminal, Write};
 
 use crate::config::JustUIConfig;
 use crate::registry::RegistryClient;
@@ -146,11 +146,21 @@ pub fn run(
 
         logger::stdout(&"─".repeat(48));
 
-        if file_idx < total_files - 1 && !auto_yes {
+        if file_idx < total_files - 1
+            && !auto_yes
+            && io::stdout().is_terminal()
+            && io::stdin().is_terminal()
+        {
             print!("Show next file? [Y/n]: ");
-            io::stdout().flush().unwrap_or(());
+            if let Err(e) = io::stdout().flush() {
+                if e.kind() == io::ErrorKind::BrokenPipe {
+                    std::process::exit(0);
+                }
+            }
             let mut input = String::new();
-            io::stdin().read_line(&mut input).unwrap_or(0);
+            if io::stdin().read_line(&mut input).is_err() {
+                break;
+            }
             let trimmed = input.trim();
             if trimmed.eq_ignore_ascii_case("n") {
                 break;
