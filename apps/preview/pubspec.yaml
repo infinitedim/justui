@@ -32,7 +32,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^2.0.0
   just_ui_core:
     path: ../../packages/core
   just_ui_tokens:

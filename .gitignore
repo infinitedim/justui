@@ -539,3 +539,6 @@ $RECYCLE.BIN/
 .source
 
 # End of https://www.toptal.com/developers/gitignore/api/nextjs,vercel,react,sublimetext,visualstudiocode,node,yarn,bower,macos,powershell,windows,linux,vim,dotenv,typings
+
+# Agent scratch output: plans, briefs, reviews, screenshots, audit reports
+.agents/tmp/
