@@ -1,145 +1,226 @@
 ---
 trigger: glob
 globs: "apps/docs/**"
-description: "Next.js docs site rules: structure, React and TypeScript, i18n, ASCII, demos, snippets, SEO and tests."
+description: "Docs site rules: TypeScript, React and Next.js practice, structure, i18n, ASCII, demos, snippets, SEO, tests and tooling."
 ---
 
 # Docs site (`apps/docs`)
 
 Next.js 16 (App Router, typed routes), React 19, Fumadocs, Tailwind CSS 4,
-Bun, Vitest, Playwright. Deployed on Vercel.
+Bun, Vitest, Playwright, zod 4. Deployed on Vercel. Each rule says why; when a
+lint or `tsc` enforces it, trust the tool over your reading of the prose.
 
-## Structure
-
-- Routes: `src/app/[lang]/...` (`page.tsx`, `docs/[[...slug]]`, `components`,
-  `studio`). Content: `content/docs/{en,id}/`.
-- UI code: `src/components/{atoms,molecules,organisms,templates}`,
-  `providers/`, `docs/` (components used inside MDX).
-- Every atom, molecule and organism is a folder with exactly:
-  `<name>.tsx`, `<name>.types.ts` (props and public types), `index.ts`
-  (re-exports). Extra files (helpers, generators, tests data) are allowed
-  beside them. Folders that miss this shape are legacy; fix them when you
-  change them.
-- Classification: atom = one element, no children components from this repo;
-  molecule = a few atoms with one job; organism = a section with its own
-  state or data; template = page layout.
-- Shared logic goes in `src/lib/`. Use `cn` from `src/lib/cn.ts` for class
-  merging.
-
-## React
-
-- New components are Server Components by default. Add `'use client'` only to
-  the smallest leaf that needs state, effects, refs or browser APIs, and add a
-  one-line comment saying why. Existing client components stay as they are
-  unless the task is about them.
-- The project targets React Compiler. Write compiler-safe code: no mutation of
-  props, state or values read during render; no reading `ref.current` during
-  render; no conditional hooks. Do not add `useMemo`/`useCallback` for
-  performance unless you measured a problem.
-- Effects only for syncing with outside systems, never to derive state.
+Legacy code that breaks a rule carries an
+`// eslint-disable-next-line <rule> -- legacy: fix when touched` (or a
+file-level `/* eslint-disable <rule> -- legacy ... */`). When you change that
+code, fix it and remove the comment. Never add a new legacy disable.
 
 ## TypeScript
 
-- `strict` is on. `any` is forbidden (lint error). Use `unknown` plus a zod
-  schema or a type guard.
-- Index access may be `undefined` (`noUncheckedIndexedAccess`). Handle it;
-  do not silence it with `!`.
-- No `as` casts to bypass typed routes or types. Build routes with the helpers
-  in `src/lib/i18n.ts`.
-- Exported functions and components get TSDoc when the name does not explain
-  the contract.
+- `strict` plus `noUncheckedIndexedAccess`, `noFallthroughCasesInSwitch`,
+  `verbatimModuleSyntax`. Handle `undefined` from index access; never
+  silence it. Why: parsers and data maps are where runtime crashes start.
+- `any` is banned (`no-explicit-any`). Use `unknown` plus zod or a type guard.
+- No non-null `!` outside tests (`no-non-null-assertion`).
+- No `as` type assertions (`consistent-type-assertions`, `never`). `as const`
+  is fine. DOM narrowing that cannot be written as a guard needs
+  `// eslint-disable-next-line ... -- <reason>`. Never assert to bypass typed
+  routes; use the helpers in `src/lib/i18n.ts`. Prefer `satisfies`.
+- Object shapes and props are `interface`; unions, mapped and utility types
+  are `type` (`consistent-type-definitions`). Why: it matches the 85
+  interfaces already in the code.
+- No `enum`. Use an `as const` object and derive the union:
+  `type Preset = (typeof presets)[number]`. Why: no runtime surprises,
+  strippable syntax.
+- Exported functions in `src/lib` declare return types
+  (`explicit-module-boundary-types`). Why: an implementation change cannot
+  silently change a shared contract.
+- Type-only imports use `import type` (`consistent-type-imports`). Import
+  order is enforced by `import/order`; let `lint:fix` sort it.
+- Type-aware lint is on (`recommendedTypeChecked`) plus
+  `no-floating-promises`, `no-misused-promises`,
+  `switch-exhaustiveness-check`, `prefer-nullish-coalescing`. Mark
+  intentional fire-and-forget with `void`.
+- Expected failures (bad input, missing data, fetch failure) return
+  `Result<T, E>` from `src/lib/result.ts`
+  (`{ ok: true, value } | { ok: false, error }`). Throw only for bugs. Why:
+  the caller is forced to handle the failure, and a bad URL never becomes a 500.
+
+## Validation and env
+
+- Everything crossing a trust boundary is parsed with zod (search params,
+  `postMessage`, storage, fetched JSON, route handler input). Server code
+  imports `zod`; client components import `zod/mini`. Why: same safety,
+  smaller client bundle.
+- Env vars are read only in `src/lib/env.ts`, parsed with zod and exported
+  typed (`no-restricted-properties` bans `process.env` elsewhere; config files
+  are exempt). Reference `NEXT_PUBLIC_*` vars there by literal name. Why: a
+  missing or misspelled env fails the build, and Next only inlines literal
+  `process.env.NEXT_PUBLIC_X` reads.
+
+## Modules and naming
+
+- Named exports only (`import/no-default-export`), except files Next or a
+  tool requires as default: `page`, `layout`, `not-found`, `error`, `loading`,
+  `opengraph-image`, `sitemap`, `robots`, `*.config.*`.
+- Each component folder has an `index.ts` re-export. No higher-level barrels
+  (`atoms/index.ts`, `components/index.ts`). Why: deep barrels pull whole
+  trees into client bundles and hide import cycles.
+- Imports across folders use `@/`. Relative imports only inside the same
+  folder (`no-restricted-imports` bans `../`).
+- Files kebab-case, components PascalCase, hooks `use-*.ts` exporting
+  `useX`, functions and variables camelCase, `UPPER_SNAKE` only for true
+  module-level constants.
+
+## Structure
+
+- Routes: `src/app/[lang]/...` (`page.tsx`, `docs/[[...slug]]`,
+  `components`, `studio`). Content: `content/docs/{en,id}/`.
+- UI: `src/components/{atoms,molecules,organisms,templates}`, `providers/`,
+  `docs/` (components used inside MDX). Atomic design stays.
+- Every atom, molecule and organism is a folder with exactly
+  `<name>.tsx`, `<name>.types.ts` (props and public types), `index.ts`.
+  Extra helpers are allowed beside them. Folders missing this shape are
+  legacy; fix them when you change them.
+- Classification: atom = one element, no child components from this repo;
+  molecule = a few atoms with one job; organism = a section with its own
+  state or data; template = page layout.
+- Shared logic in `src/lib/`. Class merging with `cn` from `src/lib/cn.ts`.
+- Component files stay under 200 lines (`max-lines`), functions under 80
+  lines including JSX (`max-lines-per-function`). This overrides the general
+  400/60 in `workflow.md` for `apps/docs`. Why: JSX makes 60 too tight and
+  400 too loose for one component.
+- Exports from `src/lib` have TSDoc (`jsdoc/require-jsdoc` on `src/lib`).
+  Components get TSDoc only when the name does not explain the contract.
+
+## React
+
+- New components are Server Components. `'use client'` goes on the smallest
+  leaf that needs state, effects, refs or browser APIs, with a one-line
+  comment saying why. When you touch an existing client component, push the
+  boundary down if you can. Why: 70% of the components ship JS today.
+- React Compiler is on. Code must be compiler-safe: no mutation of props,
+  state or values read during render, no `ref.current` during render, no
+  conditional hooks. `react-hooks` v7 `recommended` enforces this, and
+  `exhaustive-deps` is an error.
+- Do not add `useMemo`/`useCallback`. Remove existing ones in files you
+  change, unless the value is an effect dependency whose identity matters.
+- Effects only sync with outside systems, never derive state.
+- State: shareable state lives in the URL (Studio), local state in
+  `useState`, Context only for state many distant components read.
+- Variants: `cn` plus a typed map,
+  `const sizes = { sm: '...', md: '...' } satisfies Record<Size, string>`.
+  No `cva` or similar. Why: no dependency and the compiler checks every key.
+
+## Next.js
+
+- Pages render statically at build. External data (GitHub stars) uses
+  `fetch` with an explicit `revalidate`. No dynamic rendering without
+  approval. Why: fast, cheap, CDN cached.
+- No Server Actions (`'use server'` is banned by lint). Why: the site has no
+  mutations; actions are public endpoints.
+- Route handlers (`install.sh`, `install.ps1`, `api/search`): export their
+  route config explicitly, set `Content-Type` and `Cache-Control`, parse
+  query params with zod and answer 400 on bad input, and have a Vitest test.
+- Every `[lang]` route validates `lang` with `isLocale` and calls
+  `notFound()` otherwise, and exports `generateStaticParams` from
+  `localeStaticParams`.
+- Every page exports `generateMetadata` with a unique title and description,
+  `alternates.languages` for both locales, and Open Graph data.
+- Locale-less paths redirect via `next.config.ts` `redirects()`. No
+  `proxy.ts` (formerly middleware) without approval: it makes pages dynamic.
+- CSP keeps `'unsafe-inline'` in `script-src` only for theme and preset
+  bootstrapping. New code must not depend on it. See `security.md`.
 
 ## Styling
 
-- Tailwind utilities mapped to JustUI tokens in `src/app/globals.css`
-  (`bg-background`, `text-foreground`, `border-border`, `bg-accent`,
-  `rounded-md`, `shadow-sm`, ...). Colors, fonts, radii and shadows must come
-  from these tokens (see `design.md`). Arbitrary layout values
-  (`w-[13.5rem]`) are allowed.
-- Both presets must work: `.preset-default` and `.theme-neobrutalism`, each in
-  light and dark. Never style only one.
-- Icons: `lucide-react` only. Brand marks (GitHub) are local SVG components.
-  Do not import `react-icons` or any other icon set.
+- Tailwind utilities mapped to JustUI tokens in `src/app/globals.css`.
+  Colors, fonts, radii and shadows come from tokens (see `design.md`);
+  arbitrary layout values (`w-[13.5rem]`) are allowed.
+- Class order follows `prettier-plugin-tailwindcss`; CI runs
+  `prettier --check`.
+- Both presets in light and dark must work: `.preset-default` and
+  `.theme-neobrutalism`.
+- Icons: `lucide-react` only. Brand marks are local SVG atoms.
 
 ## i18n
 
-- Locales come from `src/lib/i18n.ts` (`en`, `id`). Never hardcode a locale
-  list. `cn` is an inactive placeholder; do not add content there.
-- Every user-facing change in EN ships with the ID version in the same
-  change: MDX in `content/docs/id/`, UI strings in `src/lib/*-translations.ts`.
-- No user-facing strings hardcoded in components; put them in the
-  translation modules.
-- Indonesian register: use "kamu", casual-professional. Keep technical terms
-  in English (widget, preset, token, build, commit). When you edit an ID file
-  that still uses "Anda", convert the whole file so one page never mixes both.
+- Locales come from `src/lib/i18n.ts` (`en`, `id`). `cn` is an inactive
+  placeholder.
+- UI strings live in `src/lib/*-translations.ts` as one dictionary interface
+  per module and `satisfies Record<Locale, Dict>`. Why: a missing ID key
+  fails `tsc`, not a user.
+- Every EN change ships its ID version in the same change (MDX in
+  `content/docs/id/`, strings in the translation modules). No user-facing
+  strings hardcoded in components.
+- Indonesian register: "kamu", casual-professional, technical terms in
+  English. When you edit an ID file still using "Anda", convert the whole file.
 - No marketing filler in either language ("seamless", "unlock",
   "revolutionary", "next-level", "effortless").
 
 ## ASCII only
 
 `test/ascii-purity.test.ts` fails on any byte above 127 in `src/`,
-`content/` and `test/`. Use:
-- `-` or `--` instead of dashes, straight quotes `'` and `"`, `...` instead of
-  an ellipsis character, `x` instead of a multiplication sign.
-- In JSX and MDX text: HTML entities (`&mdash;`, `&rarr;`, `&times;`) when the
-  typographic character matters. In TS strings: `\u2014` escapes.
-- Key names as text: `Cmd`, `Ctrl`, `Shift`, not symbols.
+`content/` and `test/`. Use `-`/`--`, straight quotes, `...`, `x`. In JSX and
+MDX use HTML entities (`&mdash;`, `&rarr;`); in TS strings `\u2014`. Key names
+as text: `Cmd`, `Ctrl`, `Shift`.
 
-## Code snippets in docs
+## MDX and code snippets
 
-Every Dart snippet (MDX, catalog cards, Studio export, `code-generators.ts`)
-must compile against the real API:
-- Check every class, constructor and parameter name in `packages/core` before
-  writing it. Never invent parameters.
-- Imports must match what the CLI installs into a user project (paths from
-  the default `justui.config.yaml`), never `package:just_ui_core` or
-  `package:just_ui_tokens`, which users do not have.
+- MDX may only use components registered in the single MDX component map
+  (passed to `<MDXContent components>`). Register new ones there. Why: keeps
+  per-page bundles under control.
+- Every Dart snippet (MDX, catalog cards, Studio export,
+  `code-generators.ts`) must compile against the real API: check class,
+  constructor and parameter names in `packages/core`, never invent parameters.
+  Imports match what the CLI installs (default `justui.config.yaml` paths),
+  never `package:just_ui_core` or `package:just_ui_tokens`.
 - CLI commands shown to users must exist in `packages/cli/src/main.rs` with
   those exact flags.
+- A Vitest check validates snippet names on every PR; a separate CI job runs
+  `dart analyze` on the extracted snippets. Both must pass.
 
 ## Interactive demos
 
-- Direction: component demos render the real Flutter components (Flutter web
-  embed) instead of React look-alikes. Building the embed is red-zone work:
-  plan first, because it changes CSP (`wasm-unsafe-eval`, frames) and bundle
-  size.
+- Direction: demos render the real Flutter components (Flutter web embed).
+  Building the embed is red-zone work (CSP, frames, bundle size): plan first.
 - Do not add new React mocks to `src/components/organisms/simulators/`.
-  Existing mocks are legacy until replaced; when you must touch one, keep its
-  values sourced from the tokens that mirror `packages/core`.
-- Messages between the page and the stage use `src/lib/stage-bridge.ts`.
-  Every incoming message is parsed with the zod schema and checked for origin.
-  Add new event types to the schema; never read `event.data` unparsed.
+  When you must touch one, keep its values sourced from the tokens that
+  mirror `packages/core`.
+- Page/stage messages use `src/lib/stage-bridge.ts`: origin check and zod
+  parse on every incoming message.
 - Studio color math (`src/lib/theme/color-resolver.ts`) must match
-  `packages/tokens`. When you change one, add a test that compares outputs for
-  the same seed.
-
-## Data
-
-- Component facts come from `src/lib/components.generated.ts`. Regenerate
-  with `bun run generate:components`; check drift with
-  `bun run generate:components -- --check`.
-
-## Routing and SEO
-
-- Every `[lang]` route validates `lang` with `isLocale` and calls `notFound()`
-  otherwise, and exports `generateStaticParams` from `localeStaticParams`.
-- Every page exports `generateMetadata` with a unique title and description,
-  `alternates.languages` for both locales, and Open Graph data.
-- Locale-less paths redirect via `next.config.ts` `redirects()`. There is no
-  middleware; do not add one without approval.
+  `packages/tokens`; a change to one adds a test comparing both for one seed.
+- Component facts come from `src/lib/components.generated.ts`; regenerate
+  with `bun run generate:components`, check with `-- --check`.
 
 ## Tests
 
-- Unit and component tests: Vitest in `test/` (`bun run test`).
-- E2E: Playwright in `e2e/` (`bun run test:e2e`, runs against `bun run start`).
-- Visual snapshots: every new page or component demo gets a Playwright
-  `toHaveScreenshot` test for default and neobrutalism, light and dark.
-  Baselines live next to the spec and are committed. Update a baseline only
-  when the visual change is intended, and say so in the summary.
+- Unit and component tests in `test/` (Vitest). Query by role and accessible
+  name first; `data-testid` only as a last resort. Why: the test then also
+  checks accessibility.
+- No network in unit tests. Keep fetching separate from logic and test the
+  logic as pure functions.
+- `src/lib` has a minimum coverage threshold in `vitest.config.ts`. Do not
+  lower it; add tests.
+- Type contracts for `components.generated.ts` and the i18n helpers are
+  checked with Vitest `expectTypeOf`.
+- E2E in `e2e/` (Playwright, against `bun run start`). Main pages run
+  `@axe-core/playwright` in all 4 preset/theme combinations, and dialogs,
+  search and Studio have keyboard tests (tab order, focus return, Escape).
+- Visual snapshots: every new page or demo gets `toHaveScreenshot` for the 4
+  combinations. Global `maxDiffPixelRatio: 0.01`, animations disabled, fonts
+  from the bundle. Update a baseline only for an intended change and say so.
 - Bug fix = failing test first (see `workflow.md`).
 
-## Performance
+## Tooling and dependencies
 
-- No new client-side dependency without approval (see `security.md`).
+- ESLint + Prettier. Do not switch tools.
+- Bun version comes from `packageManager` in `package.json`; CI reads it.
+- Version ranges stay caret with the lockfile committed. Renovate opens
+  grouped weekly updates; do not bump versions by hand outside a task.
+- No new dependency without approval (see `security.md`).
+- Each route has a JS budget checked in CI after `bun run build`. If your
+  change breaks a budget, report it instead of raising the budget.
 - Images via `next/image`, fonts via `next/font`. No layout shift from theme
-  or preset switching (both are applied before hydration).
+  or preset switching.
