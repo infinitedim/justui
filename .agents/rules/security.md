@@ -1,85 +1,157 @@
 ---
 trigger: model_decision
-description: "Apply when handling external input, URLs, postMessage, storage, headers or CSP, secrets, dependencies, tool versions, CI, or the CLI install/upgrade/registry paths."
+description: "Apply when handling external input (registry JSON, config, URLs, postMessage, storage), file writes into user projects, headers or CSP, secrets, or any red-zone path."
 ---
 
 # Security
 
+Three files cover security. This one: threat model, red zones, input and
+output safety, web hardening, findings. `security-supply-chain.md`: CI,
+release, dependencies, secrets in the repo. `security-agent.md`: how you, the
+agent, treat untrusted content. Each rule says why.
+
+## Threat model
+
+What we protect, in order:
+1. The machines and projects of people who run the `justui` CLI. The CLI
+   downloads code, writes files and edits `pubspec.yaml`, so a bad registry
+   or a bad release reaches every user.
+2. The release pipeline and the maintainer's GitHub account. Whoever controls
+   them controls (1).
+3. Visitors of the docs site (XSS, clickjacking, script injection).
+4. The developer machine the agent runs on (credentials, git config, shell).
+
+Who attacks, and how:
+- A compromised or malicious registry, including a custom `registry_url`
+  that a cloned project's `justui.config.yaml` points to.
+- A stolen token or moved tag that publishes a fake release (the Trivy
+  incident, March 2026: 76 of 77 tags force-pushed with a leftover token).
+- A hijacked dependency (npm worms such as Shai-Hulud, compromised actions).
+- Pull requests, issues and fetched content that carry instructions for an
+  agent, including hidden Unicode.
+
 ## Red zones (plan + approval + tests before any edit)
 
 - CLI: `packages/cli/src/commands/{add,update,diff,upgrade}.rs`,
-  `src/registry.rs`, `src/utils/{pubspec_editor,theme_editor,import_rewriter,constructor_transpiler}.rs`
-- Install scripts: `packages/cli/install/install.sh`, `install.ps1`, and the
-  docs routes that serve them: `apps/docs/src/app/install.sh/route.ts`,
-  `apps/docs/src/app/install.ps1/route.ts`
+  `src/registry.rs`, `src/config.rs`, the path helper (`safe_join`),
+  `src/utils/{pubspec_editor,theme_editor,import_rewriter,constructor_transpiler}.rs`
+- Install scripts `packages/cli/install/install.{sh,ps1}` and the docs routes
+  that serve them (`apps/docs/src/app/install.{sh,ps1}/route.ts`)
 - Registry and checksums: `registry/`, `tools/generate_checksums.dart`
-- Headers and CSP: `apps/docs/next.config.ts` `headers()`, `apps/docs/vercel.json`
-- CI and release: `.github/workflows/`, `tools/apply_changesets*`,
-  `.cargo/audit.toml`
-- The inline preset script in `apps/docs/src/app/layout.tsx`
+- Docs: `next.config.ts` `headers()`, `vercel.json`, the inline preset
+  script in `src/app/layout.tsx`, `src/lib/env.ts`, `src/lib/stage-bridge.ts`,
+  `public/.well-known/security.txt`
+- CI, release and repo config: `.github/`, `tools/apply_changesets*`,
+  `deny.toml`, `rust-toolchain.toml`, `bunfig.toml`, `renovate.json`
+- Agent instructions: `AGENTS.md`, `GEMINI.md`, `.agents/` (see
+  `security-agent.md`)
 
 ## Never weaken a check
 
 Do not remove, skip, loosen or bypass: checksum or signature verification,
-binary magic-byte or architecture checks, input validation, origin checks,
-CSP directives, `cargo audit`, lint or type rules. If a check blocks you,
-stop and report. Making something "work" by weakening a check is a failed
-task.
+binary magic-byte, architecture or size checks, input validation, origin
+checks, trust prompts, CSP directives or security headers, `cargo deny`,
+secret scanning, zizmor, lint or type rules, or the tests that lock any of
+these. If a check blocks you, stop and report. Making something "work" by
+weakening a check is a failed task.
 
-## External input
+## Registry input (CLI)
 
-Everything that crosses a trust boundary is parsed before use:
-URL path segments (`[lang]`, slugs), search params (Studio state), form input,
-`postMessage` data, `localStorage`/`sessionStorage`, fetched JSON, registry
-JSON, user `pubspec.yaml` and `justui.config.yaml`.
+Treat everything from a registry as hostile, including the default one.
+Validate before any value reaches a path, a URL, a file or `pubspec.yaml`:
 
-- Web: parse with a zod schema or an explicit whitelist (like
-  `src/lib/theme/url-serializer.ts`). Invalid input falls back to a default
-  or returns `notFound()`. Never a 500.
-- Storage access is wrapped in try/catch; storage can throw or be empty.
-- `postMessage`: check `event.origin` and parse with the schema in
-  `src/lib/stage-bridge.ts`. Send with an explicit target origin. Do not add
-  new `'*'` target origins; the existing `'*'` fallback for opaque origins in
-  `stage-bridge.ts` gets revisited when the Flutter embed lands.
-- Rust: validate before writing anything to the user's disk; paths stay
-  inside the project root (no `..` escape after normalization).
-- No `dangerouslySetInnerHTML` with anything that is not a constant string you
-  wrote. No `eval`, `new Function`, or HTML built from user input.
+- Component names match `^_?[a-z][a-z0-9_-]*$`. File names match
+  `^[a-z0-9_]+\.dart$`: no separators, no `..`, never absolute. Registry
+  paths are relative, use `/` only, and contain no `..` segment.
+- The final target path is built only through `safe_join` and must stay
+  inside the configured install directory (`clippy::join_absolute_paths`
+  catches the classic `Path::join` mistake). Why: `Path::join` with an
+  absolute or `..` path silently escapes the project.
+- Pub dependencies requested by a component: name matches
+  `^[a-z_][a-z0-9_]*$`, constraint is a plain semver constraint (no git, path,
+  url, hosted, newline or quote). Show the full list and ask before editing
+  `pubspec.yaml`; non-TTY needs `-y`. Why: the value lands in YAML, so an
+  unescaped string can add arbitrary dependencies.
+- Registry dependencies (`registryDependencies`) must name components that
+  exist in the same index; detect cycles.
+- Downloads have a size cap and a timeout; `index.json` is rejected if it is
+  not valid against the expected shape.
+- The default registry is the release tag that matches the CLI version
+  (`.../v<version>/registry`), never `main`. Why: release tags are immutable,
+  `main` is not, and the components must match the CLI that installs them.
+- A non-default `registry_url` shows the URL and asks for trust once per URL.
+  Trust is stored in a user-level file (not in the project), and non-TTY runs
+  need `--trust-registry`. Only `https://`, local paths and localhost are
+  accepted. Why: a cloned project must not be able to switch the code source
+  silently.
 
-## CSP, headers, secrets
+## Files and processes on the user's machine
 
+- Writes into a user project go through `safe_join` and are atomic (see
+  `rust-cli.md`). Never write outside the project root, never follow a
+  symlink out of it.
+- The CLI never runs shell commands built from registry or config values,
+  and never runs `flutter pub get` or similar without the user asking.
+- Backups (`.bak`) stay next to the original and are mentioned in output.
+
+## Web input (docs)
+
+Everything that crosses a trust boundary is parsed before use: URL segments
+(`[lang]`, slugs), search params (Studio state), route handler query params,
+`postMessage` data, `localStorage`/`sessionStorage`, fetched JSON.
+
+- Parse with zod or an explicit whitelist (like
+  `src/lib/theme/url-serializer.ts`). Invalid input falls back to a default,
+  `notFound()` or a 400. Never a 500.
+- Storage access is wrapped in try/catch; it can throw or be empty.
+- `postMessage`: check `event.origin`, parse with the schema in
+  `src/lib/stage-bridge.ts`, send with an explicit target origin. No new
+  `'*'` targets; the opaque-origin fallback is revisited with the Flutter embed.
+- No `dangerouslySetInnerHTML` except constant strings you wrote. No `eval`,
+  `new Function`, or HTML built from input.
+- `/api/search`: query length is capped and over-long queries get a 400; the
+  endpoint is rate limited (Vercel WAF or Upstash, see setup tasks). Keep the
+  CDN cache headers.
+
+## Headers and CSP
+
+- A Vitest test locks the security headers and the CSP baseline: every
+  header present, and no new source, scheme or keyword in any directive
+  without changing that test. A CSP change therefore shows up as a test diff
+  that needs approval.
 - Do not add domains, `unsafe-*` keywords, inline scripts or new
-  `frame-src`/`connect-src` entries without approval. If a feature needs one,
-  put the exact CSP diff in the plan.
-- `'unsafe-inline'` in `script-src` exists only for theme and preset
-  bootstrapping. Do not rely on it for new code.
-- Never hardcode secrets, tokens or keys. Read them from typed env. Never log
-  env values or full request headers. Never commit `.env*` files.
+  `frame-src`/`connect-src` entries without approval; put the exact CSP diff
+  in the plan.
+- `'unsafe-inline'` in `script-src` stays (App Router inline RSC payload and
+  the preset bootstrap need it without nonces; nonces would make every page
+  dynamic). New code must not rely on it.
+- `/.well-known/security.txt` exists with `Contact` (the GitHub advisory
+  page) and `Expires` under one year away. A test fails 30 days before
+  `Expires`; renewing it is a normal task.
 
-## Supply chain
+## Secrets
 
-- New dependencies (npm, pub, cargo) and version bumps need approval. The
-  plan names the package, version, why, size or license impact, and the
-  no-dependency alternative.
-- `packages/core` and `packages/tokens` never get third-party dependencies.
-- Prefer exact or caret-locked versions already used in the repo. Commit the
-  lockfile change in the same commit as the manifest change.
-- Install scripts and routes that serve them must point to a pinned release,
-  not a moving branch, once releases publish checksums. Until then, do not
-  make them fetch from additional locations.
-- Never add `ignore` entries to `.cargo/audit.toml`, `overrides` or
-  `resolutions` to hide a vulnerable package. Report the advisory instead.
+- Never hardcode secrets, tokens or keys. Read them through `src/lib/env.ts`
+  (docs) or the environment (CLI, CI).
+- Never print or store a secret: not in logs, error messages, CLI `--json`
+  output, test snapshots, artifacts, commit messages or PR text. Never log
+  env values or full request headers.
+- Never commit `.env*` files. `.env.example` holds names and dummy values
+  only.
+- The CLI sends `GITHUB_TOKEN` only to `api.github.com`, never to a registry.
 
-## Tool versions
+## Framework advisories
 
-Flutter is pinned in `.fvmrc` and CI (`flutter-version`), Bun in CI
-(`bun-version`). Do not change a tool version unless that is the task. When
-it is, change every place together (`.fvmrc`, CI, lockfiles) and verify the
-lockfile still installs with the pinned version.
+A critical or high advisory in a framework the docs or CLI run on (Next.js,
+React, Fumadocs, reqwest, rustls, and similar) is patched within 48 hours,
+bypassing the update cooldown. Example: CVE-2025-55182 (React2Shell, Dec
+2025). Everything else follows the update bot's schedule.
 
 ## Security findings
 
-- Write audit or vulnerability findings only to a git-ignored location
-  (for example `.agents/tmp/`). Never commit them, never paste exploit
-  details into commit messages, PR text, changesets or docs.
-- Report findings to the user in the task summary.
+- Write audit or vulnerability findings only under `.agents/tmp/`
+  (git-ignored). Never commit them; never put exploit details in commit
+  messages, PR text, changesets, docs or issue comments.
+- Report findings to the user in the task summary: what, where, severity,
+  and the proposed fix. Public disclosure happens only through a GitHub
+  security advisory (see `SECURITY.md`).
