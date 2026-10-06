@@ -10,7 +10,7 @@ plan first under the new rules.
    `.agents/rules/*.md` and `.agents/skills/justui-design/SKILL.md`.
 2. Remove `.agents/skills/taste-skill` (replaced by `justui-design`) and
    `.agents/skills/senior-architect` (already marked for removal).
-3. `.gitignore`: add `.agents/tmp/`.
+3. Done: `.gitignore`: add `.agents/tmp/`.
 4. Move `justui-audit.md` out of the repo into `.agents/tmp/` (git-ignored).
    Note: deleting it from HEAD does not remove it from git history. Rewriting
    history needs a force-push, which the rules forbid for the agent; decide
@@ -75,7 +75,6 @@ The agent may not change MCP config, so these are manual.
     (it is the fallback for `NEXT_PUBLIC_SITE_URL` in `src/lib/site.ts`).
     If the config is global, add the dev-server origins of your other
     projects too, or they will be blocked.
-
 22. Disable `browser_run_code_unsafe` in the Playwright tool list (the panel
     shows per-server tool counts, so per-tool toggles are likely; if not,
     the rule in `mcp.md` is the only guard).
@@ -97,8 +96,8 @@ The agent may not change MCP config, so these are manual.
     `script-src`. Nonces need `proxy.ts`, which makes every page dynamic and
     loses static rendering and CDN caching; hashes do not work because the
     inline RSC payload scripts differ per page.
-28. Release checksums and pinned install script URLs (supply chain items in
-    `security.md`).
+28. Release checksums: done (`SHA256SUMS` + attestations in `release.yaml`).
+    Pinned install script URLs: see item 60.
 
 ## Rust rules (questionnaire 2026-10-05; `rust-cli.md` assumes these)
 
@@ -121,7 +120,7 @@ sections, 35 `must_use` suggestions, 7 functions over 100 lines (largest 351).
     test suite. Own commit, no other changes.
 31. Lints: `[workspace.lints]` in the root `Cargo.toml` with
     `rust.unsafe_code = "forbid"`, `clippy.pedantic = { level = "warn",
-priority = -1 }`, deny `unwrap_used`, `panic`, `todo`, `dbg_macro`,
+    priority = -1 }`, deny `unwrap_used`, `panic`, `todo`, `dbg_macro`,
     `print_stdout`, `print_stderr`, `allow_attributes_without_reason`,
     warn `redundant_clone` (it lives in nursery, so pedantic does not turn
     it on), allow `must_use_candidate` (noise). Add
@@ -135,7 +134,7 @@ priority = -1 }`, deny `unwrap_used`, `panic`, `todo`, `dbg_macro`,
     `#![expect(clippy::x, reason = "legacy: fix when touched")]` to each file
     that still fails, so `-D warnings` passes.
 32. `rustfmt.toml` with stable options only: `use_field_init_shorthand =
-true`, `use_try_shorthand = true`. Add `cargo fmt --all --check` to CI.
+    true`, `use_try_shorthand = true`. Add `cargo fmt --all --check` to CI.
 33. Errors: add `thiserror`; typed errors in `registry.rs`, `config.rs` and
     red-zone utils; map them to the exit code table in `main.rs`; `hint:`
     output in the logger; custom panic hook. Add `[profile.release]`
@@ -171,9 +170,8 @@ true`, `use_try_shorthand = true`. Add `cargo fmt --all --check` to CI.
     advisories, licenses, bans, sources). Decide yourself whether the
     existing `RUSTSEC-2025-0141` (bincode) ignore moves to `deny.toml` with
     its justification; the rules forbid agents adding new ignores. Then
-    update `security.md` (red zone and supply chain lines mention
-    `.cargo/audit.toml`) and the Rust row in `AGENTS.md` section 6 to the
-    command list at the end of `rust-cli.md`.
+    update the Rust row in `AGENTS.md` section 6 to the command list at the
+    end of `rust-cli.md` (the security rules already name `deny.toml`).
 43. `cargo machete` in CI. Remove `dialoguer` from `Cargo.toml`: it has zero
     uses in `src/`.
 
@@ -231,3 +229,121 @@ Items 6, 7, 8 and 12 above still apply. These are the additions.
     size columns, so the script may have to read the build manifests.
 56. Route handlers: explicit route config exports, `Content-Type` and
     `Cache-Control`, zod-parsed query params with 400 on bad input.
+
+## Security (questionnaire 2026-10-05, evening; `security*.md` assume these)
+
+Do item 57 first, before every other setup item. Red-zone items need a plan
+and tests first. Items 3 and 4 above (ignore `.agents/tmp/`, move
+`justui-audit.md` there) are confirmed: delete it from HEAD, keep history.
+
+57. (red zone, do first) Registry input validation in `registry.rs`,
+    `add.rs` and `pubspec_editor.rs`, test-first with hostile `index.json`
+    fixtures: component names `^_?[a-z][a-z0-9_-]*$` (the `_shared_*`
+    internals need the leading underscore), file names `^[a-z0-9_]+\.dart$`,
+    relative registry paths without `..`; target paths must stay inside the
+    install dir (a minimal guard now, folded into `safe_join` by item 34);
+    pub dependency name and constraint validation plus a confirmation list
+    before editing `pubspec.yaml`; `registryDependencies` must exist in the
+    index, no cycles; response size cap. Add `clippy::join_absolute_paths`.
+58. (red zone) Default registry URL pinned to the tag of the running CLI
+    (`v` + `CARGO_PKG_VERSION`). Trust prompt for non-default
+    `registry_url`, stored per user (decide the config dir lookup without a
+    new crate if possible, or ask for `dirs`), `--trust-registry` for
+    non-TTY. `justui doctor` prints the registry source and trust state.
+59. Workflows: pin every action to a full SHA with a version comment;
+    `permissions: {}` at the top, minimal per job; `persist-credentials:
+    false`; no caches in `release.yaml`; release builds with
+    `cargo auditable build --release --locked` (install the tool pinned);
+    `bun ci` everywhere; release jobs use `environment: release`; add a
+    `zizmor` job (fail on high). Do this before turning on the SHA-pinning
+    repo setting (item 69) or CI breaks.
+60. (red zone) Attach `install.sh` and `install.ps1` to every release. The
+    docs routes serve `releases/latest/download/install.{sh,ps1}`; replace
+    the `main` URLs in `upgrade.rs`, README and docs snippets with the docs
+    route.
+61. (red zone) Install scripts: run `gh attestation verify <archive> --repo
+    infinitedim/justui` when `gh` is installed and logged in; otherwise
+    print that it was skipped.
+62. Renovate: `renovate.json` with weekly grouped updates for cargo, bun,
+    pub and GitHub Actions, `minimumReleaseAge: "7 days"`, action digests
+    with version comments, vulnerability alerts without delay. Remove the
+    version-update config in `.github/dependabot.yaml` (keep Dependabot
+    alerts and security updates on in settings). `bunfig.toml`:
+    `minimumReleaseAge = 604800` (check the section name in the Bun docs for
+    the pinned Bun version).
+63. Hidden-Unicode check: a small dependency-free Dart script in `tools/`
+    run by CI over all tracked text files; rejects bidi controls and
+    zero-width characters (BOM only allowed at offset 0).
+64. Docs: Vitest test that locks security headers and the CSP baseline;
+    `public/.well-known/security.txt` (Contact = the repo's advisory page,
+    Expires under a year) plus a test that fails 30 days before Expires;
+    `/api/search` query length cap with 400.
+65. Rate limit for `/api/search`: check whether the Vercel plan in use
+    offers WAF rate limiting; if not, Upstash needs a new dependency and an
+    env secret (approval). Pick one and document it in `security.md`.
+66. `SECURITY.md`: GitHub private vulnerability reporting as the only
+    channel (drop `support@justui.dev`), best-effort response wording,
+    supported versions = latest release.
+67. Remove `.agents/skills/cc-skill-security-review` (replaced by
+    `justui-security`).
+
+## Security settings (do these yourself on GitHub and in Antigravity)
+
+68. Settings > General: enable immutable releases. First change
+    `release.yaml` so the release is created as a draft, all assets are
+    uploaded, and only then published: assets cannot be added to a
+    published immutable release. Check how the pinned
+    `softprops/action-gh-release` version orders create and upload.
+69. Settings > Actions: require actions to be pinned to a full-length commit
+    SHA (after item 59).
+70. Rulesets: (a) tags `v*`: restrict creations, updates and deletions to
+    you, block force pushes. (b) `main`: block force pushes and deletion,
+    require CI status checks, require a pull request with review. You
+    cannot approve your own PR, so add yourself to the bypass list (or set
+    required approvals to 0 and rely on the PR plus checks). The
+    `apply-changesets` job pushes straight to `main` with `GITHUB_TOKEN`,
+    which this ruleset will reject: either let it open a PR instead, or add
+    the GitHub Actions app to the bypass list (weaker).
+71. Environment `release`: you as required reviewer, deployment limited to
+    `v*` tags.
+72. Code security: confirm secret scanning, push protection, Dependabot
+    alerts, Dependabot security updates and private vulnerability reporting
+    are on.
+73. `PROJECT_PAT`: fine-grained, this repo only, Projects permission only,
+    90-day expiry. Check that fine-grained tokens support the owner type of
+    project 2; if not, use a classic token with only the `project` scope and
+    the same expiry.
+74. Antigravity: terminal allowlist as listed in `security-agent.md`
+    (Commands); everything else on review.
+75. While agents work, `.env.local` holds dummy values only; real values
+    live in Vercel.
+76. `index.json` signing is not planned (registry is pinned to release
+    tags instead). If you add it later, the rule in
+    `security-supply-chain.md` (Ed25519 key in the `release` environment)
+    applies.
+
+## Team mode (2026-10-06; `orchestration.md` and `.agents/agents/` assume these)
+
+77. Item 3 is done (`.agents/tmp/` added to `.gitignore` on 2026-10-06), so
+    run folders, screenshots and reports stay out of git. Item 4 (move
+    `justui-audit.md` there) is still open.
+78. Use the Antigravity 2.0 app or the CLI for team mode. A 2026-08 report
+    says custom agents do not run in the IDE yet; check your version. Select
+    `orchestrator` as the main agent.
+79. Run the probe once: ask the orchestrator for a setup check (invoke the
+    `probe` subagent) and show `.agents/tmp/runs/probe/report.md`. It tells you whether
+    subagents see `AGENTS.md` and the always-on rules, the exact tool names,
+    and whether the `skills:` paths in `.agents/agents/*.md` resolve.
+80. From the probe report: if the `skills:` entries did not resolve, change
+    them to the form the probe lists. Optionally add `tools:` lists to
+    `researcher`, `research-reviewer` and the reviewers so they are read-only
+    by configuration, not only by instruction. Copy tool names exactly; a
+    misspelled tool name can hang a subagent.
+81. Run tasks 1-8 of `.agents/evals/team-eval.md` (solo vs team) and adjust
+    the split test in `orchestration.md` from the results.
+82. Commits: the orchestrator commits each unit before review, so team runs
+    make more local commits than before. `git add` and `git commit` are not
+    on the auto-run list in `security-agent.md`, so each one asks you. Either
+    accept the prompts or add those two (never `git push`) to the Antigravity
+    terminal allowlist; if you add them, update `security-agent.md`
+    (Commands) in the same commit.

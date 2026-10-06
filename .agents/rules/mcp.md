@@ -75,8 +75,8 @@ explicitly in each check.
 
 ## sequential-thinking
 
-Required for every plan that `workflow.md` asks for and for any bug with more
-than two possible causes. Use `sequentialthinking` before writing the plan.
+Required for every Tier 1 and Tier 2 plan (see `orchestration.md`) and for
+any bug with more than two possible causes. Use `sequentialthinking` before writing the plan.
 It does not replace running checks.
 
 ## mem0-gateway

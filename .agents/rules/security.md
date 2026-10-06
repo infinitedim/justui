@@ -43,7 +43,8 @@ Who attacks, and how:
   `public/.well-known/security.txt`
 - CI, release and repo config: `.github/`, `tools/apply_changesets*`,
   `deny.toml`, `rust-toolchain.toml`, `bunfig.toml`, `renovate.json`
-- Agent instructions: `AGENTS.md`, `GEMINI.md`, `.agents/` (see
+- Agent instructions: `AGENTS.md`, `GEMINI.md`, `.agents/` except the
+  git-ignored scratch folder `.agents/tmp/` (see
   `security-agent.md`)
 
 ## Never weaken a check

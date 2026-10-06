@@ -7,18 +7,21 @@ description: "How to plan, scope, test, commit and report any task in the JustUI
 
 ## Planning
 
-Write a plan and stop for approval before editing when the task:
+Every task starts with a plan. `orchestration.md` sets its depth (tier),
+whether it runs solo or as a team, and how it is reviewed. Use the plan
+template in the `justui-team` skill for Tier 1 and Tier 2.
+
+This is the one approval list; other files point here. Stop for approval
+before editing when the plan is Tier 2, or the task:
 - touches more than 3 files, or
 - touches any red-zone path listed in `security.md`, or
-- changes a public component API, the registry format, CSP or headers, a tool
-  version, a lockfile, or deletes files.
+- changes a public component API, the registry format, a config schema, CSP
+  or headers, a tool version, a lockfile, or
+- adds, removes or upgrades a dependency, or
+- deletes or moves files.
 
-A plan lists: the goal in one line, files to change, the approach, the tests
-you will add, the checks you will run, and the risks. Use the
-`sequentialthinking` tool to build the plan when there are several possible
-approaches or more than two hypotheses for a bug.
-
-For smaller tasks, start directly and state your assumptions in the summary.
+Otherwise show the plan and continue. Build every Tier 1 and Tier 2 plan with
+the `sequentialthinking` tool (`mcp.md`).
 
 ## Scope
 
@@ -59,7 +62,9 @@ do the visual check in `design.md`.
 
 ## Git
 
-- Commit locally after each step that builds and passes its checks.
+- Commit locally after each step that builds and passes its checks. Coder
+  subagents never commit; the orchestrator commits their units
+  (`orchestration.md`, Commits).
 - Conventional Commits: `type(scope): subject`, imperative, lowercase subject,
   no trailing period. Types: feat, fix, refactor, perf, test, docs, style,
   chore, ci, build. Scopes: core, tokens, cli, docs, preview, showcase,
@@ -109,8 +114,8 @@ with approval.
 
 ## Rules maintenance
 
-Do not edit `AGENTS.md`, `GEMINI.md` or anything in `.agents/rules/` or
-`.agents/skills/`. If a rule is wrong, outdated or conflicts with the code,
+Do not edit `AGENTS.md`, `GEMINI.md` or anything in `.agents/rules/`,
+`.agents/skills/` or `.agents/agents/`. If a rule is wrong, outdated or conflicts with the code,
 add a "Proposed rule changes" section to your summary with the exact patch.
 
 ## Summary

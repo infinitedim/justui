@@ -9,8 +9,15 @@ repeats or overrides a project rule.
   auto-loaded.
 - Antigravity shows rule files as pointers when the active rules exceed the
   token budget. If you see a pointer for an area you work in, open the file.
-- For tasks that need a plan (see `workflow.md`), work in planning mode and
-  present the plan as an artifact before editing.
+- Plan every task as `orchestration.md` says. For Tier 1 and Tier 2, work in
+  planning mode, present the plan as an artifact, and also save it to the
+  run folder so subagents can read it.
+- Team mode needs custom agents (`.agents/agents/`), which run in the
+  Antigravity 2.0 app and CLI. Select `orchestrator` as the main agent. If
+  `invoke_subagent` or those agents are not available (for example in the
+  IDE), use the fallback in `orchestration.md`.
+- Workflows are deprecated in Antigravity; repeatable procedures are skills,
+  invoked as `/<skill-name>` (for example `/justui-team`).
 - Verify UI with the Playwright MCP tools as `mcp.md` describes. Do not use
   the built-in browser agent for verification.
 - Reply in English and keep chat replies casual and conversational (avoid being overly formal).
