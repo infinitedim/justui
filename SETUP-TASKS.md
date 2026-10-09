@@ -15,8 +15,8 @@ plan first under the new rules.
    Note: deleting it from HEAD does not remove it from git history. Rewriting
    history needs a force-push, which the rules forbid for the agent; decide
    yourself whether it is worth it.
-5. Fix `CONTRIBUTING.md` step 4 (barrel export) so the warning in `AGENTS.md`
-   can be dropped later.
+5. Done: Fix `CONTRIBUTING.md` step 4 (barrel export) to forbid
+   exporting components from `just_ui_core.dart`.
 
 ## Docs site config (apps/docs)
 
@@ -43,9 +43,9 @@ plan first under the new rules.
 
 ## CI and tooling (red zone)
 
-14. CI: run `bun run generate:components -- --check` in `nextjs-ci`.
-15. CI: align the Bun pin with the `bun.lock` format (audit #62).
-16. `tools/generate_checksums.dart --dry-run`: exit non-zero on drift so the
+14. Done: CI: run `bun run generate:components -- --check` in `nextjs-ci`.
+15. Done: CI: align the Bun pin with the `bun.lock` format (audit #62).
+16. Done: `tools/generate_checksums.dart --dry-run`: exit non-zero on drift so the
     CI step catches it (audit #63).
 
 ## MCP setup (do these yourself in Antigravity, via "Open MCP Config")
@@ -172,8 +172,8 @@ sections, 35 `must_use` suggestions, 7 functions over 100 lines (largest 351).
     its justification; the rules forbid agents adding new ignores. Then
     update the Rust row in `AGENTS.md` section 6 to the command list at the
     end of `rust-cli.md` (the security rules already name `deny.toml`).
-43. `cargo machete` in CI. Remove `dialoguer` from `Cargo.toml`: it has zero
-    uses in `src/`.
+43. Done: Remove `dialoguer` from `Cargo.toml`: it has zero uses in `src/`.
+    Remaining: `cargo machete` in CI.
 
 ## Docs rules (questionnaire 2026-10-05; `docs-web.md` assumes these)
 
@@ -281,10 +281,10 @@ and tests first. Items 3 and 4 above (ignore `.agents/tmp/`, move
 65. Rate limit for `/api/search`: check whether the Vercel plan in use
     offers WAF rate limiting; if not, Upstash needs a new dependency and an
     env secret (approval). Pick one and document it in `security.md`.
-66. `SECURITY.md`: GitHub private vulnerability reporting as the only
+66. Done: `SECURITY.md`: GitHub private vulnerability reporting as the only
     channel (drop `support@justui.dev`), best-effort response wording,
     supported versions = latest release.
-67. Remove `.agents/skills/cc-skill-security-review` (replaced by
+67. Done: Remove `.agents/skills/cc-skill-security-review` (replaced by
     `justui-security`).
 
 ## Security settings (do these yourself on GitHub and in Antigravity)
