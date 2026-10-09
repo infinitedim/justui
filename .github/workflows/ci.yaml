@@ -72,6 +72,11 @@ jobs:
           cd apps/docs
           bun run lint
 
+      - name: Verify Component Data
+        run: |
+          cd apps/docs
+          bun run generate:components -- --check
+
       - name: Type Check
         run: |
           cd apps/docs
