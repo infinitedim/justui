@@ -1,4 +1,4 @@
-// justui-meta: registry=2043b211a79b74045ae3bb2f293424b5039e264e1738366bfee49b359d143a13 local=76d1a9039f7346cb6864a9571299bd31994870a597a551a006a94ac9471f02bd
+// justui-meta: registry=2043b211a79b74045ae3bb2f293424b5039e264e1738366bfee49b359d143a13 local=2233a015be712d86f2773abbea0af51418f217a2239a68c10da787bea7f66eec
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_scroll_area_style.dart';

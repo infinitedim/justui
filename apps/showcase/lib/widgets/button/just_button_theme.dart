@@ -1,4 +1,4 @@
-// justui-meta: registry=79810191d4778f9ea711e8084396c728a2df7f6bbd559cc5303aaeab633f88b0 local=d774452b8deb81f9f5110380e30f7ee4564479d8289ab5962d9a83d07e9dfa74
+// justui-meta: registry=6c93bd5cb34f4ca169945dd94d7e186f2ca654ac8b255282fe5ce201601a048c local=1311bb94299e612cec6d41bb9d477175e52634f1792f2a432ca7dd20a7545a09
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_button_style.dart';
@@ -25,7 +25,7 @@ class JustButtonTheme extends ThemeExtension<JustButtonTheme> {
   final JustButtonStyle? linkStyle;
 
   /// Whether to enable haptic feedback on button presses by default.
-  final bool enableHaptic;
+  final bool? enableHaptic;
 
   const JustButtonTheme({
     this.primaryStyle,
@@ -33,7 +33,7 @@ class JustButtonTheme extends ThemeExtension<JustButtonTheme> {
     this.ghostStyle,
     this.destructiveStyle,
     this.linkStyle,
-    this.enableHaptic = false,
+    this.enableHaptic,
   });
 
   /// Default configuration for the theme.

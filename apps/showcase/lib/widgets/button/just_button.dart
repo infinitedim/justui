@@ -1,11 +1,7 @@
-// justui-meta: registry=6b832e370032d392c6a05c6b27cc4e1c786dd58edd4515ade44a555808bcf7f9 local=325a96f5ae83e7f507e4d19f63739a0593cffd846ec5fd80859bb9b4ebacb99a
+// justui-meta: registry=0ae07aee124c746e50afb602d2ef6d348980b982c8db5b8f554e960223bbf003 local=94cccbe51f0423df740a072b12a852485dec3795c086d07055fcf67eeabd47e0
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
-import 'package:showcase/core/theme/theme_data.dart';
-import 'package:showcase/tokens/just_ui_tokens.dart'
-    show JustColorScheme, JustMotionProfile;
-
 import 'package:showcase/core/just_ui_core.dart';
 
 import '../shared/just_focus_indicator.dart';
@@ -241,34 +237,22 @@ class JustButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Attempt to read from Flutter Theme Extension
-    // Using context.justTheme which resolves InheritedModel aspects properly
-    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustPresetTokens presetTokens = context.justPresetTokens;
     final JustButtonTheme? buttonTheme = Theme.of(context)
         .extension<JustButtonTheme>();
-    final JustPresetTokens presetTokens = customTheme.presetTokens;
 
     final JustButtonStyle? themeStyle = buttonTheme?.styleFor(variant);
     final bool finalEnableHaptic =
         enableHaptic ??
         buttonTheme?.enableHaptic ??
-        presetTokens.showsDefaultBorder;
+        presetTokens.selectionHapticDefault;
 
-    // We register dependency to colors aspect
-    final JustColorScheme colors = JustThemeProvider.of(
-      context,
-      aspect: .colors,
-    ).theme.colors;
-    final JustTypographyScheme typography = JustThemeProvider.of(
-      context,
-      aspect: .typography,
-    ).theme.typography;
-    final JustSpacingScheme spacing = JustThemeProvider.of(
-      context,
-      aspect: .spacing,
-    ).theme.spacing;
-    final JustRadiusScheme radius = customTheme.radius;
-    final JustMotionProfile animations = customTheme.animations;
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typography = context.justTypo;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustShadowScheme shadows = context.justShadows;
+    final JustMotionProfile animations = context.justAnimations;
 
     final bool isInteractive = onPressed != null && !isDisabled && !isLoading;
 
@@ -346,13 +330,17 @@ class JustButton extends StatelessWidget {
               // Link decoration
               final bool isLinkWithHover = variant == .link && isHovered;
 
-              final Text labelWidget = Text(
-                label,
-                style: isLinkWithHover
-                    ? finalTextStyle.copyWith(decoration: .underline)
-                    : finalTextStyle,
-                maxLines: 1,
-                overflow: .ellipsis,
+              final Widget labelWidget = ExcludeSemantics(
+                child: Text(
+                  label,
+                  style: isLinkWithHover
+                      ? finalTextStyle.copyWith(
+                          decoration: TextDecoration.underline,
+                        )
+                      : finalTextStyle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               );
 
               // Layout children inside button
@@ -402,6 +390,7 @@ class JustButton extends StatelessWidget {
 
               // Shadows resolution
               List<BoxShadow> resolvedShadows;
+              Offset? pressOffset;
               if (variant == .link || variant == .ghost) {
                 resolvedShadows = const <BoxShadow>[];
               } else {
@@ -420,12 +409,21 @@ class JustButton extends StatelessWidget {
                     level = size == .xs ? .xs : .sm;
                   }
                   resolvedShadows = presetTokens.resolveShadow(
-                    customTheme.shadows,
+                    shadows,
                     level,
                     isPressed: isPressed,
                   );
+                  final List<BoxShadow> unpressed = presetTokens.resolveShadow(
+                    shadows,
+                    level,
+                    isPressed: false,
+                  );
+                  pressOffset = unpressed.isNotEmpty
+                      ? unpressed.first.offset
+                      : null;
                 } else {
                   resolvedShadows = const <BoxShadow>[];
+                  pressOffset = null;
                 }
               }
 
@@ -436,11 +434,12 @@ class JustButton extends StatelessWidget {
 
               return presetTokens.buildPressEffect(
                 isPressed: isPressed,
-                animations: customTheme.animations,
+                animations: animations,
+                customOffset: pressOffset,
                 child: AnimatedContainer(
                   duration: presetTokens.showsDefaultBorder
-                      ? customTheme.animations.instant
-                      : customTheme.animations.fast,
+                      ? animations.instant
+                      : animations.fast,
                   curve: animations.defaultCurve,
                   height: height,
                   padding: finalPadding,
@@ -559,9 +558,7 @@ class JustButtonGroup extends StatelessWidget {
     if (children.isEmpty) return const SizedBox.shrink();
 
     if (!attached) {
-      final JustSpacingScheme spacing = JustThemeProvider.of(context)
-          .theme
-          .spacing;
+      final JustSpacingScheme spacing = context.justSpacing;
       return Flex(
         direction: direction,
         mainAxisSize: .min,

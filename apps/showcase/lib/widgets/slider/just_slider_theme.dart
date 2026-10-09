@@ -1,4 +1,4 @@
-// justui-meta: registry=a5867baaa5fde9fb8d9fc58246b3e724fd399fe3938c98b490b309ce9c1702ce local=8ae4171744e12d73909d23c6f1230aebaad6a844aab58f9e769a9db76586334d
+// justui-meta: registry=a5867baaa5fde9fb8d9fc58246b3e724fd399fe3938c98b490b309ce9c1702ce local=94669b75bdbd3446fdbf952827247a2ae06af60dca525df50bc7a7d4fdc2137e
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_slider_style.dart';

@@ -1,12 +1,6 @@
-// justui-meta: registry=59ab3cf9e9a969e1cbe204067906cf40a6daf68a5f915c512200892689d7d7ba local=2fc1586c5b3a72b9a2cb2085468db52cbb5533d08a5c693ff5d52b5b00b0e4fb
+// justui-meta: registry=59ab3cf9e9a969e1cbe204067906cf40a6daf68a5f915c512200892689d7d7ba local=9d6b9fd1bfa8b366195d6182c855c477d610528060d679bd84ee624a32ddbe75
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' show Theme;
-import 'package:showcase/core/theme/preset_tokens.dart';
-import 'package:showcase/core/theme/theme_data.dart';
-
-import 'package:showcase/tokens/just_ui_tokens.dart'
-    show JustBreakpoints, JustColorScheme;
-
 import 'package:showcase/core/just_ui_core.dart';
 
 import '../shared/just_tooltip_overlay.dart';
