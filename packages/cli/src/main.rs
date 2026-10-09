@@ -348,7 +348,9 @@ fn main() {
             all,
             overwrite,
         } => commands::add::run(components, dry_run, show_diff, all, overwrite, auto_yes),
-        Commands::List { category, json } => commands::list::run(category, json),
+        Commands::List { category, json } => {
+            commands::list::run(category, json || cli.json)
+        }
         Commands::Diff {
             component,
             verbose,
