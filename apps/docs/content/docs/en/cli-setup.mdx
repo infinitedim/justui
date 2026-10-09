@@ -39,7 +39,7 @@ When you add a component, the CLI does not only copy the main component file. Th
 
 So that copied components can be compiled immediately without broken import errors, the internal `ImportRewriter` class automatically modifies the downloaded source code:
 
-- Core import paths (such as theme data or provider) are redirected to the global package: `package:just_ui_core/just_ui_core.dart`.
+- Core import paths (such as theme data or provider) are redirected to the global package: `package:your_app/core/just_ui_core.dart`.
 - Local inter-component import paths are translated to relative paths according to the `components_dir` and `tokens_dir` configured in your project.
 
 ### C. SHA-256 Security Verification & Metadata Control

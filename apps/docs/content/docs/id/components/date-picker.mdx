@@ -26,8 +26,7 @@ Pemilih tanggal dropdown untuk pemesanan jadwal:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicDatePicker(BuildContext context, DateTime? selectedDate, ValueChanged<DateTime> onDateSelected) {
   return JustDatePicker(
@@ -47,8 +46,7 @@ Kalender inline dengan pengecualian akhir pekan dan nomor minggu:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildAdvancedDatePicker(BuildContext context, DateTime? activeDate, ValueChanged<DateTime> onDateSelected) {
   return JustDatePicker(

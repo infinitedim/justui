@@ -35,7 +35,7 @@ Pertama, pastikan akar aplikasi atau halaman Anda dibungkus dengan `JustSheetSco
 
 ```dart
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget build(BuildContext context) {
   return JustSheetScope(
@@ -49,7 +49,7 @@ Kemudian, pemicu drawer bottom sheet standar:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildTrigger(BuildContext context) {
   return JustButton(
@@ -89,7 +89,7 @@ Anda dapat menyesuaikan sheet untuk masuk dari sebelah kiri atau kanan (sering d
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 void showLeftSidebarSheet(BuildContext context) {
   context.justSheet.show(

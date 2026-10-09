@@ -14,6 +14,10 @@ Sebelum memulai, pastikan Anda telah menyelesaikan langkah-langkah di halaman [I
 1. Instal CLI tool: lihat panduan [Instalasi](./installation).
 2. Menjalankan inisialisasi: `justui init` di root proyek Flutter Anda.
 
+<Callout title="Placeholder Nama Package" type="info">
+Contoh kode menggunakan `your_app` sebagai placeholder untuk nama package Flutter kamu. Ganti `your_app` dengan nama package yang tertera pada `pubspec.yaml` proyek kamu (contoh: `import 'package:proyek_kamu/core/just_ui_core.dart';`).
+</Callout>
+
 ---
 
 ## Langkah 1: Setup Provider di Root Widget
@@ -24,7 +28,7 @@ Buka file entry point aplikasi Anda (biasanya `lib/main.dart`) dan bungkus root 
 
 ```dart
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 import 'theme/just_theme.dart'; // File tema yang dihasilkan oleh CLI
 
 void main() {
@@ -71,7 +75,7 @@ Contoh inisialisasi menggunakan preset **Neobrutalism**:
 
 ```dart
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 // Di dalam main.dart atau file konfigurasi tema Anda
 final neobrutalismTheme = JustThemeData(
@@ -102,7 +106,7 @@ Gunakan gaya penulisan _Dart Dot Shorthand_ untuk parameter bawaan Flutter (sepe
 ```dart
 import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 import 'components/ui/button.dart'; // Sesuaikan dengan jalur impor Anda
 
 class HomeScreen extends StatelessWidget {

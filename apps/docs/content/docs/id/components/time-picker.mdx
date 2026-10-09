@@ -29,8 +29,7 @@ Pemilih waktu dropdown dengan tampilan jarum jam 12 jam:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicTimePicker(BuildContext context, TimeOfDay? selectedTime, ValueChanged<TimeOfDay> onTimeChanged) {
   return JustTimePicker(
@@ -48,8 +47,7 @@ Pemilih waktu modal dengan spinner 24 jam dan batas rentang operasional:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildAdvancedTimePicker(BuildContext context, TimeOfDay? activeTime, ValueChanged<TimeOfDay> onTimeChanged) {
   return JustTimePicker(

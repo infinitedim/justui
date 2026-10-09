@@ -35,7 +35,7 @@ First, ensure your application root or page is wrapped in a `JustDialogScope`:
 
 ```dart
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget build(BuildContext context) {
   return JustDialogScope(
@@ -49,7 +49,7 @@ Then, trigger a confirmation dialog from a button:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildTrigger(BuildContext context) {
   return JustButton(
@@ -102,7 +102,7 @@ You can customize dialog positioning (e.g. anchoring at the bottom like a sheet)
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 void showTopNotificationDialog(BuildContext context) {
   context.justDialog.show(
