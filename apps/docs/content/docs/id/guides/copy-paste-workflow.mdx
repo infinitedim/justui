@@ -77,7 +77,7 @@ CLI menghubungi registry resmi untuk mengunduh berkas komponen. Jika komponen ya
 
 Agar file komponen yang diunduh langsung berfungsi tanpa error linting akibat jalur berkas yang salah (_broken paths_), kelas internal CLI `ImportRewriter` secara otomatis mendeteksi jalur impor dalam berkas komponen dan melakukan penyesuaian:
 
-- Mengalihkan referensi berkas bertema core (seperti `theme_provider.dart` atau `theme_data.dart`) menjadi paket global `package:just_ui_core/just_ui_core.dart`.
+- Mengalihkan referensi berkas bertema core (seperti `theme_provider.dart` atau `theme_data.dart`) menjadi paket global `package:your_app/core/just_ui_core.dart`.
 - Mengubah referensi antar komponen lokal menjadi penulisan jalur relatif dinamis sesuai lokasi direktori target yang dikonfigurasi pengguna di `justui.config.yaml` (`components_dir` dan `tokens_dir`).
 
 #### C. Injeksi Metadata Kontrol

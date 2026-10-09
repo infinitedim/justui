@@ -39,7 +39,7 @@ Saat Anda menambahkan komponen, CLI tidak hanya menyalin berkas komponen utama. 
 
 Agar komponen yang disalin dapat langsung dikompilasi tanpa error pemanggilan file (_broken imports_), kelas internal `ImportRewriter` melakukan perubahan otomatis pada kode sumber yang diunduh:
 
-- Jalur impor core (seperti data tema atau provider) dialihkan ke paket global: `package:just_ui_core/just_ui_core.dart`.
+- Jalur impor core (seperti data tema atau provider) dialihkan ke paket global: `package:your_app/core/just_ui_core.dart`.
 - Jalur impor antar komponen lokal diterjemahkan menjadi relatif sesuai dengan lokasi `components_dir` dan `tokens_dir` yang dikonfigurasi di dalam proyek Anda.
 
 ### C. Verifikasi Keamanan SHA-256 & Kontrol Metadata

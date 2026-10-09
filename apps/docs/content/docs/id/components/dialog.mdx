@@ -35,7 +35,7 @@ Pertama, pastikan akar aplikasi atau halaman Anda dibungkus dengan `JustDialogSc
 
 ```dart
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget build(BuildContext context) {
   return JustDialogScope(
@@ -49,7 +49,7 @@ Kemudian, pemicu dialog konfirmasi dari tombol:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildTrigger(BuildContext context) {
   return JustButton(
@@ -102,7 +102,7 @@ Anda dapat memodifikasi posisi dialog (misalnya menempel di bagian atas seperti 
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 void showTopNotificationDialog(BuildContext context) {
   context.justDialog.show(

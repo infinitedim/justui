@@ -35,7 +35,7 @@ First, ensure your application root or page is wrapped in a `JustSheetScope`:
 
 ```dart
 import 'package:flutter/widgets.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget build(BuildContext context) {
   return JustSheetScope(
@@ -49,7 +49,7 @@ Then, trigger a standard bottom sheet drawer:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildTrigger(BuildContext context) {
   return JustButton(
@@ -89,7 +89,7 @@ You can customize sheets to enter from the left or right (often used for sidebar
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 void showLeftSidebarSheet(BuildContext context) {
   context.justSheet.show(

@@ -77,7 +77,7 @@ The CLI contacts the official registry to download component files. If the compo
 
 So that downloaded component files work immediately without linting errors due to incorrect file paths, the CLI's internal `ImportRewriter` class automatically detects import paths in component files and makes adjustments:
 
-- Redirects core theme file references (such as `theme_provider.dart` or `theme_data.dart`) to the global package `package:just_ui_core/just_ui_core.dart`.
+- Redirects core theme file references (such as `theme_provider.dart` or `theme_data.dart`) to the global package `package:your_app/core/just_ui_core.dart`.
 - Changes local inter-component references to dynamic relative path notation according to the target directory location configured by the user in `justui.config.yaml` (`components_dir` and `tokens_dir`).
 
 #### C. Control Metadata Injection

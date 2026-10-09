@@ -26,8 +26,7 @@ Pilihan paket langganan secara vertikal:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicRadioGroup(BuildContext context, String? selectedPlan, ValueChanged<String> onChanged) {
   return JustRadioGroup<String>(
@@ -48,8 +47,7 @@ Grup radio horizontal dengan salah satu opsi berstatus dinonaktifkan:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:just_ui_core/just_ui_core.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart';
+import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildAdvancedRadioGroup(BuildContext context, String? selectedMethod, ValueChanged<String> onChanged) {
   return JustRadioGroup<String>(
