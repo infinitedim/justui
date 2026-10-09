@@ -1,7 +1,8 @@
-// justui-meta: registry=923d07a5b0361a666be96c662b93df53f7915b71e6117c1c556a7b405d2b7428 local=64802419ba236296280b54bfbd1fbd1582bc31690d93890c6b3bfcb6aca8a607
+// justui-meta: registry=5bf597a723d3b1fcc13e5b87ac6170d572f21558710a1389380b3722f654d1ff local=625bda102d71e84e4ab4c1878f0d10ee564feabf58ae52023aeb3f7303f5ab17
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/widgets.dart';
 
 import 'package:showcase/core/just_ui_core.dart';
 

@@ -1,9 +1,7 @@
-// justui-meta: registry=3342c365adf93a202307a44bde6e3f6d449ac353bdab720cd09cfd568c00703c local=ebb17b860bcb4116a3c3dbdd4372e3e5b7fc29397b14b1c38bbdc7a1a51eb896
+// justui-meta: registry=3342c365adf93a202307a44bde6e3f6d449ac353bdab720cd09cfd568c00703c local=37fa78992fbab0df0d0a893709c5efdb7c6787beb14b1fc5d8c7c03efa224fe2
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:showcase/core/theme/theme_data.dart';
-
 import 'package:showcase/core/just_ui_core.dart';
 
 import '../shared/just_focus_indicator.dart';

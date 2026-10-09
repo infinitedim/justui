@@ -1,4 +1,4 @@
-// justui-meta: registry=c1d5fc5f03307d5a102e578b7006b701da5c57650441abf47fb23f1df588cfb1 local=226ce20b2bb32d89f03853216acae84f78c7194a0bfa5e8903757909c17ccf03
+// justui-meta: registry=50bcab9746bc51e2cbf57e9512815cb7ad164703688a810e0add583700fb76ce local=eab4d47f2993946667a65aac54380d00c672b638ac74e5a64e7e15b58066b999
 import 'package:flutter/material.dart'
     show Colors, DateUtils, DateTimeRange, Icon, Icons, Theme;
 import 'package:flutter/services.dart'
@@ -343,6 +343,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
       focusNode: _focusNode,
       onKeyEvent: _handleKeyEvent,
       child: Container(
+        constraints: const BoxConstraints(maxWidth: 340.0),
         padding: widget.showContainer ? padding : .zero,
         decoration: widget.showContainer
             ? BoxDecoration(

@@ -1,7 +1,5 @@
-// justui-meta: registry=3dbbecf80a3fbb69e0f0277ec404d1ea0c456a6f90d617a0a483d5509b0553bd local=00a166a785af3d033b0df7bc6557b19ba71c657d622079d6c2272abc088c8a38
+// justui-meta: registry=3dbbecf80a3fbb69e0f0277ec404d1ea0c456a6f90d617a0a483d5509b0553bd local=395a40a8a7a2465ba75b1656d6ace03f38ab7ce8db91bad2e56e1d24a5a1f0e2
 import 'package:flutter/widgets.dart';
-import 'package:showcase/core/theme/preset_tokens.dart';
-
 import 'package:showcase/core/just_ui_core.dart';
 
 import 'just_tabs_style.dart';

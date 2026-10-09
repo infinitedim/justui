@@ -1,4 +1,4 @@
-// justui-meta: registry=58bea2c349f146ca5a9f44212bec2d3e226e66b4e5136c813d41646c7074c7d2 local=e74401aae0f097ff06ea9a0a0c5a5fe43ce41e62fb815ea404bf00b2f3e95822
+// justui-meta: registry=d5e2b3160a141f9b426ad933abd3c807b61dc984dba5b76b53664750ff2590c3 local=7e07eb217a48e6abe8f0424fa909eb1bac3b11317075dc3c40908e83e276d9a5
 import 'dart:async';
 
 import 'package:flutter/material.dart' show Theme;
@@ -233,11 +233,22 @@ class _JustDialogWidget extends StatefulWidget {
 }
 
 class _JustDialogWidgetState extends State<_JustDialogWidget> {
-  final FocusNode _focusNode = FocusNode();
+  late final FocusScopeNode _scopeNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _scopeNode = FocusScopeNode(canRequestFocus: true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _scopeNode.requestFocus();
+      }
+    });
+  }
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _scopeNode.dispose();
     // Restore focus asynchronously after the frame to prevent layout/focus conflicts
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.previousFocus?.requestFocus();
@@ -430,34 +441,33 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
     // Wrap with focus trapping and keyboard navigation
     return RepaintBoundary(
       child: FocusScope(
+        node: _scopeNode,
         autofocus: true,
-        child: KeyboardListener(
-          focusNode: _focusNode,
-          onKeyEvent: (KeyEvent event) {
-            if (event is KeyDownEvent &&
-                event.logicalKey == LogicalKeyboardKey.escape) {
-              widget.onDismiss(null);
-            }
-          },
-          child: Stack(
-            children: <Widget>[
-              Align(
-                alignment: alignment,
-                child: Padding(
-                  padding: widget.position == .center
-                      ? .all(spacing.lg)
-                      : .zero,
-                  child: Semantics(
-                    scopesRoute: true,
-                    namesRoute: true,
-                    explicitChildNodes: true,
-                    label: 'Dialog',
-                    child: animatedChild,
-                  ),
+        canRequestFocus: true,
+        onKeyEvent: (FocusNode node, KeyEvent event) {
+          if (event is KeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.escape) {
+            widget.onDismiss(null);
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: Stack(
+          children: <Widget>[
+            Align(
+              alignment: alignment,
+              child: Padding(
+                padding: widget.position == .center ? .all(spacing.lg) : .zero,
+                child: Semantics(
+                  scopesRoute: true,
+                  namesRoute: true,
+                  explicitChildNodes: true,
+                  label: 'Dialog',
+                  child: animatedChild,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

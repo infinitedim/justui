@@ -1,9 +1,6 @@
-// justui-meta: registry=f41ebe55b7f934ca4f6501fb0b23bd6c1fb5a58e9c16e6a7d829cd990723b252 local=a7e29c292abe942041a81b3c8a55aa864154ba43b33d973afcea247447eb1613
+// justui-meta: registry=f41ebe55b7f934ca4f6501fb0b23bd6c1fb5a58e9c16e6a7d829cd990723b252 local=6a010368ef307de097af5d80cd7047c26033ad55ce84da90aa2caa2f8e1b432d
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
-import 'package:showcase/core/theme/schemes/spacing_scheme.dart';
-import 'package:showcase/core/theme/schemes/typography_scheme.dart';
-
 import 'package:showcase/core/just_ui_core.dart';
 
 import 'just_separator_style.dart';

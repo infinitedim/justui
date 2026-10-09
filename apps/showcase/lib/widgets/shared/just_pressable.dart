@@ -1,4 +1,4 @@
-// justui-meta: registry=c1670f23e3b6a67d3b52ea22932bf970cf7b96ea72638b0d41f393b7c73437b5 local=22669de3aa25ace2216734a9ddba547752e60f63080b3123b1aa882efa7aa0c7
+// justui-meta: registry=5cd6a870bbc8a9fdf39ae103a6a82ca657fa27f0f931e3f8a5d7522b7282811f local=8a7673f6100159b22fcddb1dfd02146796bea6795bc4073b989c8c446b432c9b
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
 import 'package:flutter/widgets.dart';
@@ -189,7 +189,7 @@ class _JustPressableState extends State<JustPressable> {
           child: AnimatedBuilder(
             animation: _statesListenable,
             builder: (BuildContext context, _) {
-              return widget.builder(
+              final Widget builtChild = widget.builder(
                 context,
                 JustInteractionState(
                   widget.enabled && _isHovered.value,
@@ -199,6 +199,10 @@ class _JustPressableState extends State<JustPressable> {
                   _focusNode,
                 ),
               );
+              if (widget.semanticLabel != null) {
+                return ExcludeSemantics(child: builtChild);
+              }
+              return builtChild;
             },
           ),
         ),

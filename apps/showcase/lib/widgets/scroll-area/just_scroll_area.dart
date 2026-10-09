@@ -1,4 +1,4 @@
-// justui-meta: registry=d0a3e7fc3144eb101eff318ffc1ef11cd413823a3db07055d0216ed90a866558 local=80d715f9d37a80dffdb4b898c77ae49e3f7035486a5f3182165dbd93a84f34f0
+// justui-meta: registry=cc097b57e1d2ff742041429b7c6d5431dbab9908637c5d8595bdd780ab9b024d local=1b3cfae01b7dc0da91b99a91fa63eb65a5de6c5e727460dbcd6fc1c91bfb2764
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart'
@@ -8,12 +8,6 @@ import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:showcase/core/theme/preset_tokens.dart';
-import 'package:showcase/core/theme/schemes/shadow_scheme.dart';
-import 'package:showcase/core/theme/schemes/spacing_scheme.dart';
-import 'package:showcase/tokens/just_ui_tokens.dart'
-    show JustColorScheme, JustMotionProfile;
-
 import 'package:showcase/core/just_ui_core.dart';
 
 import '../shared/just_pressable.dart';
@@ -620,6 +614,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
     // Wrap with Listener to intercept pointer signal events (mouse wheel/trackpad)
     if (smoothEnabled) {
       scrollView = Listener(
+        behavior: HitTestBehavior.opaque,
         onPointerSignal: _handlePointerSignal,
         child: scrollView,
       );
@@ -800,6 +795,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
           ValueListenableBuilder<bool>(
             valueListenable: _showScrollToTop,
             builder: (BuildContext context, bool visible, Widget? child) {
+              if (!visible) return const SizedBox.shrink();
               return Align(
                 alignment: widget.scrollToTopAlignment,
                 child: Padding(

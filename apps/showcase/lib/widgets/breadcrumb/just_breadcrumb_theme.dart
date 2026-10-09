@@ -1,4 +1,4 @@
-// justui-meta: registry=82e949293ba5753cc01cde989b943856b1e340666c5bb69a12a1271784655563 local=051c38fab3c7d99240c004e07bc5e5996bb729032ce4f1f542191628d7ec1118
+// justui-meta: registry=82e949293ba5753cc01cde989b943856b1e340666c5bb69a12a1271784655563 local=bd0423fc14366524f581b0f6cede472279beba11f135d02f702210224977ca63
 import 'package:flutter/material.dart' show ThemeExtension;
 
 import 'just_breadcrumb_style.dart';

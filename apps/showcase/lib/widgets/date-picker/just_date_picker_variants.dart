@@ -1,4 +1,4 @@
-// justui-meta: registry=033f977fbeb91050e785b6c4d4b429d8e03b6b650f797a955422dbd618121f5f local=867132c41ac5e1e6c4647a00e8e6217d2a11f1556f6aec909137511a37c59a9b
+// justui-meta: registry=033f977fbeb91050e785b6c4d4b429d8e03b6b650f797a955422dbd618121f5f local=256f213bff00a5e13b4346f506c7316f4af57b1dd016e0c0ffc887473aac660c
 import 'package:flutter/material.dart' show DateTimeRange;
 
 /// Display variant for [JustDatePicker].

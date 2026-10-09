@@ -41,6 +41,10 @@ jobs:
         run: |
           dart run tools/generate_checksums.dart --dry-run
 
+      - name: Verify Tools Shell Scripts
+        run: |
+          bash -n tools/*.sh
+
       - name: Run Tests
         run: |
           melos exec --flutter --dir-exists="test" -- "flutter test"

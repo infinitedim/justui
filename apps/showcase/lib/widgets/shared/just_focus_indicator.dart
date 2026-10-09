@@ -1,9 +1,5 @@
-// justui-meta: registry=a8f67914d14cc52293dd5857099377fdd4a0aa271750b08dea7b15bd2a0fd85f local=a0b686fbeaf857419f98d3e3c4f6134befd794aa92d79bb0aae9092770661b7e
+// justui-meta: registry=a8f67914d14cc52293dd5857099377fdd4a0aa271750b08dea7b15bd2a0fd85f local=495319c38474ba19f8001d6adbe37938c9a69049a91c51ab801ec536fa7dddb8
 import 'package:flutter/widgets.dart';
-import 'package:showcase/core/theme/preset_tokens.dart';
-import 'package:showcase/tokens/just_ui_tokens.dart'
-    show JustColorScheme, JustMotionProfile;
-
 import 'package:showcase/core/just_ui_core.dart';
 
 /// A decorator widget that draws a focus ring around its child with smooth animation.
