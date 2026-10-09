@@ -5,6 +5,19 @@ import { HtmlLang } from '@/components/html-lang';
 import { notFound } from 'next/navigation';
 import { isLocale, localeStaticParams } from '@/lib/i18n';
 import type { ReactNode } from 'react';
+import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
+
+const sans = IBM_Plex_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-sans',
+});
+
+const mono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-mono',
+});
 
 /**
  * Only the statically known locales are valid `[lang]` segments.
@@ -30,26 +43,44 @@ export default async function LangLayout({
   if (!isLocale(lang)) notFound();
 
   return (
-    <>
-      {/* Update <html lang> on the client whenever the locale changes */}
-      <HtmlLang lang={lang} />
-      {/*
-       * theme={{ enabled: false }} -- ThemeProvider is already mounted in the
-       * root layout. Disabling it here prevents a second (re-rendering) ThemeProvider
-       * from being created on every locale navigation, which is what caused the
-       * React 19 "Encountered a script tag" warning.
-       */}
-      <RootProvider
-        theme={{ enabled: false }}
-        i18n={i18nProvider(translations, lang)}
-        // The app provides its own Ctrl+K search UI (Navbar ->
-        // CustomSearchDialog). Without this, fumadocs' own default search
-        // dialog stays mounted and bound to the same hotkey, so Ctrl+K opens
-        // two independent, unstyled-vs-styled dialogs at once.
-        search={{ enabled: false }}
+    <html lang={lang} suppressHydrationWarning>
+      <head />
+      <body
+        className={`${sans.variable} ${mono.variable} bg-background text-foreground flex min-h-screen flex-col font-sans antialiased`}
       >
-        {children}
-      </RootProvider>
-    </>
+        {/*
+         * Applies the stored preset class before React hydrates, the same
+         * way next-themes avoids a flash for light/dark mode. Without this,
+         * PresetProvider's own useEffect can only apply the class after
+         * mount, so a neobrutalism visitor sees the default preset flash
+         * on every load.
+         */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{if(localStorage.getItem('justui-preset')==='neobrutalism'){document.documentElement.classList.add('theme-neobrutalism');document.body.classList.add('theme-neobrutalism');}}catch(e){}})();",
+          }}
+        />
+        {/* Update <html lang> on client-side route transitions */}
+        <HtmlLang lang={lang} />
+        {/*
+         * theme={{ enabled: false }} -- ThemeProvider is already mounted in the
+         * root layout. Disabling it here prevents a second (re-rendering) ThemeProvider
+         * from being created on every locale navigation, which is what caused the
+         * React 19 "Encountered a script tag" warning.
+         */}
+        <RootProvider
+          theme={{ enabled: false }}
+          i18n={i18nProvider(translations, lang)}
+          // The app provides its own Ctrl+K search UI (Navbar ->
+          // CustomSearchDialog). Without this, fumadocs' own default search
+          // dialog stays mounted and bound to the same hotkey, so Ctrl+K opens
+          // two independent, unstyled-vs-styled dialogs at once.
+          search={{ enabled: false }}
+        >
+          {children}
+        </RootProvider>
+      </body>
+    </html>
   );
 }
