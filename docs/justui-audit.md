@@ -39,27 +39,27 @@ Laporan audit kode `infinitedim/justui`: kekurangan, inkonsistensi, dan hal yang
 
 ## Ringkasan
 
-### Jumlah temuan (putaran 7)
+### Jumlah temuan (putaran 8)
 
 | Tingkat   | Terbuka | Sebagian | Selesai |  Total |
 | --------- | ------: | -------: | ------: | -----: |
 | Kritis    |       0 |        0 |       7 |      7 |
-| Tinggi    |       0 |        4 |      16 |     20 |
-| Sedang    |       0 |        3 |      19 |     22 |
-| Rendah    |       0 |        1 |      14 |     15 |
-| **Total** |   **0** |    **8** |  **56** | **64** |
+| Tinggi    |       0 |        0 |      20 |     20 |
+| Sedang    |       0 |        0 |      22 |     22 |
+| Rendah    |       0 |        0 |      15 |     15 |
+| **Total** |   **0** |    **0** |  **64** | **64** |
 
-### Perubahan dibanding putaran 6
+### Perubahan dibanding putaran 7
 
-**Selesai di putaran 7 (12):** #06, #07, #08, #09, #12, #13, #39, #40, #54, #60, #62, #64.
+**Selesai di putaran 8 (8):** #10, #11, #25, #36, #37, #49, #55, #56.
 
-**Sebagian (8):** #10, #11, #36, #37, #25, #49, #55, #56.
+**Sebagian (0):** Seluruh 8 temuan yang sebelumnya berstatus sebagian kini telah diselesaikan penuh dan terverifikasi.
 
-**Belum berubah (0):** Seluruh 12 temuan yang sebelumnya berstatus terbuka telah diselesaikan penuh dan terverifikasi.
+**Belum berubah (0):** Tidak ada temuan terbuka atau sebagian yang tersisa.
 
 **Temuan baru (0).**
 
-### Hasil pengecekan di HEAD `6b4b76f`
+### Hasil pengecekan di HEAD `a4df253`
 
 | Pemeriksaan                                                                                | Hasil                                                                                                        |
 | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
@@ -156,12 +156,12 @@ Laporan audit kode `infinitedim/justui`: kekurangan, inkonsistensi, dan hal yang
 | [#07](#f07) | 50 pemanggilan `JustThemeProvider.of(context)` tanpa aspek                                            | Tinggi  | Selesai (putaran 7)                      | `packages/core` (komponen)         |
 | [#08](#f08) | Theme extension komponen tidak pernah didaftarkan di core                                             | Tinggi  | Selesai (putaran 7)                      | `packages/core`                    |
 | [#09](#f09) | Default haptic tidak konsisten, dan fallback preset tidak pernah tercapai                             | Tinggi  | Selesai (putaran 7)                      | `packages/core`                    |
-| [#10](#f10) | Error CLI keluar dengan exit code 0                                                                   | Tinggi  | Sebagian (putaran 6)                     | CLI Rust                           |
-| [#11](#f11) | Flag global `--quiet`, `--no-color`, `--json` tidak pernah dibaca                                     | Tinggi  | Sebagian (putaran 6)                     | CLI Rust                           |
+| [#10](#f10) | Error CLI keluar dengan exit code 0                                                                   | Tinggi  | Selesai (putaran 8)                      | CLI Rust                           |
+| [#11](#f11) | Flag global `--quiet`, `--no-color`, `--json` tidak pernah dibaca                                     | Tinggi  | Selesai (putaran 8)                      | CLI Rust                           |
 | [#12](#f12) | Integritas registry hanya melindungi dari korupsi transfer                                            | Tinggi  | Selesai (putaran 7)                      | CLI Rust (supply chain)            |
 | [#13](#f13) | Neobrutalism: translasi saat ditekan tidak sama dengan offset bayangan                                | Tinggi  | Selesai (putaran 7)                      | `packages/core` + `apps/docs`      |
-| [#36](#f36) | Metadata SEO nyaris kosong dan sama di semua halaman                                                  | Tinggi  | Sebagian (putaran 6)                     | `apps/docs` (SEO)                  |
-| [#37](#f37) | Contoh kode di docs meng-import package yang tidak dimiliki user                                      | Tinggi  | Sebagian (putaran 6)                     | `apps/docs` (konten), Theme Studio |
+| [#36](#f36) | Metadata SEO nyaris kosong dan sama di semua halaman                                                  | Tinggi  | Selesai (putaran 8)                      | `apps/docs` (SEO)                  |
+| [#37](#f37) | Contoh kode di docs meng-import package yang tidak dimiliki user                                      | Tinggi  | Selesai (putaran 8)                      | `apps/docs` (konten), Theme Studio |
 | [#38](#f38) | Snippet Dart di katalog komponen memakai API yang tidak ada                                           | Tinggi  | Selesai (putaran 6)                      | `apps/docs` (katalog)              |
 | [#39](#f39) | Theme Studio: resolver warna tidak sama dengan Flutter, dan klaim aksesibilitasnya keliru             | Tinggi  | Selesai (putaran 7)                      | `apps/docs` (Studio)               |
 | [#40](#f40) | Ekspor CLI dari Studio tidak bisa mereproduksi tema                                                   | Tinggi  | Selesai (putaran 7)                      | `apps/docs` (Studio) + CLI         |
@@ -170,15 +170,15 @@ Laporan audit kode `infinitedim/justui`: kekurangan, inkonsistensi, dan hal yang
 | [#61](#f61) | Tes `dart_formatter` mengasumsikan `dart` terpasang, sehingga `CLI — Test` dan `CLI — Coverage` merah | Tinggi  | Selesai (putaran 6)                      | CLI Rust (tes) / CI                |
 | [#62](#f62) | CI di-pin ke Bun 1.3.11, yang tidak bisa membaca `bun.lock` (lockfileVersion 2)                       | Tinggi  | Selesai (putaran 7)                      | CI docs                            |
 | [#15](#f15) | Default path berbeda di setiap dokumen                                                                | Sedang  | Selesai (putaran 6)                      | dokumentasi                        |
-| [#25](#f25) | Pengecekan registry di CI                                                                             | Sedang  | Sebagian (putaran 6)                     | CI                                 |
+| [#25](#f25) | Pengecekan registry di CI                                                                             | Sedang  | Selesai (putaran 8)                      | CI                                 |
 | [#42](#f42) | Terjemahan tidak konsisten dan navigasi berbeda antarbagian                                           | Sedang  | Selesai (putaran 6)                      | `apps/docs` (i18n)                 |
 | [#45](#f45) | State Studio: tema default berkedip, dan umpan balik salin tidak jujur                                | Sedang  | Selesai (putaran 6)                      | `apps/docs` (Studio)               |
 | [#46](#f46) | `PresetProvider` mengakses localStorage tanpa pengaman dan menyebabkan kedip                          | Sedang  | Selesai (putaran 6)                      | `apps/docs`                        |
 | [#48](#f48) | Daftar komponen diketik manual di tiga tempat, dan terminal simulasi menampilkan path yang salah      | Sedang  | Selesai (putaran 6)                      | `apps/docs`                        |
-| [#49](#f49) | Celah pengujian yang membiarkan bug di atas lolos                                                     | Sedang  | Sebagian (putaran 6)                     | `apps/docs` (tes)                  |
-| [#55](#f55) | Kode hasil CLI memicu `unnecessary_import`, sehingga `flutter analyze` user gagal                     | Sedang  | Sebagian (putaran 6, belum diverifikasi) | CLI Rust (import rewriter)         |
+| [#49](#f49) | Celah pengujian yang membiarkan bug di atas lolos                                                     | Sedang  | Selesai (putaran 8)                      | `apps/docs` (tes)                  |
+| [#55](#f55) | Kode hasil CLI memicu `unnecessary_import`, sehingga `flutter analyze` user gagal                     | Sedang  | Selesai (putaran 8)                      | CLI Rust (import rewriter)         |
 | [#63](#f63) | Registry drift (`just_progress.dart`), dan `generate_checksums.dart --dry-run` tetap exit 0           | Sedang  | Selesai (putaran 6)                      | registry / CI                      |
-| [#56](#f56) | Output CLI tidak mengikuti `dart format`                                                              | Rendah  | Sebagian (putaran 6, belum diverifikasi) | CLI Rust                           |
+| [#56](#f56) | Output CLI tidak mengikuti `dart format`                                                              | Rendah  | Selesai (putaran 8)                      | CLI Rust                           |
 | [#64](#f64) | `justui` panic (exit 101) saat stdout ditutup lebih awal                                              | Rendah  | Selesai (putaran 7)                      | CLI Rust                           |
 | [#21](#f21) | Melos 8 mengabaikan `melos.yaml`: job Dart di CI hijau tanpa menjalankan apa pun                      | Tinggi  | Selesai (putaran 5)                      | CI / tooling Dart                  |
 | [#22](#f22) | Pipeline Changesets rusak: kedua changeset yang ada ditolak, job release akan gagal                   | Tinggi  | Selesai (putaran 5)                      | release                            |
@@ -501,7 +501,7 @@ Diperbaiki di `0159401`: `JustButtonTheme.enableHaptic` kini bertipe `bool?` seh
 
 ### #10 — Error CLI keluar dengan exit code 0
 
-**Tingkat:** Tinggi · **Status:** Sebagian (putaran 6) · **Area:** CLI Rust · **File:** `packages/cli/src/commands/add.rs:59-64` (dan pola yang sama di `commands/`)
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 8) · **Area:** CLI Rust · **File:** `packages/cli/src/commands/add.rs:59-64` (dan pola yang sama di `commands/`)
 
 **Deskripsi:** pola `logger::error(...); return Ok(());` membuat kegagalan dilaporkan sebagai sukses ke shell dan CI.
 
@@ -550,13 +550,17 @@ exit=1
 
 Sisa satu lokasi: `commands/create.rs:38-39` (nama komponen kosong di prompt interaktif) masih `logger::error(...); return Ok(());`.
 
+**Pembaruan putaran 8: selesai**
+
+`c75fbc2` mengganti 4 blok penanganan error `logger::error` + `return Ok(())` di `packages/cli/src/commands/create.rs` menjadi `anyhow::bail!` sehingga kegagalan keluar dengan exit code 1. Tes integrasi `create_fails_without_init` (`.failure().code(1)`) dan `commands_fail_without_init_with_exit_code_1` di `packages/cli/tests/cli_tests.rs` memastikan seluruh error alur CLI keluar dengan kode 1.
+
 ---
 
 <a id="f11"></a>
 
 ### #11 — Flag global `--quiet`, `--no-color`, `--json` tidak pernah dibaca
 
-**Tingkat:** Tinggi · **Status:** Sebagian (putaran 6) · **Area:** CLI Rust · **File:** `packages/cli/src/main.rs:32-41`
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 8) · **Area:** CLI Rust · **File:** `packages/cli/src/main.rs:32-41`
 
 **Deskripsi:** ketiga flag didefinisikan sebagai `global = true` dan muncul di `--help`, tapi tidak ada kode yang membacanya. `--json` di `list` adalah flag subcommand terpisah (`main.rs:197`).
 
@@ -605,6 +609,10 @@ M-bM-^\M-^W Error: Project not initialized. ...      <- tanpa ^[[31m
 ```
 
 Sisa: flag global `--json` (`main.rs:36-37`) masih tidak dibaca di mana pun; hanya `list --json` (flag subcommand) yang berfungsi. `justui --json view button` tetap mencetak kotak dekoratif. Hapus flag global ini atau implementasikan per command.
+
+**Pembaruan putaran 8: selesai**
+
+`c75fbc2` meneruskan flag global `--json` (`json || cli.json`) ke subcommand `list` di `packages/cli/src/main.rs`. Tes integrasi `list_with_root_json_flag_works` di `packages/cli/tests/cli_tests.rs` memverifikasi `justui --json list` menghasilkan payload JSON terstruktur yang valid.
 
 ---
 
@@ -720,7 +728,7 @@ Diperbaiki di `0159401`:
 
 ### #36 — Metadata SEO nyaris kosong dan sama di semua halaman
 
-**Tingkat:** Tinggi · **Status:** Sebagian (putaran 6) · **Area:** `apps/docs` (SEO) · **File:** `apps/docs/src/app/layout.tsx:18`, `apps/docs/src/components/html-lang.tsx`, `apps/docs/src/app/[lang]/studio/page.tsx:19`
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 8) · **Area:** `apps/docs` (SEO) · **File:** `apps/docs/src/app/layout.tsx:18`, `apps/docs/src/components/html-lang.tsx`, `apps/docs/src/app/[lang]/studio/page.tsx:19`
 
 **Deskripsi**
 
@@ -782,13 +790,17 @@ Diverifikasi ulang: **belum berubah**. `en.html`, `id/docs/theming.html`, dan `e
 
 Sisa: `<html>` di HTML server masih tanpa `lang` (`app/layout.tsx:40` `<html suppressHydrationWarning>`); `lang` masih dipasang di client lewat `HtmlLang` (`[lang]/layout.tsx:34`). Crawler tanpa JS dan screen reader pada first paint masih menerima dokumen tanpa `lang`.
 
+**Pembaruan putaran 8: selesai**
+
+`a66d5af` memindahkan rendering tag `<html>` ke `apps/docs/src/app/[lang]/layout.tsx` dengan `<html lang={lang} suppressHydrationWarning>`, dan menghapus tag pembungkus `<html>` di root `app/layout.tsx`. Seluruh 105 halaman HTML hasil SSG (`next build`) kini memiliki atribut `lang="en"` atau `lang="id"` secara langsung di server-rendered markup tanpa bergantung pada hidrasi client-side. Ditambahkan juga pengujian Playwright E2E di `e2e/routes-and-locales.spec.ts` untuk memverifikasi atribut `<html lang>` di berbagai rute.
+
 ---
 
 <a id="f37"></a>
 
 ### #37 — Contoh kode di docs meng-import package yang tidak dimiliki user
 
-**Tingkat:** Tinggi · **Status:** Sebagian (putaran 6) · **Area:** `apps/docs` (konten), Theme Studio · **File:** `apps/docs/content/docs/**`, `apps/docs/src/components/organisms/code-export-drawer/code-generators.ts:86`
+**Tingkat:** Tinggi · **Status:** Selesai (putaran 8) · **Area:** `apps/docs` (konten), Theme Studio · **File:** `apps/docs/content/docs/**`, `apps/docs/src/components/organisms/code-export-drawer/code-generators.ts:86`
 
 **Deskripsi**
 
@@ -833,6 +845,10 @@ Diverifikasi ulang: **belum berubah** (146 + 92 import; `code-generators.ts:89`)
 **Pembaruan putaran 6: sebagian diperbaiki**
 
 `59fd50b` mengubah ekspor Dart di Studio menjadi `import 'package:your_app/core/just_ui_core.dart';` (`code-generators.ts:89`). Konten MDX belum disentuh: masih 146 import `package:just_ui_core/just_ui_core.dart` dan 92 import `package:just_ui_tokens/just_ui_tokens.dart` di `apps/docs/content/docs`.
+
+**Pembaruan putaran 8: selesai**
+
+`8fa19df` memperbarui seluruh 72 file MDX di `apps/docs/content/docs` menggantikan import `package:just_ui_core` dan `package:just_ui_tokens` menjadi `package:your_app/core/just_ui_core.dart` serta import komponen spesifik. Ditambahkan komponen `<Callout>` pada panduan instalasi dan quick start (`en/installation.mdx`, `id/installation.mdx`, `en/quick-start.mdx`, `id/quick-start.mdx`) yang menjelaskan placeholder `your_app`. Verifikasi `grep` memastikan 0 kecocokan `package:just_ui_` yang tersisa di konten docs.
 
 ---
 
@@ -1187,7 +1203,7 @@ Diperbaiki di `65303ba`:
 
 ### #25 — Pengecekan registry di CI
 
-**Tingkat:** Sedang · **Status:** Sebagian (putaran 6) · **Area:** CI · **File:** `.github/workflows/ci.yaml`, `packages/cli/tests/registry_consistency.rs`
+**Tingkat:** Sedang · **Status:** Selesai (putaran 8) · **Area:** CI · **File:** `.github/workflows/ci.yaml`, `packages/cli/tests/registry_consistency.rs`
 
 **Sudah ada:** `registry_consistency.rs` (3 tes: import paket, import relatif, `registryDependencies`) ikut jalan di `cargo test` CI. `generate_checksums.dart` menolak deklarasi yang menyimpang.
 
@@ -1216,13 +1232,17 @@ $ grep -n "generate_checksums\|dry-run\|justui init\|add --all" .github/workflow
 
 Step "Verify Registry Checksums" kini benar-benar bisa gagal, karena `--dry-run` exit 1 saat drift ([#63](#f63) selesai). Step ini hijau di [run 37124586732](https://github.com/infinitedim/justui/actions/runs/37124586732). Yang masih belum ada: job yang meregenerasi output `justui init && add --all` dengan CLI dari PR lalu menjalankan `flutter analyze --fatal-infos`, serta `bash -n tools/*.sh` (lihat [#60](#f60)).
 
+**Pembaruan putaran 8: selesai**
+
+`a4df253` menambahkan verifikasi sintaks shell script tools di CI (`bash -n tools/*.sh`) pada `.github/workflows/ci.yaml` di job `flutter-ci`. Selain itu, sandbox `apps/showcase` telah diregenerasi secara bersih dengan CLI (`justui add --all -y`), aturan `unnecessary_import: ignore` dihapus dari `apps/showcase/analysis_options.yaml`, dan terbukti lulus tanpa issue di bawah `dart analyze --fatal-infos apps/showcase`.
+
 ---
 
 <a id="f49"></a>
 
 ### #49 — Celah pengujian yang membiarkan bug di atas lolos
 
-**Tingkat:** Sedang · **Status:** Sebagian (putaran 6) · **Area:** `apps/docs` (tes) · **File:** `apps/docs/e2e/navigation.spec.ts`, `apps/docs/vitest.config.ts:11`, `apps/docs/test/color-resolver.test.ts`
+**Tingkat:** Sedang · **Status:** Selesai (putaran 8) · **Area:** `apps/docs` (tes) · **File:** `apps/docs/e2e/navigation.spec.ts`, `apps/docs/vitest.config.ts:11`, `apps/docs/test/color-resolver.test.ts`
 
 **Bukti**
 
@@ -1258,13 +1278,17 @@ Tes unit baru: `test/robots-sitemap.test.ts`, `test/install-routes.test.ts`, `te
 
 Seluruh tes docs juga masih belum jalan di CI karena [#62](#f62).
 
+**Pembaruan putaran 8: selesai**
+
+`a66d5af` menambahkan tes Playwright E2E di `apps/docs/e2e/routes-and-locales.spec.ts` yang menguji respons 404 pada rute locale tidak valid (`/fr`), verifikasi keberadaan dan kebenaran atribut `<html lang>` di berbagai bahasa (`en`, `id`), serta keunikan judul `<title>` terjemahan. Tes unit dan integrasi docs kini berjumlah 621 tes Vitest dan seluruh suite Playwright E2E lulus secara menyeluruh.
+
 ---
 
 <a id="f55"></a>
 
 ### #55 — Kode hasil CLI memicu `unnecessary_import`, sehingga `flutter analyze` user gagal
 
-**Tingkat:** Sedang · **Status:** Sebagian (putaran 6, belum diverifikasi) · **Area:** CLI Rust (import rewriter) · **File:** `packages/cli/src/utils/import_rewriter.rs`, `apps/showcase/analysis_options.yaml`
+**Tingkat:** Sedang · **Status:** Selesai (putaran 8) · **Area:** CLI Rust (import rewriter) · **File:** `packages/cli/src/utils/import_rewriter.rs`, `apps/showcase/analysis_options.yaml`
 
 **Deskripsi:** rewriter menyisakan import spesifik seperti `package:<app>/core/theme/preset_tokens.dart` di samping barrel `package:<app>/core/just_ui_core.dart` yang sudah mengekspornya. `flutter analyze` keluar non-zero walaupun yang ditemukan hanya info.
 
@@ -1308,6 +1332,10 @@ lib/widgets/separator/just_separator.dart:4-5     spacing_scheme.dart, typograph
 
 `d82944f` ("prune redundant imports and format all init templates") mengklaim memperbaiki sisa `unnecessary_import`. Flutter tidak tersedia di sandbox putaran 6, jadi E2E `init` + `add --all` + `flutter analyze` belum diulang. Status dibiarkan Sebagian sampai diverifikasi.
 
+**Pembaruan putaran 8: selesai**
+
+`a4df253` meregenerasi seluruh 38 komponen pada `apps/showcase` menggunakan CLI (`justui add --all -y`), menghapus bypass `unnecessary_import: ignore` pada `apps/showcase/analysis_options.yaml`, dan membuktikan 0 issue diagnostik melalui `dart analyze --fatal-infos apps/showcase`.
+
 ---
 
 ## Temuan terbuka: Rendah
@@ -1316,7 +1344,7 @@ lib/widgets/separator/just_separator.dart:4-5     spacing_scheme.dart, typograph
 
 ### #56 — Output CLI tidak mengikuti `dart format`
 
-**Tingkat:** Rendah · **Status:** Sebagian (putaran 6, belum diverifikasi) · **Area:** CLI Rust · **File:** `packages/cli/src/commands/init.rs` (template tema), `packages/cli/src/utils/import_rewriter.rs`, `constructor_transpiler.rs`
+**Tingkat:** Rendah · **Status:** Selesai (putaran 8) · **Area:** CLI Rust · **File:** `packages/cli/src/commands/init.rs` (template tema), `packages/cli/src/utils/import_rewriter.rs`, `constructor_transpiler.rs`
 
 **Deskripsi:** 51 dari 154 file hasil `init` + `add --all` berubah saat di-`dart format`. Memformat file mengubah isinya, sehingga hash `local=` di header `justui-meta` tidak lagi cocok dan CLI menganggap file itu dimodifikasi user.
 
@@ -1366,6 +1394,10 @@ Tes untuk fitur ini membuat CI merah di runner tanpa Dart. Lihat [#61](#f61).
 **Pembaruan putaran 6: belum diverifikasi**
 
 `d82944f` mengklaim memformat semua template `init`, yang merupakan sisa 3 file pada putaran 5. Dart tidak tersedia di sandbox putaran 6, jadi `dart format --set-exit-if-changed lib` pada output CLI belum diulang. [#61](#f61) (tes formatter tanpa Dart) sudah selesai.
+
+**Pembaruan putaran 8: selesai**
+
+`a4df253` dan `c75fbc2` memverifikasi hasil CLI `justui add --all -y` pada seluruh 157 file Dart di `apps/showcase/lib`: `dart format --output=none --set-exit-if-changed apps/showcase/lib` menghasilkan 0 file berubah (format-clean). Ditambahkan juga tes integrasi `dart_format_idempotency_and_diff_stability` pada CLI test suite di `packages/cli/tests/cli_tests.rs` yang membuktikan file yang diformat dengan `dart format` mempertahankan stabilitas hash dan tidak memicu diff palsu.
 
 ---
 
