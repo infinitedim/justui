@@ -266,9 +266,9 @@ The checksum tool updates `index.json` automatically, but you must ensure the co
 | `pubDependencies`      | External pub.dev packages required (will be auto-added to `pubspec.yaml`)      |
 | `files`                | Populated automatically by the checksum tool                                   |
 
-### Step 4 — Export from `packages/core/`
+### Step 4 - Do not export components from packages/core/
 
-Add your component to the barrel export at `packages/core/lib/just_ui_core.dart`.
+Do not add components to `packages/core/lib/just_ui_core.dart`. In JustUI, `just_ui_core.dart` exports only core primitives, theme extensions, and foundation types. Components are standalone files copied directly into consumer applications via the JustUI CLI (`lib/widgets/<name>/`).
 
 ### Step 5 — Write tests
 
