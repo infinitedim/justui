@@ -376,6 +376,13 @@ mod cli_integration {
             .assert()
             .failure()
             .code(1);
+
+        justui()
+            .current_dir(dir.path())
+            .args(["create", "my_widget"])
+            .assert()
+            .failure()
+            .code(1);
     }
 
     #[test]
@@ -629,6 +636,8 @@ mod cli_integration {
             .current_dir(dir.path())
             .args(["create", "my_widget"])
             .assert()
+            .failure()
+            .code(1)
             .stderr(predicate::str::contains("Project not initialized"));
     }
 
@@ -1649,5 +1658,135 @@ mod cli_integration {
                 .unwrap();
         assert!(theme_file.contains("0xFFE11D48"));
         assert!(theme_file.contains("final JustThemeData justTheme = justThemeDark;"));
+    }
+
+    #[test]
+    fn list_with_root_json_flag_works() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let registry_dir = dir.path().join("mock_registry");
+        std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "0.1.0",
+                "presets": ["default"],
+                "components": [
+                    {
+                        "name": "button",
+                        "version": "0.1.0",
+                        "description": "Button component",
+                        "category": "primitives",
+                        "supportedPresets": ["default"],
+                        "registryDependencies": [],
+                        "pubDependencies": {},
+                        "files": {
+                            "default": [{
+                                "name": "just_button.dart",
+                                "path": "components/button/just_button.dart",
+                                "checksum": "sha256:111"
+                            }]
+                        }
+                    }
+                ]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(dir.path().join("pubspec.yaml"), "name: test_app\n").unwrap();
+        std::fs::write(
+            dir.path().join("justui.config.yaml"),
+            format!(
+                "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\nregistry_url: {}\n",
+                registry_dir.display()
+            ),
+        )
+        .unwrap();
+
+        justui()
+            .current_dir(dir.path())
+            .args(["--json", "list"])
+            .assert()
+            .success()
+            .stdout(predicate::str::contains("\"name\": \"button\""));
+    }
+
+    #[test]
+    fn dart_format_idempotency_and_diff_stability() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let registry_dir = dir.path().join("mock_registry");
+        std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+
+        let remote_content = "class JustButton {\n  final int count;\n  const JustButton(this.count);\n}\n";
+        let hash = {
+            use sha2::{Digest, Sha256};
+            let mut h = Sha256::new();
+            h.update(remote_content.as_bytes());
+            hex::encode(h.finalize())
+        };
+
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "0.1.0",
+                "presets": ["default"],
+                "components": [{
+                    "name": "button",
+                    "version": "0.1.0",
+                    "description": "Button",
+                    "category": "primitives",
+                    "supportedPresets": ["default"],
+                    "registryDependencies": [],
+                    "pubDependencies": {},
+                    "files": {
+                        "default": [{
+                            "name": "just_button.dart",
+                            "path": "components/button/just_button.dart",
+                            "checksum": format!("sha256:{}", hash)
+                        }]
+                    }
+                }]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(
+            registry_dir.join("components/button/just_button.dart"),
+            remote_content,
+        )
+        .unwrap();
+
+        std::fs::write(dir.path().join("pubspec.yaml"), "name: test_app\n").unwrap();
+        std::fs::write(
+            dir.path().join("justui.config.yaml"),
+            format!(
+                "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\nregistry_url: {}\n",
+                registry_dir.display()
+            ),
+        )
+        .unwrap();
+
+        justui()
+            .current_dir(dir.path())
+            .args(["add", "button", "-y"])
+            .assert()
+            .success();
+
+        let button_path = dir.path().join("lib/ui/button/just_button.dart");
+        assert!(button_path.exists());
+        let _ = std::process::Command::new("dart")
+            .arg("format")
+            .arg(&button_path)
+            .status();
+
+        justui()
+            .current_dir(dir.path())
+            .args(["diff", "button"])
+            .assert()
+            .success()
+            .stderr(predicate::str::contains("Up to date"))
+            .stderr(predicate::str::contains("Modified locally").not());
     }
 }

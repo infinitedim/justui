@@ -12,21 +12,15 @@ pub fn run(
 ) -> Result<()> {
     let config_path = std::path::Path::new(JustUIConfig::CONFIG_FILE_NAME);
     if !config_path.exists() {
-        logger::error(
-            "Project not initialized. Please run \"justui init\" in the root directory first.",
+        anyhow::bail!(
+            "Project not initialized. Please run \"justui init\" in the root directory first."
         );
-        return Ok(());
     }
 
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
-            logger::error(&format!(
-                "Failed to parse {}: {}",
-                JustUIConfig::CONFIG_FILE_NAME,
-                e
-            ));
-            return Ok(());
+            anyhow::bail!("Failed to parse {}: {}", JustUIConfig::CONFIG_FILE_NAME, e);
         }
     };
 
@@ -35,8 +29,7 @@ pub fn run(
         None => {
             let n = prompt::ask("Enter custom component name", "");
             if n.trim().is_empty() {
-                logger::error("Component name cannot be empty.");
-                return Ok(());
+                anyhow::bail!("Component name cannot be empty.");
             }
             n
         }
@@ -45,12 +38,11 @@ pub fn run(
     let name_regex = Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*$").unwrap();
     let snake_name = to_snake_case(&component_name);
     if !name_regex.is_match(&snake_name) {
-        logger::error(&format!(
+        anyhow::bail!(
             "Invalid component name \"{}\". \
              It must contain only letters, numbers, or underscores.",
             component_name
-        ));
-        return Ok(());
+        );
     }
 
     let pascal_name = to_pascal_case(&snake_name);
@@ -370,8 +362,8 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap();
         let _guard = crate::utils::set_dir(temp_dir.path());
 
-        // 1. Uninitialized -> returns Ok with warning
-        assert!(run(None, None, false, false).is_ok());
+        // 1. Uninitialized -> returns Err
+        assert!(run(None, None, false, false).is_err());
 
         // 2. Initialized -> creates component files
         std::fs::write("pubspec.yaml", "name: test_app").unwrap();
