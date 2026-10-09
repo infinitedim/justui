@@ -374,6 +374,7 @@ mod tests {
         .unwrap();
 
         assert!(run(Some("my_widget".to_string()), None, false, true).is_ok());
-        assert!(run(None, None, false, false).is_ok());
+        // Non-interactive / empty prompt returns Err (Finding #10)
+        assert!(run(None, None, false, false).is_err());
     }
 }
