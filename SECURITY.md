@@ -4,21 +4,23 @@ We take the security of JustUI seriously. If you believe you have found a securi
 
 ## Supported Versions
 
-We actively support and provide security updates for the following versions of JustUI packages:
+We actively support and provide security updates for the latest release on the `main` branch:
 
-| Version | Supported |
-| ------- | --------- |
-| < 1.0.x | Yes       |
+| Version        | Supported |
+| -------------- | --------- |
+| Latest release | Yes       |
+| Older releases | No        |
 
 ## Reporting a Vulnerability
 
-**Please do not report security vulnerabilities through public GitHub issues.**
+**Please do not report security vulnerabilities through public GitHub issues or discussions.**
 
-Instead, please report vulnerabilities privately by emailing us at **support@justui.dev**.
+Instead, report vulnerabilities privately through GitHub Private Vulnerability Reporting:
+https://github.com/infinitedim/justui/security/advisories/new
 
 When reporting, please include:
 - A description of the vulnerability and its potential impact.
-- Steps to reproduce, including any sample code or environment details.
-- Any suggested remediations if available.
+- Steps to reproduce, including any sample code, manifests, or environment details.
+- Any suggested remediations or mitigations if available.
 
-We will acknowledge receipt of your report within **48 hours** and provide a timeline for triage and resolution. We request that you follow responsible disclosure guidelines and give us time to patch the issue before making it public.
+We provide best-effort triage and resolution timelines for confirmed security reports. We request that you follow coordinated vulnerability disclosure practices and give maintainers time to patch the issue before making it public.
