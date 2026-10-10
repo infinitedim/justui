@@ -1,3 +1,11 @@
+#![expect(
+    clippy::missing_errors_doc,
+    clippy::missing_panics_doc,
+    clippy::needless_pass_by_value,
+    clippy::too_many_lines,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Result;
 use crossterm::{event, terminal::enable_raw_mode};
 use ratatui::{Terminal, backend::CrosstermBackend, widgets::ListState};
@@ -23,7 +31,7 @@ enum InputMode {
 enum KeyAction {
     None,
     Quit,
-    #[allow(unused)]
+    #[allow(unused, reason = "reserved for single item direct install in tui")]
     Install(usize),
     ToggleSelect(usize),
     SelectAll,
@@ -50,7 +58,7 @@ pub fn run(category: Option<String>, json: bool) -> Result<()> {
         }
         Err(e) => {
             pb_index.finish_and_clear();
-            anyhow::bail!("Failed to list components: {}", e);
+            anyhow::bail!("Failed to list components: {e}");
         }
     };
 

@@ -1,3 +1,10 @@
+#![expect(
+    clippy::manual_let_else,
+    clippy::missing_errors_doc,
+    clippy::too_many_lines,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Result;
 use std::collections::HashSet;
 
@@ -33,7 +40,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
         }
         Err(e) => {
             pb_index.finish_and_clear();
-            anyhow::bail!("Failed to perform update: {}", e);
+            anyhow::bail!("Failed to perform update: {e}");
         }
     };
 
@@ -50,7 +57,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
     let entries = match std::fs::read_dir(components_dir) {
         Ok(e) => e,
         Err(e) => {
-            anyhow::bail!("Failed to perform update: {}", e);
+            anyhow::bail!("Failed to perform update: {e}");
         }
     };
     for entry in entries.flatten() {
@@ -84,7 +91,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
 
         for file in component.files_for_preset(&config.preset) {
             let local_file_name = component.local_file_name(&file.name);
-            let target_path = format!("{}/{}", target_dir, local_file_name);
+            let target_path = format!("{target_dir}/{local_file_name}");
             let local_file = std::path::Path::new(&target_path);
 
             if !local_file.exists() {
@@ -125,12 +132,14 @@ pub fn run(auto_yes: bool) -> Result<()> {
     let selected_indices: Vec<usize> = if auto_yes {
         let names_str = outdated_components.join(", ");
         logger::stdout(&format!(
-            "[auto] Updating all outdated components: {}",
-            names_str
+            "[auto] Updating all outdated components: {names_str}"
         ));
         (0..outdated_components.len()).collect()
     } else {
-        let refs: Vec<&str> = outdated_components.iter().map(|s| s.as_str()).collect();
+        let refs: Vec<&str> = outdated_components
+            .iter()
+            .map(std::string::String::as_str)
+            .collect();
         let indices = prompt::select_multiple("Select components to update", &refs);
         if indices.is_empty() {
             logger::warning("No updates performed.");
@@ -143,7 +152,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
     let mut has_error = false;
     for idx in selected_indices {
         let comp_name = &outdated_components[idx];
-        logger::info(&format!("Updating component \"{}\"...", comp_name));
+        logger::info(&format!("Updating component \"{comp_name}\"..."));
         if let Err(e) = add_component(
             comp_name,
             &index,
@@ -159,7 +168,7 @@ pub fn run(auto_yes: bool) -> Result<()> {
             &config.preset,
             config.dart_target,
         ) {
-            logger::error(&format!("Failed to update \"{}\": {}", comp_name, e));
+            logger::error(&format!("Failed to update \"{comp_name}\": {e}"));
             has_error = true;
         }
     }
@@ -262,14 +271,13 @@ mod tests {
                                     {{
                                         "name": "just_button.dart",
                                         "path": "just_button.dart",
-                                        "checksum": "sha256:{}"
+                                        "checksum": "sha256:{new_hash}"
                                     }}
                                 ]
                             }}
                         }}
                     ]
-                }}"#,
-                new_hash
+                }}"#
             ),
         )
         .unwrap();

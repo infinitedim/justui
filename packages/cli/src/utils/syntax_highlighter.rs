@@ -29,7 +29,7 @@ pub fn highlight_code(code: &str, extension: &str) -> Vec<String> {
     let mut highlighted_lines = Vec::new();
 
     for line in code.lines() {
-        let line_with_nl = format!("{}\n", line);
+        let line_with_nl = format!("{line}\n");
         match highlighter.highlight_line(&line_with_nl, ps) {
             Ok(ranges) => {
                 let escaped = as_24_bit_terminal_escaped(&ranges[..], false);

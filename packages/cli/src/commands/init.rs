@@ -1,3 +1,11 @@
+#![expect(
+    clippy::missing_errors_doc,
+    clippy::missing_panics_doc,
+    clippy::too_many_lines,
+    clippy::unwrap_used,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Result;
 use regex::Regex;
 
@@ -17,7 +25,7 @@ fn to_lib_path(input: &str) -> String {
     if trimmed.starts_with("lib/") {
         trimmed.to_string()
     } else {
-        format!("lib/{}", trimmed)
+        format!("lib/{trimmed}")
     }
 }
 
@@ -32,7 +40,7 @@ fn resolve_shared_dir(raw_input: &str, components_dir: &str, default_full_path: 
         return to_lib_path(trimmed);
     }
 
-    format!("{}/{}", components_dir, trimmed)
+    format!("{components_dir}/{trimmed}")
 }
 
 #[derive(Debug, Clone, Default)]
@@ -115,7 +123,7 @@ pub fn run(args: InitArgs) -> Result<()> {
         to_lib_path(&d)
     } else if args.auto_yes {
         let dir = "lib/widgets".to_string();
-        logger::stdout(&format!("[auto] Using components dir: {}", dir));
+        logger::stdout(&format!("[auto] Using components dir: {dir}"));
         dir
     } else {
         logger::stdout("");
@@ -135,7 +143,7 @@ pub fn run(args: InitArgs) -> Result<()> {
         to_lib_path(&t)
     } else if args.auto_yes {
         let dir = "lib/tokens".to_string();
-        logger::stdout(&format!("[auto] Using tokens dir: {}", dir));
+        logger::stdout(&format!("[auto] Using tokens dir: {dir}"));
         dir
     } else {
         logger::stdout("");
@@ -143,14 +151,13 @@ pub fn run(args: InitArgs) -> Result<()> {
         to_lib_path(&tokens_input)
     };
 
-    let shared_dir_default = format!("{}/shared", components_dir);
+    let shared_dir_default = format!("{components_dir}/shared");
     let shared_dir = if args.auto_yes {
-        logger::stdout(&format!("[auto] Using shared dir: {}", shared_dir_default));
+        logger::stdout(&format!("[auto] Using shared dir: {shared_dir_default}"));
         shared_dir_default
     } else {
         logger::stdout(&format!(
-            "  (This folder will be created relative to '{}', e.g. '{}')",
-            components_dir, shared_dir_default
+            "  (This folder will be created relative to '{components_dir}', e.g. '{shared_dir_default}')"
         ));
         let raw_shared_dir = prompt::ask(
             "Enter shared components folder name (leave blank for default)",
@@ -164,18 +171,17 @@ pub fn run(args: InitArgs) -> Result<()> {
         let trimmed = s.trim();
         if !hex_regex.is_match(trimmed) {
             anyhow::bail!(
-                "Invalid HEX color format: \"{}\". Expected format e.g. #3b82f6 or 3b82f6.",
-                trimmed
+                "Invalid HEX color format: \"{trimmed}\". Expected format e.g. #3b82f6 or 3b82f6."
             );
         }
         if trimmed.starts_with('#') {
             trimmed.to_string()
         } else {
-            format!("#{}", trimmed)
+            format!("#{trimmed}")
         }
     } else if args.auto_yes {
         let color = "#3b82f6".to_string();
-        logger::stdout(&format!("[auto] Using brand color: {}", color));
+        logger::stdout(&format!("[auto] Using brand color: {color}"));
         color
     } else {
         loop {
@@ -191,14 +197,13 @@ pub fn run(args: InitArgs) -> Result<()> {
     if clean_hex.len() == 3 {
         clean_hex = clean_hex.chars().flat_map(|c| [c, c]).collect();
     }
-    let hex_code = format!("0xFF{}", clean_hex);
+    let hex_code = format!("0xFF{clean_hex}");
 
     if let Some(ref feat) = args.experimental
         && feat != "auto-detect-flutter-version"
     {
         logger::warning(&format!(
-            "Unknown experimental feature: \"{}\". Ignoring.",
-            feat
+            "Unknown experimental feature: \"{feat}\". Ignoring."
         ));
     }
 
@@ -208,29 +213,28 @@ pub fn run(args: InitArgs) -> Result<()> {
             "standard" => crate::utils::env_resolver::DartTarget::Standard,
             other => {
                 logger::warning(&format!(
-                    "Unknown dart_target: \"{}\". Falling back to auto-detection.",
-                    other
+                    "Unknown dart_target: \"{other}\". Falling back to auto-detection."
                 ));
                 crate::utils::env_resolver::resolve_dart_target(std::path::Path::new("."))
             }
         }
     } else {
         let target = crate::utils::env_resolver::resolve_dart_target(std::path::Path::new("."));
-        logger::info(&format!("Auto-detected dart_target: {:?}", target));
+        logger::info(&format!("Auto-detected dart_target: {target:?}"));
         target
     };
 
     let config = JustUIConfig {
-        components_dir: components_dir.clone(),
+        components_dir,
         tokens_dir: tokens_dir.clone(),
-        shared_dir: shared_dir.clone(),
+        shared_dir,
         registry_url: JustUIConfig::DEFAULT_REGISTRY_URL.to_string(),
         preset: preset.clone(),
         color_space: color_space.clone(),
         dart_target,
     };
     std::fs::write(config_path, config.to_yaml_string())
-        .map_err(|e| anyhow::anyhow!("Failed to initialize JustUI: {}", e))?;
+        .map_err(|e| anyhow::anyhow!("Failed to initialize JustUI: {e}"))?;
 
     logger::success("JustUI configuration initialized.");
     logger::info(&format!(
@@ -252,7 +256,7 @@ pub fn run(args: InitArgs) -> Result<()> {
     logger::success("Design tokens & Core engine scaffolded locally.");
 
     std::fs::create_dir_all("lib/core/theme")
-        .map_err(|e| anyhow::anyhow!("Failed to create lib/core/theme: {}", e))?;
+        .map_err(|e| anyhow::anyhow!("Failed to create lib/core/theme: {e}"))?;
 
     let preset_param = if preset == "neobrutalism" {
         "\n  preset: JustThemePreset.neobrutalism,"
@@ -277,29 +281,22 @@ pub fn run(args: InitArgs) -> Result<()> {
          \n\
          /// Dynamically generated light theme from brand seed color.\n\
          final JustThemeData justThemeLight = JustThemeData.fromSeed(\n\
-           const Color({}),\n\
-           isDark: false,{}{}\n\
+           const Color({hex_code}),\n\
+           isDark: false,{preset_param}{color_space_param}\n\
          );\n\
          \n\
          /// Dynamically generated dark theme from brand seed color.\n\
          final JustThemeData justThemeDark = JustThemeData.fromSeed(\n\
-           const Color({}),\n\
-           isDark: true,{}{}\n\
+           const Color({hex_code}),\n\
+           isDark: true,{preset_param}{color_space_param}\n\
          );\n\
          \n\
          /// Default bootstrap theme matching configuration.\n\
-         final JustThemeData justTheme = {};\n",
-        hex_code,
-        preset_param,
-        color_space_param,
-        hex_code,
-        preset_param,
-        color_space_param,
-        default_theme_ref
+         final JustThemeData justTheme = {default_theme_ref};\n"
     );
 
     std::fs::write("lib/core/theme/just_theme.dart", theme_content)
-        .map_err(|e| anyhow::anyhow!("Failed to write theme file: {}", e))?;
+        .map_err(|e| anyhow::anyhow!("Failed to write theme file: {e}"))?;
     crate::utils::dart_formatter::format_and_refresh_metadata(std::path::Path::new(
         "lib/core/theme/just_theme.dart",
     ));

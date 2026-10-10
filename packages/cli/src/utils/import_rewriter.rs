@@ -1,3 +1,10 @@
+#![expect(
+    clippy::items_after_statements,
+    clippy::too_many_lines,
+    clippy::unwrap_used,
+    reason = "legacy: fix when touched"
+)]
+
 use regex::Regex;
 use std::collections::HashMap;
 use std::sync::OnceLock;
@@ -34,7 +41,7 @@ pub fn local_package_subpath(subpath: &str) -> &str {
 
 pub fn normalize_shared_file_name(file_name: &str) -> String {
     if let Some(rest) = file_name.strip_prefix("_shared_") {
-        format!("just_{}", rest)
+        format!("just_{rest}")
     } else {
         file_name.to_string()
     }
@@ -58,10 +65,7 @@ pub fn strip_metadata(content: &str) -> String {
 
 pub fn inject_metadata(content: &str, registry_hash: &str, local_hash: &str) -> String {
     let clean = strip_metadata(content);
-    format!(
-        "// justui-meta: registry={} local={}\n{}",
-        registry_hash, local_hash, clean
-    )
+    format!("// justui-meta: registry={registry_hash} local={local_hash}\n{clean}")
 }
 
 fn unix_dirname(path: &str) -> &str {
@@ -78,7 +82,7 @@ fn unix_join(base: &str, path: &str) -> String {
     if base == "." || base.is_empty() {
         return path.to_string();
     }
-    format!("{}/{}", base, path)
+    format!("{base}/{path}")
 }
 
 fn normalize_unix_path(path: &str) -> String {
@@ -111,7 +115,11 @@ fn path_relative_unix(target: &str, from_dir: &str) -> String {
 
     let up_count = from_parts.len() - common_len;
     let rel: Vec<String> = std::iter::repeat_n("..".to_string(), up_count)
-        .chain(target_parts[common_len..].iter().map(|s| s.to_string()))
+        .chain(
+            target_parts[common_len..]
+                .iter()
+                .map(std::string::ToString::to_string),
+        )
         .collect();
 
     if rel.is_empty() {
@@ -124,9 +132,9 @@ fn path_relative_unix(target: &str, from_dir: &str) -> String {
 /// Canonicalizes a registry relative path into a flat logical path without any preset folder.
 ///
 /// Examples:
-/// - "components/accordion/neobrutalism/just_accordion.dart" -> "components/accordion/just_accordion.dart"
-/// - "components/shared/default/_shared_pressable.dart" -> "components/shared/_shared_pressable.dart"
-/// - "components/button/just_button_theme.dart" -> "components/button/just_button_theme.dart"
+/// - "`components/accordion/neobrutalism/just_accordion.dart`" -> "`components/accordion/just_accordion.dart`"
+/// - "components/shared/default/_`shared_pressable.dart`" -> "components/shared/_`shared_pressable.dart`"
+/// - "`components/button/just_button_theme.dart`" -> "`components/button/just_button_theme.dart`"
 pub fn canonicalize_registry_path(path: &str) -> String {
     let parts: Vec<&str> = path.split('/').filter(|s| !s.is_empty()).collect();
     if parts.len() == 4 && parts[0] == "components" {
@@ -168,7 +176,7 @@ impl<'a> CanonicalRegistryResolver<'a> {
                     let dir = unix_dirname(&canonical);
                     let filename = canonical.split('/').next_back().unwrap_or(&canonical);
                     if let Some(stripped) = filename.strip_prefix("_shared_") {
-                        let just_key = format!("{}/just_{}", dir, stripped);
+                        let just_key = format!("{dir}/just_{stripped}");
                         map.insert(
                             just_key,
                             ResolvedTarget {
@@ -177,7 +185,7 @@ impl<'a> CanonicalRegistryResolver<'a> {
                             },
                         );
                     } else if let Some(stripped) = filename.strip_prefix("just_") {
-                        let shared_key = format!("{}/_shared_{}", dir, stripped);
+                        let shared_key = format!("{dir}/_shared_{stripped}");
                         map.insert(
                             shared_key,
                             ResolvedTarget {
@@ -206,12 +214,12 @@ impl<'a> CanonicalRegistryResolver<'a> {
             .next_back()
             .unwrap_or(resolved_flat_path);
         if let Some(stripped) = filename.strip_prefix("_shared_") {
-            let just_key = format!("{}/just_{}", dir, stripped);
+            let just_key = format!("{dir}/just_{stripped}");
             if let Some(target) = self.index_by_logical_path.get(&just_key) {
                 return Some(target);
             }
         } else if let Some(stripped) = filename.strip_prefix("just_") {
-            let shared_key = format!("{}/_shared_{}", dir, stripped);
+            let shared_key = format!("{dir}/_shared_{stripped}");
             if let Some(target) = self.index_by_logical_path.get(&shared_key) {
                 return Some(target);
             }
@@ -221,7 +229,10 @@ impl<'a> CanonicalRegistryResolver<'a> {
     }
 }
 
-#[allow(clippy::too_many_arguments)]
+#[allow(
+    clippy::too_many_arguments,
+    reason = "legacy rewrite engine requires path, component, and config context"
+)]
 pub fn rewrite(
     content: &str,
     source_registry_path: &str,
@@ -247,22 +258,22 @@ pub fn rewrite(
             } else if comp.internal {
                 shared_dir.to_string()
             } else {
-                format!("{}/{}", components_dir, current_component_name)
+                format!("{components_dir}/{current_component_name}")
             }
         }
-        None => format!("{}/{}", components_dir, current_component_name),
+        None => format!("{components_dir}/{current_component_name}"),
     };
 
     let filename = source_registry_path
         .split('/')
         .next_back()
         .unwrap_or(source_registry_path);
-    let local_filename = if current_component.map(|c| c.internal).unwrap_or(false) {
+    let local_filename = if current_component.is_some_and(|c| c.internal) {
         normalize_shared_file_name(filename)
     } else {
         filename.to_string()
     };
-    let current_file_path = format!("{}/{}", current_dir, local_filename);
+    let current_file_path = format!("{current_dir}/{local_filename}");
 
     const THEME_SUFFIXES: &[&str] = &[
         "theme_provider.dart",
@@ -314,20 +325,13 @@ pub fn rewrite(
                     || local_subpath.contains("schemes/")
                 {
                     return format!(
-                        "{} 'package:{}/core/just_ui_core.dart'{};",
-                        kw, package_name, trailing
+                        "{kw} 'package:{package_name}/core/just_ui_core.dart'{trailing};"
                     );
                 }
-                return format!(
-                    "{} 'package:{}/core/{}'{};",
-                    kw, package_name, local_subpath, trailing
-                );
+                return format!("{kw} 'package:{package_name}/core/{local_subpath}'{trailing};");
             }
             if import_path == "package:just_ui_core" {
-                return format!(
-                    "{} 'package:{}/core/just_ui_core.dart'{};",
-                    kw, package_name, trailing
-                );
+                return format!("{kw} 'package:{package_name}/core/just_ui_core.dart'{trailing};");
             }
 
             if import_path.starts_with("package:") || import_path.starts_with("dart:") {
@@ -348,10 +352,7 @@ pub fn rewrite(
                     .any(|suffix| resolved_flat_path.ends_with(suffix));
 
             if is_theme_import {
-                return format!(
-                    "{} 'package:{}/core/just_ui_core.dart'{};",
-                    kw, package_name, trailing
-                );
+                return format!("{kw} 'package:{package_name}/core/just_ui_core.dart'{trailing};");
             }
 
             if let Some(target) = resolver.resolve(&resolved_flat_path) {
@@ -372,25 +373,24 @@ pub fn rewrite(
                     file.name.clone()
                 };
 
-                let target_file_path = format!("{}/{}", target_dir, local_target_file_name);
+                let target_file_path = format!("{target_dir}/{local_target_file_name}");
                 let relative_import = path_relative_unix(&target_file_path, current_file_dir);
-                return format!("{} '{}'{};", kw, relative_import, trailing);
+                return format!("{kw} '{relative_import}'{trailing};");
             }
 
             logger::warning(&format!(
-                "Relative {} \"{}\" in component \"{}\" \
-                 (source file: \"{}\") could not be resolved in the \
-                 registry. The import/export will be left as-is and may need manual fixing.",
-                kw, import_path, current_component_name, source_registry_path
+                "Relative {kw} \"{import_path}\" in component \"{current_component_name}\" \
+                 (source file: \"{source_registry_path}\") could not be resolved in the \
+                 registry. The import/export will be left as-is and may need manual fixing."
             ));
             caps[0].to_string()
         })
         .into_owned();
 
-    let full_core_target = format!("package:{}/core/just_ui_core.dart", package_name);
-    let tokens_target = format!("package:{}/tokens/just_ui_tokens.dart", package_name);
-    let core_theme_prefix = format!("package:{}/core/theme/", package_name);
-    let core_overlay_prefix = format!("package:{}/core/overlay/", package_name);
+    let full_core_target = format!("package:{package_name}/core/just_ui_core.dart");
+    let tokens_target = format!("package:{package_name}/tokens/just_ui_tokens.dart");
+    let core_theme_prefix = format!("package:{package_name}/core/theme/");
+    let core_overlay_prefix = format!("package:{package_name}/core/overlay/");
 
     let has_full_core_import = import_regex().captures_iter(&rewritten).any(|caps| {
         &caps[1] == "import" && caps[2] == full_core_target && !caps[3].contains("show")
@@ -609,13 +609,13 @@ mod tests {
             components: vec![],
         };
 
-        let content = r#"import 'package:just_ui_core/just_ui_core.dart';
+        let content = r"import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 import 'package:flutter/widgets.dart' show BuildContext, Widget;
 import 'package:flutter/math.dart' as math;
 import '../../../just_ui_core.dart';
 export 'just_carousel_style.dart';
-"#;
+";
 
         let rewritten = rewrite(
             content,
@@ -673,11 +673,11 @@ export 'just_carousel_style.dart';
             components: vec![],
         };
 
-        let content = r#"import 'package:flutter/widgets.dart';
+        let content = r"import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart'
     show JustColorScheme, JustMotionProfile;
-"#;
+";
 
         let rewritten = rewrite(
             content,
@@ -738,7 +738,7 @@ import 'package:just_ui_tokens/just_ui_tokens.dart'
         let shared_comp = RegistryComponent {
             name: "_shared_pressable".to_string(),
             version: "0.14.0".to_string(),
-            description: "".to_string(),
+            description: String::new(),
             category: "internal".to_string(),
             internal: true,
             supported_presets: vec!["default".to_string()],
@@ -760,7 +760,7 @@ import 'package:just_ui_tokens/just_ui_tokens.dart'
         let accordion_comp = RegistryComponent {
             name: "accordion".to_string(),
             version: "0.14.0".to_string(),
-            description: "".to_string(),
+            description: String::new(),
             category: "primitive".to_string(),
             internal: false,
             supported_presets: vec!["default".to_string(), "neobrutalism".to_string()],
@@ -827,7 +827,7 @@ import 'package:just_ui_tokens/just_ui_tokens.dart'
         let tooltip_comp = RegistryComponent {
             name: "tooltip".to_string(),
             version: "0.14.0".to_string(),
-            description: "".to_string(),
+            description: String::new(),
             category: "overlay".to_string(),
             internal: false,
             supported_presets: vec!["default".to_string()],
@@ -849,7 +849,7 @@ import 'package:just_ui_tokens/just_ui_tokens.dart'
         let shared_overlay_comp = RegistryComponent {
             name: "_shared_tooltip_overlay".to_string(),
             version: "0.14.0".to_string(),
-            description: "".to_string(),
+            description: String::new(),
             category: "internal".to_string(),
             internal: true,
             supported_presets: vec!["default".to_string()],

@@ -18,7 +18,9 @@ pub static TEST_MUTEX: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
 #[cfg(test)]
 pub fn lock_test_mutex() -> std::sync::MutexGuard<'static, ()> {
-    TEST_MUTEX.lock().unwrap_or_else(|e| e.into_inner())
+    TEST_MUTEX
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 #[cfg(test)]

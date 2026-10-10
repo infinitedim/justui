@@ -1,3 +1,11 @@
+#![expect(
+    clippy::missing_errors_doc,
+    clippy::missing_panics_doc,
+    clippy::too_many_lines,
+    clippy::unwrap_used,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Result;
 use regex::Regex;
 
@@ -24,24 +32,22 @@ pub fn run(
         }
     };
 
-    let component_name = match component_name_arg {
-        Some(n) => n,
-        None => {
-            let n = prompt::ask("Enter custom component name", "");
-            if n.trim().is_empty() {
-                anyhow::bail!("Component name cannot be empty.");
-            }
-            n
+    let component_name = if let Some(n) = component_name_arg {
+        n
+    } else {
+        let n = prompt::ask("Enter custom component name", "");
+        if n.trim().is_empty() {
+            anyhow::bail!("Component name cannot be empty.");
         }
+        n
     };
 
     let name_regex = Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*$").unwrap();
     let snake_name = to_snake_case(&component_name);
     if !name_regex.is_match(&snake_name) {
         anyhow::bail!(
-            "Invalid component name \"{}\". \
-             It must contain only letters, numbers, or underscores.",
-            component_name
+            "Invalid component name \"{component_name}\". \
+             It must contain only letters, numbers, or underscores."
         );
     }
 
@@ -54,8 +60,7 @@ pub fn run(
 
     if dry_run {
         logger::stdout(&format!(
-            "[dry-run] Would scaffold component \"{}\" in {}",
-            pascal_name, target_dir
+            "[dry-run] Would scaffold component \"{pascal_name}\" in {target_dir}"
         ));
         return Ok(());
     }
@@ -64,43 +69,42 @@ pub fn run(
     let target_dir = format!("{}/{}", config.components_dir, snake_name);
 
     logger::info(&format!(
-        "Scaffolding custom component \"{}\" in {}...",
-        class_name, target_dir
+        "Scaffolding custom component \"{class_name}\" in {target_dir}..."
     ));
 
     let files_to_write = vec![
         (
-            format!("{}_style.dart", snake_name),
+            format!("{snake_name}_style.dart"),
             generate_style_template(&class_name),
         ),
         (
-            format!("{}_variants.dart", snake_name),
+            format!("{snake_name}_variants.dart"),
             generate_variants_template(&class_name),
         ),
         (
-            format!("{}_theme.dart", snake_name),
+            format!("{snake_name}_theme.dart"),
             generate_theme_template(&class_name, &snake_name),
         ),
         (
-            format!("{}.dart", snake_name),
+            format!("{snake_name}.dart"),
             generate_widget_template(&class_name, &snake_name),
         ),
     ];
 
     std::fs::create_dir_all(&target_dir)
-        .map_err(|e| anyhow::anyhow!("Failed to scaffold custom component: {}", e))?;
+        .map_err(|e| anyhow::anyhow!("Failed to scaffold custom component: {e}"))?;
 
     for (file_name, content) in &files_to_write {
-        let file_path = format!("{}/{}", target_dir, file_name);
+        let file_path = format!("{target_dir}/{file_name}");
         let path = std::path::Path::new(&file_path);
 
         let should_write = if path.exists() {
             if auto_yes {
-                logger::stdout(&format!("[auto] Skipping {} (already exists)", file_name));
+                logger::stdout(&format!("[auto] Skipping {file_name} (already exists)"));
                 false
             } else {
                 prompt::confirm(
-                    &format!("File \"{}\" already exists. Overwrite?", file_name),
+                    &format!("File \"{file_name}\" already exists. Overwrite?"),
                     false,
                 )
             }
@@ -110,16 +114,15 @@ pub fn run(
 
         if should_write {
             std::fs::write(path, content)
-                .map_err(|e| anyhow::anyhow!("Failed to scaffold custom component: {}", e))?;
-            logger::stdout(&format!("  - Generated {}", file_name));
+                .map_err(|e| anyhow::anyhow!("Failed to scaffold custom component: {e}"))?;
+            logger::stdout(&format!("  - Generated {file_name}"));
         } else if !auto_yes {
-            logger::stdout(&format!("  - Skipped {}", file_name));
+            logger::stdout(&format!("  - Skipped {file_name}"));
         }
     }
 
     logger::success(&format!(
-        "Scaffolded custom component \"{}\" successfully.",
-        class_name
+        "Scaffolded custom component \"{class_name}\" successfully."
     ));
     Ok(())
 }
@@ -171,8 +174,7 @@ fn generate_style_template(class_name: &str) -> String {
              this.padding,\n\
              this.borderRadius,\n\
            }});\n\
-         }}\n",
-        class_name = class_name
+         }}\n"
     )
 }
 
@@ -197,8 +199,7 @@ fn generate_variants_template(class_name: &str) -> String {
          \n\
            /// Large size.\n\
            lg,\n\
-         }}\n",
-        class_name = class_name
+         }}\n"
     )
 }
 
@@ -240,9 +241,7 @@ fn generate_theme_template(class_name: &str, snake_name: &str) -> String {
              if (other is! {class_name}Theme) return this;\n\
              return t < 0.5 ? this : other;\n\
            }}\n\
-         }}\n",
-        class_name = class_name,
-        snake_name = snake_name
+         }}\n"
     )
 }
 
@@ -335,9 +334,7 @@ fn generate_widget_template(class_name: &str, snake_name: &str) -> String {
                child: child,\n\
              );\n\
            }}\n\
-         }}\n",
-        class_name = class_name,
-        snake_name = snake_name
+         }}\n"
     )
 }
 

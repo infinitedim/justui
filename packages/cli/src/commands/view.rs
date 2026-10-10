@@ -1,3 +1,13 @@
+#![expect(
+    clippy::format_push_string,
+    clippy::manual_let_else,
+    clippy::missing_errors_doc,
+    clippy::needless_pass_by_value,
+    clippy::print_stdout,
+    clippy::too_many_lines,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Result;
 use std::io::{self, IsTerminal, Write};
 
@@ -26,32 +36,31 @@ pub fn run(
     let index = match client.fetch_index() {
         Ok(idx) => idx,
         Err(e) => {
-            anyhow::bail!("Failed to fetch registry: {}", e);
+            anyhow::bail!("Failed to fetch registry: {e}");
         }
     };
 
-    let comp = match index.components.iter().find(|c| c.name == component) {
-        Some(c) => c,
-        None => {
-            let mut msg = format!("Component \"{}\" not found in registry.", component);
+    let comp = if let Some(c) = index.components.iter().find(|c| c.name == component) {
+        c
+    } else {
+        let mut msg = format!("Component \"{component}\" not found in registry.");
 
-            let query_lc = component.to_lowercase();
-            let suggestions: Vec<&str> = index
-                .components
-                .iter()
-                .filter(|c| c.name.to_lowercase().contains(&query_lc))
-                .map(|c| c.name.as_str())
-                .collect();
+        let query_lc = component.to_lowercase();
+        let suggestions: Vec<&str> = index
+            .components
+            .iter()
+            .filter(|c| c.name.to_lowercase().contains(&query_lc))
+            .map(|c| c.name.as_str())
+            .collect();
 
-            if !suggestions.is_empty() {
-                msg.push_str("\nDid you mean one of these?");
-                for s in &suggestions {
-                    msg.push_str(&format!("\n  - {}", s));
-                }
+        if !suggestions.is_empty() {
+            msg.push_str("\nDid you mean one of these?");
+            for s in &suggestions {
+                msg.push_str(&format!("\n  - {s}"));
             }
-
-            anyhow::bail!(msg);
         }
+
+        anyhow::bail!(msg);
     };
 
     let name_ver = format!("  {} (v{})  ", comp.name, comp.version);
@@ -61,8 +70,8 @@ pub fn run(
     let top_border = format!("╔{}╗", "═".repeat(inner_width));
     let bot_border = format!("╚{}╝", "═".repeat(inner_width));
 
-    let name_ver_padded = format!("║{:<width$}║", name_ver, width = inner_width);
-    let desc_padded = format!("║{:<width$}║", desc_line, width = inner_width);
+    let name_ver_padded = format!("║{name_ver:<inner_width$}║");
+    let desc_padded = format!("║{desc_line:<inner_width$}║");
 
     logger::stdout(&top_border);
     logger::stdout(&name_ver_padded);
@@ -80,14 +89,14 @@ pub fn run(
     } else {
         comp.pub_dependencies
             .iter()
-            .map(|(k, v)| format!("{}: {}", k, v))
+            .map(|(k, v)| format!("{k}: {v}"))
             .collect::<Vec<_>>()
             .join(", ")
     };
 
     logger::stdout(&format!("Category      : {}", comp.category));
-    logger::stdout(&format!("Dependencies  : {}", reg_deps));
-    logger::stdout(&format!("Pub deps      : {}", pub_deps_str));
+    logger::stdout(&format!("Dependencies  : {reg_deps}"));
+    logger::stdout(&format!("Pub deps      : {pub_deps_str}"));
     let preset_files = comp.files_for_preset(&preset);
     logger::stdout(&format!("File count    : {} file(s)", preset_files.len()));
     logger::stdout("");
@@ -123,7 +132,7 @@ pub fn run(
         } else {
             String::new()
         };
-        logger::stdout(&format!("{}{}", header_prefix, dash_fill));
+        logger::stdout(&format!("{header_prefix}{dash_fill}"));
 
         let lines: Vec<&str> = content.lines().collect();
         let total_lines = lines.len();
@@ -188,7 +197,7 @@ mod tests {
         std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
 
         let multiline_code = (0..105)
-            .map(|i| format!("// line {}", i))
+            .map(|i| format!("// line {i}"))
             .collect::<Vec<_>>()
             .join("\n");
 

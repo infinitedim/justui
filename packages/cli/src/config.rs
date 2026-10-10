@@ -1,3 +1,5 @@
+#![expect(clippy::manual_let_else, reason = "legacy: fix when touched")]
+
 #[derive(Debug, Clone)]
 pub struct JustUIConfig {
     pub components_dir: String,
@@ -35,12 +37,14 @@ impl JustUIConfig {
         };
 
         let get_str = |key: &str| -> Option<String> {
-            map.get(key).and_then(|v| v.as_str()).map(|s| s.to_string())
+            map.get(key)
+                .and_then(|v| v.as_str())
+                .map(std::string::ToString::to_string)
         };
 
         let components_dir = get_str("components_dir").unwrap_or_else(|| "lib/widgets".to_string());
         let shared_dir =
-            get_str("shared_dir").unwrap_or_else(|| format!("{}/shared", components_dir));
+            get_str("shared_dir").unwrap_or_else(|| format!("{components_dir}/shared"));
         let preset = get_str("preset").unwrap_or_else(|| "default".to_string());
         let color_space = get_str("color_space").unwrap_or_else(|| "hsl".to_string());
 

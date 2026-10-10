@@ -1,3 +1,10 @@
+#![expect(
+    clippy::missing_panics_doc,
+    clippy::too_many_lines,
+    clippy::unwrap_used,
+    reason = "legacy: fix when touched"
+)]
+
 use similar::{ChangeTag, TextDiff};
 use std::cmp::max;
 
@@ -29,19 +36,15 @@ pub fn calculate_diff(local: &str, remote: &str) -> Vec<DiffLine> {
         let (kind, local_num, remote_num) = match change.tag() {
             ChangeTag::Equal => (
                 DiffKind::Unchanged,
-                change.old_index().map(|i| i + 1).unwrap_or(0),
-                change.new_index().map(|i| i + 1).unwrap_or(0),
+                change.old_index().map_or(0, |i| i + 1),
+                change.new_index().map_or(0, |i| i + 1),
             ),
             ChangeTag::Delete => (
                 DiffKind::Removed,
-                change.old_index().map(|i| i + 1).unwrap_or(0),
+                change.old_index().map_or(0, |i| i + 1),
                 0,
             ),
-            ChangeTag::Insert => (
-                DiffKind::Added,
-                0,
-                change.new_index().map(|i| i + 1).unwrap_or(0),
-            ),
+            ChangeTag::Insert => (DiffKind::Added, 0, change.new_index().map_or(0, |i| i + 1)),
         };
         result.push(DiffLine {
             kind,
@@ -61,7 +64,7 @@ pub fn print_unified_diff(file_name: &str, local: &str, remote: &str, context_co
 
     let has_changes = diff.iter_all_changes().any(|c| c.tag() != ChangeTag::Equal);
     if !has_changes {
-        logger::success(&format!("  {}: No changes detected.", file_name));
+        logger::success(&format!("  {file_name}: No changes detected."));
         return;
     }
 
@@ -72,7 +75,7 @@ pub fn print_unified_diff(file_name: &str, local: &str, remote: &str, context_co
     let border_length = max(40, fn_chars + 8);
     let dash_count = border_length.saturating_sub(fn_chars + 4);
     let header_dashes = "─".repeat(dash_count);
-    logger::stdout(&format!("┌─ {} {}", file_name, header_dashes));
+    logger::stdout(&format!("┌─ {file_name} {header_dashes}"));
 
     for group in diff.grouped_ops(context_count) {
         let mut local_start = 0usize;
@@ -113,11 +116,9 @@ pub fn print_unified_diff(file_name: &str, local: &str, remote: &str, context_co
             }
         }
 
-        let hunk_header = format!(
-            "│ @@ -{},{} +{},{} @@",
-            local_start, local_count, remote_start, remote_count
-        );
-        logger::stdout(&format!("\x1B[36m{}\x1B[0m", hunk_header));
+        let hunk_header =
+            format!("│ @@ -{local_start},{local_count} +{remote_start},{remote_count} @@");
+        logger::stdout(&format!("\x1B[36m{hunk_header}\x1B[0m"));
 
         for op in &group {
             for change in diff.iter_changes(op) {
@@ -127,25 +128,22 @@ pub fn print_unified_diff(file_name: &str, local: &str, remote: &str, context_co
                         let idx = change.new_index().unwrap();
                         let highlighted = remote_highlighted
                             .get(idx)
-                            .map(|s| s.as_str())
-                            .unwrap_or(text);
-                        logger::stdout(&format!("\x1B[32m│ +  {}\x1B[0m", highlighted));
+                            .map_or(text, std::string::String::as_str);
+                        logger::stdout(&format!("\x1B[32m│ +  {highlighted}\x1B[0m"));
                     }
                     ChangeTag::Delete => {
                         let idx = change.old_index().unwrap();
                         let highlighted = local_highlighted
                             .get(idx)
-                            .map(|s| s.as_str())
-                            .unwrap_or(text);
-                        logger::stdout(&format!("\x1B[31m│ -  {}\x1B[0m", highlighted));
+                            .map_or(text, std::string::String::as_str);
+                        logger::stdout(&format!("\x1B[31m│ -  {highlighted}\x1B[0m"));
                     }
                     ChangeTag::Equal => {
                         let idx = change.new_index().unwrap();
                         let highlighted = remote_highlighted
                             .get(idx)
-                            .map(|s| s.as_str())
-                            .unwrap_or(text);
-                        logger::stdout(&format!("│    {}", highlighted));
+                            .map_or(text, std::string::String::as_str);
+                        logger::stdout(&format!("│    {highlighted}"));
                     }
                 }
             }

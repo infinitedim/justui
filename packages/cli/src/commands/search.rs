@@ -1,3 +1,10 @@
+#![expect(
+    clippy::missing_errors_doc,
+    clippy::needless_pass_by_value,
+    clippy::too_many_lines,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Result;
 use std::collections::HashMap;
 
@@ -17,12 +24,12 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
     let index = match client.fetch_index() {
         Ok(idx) => idx,
         Err(e) => {
-            anyhow::bail!("Failed to fetch registry: {}", e);
+            anyhow::bail!("Failed to fetch registry: {e}");
         }
     };
 
     let query_lc = query.to_lowercase();
-    let category_lc = category.as_deref().map(|c| c.to_lowercase());
+    let category_lc = category.as_deref().map(str::to_lowercase);
 
     let mut name_matches: Vec<&RegistryComponent> = Vec::new();
     let mut other_matches: Vec<&RegistryComponent> = Vec::new();
@@ -52,11 +59,11 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
     let results: Vec<&RegistryComponent> = name_matches.into_iter().chain(other_matches).collect();
 
     if results.is_empty() {
-        logger::stdout(&format!("No components found matching \"{}\".", query));
+        logger::stdout(&format!("No components found matching \"{query}\"."));
         return Ok(());
     }
 
-    logger::stdout(&format!("Search results for \"{}\":\n", query));
+    logger::stdout(&format!("Search results for \"{query}\":\n"));
 
     let mut grouped: HashMap<String, Vec<&&RegistryComponent>> = HashMap::new();
     let mut category_order: Vec<String> = Vec::new();
@@ -77,7 +84,7 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
                 Some(c) => c.to_uppercase().to_string() + chars.as_str(),
             }
         };
-        logger::stdout(&format!("  {}:", capitalized));
+        logger::stdout(&format!("  {capitalized}:"));
 
         for comp in comps {
             let dot = "\x1B[32m●\x1B[0m";
@@ -91,7 +98,7 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
                 String::new()
             };
             let version_str = format!("(v{})", comp.version);
-            let version_padded = format!("{:<10}", version_str);
+            let version_padded = format!("{version_str:<10}");
             logger::stdout(&format!(
                 "    {} {}{} {} {}",
                 dot, highlighted_name, name_padding, version_padded, comp.description
