@@ -129,7 +129,7 @@ passed that you did not run.
 | Tokens (pure Dart tests) | `melos exec --no-flutter --dir-exists="test" -- "dart test"`                                                   |
 | Registry sync            | `dart run tools/generate_checksums.dart --dry-run` (read the output: it can report drift and still exit 0)     |
 | Formatting               | `dart format --set-exit-if-changed .`                                                                          |
-| Rust CLI                 | `cargo clippy --all-targets --all-features -- -D warnings` and `cargo test --all-targets`                      |
+| Rust CLI                 | `cargo fmt --all --check`, `cargo clippy --all-targets --all-features -- -D warnings`, `cargo test --all-targets`, `cargo deny check`, `cargo machete` |
 | Docs                     | in `apps/docs`: `bun run lint`, `bun run type-check`, `bun run test`, `bun run build`                          |
 | Docs UI                  | in `apps/docs`: `bun run test:e2e`                                                                             |
 | Generated docs data      | in `apps/docs`: `bun run generate:components -- --check`                                                       |

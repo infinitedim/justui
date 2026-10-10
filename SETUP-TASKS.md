@@ -156,20 +156,9 @@ sections, 35 `must_use` suggestions, 7 functions over 100 lines (largest 351).
     aliases (`i`, `a`, `up`, `ls`); `Cli::command().debug_assert()` test.
 39. Done: Config: `version` field with a migration hook; warn on unknown fields.
     Replaced `serde_yaml` 0.9 with maintained fork `serde_yaml_ng` 0.10.
-40. Tests: dev-dependencies `insta`, `proptest`, `wiremock` (wiremock needs
-    tokio, so after 36; use blocking-friendly `mockito` if tests are needed
-    earlier). `assert_cmd` tests per subcommand: happy path, failure exit
-    code, `--json`, no TTY. Move test modules over ~150 lines to
-    `<name>_tests.rs`; keep small ones inline.
-41. CI: run `cargo test` on `windows-latest` too, build-only on macOS;
-    `cargo llvm-cov` with a minimum line coverage for red-zone modules (set
-    the first threshold at the measured value, round down).
-42. Supply chain: replace `cargo audit` with `cargo deny` (`deny.toml` with
-    advisories, licenses, bans, sources). Decide yourself whether the
-    existing `RUSTSEC-2025-0141` (bincode) ignore moves to `deny.toml` with
-    its justification; the rules forbid agents adding new ignores. Then
-    update the Rust row in `AGENTS.md` section 6 to the command list at the
-    end of `rust-cli.md` (the security rules already name `deny.toml`).
+40. Done: Tests: dev-dependencies `insta`, `proptest`, `wiremock`. `assert_cmd` tests per subcommand: happy path, failure exit code, `--json`, no TTY. Move test modules over ~150 lines to `<name>_tests.rs`; keep small ones inline.
+41. Done: CI: run `cargo test` on `windows-latest` too, build-only on macOS; `cargo llvm-cov` with a minimum line coverage for red-zone modules (set the first threshold at the measured value, round down).
+42. Done: Supply chain: replace `cargo audit` with `cargo deny` (`deny.toml` with advisories, licenses, bans, sources). Moved existing `RUSTSEC-2025-0141` (bincode) ignore to `deny.toml` with justification. Updated Rust row in `AGENTS.md` section 6 to the command list at the end of `rust-cli.md`.
 43. Done: Remove `dialoguer` from `Cargo.toml`: it has zero uses in `src/`.
     Added `cargo machete` to CI.
 
