@@ -10,7 +10,7 @@ use std::io::Write;
 use std::path::PathBuf;
 use std::process;
 
-use justui_cli::{commands, utils};
+use justui_cli::{commands, errors, utils};
 
 /// `JustUI` CLI - High-performance Flutter UI scaffolding and copy-paste component tool
 #[derive(Parser)]
@@ -286,7 +286,21 @@ fn main() {
         if payload.contains("Broken pipe") || payload.contains("os error 32") {
             process::exit(0);
         }
-        default_panic(info);
+        let _ = crossterm::terminal::disable_raw_mode();
+
+        let version = env!("CARGO_PKG_VERSION");
+        let issue_url = "https://github.com/infinitedim/justui/issues/new";
+
+        utils::logger::error(&format!(
+            "JustUI encountered an unexpected panic (v{version}).\nPlease report this at: {issue_url}"
+        ));
+
+        let backtrace = std::env::var("RUST_BACKTRACE").is_ok_and(|v| v == "1" || v == "full");
+        if backtrace {
+            default_panic(info);
+        } else {
+            utils::logger::hint("run with RUST_BACKTRACE=1 for a full panic report");
+        }
     }));
 
     let cli = Cli::parse();
@@ -378,8 +392,9 @@ fn main() {
     };
 
     if let Err(e) = result {
+        let code = errors::exit_code_for_error(&e);
         utils::logger::error(&e.to_string());
-        process::exit(1);
+        process::exit(code);
     }
 
     let _ = std::io::stdout().flush();
