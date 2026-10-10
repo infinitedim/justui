@@ -53,8 +53,8 @@ fn test_unpack_raw_binary() {
 
 #[test]
 fn test_unpack_tar_gz_archive() {
-    use flate2::write::GzEncoder;
     use flate2::Compression;
+    use flate2::write::GzEncoder;
     use std::io::Write;
 
     let binary_content = b"hello world executable bytes";
@@ -89,8 +89,8 @@ fn test_unpack_tar_gz_archive() {
 
 #[test]
 fn test_tar_gz_archive_corrupted_or_missing() {
-    use flate2::write::GzEncoder;
     use flate2::Compression;
+    use flate2::write::GzEncoder;
     use std::io::Write;
 
     // Tar with size beyond buffer
@@ -120,14 +120,15 @@ fn test_unpack_zip_archive() {
         .status();
 
     if let Ok(status) = zip_status
-        && status.success() {
-            let zip_bytes = std::fs::read(temp_dir.path().join("update.zip")).unwrap();
-            let extracted = unpack_binary_bytes(&zip_bytes, "justui").unwrap();
-            assert_eq!(extracted, b"zip binary contents");
+        && status.success()
+    {
+        let zip_bytes = std::fs::read(temp_dir.path().join("update.zip")).unwrap();
+        let extracted = unpack_binary_bytes(&zip_bytes, "justui").unwrap();
+        assert_eq!(extracted, b"zip binary contents");
 
-            // Missing binary in zip
-            assert!(unpack_binary_bytes(&zip_bytes, "missing_bin").is_err());
-        }
+        // Missing binary in zip
+        assert!(unpack_binary_bytes(&zip_bytes, "missing_bin").is_err());
+    }
 
     // Invalid zip bytes test
     let invalid_zip = b"PK\x03\x04invalid_zip_header_bytes";
@@ -192,8 +193,8 @@ fn test_print_fallback_instructions_and_zip_unpack_error() {
     tar_bytes[124..136].copy_from_slice(octal_size.as_bytes());
     tar_bytes[156] = b'0';
 
-    use flate2::write::GzEncoder;
     use flate2::Compression;
+    use flate2::write::GzEncoder;
     use std::io::Write;
     let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
     encoder.write_all(&tar_bytes).unwrap();
@@ -364,8 +365,8 @@ fn test_plan_upgrade_matrix() {
 /// Builds a `.tar.gz` holding a minimal executable for the host platform.
 /// Returns `(archive_bytes, binary_bytes, binary_name)`.
 fn fake_release_archive() -> (Vec<u8>, Vec<u8>, &'static str) {
-    use flate2::write::GzEncoder;
     use flate2::Compression;
+    use flate2::write::GzEncoder;
     use std::io::Write;
 
     let fake_binary = if cfg!(target_os = "linux") {

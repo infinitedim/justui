@@ -194,12 +194,13 @@ pub fn run(args: InitArgs) -> Result<()> {
     let hex_code = format!("0xFF{}", clean_hex);
 
     if let Some(ref feat) = args.experimental
-        && feat != "auto-detect-flutter-version" {
-            logger::warning(&format!(
-                "Unknown experimental feature: \"{}\". Ignoring.",
-                feat
-            ));
-        }
+        && feat != "auto-detect-flutter-version"
+    {
+        logger::warning(&format!(
+            "Unknown experimental feature: \"{}\". Ignoring.",
+            feat
+        ));
+    }
 
     let dart_target = if let Some(dt) = args.dart_target {
         match dt.to_lowercase().as_str() {
@@ -344,21 +345,25 @@ mod tests {
         let _guard = set_dir(temp_dir.path());
 
         // 1. Without pubspec -> fails with error
-        assert!(run(InitArgs {
-            auto_yes: true,
-            ..Default::default()
-        })
-        .is_err());
+        assert!(
+            run(InitArgs {
+                auto_yes: true,
+                ..Default::default()
+            })
+            .is_err()
+        );
 
         // 2. With pubspec -> succeeds in auto_yes mode
         std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: test_app").unwrap();
-        assert!(run(InitArgs {
-            preset: Some("neo".to_string()),
-            color_space: Some("oklch".to_string()),
-            auto_yes: true,
-            ..Default::default()
-        })
-        .is_ok());
+        assert!(
+            run(InitArgs {
+                preset: Some("neo".to_string()),
+                color_space: Some("oklch".to_string()),
+                auto_yes: true,
+                ..Default::default()
+            })
+            .is_ok()
+        );
 
         let theme_path = temp_dir.path().join("lib/core/theme/just_theme.dart");
         let theme_file = std::fs::read_to_string(&theme_path).unwrap();
@@ -381,11 +386,13 @@ mod tests {
         }
 
         // 3. Already initialized -> warns and returns Ok
-        assert!(run(InitArgs {
-            auto_yes: true,
-            ..Default::default()
-        })
-        .is_ok());
+        assert!(
+            run(InitArgs {
+                auto_yes: true,
+                ..Default::default()
+            })
+            .is_ok()
+        );
     }
 
     #[test]

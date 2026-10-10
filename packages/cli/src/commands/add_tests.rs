@@ -101,9 +101,9 @@ fn test_add_run_empty_registry_and_selection() {
     std::fs::write(reg_dir.join("index.json"), index_json).unwrap();
 
     let config_yaml = format!(
-            "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
-            reg_dir.display()
-        );
+        "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
+        reg_dir.display()
+    );
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
     // Prompting components with auto_yes when registry has 0 components -> returns Err
@@ -201,9 +201,9 @@ fn test_add_component_execution_flow_all_types() {
     std::fs::write("pubspec.yaml", "name: my_app\n").unwrap();
 
     let config_yaml = format!(
-            "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\ndart_target: primary\nregistry_url: {}\n",
-            reg_dir.display()
-        );
+        "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\ndart_target: primary\nregistry_url: {}\n",
+        reg_dir.display()
+    );
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
     // 1. Dry run with diff enabled
@@ -358,32 +358,36 @@ fn test_add_component_checksum_and_unknown_dependency() {
     std::fs::write(reg_dir.join("components/corrupt.dart"), "some content").unwrap();
 
     let config_yaml = format!(
-            "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
-            reg_dir.display()
-        );
+        "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
+        reg_dir.display()
+    );
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
     // 1. Security checksum failure
-    assert!(run(
-        vec!["bad_checksum".to_string()],
-        false,
-        false,
-        false,
-        false,
-        true
-    )
-    .is_err());
+    assert!(
+        run(
+            vec!["bad_checksum".to_string()],
+            false,
+            false,
+            false,
+            false,
+            true
+        )
+        .is_err()
+    );
 
     // 2. Unknown dependency error
-    assert!(run(
-        vec!["broken_dep".to_string()],
-        false,
-        false,
-        false,
-        false,
-        true
-    )
-    .is_err());
+    assert!(
+        run(
+            vec!["broken_dep".to_string()],
+            false,
+            false,
+            false,
+            false,
+            true
+        )
+        .is_err()
+    );
 }
 
 #[test]
@@ -616,9 +620,9 @@ fn test_add_special_component_categories_and_all_flag() {
     std::fs::write(reg_dir.join("theme/_shared_theme_bridge.dart"), theme_code).unwrap();
 
     let config_yaml = format!(
-            "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
-            reg_dir.display()
-        );
+        "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
+        reg_dir.display()
+    );
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
     // Test run with `all = true` flag
@@ -704,9 +708,9 @@ fn test_add_progress_bar_and_theme_file_candidates_and_error_handling() {
     std::fs::write("pubspec.yaml", "name: app\n").unwrap();
 
     let config_yaml = format!(
-            "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
-            reg_dir.display()
-        );
+        "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
+        reg_dir.display()
+    );
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
     // Run with overwrite = true (sets auto_yes = true)
@@ -787,9 +791,9 @@ fn test_add_run_all_operation_statuses_output_formatting() {
     std::fs::write(reg_dir.join("comp/widget.dart"), v1_code).unwrap();
 
     let config_yaml = format!(
-            "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
-            reg_dir.display()
-        );
+        "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
+        reg_dir.display()
+    );
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
     // Run 1: Copied (New)
@@ -869,9 +873,9 @@ fn test_add_diff_formatting_and_dry_run_conflicts() {
     std::fs::write(reg_dir.join("comp/widget.dart"), v1_code).unwrap();
 
     let config_yaml = format!(
-            "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
-            reg_dir.display()
-        );
+        "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
+        reg_dir.display()
+    );
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
     // 1. show_diff = true for new file
@@ -973,9 +977,9 @@ fn test_add_run_summary_output_and_auto_select_all() {
     std::fs::write(reg_dir.join("shared/helper.dart"), code2).unwrap();
 
     let config_yaml = format!(
-            "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
-            reg_dir.display()
-        );
+        "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
+        reg_dir.display()
+    );
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
     // Calling run with components = vec![], auto_yes = true, dry_run = false
@@ -1029,21 +1033,23 @@ fn test_add_select_empty_and_token_summary() {
     std::fs::write(reg_dir.join("tokens/token.dart"), token_code).unwrap();
 
     let config_yaml = format!(
-            "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
-            reg_dir.display()
-        );
+        "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
+        reg_dir.display()
+    );
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
     // 1. Run token component addition (dry_run = false) to trigger tokens/core summary item path
-    assert!(run(
-        vec!["token_color".to_string()],
-        false,
-        false,
-        false,
-        false,
-        true
-    )
-    .is_ok());
+    assert!(
+        run(
+            vec!["token_color".to_string()],
+            false,
+            false,
+            false,
+            false,
+            true
+        )
+        .is_ok()
+    );
 
     // 2. Interactive selection returning empty vector -> returns Ok with warning
     assert!(run(vec![], false, false, false, false, false).is_ok());
@@ -1083,21 +1089,23 @@ fn test_add_missing_dependency_and_empty_selection() {
     std::fs::write(reg_dir.join("index.json"), index_json).unwrap();
 
     let config_yaml = format!(
-            "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
-            reg_dir.display()
-        );
+        "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\nregistry_url: {}\n",
+        reg_dir.display()
+    );
     std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
 
     // Triggers "Dependency resolution error: Component "missing_dep_name" not found in registry"
-    assert!(run(
-        vec!["invalid_dep_comp".to_string()],
-        false,
-        false,
-        false,
-        false,
-        true
-    )
-    .is_err());
+    assert!(
+        run(
+            vec!["invalid_dep_comp".to_string()],
+            false,
+            false,
+            false,
+            false,
+            true
+        )
+        .is_err()
+    );
 }
 
 #[test]
@@ -1281,15 +1289,17 @@ fn test_add_run_initialized_all_flags() {
     assert!(run(vec![], false, false, true, false, true).is_ok());
 
     // 5. Run add with non-existent component name
-    assert!(run(
-        vec!["nonexistent".to_string()],
-        false,
-        false,
-        false,
-        false,
-        true
-    )
-    .is_err());
+    assert!(
+        run(
+            vec!["nonexistent".to_string()],
+            false,
+            false,
+            false,
+            false,
+            true
+        )
+        .is_err()
+    );
 
     // 6. Run add empty names without --all and auto_yes = true
     assert!(run(vec![], false, false, false, false, true).is_ok());

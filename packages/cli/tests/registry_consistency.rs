@@ -173,9 +173,10 @@ fn registry_dependencies_match_actual_imports() {
                 }
                 let resolved = normalize(&format!("{}/{}", own_dir, target));
                 if let Some(owner) = owner_by_target.get(resolved.as_str())
-                    && *owner != f.comp.name {
-                        entry.insert(owner);
-                    }
+                    && *owner != f.comp.name
+                {
+                    entry.insert(owner);
+                }
             }
         }
 

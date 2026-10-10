@@ -291,14 +291,15 @@ fn main() {
     let auto_yes = cli.auto_yes;
 
     if let Some(ref path) = cli.cwd
-        && let Err(e) = std::env::set_current_dir(path) {
-            utils::logger::error(&format!(
-                "Failed to change working directory to {}: {}",
-                path.display(),
-                e
-            ));
-            process::exit(1);
-        }
+        && let Err(e) = std::env::set_current_dir(path)
+    {
+        utils::logger::error(&format!(
+            "Failed to change working directory to {}: {}",
+            path.display(),
+            e
+        ));
+        process::exit(1);
+    }
 
     if cli.version_flag {
         if let Err(e) = commands::upgrade::run(true, false) {
@@ -347,9 +348,7 @@ fn main() {
             all,
             overwrite,
         } => commands::add::run(components, dry_run, show_diff, all, overwrite, auto_yes),
-        Commands::List { category, json } => {
-            commands::list::run(category, json || cli.json)
-        }
+        Commands::List { category, json } => commands::list::run(category, json || cli.json),
         Commands::Diff {
             component,
             verbose,

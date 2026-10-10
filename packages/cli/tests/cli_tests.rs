@@ -272,33 +272,37 @@ fn test_zero_dep_package_import_rewriting() {
 #[test]
 fn calculate_diff_detects_unchanged() {
     let diff = diff_formatter::calculate_diff("line1\nline2\n", "line1\nline2\n");
-    assert!(diff
-        .iter()
-        .all(|d| matches!(d.kind, diff_formatter::DiffKind::Unchanged)));
+    assert!(
+        diff.iter()
+            .all(|d| matches!(d.kind, diff_formatter::DiffKind::Unchanged))
+    );
 }
 
 #[test]
 fn calculate_diff_detects_additions() {
     let diff = diff_formatter::calculate_diff("", "added\n");
-    assert!(diff
-        .iter()
-        .any(|d| matches!(d.kind, diff_formatter::DiffKind::Added)));
+    assert!(
+        diff.iter()
+            .any(|d| matches!(d.kind, diff_formatter::DiffKind::Added))
+    );
 }
 
 #[test]
 fn calculate_diff_detects_removals() {
     let diff = diff_formatter::calculate_diff("removed\n", "");
-    assert!(diff
-        .iter()
-        .any(|d| matches!(d.kind, diff_formatter::DiffKind::Removed)));
+    assert!(
+        diff.iter()
+            .any(|d| matches!(d.kind, diff_formatter::DiffKind::Removed))
+    );
 }
 
 #[test]
 fn calculate_diff_normalizes_crlf() {
     let diff = diff_formatter::calculate_diff("line1\r\nline2\r\n", "line1\nline2\n");
-    assert!(diff
-        .iter()
-        .all(|d| matches!(d.kind, diff_formatter::DiffKind::Unchanged)));
+    assert!(
+        diff.iter()
+            .all(|d| matches!(d.kind, diff_formatter::DiffKind::Unchanged))
+    );
 }
 
 #[test]
@@ -1617,10 +1621,14 @@ mod cli_integration {
                 .join("lib/core/theme/theme_data_material.dart"),
         )
         .unwrap();
-        assert!(updated_theme_material
-            .contains("import 'package:test_app/atoms/button/just_button_theme.dart';"));
-        assert!(updated_theme_material
-            .contains("        JustButtonTheme.defaults,\n        // CLI:REGISTER_EXTENSIONS"));
+        assert!(
+            updated_theme_material
+                .contains("import 'package:test_app/atoms/button/just_button_theme.dart';")
+        );
+        assert!(
+            updated_theme_material
+                .contains("        JustButtonTheme.defaults,\n        // CLI:REGISTER_EXTENSIONS")
+        );
     }
 
     #[test]
@@ -1718,7 +1726,8 @@ mod cli_integration {
         let registry_dir = dir.path().join("mock_registry");
         std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
 
-        let remote_content = "class JustButton {\n  final int count;\n  const JustButton(this.count);\n}\n";
+        let remote_content =
+            "class JustButton {\n  final int count;\n  const JustButton(this.count);\n}\n";
         let hash = {
             use sha2::{Digest, Sha256};
             let mut h = Sha256::new();

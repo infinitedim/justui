@@ -153,9 +153,10 @@ pub fn run(
         {
             print!("Show next file? [Y/n]: ");
             if let Err(e) = io::stdout().flush()
-                && e.kind() == io::ErrorKind::BrokenPipe {
-                    std::process::exit(0);
-                }
+                && e.kind() == io::ErrorKind::BrokenPipe
+            {
+                std::process::exit(0);
+            }
             let mut input = String::new();
             if io::stdin().read_line(&mut input).is_err() {
                 break;
@@ -265,22 +266,26 @@ mod tests {
         assert!(run("button".to_string(), None, false, true).is_ok());
 
         // 2. View button with single file filter
-        assert!(run(
-            "button".to_string(),
-            Some("just_button.dart".to_string()),
-            false,
-            true
-        )
-        .is_ok());
+        assert!(
+            run(
+                "button".to_string(),
+                Some("just_button.dart".to_string()),
+                false,
+                true
+            )
+            .is_ok()
+        );
 
         // 4. View with file_filter not found
-        assert!(run(
-            "button".to_string(),
-            Some("nonexistent.dart".to_string()),
-            false,
-            true
-        )
-        .is_err());
+        assert!(
+            run(
+                "button".to_string(),
+                Some("nonexistent.dart".to_string()),
+                false,
+                true
+            )
+            .is_err()
+        );
 
         // 5. View component not found with suggestion
         assert!(run("btn".to_string(), None, false, true).is_err());

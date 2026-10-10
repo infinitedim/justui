@@ -198,9 +198,10 @@ impl RegistryClient {
             if response.status() == reqwest::StatusCode::NOT_FOUND && url.contains(&tag_pattern) {
                 let fallback_url = url.replace(&tag_pattern, "/main/");
                 if let Ok(fallback_resp) = client.get(&fallback_url).send()
-                    && fallback_resp.status().is_success() {
-                        response = fallback_resp;
-                    }
+                    && fallback_resp.status().is_success()
+                {
+                    response = fallback_resp;
+                }
             }
 
             if !response.status().is_success() {

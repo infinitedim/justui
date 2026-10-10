@@ -104,13 +104,15 @@ mod tests {
         let theme_path = dir.path().join("theme_data_material.dart");
 
         // 1. Non-existent file
-        assert!(!register_theme_extension(
-            &theme_path,
-            "my_app",
-            "widgets/button/just_button_theme.dart",
-            "JustButtonTheme"
-        )
-        .unwrap());
+        assert!(
+            !register_theme_extension(
+                &theme_path,
+                "my_app",
+                "widgets/button/just_button_theme.dart",
+                "JustButtonTheme"
+            )
+            .unwrap()
+        );
 
         // 2. Initial theme file with 8-space indented marker
         let initial_code = r#"import 'package:flutter/material.dart';
@@ -135,8 +137,10 @@ import 'theme_data.dart';
 
         let updated = std::fs::read_to_string(&theme_path).unwrap();
         assert!(updated.contains("import 'package:my_app/widgets/button/just_button_theme.dart';"));
-        assert!(updated
-            .contains("        JustButtonTheme.defaults,\n        // CLI:REGISTER_EXTENSIONS"));
+        assert!(
+            updated
+                .contains("        JustButtonTheme.defaults,\n        // CLI:REGISTER_EXTENSIONS")
+        );
 
         // 4. Register duplicate extension (should return false)
         let duplicate = register_theme_extension(
@@ -171,23 +175,17 @@ import 'theme_data.dart';
             "const JustButtonTheme()\n// CLI:REGISTER_EXTENSIONS",
         )
         .unwrap();
-        assert!(!register_theme_extension(
-            &legacy_path,
-            "my_app",
-            "button.dart",
-            "JustButtonTheme"
-        )
-        .unwrap());
+        assert!(
+            !register_theme_extension(&legacy_path, "my_app", "button.dart", "JustButtonTheme")
+                .unwrap()
+        );
 
         // 7. Theme file without marker
         let no_match_path = dir.path().join("no_match_theme.dart");
         std::fs::write(&no_match_path, "// simple file without theme extensions\n").unwrap();
-        assert!(!register_theme_extension(
-            &no_match_path,
-            "my_app",
-            "button.dart",
-            "JustButtonTheme"
-        )
-        .unwrap());
+        assert!(
+            !register_theme_extension(&no_match_path, "my_app", "button.dart", "JustButtonTheme")
+                .unwrap()
+        );
     }
 }

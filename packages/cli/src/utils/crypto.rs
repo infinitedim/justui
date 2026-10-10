@@ -87,10 +87,12 @@ mod tests {
         // Hex string but wrong length (not 64 bytes / 128 hex)
         let short_hex = verify_signature(data, "0011223344", JUSTUI_REGISTRY_PUBKEY);
         assert!(short_hex.is_err());
-        assert!(short_hex
-            .unwrap_err()
-            .to_string()
-            .contains("expected 64 bytes"));
+        assert!(
+            short_hex
+                .unwrap_err()
+                .to_string()
+                .contains("expected 64 bytes")
+        );
     }
 
     #[test]

@@ -274,7 +274,10 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
         logger::stdout("");
 
         let confirm = prompt::confirm(
-            &format!("Continue? Existing component files will be overwritten with the \"{}\" preset version.", preset_name),
+            &format!(
+                "Continue? Existing component files will be overwritten with the \"{}\" preset version.",
+                preset_name
+            ),
             false,
         );
         if !confirm {
