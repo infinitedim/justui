@@ -115,7 +115,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
+          toolchain: "1.98.1"
 
       - name: Cache Cargo registry
         uses: actions/cache@v6
@@ -148,7 +148,7 @@ jobs:
       - name: Install Rust toolchain with clippy
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
+          toolchain: "1.98.1"
           components: clippy
 
       - name: Cache Cargo registry
@@ -179,7 +179,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
+          toolchain: "1.98.1"
 
       - name: Install cargo-audit
         uses: taiki-e/install-action@v2
@@ -203,7 +203,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
+          toolchain: "1.98.1"
 
       - name: Cache Cargo registry
         uses: actions/cache@v6
@@ -235,7 +235,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
+          toolchain: "1.98.1"
 
       - name: Cache Cargo registry
         uses: actions/cache@v6
@@ -267,7 +267,7 @@ jobs:
       - name: Install Rust toolchain with llvm-tools
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
+          toolchain: "1.98.1"
           components: llvm-tools-preview
 
       - name: Cache Cargo registry
