@@ -8,3 +8,7 @@ pathIgnorePatterns = [
   "**/node_modules/**",
   "**/.next/**"
 ]
+
+[install]
+minimumReleaseAge = 604800
+
