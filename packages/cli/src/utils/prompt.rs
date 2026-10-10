@@ -1,7 +1,21 @@
 use inquire::{MultiSelect, Select};
 use std::io::{self, IsTerminal};
 
+#[cfg(test)]
+thread_local! {
+    static TEST_FORCE_INTERACTIVE: std::cell::Cell<Option<bool>> = const { std::cell::Cell::new(None) };
+}
+
+#[cfg(test)]
+pub fn set_force_interactive_for_test(val: Option<bool>) {
+    TEST_FORCE_INTERACTIVE.with(|c| c.set(val));
+}
+
 pub fn is_interactive() -> bool {
+    #[cfg(test)]
+    if let Some(val) = TEST_FORCE_INTERACTIVE.with(std::cell::Cell::get) {
+        return val;
+    }
     if std::env::var("JUSTUI_FORCE_INTERACTIVE").is_ok() {
         return true;
     }
@@ -18,7 +32,7 @@ pub fn confirm_with_input<R: io::BufRead, W: io::Write>(
     default: bool,
 ) -> bool {
     let suffix = if default { "[Y/n]" } else { "[y/N]" };
-    let _ = write!(writer, "{} {}: ", message, suffix);
+    let _ = write!(writer, "{message} {suffix}: ");
     let _ = writer.flush();
     let mut input = String::new();
     let _ = reader.read_line(&mut input);
@@ -76,7 +90,7 @@ pub fn ask_with_input<R: io::BufRead, W: io::Write>(
     message: &str,
     default_value: &str,
 ) -> String {
-    let _ = write!(writer, "{} [{}]: ", message, default_value);
+    let _ = write!(writer, "{message} [{default_value}]: ");
     let _ = writer.flush();
     let mut input = String::new();
     let _ = reader.read_line(&mut input);
@@ -157,10 +171,8 @@ mod tests {
     #[test]
     fn test_force_interactive_branch() {
         let _lock = crate::utils::lock_test_mutex();
-        // FIXME: Audit that the environment access only happens in single-threaded code.
-        unsafe { std::env::set_var("JUSTUI_FORCE_INTERACTIVE", "1") };
+        set_force_interactive_for_test(Some(true));
         assert!(is_interactive());
-        // FIXME: Audit that the environment access only happens in single-threaded code.
-        unsafe { std::env::remove_var("JUSTUI_FORCE_INTERACTIVE") };
+        set_force_interactive_for_test(None);
     }
 }

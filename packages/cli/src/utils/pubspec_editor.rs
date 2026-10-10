@@ -1,3 +1,9 @@
+#![expect(
+    clippy::manual_let_else,
+    clippy::missing_errors_doc,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::{Context, Result};
 use std::path::Path;
 
@@ -22,7 +28,7 @@ pub fn add_dependency(
 
     let backup_path = format!("{}.bak", pubspec_path.display());
     std::fs::write(&backup_path, &content)
-        .with_context(|| format!("Failed to write backup to {}", backup_path))?;
+        .with_context(|| format!("Failed to write backup to {backup_path}"))?;
 
     let lines: Vec<&str> = content.split('\n').collect();
     let mut dependencies_line_index: Option<usize> = None;
@@ -40,8 +46,8 @@ pub fn add_dependency(
     let dep_idx = dependencies_line_index
         .ok_or_else(|| anyhow::anyhow!("Root \"dependencies:\" key not found in pubspec.yaml."))?;
 
-    let dependency_line = format!("  {}: \"{}\"", dependency_name, version_constraint);
-    let mut new_lines: Vec<String> = lines.iter().map(|l| l.to_string()).collect();
+    let dependency_line = format!("  {dependency_name}: \"{version_constraint}\"");
+    let mut new_lines: Vec<String> = lines.iter().map(std::string::ToString::to_string).collect();
     new_lines.insert(dep_idx + 1, dependency_line);
 
     std::fs::write(pubspec_path, new_lines.join("\n"))

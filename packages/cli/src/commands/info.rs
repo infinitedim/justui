@@ -1,3 +1,12 @@
+#![expect(
+    clippy::missing_errors_doc,
+    clippy::missing_panics_doc,
+    clippy::needless_pass_by_value,
+    clippy::too_many_lines,
+    clippy::unwrap_used,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Result;
 use regex::Regex;
 
@@ -21,8 +30,8 @@ pub fn run(component_name: Option<String>) -> Result<()> {
     };
 
     if let Some(ref name) = component_name {
-        logger::info(&format!("Component info for \"{}\"", name));
-        let client = RegistryClient::new(config.registry_url.clone());
+        logger::info(&format!("Component info for \"{name}\""));
+        let client = RegistryClient::new(config.registry_url);
         if let Ok(index) = client.fetch_index()
             && let Some(c) = index.components.iter().find(|comp| comp.name == *name)
         {
@@ -32,12 +41,11 @@ pub fn run(component_name: Option<String>) -> Result<()> {
             return Ok(());
         }
         return Err(anyhow::anyhow!(
-            "Component \"{}\" not found in registry",
-            name
+            "Component \"{name}\" not found in registry"
         ));
     }
 
-    logger::stdout(&format!("JustUI CLI v{}", version));
+    logger::stdout(&format!("JustUI CLI v{version}"));
     logger::stdout("");
 
     logger::stdout("Config");
@@ -64,8 +72,7 @@ pub fn run(component_name: Option<String>) -> Result<()> {
         let name = re
             .captures(&content)
             .and_then(|caps| caps.get(1))
-            .map(|m| m.as_str().trim().to_string())
-            .unwrap_or_else(|| "-".to_string());
+            .map_or_else(|| "-".to_string(), |m| m.as_str().trim().to_string());
         ("[found]".to_string(), name)
     } else {
         ("[not found]".to_string(), "-".to_string())
@@ -76,23 +83,20 @@ pub fn run(component_name: Option<String>) -> Result<()> {
     logger::stdout(&format!("  {:<14}: {}", "Project name", project_name));
     logger::stdout("");
 
-    let client = RegistryClient::new(config.registry_url.clone());
+    let client = RegistryClient::new(config.registry_url);
     logger::stdout("Registry");
-    match client.fetch_index() {
-        Ok(index) => {
-            logger::stdout(&format!("  {:<14}: OK", "Status"));
-            logger::stdout(&format!("  {:<14}: {}", "Index version", index.version));
-            logger::stdout(&format!(
-                "  {:<14}: {}",
-                "Components",
-                index.components.len()
-            ));
-        }
-        Err(_) => {
-            logger::stdout(&format!("  {:<14}: Unreachable", "Status"));
-            logger::stdout(&format!("  {:<14}: -", "Index version"));
-            logger::stdout(&format!("  {:<14}: -", "Components"));
-        }
+    if let Ok(index) = client.fetch_index() {
+        logger::stdout(&format!("  {:<14}: OK", "Status"));
+        logger::stdout(&format!("  {:<14}: {}", "Index version", index.version));
+        logger::stdout(&format!(
+            "  {:<14}: {}",
+            "Components",
+            index.components.len()
+        ));
+    } else {
+        logger::stdout(&format!("  {:<14}: Unreachable", "Status"));
+        logger::stdout(&format!("  {:<14}: -", "Index version"));
+        logger::stdout(&format!("  {:<14}: -", "Components"));
     }
 
     Ok(())

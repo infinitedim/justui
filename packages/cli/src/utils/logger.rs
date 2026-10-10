@@ -1,4 +1,10 @@
+#![allow(
+    clippy::print_stderr,
+    reason = "logger module is the central stderr output sink"
+)]
+
 use colored::Colorize;
+use std::io::Write;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 static QUIET: AtomicBool = AtomicBool::new(false);
@@ -18,31 +24,30 @@ pub fn success(msg: &str) {
     if is_quiet() {
         return;
     }
-    eprintln!("{}", format!("✓ {}", msg).green());
+    eprintln!("{}", format!("✓ {msg}").green());
 }
 
 pub fn error(msg: &str) {
-    eprintln!("{}", format!("✗ Error: {}", msg).red());
+    eprintln!("{}", format!("✗ Error: {msg}").red());
 }
 
 pub fn warning(msg: &str) {
     if is_quiet() {
         return;
     }
-    eprintln!("{}", format!("⚠ Warning: {}", msg).yellow());
+    eprintln!("{}", format!("⚠ Warning: {msg}").yellow());
 }
 
 pub fn info(msg: &str) {
     if is_quiet() {
         return;
     }
-    eprintln!("{}", format!("ℹ {}", msg).cyan());
+    eprintln!("{}", format!("ℹ {msg}").cyan());
 }
 
 pub fn stdout(msg: &str) {
-    use std::io::Write;
     let mut out = std::io::stdout().lock();
-    if let Err(e) = writeln!(out, "{}", msg)
+    if let Err(e) = writeln!(out, "{msg}")
         && e.kind() == std::io::ErrorKind::BrokenPipe
     {
         std::process::exit(0);
@@ -61,7 +66,7 @@ pub fn panel(msg: &str) {
     let msg_chars = msg.chars().count();
     let inner_width = msg_chars + 4;
     let top = format!("┌{}┐", "─".repeat(inner_width));
-    let middle = format!("│  {}  │", msg);
+    let middle = format!("│  {msg}  │");
     let bottom = format!("└{}┘", "─".repeat(inner_width));
     eprintln!("{}", top.cyan());
     eprintln!("{}", middle.cyan());
@@ -90,7 +95,7 @@ pub fn summary(title: &str, items: &[SummaryItem]) {
     let bottom = format!("╰{}╯", "─".repeat(inner_width + 2));
 
     eprintln!("{}", top.green());
-    eprintln!("{}", pad(&format!("  ✔  {}", title)).green());
+    eprintln!("{}", pad(&format!("  ✔  {title}")).green());
     if !items.is_empty() {
         eprintln!("{}", pad("").green());
         for item in items {

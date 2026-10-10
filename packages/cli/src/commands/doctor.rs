@@ -1,3 +1,9 @@
+#![expect(
+    clippy::missing_errors_doc,
+    clippy::too_many_lines,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Result;
 use colored::Colorize;
 use std::path::Path;
@@ -76,39 +82,76 @@ pub fn print_doctor_report(checks: &[DoctorCheck]) {
         ));
     } else {
         logger::error(&format!(
-            "Found {} error(s) and {} warning(s). Please resolve the issues above.",
-            error_count, warn_count
+            "Found {error_count} error(s) and {warn_count} warning(s). Please resolve the issues above."
         ));
     }
 
     logger::summary(
-        &format!(
-            "Doctor Summary: {} OK, {} Warning(s), {} Error(s)",
-            ok_count, warn_count, error_count
-        ),
+        &format!("Doctor Summary: {ok_count} OK, {warn_count} Warning(s), {error_count} Error(s)"),
         &summary_items,
     );
 }
 
+#[cfg(test)]
+thread_local! {
+    static TEST_TOOLCHAIN_DIR: std::cell::RefCell<Option<std::path::PathBuf>> = const { std::cell::RefCell::new(None) };
+    static TEST_OVERRIDE_EMPTY_PATH: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+#[cfg(test)]
+pub fn set_test_toolchain_dir(dir: Option<std::path::PathBuf>) {
+    TEST_TOOLCHAIN_DIR.with(|d| *d.borrow_mut() = dir);
+}
+
+#[cfg(test)]
+pub fn set_test_override_empty_path(val: bool) {
+    TEST_OVERRIDE_EMPTY_PATH.with(|b| b.set(val));
+}
+
 pub fn check_toolchain(cmd: &str, name: &str) -> DoctorCheck {
-    match Command::new(cmd).arg("--version").output() {
+    #[cfg(test)]
+    if TEST_OVERRIDE_EMPTY_PATH.with(std::cell::Cell::get) {
+        return DoctorCheck {
+            category: "Toolchain".to_string(),
+            title: format!("{name} SDK"),
+            status: CheckStatus::Warning,
+            message: format!("{name} CLI binary not found in system PATH."),
+        };
+    }
+
+    #[cfg(test)]
+    let mut command = if let Some(bin_dir) = TEST_TOOLCHAIN_DIR.with(|d| d.borrow().clone()) {
+        let binary_path = bin_dir.join(cmd);
+        if binary_path.exists() {
+            Command::new(binary_path)
+        } else {
+            Command::new(cmd)
+        }
+    } else {
+        Command::new(cmd)
+    };
+
+    #[cfg(not(test))]
+    let mut command = Command::new(cmd);
+
+    match command.arg("--version").output() {
         Ok(out) if out.status.success() => {
             let stdout_str = String::from_utf8_lossy(&out.stdout).trim().to_string();
             let stderr_str = String::from_utf8_lossy(&out.stderr).trim().to_string();
-            let version_str = if !stdout_str.is_empty() {
-                stdout_str
-            } else {
+            let version_str = if stdout_str.is_empty() {
                 stderr_str
+            } else {
+                stdout_str
             };
 
             let first_line = version_str.lines().next().unwrap_or("").to_string();
 
             DoctorCheck {
                 category: "Toolchain".to_string(),
-                title: format!("{} SDK", name),
+                title: format!("{name} SDK"),
                 status: CheckStatus::Ok,
                 message: if first_line.is_empty() {
-                    format!("{} SDK active", name)
+                    format!("{name} SDK active")
                 } else {
                     first_line
                 },
@@ -116,9 +159,9 @@ pub fn check_toolchain(cmd: &str, name: &str) -> DoctorCheck {
         }
         _ => DoctorCheck {
             category: "Toolchain".to_string(),
-            title: format!("{} SDK", name),
+            title: format!("{name} SDK"),
             status: CheckStatus::Warning,
-            message: format!("{} CLI binary not found in system PATH.", name),
+            message: format!("{name} CLI binary not found in system PATH."),
         },
     }
 }
@@ -256,7 +299,7 @@ pub fn perform_checks() -> Vec<DoctorCheck> {
                 category: "Configuration".to_string(),
                 title: "Dart Target".to_string(),
                 status: CheckStatus::Ok,
-                message: format!("Constructor syntax target: {}", target_label),
+                message: format!("Constructor syntax target: {target_label}"),
             });
 
             // Check registry client reachability
@@ -371,9 +414,7 @@ mod tests {
             fs::set_permissions(&dart_empty_bin, fs::Permissions::from_mode(0o755)).unwrap();
         }
 
-        let old_path = std::env::var("PATH").unwrap_or_default();
-        // FIXME: Audit that the environment access only happens in single-threaded code.
-        unsafe { std::env::set_var("PATH", format!("{}:{}", bin_dir.display(), old_path)) };
+        set_test_toolchain_dir(Some(bin_dir));
 
         let checks_empty_dart = perform_checks();
         let dart_check = checks_empty_dart
@@ -382,9 +423,9 @@ mod tests {
             .unwrap();
         assert_eq!(dart_check.message, "Dart SDK active");
 
-        // Set PATH to empty directory to test CLI missing warning
-        // FIXME: Audit that the environment access only happens in single-threaded code.
-        unsafe { std::env::set_var("PATH", temp_dir.path().display().to_string()) };
+        // Set override to test CLI missing warning
+        set_test_toolchain_dir(None);
+        set_test_override_empty_path(true);
         let checks_missing_tools = perform_checks();
         assert!(
             checks_missing_tools
@@ -397,8 +438,7 @@ mod tests {
                 .any(|c| c.title == "Flutter SDK" && c.status == CheckStatus::Warning)
         );
 
-        // FIXME: Audit that the environment access only happens in single-threaded code.
-        unsafe { std::env::set_var("PATH", old_path) };
+        set_test_override_empty_path(false);
     }
 
     #[test]
@@ -453,15 +493,12 @@ mod tests {
             fs::set_permissions(&flutter_bin, fs::Permissions::from_mode(0o755)).unwrap();
             fs::set_permissions(&dart_bin, fs::Permissions::from_mode(0o755)).unwrap();
         }
-        let old_path = std::env::var("PATH").unwrap_or_default();
-        // FIXME: Audit that the environment access only happens in single-threaded code.
-        unsafe { std::env::set_var("PATH", format!("{}:{}", bin_dir.display(), old_path)) };
+        set_test_toolchain_dir(Some(bin_dir));
 
         // Run when all checks are OK (triggers line 68)
         assert!(run().is_ok());
 
-        // FIXME: Audit that the environment access only happens in single-threaded code.
-        unsafe { std::env::set_var("PATH", old_path) };
+        set_test_toolchain_dir(None);
     }
 
     #[test]
@@ -506,7 +543,7 @@ mod tests {
         );
 
         // 4. Add config with non-existent directories and invalid registry URL
-        let config_yaml = r#"
+        let config_yaml = r"
 version: '1.0'
 components_dir: lib/non_existent_components
 tokens_dir: lib/non_existent_tokens
@@ -514,7 +551,7 @@ shared_dir: lib/non_existent_shared
 registry_url: http://127.0.0.1:59999/non_existent_registry_index.json
 preset: default
 dart_target: standard
-"#;
+";
         fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
         let checks_config = perform_checks();
         assert!(
@@ -577,10 +614,7 @@ dart_target: standard
             fs::set_permissions(&dart_bin, fs::Permissions::from_mode(0o755)).unwrap();
         }
 
-        let old_path = std::env::var("PATH").unwrap_or_default();
-        let new_path = format!("{}:{}", bin_dir.display(), old_path);
-        // FIXME: Audit that the environment access only happens in single-threaded code.
-        unsafe { std::env::set_var("PATH", &new_path) };
+        set_test_toolchain_dir(Some(bin_dir));
 
         let checks = perform_checks();
         let flutter_check = checks.iter().find(|c| c.title == "Flutter SDK").unwrap();
@@ -591,8 +625,7 @@ dart_target: standard
         assert_eq!(dart_check.status, CheckStatus::Ok);
         assert!(dart_check.message.contains("Dart SDK version: 3.3.0"));
 
-        // FIXME: Audit that the environment access only happens in single-threaded code.
-        unsafe { std::env::set_var("PATH", old_path) };
+        set_test_toolchain_dir(None);
     }
 
     #[test]

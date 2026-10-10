@@ -1,3 +1,15 @@
+#![expect(
+    clippy::fn_params_excessive_bools,
+    clippy::implicit_hasher,
+    clippy::missing_errors_doc,
+    clippy::missing_panics_doc,
+    clippy::redundant_else,
+    clippy::similar_names,
+    clippy::too_many_lines,
+    clippy::unwrap_used,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Result;
 use regex::Regex;
 use sha2::{Digest, Sha256};
@@ -92,7 +104,7 @@ pub fn run(
         }
         Err(e) => {
             pb_index.finish_and_clear();
-            anyhow::bail!("Failed to add components: {}", e);
+            anyhow::bail!("Failed to add components: {e}");
         }
     };
 
@@ -112,11 +124,14 @@ pub fn run(
         if auto_yes {
             let names: Vec<String> = index.components.iter().map(|c| c.name.clone()).collect();
             let names_str = names.join(", ");
-            logger::stdout(&format!("[auto] Selecting all components: {}", names_str));
+            logger::stdout(&format!("[auto] Selecting all components: {names_str}"));
             names
         } else {
             logger::stdout("Select components to add:");
-            let refs: Vec<&str> = component_names.iter().map(|s| s.as_str()).collect();
+            let refs: Vec<&str> = component_names
+                .iter()
+                .map(std::string::String::as_str)
+                .collect();
             let selected_indices = prompt::select_multiple("Choose components", &refs);
 
             if selected_indices.is_empty() {
@@ -142,7 +157,7 @@ pub fn run(
             &mut dep_visited,
             &mut resolved_components,
         ) {
-            anyhow::bail!("Dependency resolution error: {}", e);
+            anyhow::bail!("Dependency resolution error: {e}");
         }
     }
 
@@ -153,8 +168,7 @@ pub fn run(
                 .components
                 .iter()
                 .find(|c| c.name == *name)
-                .map(|c| c.files_for_preset(&config.preset).len())
-                .unwrap_or(0)
+                .map_or(0, |c| c.files_for_preset(&config.preset).len())
         })
         .sum();
 
@@ -211,7 +225,7 @@ pub fn run(
     }
 
     if let Some(e) = last_error {
-        anyhow::bail!("Failed to add components: {}", e);
+        anyhow::bail!("Failed to add components: {e}");
     }
 
     if effective_dry_run {
@@ -275,8 +289,7 @@ pub fn run(
         logger::stdout("");
         if copied_count > 0 {
             logger::stdout(&format!(
-                "\x1B[32m✔\x1B[0m {} file(s) added/updated:",
-                copied_count
+                "\x1B[32m✔\x1B[0m {copied_count} file(s) added/updated:"
             ));
             for line in success_details {
                 logger::stdout(&line);
@@ -284,8 +297,7 @@ pub fn run(
         }
         if skipped_count > 0 {
             logger::stdout(&format!(
-                "\x1B[33m⚠\x1B[0m {} file(s) skipped:",
-                skipped_count
+                "\x1B[33m⚠\x1B[0m {skipped_count} file(s) skipped:"
             ));
             for line in skip_details {
                 logger::stdout(&line);
@@ -336,7 +348,7 @@ pub fn resolve_dependencies_recursive(
         .components
         .iter()
         .find(|c| c.name == name)
-        .ok_or_else(|| anyhow::anyhow!("Component \"{}\" not found in registry", name))?;
+        .ok_or_else(|| anyhow::anyhow!("Component \"{name}\" not found in registry"))?;
 
     for dep in &component.registry_dependencies {
         resolve_dependencies_recursive(dep, index, visited, resolved)?;
@@ -345,7 +357,10 @@ pub fn resolve_dependencies_recursive(
     Ok(())
 }
 
-#[allow(clippy::too_many_arguments)]
+#[allow(
+    clippy::too_many_arguments,
+    reason = "legacy component installer signature"
+)]
 pub fn add_component(
     name: &str,
     index: &RegistryIndex,
@@ -370,7 +385,7 @@ pub fn add_component(
         .components
         .iter()
         .find(|c| c.name == name)
-        .ok_or_else(|| anyhow::anyhow!("Component \"{}\" not found in registry", name))?;
+        .ok_or_else(|| anyhow::anyhow!("Component \"{name}\" not found in registry"))?;
 
     let deps: Vec<String> = component.registry_dependencies.clone();
     let mut stats = DryRunStats::new();
@@ -402,7 +417,7 @@ pub fn add_component(
 
     let target_dir = component.install_dir(components_dir, tokens_dir, shared_dir);
 
-    let files: Vec<_> = component.files_for_preset(preset).clone();
+    let files: Vec<_> = component.files_for_preset(preset);
     let comp_name = component.name.clone();
     let pub_deps: Vec<(String, String)> = component
         .pub_dependencies
@@ -503,9 +518,9 @@ pub fn add_component(
                     3,
                 );
             } else {
-                logger::stdout(&format!("[registry] {} (file baru)", local_file_name));
+                logger::stdout(&format!("[registry] {local_file_name} (file baru)"));
                 for line in rewritten_content.lines() {
-                    logger::stdout(&format!("+ {}", line));
+                    logger::stdout(&format!("+ {line}"));
                 }
             }
         }
@@ -514,8 +529,7 @@ pub fn add_component(
             if conflict_detected {
                 stats.conflicts += 1;
                 logger::stdout(&format!(
-                    "  [dry-run] Conflict (will write if selected): {}",
-                    local_file_name
+                    "  [dry-run] Conflict (will write if selected): {local_file_name}"
                 ));
             } else if should_write {
                 stats.will_write += 1;
@@ -532,10 +546,7 @@ pub fn add_component(
             }
             std::fs::write(&target_path, &final_content)?;
             crate::utils::dart_formatter::format_and_refresh_metadata(&target_path);
-            logger::stdout(&format!(
-                "  - Copied {} to {}/",
-                local_file_name, target_dir
-            ));
+            logger::stdout(&format!("  - Copied {local_file_name} to {target_dir}/"));
         }
 
         if local_file_name.ends_with("_theme.dart") {
@@ -581,23 +592,21 @@ pub fn add_component(
                                 theme_file.display()
                             ));
                             break;
-                        } else {
-                            if let Ok(updated) =
-                                crate::utils::theme_editor::register_theme_extension(
-                                    theme_file,
-                                    &pkg_name,
-                                    &import_uri,
-                                    &theme_class,
-                                )
-                                && updated
-                            {
-                                logger::stdout(&format!(
-                                    "  - Registered {}.defaults in {}",
-                                    theme_class,
-                                    theme_file.display()
-                                ));
-                                break;
-                            }
+                        } else if let Ok(updated) =
+                            crate::utils::theme_editor::register_theme_extension(
+                                theme_file,
+                                &pkg_name,
+                                &import_uri,
+                                &theme_class,
+                            )
+                            && updated
+                        {
+                            logger::stdout(&format!(
+                                "  - Registered {}.defaults in {}",
+                                theme_class,
+                                theme_file.display()
+                            ));
+                            break;
                         }
                     }
                 }
@@ -607,7 +616,7 @@ pub fn add_component(
         details.push(OperationDetail {
             file_name: local_file_name.clone(),
             status,
-            path: format!("{}/{}", target_dir, local_file_name),
+            path: format!("{target_dir}/{local_file_name}"),
         });
     }
 
@@ -615,26 +624,28 @@ pub fn add_component(
         let pubspec_path = std::path::Path::new("pubspec.yaml");
         for (dep, version) in &pub_deps {
             match pubspec_editor::add_dependency(pubspec_path, dep, version) {
-                Ok(_) => {
+                Ok(()) => {
                     logger::success(&format!(
-                        "Added dependency \"{}: {}\" to pubspec.yaml.",
-                        dep, version
+                        "Added dependency \"{dep}: {version}\" to pubspec.yaml."
                     ));
                 }
                 Err(e) => {
-                    logger::warning(&format!("Could not add dependency \"{}\": {}", dep, e));
+                    logger::warning(&format!("Could not add dependency \"{dep}\": {e}"));
                 }
             }
         }
     }
 
     if !dry_run {
-        logger::success(&format!("Component \"{}\" added successfully.", comp_name));
+        logger::success(&format!("Component \"{comp_name}\" added successfully."));
     }
     Ok((stats, details))
 }
 
-#[allow(clippy::needless_return)]
+#[allow(
+    clippy::needless_return,
+    reason = "explicit return for clarity in conflict branch"
+)]
 fn resolve_conflict(
     target_path: &std::path::Path,
     local_file_name: &str,
@@ -653,95 +664,79 @@ fn resolve_conflict(
         if current_local_hash == meta.local_hash {
             if meta.registry_hash == expected_hash {
                 if local_clean == rewritten_content {
-                    logger::stdout(&format!("  - {} is already up-to-date.", local_file_name));
+                    logger::stdout(&format!("  - {local_file_name} is already up-to-date."));
                     return Ok((false, OperationStatus::UpToDate));
                 } else if auto_yes {
                     logger::stdout(&format!(
-                        "[auto] Overwriting {} (updated content generated)",
-                        local_file_name
-                    ));
-                    return Ok((true, OperationStatus::Overwritten));
-                } else {
-                    logger::info(&format!(
-                        "  - Updating {} to newly generated version.",
-                        local_file_name
-                    ));
-                    return Ok((true, OperationStatus::Overwritten));
-                }
-            } else {
-                if auto_yes {
-                    logger::stdout(&format!(
-                        "[auto] Overwriting {} (not modified locally)",
-                        local_file_name
+                        "[auto] Overwriting {local_file_name} (updated content generated)"
                     ));
                     return Ok((true, OperationStatus::Overwritten));
                 }
                 logger::info(&format!(
-                    "  - Updating {} to latest registry version.",
-                    local_file_name
+                    "  - Updating {local_file_name} to newly generated version."
                 ));
                 return Ok((true, OperationStatus::Overwritten));
             }
-        } else {
-            if meta.registry_hash == expected_hash {
-                if auto_yes {
-                    logger::stdout(&format!(
-                        "[auto] Skipping {} (modified locally)",
-                        local_file_name
-                    ));
-                    return Ok((false, OperationStatus::SkippedLocalCustomization));
-                }
+            if auto_yes {
                 logger::stdout(&format!(
-                    "  - {} has been customized locally. Skipping.",
-                    local_file_name
+                    "[auto] Overwriting {local_file_name} (not modified locally)"
+                ));
+                return Ok((true, OperationStatus::Overwritten));
+            }
+            logger::info(&format!(
+                "  - Updating {local_file_name} to latest registry version."
+            ));
+            return Ok((true, OperationStatus::Overwritten));
+        }
+        if meta.registry_hash == expected_hash {
+            if auto_yes {
+                logger::stdout(&format!(
+                    "[auto] Skipping {local_file_name} (modified locally)"
                 ));
                 return Ok((false, OperationStatus::SkippedLocalCustomization));
-            } else {
-                if auto_yes {
-                    logger::stdout(&format!(
-                        "[auto] Skipping {} (modified locally)",
-                        local_file_name
-                    ));
-                    return Ok((false, OperationStatus::ConflictResolvedSkip));
-                }
-                logger::warning(&format!(
-                    "Conflict: Local file \"{}\" has been modified, and a registry update is available.",
-                    local_file_name
-                ));
-                let proceed = conflict_prompt(local_file_name, &local_clean, rewritten_content)?;
-                if proceed {
-                    return Ok((true, OperationStatus::ConflictResolvedOverwrite));
-                } else {
-                    return Ok((false, OperationStatus::ConflictResolvedSkip));
-                }
             }
+            logger::stdout(&format!(
+                "  - {local_file_name} has been customized locally. Skipping."
+            ));
+            return Ok((false, OperationStatus::SkippedLocalCustomization));
+        } else {
+            if auto_yes {
+                logger::stdout(&format!(
+                    "[auto] Skipping {local_file_name} (modified locally)"
+                ));
+                return Ok((false, OperationStatus::ConflictResolvedSkip));
+            }
+            logger::warning(&format!(
+                "Conflict: Local file \"{local_file_name}\" has been modified, and a registry update is available."
+            ));
+            let proceed = conflict_prompt(local_file_name, &local_clean, rewritten_content)?;
+            if proceed {
+                return Ok((true, OperationStatus::ConflictResolvedOverwrite));
+            }
+            return Ok((false, OperationStatus::ConflictResolvedSkip));
         }
     } else {
         let local_hash = sha256_hex(local_content.as_bytes());
         if local_hash == expected_hash {
             logger::stdout(&format!(
-                "  - {} is already up-to-date (no metadata).",
-                local_file_name
+                "  - {local_file_name} is already up-to-date (no metadata)."
             ));
             return Ok((false, OperationStatus::UpToDate));
         } else {
             if auto_yes {
                 logger::stdout(&format!(
-                    "[auto] Overwriting {} (not modified locally)",
-                    local_file_name
+                    "[auto] Overwriting {local_file_name} (not modified locally)"
                 ));
                 return Ok((true, OperationStatus::ConflictResolvedOverwrite));
             }
             logger::warning(&format!(
-                "Conflict: Local file \"{}\" exists and differs (no metadata).",
-                local_file_name
+                "Conflict: Local file \"{local_file_name}\" exists and differs (no metadata)."
             ));
             let proceed = conflict_prompt(local_file_name, &local_content, rewritten_content)?;
             if proceed {
                 return Ok((true, OperationStatus::ConflictResolvedOverwrite));
-            } else {
-                return Ok((false, OperationStatus::ConflictResolvedSkip));
             }
+            return Ok((false, OperationStatus::ConflictResolvedSkip));
         }
     }
 }
@@ -764,8 +759,7 @@ fn resolve_conflict_dry(
             if meta.registry_hash == expected_hash {
                 if local_clean == rewritten_content {
                     logger::stdout(&format!(
-                        "  [dry-run] Already up-to-date: {}",
-                        local_file_name
+                        "  [dry-run] Already up-to-date: {local_file_name}"
                     ));
                     Ok((false, false, local_clean, OperationStatus::UpToDate))
                 } else {
@@ -777,8 +771,7 @@ fn resolve_conflict_dry(
         } else {
             if meta.registry_hash == expected_hash {
                 logger::stdout(&format!(
-                    "  [dry-run] Skipped (modified locally): {}",
-                    local_file_name
+                    "  [dry-run] Skipped (modified locally): {local_file_name}"
                 ));
                 Ok((
                     false,
@@ -799,14 +792,12 @@ fn resolve_conflict_dry(
         let local_hash = sha256_hex(local_content.as_bytes());
         if local_hash == expected_hash {
             logger::stdout(&format!(
-                "  [dry-run] Already up-to-date: {}",
-                local_file_name
+                "  [dry-run] Already up-to-date: {local_file_name}"
             ));
             Ok((false, false, local_content, OperationStatus::UpToDate))
         } else {
             logger::stdout(&format!(
-                "  [dry-run] Skipped (modified locally): {}",
-                local_file_name
+                "  [dry-run] Skipped (modified locally): {local_file_name}"
             ));
             Ok((
                 false,

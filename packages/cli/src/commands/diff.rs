@@ -1,3 +1,10 @@
+#![expect(
+    clippy::missing_errors_doc,
+    clippy::needless_pass_by_value,
+    clippy::too_many_lines,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Result;
 use std::collections::HashSet;
 
@@ -82,7 +89,7 @@ pub fn run(
     let index = match client.fetch_index() {
         Ok(idx) => idx,
         Err(e) => {
-            anyhow::bail!("Failed to run diff: {}", e);
+            anyhow::bail!("Failed to run diff: {e}");
         }
     };
 
@@ -91,9 +98,7 @@ pub fn run(
             Some(c) => vec![c],
             None => {
                 anyhow::bail!(
-                    "Failed to run diff for \"{}\": Component \"{}\" not found in registry",
-                    name,
-                    name
+                    "Failed to run diff for \"{name}\": Component \"{name}\" not found in registry"
                 );
             }
         }
@@ -104,8 +109,7 @@ pub fn run(
     for component in target_components {
         let component_name = component.name.clone();
         logger::info(&format!(
-            "Comparing component \"{}\" with registry...",
-            component_name
+            "Comparing component \"{component_name}\" with registry..."
         ));
 
         let target_dir = component.install_dir(
@@ -118,7 +122,7 @@ pub fn run(
 
         for file in component.files_for_preset(&config.preset) {
             let local_file_name = component.local_file_name(&file.name);
-            let target_path = format!("{}/{}", target_dir, local_file_name);
+            let target_path = format!("{target_dir}/{local_file_name}");
             let local_file_path = std::path::Path::new(&target_path);
             let expected_hash = file.checksum.replace("sha256:", "").trim().to_string();
 
@@ -155,16 +159,16 @@ pub fn run(
         for fs in &files_status {
             match fs.status_type {
                 DiffStatusType::UpToDate => {
-                    logger::success(&format!("{}: Up to date.", fs.file.name))
+                    logger::success(&format!("{}: Up to date.", fs.file.name));
                 }
                 DiffStatusType::LocallyModified => {
-                    logger::warning(&format!("{}: Modified locally.", fs.file.name))
+                    logger::warning(&format!("{}: Modified locally.", fs.file.name));
                 }
                 DiffStatusType::UpdateAvailable => {
-                    logger::info(&format!("{}: Update available.", fs.file.name))
+                    logger::info(&format!("{}: Update available.", fs.file.name));
                 }
                 DiffStatusType::Conflict => {
-                    logger::warning(&format!("{}: Conflict (both modified).", fs.file.name))
+                    logger::warning(&format!("{}: Conflict (both modified).", fs.file.name));
                 }
                 DiffStatusType::Missing => logger::warning(&format!(
                     "File {} is missing locally (needs to be added).",
@@ -329,7 +333,7 @@ fn show_all_diffs(
 }
 
 fn print_line_diff(file_name: &str, local: &str, remote: &str) {
-    logger::stdout(&format!("\n--- Line-by-line diff for {} ---", file_name));
+    logger::stdout(&format!("\n--- Line-by-line diff for {file_name} ---"));
     let local_norm = local.replace("\r\n", "\n");
     let remote_norm = remote.replace("\r\n", "\n");
     let local_lines: Vec<&str> = local_norm.split('\n').collect();
@@ -343,10 +347,10 @@ fn print_line_diff(file_name: &str, local: &str, remote: &str) {
         if local_line != remote_line {
             match (local_line, remote_line) {
                 (None, Some(r)) => {
-                    logger::stdout(&format!("\x1B[32m+ [Line {}] {}\x1B[0m", i + 1, r))
+                    logger::stdout(&format!("\x1B[32m+ [Line {}] {}\x1B[0m", i + 1, r));
                 }
                 (Some(l), None) => {
-                    logger::stdout(&format!("\x1B[31m- [Line {}] {}\x1B[0m", i + 1, l))
+                    logger::stdout(&format!("\x1B[31m- [Line {}] {}\x1B[0m", i + 1, l));
                 }
                 (Some(l), Some(r)) => {
                     logger::stdout(&format!(
@@ -565,11 +569,9 @@ mod tests {
 
         // Test metadata with UpdateAvailable and Conflict
         let old_reg_hash = "old_reg_hash_123";
-        let _new_reg_hash = "new_reg_hash_456";
         let content_unmodified = "class Button {}";
         let content_modified = "class ButtonModified {}";
         let local_hash_unmodified = sha256_hex(content_unmodified.as_bytes());
-        let _local_hash_modified = sha256_hex(content_modified.as_bytes());
 
         // UpdateAvailable metadata
         let meta_update = import_rewriter::inject_metadata(

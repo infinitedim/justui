@@ -1,3 +1,11 @@
+#![expect(
+    clippy::case_sensitive_file_extension_comparisons,
+    clippy::manual_let_else,
+    clippy::missing_errors_doc,
+    clippy::too_many_lines,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::{Context, Result};
 use semver::Version;
 use serde::Deserialize;
@@ -73,7 +81,7 @@ pub fn parse_tag_from_location(location: &str) -> Option<String> {
 
 fn resolve_via_redirect(redirect_client: &reqwest::blocking::Client) -> Option<GitHubRelease> {
     let repo = get_repo_name();
-    let url = format!("https://github.com/{}/releases/latest", repo);
+    let url = format!("https://github.com/{repo}/releases/latest");
     let resp = redirect_client
         .head(&url)
         .send()
@@ -95,28 +103,26 @@ fn resolve_via_redirect(redirect_client: &reqwest::blocking::Client) -> Option<G
 
     let tag = parse_tag_from_location(loc_header)?;
     let target_triple = get_target_triple();
-    let assets = if !target_triple.is_empty() {
+    let assets = if target_triple.is_empty() {
+        vec![]
+    } else {
         let ext = if env::consts::OS == "windows" {
             "zip"
         } else {
             "tar.gz"
         };
-        let asset_name = format!("justui-{}.{}", target_triple, ext);
-        let download_url = format!(
-            "https://github.com/{}/releases/download/{}/{}",
-            repo, tag, asset_name
-        );
+        let asset_name = format!("justui-{target_triple}.{ext}");
+        let download_url =
+            format!("https://github.com/{repo}/releases/download/{tag}/{asset_name}");
         vec![GitHubAsset {
             name: asset_name,
             browser_download_url: download_url,
         }]
-    } else {
-        vec![]
     };
 
     Some(GitHubRelease {
         tag_name: tag.clone(),
-        html_url: format!("https://github.com/{}/releases/tag/{}", repo, tag),
+        html_url: format!("https://github.com/{repo}/releases/tag/{tag}"),
         body: None,
         assets,
     })
@@ -137,7 +143,7 @@ pub fn resolve_latest_version(client: &reqwest::blocking::Client) -> Result<GitH
     }
 
     let repo = get_repo_name();
-    let api_url = format!("https://api.github.com/repos/{}/releases/latest", repo);
+    let api_url = format!("https://api.github.com/repos/{repo}/releases/latest");
 
     // Strategy 2: Authenticated API if GITHUB_TOKEN or GH_TOKEN is set
     let token = env::var("GITHUB_TOKEN")
@@ -149,7 +155,7 @@ pub fn resolve_latest_version(client: &reqwest::blocking::Client) -> Result<GitH
         if !token.is_empty()
             && let Ok(resp) = client
                 .get(&api_url)
-                .header(reqwest::header::AUTHORIZATION, format!("Bearer {}", token))
+                .header(reqwest::header::AUTHORIZATION, format!("Bearer {token}"))
                 .header(reqwest::header::USER_AGENT, "justui-cli")
                 .header(reqwest::header::ACCEPT, "application/vnd.github.v3+json")
                 .send()
@@ -194,7 +200,7 @@ pub fn plan_upgrade(
     force: bool,
 ) -> Result<UpgradeAction> {
     let current_version = Version::parse(current_version_str)
-        .with_context(|| format!("Failed to parse local version '{}'", current_version_str))?;
+        .with_context(|| format!("Failed to parse local version '{current_version_str}'"))?;
 
     let clean_tag = release.tag_name.trim_start_matches('v');
     let latest_version = match Version::parse(clean_tag) {
@@ -282,9 +288,9 @@ fn checksum_manifest_location(download_url: &str) -> Result<(String, String)> {
     let (base, asset_name) = without_query
         .rsplit_once('/')
         .filter(|(_, name)| !name.is_empty())
-        .with_context(|| format!("Cannot derive archive name from URL {}", download_url))?;
+        .with_context(|| format!("Cannot derive archive name from URL {download_url}"))?;
     Ok((
-        format!("{}/{}", base, CHECKSUM_MANIFEST),
+        format!("{base}/{CHECKSUM_MANIFEST}"),
         asset_name.to_string(),
     ))
 }
@@ -307,29 +313,25 @@ fn verify_sha256(bytes: &[u8], manifest: &str, asset_name: &str) -> Result<()> {
         .map(|(hash, _)| hash.to_ascii_lowercase())
         .with_context(|| {
             format!(
-                "Archive \"{}\" is not listed in {}. Refusing to install an unverified binary.",
-                asset_name, CHECKSUM_MANIFEST
+                "Archive \"{asset_name}\" is not listed in {CHECKSUM_MANIFEST}. Refusing to install an unverified binary."
             )
         })?;
 
     let actual = hex::encode(Sha256::digest(bytes));
     if actual != expected {
         anyhow::bail!(
-            "Checksum mismatch for \"{}\": expected {}, got {}. The download may be corrupted or tampered with.",
-            asset_name,
-            expected,
-            actual
+            "Checksum mismatch for \"{asset_name}\": expected {expected}, got {actual}. The download may be corrupted or tampered with."
         );
     }
     Ok(())
 }
 
 fn download_and_unpack(client: &reqwest::blocking::Client, download_url: &str) -> Result<Vec<u8>> {
-    logger::info(&format!("Downloading update from {}...", download_url));
+    logger::info(&format!("Downloading update from {download_url}..."));
     let response = client
         .get(download_url)
         .send()
-        .with_context(|| format!("Failed to download release archive from {}", download_url))?;
+        .with_context(|| format!("Failed to download release archive from {download_url}"))?;
 
     if !response.status().is_success() {
         anyhow::bail!(
@@ -345,7 +347,7 @@ fn download_and_unpack(client: &reqwest::blocking::Client, download_url: &str) -
         .get(&manifest_url)
         .header(reqwest::header::USER_AGENT, "justui-cli")
         .send()
-        .with_context(|| format!("Failed to download checksum manifest from {}", manifest_url))?;
+        .with_context(|| format!("Failed to download checksum manifest from {manifest_url}"))?;
     if !manifest_response.status().is_success() {
         anyhow::bail!(
             "Failed to download checksum manifest {}: HTTP status {}. Refusing to install an unverified binary.",
@@ -383,8 +385,7 @@ pub fn execute_upgrade(
         .context("Failed to replace current executable with updated binary")?;
 
     logger::success(&format!(
-        "Successfully upgraded JustUI CLI to v{}!",
-        clean_tag
+        "Successfully upgraded JustUI CLI to v{clean_tag}!"
     ));
 
     Ok(())
@@ -402,8 +403,7 @@ pub fn execute_upgrade_to_path(
         .context("Failed to replace current executable with updated binary")?;
 
     logger::success(&format!(
-        "Successfully upgraded JustUI CLI to v{}!",
-        clean_tag
+        "Successfully upgraded JustUI CLI to v{clean_tag}!"
     ));
 
     Ok(())
@@ -412,11 +412,10 @@ pub fn execute_upgrade_to_path(
 pub fn run(check_only: bool, force: bool) -> Result<()> {
     let current_version_str = env!("CARGO_PKG_VERSION");
     let _current_version = Version::parse(current_version_str)
-        .with_context(|| format!("Failed to parse local version '{}'", current_version_str))?;
+        .with_context(|| format!("Failed to parse local version '{current_version_str}'"))?;
 
     logger::stdout(&format!(
-        "Current JustUI CLI version: v{}",
-        current_version_str
+        "Current JustUI CLI version: v{current_version_str}"
     ));
 
     let pb = indicatif::ProgressBar::new_spinner();
@@ -430,7 +429,7 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
         Ok(c) => c,
         Err(e) => {
             pb.finish_and_clear();
-            logger::warning(&format!("Failed to initialize HTTP client: {}", e));
+            logger::warning(&format!("Failed to initialize HTTP client: {e}"));
             return Ok(());
         }
     };
@@ -442,7 +441,7 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
         }
         Err(e) => {
             pb.finish_and_clear();
-            logger::warning(&format!("Could not check for updates: {}", e));
+            logger::warning(&format!("Could not check for updates: {e}"));
             return Ok(());
         }
     };
@@ -450,7 +449,7 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
     let plan = match plan_upgrade(current_version_str, &release, check_only, force) {
         Ok(p) => p,
         Err(e) => {
-            logger::warning(&format!("Failed to plan upgrade: {}", e));
+            logger::warning(&format!("Failed to plan upgrade: {e}"));
             return Ok(());
         }
     };
@@ -461,8 +460,7 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
         }
         UpgradeAction::InvalidVersion { raw_tag } => {
             logger::warning(&format!(
-                "GitHub release tag '{}' is not a valid semver.",
-                raw_tag
+                "GitHub release tag '{raw_tag}' is not a valid semver."
             ));
         }
         UpgradeAction::CheckOnly { target_version } => {
@@ -502,14 +500,11 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
             if cfg!(test) {
                 let _ = execute_upgrade;
                 logger::info(&format!(
-                    "Downloading update from {} (skipped in test mode)...",
-                    download_url
+                    "Downloading update from {download_url} (skipped in test mode)..."
                 ));
-            } else {
-                if let Err(e) = execute_upgrade(&client, &download_url, &target_version) {
-                    logger::warning(&format!("Failed to upgrade: {}", e));
-                    print_fallback_instructions();
-                }
+            } else if let Err(e) = execute_upgrade(&client, &download_url, &target_version) {
+                logger::warning(&format!("Failed to upgrade: {e}"));
+                print_fallback_instructions();
             }
         }
     }
@@ -523,7 +518,7 @@ fn print_release_notes(release: &GitHubRelease) {
     {
         logger::stdout("\nRelease Notes:");
         for line in body.lines().take(10) {
-            logger::stdout(&format!("  {}", line));
+            logger::stdout(&format!("  {line}"));
         }
     }
 }
@@ -554,14 +549,12 @@ fn validate_binary_executable(bytes: &[u8]) -> Result<()> {
         match target_arch {
             "x86_64" if e_machine != 0x3e => {
                 anyhow::bail!(
-                    "Downloaded binary architecture (e_machine: {:#x}) does not match system x86_64 architecture",
-                    e_machine
+                    "Downloaded binary architecture (e_machine: {e_machine:#x}) does not match system x86_64 architecture"
                 );
             }
             "aarch64" if e_machine != 0xb7 => {
                 anyhow::bail!(
-                    "Downloaded binary architecture (e_machine: {:#x}) does not match system AArch64 architecture",
-                    e_machine
+                    "Downloaded binary architecture (e_machine: {e_machine:#x}) does not match system AArch64 architecture"
                 );
             }
             _ => {}
@@ -647,16 +640,15 @@ fn extract_binary_from_tar_gz(gz_bytes: &[u8], binary_name: &str) -> Result<Vec<
         if filename == clean_binary_name || filename == binary_name {
             if cursor + size <= decompressed.len() {
                 return Ok(decompressed[cursor..cursor + size].to_vec());
-            } else {
-                anyhow::bail!("Corrupted tar archive entry size");
             }
+            anyhow::bail!("Corrupted tar archive entry size");
         }
 
         let blocks = size.div_ceil(512);
         cursor += blocks * 512;
     }
 
-    anyhow::bail!("Binary '{}' not found inside tar archive", binary_name)
+    anyhow::bail!("Binary '{binary_name}' not found inside tar archive")
 }
 
 fn extract_binary_from_zip(zip_bytes: &[u8], binary_name: &str) -> Result<Vec<u8>> {
@@ -715,7 +707,7 @@ fn extract_binary_from_zip(zip_bytes: &[u8], binary_name: &str) -> Result<Vec<u8
         }
     }
 
-    anyhow::bail!("Binary '{}' not found inside zip archive", binary_name)
+    anyhow::bail!("Binary '{binary_name}' not found inside zip archive")
 }
 
 fn replace_current_executable(new_bytes: &[u8]) -> Result<()> {

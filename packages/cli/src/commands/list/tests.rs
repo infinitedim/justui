@@ -1,3 +1,11 @@
+#![expect(
+    clippy::manual_string_new,
+    clippy::redundant_clone,
+    clippy::too_many_lines,
+    clippy::uninlined_format_args,
+    reason = "legacy: fix when touched"
+)]
+
 use super::ui::{draw_ui, handle_key_code, run_interactive_tui};
 use super::*;
 use crate::commands::add::sha256_hex;

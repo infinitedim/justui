@@ -1,3 +1,8 @@
+#![expect(
+    clippy::needless_raw_string_hashes,
+    reason = "legacy: fix when touched"
+)]
+
 use super::*;
 
 #[test]

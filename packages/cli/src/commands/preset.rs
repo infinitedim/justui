@@ -1,3 +1,10 @@
+#![expect(
+    clippy::missing_errors_doc,
+    clippy::too_many_lines,
+    clippy::unwrap_used,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Result;
 use clap::Subcommand;
 use std::collections::HashSet;
@@ -70,7 +77,7 @@ fn run_list() -> Result<()> {
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
-            anyhow::bail!("Failed to read config: {}", e);
+            anyhow::bail!("Failed to read config: {e}");
         }
     };
 
@@ -78,7 +85,7 @@ fn run_list() -> Result<()> {
     let index = match client.fetch_index() {
         Ok(idx) => idx,
         Err(e) => {
-            anyhow::bail!("Failed to fetch registry: {}", e);
+            anyhow::bail!("Failed to fetch registry: {e}");
         }
     };
 
@@ -97,8 +104,7 @@ fn run_list() -> Result<()> {
             .filter(|c| c.supported_presets.contains(preset))
             .count();
         logger::stdout(&format!(
-            "  {}{}  —  {} component(s)",
-            preset, active_marker, supported_count
+            "  {preset}{active_marker}  —  {supported_count} component(s)"
         ));
     }
 
@@ -114,7 +120,7 @@ fn run_info(preset_name: &str) -> Result<()> {
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
-            anyhow::bail!("Failed to read config: {}", e);
+            anyhow::bail!("Failed to read config: {e}");
         }
     };
 
@@ -122,14 +128,13 @@ fn run_info(preset_name: &str) -> Result<()> {
     let index = match client.fetch_index() {
         Ok(idx) => idx,
         Err(e) => {
-            anyhow::bail!("Failed to fetch registry: {}", e);
+            anyhow::bail!("Failed to fetch registry: {e}");
         }
     };
 
     if !index.presets.contains(&preset_name.to_string()) {
         anyhow::bail!(
-            "Preset \"{}\" not found in registry. Run \"justui preset list\" to see available presets.",
-            preset_name
+            "Preset \"{preset_name}\" not found in registry. Run \"justui preset list\" to see available presets."
         );
     }
 
@@ -156,13 +161,13 @@ fn run_info(preset_name: &str) -> Result<()> {
 
     logger::stdout(&format!("\n  Supported components ({}):", supported.len()));
     for name in &supported {
-        logger::stdout(&format!("    ✔  {}", name));
+        logger::stdout(&format!("    ✔  {name}"));
     }
 
     if !unsupported.is_empty() {
         logger::stdout(&format!("\n  Not yet supported ({}):", unsupported.len()));
         for name in &unsupported {
-            logger::stdout(&format!("    ○  {}", name));
+            logger::stdout(&format!("    ○  {name}"));
         }
     }
 
@@ -178,7 +183,7 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
     let config = match std::fs::read_to_string(config_path) {
         Ok(content) => JustUIConfig::from_yaml(&content),
         Err(e) => {
-            anyhow::bail!("Failed to read config: {}", e);
+            anyhow::bail!("Failed to read config: {e}");
         }
     };
 
@@ -186,19 +191,18 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
     let index = match client.fetch_index() {
         Ok(idx) => idx,
         Err(e) => {
-            anyhow::bail!("Failed to fetch registry: {}", e);
+            anyhow::bail!("Failed to fetch registry: {e}");
         }
     };
 
     if !index.presets.contains(&preset_name.to_string()) {
         anyhow::bail!(
-            "Preset \"{}\" not found in registry. Run \"justui preset list\" to see available presets.",
-            preset_name
+            "Preset \"{preset_name}\" not found in registry. Run \"justui preset list\" to see available presets."
         );
     }
 
     if config.preset == preset_name {
-        logger::info(&format!("Preset \"{}\" is already active.", preset_name));
+        logger::info(&format!("Preset \"{preset_name}\" is already active."));
         return Ok(());
     }
 
@@ -228,10 +232,9 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
                 .components
                 .iter()
                 .find(|c| &c.name == *name)
-                .map(|c| !c.supported_presets.contains(&preset_name.to_string()))
-                .unwrap_or(false)
+                .is_some_and(|c| !c.supported_presets.contains(&preset_name.to_string()))
         })
-        .map(|s| s.as_str())
+        .map(std::string::String::as_str)
         .collect();
 
     if !unsupported.is_empty() {
@@ -250,16 +253,12 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
                 .components
                 .iter()
                 .find(|c| &c.name == name)
-                .map(|c| c.supported_presets.contains(&preset_name.to_string()))
-                .unwrap_or(false)
+                .is_some_and(|c| c.supported_presets.contains(&preset_name.to_string()))
         })
         .collect();
 
     if to_apply.is_empty() {
-        anyhow::bail!(
-            "No installed components support preset \"{}\".",
-            preset_name
-        );
+        anyhow::bail!("No installed components support preset \"{preset_name}\".");
     }
 
     if !auto_yes {
@@ -269,14 +268,13 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
             to_apply.len()
         ));
         for name in &to_apply {
-            logger::stdout(&format!("  →  {}", name));
+            logger::stdout(&format!("  →  {name}"));
         }
         logger::stdout("");
 
         let confirm = prompt::confirm(
             &format!(
-                "Continue? Existing component files will be overwritten with the \"{}\" preset version.",
-                preset_name
+                "Continue? Existing component files will be overwritten with the \"{preset_name}\" preset version."
             ),
             false,
         );
@@ -288,12 +286,12 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
 
     let new_config = JustUIConfig {
         preset: preset_name.to_string(),
-        ..config.clone()
+        ..config
     };
 
     let mut visited: HashSet<String> = HashSet::new();
 
-    logger::panel(&format!("Applying preset \"{}\"", preset_name));
+    logger::panel(&format!("Applying preset \"{preset_name}\""));
 
     let pb = indicatif::ProgressBar::new(to_apply.len() as u64);
     pb.set_style(
@@ -307,7 +305,7 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
     let mut fail_count = 0;
 
     for comp_name in &to_apply {
-        pb.set_message(format!("Applying {}...", comp_name));
+        pb.set_message(format!("Applying {comp_name}..."));
         match add_component(
             comp_name,
             &index,
@@ -326,7 +324,7 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
             Ok(_) => success_count += 1,
             Err(e) => {
                 fail_count += 1;
-                logger::warning(&format!("Failed to apply \"{}\": {}", comp_name, e));
+                logger::warning(&format!("Failed to apply \"{comp_name}\": {e}"));
             }
         }
         pb.inc(1);
@@ -340,15 +338,15 @@ fn run_apply(preset_name: &str, auto_yes: bool) -> Result<()> {
     }
 
     logger::summary(
-        &format!("Preset \"{}\" applied successfully", preset_name),
+        &format!("Preset \"{preset_name}\" applied successfully"),
         &[
             crate::utils::logger::SummaryItem {
                 label: "Succeeded".to_string(),
-                value: format!("{} component(s)", success_count),
+                value: format!("{success_count} component(s)"),
             },
             crate::utils::logger::SummaryItem {
                 label: "Failed".to_string(),
-                value: format!("{} component(s)", fail_count),
+                value: format!("{fail_count} component(s)"),
             },
             crate::utils::logger::SummaryItem {
                 label: "Active preset".to_string(),

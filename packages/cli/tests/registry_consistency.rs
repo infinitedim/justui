@@ -4,6 +4,8 @@
 //! - relative imports pointing at files `add` never installs,
 //! - `registryDependencies` drifting from the imports a component really has.
 
+#![expect(clippy::too_many_lines, reason = "legacy: fix when touched")]
+
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::path::PathBuf;
 
@@ -29,7 +31,7 @@ fn load_index() -> RegistryIndex {
 }
 
 fn import_regex() -> Regex {
-    Regex::new(r#"(?m)^\s*(?:import|export)\s+'([^']+)'"#).expect("valid regex")
+    Regex::new(r"(?m)^\s*(?:import|export)\s+'([^']+)'").expect("valid regex")
 }
 
 fn normalize(path: &str) -> String {
@@ -83,7 +85,7 @@ fn rewritten_imports_resolve_to_installed_or_extracted_files() {
     let index = load_index();
     let (core_files, token_files) = extracted_kernel_files();
     let imports = import_regex();
-    let core_prefix = format!("package:{}/core/", PACKAGE);
+    let core_prefix = format!("package:{PACKAGE}/core/");
     let tokens_prefix = format!(
         "package:{}/{}/",
         PACKAGE,
@@ -120,7 +122,7 @@ fn rewritten_imports_resolve_to_installed_or_extracted_files() {
                 } else if target.starts_with("package:") || target.starts_with("dart:") {
                     !target.starts_with("package:just_ui_")
                 } else {
-                    targets.contains(normalize(&format!("{}/{}", own_dir, target)).as_str())
+                    targets.contains(normalize(&format!("{own_dir}/{target}")).as_str())
                 };
                 if !ok {
                     failures.insert(format!("[{}] {} -> {}", preset, f.registry_path, target));
@@ -171,7 +173,7 @@ fn registry_dependencies_match_actual_imports() {
                 if target.starts_with("package:") || target.starts_with("dart:") {
                     continue;
                 }
-                let resolved = normalize(&format!("{}/{}", own_dir, target));
+                let resolved = normalize(&format!("{own_dir}/{target}"));
                 if let Some(owner) = owner_by_target.get(resolved.as_str())
                     && *owner != f.comp.name
                 {
@@ -229,7 +231,7 @@ fn standard_target_removes_every_primary_constructor() {
     for path in CoreAssets::iter() {
         if let Some(asset) = CoreAssets::get(&path) {
             sources.push((
-                format!("core/{}", path),
+                format!("core/{path}"),
                 String::from_utf8_lossy(&asset.data).into_owned(),
             ));
         }
@@ -237,7 +239,7 @@ fn standard_target_removes_every_primary_constructor() {
     for path in TokensAssets::iter() {
         if let Some(asset) = TokensAssets::get(&path) {
             sources.push((
-                format!("tokens/{}", path),
+                format!("tokens/{path}"),
                 String::from_utf8_lossy(&asset.data).into_owned(),
             ));
         }
@@ -251,7 +253,7 @@ fn standard_target_removes_every_primary_constructor() {
     for (name, content) in &sources {
         let (converted, skipped) = transpile_to_standard_constructor(content);
         if !skipped.is_empty() {
-            failures.insert(format!("{}: skipped {:?}", name, skipped));
+            failures.insert(format!("{name}: skipped {skipped:?}"));
         }
         if let Some(m) = header.find(&converted) {
             failures.insert(format!(
@@ -303,7 +305,7 @@ fn test_registry_signature_validity() {
         verify_res.err()
     );
 
-    let mut tampered = index_bytes.clone();
+    let mut tampered = index_bytes;
     tampered.push(b' ');
     let fail_res = justui_cli::utils::crypto::verify_signature(
         &tampered,

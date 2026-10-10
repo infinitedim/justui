@@ -1,11 +1,18 @@
+#![expect(
+    clippy::struct_excessive_bools,
+    clippy::too_many_lines,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Context;
 use clap::{Parser, Subcommand};
+use std::io::Write;
 use std::path::PathBuf;
 use std::process;
 
 use justui_cli::{commands, utils};
 
-/// JustUI CLI - High-performance Flutter UI scaffolding and copy-paste component tool
+/// `JustUI` CLI - High-performance Flutter UI scaffolding and copy-paste component tool
 #[derive(Parser)]
 #[command(
     name = "justui",
@@ -58,7 +65,7 @@ enum Commands {
     )]
     Version,
 
-    /// Initialize JustUI configuration and theme tokens in a Flutter project
+    /// Initialize `JustUI` configuration and theme tokens in a Flutter project
     #[command(
         subcommand_help_heading = "Project Setup & Scaffolding",
         after_help = "EXAMPLES:\n  justui init\n  justui init --preset neobrutalism -y"
@@ -191,7 +198,7 @@ enum Commands {
         accept: bool,
     },
 
-    /// List all available components in the JustUI registry
+    /// List all available components in the `JustUI` registry
     #[command(
         subcommand_help_heading = "Discovery & Inspection",
         after_help = "EXAMPLES:\n  justui list"
@@ -244,7 +251,7 @@ enum Commands {
         component: Option<String>,
     },
 
-    /// Check for and upgrade JustUI CLI to the latest version
+    /// Check for and upgrade `JustUI` CLI to the latest version
     #[command(
         subcommand_help_heading = "Maintenance & Utility",
         after_help = "EXAMPLES:\n  justui upgrade\n  justui upgrade --check"
@@ -309,14 +316,11 @@ fn main() {
         return;
     }
 
-    let command = match cli.command {
-        Some(cmd) => cmd,
-        None => {
-            use clap::CommandFactory;
-            Cli::command().print_help().ok();
-            utils::logger::stdout("");
-            return;
-        }
+    let Some(command) = cli.command else {
+        use clap::CommandFactory;
+        Cli::command().print_help().ok();
+        utils::logger::stdout("");
+        return;
     };
 
     let result = match command {
@@ -384,7 +388,6 @@ fn main() {
         process::exit(1);
     }
 
-    use std::io::Write;
     let _ = std::io::stdout().flush();
 }
 
@@ -405,7 +408,7 @@ fn sign_registry_command(dir: Option<PathBuf>) -> anyhow::Result<()> {
         std::fs::read(&index_path).with_context(|| format!("Reading {}", index_path.display()))?;
     let keypair = utils::crypto::official_keypair();
     let sig_hex = utils::crypto::sign_content(&content, &keypair);
-    std::fs::write(&sig_path, format!("{}\n", sig_hex))
+    std::fs::write(&sig_path, format!("{sig_hex}\n"))
         .with_context(|| format!("Writing {}", sig_path.display()))?;
 
     utils::logger::success(&format!(

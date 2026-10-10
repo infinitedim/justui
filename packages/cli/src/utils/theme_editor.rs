@@ -1,3 +1,9 @@
+#![expect(
+    clippy::missing_errors_doc,
+    clippy::too_many_lines,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::{Context, Result};
 use std::path::Path;
 
@@ -16,8 +22,8 @@ pub fn register_theme_extension(
         .with_context(|| format!("Failed to read theme file at {}", theme_file_path.display()))?;
 
     // Check if the theme class instance or defaults is already registered
-    let class_instance_pattern = format!("{}.defaults", theme_class_name);
-    let legacy_instance_pattern = format!("const {}()", theme_class_name);
+    let class_instance_pattern = format!("{theme_class_name}.defaults");
+    let legacy_instance_pattern = format!("const {theme_class_name}()");
     if content.contains(&class_instance_pattern) || content.contains(&legacy_instance_pattern) {
         return Ok(false);
     }
@@ -28,8 +34,11 @@ pub fn register_theme_extension(
         return Ok(false);
     }
 
-    let import_line = format!("import '{}';", component_import_path);
-    let mut lines: Vec<String> = content.lines().map(|s| s.to_string()).collect();
+    let import_line = format!("import '{component_import_path}';");
+    let mut lines: Vec<String> = content
+        .lines()
+        .map(std::string::ToString::to_string)
+        .collect();
 
     // Insert import statement respecting Dart directives_ordering:
     // package: imports are placed with existing package imports and before relative imports
@@ -62,25 +71,26 @@ pub fn register_theme_extension(
     let indent = updated_content
         .lines()
         .find(|l| l.contains(reg_marker))
-        .map(|l| {
-            l.chars()
-                .take_while(|c| c.is_whitespace())
-                .collect::<String>()
-        })
-        .unwrap_or_else(|| "        ".to_string());
+        .map_or_else(
+            || "        ".to_string(),
+            |l| {
+                l.chars()
+                    .take_while(|c| c.is_whitespace())
+                    .collect::<String>()
+            },
+        );
 
-    let search = format!("{}{}", indent, reg_marker);
-    let replacement = format!(
-        "{}{}.defaults,\n{}{}",
-        indent, theme_class_name, indent, reg_marker
-    );
+    let search = format!("{indent}{reg_marker}");
+    let replacement = format!("{indent}{theme_class_name}.defaults,\n{indent}{reg_marker}");
     let final_content = if updated_content.contains(&search) {
         updated_content.replace(&search, &replacement)
     } else {
         updated_content.replace(reg_marker, &replacement)
     };
 
-    if final_content != content {
+    if final_content == content {
+        Ok(false)
+    } else {
         std::fs::write(theme_file_path, &final_content).with_context(|| {
             format!(
                 "Failed to update theme file at {}",
@@ -88,8 +98,6 @@ pub fn register_theme_extension(
             )
         })?;
         Ok(true)
-    } else {
-        Ok(false)
     }
 }
 
@@ -115,14 +123,14 @@ mod tests {
         );
 
         // 2. Initial theme file with 8-space indented marker
-        let initial_code = r#"import 'package:flutter/material.dart';
+        let initial_code = r"import 'package:flutter/material.dart';
 
 import 'theme_data.dart';
 
       extensions: const [
         // CLI:REGISTER_EXTENSIONS
       ],
-"#;
+";
         std::fs::write(&theme_path, initial_code).unwrap();
 
         // 3. Register first extension

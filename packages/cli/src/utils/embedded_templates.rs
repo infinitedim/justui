@@ -1,3 +1,9 @@
+#![expect(
+    clippy::manual_let_else,
+    clippy::missing_errors_doc,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Result;
 use rust_embed::RustEmbed;
 use std::path::Path;
@@ -109,37 +115,34 @@ fn rewrite_tokens_internal_imports(content: &str, _package_name: &str) -> String
 
 fn rewrite_core_internal_imports(content: &str, package_name: &str, tokens_dir: &str) -> String {
     let tokens_dir_rel = tokens_dir.strip_prefix("lib/").unwrap_or(tokens_dir);
-    let tokens_import = format!(
-        "package:{}/{}/just_ui_tokens.dart",
-        package_name, tokens_dir_rel
-    );
+    let tokens_import = format!("package:{package_name}/{tokens_dir_rel}/just_ui_tokens.dart");
 
     content
         .replace("export 'src/", "export '")
         .replace("import 'src/", "import '")
         .replace(
             "import 'package:just_ui_tokens/just_ui_tokens.dart';",
-            &format!("import '{}';", tokens_import),
+            &format!("import '{tokens_import}';"),
         )
         .replace(
             "export 'package:just_ui_tokens/just_ui_tokens.dart';",
-            &format!("export '{}';", tokens_import),
+            &format!("export '{tokens_import}';"),
         )
         .replace(
             "package:just_ui_tokens/src/",
-            &format!("package:{}/{}/", package_name, tokens_dir_rel),
+            &format!("package:{package_name}/{tokens_dir_rel}/"),
         )
         .replace(
             "package:just_ui_tokens/",
-            &format!("package:{}/{}/", package_name, tokens_dir_rel),
+            &format!("package:{package_name}/{tokens_dir_rel}/"),
         )
         .replace(
             "package:just_ui_core/src/",
-            &format!("package:{}/core/", package_name),
+            &format!("package:{package_name}/core/"),
         )
         .replace(
             "package:just_ui_core/",
-            &format!("package:{}/core/", package_name),
+            &format!("package:{package_name}/core/"),
         )
 }
 
@@ -215,7 +218,7 @@ mod tests {
 
     #[test]
     fn test_sanitize_theme_data_material() {
-        let dirty = r#"import 'package:flutter/material.dart';
+        let dirty = r"import 'package:flutter/material.dart';
 import '../components/button/just_button_theme.dart';
 import 'theme_data.dart';
 
@@ -223,7 +226,7 @@ import 'theme_data.dart';
         // CLI:REGISTER_EXTENSIONS
         JustButtonTheme.defaults,
       ],
-"#;
+";
         let clean = sanitize_theme_data_material(dirty);
         assert!(!clean.contains("just_button_theme.dart"));
         assert!(!clean.contains("JustButtonTheme.defaults"));

@@ -1,3 +1,10 @@
+#![expect(
+    clippy::items_after_statements,
+    clippy::too_many_lines,
+    clippy::uninlined_format_args,
+    reason = "legacy: fix when touched"
+)]
+
 use super::*;
 
 #[test]

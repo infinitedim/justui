@@ -1,3 +1,9 @@
+#![expect(
+    clippy::similar_names,
+    clippy::too_many_lines,
+    reason = "legacy: fix when touched"
+)]
+
 use std::collections::HashMap;
 
 use justui_cli::config::JustUIConfig;
@@ -7,11 +13,11 @@ use justui_cli::utils::import_rewriter;
 
 #[test]
 fn config_parses_from_yaml_correctly() {
-    let yaml = r#"
+    let yaml = r"
 components_dir: custom/ui
 tokens_dir: custom/tokens
 registry_url: http://example.com/reg
-"#;
+";
     let config = JustUIConfig::from_yaml(yaml);
     assert_eq!(config.components_dir, "custom/ui");
     assert_eq!(config.tokens_dir, "custom/tokens");
@@ -28,23 +34,23 @@ fn config_falls_back_to_defaults_on_invalid_yaml() {
 
 #[test]
 fn config_parses_shared_dir_from_yaml() {
-    let yaml = r#"
+    let yaml = r"
 components_dir: lib/ui
 tokens_dir: lib/tokens
 shared_dir: lib/ui/common
 registry_url: http://example.com/reg
-"#;
+";
     let config = JustUIConfig::from_yaml(yaml);
     assert_eq!(config.shared_dir, "lib/ui/common");
 }
 
 #[test]
 fn config_falls_back_shared_dir_to_components_plus_shared() {
-    let yaml = r#"
+    let yaml = r"
 components_dir: lib/custom
 tokens_dir: lib/tokens
 registry_url: http://example.com/reg
-"#;
+";
     let config = JustUIConfig::from_yaml(yaml);
     assert_eq!(config.shared_dir, "lib/custom/shared");
 }
@@ -81,10 +87,7 @@ fn normalize_shared_file_name_strips_prefix() {
 fn parse_metadata_extracts_hashes() {
     let hash_a = "a".repeat(64);
     let hash_b = "b".repeat(64);
-    let content = format!(
-        "// justui-meta: registry={} local={}\nsome dart code\n",
-        hash_a, hash_b
-    );
+    let content = format!("// justui-meta: registry={hash_a} local={hash_b}\nsome dart code\n");
     let meta = import_rewriter::parse_metadata(&content).unwrap();
     assert_eq!(meta.registry_hash, hash_a);
     assert_eq!(meta.local_hash, hash_b);
@@ -99,10 +102,7 @@ fn parse_metadata_returns_none_when_absent() {
 fn strip_metadata_removes_header() {
     let hash_a = "a".repeat(64);
     let hash_b = "b".repeat(64);
-    let content = format!(
-        "// justui-meta: registry={} local={}\nsome dart code\n",
-        hash_a, hash_b
-    );
+    let content = format!("// justui-meta: registry={hash_a} local={hash_b}\nsome dart code\n");
     let stripped = import_rewriter::strip_metadata(&content);
     assert_eq!(stripped, "some dart code\n");
 }
@@ -113,7 +113,7 @@ fn inject_metadata_prepends_header() {
     let hash_l = "b".repeat(64);
     let result = import_rewriter::inject_metadata("some code\n", &hash_r, &hash_l);
     assert!(result.starts_with("// justui-meta: registry="));
-    assert!(result.contains(&format!("registry={} local={}", hash_r, hash_l)));
+    assert!(result.contains(&format!("registry={hash_r} local={hash_l}")));
     assert!(result.ends_with("some code\n"));
 }
 
@@ -189,7 +189,7 @@ fn rewrite_computes_relative_path_for_component_import() {
             RegistryComponent {
                 name: "button".to_string(),
                 version: "0.1.0".to_string(),
-                description: "".to_string(),
+                description: String::new(),
                 category: "primitives".to_string(),
                 internal: false,
                 supported_presets: vec!["default".to_string()],
@@ -207,7 +207,7 @@ fn rewrite_computes_relative_path_for_component_import() {
             RegistryComponent {
                 name: "spacing".to_string(),
                 version: "0.1.0".to_string(),
-                description: "".to_string(),
+                description: String::new(),
                 category: "tokens".to_string(),
                 internal: false,
                 supported_presets: vec!["default".to_string()],
@@ -240,8 +240,7 @@ fn rewrite_computes_relative_path_for_component_import() {
 
     assert!(
         result.contains("import '../../tokens/spacing.dart';"),
-        "got: {}",
-        result
+        "got: {result}"
     );
 }
 
@@ -434,8 +433,7 @@ mod cli_integration {
             std::fs::read_to_string(dir.path().join("lib/core/theme/just_theme.dart")).unwrap();
         assert!(
             theme.contains("JustThemePreset.neobrutalism"),
-            "theme file should contain neobrutalism preset, got: {}",
-            theme
+            "theme file should contain neobrutalism preset, got: {theme}"
         );
 
         assert!(
@@ -671,10 +669,9 @@ mod cli_integration {
         ] {
             assert!(
                 dir.path()
-                    .join(format!("lib/widgets/my_card/{}", file))
+                    .join(format!("lib/widgets/my_card/{file}"))
                     .exists(),
-                "{} not found",
-                file
+                "{file} not found"
             );
         }
     }
@@ -894,7 +891,7 @@ mod cli_integration {
         let comp = RegistryComponent {
             name: "button".to_string(),
             version: "0.1.0".to_string(),
-            description: "".to_string(),
+            description: String::new(),
             category: "primitive".to_string(),
             internal: false,
             supported_presets: vec!["default".to_string(), "neobrutalism".to_string()],

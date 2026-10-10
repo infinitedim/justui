@@ -1,3 +1,13 @@
+#![expect(
+    clippy::format_push_string,
+    clippy::items_after_statements,
+    clippy::manual_let_else,
+    clippy::missing_panics_doc,
+    clippy::too_many_lines,
+    clippy::unwrap_used,
+    reason = "legacy: fix when touched"
+)]
+
 use regex::Regex;
 use std::collections::HashMap;
 use std::sync::OnceLock;
@@ -9,7 +19,7 @@ fn field_regex() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
     RE.get_or_init(|| {
         Regex::new(
-            r#"(?m)(?:^|\n)([ \t]*(?:///.*?\r?\n[ \t]*)*(?:@\w+\s+)*)final\s+([^;{}=]+?)\s+([a-zA-Z0-9_]+)\s*(?:=\s*([^;{}]+?))?\s*;"#,
+            r"(?m)(?:^|\n)([ \t]*(?:///.*?\r?\n[ \t]*)*(?:@\w+\s+)*)final\s+([^;{}=]+?)\s+([a-zA-Z0-9_]+)\s*(?:=\s*([^;{}]+?))?\s*;",
         )
         .unwrap()
     })
@@ -248,7 +258,7 @@ struct ClassInfo {
 /// - Places generic type parameters before primary constructor parameters (`class const Dropdown<T>(...)`).
 pub fn transpile_to_primary_constructor(code: &str) -> String {
     let class_header_regex = match Regex::new(
-        r#"(?ms)^[ \t]*((?:(?:abstract|sealed|base|interface|final|mixin)\s+)*)class\s+(?:const\s+)?([a-zA-Z_][a-zA-Z0-9_]*)"#,
+        r"(?ms)^[ \t]*((?:(?:abstract|sealed|base|interface|final|mixin)\s+)*)class\s+(?:const\s+)?([a-zA-Z_][a-zA-Z0-9_]*)",
     ) {
         Ok(r) => r,
         Err(_) => return code.to_string(),
@@ -263,7 +273,7 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
         };
 
         let full_start = full_match.start();
-        let modifiers = cap.get(1).map(|m| m.as_str()).unwrap_or("").to_string();
+        let modifiers = cap.get(1).map_or("", |m| m.as_str()).to_string();
         let class_name = match cap.get(2) {
             Some(m) => m.as_str().to_string(),
             None => continue,
@@ -377,7 +387,7 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
 
         // 1. Scan constructors inside class_body strictly at depth 0
         let ctor_pattern = format!(
-            r#"(?m)(?:^|\n)([ \t]*(?:///.*?\r?\n[ \t]*)*)(const\s+)?{}(\.[a-zA-Z0-9_]+)?\s*\("#,
+            r"(?m)(?:^|\n)([ \t]*(?:///.*?\r?\n[ \t]*)*)(const\s+)?{}(\.[a-zA-Z0-9_]+)?\s*\(",
             regex::escape(&class_info.class_name)
         );
         let ctor_find_regex = match Regex::new(&ctor_pattern) {
@@ -530,7 +540,7 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
             }
 
             if trimmed.starts_with("super.") {
-                new_params.push(format!("  {},", trimmed));
+                new_params.push(format!("  {trimmed},"));
             } else if trimmed.starts_with("required this.") {
                 let p_name = trimmed.trim_start_matches("required this.").trim();
                 if let Some(f_info) = fields.get(p_name) {
@@ -573,7 +583,7 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
                     }
                 }
             } else {
-                new_params.push(format!("  {},", trimmed));
+                new_params.push(format!("  {trimmed},"));
             }
         }
 
@@ -640,7 +650,7 @@ pub fn transpile_to_primary_constructor(code: &str) -> String {
             )
         };
 
-        let new_class_content = format!("{}{}\n}}", primary_header, new_body);
+        let new_class_content = format!("{primary_header}{new_body}\n}}");
         result.replace_range(
             class_info.full_start..=class_info.close_brace_idx,
             &new_class_content,
@@ -682,10 +692,9 @@ pub fn apply_dart_target(code: &str, target: DartTarget) -> String {
             let (converted, skipped) = transpile_to_standard_constructor(code);
             for class_name in skipped {
                 logger::warning(&format!(
-                    "Class \"{}\" could not be converted to a standard constructor and still \
+                    "Class \"{class_name}\" could not be converted to a standard constructor and still \
                      uses primary-constructor syntax. Enable the `primary-constructors` \
-                     experiment or convert it manually.",
-                    class_name
+                     experiment or convert it manually."
                 ));
             }
             converted
@@ -740,8 +749,8 @@ fn find_default_separator(decl: &str) -> Option<usize> {
             b'=' if depth == 0 => {
                 let next = bytes.get(i + 1).copied();
                 let prev = if i > 0 { Some(bytes[i - 1]) } else { None };
-                let is_operator = matches!(next, Some(b'=') | Some(b'>'))
-                    || matches!(prev, Some(b'=') | Some(b'!') | Some(b'<') | Some(b'>'));
+                let is_operator = matches!(next, Some(b'=' | b'>'))
+                    || matches!(prev, Some(b'=' | b'!' | b'<' | b'>'));
                 if !is_operator {
                     return Some(i);
                 }
@@ -859,8 +868,8 @@ fn render_standard_members(
     is_const: bool,
     params: &[(ParamGroup, PrimaryParam)],
 ) -> String {
-    let member_indent = format!("{}  ", indent);
-    let param_indent = format!("{}    ", indent);
+    let member_indent = format!("{indent}  ");
+    let param_indent = format!("{indent}    ");
 
     let mut fields = Vec::new();
     for (_, param) in params {
@@ -873,12 +882,12 @@ fn render_standard_members(
         {
             let mut field = String::new();
             for comment in comments {
-                field.push_str(&format!("{}{}\n", member_indent, comment));
+                field.push_str(&format!("{member_indent}{comment}\n"));
             }
             if type_name.is_empty() {
-                field.push_str(&format!("{}final {};", member_indent, name));
+                field.push_str(&format!("{member_indent}final {name};"));
             } else {
-                field.push_str(&format!("{}final {} {};", member_indent, type_name, name));
+                field.push_str(&format!("{member_indent}final {type_name} {name};"));
             }
             fields.push(field);
         }
@@ -906,7 +915,7 @@ fn render_standard_members(
             }
             PrimaryParam::Super { comments, text } => {
                 for comment in comments {
-                    out.push_str(&format!("{}{}\n", param_indent, comment));
+                    out.push_str(&format!("{param_indent}{comment}\n"));
                 }
                 out.push_str(&param_indent);
                 out.push_str(text);
@@ -933,9 +942,9 @@ fn render_standard_members(
 
     let const_kw = if is_const { "const " } else { "" };
     let ctor = if params.is_empty() {
-        format!("{}{}{}();", member_indent, const_kw, class_name)
+        format!("{member_indent}{const_kw}{class_name}();")
     } else {
-        let mut ctor = format!("{}{}{}(\n", member_indent, const_kw, class_name);
+        let mut ctor = format!("{member_indent}{const_kw}{class_name}(\n");
         if !positional.is_empty() {
             ctor.push_str(&positional.join("\n"));
             ctor.push('\n');
@@ -947,15 +956,15 @@ fn render_standard_members(
                 ('[', ']')
             };
             if positional.is_empty() {
-                ctor = format!("{}{}{}({}\n", member_indent, const_kw, class_name, open);
+                ctor = format!("{member_indent}{const_kw}{class_name}({open}\n");
             } else {
                 ctor.pop();
-                ctor.push_str(&format!(" {}\n", open));
+                ctor.push_str(&format!(" {open}\n"));
             }
             ctor.push_str(&optional.join("\n"));
-            ctor.push_str(&format!("\n{}{});", member_indent, close));
+            ctor.push_str(&format!("\n{member_indent}{close});"));
         } else {
-            ctor.push_str(&format!("{});", member_indent));
+            ctor.push_str(&format!("{member_indent});"));
         }
         ctor
     };
@@ -1152,14 +1161,14 @@ pub fn transpile_to_standard_constructor(code: &str) -> (String, Vec<String>) {
             let rest = code[terminator + 1..=close_brace].trim_start_matches(['\r', '\n']);
             (rewrite_new_constructors(rest, class_name), close_brace + 1)
         } else {
-            (format!("{}}}", indent), terminator + 1)
+            (format!("{indent}}}"), terminator + 1)
         };
 
         let members = render_standard_members(indent, class_name, is_const, &params);
         let heritage_part = if heritage.is_empty() {
             String::new()
         } else {
-            format!(" {}", heritage)
+            format!(" {heritage}")
         };
         let separator = if body_rest.trim_start().starts_with('}') {
             "\n"
@@ -1167,15 +1176,7 @@ pub fn transpile_to_standard_constructor(code: &str) -> (String, Vec<String>) {
             "\n\n"
         };
         let replacement = format!(
-            "{}{}class {}{}{} {{\n{}{}{}",
-            indent,
-            modifiers,
-            class_name,
-            type_params,
-            heritage_part,
-            members,
-            separator,
-            body_rest
+            "{indent}{modifiers}class {class_name}{type_params}{heritage_part} {{\n{members}{separator}{body_rest}"
         );
 
         conversions.push(Conversion {

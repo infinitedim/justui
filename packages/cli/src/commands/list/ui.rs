@@ -1,6 +1,12 @@
 //! Interactive ratatui front-end for `justui list`: event loop, key handling and
 //! rendering. Command entry, status resolution and installation live in `mod.rs`.
 
+#![expect(
+    clippy::print_stdout,
+    clippy::too_many_lines,
+    reason = "legacy: fix when touched"
+)]
+
 use anyhow::Result;
 use crossterm::event::{Event, KeyCode};
 use ratatui::{
@@ -134,8 +140,7 @@ pub(super) fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Even
                                 &mut resolved_components,
                             ) {
                                 logger::error(&format!(
-                                    "Dependency resolution failed for \"{}\": {}",
-                                    comp_name, e
+                                    "Dependency resolution failed for \"{comp_name}\": {e}"
                                 ));
                             }
                         }
@@ -147,8 +152,7 @@ pub(super) fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Even
                                     .components
                                     .iter()
                                     .find(|c| c.name == *name)
-                                    .map(|c| c.files_for_preset(&config.preset).len())
-                                    .unwrap_or(0)
+                                    .map_or(0, |c| c.files_for_preset(&config.preset).len())
                             })
                             .sum();
 
@@ -199,8 +203,7 @@ pub(super) fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Even
                                 }
                                 Err(e) => {
                                     logger::error(&format!(
-                                        "Failed to install component \"{}\": {}",
-                                        comp_name, e
+                                        "Failed to install component \"{comp_name}\": {e}"
                                     ));
                                 }
                             }
@@ -284,8 +287,8 @@ pub(super) fn handle_key_code(
                 }
                 KeyAction::None
             }
-            KeyCode::Char('a') | KeyCode::Char('A') => KeyAction::SelectAll,
-            KeyCode::Char('n') | KeyCode::Char('N') => KeyAction::DeselectAll,
+            KeyCode::Char('a' | 'A') => KeyAction::SelectAll,
+            KeyCode::Char('n' | 'N') => KeyAction::DeselectAll,
             KeyCode::Char('/') => {
                 *input_mode = InputMode::Searching;
                 KeyAction::None
@@ -311,7 +314,10 @@ pub(super) fn handle_key_code(
     }
 }
 
-#[allow(clippy::too_many_arguments)]
+#[allow(
+    clippy::too_many_arguments,
+    reason = "ratatui render function requires multiple UI state references"
+)]
 pub(super) fn draw_ui(
     f: &mut ratatui::Frame,
     list_state: &mut ListState,
@@ -350,7 +356,7 @@ pub(super) fn draw_ui(
         input_mode == InputMode::Searching,
         selected_names.is_empty(),
     ) {
-        (true, true) => format!(" Components (Filter: {}) ", search_query),
+        (true, true) => format!(" Components (Filter: {search_query}) "),
         (true, false) => format!(
             " Components (Filter: {}) ({} selected) ",
             search_query,
@@ -386,7 +392,7 @@ pub(super) fn draw_ui(
             let content = ratatui::text::Line::from(vec![
                 checkbox_span,
                 ratatui::text::Span::raw(format!("{:<16}", comp.name)),
-                ratatui::text::Span::styled(format!(" [{}]", status), status_style),
+                ratatui::text::Span::styled(format!(" [{status}]"), status_style),
             ]);
             ListItem::new(content)
         })
@@ -467,7 +473,7 @@ pub(super) fn draw_ui(
         } else {
             comp.pub_dependencies
                 .iter()
-                .map(|(k, v)| format!("{}: {}", k, v))
+                .map(|(k, v)| format!("{k}: {v}"))
                 .collect::<Vec<_>>()
                 .join(", ")
         };
@@ -572,15 +578,14 @@ pub(super) fn draw_ui(
             for dep in &additional_deps {
                 let normalized = if dep.starts_with("_shared_") {
                     crate::utils::import_rewriter::normalize_shared_file_name(&format!(
-                        "{}.dart",
-                        dep
+                        "{dep}.dart"
                     ))
                 } else {
-                    format!("{}.dart", dep)
+                    format!("{dep}.dart")
                 };
                 detail_lines.push(ratatui::text::Line::from(vec![
                     ratatui::text::Span::styled("  • ", Style::default().fg(Color::Cyan)),
-                    ratatui::text::Span::raw(format!("{} (→ {})", dep, normalized)),
+                    ratatui::text::Span::raw(format!("{dep} (→ {normalized})")),
                 ]));
             }
         }
@@ -592,8 +597,7 @@ pub(super) fn draw_ui(
                     .components
                     .iter()
                     .find(|c| c.name == *name)
-                    .map(|c| c.files_for_preset(&config.preset).len())
-                    .unwrap_or(0)
+                    .map_or(0, |c| c.files_for_preset(&config.preset).len())
             })
             .sum();
 
@@ -604,7 +608,7 @@ pub(super) fn draw_ui(
                 Style::default().fg(Color::DarkGray),
             ),
             ratatui::text::Span::styled(
-                format!("{}", total_files),
+                format!("{total_files}"),
                 Style::default()
                     .fg(Color::Cyan)
                     .add_modifier(Modifier::BOLD),

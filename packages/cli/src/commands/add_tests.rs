@@ -1,3 +1,9 @@
+#![expect(
+    clippy::redundant_closure_for_method_calls,
+    clippy::too_many_lines,
+    reason = "legacy: fix when touched"
+)]
+
 use super::*;
 
 use crate::utils::set_dir;

@@ -1,3 +1,5 @@
+#![expect(clippy::missing_errors_doc, reason = "legacy: fix when touched")]
+
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -150,8 +152,7 @@ impl RegistryClient {
             Err(err) => {
                 if self.is_remote() && crate::utils::crypto::is_official_registry(&self.base_url) {
                     return Err(anyhow::anyhow!(
-                        "Official registry is missing cryptographic signature (index.json.sig): {}",
-                        err
+                        "Official registry is missing cryptographic signature (index.json.sig): {err}"
                     ));
                 }
             }
@@ -179,7 +180,7 @@ impl RegistryClient {
             } else {
                 format!("{}/", self.base_url)
             };
-            let url = format!("{}{}", clean_base, relative_path);
+            let url = format!("{clean_base}{relative_path}");
             let client = reqwest::blocking::Client::builder()
                 .timeout(registry_timeout(
                     std::env::var(REGISTRY_TIMEOUT_ENV).ok().as_deref(),
@@ -192,7 +193,7 @@ impl RegistryClient {
             let mut response = client
                 .get(&url)
                 .send()
-                .with_context(|| format!("Failed to fetch from registry ({})", url))?;
+                .with_context(|| format!("Failed to fetch from registry ({url})"))?;
 
             let tag_pattern = format!("/v{}/", env!("CARGO_PKG_VERSION"));
             if response.status() == reqwest::StatusCode::NOT_FOUND && url.contains(&tag_pattern) {
@@ -270,7 +271,7 @@ mod tests {
         let comp = RegistryComponent {
             name: "test".to_string(),
             version: "1.0".to_string(),
-            description: "".to_string(),
+            description: String::new(),
             category: "general".to_string(),
             internal: false,
             supported_presets: vec![],

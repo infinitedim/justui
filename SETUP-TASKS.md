@@ -118,7 +118,7 @@ sections, 35 `must_use` suggestions, 7 functions over 100 lines (largest 351).
     floating `stable`.
 30. Done: Edition 2024: `cargo fix --edition`, set `edition = "2024"`, run the full
     test suite. Own commit, no other changes.
-31. Lints: `[workspace.lints]` in the root `Cargo.toml` with
+31. Done: Lints: `[workspace.lints]` in the root `Cargo.toml` with
     `rust.unsafe_code = "forbid"`, `clippy.pedantic = { level = "warn",
     priority = -1 }`, deny `unwrap_used`, `panic`, `todo`, `dbg_macro`,
     `print_stdout`, `print_stderr`, `allow_attributes_without_reason`,
@@ -173,7 +173,7 @@ sections, 35 `must_use` suggestions, 7 functions over 100 lines (largest 351).
     update the Rust row in `AGENTS.md` section 6 to the command list at the
     end of `rust-cli.md` (the security rules already name `deny.toml`).
 43. Done: Remove `dialoguer` from `Cargo.toml`: it has zero uses in `src/`.
-    Remaining: `cargo machete` in CI.
+    Added `cargo machete` to CI.
 
 ## Docs rules (questionnaire 2026-10-05; `docs-web.md` assumes these)
 

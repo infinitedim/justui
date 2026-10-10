@@ -1,3 +1,5 @@
+#![expect(clippy::missing_errors_doc, reason = "legacy: fix when touched")]
+
 use crossterm::{
     execute,
     terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
