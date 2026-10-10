@@ -111,12 +111,12 @@ targets. Outside test files: about 300 `unwrap`/`expect`/`panic` calls, 242
 `uninlined_format_args` (auto-fixable), 37 missing `# Errors`/`# Panics`
 sections, 35 `must_use` suggestions, 7 functions over 100 lines (largest 351).
 
-29. `rust-toolchain.toml`: pin the current stable version (check the Rust
+29. Done: `rust-toolchain.toml`: pin the current stable version (check the Rust
     release blog; rustc 1.97 was installed in the sandbox) with components
     `clippy` and `rustfmt`. Set `rust-version` in `packages/cli/Cargo.toml`
     to the same version. Make CI install the pinned version instead of
     floating `stable`.
-30. Edition 2024: `cargo fix --edition`, set `edition = "2024"`, run the full
+30. Done: Edition 2024: `cargo fix --edition`, set `edition = "2024"`, run the full
     test suite. Own commit, no other changes.
 31. Lints: `[workspace.lints]` in the root `Cargo.toml` with
     `rust.unsafe_code = "forbid"`, `clippy.pedantic = { level = "warn",
@@ -133,7 +133,7 @@ sections, 35 `must_use` suggestions, 7 functions over 100 lines (largest 351).
     first, then add module-level
     `#![expect(clippy::x, reason = "legacy: fix when touched")]` to each file
     that still fails, so `-D warnings` passes.
-32. `rustfmt.toml` with stable options only: `use_field_init_shorthand =
+32. Done: `rustfmt.toml` with stable options only: `use_field_init_shorthand =
     true`, `use_try_shorthand = true`. Add `cargo fmt --all --check` to CI.
 33. Errors: add `thiserror`; typed errors in `registry.rs`, `config.rs` and
     red-zone utils; map them to the exit code table in `main.rs`; `hint:`
