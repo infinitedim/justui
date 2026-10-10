@@ -55,9 +55,10 @@ pub fn run(auto_yes: bool) -> Result<()> {
     };
     for entry in entries.flatten() {
         if entry.path().is_dir()
-            && let Some(name) = entry.file_name().to_str() {
-                local_component_names.push(name.to_string());
-            }
+            && let Some(name) = entry.file_name().to_str()
+        {
+            local_component_names.push(name.to_string());
+        }
     }
 
     if local_component_names.is_empty() {

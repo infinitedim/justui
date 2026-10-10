@@ -4,21 +4,21 @@
 use anyhow::Result;
 use crossterm::event::{Event, KeyCode};
 use ratatui::{
+    Terminal,
     backend::CrosstermBackend,
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style, Stylize},
     widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Wrap},
-    Terminal,
 };
 use std::collections::HashSet;
 use std::io::{self, Write};
 
-use crate::commands::add::{add_component, resolve_dependencies_recursive, OperationDetail};
+use crate::commands::add::{OperationDetail, add_component, resolve_dependencies_recursive};
 use crate::config::JustUIConfig;
 use crate::registry::{RegistryClient, RegistryComponent, RegistryIndex};
 use crate::utils::logger;
 
-use super::{get_component_status, InputMode, KeyAction};
+use super::{InputMode, KeyAction, get_component_status};
 
 pub(super) fn run_interactive_tui<W: io::Write, E: FnMut() -> Result<Option<Event>>>(
     terminal: &mut Terminal<CrosstermBackend<W>>,
@@ -261,23 +261,27 @@ pub(super) fn handle_key_code(
             KeyCode::Char('q') | KeyCode::Esc => KeyAction::Quit,
             KeyCode::Up | KeyCode::Char('k') => {
                 if let Some(selected) = list_state.selected()
-                    && selected > 0 {
-                        list_state.select(Some(selected - 1));
-                    }
+                    && selected > 0
+                {
+                    list_state.select(Some(selected - 1));
+                }
                 KeyAction::None
             }
             KeyCode::Down | KeyCode::Char('j') => {
                 if let Some(selected) = list_state.selected()
-                    && filtered_len > 0 && selected < filtered_len - 1 {
-                        list_state.select(Some(selected + 1));
-                    }
+                    && filtered_len > 0
+                    && selected < filtered_len - 1
+                {
+                    list_state.select(Some(selected + 1));
+                }
                 KeyAction::None
             }
             KeyCode::Char(' ') => {
                 if let Some(selected) = list_state.selected()
-                    && selected < filtered_len {
-                        return KeyAction::ToggleSelect(selected);
-                    }
+                    && selected < filtered_len
+                {
+                    return KeyAction::ToggleSelect(selected);
+                }
                 KeyAction::None
             }
             KeyCode::Char('a') | KeyCode::Char('A') => KeyAction::SelectAll,
@@ -422,84 +426,85 @@ pub(super) fn draw_ui(
     let mut detail_lines = Vec::new();
 
     if let Some(selected_idx) = list_state.selected()
-        && let Some(comp) = filtered_components.get(selected_idx) {
+        && let Some(comp) = filtered_components.get(selected_idx)
+    {
+        detail_lines.push(ratatui::text::Line::from(vec![
+            ratatui::text::Span::styled(
+                &comp.name,
+                Style::default()
+                    .fg(Color::Cyan)
+                    .add_modifier(Modifier::BOLD),
+            ),
+            ratatui::text::Span::raw(format!(" (v{})", comp.version)),
+        ]));
+        detail_lines.push(ratatui::text::Line::from(vec![
+            ratatui::text::Span::styled("Category:     ", Style::default().fg(Color::DarkGray)),
+            ratatui::text::Span::raw(&comp.category),
+        ]));
+
+        let presets_str = if comp.supported_presets.is_empty() {
+            "default".to_string()
+        } else {
+            comp.supported_presets.join(", ")
+        };
+        detail_lines.push(ratatui::text::Line::from(vec![
+            ratatui::text::Span::styled("Presets:      ", Style::default().fg(Color::DarkGray)),
+            ratatui::text::Span::raw(presets_str),
+        ]));
+
+        let reg_deps = if comp.registry_dependencies.is_empty() {
+            "none".to_string()
+        } else {
+            comp.registry_dependencies.join(", ")
+        };
+        detail_lines.push(ratatui::text::Line::from(vec![
+            ratatui::text::Span::styled("Registry Deps:", Style::default().fg(Color::DarkGray)),
+            ratatui::text::Span::raw(reg_deps),
+        ]));
+
+        let pub_deps = if comp.pub_dependencies.is_empty() {
+            "none".to_string()
+        } else {
+            comp.pub_dependencies
+                .iter()
+                .map(|(k, v)| format!("{}: {}", k, v))
+                .collect::<Vec<_>>()
+                .join(", ")
+        };
+        detail_lines.push(ratatui::text::Line::from(vec![
+            ratatui::text::Span::styled("Pub.dev Deps: ", Style::default().fg(Color::DarkGray)),
+            ratatui::text::Span::raw(pub_deps),
+        ]));
+
+        detail_lines.push(ratatui::text::Line::from(""));
+        detail_lines.push(ratatui::text::Line::from(ratatui::text::Span::styled(
+            "Description:",
+            Style::default()
+                .fg(Color::DarkGray)
+                .add_modifier(Modifier::UNDERLINED),
+        )));
+        detail_lines.push(ratatui::text::Line::from(comp.description.as_str()));
+
+        detail_lines.push(ratatui::text::Line::from(""));
+        detail_lines.push(ratatui::text::Line::from(ratatui::text::Span::styled(
+            "Files:",
+            Style::default()
+                .fg(Color::DarkGray)
+                .add_modifier(Modifier::UNDERLINED),
+        )));
+
+        let files = comp.files_for_preset(&config.preset);
+        for file in files {
             detail_lines.push(ratatui::text::Line::from(vec![
+                ratatui::text::Span::raw("  • "),
+                ratatui::text::Span::styled(file.name, Style::default().fg(Color::LightGreen)),
                 ratatui::text::Span::styled(
-                    &comp.name,
-                    Style::default()
-                        .fg(Color::Cyan)
-                        .add_modifier(Modifier::BOLD),
+                    format!(" ({})", file.path),
+                    Style::default().fg(Color::DarkGray),
                 ),
-                ratatui::text::Span::raw(format!(" (v{})", comp.version)),
             ]));
-            detail_lines.push(ratatui::text::Line::from(vec![
-                ratatui::text::Span::styled("Category:     ", Style::default().fg(Color::DarkGray)),
-                ratatui::text::Span::raw(&comp.category),
-            ]));
-
-            let presets_str = if comp.supported_presets.is_empty() {
-                "default".to_string()
-            } else {
-                comp.supported_presets.join(", ")
-            };
-            detail_lines.push(ratatui::text::Line::from(vec![
-                ratatui::text::Span::styled("Presets:      ", Style::default().fg(Color::DarkGray)),
-                ratatui::text::Span::raw(presets_str),
-            ]));
-
-            let reg_deps = if comp.registry_dependencies.is_empty() {
-                "none".to_string()
-            } else {
-                comp.registry_dependencies.join(", ")
-            };
-            detail_lines.push(ratatui::text::Line::from(vec![
-                ratatui::text::Span::styled("Registry Deps:", Style::default().fg(Color::DarkGray)),
-                ratatui::text::Span::raw(reg_deps),
-            ]));
-
-            let pub_deps = if comp.pub_dependencies.is_empty() {
-                "none".to_string()
-            } else {
-                comp.pub_dependencies
-                    .iter()
-                    .map(|(k, v)| format!("{}: {}", k, v))
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            };
-            detail_lines.push(ratatui::text::Line::from(vec![
-                ratatui::text::Span::styled("Pub.dev Deps: ", Style::default().fg(Color::DarkGray)),
-                ratatui::text::Span::raw(pub_deps),
-            ]));
-
-            detail_lines.push(ratatui::text::Line::from(""));
-            detail_lines.push(ratatui::text::Line::from(ratatui::text::Span::styled(
-                "Description:",
-                Style::default()
-                    .fg(Color::DarkGray)
-                    .add_modifier(Modifier::UNDERLINED),
-            )));
-            detail_lines.push(ratatui::text::Line::from(comp.description.as_str()));
-
-            detail_lines.push(ratatui::text::Line::from(""));
-            detail_lines.push(ratatui::text::Line::from(ratatui::text::Span::styled(
-                "Files:",
-                Style::default()
-                    .fg(Color::DarkGray)
-                    .add_modifier(Modifier::UNDERLINED),
-            )));
-
-            let files = comp.files_for_preset(&config.preset);
-            for file in files {
-                detail_lines.push(ratatui::text::Line::from(vec![
-                    ratatui::text::Span::raw("  • "),
-                    ratatui::text::Span::styled(file.name, Style::default().fg(Color::LightGreen)),
-                    ratatui::text::Span::styled(
-                        format!(" ({})", file.path),
-                        Style::default().fg(Color::DarkGray),
-                    ),
-                ]));
-            }
         }
+    }
 
     if !selected_names.is_empty() {
         if !detail_lines.is_empty() {

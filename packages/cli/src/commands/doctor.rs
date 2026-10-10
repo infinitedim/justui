@@ -347,12 +347,16 @@ mod tests {
 
         // Run checks - confirms registry reachability and OK outcome
         let checks = perform_checks();
-        assert!(checks
-            .iter()
-            .any(|c| c.title == "Registry Index" && c.status == CheckStatus::Ok));
-        assert!(checks
-            .iter()
-            .any(|c| c.title == "JustUI Packages" && c.status == CheckStatus::Ok));
+        assert!(
+            checks
+                .iter()
+                .any(|c| c.title == "Registry Index" && c.status == CheckStatus::Ok)
+        );
+        assert!(
+            checks
+                .iter()
+                .any(|c| c.title == "JustUI Packages" && c.status == CheckStatus::Ok)
+        );
 
         // Create mock binary dir for toolchain edge cases
         let bin_dir = temp_dir.path().join("mock_bin");
@@ -382,12 +386,16 @@ mod tests {
         // FIXME: Audit that the environment access only happens in single-threaded code.
         unsafe { std::env::set_var("PATH", temp_dir.path().display().to_string()) };
         let checks_missing_tools = perform_checks();
-        assert!(checks_missing_tools
-            .iter()
-            .any(|c| c.title == "Dart SDK" && c.status == CheckStatus::Warning));
-        assert!(checks_missing_tools
-            .iter()
-            .any(|c| c.title == "Flutter SDK" && c.status == CheckStatus::Warning));
+        assert!(
+            checks_missing_tools
+                .iter()
+                .any(|c| c.title == "Dart SDK" && c.status == CheckStatus::Warning)
+        );
+        assert!(
+            checks_missing_tools
+                .iter()
+                .any(|c| c.title == "Flutter SDK" && c.status == CheckStatus::Warning)
+        );
 
         // FIXME: Audit that the environment access only happens in single-threaded code.
         unsafe { std::env::set_var("PATH", old_path) };
@@ -464,19 +472,25 @@ mod tests {
 
         // 1. Check uninitialized (no pubspec.yaml, no config)
         let checks_uninit = perform_checks();
-        assert!(checks_uninit
-            .iter()
-            .any(|c| c.status == CheckStatus::Error && c.title == "pubspec.yaml"));
-        assert!(checks_uninit
-            .iter()
-            .any(|c| c.status == CheckStatus::Warning && c.title == "justui.config.yaml"));
+        assert!(
+            checks_uninit
+                .iter()
+                .any(|c| c.status == CheckStatus::Error && c.title == "pubspec.yaml")
+        );
+        assert!(
+            checks_uninit
+                .iter()
+                .any(|c| c.status == CheckStatus::Warning && c.title == "justui.config.yaml")
+        );
 
         // 2. Add pubspec without just_ui dependencies
         fs::write("pubspec.yaml", "name: my_app\n").unwrap();
         let checks_no_deps = perform_checks();
-        assert!(checks_no_deps
-            .iter()
-            .any(|c| c.status == CheckStatus::Warning && c.title == "JustUI Packages"));
+        assert!(
+            checks_no_deps
+                .iter()
+                .any(|c| c.status == CheckStatus::Warning && c.title == "JustUI Packages")
+        );
 
         // 3. Add pubspec with just_ui_core
         fs::write(
@@ -485,9 +499,11 @@ mod tests {
         )
         .unwrap();
         let checks_core_dep = perform_checks();
-        assert!(checks_core_dep
-            .iter()
-            .any(|c| c.status == CheckStatus::Ok && c.title == "JustUI Packages"));
+        assert!(
+            checks_core_dep
+                .iter()
+                .any(|c| c.status == CheckStatus::Ok && c.title == "JustUI Packages")
+        );
 
         // 4. Add config with non-existent directories and invalid registry URL
         let config_yaml = r#"
@@ -501,21 +517,31 @@ dart_target: standard
 "#;
         fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
         let checks_config = perform_checks();
-        assert!(checks_config
-            .iter()
-            .any(|c| c.title == "Components Directory" && c.status == CheckStatus::Warning));
-        assert!(checks_config
-            .iter()
-            .any(|c| c.title == "Tokens Directory" && c.status == CheckStatus::Warning));
-        assert!(checks_config
-            .iter()
-            .any(|c| c.title == "Shared Directory" && c.status == CheckStatus::Warning));
-        assert!(checks_config
-            .iter()
-            .any(|c| c.title == "Dart Target" && c.message.contains("standard")));
-        assert!(checks_config
-            .iter()
-            .any(|c| c.title == "Registry Index" && c.status == CheckStatus::Warning));
+        assert!(
+            checks_config
+                .iter()
+                .any(|c| c.title == "Components Directory" && c.status == CheckStatus::Warning)
+        );
+        assert!(
+            checks_config
+                .iter()
+                .any(|c| c.title == "Tokens Directory" && c.status == CheckStatus::Warning)
+        );
+        assert!(
+            checks_config
+                .iter()
+                .any(|c| c.title == "Shared Directory" && c.status == CheckStatus::Warning)
+        );
+        assert!(
+            checks_config
+                .iter()
+                .any(|c| c.title == "Dart Target" && c.message.contains("standard"))
+        );
+        assert!(
+            checks_config
+                .iter()
+                .any(|c| c.title == "Registry Index" && c.status == CheckStatus::Warning)
+        );
     }
 
     #[test]
@@ -610,15 +636,21 @@ dart_target: standard
         std::fs::write(temp_dir.path().join("justui.config.yaml"), config_yaml).unwrap();
 
         let checks = perform_checks();
-        assert!(checks
-            .iter()
-            .any(|c| c.title == "JustUI Packages" && c.status == CheckStatus::Ok));
-        assert!(checks
-            .iter()
-            .any(|c| c.title == "Components Directory" && c.status == CheckStatus::Ok));
-        assert!(checks
-            .iter()
-            .any(|c| c.title == "Registry Index" && c.status == CheckStatus::Ok));
+        assert!(
+            checks
+                .iter()
+                .any(|c| c.title == "JustUI Packages" && c.status == CheckStatus::Ok)
+        );
+        assert!(
+            checks
+                .iter()
+                .any(|c| c.title == "Components Directory" && c.status == CheckStatus::Ok)
+        );
+        assert!(
+            checks
+                .iter()
+                .any(|c| c.title == "Registry Index" && c.status == CheckStatus::Ok)
+        );
 
         assert!(run().is_ok());
     }
@@ -641,21 +673,31 @@ dart_target: standard
         std::fs::write(temp_dir.path().join("justui.config.yaml"), config_yaml).unwrap();
 
         let checks = perform_checks();
-        assert!(checks
-            .iter()
-            .any(|c| c.title == "JustUI Packages" && c.status == CheckStatus::Warning));
-        assert!(checks
-            .iter()
-            .any(|c| c.title == "Components Directory" && c.status == CheckStatus::Warning));
-        assert!(checks
-            .iter()
-            .any(|c| c.title == "Tokens Directory" && c.status == CheckStatus::Warning));
-        assert!(checks
-            .iter()
-            .any(|c| c.title == "Shared Directory" && c.status == CheckStatus::Warning));
-        assert!(checks
-            .iter()
-            .any(|c| c.title == "Registry Index" && c.status == CheckStatus::Warning));
+        assert!(
+            checks
+                .iter()
+                .any(|c| c.title == "JustUI Packages" && c.status == CheckStatus::Warning)
+        );
+        assert!(
+            checks
+                .iter()
+                .any(|c| c.title == "Components Directory" && c.status == CheckStatus::Warning)
+        );
+        assert!(
+            checks
+                .iter()
+                .any(|c| c.title == "Tokens Directory" && c.status == CheckStatus::Warning)
+        );
+        assert!(
+            checks
+                .iter()
+                .any(|c| c.title == "Shared Directory" && c.status == CheckStatus::Warning)
+        );
+        assert!(
+            checks
+                .iter()
+                .any(|c| c.title == "Registry Index" && c.status == CheckStatus::Warning)
+        );
 
         assert!(run().is_ok());
     }
@@ -668,9 +710,11 @@ dart_target: standard
 
         // No pubspec.yaml -> triggers CheckStatus::Error
         let checks = perform_checks();
-        assert!(checks
-            .iter()
-            .any(|c| c.title == "pubspec.yaml" && c.status == CheckStatus::Error));
+        assert!(
+            checks
+                .iter()
+                .any(|c| c.title == "pubspec.yaml" && c.status == CheckStatus::Error)
+        );
 
         assert!(run().is_ok());
     }

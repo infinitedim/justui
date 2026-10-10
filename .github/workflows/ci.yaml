@@ -131,6 +131,9 @@ jobs:
       - name: Install OpenSSL dev dependencies
         run: sudo apt-get install -y pkg-config libssl-dev
 
+      - name: Verify Rust formatting
+        run: cargo fmt --all --check
+
       - name: Run cargo check
         run: cargo check --all-targets
 

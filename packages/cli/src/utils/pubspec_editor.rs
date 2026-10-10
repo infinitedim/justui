@@ -15,9 +15,10 @@ pub fn add_dependency(
 
     if let Ok(doc) = serde_yaml::from_str::<serde_yaml::Value>(&content)
         && let Some(deps) = doc.get("dependencies")
-            && deps.get(dependency_name).is_some() {
-                return Ok(());
-            }
+        && deps.get(dependency_name).is_some()
+    {
+        return Ok(());
+    }
 
     let backup_path = format!("{}.bak", pubspec_path.display());
     std::fs::write(&backup_path, &content)
@@ -58,9 +59,10 @@ pub fn get_package_name(pubspec_path: &Path) -> Result<String> {
     })?;
 
     if let Ok(doc) = serde_yaml::from_str::<serde_yaml::Value>(&content)
-        && let Some(name) = doc.get("name").and_then(|v| v.as_str()) {
-            return Ok(name.to_string());
-        }
+        && let Some(name) = doc.get("name").and_then(|v| v.as_str())
+    {
+        return Ok(name.to_string());
+    }
 
     anyhow::bail!("Could not parse 'name:' from pubspec.yaml")
 }
@@ -119,21 +121,23 @@ pub fn supports_primary_constructors(pubspec_path: &Path) -> Result<bool> {
     if let Some(sdk_str) = env.get("sdk").and_then(|v| v.as_str()) {
         checked = true;
         if let Some(min_sdk) = parse_min_version(sdk_str)
-            && (min_sdk.major, min_sdk.minor) >= (3, 13) {
-                dart_supported = true;
-            }
+            && (min_sdk.major, min_sdk.minor) >= (3, 13)
+        {
+            dart_supported = true;
+        }
     }
 
     if let Some(flutter_str) = env.get("flutter").and_then(|v| v.as_str())
-        && let Some(min_flutter) = parse_min_version(flutter_str) {
-            if (min_flutter.major, min_flutter.minor) < (3, 47) {
-                return Ok(false);
-            }
-            if env.get("sdk").is_none() {
-                checked = true;
-                dart_supported = true;
-            }
+        && let Some(min_flutter) = parse_min_version(flutter_str)
+    {
+        if (min_flutter.major, min_flutter.minor) < (3, 47) {
+            return Ok(false);
         }
+        if env.get("sdk").is_none() {
+            checked = true;
+            dart_supported = true;
+        }
+    }
 
     if checked {
         Ok(dart_supported)

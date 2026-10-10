@@ -581,20 +581,24 @@ pub fn add_component(
                                 theme_file.display()
                             ));
                             break;
-                        } else { if let Ok(updated) = crate::utils::theme_editor::register_theme_extension(
-                                theme_file,
-                                &pkg_name,
-                                &import_uri,
-                                &theme_class,
-                            )
-                            && updated {
+                        } else {
+                            if let Ok(updated) =
+                                crate::utils::theme_editor::register_theme_extension(
+                                    theme_file,
+                                    &pkg_name,
+                                    &import_uri,
+                                    &theme_class,
+                                )
+                                && updated
+                            {
                                 logger::stdout(&format!(
                                     "  - Registered {}.defaults in {}",
                                     theme_class,
                                     theme_file.display()
                                 ));
                                 break;
-                            }}
+                            }
+                        }
                     }
                 }
             }
