@@ -50,7 +50,7 @@ pub fn add_dependency(
     let mut new_lines: Vec<String> = lines.iter().map(std::string::ToString::to_string).collect();
     new_lines.insert(dep_idx + 1, dependency_line);
 
-    std::fs::write(pubspec_path, new_lines.join("\n"))
+    crate::utils::path_guard::atomic_write(pubspec_path, new_lines.join("\n"))
         .context("Failed to write modified pubspec.yaml")?;
 
     Ok(())

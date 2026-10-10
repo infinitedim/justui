@@ -103,7 +103,6 @@ pub struct RegistryIndex {
 pub const REGISTRY_TIMEOUT_ENV: &str = "JUSTUI_HTTP_TIMEOUT";
 
 const DEFAULT_REGISTRY_TIMEOUT_SECS: u64 = 15;
-const REGISTRY_CONNECT_TIMEOUT_SECS: u64 = 5;
 
 /// Resolves the total request timeout for registry fetches.
 ///
@@ -118,6 +117,7 @@ pub fn registry_timeout(env_value: Option<&str>) -> std::time::Duration {
     std::time::Duration::from_secs(secs)
 }
 
+#[derive(Debug, Clone)]
 pub struct RegistryClient {
     pub base_url: String,
 }
@@ -131,7 +131,7 @@ impl RegistryClient {
         self.base_url.starts_with("http://") || self.base_url.starts_with("https://")
     }
 
-    pub fn fetch_index(&self) -> Result<RegistryIndex> {
+    pub async fn fetch_index_async(&self) -> Result<RegistryIndex> {
         if !crate::utils::crypto::is_official_registry(&self.base_url) {
             crate::utils::logger::warning(&format!(
                 "Using non-default registry URL: {}. Ensure this source is trusted.",
@@ -139,9 +139,9 @@ impl RegistryClient {
             ));
         }
 
-        let content = self.fetch_file_content("index.json")?;
+        let content = self.fetch_file_content_async("index.json").await?;
 
-        match self.fetch_file_content("index.json.sig") {
+        match self.fetch_file_content_async("index.json.sig").await {
             Ok(sig_str) => {
                 crate::utils::crypto::verify_signature(
                     content.as_bytes(),
@@ -163,7 +163,49 @@ impl RegistryClient {
         Ok(index)
     }
 
-    pub fn fetch_file_content(&self, relative_path: &str) -> Result<String> {
+    pub fn fetch_index(&self) -> Result<RegistryIndex> {
+        if !self.is_remote() {
+            let path = std::path::Path::new(&self.base_url).join("index.json");
+            let content = std::fs::read_to_string(&path)
+                .with_context(|| format!("Registry file not found at: {}", path.display()))?;
+            let sig_path = std::path::Path::new(&self.base_url).join("index.json.sig");
+            if let Ok(sig_str) = std::fs::read_to_string(&sig_path) {
+                crate::utils::crypto::verify_signature(
+                    content.as_bytes(),
+                    &sig_str,
+                    crate::utils::crypto::JUSTUI_REGISTRY_PUBKEY,
+                )?;
+            }
+            let index: RegistryIndex =
+                serde_json::from_str(&content).context("Failed to parse registry index.json")?;
+            return Ok(index);
+        }
+        if let Ok(handle) = tokio::runtime::Handle::try_current() {
+            if handle.runtime_flavor() == tokio::runtime::RuntimeFlavor::MultiThread {
+                tokio::task::block_in_place(|| handle.block_on(self.fetch_index_async()))
+            } else {
+                std::thread::scope(|s| {
+                    s.spawn(|| {
+                        tokio::runtime::Builder::new_current_thread()
+                            .enable_all()
+                            .build()
+                            .map_err(|e| anyhow::anyhow!("{e}"))?
+                            .block_on(self.fetch_index_async())
+                    })
+                    .join()
+                    .unwrap_or_else(|_| Err(anyhow::anyhow!("Worker thread panicked")))
+                })
+            }
+        } else {
+            tokio::runtime::Runtime::new()?.block_on(self.fetch_index_async())
+        }
+    }
+
+    pub fn fetch_index_blocking(&self) -> Result<RegistryIndex> {
+        self.fetch_index()
+    }
+
+    pub async fn fetch_file_content_async(&self, relative_path: &str) -> Result<String> {
         if self.is_remote() {
             #[cfg(test)]
             if std::env::var("JUSTUI_ALLOW_NET_TESTS").is_err() {
@@ -181,43 +223,65 @@ impl RegistryClient {
                 format!("{}/", self.base_url)
             };
             let url = format!("{clean_base}{relative_path}");
-            let client = reqwest::blocking::Client::builder()
-                .timeout(registry_timeout(
-                    std::env::var(REGISTRY_TIMEOUT_ENV).ok().as_deref(),
-                ))
-                .connect_timeout(std::time::Duration::from_secs(
-                    REGISTRY_CONNECT_TIMEOUT_SECS,
-                ))
-                .build()
-                .unwrap_or_default();
-            let mut response = client
-                .get(&url)
-                .send()
-                .with_context(|| format!("Failed to fetch from registry ({url})"))?;
 
-            let tag_pattern = format!("/v{}/", env!("CARGO_PKG_VERSION"));
-            if response.status() == reqwest::StatusCode::NOT_FOUND && url.contains(&tag_pattern) {
-                let fallback_url = url.replace(&tag_pattern, "/main/");
-                if let Ok(fallback_resp) = client.get(&fallback_url).send()
-                    && fallback_resp.status().is_success()
-                {
-                    response = fallback_resp;
+            let client = crate::utils::http_client::make_client()?;
+            match crate::utils::http_client::get_with_retry_text(&client, &url).await {
+                Ok(text) => Ok(text),
+                Err(e) => {
+                    let tag_pattern = format!("/v{}/", env!("CARGO_PKG_VERSION"));
+                    if url.contains(&tag_pattern) {
+                        let fallback_url = url.replace(&tag_pattern, "/main/");
+                        if let Ok(fallback_text) =
+                            crate::utils::http_client::get_with_retry_text(&client, &fallback_url)
+                                .await
+                        {
+                            return Ok(fallback_text);
+                        }
+                    }
+                    Err(anyhow::anyhow!(
+                        "Failed to fetch from registry ({url}): {e}"
+                    ))
                 }
             }
-
-            if !response.status().is_success() {
-                return Err(anyhow::anyhow!(
-                    "Failed to fetch from registry ({}): HTTP {}",
-                    url,
-                    response.status().as_u16()
-                ));
-            }
-            Ok(response.text()?)
         } else {
             let path = std::path::Path::new(&self.base_url).join(relative_path);
-            std::fs::read_to_string(&path)
+            tokio::fs::read_to_string(&path)
+                .await
                 .with_context(|| format!("Registry file not found at: {}", path.display()))
         }
+    }
+
+    pub fn fetch_file_content(&self, relative_path: &str) -> Result<String> {
+        if !self.is_remote() {
+            let path = std::path::Path::new(&self.base_url).join(relative_path);
+            return std::fs::read_to_string(&path)
+                .with_context(|| format!("Registry file not found at: {}", path.display()));
+        }
+        if let Ok(handle) = tokio::runtime::Handle::try_current() {
+            if handle.runtime_flavor() == tokio::runtime::RuntimeFlavor::MultiThread {
+                tokio::task::block_in_place(|| {
+                    handle.block_on(self.fetch_file_content_async(relative_path))
+                })
+            } else {
+                std::thread::scope(|s| {
+                    s.spawn(|| {
+                        tokio::runtime::Builder::new_current_thread()
+                            .enable_all()
+                            .build()
+                            .map_err(|e| anyhow::anyhow!("{e}"))?
+                            .block_on(self.fetch_file_content_async(relative_path))
+                    })
+                    .join()
+                    .unwrap_or_else(|_| Err(anyhow::anyhow!("Worker thread panicked")))
+                })
+            }
+        } else {
+            tokio::runtime::Runtime::new()?.block_on(self.fetch_file_content_async(relative_path))
+        }
+    }
+
+    pub fn fetch_file_content_blocking(&self, relative_path: &str) -> Result<String> {
+        self.fetch_file_content(relative_path)
     }
 }
 
@@ -226,8 +290,8 @@ mod tests {
     use super::*;
     use tempfile::tempdir;
 
-    #[test]
-    fn test_registry_client_local_and_remote() {
+    #[tokio::test]
+    async fn test_registry_client_local_and_remote() {
         let remote_client = RegistryClient::new("https://example.com/registry".to_string());
         assert!(remote_client.is_remote());
 
@@ -239,6 +303,13 @@ mod tests {
         assert!(!local_client.is_remote());
 
         // Local non-existent file
+        assert!(
+            local_client
+                .fetch_file_content_async("nonexistent.json")
+                .await
+                .is_err()
+        );
+        assert!(local_client.fetch_index_async().await.is_err());
         assert!(local_client.fetch_file_content("nonexistent.json").is_err());
         assert!(local_client.fetch_index().is_err());
 
@@ -250,9 +321,11 @@ mod tests {
         )
         .unwrap();
 
-        let index = local_client.fetch_index().unwrap();
+        let index = local_client.fetch_index_async().await.unwrap();
         assert_eq!(index.version, "1.0");
         assert_eq!(index.presets, vec!["default"]);
+        let index_sync = local_client.fetch_index().unwrap();
+        assert_eq!(index_sync.version, "1.0");
     }
 
     #[test]
@@ -282,8 +355,8 @@ mod tests {
         assert!(comp.files_for_preset("unknown_preset").is_empty());
     }
 
-    #[test]
-    fn test_registry_signature_verification_success_and_tampered() {
+    #[tokio::test]
+    async fn test_registry_signature_verification_success_and_tampered() {
         let dir = tempdir().unwrap();
         let client = RegistryClient::new(dir.path().to_string_lossy().to_string());
         let index_path = dir.path().join("index.json");
@@ -297,21 +370,21 @@ mod tests {
         std::fs::write(&sig_path, &sig).unwrap();
 
         // Valid signature verifies cleanly
-        let fetched = client.fetch_index();
+        let fetched = client.fetch_index_async().await;
         assert!(fetched.is_ok());
 
         // Tampering with content causes signature verification to fail
         let tampered_content =
             r#"{"version": "1.0", "presets": ["default"], "components": [{"name": "evil"}]}"#;
         std::fs::write(&index_path, tampered_content).unwrap();
-        let fail_res = client.fetch_index();
+        let fail_res = client.fetch_index_async().await;
         assert!(fail_res.is_err());
         let err = fail_res.unwrap_err().to_string();
         assert!(err.contains("tampered with"));
 
         // Malformed signature hex fails
         std::fs::write(&sig_path, "not-a-valid-hex-signature").unwrap();
-        let bad_hex_res = client.fetch_index();
+        let bad_hex_res = client.fetch_index_async().await;
         assert!(bad_hex_res.is_err());
         assert!(bad_hex_res.unwrap_err().to_string().contains("Invalid hex"));
     }

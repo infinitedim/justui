@@ -386,10 +386,7 @@ fn apply_file_change(
         import_rewriter::inject_metadata(remote_rewritten, &fs.expected_hash, &local_hash);
 
     let path = std::path::Path::new(&fs.target_path);
-    if let Some(parent) = path.parent() {
-        std::fs::create_dir_all(parent)?;
-    }
-    std::fs::write(path, &final_to_write)?;
+    crate::utils::path_guard::atomic_write(path, &final_to_write)?;
     crate::utils::dart_formatter::format_and_refresh_metadata(path);
     logger::stdout(&format!("  - Updated {}", fs.file.name));
     Ok(())

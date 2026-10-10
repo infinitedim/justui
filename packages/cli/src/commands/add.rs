@@ -425,18 +425,68 @@ pub fn add_component(
         .map(|(k, v)| (k.clone(), v.clone()))
         .collect();
 
-    for file in &files {
+    let downloaded_contents: Vec<String> = if let Ok(handle) = tokio::runtime::Handle::try_current()
+    {
+        tokio::task::block_in_place(|| {
+            handle.block_on(async {
+                use std::sync::Arc;
+                use tokio::sync::Semaphore;
+                use tokio::task::JoinSet;
+
+                let semaphore = Arc::new(Semaphore::new(4));
+                let mut join_set = JoinSet::new();
+
+                for (idx, file) in files.iter().enumerate() {
+                    let sem = Arc::clone(&semaphore);
+                    let client_ref = client.clone();
+                    let path = file.path.clone();
+                    let name = file.name.clone();
+
+                    join_set.spawn(async move {
+                        let _permit = sem
+                            .acquire()
+                            .await
+                            .map_err(|e| anyhow::anyhow!("Semaphore error: {e}"))?;
+                        let content = client_ref
+                            .fetch_file_content_async(&path)
+                            .await
+                            .map_err(|e| anyhow::anyhow!("Failed to fetch \"{name}\": {e}"))?;
+                        Ok::<(usize, String), anyhow::Error>((idx, content))
+                    });
+                }
+
+                let mut results = vec![String::new(); files.len()];
+                while let Some(res) = join_set.join_next().await {
+                    let (idx, content) =
+                        res.map_err(|e| anyhow::anyhow!("Task join error: {e}"))??;
+                    results[idx] = content;
+                }
+                Ok::<Vec<String>, anyhow::Error>(results)
+            })
+        })?
+    } else {
+        let mut results = Vec::with_capacity(files.len());
+        for file in &files {
+            let content = client
+                .fetch_file_content(&file.path)
+                .map_err(|e| anyhow::anyhow!("Failed to fetch \"{}\": {e}", file.name))?;
+            results.push(content);
+        }
+        results
+    };
+
+    for (file, content) in files.iter().zip(downloaded_contents.iter()) {
         if let Some(bar) = pb {
             bar.inc(1);
             bar.set_message(format!("Processing {}...", file.name));
         }
 
-        let content = client
-            .fetch_file_content(&file.path)
-            .map_err(|e| anyhow::anyhow!("Failed to fetch \"{}\": {}", file.name, e))?;
-
-        let downloaded_hash = sha256_hex(content.as_bytes());
-        let expected_hash = file.checksum.replace("sha256:", "").trim().to_string();
+        let downloaded_hash = crate::utils::path_guard::Sha256Hex::from_bytes(content.as_bytes());
+        let expected_hash_str = file.checksum.replace("sha256:", "").trim().to_string();
+        let expected_hash =
+            crate::utils::path_guard::Sha256Hex::new(&expected_hash_str).map_err(|e| {
+                anyhow::anyhow!("Invalid registry checksum for \"{}\": {}", file.name, e)
+            })?;
 
         if downloaded_hash != expected_hash {
             return Err(anyhow::anyhow!(
@@ -453,7 +503,7 @@ pub fn add_component(
             .unwrap_or_else(|_| "flutter_app".to_string());
 
         let mut rewritten_content = import_rewriter::rewrite(
-            &content,
+            content,
             &file.path,
             &comp_name,
             index,
@@ -472,12 +522,23 @@ pub fn add_component(
         let local_rewritten_hash = sha256_hex(rewritten_content.as_bytes());
         let final_content = import_rewriter::inject_metadata(
             &rewritten_content,
-            &expected_hash,
+            expected_hash.as_str(),
             &local_rewritten_hash,
         );
 
         let local_file_name = component.local_file_name(&file.name);
-        let target_path = std::path::Path::new(&target_dir).join(&local_file_name);
+        let raw_dest = std::path::Path::new(&target_dir).join(&local_file_name);
+        let project_rel = if raw_dest.is_absolute() {
+            let cwd = std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
+            crate::utils::path_guard::ProjectRelPath::from_project_root(&cwd, &raw_dest)
+                .map_err(|e| anyhow::anyhow!("Invalid target path: {e}"))?
+        } else {
+            crate::utils::path_guard::ProjectRelPath::new(&raw_dest)
+                .map_err(|e| anyhow::anyhow!("Invalid target path: {e}"))?
+        };
+        let target_path =
+            crate::utils::path_guard::safe_join(std::path::Path::new("."), &project_rel)
+                .map_err(|e| anyhow::anyhow!("Unsafe target path: {e}"))?;
 
         let file_exists = target_path.exists();
 
@@ -488,7 +549,7 @@ pub fn add_component(
                 let (sw, conflict, local_clean, st) = resolve_conflict_dry(
                     &target_path,
                     &local_file_name,
-                    &expected_hash,
+                    expected_hash.as_str(),
                     &rewritten_content,
                     auto_yes,
                 )?;
@@ -498,7 +559,7 @@ pub fn add_component(
                 let (sw, st) = resolve_conflict(
                     &target_path,
                     &local_file_name,
-                    &expected_hash,
+                    expected_hash.as_str(),
                     &rewritten_content,
                     &final_content,
                     auto_yes,
@@ -541,10 +602,7 @@ pub fn add_component(
                 stats.skipped += 1;
             }
         } else if should_write {
-            if let Some(parent) = target_path.parent() {
-                std::fs::create_dir_all(parent)?;
-            }
-            std::fs::write(&target_path, &final_content)?;
+            crate::utils::path_guard::atomic_write(&target_path, &final_content)?;
             crate::utils::dart_formatter::format_and_refresh_metadata(&target_path);
             logger::stdout(&format!("  - Copied {local_file_name} to {target_dir}/"));
         }

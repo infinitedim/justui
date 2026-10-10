@@ -455,7 +455,7 @@ fn test_execute_upgrade_to_path() {
     );
     let (port, server_thread) = spawn_release_server(archive_bytes, manifest);
 
-    let client = reqwest::blocking::Client::builder().build().unwrap();
+    let client = reqwest::Client::builder().build().unwrap();
     let download_url = format!("http://127.0.0.1:{}/justui.tar.gz", port);
 
     let temp_dir = tempfile::tempdir().unwrap();
@@ -477,7 +477,7 @@ fn test_execute_upgrade_rejects_checksum_mismatch() {
     let manifest = format!("{}  justui.tar.gz\n", "ab".repeat(32));
     let (port, server_thread) = spawn_release_server(archive_bytes, manifest);
 
-    let client = reqwest::blocking::Client::builder().build().unwrap();
+    let client = reqwest::Client::builder().build().unwrap();
     let download_url = format!("http://127.0.0.1:{}/justui.tar.gz", port);
 
     let temp_dir = tempfile::tempdir().unwrap();

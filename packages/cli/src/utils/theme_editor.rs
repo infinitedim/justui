@@ -91,12 +91,14 @@ pub fn register_theme_extension(
     if final_content == content {
         Ok(false)
     } else {
-        std::fs::write(theme_file_path, &final_content).with_context(|| {
-            format!(
-                "Failed to update theme file at {}",
-                theme_file_path.display()
-            )
-        })?;
+        crate::utils::path_guard::atomic_write(theme_file_path, &final_content).with_context(
+            || {
+                format!(
+                    "Failed to update theme file at {}",
+                    theme_file_path.display()
+                )
+            },
+        )?;
         Ok(true)
     }
 }
