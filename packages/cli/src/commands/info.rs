@@ -23,14 +23,13 @@ pub fn run(component_name: Option<String>) -> Result<()> {
     if let Some(ref name) = component_name {
         logger::info(&format!("Component info for \"{}\"", name));
         let client = RegistryClient::new(config.registry_url.clone());
-        if let Ok(index) = client.fetch_index() {
-            if let Some(c) = index.components.iter().find(|comp| comp.name == *name) {
+        if let Ok(index) = client.fetch_index()
+            && let Some(c) = index.components.iter().find(|comp| comp.name == *name) {
                 logger::stdout(&format!("{} ({})", c.name, c.description));
                 logger::stdout(&format!("Version: {}", c.version));
                 logger::stdout(&format!("Category: {}", c.category));
                 return Ok(());
             }
-        }
         return Err(anyhow::anyhow!(
             "Component \"{}\" not found in registry",
             name

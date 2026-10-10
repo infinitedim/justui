@@ -32,11 +32,10 @@ pub fn run(query: String, category: Option<String>) -> Result<()> {
         let desc_lc = comp.description.to_lowercase();
         let cat_lc = comp.category.to_lowercase();
 
-        if let Some(ref cf) = category_lc {
-            if &cat_lc != cf {
+        if let Some(ref cf) = category_lc
+            && &cat_lc != cf {
                 continue;
             }
-        }
 
         let name_match = name_lc.contains(&query_lc);
         let desc_match = desc_lc.contains(&query_lc);

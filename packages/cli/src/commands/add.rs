@@ -411,7 +411,7 @@ pub fn add_component(
         .collect();
 
     for file in &files {
-        if let Some(ref bar) = pb {
+        if let Some(bar) = pb {
             bar.inc(1);
             bar.set_message(format!("Processing {}...", file.name));
         }
@@ -581,23 +581,20 @@ pub fn add_component(
                                 theme_file.display()
                             ));
                             break;
-                        } else if let Ok(updated) =
-                            crate::utils::theme_editor::register_theme_extension(
+                        } else { if let Ok(updated) = crate::utils::theme_editor::register_theme_extension(
                                 theme_file,
                                 &pkg_name,
                                 &import_uri,
                                 &theme_class,
                             )
-                        {
-                            if updated {
+                            && updated {
                                 logger::stdout(&format!(
                                     "  - Registered {}.defaults in {}",
                                     theme_class,
                                     theme_file.display()
                                 ));
                                 break;
-                            }
-                        }
+                            }}
                     }
                 }
             }

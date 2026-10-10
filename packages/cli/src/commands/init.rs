@@ -193,14 +193,13 @@ pub fn run(args: InitArgs) -> Result<()> {
     }
     let hex_code = format!("0xFF{}", clean_hex);
 
-    if let Some(ref feat) = args.experimental {
-        if feat != "auto-detect-flutter-version" {
+    if let Some(ref feat) = args.experimental
+        && feat != "auto-detect-flutter-version" {
             logger::warning(&format!(
                 "Unknown experimental feature: \"{}\". Ignoring.",
                 feat
             ));
         }
-    }
 
     let dart_target = if let Some(dt) = args.dart_target {
         match dt.to_lowercase().as_str() {
