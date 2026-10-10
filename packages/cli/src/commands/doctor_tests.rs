@@ -420,3 +420,49 @@ fn test_check_toolchain_helpers() {
     let check_invalid = check_toolchain("non_existent_binary_xyz_123", "NonExistent");
     assert_eq!(check_invalid.status, CheckStatus::Warning);
 }
+
+#[test]
+fn test_doctor_registry_source_check() {
+    let _lock = crate::utils::lock_test_mutex();
+    let temp_dir = tempfile::tempdir().unwrap();
+    let _guard = crate::utils::set_dir(temp_dir.path());
+    crate::utils::trust_store::set_test_config_dir(Some(temp_dir.path().to_path_buf()));
+
+    // 1. Official registry is trusted
+    let config_yaml = format!(
+        "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\npreset: default\nregistry_url: {}\n",
+        JustUIConfig::DEFAULT_REGISTRY_URL
+    );
+    fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
+    let checks = perform_checks();
+    let reg_check = checks
+        .iter()
+        .find(|c| c.title == "Registry Source")
+        .unwrap();
+    assert_eq!(reg_check.status, CheckStatus::Ok);
+    assert!(reg_check.message.contains("official (trusted)"));
+
+    // 2. Custom registry untrusted initially
+    let custom_yaml = "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\npreset: default\nregistry_url: https://my-custom.reg.io\n";
+    fs::write(JustUIConfig::CONFIG_FILE_NAME, custom_yaml).unwrap();
+    let checks_custom = perform_checks();
+    let reg_check_custom = checks_custom
+        .iter()
+        .find(|c| c.title == "Registry Source")
+        .unwrap();
+    assert_eq!(reg_check_custom.status, CheckStatus::Warning);
+    assert!(reg_check_custom.message.contains("custom (untrusted)"));
+
+    // 3. Custom registry once trusted becomes Ok
+    let mut store = crate::utils::trust_store::TrustStore::load();
+    store.add_trust("https://my-custom.reg.io").unwrap();
+    let checks_trusted = perform_checks();
+    let reg_check_trusted = checks_trusted
+        .iter()
+        .find(|c| c.title == "Registry Source")
+        .unwrap();
+    assert_eq!(reg_check_trusted.status, CheckStatus::Ok);
+    assert!(reg_check_trusted.message.contains("custom (trusted)"));
+
+    crate::utils::trust_store::set_test_config_dir(None);
+}

@@ -302,6 +302,27 @@ pub fn perform_checks() -> Vec<DoctorCheck> {
                 message: format!("Constructor syntax target: {target_label}"),
             });
 
+            let is_official = crate::utils::crypto::is_official_registry(&config.registry_url)
+                || config.registry_url == JustUIConfig::DEFAULT_REGISTRY_URL;
+            let source_label = if is_official { "official" } else { "custom" };
+            let is_trusted = if is_official {
+                true
+            } else {
+                crate::utils::trust_store::is_registry_trusted(&config.registry_url)
+            };
+            let trust_label = if is_trusted { "trusted" } else { "untrusted" };
+
+            checks.push(DoctorCheck {
+                category: "Registry".to_string(),
+                title: "Registry Source".to_string(),
+                status: if is_trusted {
+                    CheckStatus::Ok
+                } else {
+                    CheckStatus::Warning
+                },
+                message: format!("{source_label} ({trust_label}): {}", config.registry_url),
+            });
+
             // Check registry client reachability
             let client = RegistryClient::new(config.registry_url.clone());
             match client.fetch_index() {

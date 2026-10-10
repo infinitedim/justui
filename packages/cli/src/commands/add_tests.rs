@@ -124,6 +124,7 @@ fn test_add_component_execution_flow_all_types() {
     let _lock = crate::utils::TEST_MUTEX
         .lock()
         .unwrap_or_else(|e| e.into_inner());
+    let _trust = crate::utils::trust_store::TestTrustGuard::new();
     let temp_dir = tempfile::tempdir().unwrap();
     let _guard = set_dir(temp_dir.path());
 
@@ -232,6 +233,7 @@ fn test_add_writes_dart_format_clean_files_with_matching_local_hash() {
     let _lock = crate::utils::TEST_MUTEX
         .lock()
         .unwrap_or_else(|e| e.into_inner());
+    let _trust = crate::utils::trust_store::TestTrustGuard::new();
     let temp_dir = tempfile::tempdir().unwrap();
     let _guard = set_dir(temp_dir.path());
 
@@ -561,6 +563,7 @@ fn test_add_special_component_categories_and_all_flag() {
     let _lock = crate::utils::TEST_MUTEX
         .lock()
         .unwrap_or_else(|e| e.into_inner());
+    let _trust = crate::utils::trust_store::TestTrustGuard::new();
     let temp_dir = tempfile::tempdir().unwrap();
     let _guard = set_dir(temp_dir.path());
 
@@ -645,6 +648,7 @@ fn test_add_progress_bar_and_theme_file_candidates_and_error_handling() {
     let _lock = crate::utils::TEST_MUTEX
         .lock()
         .unwrap_or_else(|e| e.into_inner());
+    let _trust = crate::utils::trust_store::TestTrustGuard::new();
     let temp_dir = tempfile::tempdir().unwrap();
     let _guard = set_dir(temp_dir.path());
 
@@ -751,6 +755,7 @@ fn test_add_run_all_operation_statuses_output_formatting() {
     let _lock = crate::utils::TEST_MUTEX
         .lock()
         .unwrap_or_else(|e| e.into_inner());
+    let _trust = crate::utils::trust_store::TestTrustGuard::new();
     let temp_dir = tempfile::tempdir().unwrap();
     let _guard = set_dir(temp_dir.path());
 
@@ -838,6 +843,7 @@ fn test_add_diff_formatting_and_dry_run_conflicts() {
     let _lock = crate::utils::TEST_MUTEX
         .lock()
         .unwrap_or_else(|e| e.into_inner());
+    let _trust = crate::utils::trust_store::TestTrustGuard::new();
     let temp_dir = tempfile::tempdir().unwrap();
     let _guard = set_dir(temp_dir.path());
 
@@ -917,6 +923,7 @@ fn test_add_run_summary_output_and_auto_select_all() {
     let _lock = crate::utils::TEST_MUTEX
         .lock()
         .unwrap_or_else(|e| e.into_inner());
+    let _trust = crate::utils::trust_store::TestTrustGuard::new();
     let temp_dir = tempfile::tempdir().unwrap();
     let _guard = set_dir(temp_dir.path());
 
@@ -998,6 +1005,7 @@ fn test_add_select_empty_and_token_summary() {
     let _lock = crate::utils::TEST_MUTEX
         .lock()
         .unwrap_or_else(|e| e.into_inner());
+    let _trust = crate::utils::trust_store::TestTrustGuard::new();
     let temp_dir = tempfile::tempdir().unwrap();
     let _guard = set_dir(temp_dir.path());
 
@@ -1209,6 +1217,7 @@ fn test_add_resolve_conflict_matrix() {
 #[test]
 fn test_add_run_initialized_all_flags() {
     let _lock = crate::utils::lock_test_mutex();
+    let _trust = crate::utils::trust_store::TestTrustGuard::new();
     let temp_dir = tempfile::tempdir().unwrap();
     let _guard = set_dir(temp_dir.path());
 
@@ -1309,4 +1318,36 @@ fn test_add_run_initialized_all_flags() {
 
     // 6. Run add empty names without --all and auto_yes = true
     assert!(run(vec![], false, false, false, false, true).is_ok());
+}
+
+#[test]
+fn test_resolve_dependencies_cycle_detection() {
+    let json = r#"{
+        "version": "1.0",
+        "components": [
+            {
+                "name": "a",
+                "version": "1.0.0",
+                "registryDependencies": ["b"]
+            },
+            {
+                "name": "b",
+                "version": "1.0.0",
+                "registryDependencies": ["c"]
+            },
+            {
+                "name": "c",
+                "version": "1.0.0",
+                "registryDependencies": ["a"]
+            }
+        ]
+    }"#;
+    let index: RegistryIndex = serde_json::from_str(json).unwrap();
+    let mut visited = HashSet::new();
+    let mut resolved = Vec::new();
+    let res = resolve_dependencies_recursive("a", &index, &mut visited, &mut resolved);
+    assert!(res.is_err());
+    let err = res.unwrap_err().to_string();
+    assert!(err.contains("dependency cycle detected"));
+    assert!(err.contains("a -> b -> c -> a"));
 }

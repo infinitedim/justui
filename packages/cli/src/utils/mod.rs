@@ -14,6 +14,7 @@ pub mod pubspec_editor;
 pub mod syntax_highlighter;
 pub mod terminal_guard;
 pub mod theme_editor;
+pub mod trust_store;
 
 #[cfg(test)]
 pub static TEST_MUTEX: std::sync::Mutex<()> = std::sync::Mutex::new(());

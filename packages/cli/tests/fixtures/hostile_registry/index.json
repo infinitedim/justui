@@ -1,0 +1,53 @@
+{
+  "version": "1.0",
+  "presets": ["default"],
+  "components": [
+    {
+      "name": "../malicious",
+      "version": "1.0.0",
+      "description": "Path traversal component",
+      "supportedPresets": ["default"],
+      "registryDependencies": [],
+      "pubDependencies": {},
+      "files": {
+        "default": [
+          {
+            "name": "malicious.dart",
+            "path": "../malicious.dart",
+            "checksum": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "cycle_a",
+      "version": "1.0.0",
+      "description": "Cycle component A",
+      "supportedPresets": ["default"],
+      "registryDependencies": ["cycle_b"],
+      "pubDependencies": {},
+      "files": {}
+    },
+    {
+      "name": "cycle_b",
+      "version": "1.0.0",
+      "description": "Cycle component B",
+      "supportedPresets": ["default"],
+      "registryDependencies": ["cycle_a"],
+      "pubDependencies": {},
+      "files": {}
+    },
+    {
+      "name": "hostile_deps",
+      "version": "1.0.0",
+      "description": "Hostile dependencies",
+      "supportedPresets": ["default"],
+      "registryDependencies": [],
+      "pubDependencies": {
+        "bad-name": "^1.0.0",
+        "inject": "^1.0.0\n evil: 1.0"
+      },
+      "files": {}
+    }
+  ]
+}
