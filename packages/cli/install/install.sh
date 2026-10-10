@@ -107,13 +107,25 @@ if [ "$EXPECTED_HASH" != "$ACTUAL_HASH" ]; then
   exit 1
 fi
 
+if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+  echo "Verifying build provenance attestation with gh CLI..."
+  if ! gh attestation verify "$TMP/$ARCHIVE" --repo "$REPO"; then
+    echo "Security check failed: gh attestation verification failed for \"$ARCHIVE\"." >&2
+    echo "The download might be tampered with. Aborting installation." >&2
+    exit 1
+  fi
+  echo "Attestation verified."
+else
+  echo "Attestation verification skipped (gh CLI not installed or logged in)."
+fi
+
 tar -xzf "$TMP/$ARCHIVE" -C "$TMP"
 
 mkdir -p "$INSTALL_DIR"
 cp "$TMP/$BINARY_NAME" "$INSTALL_DIR/$BINARY_NAME"
 chmod +x "$INSTALL_DIR/$BINARY_NAME"
 
-echo "✓ Installed to $INSTALL_DIR/$BINARY_NAME"
+echo "Installed to $INSTALL_DIR/$BINARY_NAME"
 
 case ":$PATH:" in
   *":$INSTALL_DIR:"*) ;;

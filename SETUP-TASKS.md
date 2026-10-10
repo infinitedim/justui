@@ -244,11 +244,11 @@ and tests first. Items 3 and 4 above (ignore `.agents/tmp/`, move
     `bun ci` everywhere; release jobs use `environment: release`; add a
     `zizmor` job (fail on high). Do this before turning on the SHA-pinning
     repo setting (item 69) or CI breaks.
-60. (red zone) Attach `install.sh` and `install.ps1` to every release. The
+60. Done: (red zone) Attach `install.sh` and `install.ps1` to every release. The
     docs routes serve `releases/latest/download/install.{sh,ps1}`; replace
     the `main` URLs in `upgrade.rs`, README and docs snippets with the docs
     route.
-61. (red zone) Install scripts: run `gh attestation verify <archive> --repo
+61. Done: (red zone) Install scripts: run `gh attestation verify <archive> --repo
     infinitedim/justui` when `gh` is installed and logged in; otherwise
     print that it was skipped.
 62. Renovate: `renovate.json` with weekly grouped updates for cargo, bun,
