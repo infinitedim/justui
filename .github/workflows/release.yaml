@@ -237,6 +237,8 @@ jobs:
           mkdir -p release_assets
           find dist/ -type f \( -name "*.tar.gz" -o -name "*.zip" \) \
             -exec cp {} release_assets/ \;
+          cp packages/cli/install/install.sh release_assets/
+          cp packages/cli/install/install.ps1 release_assets/
 
       - name: Generate build provenance attestations
         uses: actions/attest-build-provenance@v4
@@ -268,4 +270,6 @@ jobs:
             release_assets/*.zip
             release_assets/SHA256SUMS
             release_assets/checksums.txt
+            release_assets/install.sh
+            release_assets/install.ps1
           generate_release_notes: true

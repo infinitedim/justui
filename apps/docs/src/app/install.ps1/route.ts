@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const INSTALL_SCRIPT_URL =
-  'https://raw.githubusercontent.com/infinitedim/justui/main/packages/cli/install/install.ps1';
+  'https://github.com/infinitedim/justui/releases/latest/download/install.ps1';
 
 export const dynamic = 'force-dynamic';
 

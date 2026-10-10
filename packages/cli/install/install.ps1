@@ -120,12 +120,38 @@ try {
         throw "Security check failed: Checksum mismatch for downloaded archive `"$Archive`".`n  Expected: $ExpectedHash`n  Got:      $ActualHash`nThe download might be corrupted or tampered with. Aborting installation."
     }
 
+    $ghCli = Get-Command gh -ErrorAction SilentlyContinue
+    $ghLoggedIn = $false
+    if ($ghCli) {
+        $prevEap = $ErrorActionPreference
+        try {
+            $ErrorActionPreference = 'SilentlyContinue'
+            & gh auth status *> $null
+            $ghLoggedIn = ($LASTEXITCODE -eq 0)
+        } catch {
+            $ghLoggedIn = $false
+        } finally {
+            $ErrorActionPreference = $prevEap
+        }
+    }
+
+    if ($ghCli -and $ghLoggedIn) {
+        Write-Host "Verifying build provenance attestation with gh CLI..."
+        & gh attestation verify "$Tmp\$Archive" --repo "$Repo"
+        if ($LASTEXITCODE -ne 0) {
+            throw "Security check failed: Attestation verification failed for `"$Archive`".`nThe download might be tampered with. Aborting installation."
+        }
+        Write-Host "Attestation verified."
+    } else {
+        Write-Host "Attestation verification skipped (gh CLI not installed or logged in)."
+    }
+
     Expand-Archive "$Tmp\$Archive" -DestinationPath $Tmp -Force
 
     New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
     Copy-Item "$Tmp\$BinaryName" "$InstallDir\$BinaryName" -Force
 
-    Write-Host "✓ Installed to $InstallDir\$BinaryName"
+    Write-Host "Installed to $InstallDir\$BinaryName"
 
     $CurrentPath = [System.Environment]::GetEnvironmentVariable("PATH", "User")
     if ($CurrentPath -notlike "*$InstallDir*") {

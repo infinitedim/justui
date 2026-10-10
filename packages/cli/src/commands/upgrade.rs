@@ -547,9 +547,7 @@ fn print_release_notes(release: &GitHubRelease) {
 
 pub fn print_fallback_instructions() {
     logger::stdout("\nYou can update manually using:");
-    logger::stdout(
-        "  curl -fsSL https://raw.githubusercontent.com/infinitedim/justui/main/packages/cli/install/install.sh | sh",
-    );
+    logger::stdout("  curl -fsSL https://justui.vercel.app/install.sh | sh");
     logger::stdout(
         "  or download the release directly from https://github.com/infinitedim/justui/releases/latest",
     );
