@@ -279,7 +279,8 @@ enum Commands {
 
 use commands::preset::PresetSubcommands;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let default_panic = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {
         let payload = info.to_string();

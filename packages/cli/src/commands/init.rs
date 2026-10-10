@@ -257,7 +257,7 @@ pub fn run(args: InitArgs) -> Result<()> {
         color_space: color_space.clone(),
         dart_target,
     };
-    std::fs::write(config_path, config.to_yaml_string())
+    crate::utils::path_guard::atomic_write(config_path, config.to_yaml_string())
         .map_err(|e| anyhow::anyhow!("Failed to initialize JustUI: {e}"))?;
 
     logger::success("JustUI configuration initialized.");
@@ -319,8 +319,11 @@ pub fn run(args: InitArgs) -> Result<()> {
          final JustThemeData justTheme = {default_theme_ref};\n"
     );
 
-    std::fs::write("lib/core/theme/just_theme.dart", theme_content)
-        .map_err(|e| anyhow::anyhow!("Failed to write theme file: {e}"))?;
+    crate::utils::path_guard::atomic_write(
+        std::path::Path::new("lib/core/theme/just_theme.dart"),
+        &theme_content,
+    )
+    .map_err(|e| anyhow::anyhow!("Failed to write theme file: {e}"))?;
     crate::utils::dart_formatter::format_and_refresh_metadata(std::path::Path::new(
         "lib/core/theme/just_theme.dart",
     ));

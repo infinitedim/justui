@@ -139,14 +139,14 @@ sections, 35 `must_use` suggestions, 7 functions over 100 lines (largest 351).
     mapped to exit code table in `main.rs` (0, 1, 2, 3, 4, 5, 130); `hint:`
     output in logger; custom panic hook. Added `[profile.release]`
     (`lto = "thin"`, `codegen-units = 1`, `strip = true`, `opt-level = 3`).
-34. (red zone) `safe_join` path helper with symlink rejection,
+34. Done: (red zone) `safe_join` path helper with symlink rejection,
     `ProjectRelPath` and `Sha256Hex` newtypes, atomic writes via
     `NamedTempFile::new_in(parent)` + `persist` for every write into a
     user's project. Tests first, including Windows paths.
-35. (red zone) Shared HTTP client: connect and total timeouts,
+35. Done: (red zone) Shared HTTP client: connect and total timeouts,
     `User-Agent: justui/<version>`, retry with backoff for GET (connect
     errors, timeouts, 5xx), `https://` only except local paths and localhost.
-36. (red zone) Async migration: `tokio` (minimal features) + async `reqwest`,
+36. Done: (red zone) Async migration: `tokio` (minimal features) + async `reqwest`,
     bounded parallel downloads (`JoinSet` + `Semaphore`). Watch the
     `list` TUI path that installs from inside the UI. Do this after 35.
 37. Done: Output: global `-v`/`-vv`; one color-decision function (`NO_COLOR`,

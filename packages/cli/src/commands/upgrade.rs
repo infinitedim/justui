@@ -79,21 +79,16 @@ pub fn parse_tag_from_location(location: &str) -> Option<String> {
     }
 }
 
-fn resolve_via_redirect(redirect_client: &reqwest::blocking::Client) -> Option<GitHubRelease> {
+async fn resolve_via_redirect_async(redirect_client: &reqwest::Client) -> Option<GitHubRelease> {
     let repo = get_repo_name();
     let url = format!("https://github.com/{repo}/releases/latest");
-    let resp = redirect_client
-        .head(&url)
-        .send()
-        .ok()
-        .filter(|r| r.status().is_redirection())
-        .or_else(|| {
-            redirect_client
-                .get(&url)
-                .send()
-                .ok()
-                .filter(|r| r.status().is_redirection())
-        })?;
+    let resp = match redirect_client.head(&url).send().await {
+        Ok(r) if r.status().is_redirection() => Some(r),
+        _ => match redirect_client.get(&url).send().await {
+            Ok(r) if r.status().is_redirection() => Some(r),
+            _ => None,
+        },
+    }?;
 
     let loc_header = resp
         .headers()
@@ -128,16 +123,16 @@ fn resolve_via_redirect(redirect_client: &reqwest::blocking::Client) -> Option<G
     })
 }
 
-pub fn resolve_latest_version(client: &reqwest::blocking::Client) -> Result<GitHubRelease> {
+async fn resolve_latest_version_async(client: &reqwest::Client) -> Result<GitHubRelease> {
     // Strategy 1: GitHub Web 302 redirect (rate-limit free)
-    let redirect_client = reqwest::blocking::Client::builder()
+    let redirect_client = reqwest::Client::builder()
         .redirect(reqwest::redirect::Policy::none())
         .user_agent("justui-cli")
         .timeout(std::time::Duration::from_secs(10))
         .build();
 
     if let Ok(redirect_client) = redirect_client
-        && let Some(rel) = resolve_via_redirect(&redirect_client)
+        && let Some(rel) = resolve_via_redirect_async(&redirect_client).await
     {
         return Ok(rel);
     }
@@ -159,9 +154,10 @@ pub fn resolve_latest_version(client: &reqwest::blocking::Client) -> Result<GitH
                 .header(reqwest::header::USER_AGENT, "justui-cli")
                 .header(reqwest::header::ACCEPT, "application/vnd.github.v3+json")
                 .send()
+                .await
         {
             if resp.status().is_success() {
-                if let Ok(rel) = resp.json::<GitHubRelease>() {
+                if let Ok(rel) = resp.json::<GitHubRelease>().await {
                     return Ok(rel);
                 }
             } else if resp.status() == reqwest::StatusCode::NOT_FOUND {
@@ -176,6 +172,7 @@ pub fn resolve_latest_version(client: &reqwest::blocking::Client) -> Result<GitH
         .header(reqwest::header::USER_AGENT, "justui-cli")
         .header(reqwest::header::ACCEPT, "application/vnd.github.v3+json")
         .send()
+        .await
         .context("Could not connect to GitHub API to check for updates")?;
 
     if resp.status() == reqwest::StatusCode::NOT_FOUND {
@@ -188,9 +185,18 @@ pub fn resolve_latest_version(client: &reqwest::blocking::Client) -> Result<GitH
 
     let rel = resp
         .json::<GitHubRelease>()
+        .await
         .context("Failed to parse GitHub release data")?;
 
     Ok(rel)
+}
+
+pub fn resolve_latest_version(client: &reqwest::Client) -> Result<GitHubRelease> {
+    if let Ok(handle) = tokio::runtime::Handle::try_current() {
+        tokio::task::block_in_place(|| handle.block_on(resolve_latest_version_async(client)))
+    } else {
+        tokio::runtime::Runtime::new()?.block_on(resolve_latest_version_async(client))
+    }
 }
 
 pub fn plan_upgrade(
@@ -326,11 +332,15 @@ fn verify_sha256(bytes: &[u8], manifest: &str, asset_name: &str) -> Result<()> {
     Ok(())
 }
 
-fn download_and_unpack(client: &reqwest::blocking::Client, download_url: &str) -> Result<Vec<u8>> {
+async fn download_and_unpack_async(
+    client: &reqwest::Client,
+    download_url: &str,
+) -> Result<Vec<u8>> {
     logger::info(&format!("Downloading update from {download_url}..."));
     let response = client
         .get(download_url)
         .send()
+        .await
         .with_context(|| format!("Failed to download release archive from {download_url}"))?;
 
     if !response.status().is_success() {
@@ -340,13 +350,17 @@ fn download_and_unpack(client: &reqwest::blocking::Client, download_url: &str) -
         );
     }
 
-    let bytes = response.bytes().context("Failed to read response bytes")?;
+    let bytes = response
+        .bytes()
+        .await
+        .context("Failed to read response bytes")?;
 
     let (manifest_url, asset_name) = checksum_manifest_location(download_url)?;
     let manifest_response = client
         .get(&manifest_url)
         .header(reqwest::header::USER_AGENT, "justui-cli")
         .send()
+        .await
         .with_context(|| format!("Failed to download checksum manifest from {manifest_url}"))?;
     if !manifest_response.status().is_success() {
         anyhow::bail!(
@@ -357,6 +371,7 @@ fn download_and_unpack(client: &reqwest::blocking::Client, download_url: &str) -
     }
     let manifest = manifest_response
         .text()
+        .await
         .context("Failed to read checksum manifest")?;
     verify_sha256(&bytes, &manifest, &asset_name)?;
 
@@ -375,8 +390,18 @@ fn download_and_unpack(client: &reqwest::blocking::Client, download_url: &str) -
     Ok(unpacked_bytes)
 }
 
+fn download_and_unpack(client: &reqwest::Client, download_url: &str) -> Result<Vec<u8>> {
+    if let Ok(handle) = tokio::runtime::Handle::try_current() {
+        tokio::task::block_in_place(|| {
+            handle.block_on(download_and_unpack_async(client, download_url))
+        })
+    } else {
+        tokio::runtime::Runtime::new()?.block_on(download_and_unpack_async(client, download_url))
+    }
+}
+
 pub fn execute_upgrade(
-    client: &reqwest::blocking::Client,
+    client: &reqwest::Client,
     download_url: &str,
     clean_tag: &str,
 ) -> Result<()> {
@@ -393,7 +418,7 @@ pub fn execute_upgrade(
 
 #[cfg(test)]
 pub fn execute_upgrade_to_path(
-    client: &reqwest::blocking::Client,
+    client: &reqwest::Client,
     download_url: &str,
     clean_tag: &str,
     target_path: &std::path::Path,
@@ -422,10 +447,7 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
     pb.set_message("Checking GitHub for latest release...");
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-    let client = match reqwest::blocking::Client::builder()
-        .user_agent("justui-cli")
-        .build()
-    {
+    let client = match reqwest::Client::builder().user_agent("justui-cli").build() {
         Ok(c) => c,
         Err(e) => {
             pb.finish_and_clear();

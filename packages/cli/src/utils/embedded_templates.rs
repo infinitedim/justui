@@ -48,10 +48,7 @@ pub fn extract_tokens(
                 .unwrap_or(path_str);
 
             let dest_path = target_tokens_dir.join(rel_path_str);
-            if let Some(parent) = dest_path.parent() {
-                std::fs::create_dir_all(parent)?;
-            }
-            std::fs::write(&dest_path, file_content)?;
+            crate::utils::path_guard::atomic_write(&dest_path, file_content)?;
             crate::utils::dart_formatter::format_and_refresh_metadata(&dest_path);
         }
     }
@@ -96,10 +93,7 @@ pub fn extract_core(
                 .unwrap_or(path_str);
 
             let dest_path = target_core_dir.join(rel_path_str);
-            if let Some(parent) = dest_path.parent() {
-                std::fs::create_dir_all(parent)?;
-            }
-            std::fs::write(&dest_path, file_content)?;
+            crate::utils::path_guard::atomic_write(&dest_path, &file_content)?;
             crate::utils::dart_formatter::format_and_refresh_metadata(&dest_path);
         }
     }

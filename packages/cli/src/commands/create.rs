@@ -113,7 +113,7 @@ pub fn run(
         };
 
         if should_write {
-            std::fs::write(path, content)
+            crate::utils::path_guard::atomic_write(path, content)
                 .map_err(|e| anyhow::anyhow!("Failed to scaffold custom component: {e}"))?;
             logger::stdout(&format!("  - Generated {file_name}"));
         } else if !auto_yes {
