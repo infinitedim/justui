@@ -237,7 +237,7 @@ and tests first. Items 3 and 4 above (ignore `.agents/tmp/`, move
     `registry_url`, stored per user (decide the config dir lookup without a
     new crate if possible, or ask for `dirs`), `--trust-registry` for
     non-TTY. `justui doctor` prints the registry source and trust state.
-59. Workflows: pin every action to a full SHA with a version comment;
+59. Done: Workflows: pin every action to a full SHA with a version comment;
     `permissions: {}` at the top, minimal per job; `persist-credentials:
     false`; no caches in `release.yaml`; release builds with
     `cargo auditable build --release --locked` (install the tool pinned);
@@ -251,14 +251,14 @@ and tests first. Items 3 and 4 above (ignore `.agents/tmp/`, move
 61. Done: (red zone) Install scripts: run `gh attestation verify <archive> --repo
     infinitedim/justui` when `gh` is installed and logged in; otherwise
     print that it was skipped.
-62. Renovate: `renovate.json` with weekly grouped updates for cargo, bun,
+62. Done: Renovate: `renovate.json` with weekly grouped updates for cargo, bun,
     pub and GitHub Actions, `minimumReleaseAge: "7 days"`, action digests
     with version comments, vulnerability alerts without delay. Remove the
     version-update config in `.github/dependabot.yaml` (keep Dependabot
     alerts and security updates on in settings). `bunfig.toml`:
     `minimumReleaseAge = 604800` (check the section name in the Bun docs for
     the pinned Bun version).
-63. Hidden-Unicode check: a small dependency-free Dart script in `tools/`
+63. Done: Hidden-Unicode check: a small dependency-free Dart script in `tools/`
     run by CI over all tracked text files; rejects bidi controls and
     zero-width characters (BOM only allowed at offset 0).
 64. Docs: Vitest test that locks security headers and the CSP baseline;
