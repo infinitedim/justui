@@ -135,9 +135,9 @@ sections, 35 `must_use` suggestions, 7 functions over 100 lines (largest 351).
     that still fails, so `-D warnings` passes.
 32. Done: `rustfmt.toml` with stable options only: `use_field_init_shorthand =
     true`, `use_try_shorthand = true`. Add `cargo fmt --all --check` to CI.
-33. Errors: add `thiserror`; typed errors in `registry.rs`, `config.rs` and
-    red-zone utils; map them to the exit code table in `main.rs`; `hint:`
-    output in the logger; custom panic hook. Add `[profile.release]`
+33. Done: Errors: add `thiserror`; typed errors in `errors.rs` (`CliError`, `RegistryError`, `ConfigError`);
+    mapped to exit code table in `main.rs` (0, 1, 2, 3, 4, 5, 130); `hint:`
+    output in logger; custom panic hook. Added `[profile.release]`
     (`lto = "thin"`, `codegen-units = 1`, `strip = true`, `opt-level = 3`).
 34. (red zone) `safe_join` path helper with symlink rejection,
     `ProjectRelPath` and `Sha256Hex` newtypes, atomic writes via
