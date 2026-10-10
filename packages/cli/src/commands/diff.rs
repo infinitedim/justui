@@ -266,6 +266,10 @@ pub fn run(
             continue;
         }
 
+        if !prompt::is_interactive() {
+            continue;
+        }
+
         loop {
             logger::stdout("\nOptions:");
             logger::stdout("  [a] Apply all changes");

@@ -4,20 +4,44 @@
 )]
 
 use colored::Colorize;
-use std::io::Write;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::io::{IsTerminal, Write};
+use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
 
 static QUIET: AtomicBool = AtomicBool::new(false);
+static VERBOSITY: AtomicU8 = AtomicU8::new(0);
 
-pub fn init(quiet: bool, no_color: bool) {
-    QUIET.store(quiet, Ordering::Relaxed);
-    if no_color || std::env::var("NO_COLOR").is_ok() {
-        colored::control::set_override(false);
+/// Determines whether terminal colors should be enabled based on
+/// flags, environment variables (`NO_COLOR`, `CLICOLOR_FORCE`), and stream TTY status.
+pub fn should_color(stream_is_terminal: bool, no_color_flag: bool) -> bool {
+    if no_color_flag {
+        return false;
     }
+    if let Ok(val) = std::env::var("NO_COLOR")
+        && !val.is_empty()
+    {
+        return false;
+    }
+    if let Ok(val) = std::env::var("CLICOLOR_FORCE")
+        && val != "0"
+    {
+        return true;
+    }
+    stream_is_terminal
+}
+
+pub fn init(quiet: bool, verbose: u8, no_color: bool) {
+    QUIET.store(quiet, Ordering::Relaxed);
+    VERBOSITY.store(verbose, Ordering::Relaxed);
+    let color_enabled = should_color(std::io::stderr().is_terminal(), no_color);
+    colored::control::set_override(color_enabled);
 }
 
 pub fn is_quiet() -> bool {
     QUIET.load(Ordering::Relaxed)
+}
+
+pub fn verbosity() -> u8 {
+    VERBOSITY.load(Ordering::Relaxed)
 }
 
 pub fn success(msg: &str) {
@@ -43,6 +67,27 @@ pub fn info(msg: &str) {
         return;
     }
     eprintln!("{}", format!("ℹ {msg}").cyan());
+}
+
+pub fn hint(msg: &str) {
+    if is_quiet() {
+        return;
+    }
+    eprintln!("{}", format!("hint: {msg}").cyan());
+}
+
+pub fn debug(msg: &str) {
+    if is_quiet() || verbosity() < 1 {
+        return;
+    }
+    eprintln!("{}", format!("[debug] {msg}").blue());
+}
+
+pub fn trace(msg: &str) {
+    if is_quiet() || verbosity() < 2 {
+        return;
+    }
+    eprintln!("{}", format!("[trace] {msg}").magenta());
 }
 
 pub fn stdout(msg: &str) {
@@ -129,15 +174,26 @@ mod tests {
 
     #[test]
     fn test_logger_init_quiet_and_no_color() {
-        init(true, true);
+        init(true, 0, true);
         assert!(is_quiet());
+        assert_eq!(verbosity(), 0);
         // Should not panic or print errors
         info("quiet info message");
         warning("quiet warning message");
         success("quiet success message");
         panel("quiet panel message");
+        debug("quiet debug message");
+        trace("quiet trace message");
 
-        init(false, false);
+        init(false, 2, false);
         assert!(!is_quiet());
+        assert_eq!(verbosity(), 2);
+        debug("active debug message");
+        trace("active trace message");
+
+        // Color decisions
+        assert!(!should_color(true, true));
+        assert!(should_color(true, false));
+        assert!(!should_color(false, false));
     }
 }

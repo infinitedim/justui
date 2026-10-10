@@ -423,8 +423,7 @@ mod cli_integration {
 
         justui()
             .current_dir(dir.path())
-            .args(["init", "--preset", "neo"])
-            .write_stdin("\n\n\n\n")
+            .args(["init", "--preset", "neo", "-y"])
             .assert()
             .success()
             .stderr(predicate::str::contains("Bootstrap theme created"));
@@ -1714,6 +1713,7 @@ mod cli_integration {
             .args(["--json", "list"])
             .assert()
             .success()
+            .stdout(predicate::str::contains("\"version\": 1"))
             .stdout(predicate::str::contains("\"name\": \"button\""));
     }
 
@@ -1794,5 +1794,68 @@ mod cli_integration {
             .success()
             .stderr(predicate::str::contains("Up to date"))
             .stderr(predicate::str::contains("Modified locally").not());
+    }
+
+    #[test]
+    fn non_interactive_without_auto_yes_fails_with_exit_code_2() {
+        let dir = tempfile::TempDir::new().unwrap();
+        std::fs::write(dir.path().join("pubspec.yaml"), "name: test_app\n").unwrap();
+        justui()
+            .current_dir(dir.path())
+            .arg("init")
+            .assert()
+            .failure()
+            .code(2)
+            .stderr(predicate::str::contains(
+                "hint: use -y to run non-interactively",
+            ));
+    }
+
+    #[test]
+    fn cli_aliases_and_json_envelope_work() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let registry_dir = dir.path().join("mock_registry");
+        std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+
+        std::fs::write(
+            registry_dir.join("index.json"),
+            serde_json::to_string(&serde_json::json!({
+                "version": "0.1.0",
+                "presets": ["default"],
+                "components": [{
+                    "name": "button",
+                    "version": "0.1.0",
+                    "description": "Button",
+                    "category": "primitives",
+                    "supportedPresets": ["default"],
+                    "registryDependencies": [],
+                    "pubDependencies": {},
+                    "files": {
+                        "default": [{
+                            "name": "just_button.dart",
+                            "path": "components/button/just_button.dart",
+                            "checksum": "sha256:111"
+                        }]
+                    }
+                }]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        std::fs::write(dir.path().join("pubspec.yaml"), "name: test_app\n").unwrap();
+        std::fs::write(
+            dir.path().join("justui.config.yaml"),
+            format!("version: 1\ncomponents_dir: lib/widgets\ntokens_dir: lib/tokens\nshared_dir: lib/widgets/shared\nregistry_url: {}\n", registry_dir.display()),
+        )
+        .unwrap();
+
+        justui()
+            .current_dir(dir.path())
+            .args(["ls", "--json"])
+            .assert()
+            .success()
+            .stdout(predicate::str::contains("\"version\": 1"))
+            .stdout(predicate::str::contains("\"name\": \"button\""));
     }
 }
