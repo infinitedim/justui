@@ -6,12 +6,85 @@
 
 use anyhow::{Context, Result};
 use std::path::Path;
+use std::sync::LazyLock;
+
+static PUB_DEP_NAME_REGEX: LazyLock<regex::Regex> = LazyLock::new(|| {
+    regex::Regex::new(r"^[a-z_][a-z0-9_]*$").expect("invariant: pub dependency name regex is valid")
+});
+
+/// Validates package name against pub naming rules (`^[a-z_][a-z0-9_]*$`).
+///
+/// # Errors
+/// Returns error if dependency name format is invalid.
+pub fn validate_pub_dependency_name(name: &str) -> Result<()> {
+    if !PUB_DEP_NAME_REGEX.is_match(name) {
+        anyhow::bail!("invalid pub dependency name '{name}': must match ^[a-z_][a-z0-9_]*$");
+    }
+    Ok(())
+}
+
+/// Validates that a version constraint is safe semver without YAML injection.
+///
+/// # Errors
+/// Returns error if constraint is empty, contains quotes, newlines, or invalid semver syntax.
+pub fn validate_semver_constraint(constraint: &str) -> Result<()> {
+    let trimmed = constraint.trim();
+    if trimmed.is_empty() {
+        anyhow::bail!("pub dependency semver constraint cannot be empty");
+    }
+    if trimmed.contains('\n') || trimmed.contains('\r') {
+        anyhow::bail!("pub dependency constraint contains newlines");
+    }
+    if trimmed.contains('"') || trimmed.contains('\'') {
+        anyhow::bail!("pub dependency constraint contains quotes");
+    }
+    if trimmed.contains(':') || trimmed.contains('{') || trimmed.contains('}') {
+        anyhow::bail!("pub dependency constraint contains invalid YAML characters");
+    }
+
+    if trimmed == "any" {
+        return Ok(());
+    }
+
+    for ch in trimmed.chars() {
+        if !ch.is_ascii_alphanumeric()
+            && ch != '.'
+            && ch != '-'
+            && ch != '+'
+            && ch != '^'
+            && ch != '>'
+            && ch != '<'
+            && ch != '='
+            && ch != ','
+            && ch != ' '
+        {
+            anyhow::bail!("pub dependency constraint contains invalid character: '{ch}'");
+        }
+    }
+
+    let normalized = trimmed.split_whitespace().collect::<Vec<_>>().join(",");
+    semver::VersionReq::parse(&normalized)
+        .map_err(|e| anyhow::anyhow!("invalid semver constraint '{trimmed}': {e}"))?;
+
+    Ok(())
+}
+
+/// Validates both dependency name and semver constraint before modifying pubspec.yaml.
+///
+/// # Errors
+/// Returns error if name or constraint is invalid.
+pub fn validate_pub_dependency(name: &str, constraint: &str) -> Result<()> {
+    validate_pub_dependency_name(name)?;
+    validate_semver_constraint(constraint)?;
+    Ok(())
+}
 
 pub fn add_dependency(
     pubspec_path: &Path,
     dependency_name: &str,
     version_constraint: &str,
 ) -> Result<()> {
+    validate_pub_dependency(dependency_name, version_constraint)?;
     let content = std::fs::read_to_string(pubspec_path).with_context(|| {
         format!(
             "Target project pubspec.yaml not found at: {}",
@@ -261,5 +334,23 @@ mod tests {
         let p11 = dir.path().join("p11.yaml");
         std::fs::write(&p11, "environment:\n  flutter: '>=3.47.0'\n").unwrap();
         assert!(supports_primary_constructors(&p11).unwrap());
+    }
+
+    #[test]
+    fn test_validate_pub_dependency() {
+        assert!(validate_pub_dependency("http", "^1.0.0").is_ok());
+        assert!(validate_pub_dependency("path_provider", ">=2.0.0 <3.0.0").is_ok());
+        assert!(validate_pub_dependency("_internal_pkg", "any").is_ok());
+
+        // Invalid names
+        assert!(validate_pub_dependency("BadName", "^1.0.0").is_err());
+        assert!(validate_pub_dependency("123bad", "^1.0.0").is_err());
+        assert!(validate_pub_dependency("bad-name", "^1.0.0").is_err());
+
+        // Malicious / invalid semver
+        assert!(validate_pub_dependency("http", "^1.0.0\n  evil: true").is_err());
+        assert!(validate_pub_dependency("http", "git: https://evil.com").is_err());
+        assert!(validate_pub_dependency("http", "\"^1.0.0\"").is_err());
+        assert!(validate_pub_dependency("http", "").is_err());
     }
 }

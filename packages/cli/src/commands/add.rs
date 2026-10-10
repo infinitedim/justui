@@ -92,6 +92,9 @@ pub fn run(
         ));
     }
 
+    let trust_flag = crate::utils::trust_store::get_trust_registry_flag();
+    crate::utils::trust_store::ensure_registry_trusted(&config.registry_url, trust_flag)?;
+
     let pb_index = indicatif::ProgressBar::new_spinner();
     pb_index.set_message("Fetching registry index...");
     pb_index.enable_steady_tick(std::time::Duration::from_millis(100));
@@ -158,6 +161,43 @@ pub fn run(
             &mut resolved_components,
         ) {
             anyhow::bail!("Dependency resolution error: {e}");
+        }
+    }
+
+    let mut missing_pub_deps = Vec::new();
+    if !effective_dry_run {
+        let pubspec_path = std::path::Path::new("pubspec.yaml");
+        let content = std::fs::read_to_string(pubspec_path).unwrap_or_default();
+        let doc: Option<serde_yaml::Value> = serde_yaml::from_str(&content).ok();
+        let existing_deps = doc.as_ref().and_then(|d| d.get("dependencies"));
+
+        for comp_name in &resolved_components {
+            if let Some(comp) = index.components.iter().find(|c| c.name == *comp_name) {
+                for (dep, ver) in &comp.pub_dependencies {
+                    let already_present = existing_deps.and_then(|d| d.get(dep)).is_some();
+                    if !already_present && !missing_pub_deps.iter().any(|(d, _)| d == dep) {
+                        missing_pub_deps.push((dep.clone(), ver.clone()));
+                    }
+                }
+            }
+        }
+
+        if !missing_pub_deps.is_empty() && !auto_yes {
+            if !crate::utils::prompt::is_interactive() {
+                logger::hint("use -y to run non-interactively");
+                return Err(anyhow::Error::new(crate::errors::CliError::Usage(
+                    "adding required pub dependencies requires confirmation".to_string(),
+                )));
+            }
+
+            logger::stdout("The following pub dependencies will be added to pubspec.yaml:");
+            for (dep, ver) in &missing_pub_deps {
+                logger::stdout(&format!("  - {dep}: \"{ver}\""));
+            }
+            let proceed = prompt::confirm("Add these dependencies to pubspec.yaml?", true);
+            if !proceed {
+                logger::warning("Skipping pub dependency installation.");
+            }
         }
     }
 
@@ -339,10 +379,26 @@ pub fn resolve_dependencies_recursive(
     visited: &mut HashSet<String>,
     resolved: &mut Vec<String>,
 ) -> Result<()> {
+    let mut stack = Vec::new();
+    resolve_deps_inner(name, index, visited, &mut stack, resolved)
+}
+
+fn resolve_deps_inner(
+    name: &str,
+    index: &RegistryIndex,
+    visited: &mut HashSet<String>,
+    stack: &mut Vec<String>,
+    resolved: &mut Vec<String>,
+) -> Result<()> {
+    if stack.iter().any(|s| s == name) {
+        let mut cycle_path = stack.join(" -> ");
+        cycle_path.push_str(" -> ");
+        cycle_path.push_str(name);
+        anyhow::bail!("dependency cycle detected: {cycle_path}");
+    }
     if visited.contains(name) {
         return Ok(());
     }
-    visited.insert(name.to_string());
 
     let component = index
         .components
@@ -350,9 +406,13 @@ pub fn resolve_dependencies_recursive(
         .find(|c| c.name == name)
         .ok_or_else(|| anyhow::anyhow!("Component \"{name}\" not found in registry"))?;
 
+    stack.push(name.to_string());
     for dep in &component.registry_dependencies {
-        resolve_dependencies_recursive(dep, index, visited, resolved)?;
+        resolve_deps_inner(dep, index, visited, stack, resolved)?;
     }
+    stack.pop();
+
+    visited.insert(name.to_string());
     resolved.push(name.to_string());
     Ok(())
 }

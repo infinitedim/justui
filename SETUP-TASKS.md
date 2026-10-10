@@ -223,7 +223,7 @@ Do item 57 first, before every other setup item. Red-zone items need a plan
 and tests first. Items 3 and 4 above (ignore `.agents/tmp/`, move
 `justui-audit.md` there) are confirmed: delete it from HEAD, keep history.
 
-57. (red zone, do first) Registry input validation in `registry.rs`,
+57. Done: (red zone, do first) Registry input validation in `registry.rs`,
     `add.rs` and `pubspec_editor.rs`, test-first with hostile `index.json`
     fixtures: component names `^_?[a-z][a-z0-9_-]*$` (the `_shared_*`
     internals need the leading underscore), file names `^[a-z0-9_]+\.dart$`,
@@ -232,7 +232,7 @@ and tests first. Items 3 and 4 above (ignore `.agents/tmp/`, move
     pub dependency name and constraint validation plus a confirmation list
     before editing `pubspec.yaml`; `registryDependencies` must exist in the
     index, no cycles; response size cap. Add `clippy::join_absolute_paths`.
-58. (red zone) Default registry URL pinned to the tag of the running CLI
+58. Done: (red zone) Default registry URL pinned to the tag of the running CLI
     (`v` + `CARGO_PKG_VERSION`). Trust prompt for non-default
     `registry_url`, stored per user (decide the config dir lookup without a
     new crate if possible, or ask for `dirs`), `--trust-registry` for

@@ -16,6 +16,7 @@ print_stderr = "deny"
 allow_attributes_without_reason = "deny"
 redundant_clone = "warn"
 must_use_candidate = "allow"
+join_absolute_paths = "warn"
 
 [profile.release]
 opt-level = 3

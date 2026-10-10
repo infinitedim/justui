@@ -334,7 +334,9 @@ mod cli_integration {
     use tempfile::TempDir;
 
     fn justui() -> Command {
-        Command::cargo_bin("justui").unwrap()
+        let mut cmd = Command::cargo_bin("justui").unwrap();
+        cmd.env("JUSTUI_TRUST_REGISTRY", "1");
+        cmd
     }
 
     #[test]
@@ -1921,5 +1923,52 @@ mod cli_integration {
             assert!(verified.is_ok());
             assert_eq!(verified.unwrap().as_str().len(), 64);
         }
+    }
+
+    #[test]
+    fn test_hostile_registry_fixture_rejected() {
+        let fixture_path = std::path::Path::new("tests/fixtures/hostile_registry/index.json");
+        assert!(fixture_path.exists());
+        let content = std::fs::read_to_string(fixture_path).unwrap();
+        let index: justui_cli::registry::RegistryIndex = serde_json::from_str(&content).unwrap();
+        assert!(index.validate().is_err());
+    }
+
+    #[test]
+    fn test_untrusted_registry_cli_fails_without_trust_flag() {
+        let dir = TempDir::new().unwrap();
+        let registry_dir = dir.path().join("untrusted_registry");
+        std::fs::create_dir_all(registry_dir.join("components/button")).unwrap();
+        std::fs::write(dir.path().join("pubspec.yaml"), "name: test_app\n").unwrap();
+        std::fs::write(
+            dir.path().join("justui.config.yaml"),
+            format!(
+                "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\nregistry_url: {}\n",
+                registry_dir.display()
+            ),
+        )
+        .unwrap();
+
+        // 1. Without --trust-registry and without env var, non-interactive add fails with code 2
+        let mut cmd = Command::cargo_bin("justui").unwrap();
+        cmd.current_dir(dir.path())
+            .env_remove("JUSTUI_TRUST_REGISTRY")
+            .args(["add", "button"])
+            .assert()
+            .failure()
+            .code(2)
+            .stderr(predicate::str::contains(
+                "is untrusted and requires confirmation",
+            ));
+
+        // 2. With --trust-registry, trust validation passes
+        let mut trusted_cmd = Command::cargo_bin("justui").unwrap();
+        trusted_cmd
+            .current_dir(dir.path())
+            .env_remove("JUSTUI_TRUST_REGISTRY")
+            .args(["--trust-registry", "add", "button"])
+            .assert()
+            .failure() // Fails later because index.json doesn't exist, but NOT with code 2 / untrusted!
+            .code(1);
     }
 }

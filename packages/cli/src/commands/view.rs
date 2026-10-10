@@ -231,6 +231,16 @@ mod tests {
                         }
                     },
                     {
+                        "name": "pressable",
+                        "version": "0.1.0",
+                        "description": "Pressable component",
+                        "category": "primitives",
+                        "supportedPresets": ["default"],
+                        "registryDependencies": [],
+                        "pubDependencies": {},
+                        "files": {}
+                    },
+                    {
                         "name": "empty_dep_comp",
                         "version": "1.0.0",
                         "description": "Empty deps",

@@ -52,6 +52,10 @@ struct Cli {
     #[arg(long = "no-color", global = true)]
     no_color: bool,
 
+    /// Explicitly trust a custom component registry URL in non-interactive mode
+    #[arg(long = "trust-registry", global = true)]
+    trust_registry: bool,
+
     /// Display CLI version and check for updates
     #[arg(short = 'V', long = "version")]
     version_flag: bool,
@@ -306,6 +310,9 @@ async fn main() {
 
     let cli = Cli::parse();
     utils::logger::init(cli.quiet, cli.verbose, cli.no_color);
+    if cli.trust_registry {
+        utils::trust_store::set_trust_registry_flag(true);
+    }
     let auto_yes = cli.auto_yes;
 
     if let Some(ref path) = cli.cwd
