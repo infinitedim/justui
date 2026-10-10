@@ -1858,4 +1858,68 @@ mod cli_integration {
             .stdout(predicate::str::contains("\"version\": 1"))
             .stdout(predicate::str::contains("\"name\": \"button\""));
     }
+
+    #[test]
+    fn doctor_command_assert_cmd_smoke() {
+        let dir = tempfile::TempDir::new().unwrap();
+        // Running doctor in uninitialized folder runs diagnostics and warns without panic
+        justui()
+            .current_dir(dir.path())
+            .arg("doctor")
+            .assert()
+            .success();
+    }
+
+    #[tokio::test]
+    async fn wiremock_network_fetch_404_and_ok() {
+        use justui_cli::utils::http_client::{get_with_retry, make_client};
+        use wiremock::matchers::{method, path};
+        use wiremock::{Mock, MockServer, ResponseTemplate};
+
+        let client = make_client().expect("client should build");
+        let mock_server = MockServer::start().await;
+
+        Mock::given(method("GET"))
+            .and(path("/404.json"))
+            .respond_with(ResponseTemplate::new(404))
+            .mount(&mock_server)
+            .await;
+
+        let res = get_with_retry(&client, &format!("{}/404.json", mock_server.uri())).await;
+        assert!(res.is_err(), "404 HTTP response should be an Err");
+
+        Mock::given(method("GET"))
+            .and(path("/index.json"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_string(r#"{"version":"1.0.0","components":[],"presets":[]}"#),
+            )
+            .mount(&mock_server)
+            .await;
+
+        let ok_res = get_with_retry(&client, &format!("{}/index.json", mock_server.uri())).await;
+        assert!(ok_res.is_ok(), "200 HTTP response should be Ok");
+    }
+
+    proptest::proptest! {
+        #[test]
+        fn proptest_safe_join_rejects_parent_dir_escape(sub in "[a-zA-Z0-9_]{1,10}") {
+            use justui_cli::utils::path_guard::ProjectRelPath;
+            let malicious = format!("../../../{sub}");
+            let res = ProjectRelPath::new(&malicious);
+            assert!(res.is_err());
+        }
+
+        #[test]
+        fn proptest_sha256_hex_length_and_chars(payload in ".*") {
+            use justui_cli::utils::path_guard::Sha256Hex;
+            use sha2::{Digest, Sha256};
+            let mut hasher = Sha256::new();
+            hasher.update(payload.as_bytes());
+            let hash_str = hex::encode(hasher.finalize());
+            let verified = Sha256Hex::new(&hash_str);
+            assert!(verified.is_ok());
+            assert_eq!(verified.unwrap().as_str().len(), 64);
+        }
+    }
 }
