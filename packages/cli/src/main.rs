@@ -40,6 +40,10 @@ struct Cli {
     #[arg(short = 'q', long = "quiet", global = true)]
     quiet: bool,
 
+    /// Increase logging verbosity (-v for debug, -vv for trace)
+    #[arg(short = 'v', long = "verbose", action = clap::ArgAction::Count, global = true)]
+    verbose: u8,
+
     /// Output results in machine-readable JSON format
     #[arg(long = "json", global = true)]
     json: bool,
@@ -67,22 +71,17 @@ enum Commands {
 
     /// Initialize `JustUI` configuration and theme tokens in a Flutter project
     #[command(
+        alias = "i",
         subcommand_help_heading = "Project Setup & Scaffolding",
         after_help = "EXAMPLES:\n  justui init\n  justui init --preset neobrutalism -y"
     )]
     Init {
         /// Visual style preset to apply during initialization (default, neobrutalism)
-        #[arg(
-            long,
-            value_parser = clap::builder::PossibleValuesParser::new(["default", "d", "neobrutalism", "neo"])
-        )]
-        preset: Option<String>,
+        #[arg(long)]
+        preset: Option<commands::init::PresetArg>,
         /// Color space engine for dynamic palette generation (hsl, oklch, hsluv)
-        #[arg(
-            long = "color-space",
-            value_parser = clap::builder::PossibleValuesParser::new(["hsl", "oklch", "hsluv"])
-        )]
-        color_space: Option<String>,
+        #[arg(long = "color-space")]
+        color_space: Option<commands::init::ColorSpaceArg>,
         /// Target UI components directory
         #[arg(long = "components-dir")]
         components_dir: Option<String>,
@@ -90,11 +89,8 @@ enum Commands {
         #[arg(long = "tokens-dir")]
         tokens_dir: Option<String>,
         /// Target Dart constructor syntax override (primary, standard)
-        #[arg(
-            long = "dart-target",
-            value_parser = clap::builder::PossibleValuesParser::new(["primary", "standard"])
-        )]
-        dart_target: Option<String>,
+        #[arg(long = "dart-target")]
+        dart_target: Option<utils::env_resolver::DartTarget>,
         /// Primary brand seed color in hex format (e.g. #3b82f6 or 3b82f6)
         #[arg(long = "seed")]
         seed: Option<String>,
@@ -139,6 +135,7 @@ enum Commands {
 
     /// Copy one or more components from the registry into your project
     #[command(
+        alias = "a",
         subcommand_help_heading = "Component Lifecycle",
         after_help = "EXAMPLES:\n  justui add button card\n  justui add button --dry-run"
     )]
@@ -161,6 +158,7 @@ enum Commands {
 
     /// Synchronize local components with upstream registry updates
     #[command(
+        alias = "up",
         subcommand_help_heading = "Component Lifecycle",
         after_help = "EXAMPLES:\n  justui update\n  justui update -y"
     )]
@@ -190,9 +188,6 @@ enum Commands {
     Diff {
         /// Component name to inspect
         component: Option<String>,
-        /// Show detailed line-by-line diff breakdown
-        #[arg(short, long)]
-        verbose: bool,
         /// Automatically accept diff updates
         #[arg(long = "accept")]
         accept: bool,
@@ -200,6 +195,7 @@ enum Commands {
 
     /// List all available components in the `JustUI` registry
     #[command(
+        alias = "ls",
         subcommand_help_heading = "Discovery & Inspection",
         after_help = "EXAMPLES:\n  justui list"
     )]
@@ -294,7 +290,7 @@ fn main() {
     }));
 
     let cli = Cli::parse();
-    utils::logger::init(cli.quiet, cli.no_color);
+    utils::logger::init(cli.quiet, cli.verbose, cli.no_color);
     let auto_yes = cli.auto_yes;
 
     if let Some(ref path) = cli.cwd
@@ -353,11 +349,9 @@ fn main() {
             overwrite,
         } => commands::add::run(components, dry_run, show_diff, all, overwrite, auto_yes),
         Commands::List { category, json } => commands::list::run(category, json || cli.json),
-        Commands::Diff {
-            component,
-            verbose,
-            accept,
-        } => commands::diff::run(component, verbose, accept, auto_yes),
+        Commands::Diff { component, accept } => {
+            commands::diff::run(component, cli.verbose > 0, accept, auto_yes)
+        }
         Commands::Update => commands::update::run(auto_yes),
         Commands::Upgrade { check_only, force } => commands::upgrade::run(check_only, force),
         Commands::Create {
@@ -417,4 +411,15 @@ fn sign_registry_command(dir: Option<PathBuf>) -> anyhow::Result<()> {
         sig_path.display()
     ));
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use clap::CommandFactory;
+
+    #[test]
+    fn verify_cli() {
+        Cli::command().debug_assert();
+    }
 }

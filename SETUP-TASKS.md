@@ -149,15 +149,13 @@ sections, 35 `must_use` suggestions, 7 functions over 100 lines (largest 351).
 36. (red zone) Async migration: `tokio` (minimal features) + async `reqwest`,
     bounded parallel downloads (`JoinSet` + `Semaphore`). Watch the
     `list` TUI path that installs from inside the UI. Do this after 35.
-37. Output: global `-v`/`-vv`; one color-decision function (`NO_COLOR`,
+37. Done: Output: global `-v`/`-vv`; one color-decision function (`NO_COLOR`,
     `CLICOLOR_FORCE`, `--no-color`, TTY); non-TTY prompts fail with exit 2;
-    `"version"` field in every `--json` output and its shape documented in
-    the docs site. Replace the 15 raw `println!`/`eprintln!`.
-38. clap: `ValueEnum` for preset, color space and dart target (none today);
-    `Cli::command().debug_assert()` test.
-39. Config: `version` field with a migration hook; warn on unknown fields.
-    Replace `serde_yaml` 0.9 with a maintained fork after checking its
-    status (candidates: `serde_yaml_ng`, `serde_norway`; not `serde_yml`).
+    `"version"` field in every `--json` output; replaced raw `println!`/`eprintln!`.
+38. Done: clap: `ValueEnum` for preset, color space and dart target;
+    aliases (`i`, `a`, `up`, `ls`); `Cli::command().debug_assert()` test.
+39. Done: Config: `version` field with a migration hook; warn on unknown fields.
+    Replaced `serde_yaml` 0.9 with maintained fork `serde_yaml_ng` 0.10.
 40. Tests: dev-dependencies `insta`, `proptest`, `wiremock` (wiremock needs
     tokio, so after 36; use blocking-friendly `mockito` if tests are needed
     earlier). `assert_cmd` tests per subcommand: happy path, failure exit

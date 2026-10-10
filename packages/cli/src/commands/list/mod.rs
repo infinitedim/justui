@@ -66,9 +66,15 @@ pub fn run(category: Option<String>, json: bool) -> Result<()> {
         index.components.retain(|c| c.category == *cat);
     }
 
-    if json && let Ok(json_str) = serde_json::to_string_pretty(&index.components) {
-        logger::stdout(&json_str);
-        return Ok(());
+    if json {
+        let envelope = serde_json::json!({
+            "version": 1,
+            "components": index.components,
+        });
+        if let Ok(json_str) = serde_json::to_string_pretty(&envelope) {
+            logger::stdout(&json_str);
+            return Ok(());
+        }
     }
 
     if index.components.is_empty() {

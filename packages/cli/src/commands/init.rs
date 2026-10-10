@@ -12,14 +12,6 @@ use regex::Regex;
 use crate::config::JustUIConfig;
 use crate::utils::{embedded_templates, logger, prompt, pubspec_editor};
 
-fn normalize_preset(input: &str) -> String {
-    match input.to_lowercase().as_str() {
-        "neo" => "neobrutalism".to_string(),
-        "d" => "default".to_string(),
-        other => other.to_string(),
-    }
-}
-
 fn to_lib_path(input: &str) -> String {
     let trimmed = input.trim();
     if trimmed.starts_with("lib/") {
@@ -43,15 +35,55 @@ fn resolve_shared_dir(raw_input: &str, components_dir: &str, default_full_path: 
     format!("{components_dir}/{trimmed}")
 }
 
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, clap::ValueEnum, serde::Serialize, serde::Deserialize,
+)]
+#[serde(rename_all = "lowercase")]
+pub enum PresetArg {
+    #[value(name = "default", alias = "d")]
+    Default,
+    #[value(name = "neobrutalism", alias = "neo")]
+    Neobrutalism,
+}
+
+impl PresetArg {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Default => "default",
+            Self::Neobrutalism => "neobrutalism",
+        }
+    }
+}
+
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, clap::ValueEnum, serde::Serialize, serde::Deserialize,
+)]
+#[serde(rename_all = "lowercase")]
+pub enum ColorSpaceArg {
+    Hsl,
+    Oklch,
+    Hsluv,
+}
+
+impl ColorSpaceArg {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Hsl => "hsl",
+            Self::Oklch => "oklch",
+            Self::Hsluv => "hsluv",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct InitArgs {
-    pub preset: Option<String>,
-    pub color_space: Option<String>,
+    pub preset: Option<PresetArg>,
+    pub color_space: Option<ColorSpaceArg>,
     pub components_dir: Option<String>,
     pub tokens_dir: Option<String>,
     pub auto_yes: bool,
     pub experimental: Option<String>,
-    pub dart_target: Option<String>,
+    pub dart_target: Option<crate::utils::env_resolver::DartTarget>,
     pub seed: Option<String>,
     pub dark: bool,
 }
@@ -76,7 +108,7 @@ pub fn run(args: InitArgs) -> Result<()> {
     logger::stdout("=== JustUI Initialization Wizard ===");
 
     let preset = if let Some(p) = args.preset {
-        normalize_preset(&p)
+        p.as_str().to_string()
     } else if args.auto_yes {
         logger::stdout("[auto] Using preset: default");
         "default".to_string()
@@ -96,7 +128,7 @@ pub fn run(args: InitArgs) -> Result<()> {
     };
 
     let color_space = if let Some(cs) = args.color_space {
-        cs.to_lowercase()
+        cs.as_str().to_string()
     } else if args.auto_yes {
         logger::stdout("[auto] Using color space: hsl");
         "hsl".to_string()
@@ -208,16 +240,7 @@ pub fn run(args: InitArgs) -> Result<()> {
     }
 
     let dart_target = if let Some(dt) = args.dart_target {
-        match dt.to_lowercase().as_str() {
-            "primary" => crate::utils::env_resolver::DartTarget::Primary,
-            "standard" => crate::utils::env_resolver::DartTarget::Standard,
-            other => {
-                logger::warning(&format!(
-                    "Unknown dart_target: \"{other}\". Falling back to auto-detection."
-                ));
-                crate::utils::env_resolver::resolve_dart_target(std::path::Path::new("."))
-            }
-        }
+        dt
     } else {
         let target = crate::utils::env_resolver::resolve_dart_target(std::path::Path::new("."));
         logger::info(&format!("Auto-detected dart_target: {target:?}"));
@@ -225,6 +248,7 @@ pub fn run(args: InitArgs) -> Result<()> {
     };
 
     let config = JustUIConfig {
+        version: JustUIConfig::CURRENT_VERSION,
         components_dir,
         tokens_dir: tokens_dir.clone(),
         shared_dir,
@@ -314,9 +338,11 @@ mod tests {
 
     #[test]
     fn test_init_helpers() {
-        assert_eq!(normalize_preset("neo"), "neobrutalism");
-        assert_eq!(normalize_preset("d"), "default");
-        assert_eq!(normalize_preset("custom"), "custom");
+        assert_eq!(PresetArg::Default.as_str(), "default");
+        assert_eq!(PresetArg::Neobrutalism.as_str(), "neobrutalism");
+        assert_eq!(ColorSpaceArg::Hsl.as_str(), "hsl");
+        assert_eq!(ColorSpaceArg::Oklch.as_str(), "oklch");
+        assert_eq!(ColorSpaceArg::Hsluv.as_str(), "hsluv");
 
         assert_eq!(to_lib_path("widgets"), "lib/widgets");
         assert_eq!(to_lib_path("lib/components"), "lib/components");
@@ -354,8 +380,8 @@ mod tests {
         std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: test_app").unwrap();
         assert!(
             run(InitArgs {
-                preset: Some("neo".to_string()),
-                color_space: Some("oklch".to_string()),
+                preset: Some(PresetArg::Neobrutalism),
+                color_space: Some(ColorSpaceArg::Oklch),
                 auto_yes: true,
                 ..Default::default()
             })
@@ -405,7 +431,7 @@ mod tests {
         .unwrap();
 
         let result = run(InitArgs {
-            preset: Some("default".to_string()),
+            preset: Some(PresetArg::Default),
             auto_yes: true,
             ..Default::default()
         });
@@ -429,7 +455,7 @@ mod tests {
         .unwrap();
 
         let result = run(InitArgs {
-            preset: Some("default".to_string()),
+            preset: Some(PresetArg::Default),
             auto_yes: true,
             ..Default::default()
         });
@@ -454,8 +480,8 @@ mod tests {
         .unwrap();
 
         let result = run(InitArgs {
-            preset: Some("default".to_string()),
-            dart_target: Some("primary".to_string()),
+            preset: Some(PresetArg::Default),
+            dart_target: Some(crate::utils::env_resolver::DartTarget::Primary),
             auto_yes: true,
             ..Default::default()
         });
@@ -475,7 +501,7 @@ mod tests {
         std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: test_app").unwrap();
 
         let result = run(InitArgs {
-            preset: Some("default".to_string()),
+            preset: Some(PresetArg::Default),
             experimental: Some("unknown-feature".to_string()),
             auto_yes: true,
             ..Default::default()
@@ -496,8 +522,8 @@ mod tests {
         std::fs::write(temp_dir.path().join("pubspec.yaml"), "name: test_app").unwrap();
 
         let result = run(InitArgs {
-            preset: Some("default".to_string()),
-            color_space: Some("hsl".to_string()),
+            preset: Some(PresetArg::Default),
+            color_space: Some(ColorSpaceArg::Hsl),
             seed: Some("#e11d48".to_string()),
             dark: true,
             auto_yes: true,

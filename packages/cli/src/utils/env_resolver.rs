@@ -3,7 +3,7 @@ use crate::utils::pubspec_editor::supports_primary_constructors;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default, clap::ValueEnum)]
 #[serde(rename_all = "snake_case")]
 pub enum DartTarget {
     Primary,

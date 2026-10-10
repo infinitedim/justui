@@ -4,11 +4,27 @@ use std::io::{self, IsTerminal};
 #[cfg(test)]
 thread_local! {
     static TEST_FORCE_INTERACTIVE: std::cell::Cell<Option<bool>> = const { std::cell::Cell::new(None) };
+    static TEST_ALLOW_NON_INTERACTIVE: std::cell::Cell<bool> = const { std::cell::Cell::new(true) };
 }
 
 #[cfg(test)]
 pub fn set_force_interactive_for_test(val: Option<bool>) {
     TEST_FORCE_INTERACTIVE.with(|c| c.set(val));
+}
+
+#[cfg(test)]
+pub fn set_allow_non_interactive_for_test(val: bool) {
+    TEST_ALLOW_NON_INTERACTIVE.with(|c| c.set(val));
+}
+
+fn require_interactive_or_exit() {
+    #[cfg(test)]
+    if TEST_ALLOW_NON_INTERACTIVE.with(std::cell::Cell::get) {
+        return;
+    }
+    crate::utils::logger::error("interactive prompt required but stdin is not a terminal");
+    crate::utils::logger::hint("use -y to run non-interactively");
+    std::process::exit(2);
 }
 
 pub fn is_interactive() -> bool {
@@ -45,6 +61,7 @@ pub fn confirm_with_input<R: io::BufRead, W: io::Write>(
 
 pub fn confirm(message: &str, default: bool) -> bool {
     if !is_interactive() {
+        require_interactive_or_exit();
         return default;
     }
     let mut stdin = io::BufReader::new(io::stdin());
@@ -54,6 +71,7 @@ pub fn confirm(message: &str, default: bool) -> bool {
 
 pub fn select_one(message: &str, options: &[&str], default_index: usize) -> usize {
     if !is_interactive() {
+        require_interactive_or_exit();
         return default_index;
     }
     let result = Select::new(message, options.to_vec())
@@ -71,6 +89,7 @@ pub fn select_one(message: &str, options: &[&str], default_index: usize) -> usiz
 
 pub fn select_multiple(message: &str, options: &[&str]) -> Vec<usize> {
     if !is_interactive() {
+        require_interactive_or_exit();
         return (0..options.len()).collect();
     }
     let result = MultiSelect::new(message, options.to_vec()).prompt();
@@ -104,6 +123,7 @@ pub fn ask_with_input<R: io::BufRead, W: io::Write>(
 
 pub fn ask(message: &str, default_value: &str) -> String {
     if !is_interactive() {
+        require_interactive_or_exit();
         return default_value.to_string();
     }
     let mut stdin = io::BufReader::new(io::stdin());
