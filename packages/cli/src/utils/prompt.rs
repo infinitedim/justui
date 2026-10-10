@@ -157,8 +157,10 @@ mod tests {
     #[test]
     fn test_force_interactive_branch() {
         let _lock = crate::utils::lock_test_mutex();
-        std::env::set_var("JUSTUI_FORCE_INTERACTIVE", "1");
+        // FIXME: Audit that the environment access only happens in single-threaded code.
+        unsafe { std::env::set_var("JUSTUI_FORCE_INTERACTIVE", "1") };
         assert!(is_interactive());
-        std::env::remove_var("JUSTUI_FORCE_INTERACTIVE");
+        // FIXME: Audit that the environment access only happens in single-threaded code.
+        unsafe { std::env::remove_var("JUSTUI_FORCE_INTERACTIVE") };
     }
 }

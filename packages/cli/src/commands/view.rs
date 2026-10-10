@@ -152,11 +152,10 @@ pub fn run(
             && io::stdin().is_terminal()
         {
             print!("Show next file? [Y/n]: ");
-            if let Err(e) = io::stdout().flush() {
-                if e.kind() == io::ErrorKind::BrokenPipe {
+            if let Err(e) = io::stdout().flush()
+                && e.kind() == io::ErrorKind::BrokenPipe {
                     std::process::exit(0);
                 }
-            }
             let mut input = String::new();
             if io::stdin().read_line(&mut input).is_err() {
                 break;

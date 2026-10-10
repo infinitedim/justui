@@ -260,27 +260,24 @@ pub(super) fn handle_key_code(
         InputMode::Normal => match code {
             KeyCode::Char('q') | KeyCode::Esc => KeyAction::Quit,
             KeyCode::Up | KeyCode::Char('k') => {
-                if let Some(selected) = list_state.selected() {
-                    if selected > 0 {
+                if let Some(selected) = list_state.selected()
+                    && selected > 0 {
                         list_state.select(Some(selected - 1));
                     }
-                }
                 KeyAction::None
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if let Some(selected) = list_state.selected() {
-                    if filtered_len > 0 && selected < filtered_len - 1 {
+                if let Some(selected) = list_state.selected()
+                    && filtered_len > 0 && selected < filtered_len - 1 {
                         list_state.select(Some(selected + 1));
                     }
-                }
                 KeyAction::None
             }
             KeyCode::Char(' ') => {
-                if let Some(selected) = list_state.selected() {
-                    if selected < filtered_len {
+                if let Some(selected) = list_state.selected()
+                    && selected < filtered_len {
                         return KeyAction::ToggleSelect(selected);
                     }
-                }
                 KeyAction::None
             }
             KeyCode::Char('a') | KeyCode::Char('A') => KeyAction::SelectAll,
@@ -424,8 +421,8 @@ pub(super) fn draw_ui(
 
     let mut detail_lines = Vec::new();
 
-    if let Some(selected_idx) = list_state.selected() {
-        if let Some(comp) = filtered_components.get(selected_idx) {
+    if let Some(selected_idx) = list_state.selected()
+        && let Some(comp) = filtered_components.get(selected_idx) {
             detail_lines.push(ratatui::text::Line::from(vec![
                 ratatui::text::Span::styled(
                     &comp.name,
@@ -503,7 +500,6 @@ pub(super) fn draw_ui(
                 ]));
             }
         }
-    }
 
     if !selected_names.is_empty() {
         if !detail_lines.is_empty() {

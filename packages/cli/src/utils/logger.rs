@@ -42,16 +42,14 @@ pub fn info(msg: &str) {
 pub fn stdout(msg: &str) {
     use std::io::Write;
     let mut out = std::io::stdout().lock();
-    if let Err(e) = writeln!(out, "{}", msg) {
-        if e.kind() == std::io::ErrorKind::BrokenPipe {
+    if let Err(e) = writeln!(out, "{}", msg)
+        && e.kind() == std::io::ErrorKind::BrokenPipe {
             std::process::exit(0);
         }
-    }
-    if let Err(e) = out.flush() {
-        if e.kind() == std::io::ErrorKind::BrokenPipe {
+    if let Err(e) = out.flush()
+        && e.kind() == std::io::ErrorKind::BrokenPipe {
             std::process::exit(0);
         }
-    }
 }
 
 pub fn panel(msg: &str) {

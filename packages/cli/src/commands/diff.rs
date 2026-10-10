@@ -293,11 +293,10 @@ pub fn run(
                             &format!("Apply changes to \"{}\"?", fs.file.name),
                             false,
                         );
-                        if confirm {
-                            if let Some(rr) = remote_rewritten_map.get(&idx) {
+                        if confirm
+                            && let Some(rr) = remote_rewritten_map.get(&idx) {
                                 apply_file_change(fs, rr, &component_name, &index)?;
                             }
-                        }
                     }
                     logger::success("Selected changes applied successfully.");
                     break;

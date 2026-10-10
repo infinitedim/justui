@@ -290,8 +290,8 @@ fn main() {
     utils::logger::init(cli.quiet, cli.no_color);
     let auto_yes = cli.auto_yes;
 
-    if let Some(ref path) = cli.cwd {
-        if let Err(e) = std::env::set_current_dir(path) {
+    if let Some(ref path) = cli.cwd
+        && let Err(e) = std::env::set_current_dir(path) {
             utils::logger::error(&format!(
                 "Failed to change working directory to {}: {}",
                 path.display(),
@@ -299,7 +299,6 @@ fn main() {
             ));
             process::exit(1);
         }
-    }
 
     if cli.version_flag {
         if let Err(e) = commands::upgrade::run(true, false) {

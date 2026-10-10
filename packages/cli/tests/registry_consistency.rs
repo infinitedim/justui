@@ -172,11 +172,10 @@ fn registry_dependencies_match_actual_imports() {
                     continue;
                 }
                 let resolved = normalize(&format!("{}/{}", own_dir, target));
-                if let Some(owner) = owner_by_target.get(resolved.as_str()) {
-                    if *owner != f.comp.name {
+                if let Some(owner) = owner_by_target.get(resolved.as_str())
+                    && *owner != f.comp.name {
                         entry.insert(owner);
                     }
-                }
             }
         }
 

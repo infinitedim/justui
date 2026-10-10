@@ -58,12 +58,11 @@ pub fn run(category: Option<String>, json: bool) -> Result<()> {
         index.components.retain(|c| c.category == *cat);
     }
 
-    if json {
-        if let Ok(json_str) = serde_json::to_string_pretty(&index.components) {
+    if json
+        && let Ok(json_str) = serde_json::to_string_pretty(&index.components) {
             logger::stdout(&json_str);
             return Ok(());
         }
-    }
 
     if index.components.is_empty() {
         logger::warning("No components found in the registry.");

@@ -130,11 +130,10 @@ pub fn resolve_latest_version(client: &reqwest::blocking::Client) -> Result<GitH
         .timeout(std::time::Duration::from_secs(10))
         .build();
 
-    if let Ok(redirect_client) = redirect_client {
-        if let Some(rel) = resolve_via_redirect(&redirect_client) {
+    if let Ok(redirect_client) = redirect_client
+        && let Some(rel) = resolve_via_redirect(&redirect_client) {
             return Ok(rel);
         }
-    }
 
     let repo = get_repo_name();
     let api_url = format!("https://api.github.com/repos/{}/releases/latest", repo);
@@ -146,8 +145,8 @@ pub fn resolve_latest_version(client: &reqwest::blocking::Client) -> Result<GitH
 
     if let Some(token) = token {
         let token = token.trim();
-        if !token.is_empty() {
-            if let Ok(resp) = client
+        if !token.is_empty()
+            && let Ok(resp) = client
                 .get(&api_url)
                 .header(reqwest::header::AUTHORIZATION, format!("Bearer {}", token))
                 .header(reqwest::header::USER_AGENT, "justui-cli")
@@ -162,7 +161,6 @@ pub fn resolve_latest_version(client: &reqwest::blocking::Client) -> Result<GitH
                     anyhow::bail!("No releases found on GitHub repository yet.");
                 }
             }
-        }
     }
 
     // Strategy 3: Unauthenticated API last resort
@@ -506,10 +504,10 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
                     "Downloading update from {} (skipped in test mode)...",
                     download_url
                 ));
-            } else if let Err(e) = execute_upgrade(&client, &download_url, &target_version) {
+            } else { if let Err(e) = execute_upgrade(&client, &download_url, &target_version) {
                 logger::warning(&format!("Failed to upgrade: {}", e));
                 print_fallback_instructions();
-            }
+            }}
         }
     }
 
@@ -517,14 +515,13 @@ pub fn run(check_only: bool, force: bool) -> Result<()> {
 }
 
 fn print_release_notes(release: &GitHubRelease) {
-    if let Some(ref body) = release.body {
-        if !body.is_empty() {
+    if let Some(ref body) = release.body
+        && !body.is_empty() {
             logger::stdout("\nRelease Notes:");
             for line in body.lines().take(10) {
                 logger::stdout(&format!("  {}", line));
             }
         }
-    }
 }
 
 pub fn print_fallback_instructions() {

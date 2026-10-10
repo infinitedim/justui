@@ -119,8 +119,8 @@ fn test_unpack_zip_archive() {
         .current_dir(temp_dir.path())
         .status();
 
-    if let Ok(status) = zip_status {
-        if status.success() {
+    if let Ok(status) = zip_status
+        && status.success() {
             let zip_bytes = std::fs::read(temp_dir.path().join("update.zip")).unwrap();
             let extracted = unpack_binary_bytes(&zip_bytes, "justui").unwrap();
             assert_eq!(extracted, b"zip binary contents");
@@ -128,7 +128,6 @@ fn test_unpack_zip_archive() {
             // Missing binary in zip
             assert!(unpack_binary_bytes(&zip_bytes, "missing_bin").is_err());
         }
-    }
 
     // Invalid zip bytes test
     let invalid_zip = b"PK\x03\x04invalid_zip_header_bytes";

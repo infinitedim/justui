@@ -368,7 +368,8 @@ mod tests {
         }
 
         let old_path = std::env::var("PATH").unwrap_or_default();
-        std::env::set_var("PATH", format!("{}:{}", bin_dir.display(), old_path));
+        // FIXME: Audit that the environment access only happens in single-threaded code.
+        unsafe { std::env::set_var("PATH", format!("{}:{}", bin_dir.display(), old_path)) };
 
         let checks_empty_dart = perform_checks();
         let dart_check = checks_empty_dart
@@ -378,7 +379,8 @@ mod tests {
         assert_eq!(dart_check.message, "Dart SDK active");
 
         // Set PATH to empty directory to test CLI missing warning
-        std::env::set_var("PATH", temp_dir.path().display().to_string());
+        // FIXME: Audit that the environment access only happens in single-threaded code.
+        unsafe { std::env::set_var("PATH", temp_dir.path().display().to_string()) };
         let checks_missing_tools = perform_checks();
         assert!(checks_missing_tools
             .iter()
@@ -387,7 +389,8 @@ mod tests {
             .iter()
             .any(|c| c.title == "Flutter SDK" && c.status == CheckStatus::Warning));
 
-        std::env::set_var("PATH", old_path);
+        // FIXME: Audit that the environment access only happens in single-threaded code.
+        unsafe { std::env::set_var("PATH", old_path) };
     }
 
     #[test]
@@ -443,12 +446,14 @@ mod tests {
             fs::set_permissions(&dart_bin, fs::Permissions::from_mode(0o755)).unwrap();
         }
         let old_path = std::env::var("PATH").unwrap_or_default();
-        std::env::set_var("PATH", format!("{}:{}", bin_dir.display(), old_path));
+        // FIXME: Audit that the environment access only happens in single-threaded code.
+        unsafe { std::env::set_var("PATH", format!("{}:{}", bin_dir.display(), old_path)) };
 
         // Run when all checks are OK (triggers line 68)
         assert!(run().is_ok());
 
-        std::env::set_var("PATH", old_path);
+        // FIXME: Audit that the environment access only happens in single-threaded code.
+        unsafe { std::env::set_var("PATH", old_path) };
     }
 
     #[test]
@@ -548,7 +553,8 @@ dart_target: standard
 
         let old_path = std::env::var("PATH").unwrap_or_default();
         let new_path = format!("{}:{}", bin_dir.display(), old_path);
-        std::env::set_var("PATH", &new_path);
+        // FIXME: Audit that the environment access only happens in single-threaded code.
+        unsafe { std::env::set_var("PATH", &new_path) };
 
         let checks = perform_checks();
         let flutter_check = checks.iter().find(|c| c.title == "Flutter SDK").unwrap();
@@ -559,7 +565,8 @@ dart_target: standard
         assert_eq!(dart_check.status, CheckStatus::Ok);
         assert!(dart_check.message.contains("Dart SDK version: 3.3.0"));
 
-        std::env::set_var("PATH", old_path);
+        // FIXME: Audit that the environment access only happens in single-threaded code.
+        unsafe { std::env::set_var("PATH", old_path) };
     }
 
     #[test]
