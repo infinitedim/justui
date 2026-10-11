@@ -61,7 +61,7 @@ export function ThemeStudioProvider({
   initialIsDark = DEFAULT_IS_DARK,
   initialPreset = DEFAULT_PRESET,
   initialColorSpace = DEFAULT_COLOR_SPACE,
-}: ThemeStudioProviderProps) {
+}: ThemeStudioProviderProps): React.ReactNode {
   const [seedColor, setSeedColorState] = useState<string>(initialSeedColor);
   const [isDark, setIsDarkState] = useState<boolean>(initialIsDark);
   // The preset is site-wide state (navbar toggle); the studio reads and

@@ -31,7 +31,7 @@ justui add dialog
 
 ### Penggunaan Dasar
 
-Pertama, pastikan akar aplikasi atau halaman Anda dibungkus dengan `JustDialogScope`:
+Pertama, pastikan akar aplikasi atau halaman kamu dibungkus dengan `JustDialogScope`:
 
 ```dart
 import 'package:flutter/widgets.dart';
@@ -63,7 +63,7 @@ Widget buildTrigger(BuildContext context) {
             spacing: context.justSpacing.md,
             children: [
               Text('Konfirmasi Keluar', style: context.justTypo.headingMd),
-              Text('Apakah Anda yakin ingin keluar dari akun Anda?'),
+              Text('Apakah kamu yakin ingin keluar dari akun kamu?'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 spacing: context.justSpacing.sm,
@@ -94,11 +94,11 @@ Widget buildTrigger(BuildContext context) {
 }
 ```
 
-> **Catatan**: Di dalam widget konten dialog, Anda dapat menggunakan mekanisme navigasi standar (seperti `Navigator.of(context).pop(result)`) untuk menutup dialog dan mengembalikan nilai ke pemanggil.
+> **Catatan**: Di dalam widget konten dialog, kamu dapat menggunakan mekanisme navigasi standar (seperti `Navigator.of(context).pop(result)`) untuk menutup dialog dan mengembalikan nilai ke pemanggil.
 
 ### Penggunaan Lanjutan
 
-Anda dapat memodifikasi posisi dialog (misalnya menempel di bagian atas seperti pemberitahuan) dan menyesuaikan gayanya:
+Kamu dapat memodifikasi posisi dialog (misalnya menempel di bagian atas seperti pemberitahuan) dan menyesuaikan gayanya:
 
 ```dart
 import 'package:flutter/material.dart';
@@ -116,7 +116,7 @@ void showTopNotificationDialog(BuildContext context) {
         children: [
           const Icon(Icons.info_outline, color: Colors.blue),
           const Expanded(
-            child: Text('Pembaruan baru tersedia untuk aplikasi Anda.'),
+            child: Text('Pembaruan baru tersedia untuk aplikasi kamu.'),
           ),
           JustButton(
             label: 'Segarkan',

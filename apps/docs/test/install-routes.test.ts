@@ -33,7 +33,9 @@ describe('install script route handlers', () => {
     });
 
     it('falls back to local file when remote fetch fails', async () => {
-      globalThis.fetch = vi.fn().mockRejectedValue(new Error('Network offline'));
+      globalThis.fetch = vi
+        .fn()
+        .mockRejectedValue(new Error('Network offline'));
 
       const response = await getInstallSh();
       // Should read local file in workspace
@@ -66,7 +68,9 @@ describe('install script route handlers', () => {
     });
 
     it('falls back to local file when remote fetch fails', async () => {
-      globalThis.fetch = vi.fn().mockRejectedValue(new Error('Network offline'));
+      globalThis.fetch = vi
+        .fn()
+        .mockRejectedValue(new Error('Network offline'));
 
       const response = await getInstallPs1();
       expect(response.status).toBe(200);

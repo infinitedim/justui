@@ -9,7 +9,7 @@ export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = 'en';
 
 export function isLocale(value: string): value is Locale {
-  return (locales as readonly string[]).includes(value);
+  return locales.some((loc) => loc === value);
 }
 
 /** `generateStaticParams` result shared by every `[lang]` route. */
@@ -33,7 +33,12 @@ const LOCALE_PREFIX = new RegExp(`^/(${locales.join('|')})(?=/|$)`);
  * locale-prefixed path, so the cast is safe here and nowhere else.
  */
 export function localizedHref(lang: string, path: `/${string}` | ''): Route {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Next.js typed route constructor
   return `/${lang}${path}` as Route;
+}
+
+function isSlashString(str: string): str is `/${string}` {
+  return str.startsWith('/');
 }
 
 /**
@@ -42,8 +47,9 @@ export function localizedHref(lang: string, path: `/${string}` | ''): Route {
  */
 export function switchLocalePath(pathname: string, target: Locale): Route {
   if (!LOCALE_PREFIX.test(pathname)) return localizedHref(target, '');
-  return localizedHref(
-    target,
-    pathname.replace(LOCALE_PREFIX, '') as `/${string}` | ''
-  );
+  const rawPath = pathname.replace(LOCALE_PREFIX, '');
+  const normalizedPath: `/${string}` | '' = isSlashString(rawPath)
+    ? rawPath
+    : '';
+  return localizedHref(target, normalizedPath);
 }

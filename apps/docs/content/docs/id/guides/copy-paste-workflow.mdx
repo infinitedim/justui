@@ -3,7 +3,7 @@ title: Alur Kerja Copy-Paste & CLI
 description: Panduan mendalam tentang filosofi desain copy-paste, zero-dependency footprint, serta integrasi alat baris perintah (CLI) JustUI.
 ---
 
-JustUI mengadopsi model distribusi komponen yang berbeda dari pustaka UI Flutter konvensional. Alih-alih menginstal JustUI sebagai paket pihak ketiga melalui pub.dev, Anda menyalin kode sumber komponen secara langsung ke dalam proyek Flutter Anda sendiri. Dokumen ini menjelaskan filosofi di balik keputusan ini, keuntungan teknis yang ditawarkan, dan bagaimana CLI JustUI memfasilitasi alur kerja ini.
+JustUI mengadopsi model distribusi komponen yang berbeda dari pustaka UI Flutter konvensional. Alih-alih menginstal JustUI sebagai paket pihak ketiga melalui pub.dev, kamu menyalin kode sumber komponen secara langsung ke dalam proyek Flutter kamu sendiri. Dokumen ini menjelaskan filosofi di balik keputusan ini, keuntungan teknis yang ditawarkan, dan bagaimana CLI JustUI memfasilitasi alur kerja ini.
 
 ---
 
@@ -13,26 +13,26 @@ Model copy-paste (terinspirasi dari filosofi **shadcn/ui** di ekosistem web) dir
 
 ### 1. Kustomisasi Tanpa Batas
 
-Saat Anda menggunakan pustaka UI dari pub.dev, Anda sering kali terbentur dengan batasan kustomisasi. Jika Anda ingin mengubah perilaku transisi, menambahkan parameter gaya baru, atau memodifikasi tata letak internal suatu komponen, Anda harus:
+Saat kamu menggunakan pustaka UI dari pub.dev, kamu sering kali terbentur dengan batasan kustomisasi. Jika kamu ingin mengubah perilaku transisi, menambahkan parameter gaya baru, atau memodifikasi tata letak internal suatu komponen, kamu harus:
 
 - Membuat _wrapper_ widget yang rumit.
 - Melakukan _fork_ terhadap repositori pustaka tersebut dan memeliharanya sendiri.
 - Mengajukan _pull request_ ke repositori asli dan menunggu persetujuan pemelihara paket.
 
-Dengan JustUI, kode sumber komponen berada langsung di dalam direktori proyek Anda (`lib/widgets` atau folder tujuan pilihan Anda). Komponen tersebut sepenuhnya milik Anda. Anda bebas mengedit, menghapus, atau merombak kode tersebut sesuai dengan kebutuhan spesifik desain aplikasi Anda tanpa batasan apa pun.
+Dengan JustUI, kode sumber komponen berada langsung di dalam direktori proyek kamu (`lib/widgets` atau folder tujuan pilihan kamu). Komponen tersebut sepenuhnya milik kamu. kamu bebas mengedit, menghapus, atau merombak kode tersebut sesuai dengan kebutuhan spesifik desain aplikasi kamu tanpa batasan apa pun.
 
 ### 2. Zero-Dependency Footprint
 
-Banyak pustaka UI mengemas banyak dependensi pihak ketiga yang mungkin tidak Anda butuhkan. Hal ini dapat menyebabkan:
+Banyak pustaka UI mengemas banyak dependensi pihak ketiga yang mungkin tidak kamu butuhkan. Hal ini dapat menyebabkan:
 
-- **Dependency Hell**: Konflik versi ketika paket UI memerlukan versi paket tertentu (seperti `provider` atau `intl`) yang berbeda dengan versi yang digunakan oleh proyek Anda.
+- **Dependency Hell**: Konflik versi ketika paket UI memerlukan versi paket tertentu (seperti `provider` atau `intl`) yang berbeda dengan versi yang digunakan oleh proyek kamu.
 - **Bloated Binary**: Peningkatan ukuran berkas APK/IPA karena mengemas kode-kode eksternal yang tidak terpakai.
 
-JustUI dibangun dengan prinsip **Zero-dependency footprint**. Komponen JustUI hanya bergantung pada pustaka bawaan Flutter SDK (seperti `package:flutter/widgets.dart` atau `painting.dart`). Satu-satunya dependensi internal yang digunakan adalah token sistem desain Anda (`just_ui_tokens`) dan mesin theming dasar (`just_ui_core`).
+JustUI dibangun dengan prinsip **Zero-dependency footprint**. Komponen JustUI hanya bergantung pada pustaka bawaan Flutter SDK (seperti `package:flutter/widgets.dart` atau `painting.dart`). Satu-satunya dependensi internal yang digunakan adalah token sistem desain kamu (`just_ui_tokens`) dan mesin theming dasar (`just_ui_core`).
 
 ### 3. Kendali Penuh terhadap Pembaruan
 
-Anda tidak akan pernah terkejut oleh perubahan merusak (_breaking changes_) akibat pembaruan otomatis paket pihak ketiga. Anda memutuskan kapan dan komponen apa saja yang ingin diperbarui secara manual menggunakan CLI.
+Kamu tidak akan pernah terkejut oleh perubahan merusak (_breaking changes_) akibat pembaruan otomatis paket pihak ketiga. kamu memutuskan kapan dan komponen apa saja yang ingin diperbarui secara manual menggunakan CLI.
 
 ---
 
@@ -44,7 +44,7 @@ Berikut adalah alur integrasi CLI dari awal hingga komponen siap digunakan:
 
 ### 1. Inisialisasi Proyek (`justui init`)
 
-Langkah pertama adalah menjalankan perintah inisialisasi di direktori akar proyek Flutter Anda:
+Langkah pertama adalah menjalankan perintah inisialisasi di direktori akar proyek Flutter kamu:
 
 ```bash
 export HOME=/home/yourblooo/development/justui/.home && justui init --preset default
@@ -53,25 +53,25 @@ export HOME=/home/yourblooo/development/justui/.home && justui init --preset def
 Perintah ini akan melakukan langkah-langkah berikut:
 
 1. **Verifikasi Proyek**: Memastikan perintah dipanggil dari folder root proyek Flutter yang memiliki berkas `pubspec.yaml`.
-2. **Konfigurasi Interaktif**: Meminta Anda menentukan folder tujuan untuk komponen (default: `lib/widgets`), folder token (default: `lib/tokens`), serta kode warna seed merek (format HEX).
-3. **Pembuatan Konfigurasi**: Menghasilkan berkas konfigurasi `justui.config.yaml` yang menyimpan preferensi folder Anda.
-4. **Scaffolding Tema**: Membuat berkas inisialisasi tema `lib/core/theme/just_theme.dart` sesuai dengan preset yang Anda pilih (`default` atau `neobrutalism`).
+2. **Konfigurasi Interaktif**: Meminta kamu menentukan folder tujuan untuk komponen (default: `lib/widgets`), folder token (default: `lib/tokens`), serta kode warna seed merek (format HEX).
+3. **Pembuatan Konfigurasi**: Menghasilkan berkas konfigurasi `justui.config.yaml` yang menyimpan preferensi folder kamu.
+4. **Scaffolding Tema**: Membuat berkas inisialisasi tema `lib/core/theme/just_theme.dart` sesuai dengan preset yang kamu pilih (`default` atau `neobrutalism`).
 
 ### 2. Memasang Komponen (`justui add`)
 
-Untuk memasang komponen baru, Anda menggunakan perintah `add`. Misalnya, untuk menambahkan komponen Button dan Input secara bersamaan:
+Untuk memasang komponen baru, kamu menggunakan perintah `add`. Misalnya, untuk menambahkan komponen Button dan Input secara bersamaan:
 
 ```bash
 justui add button input
 ```
 
-Jika Anda memanggil perintah `justui add` tanpa argumen komponen, CLI akan menampilkan antarmuka daftar centang interaktif (_multi-select prompt_) yang memungkinkan Anda memilih beberapa komponen secara visual menggunakan tombol spasi dan panah.
+Jika kamu memanggil perintah `justui add` tanpa argumen komponen, CLI akan menampilkan antarmuka daftar centang interaktif (_multi-select prompt_) yang memungkinkan kamu memilih beberapa komponen secara visual menggunakan tombol spasi dan panah.
 
 Di balik layar, CLI melakukan proses-proses penting berikut:
 
 #### A. Unduhan Rekursif & Resolusi Dependensi
 
-CLI menghubungi registry resmi untuk mengunduh berkas komponen. Jika komponen yang Anda pasang memerlukan komponen lain (misalnya, `JustInput` tipe OTP yang memerlukan sistem focus atau pendengar keyboard khusus), CLI secara otomatis mengunduh komponen dependensi tersebut secara rekursif.
+CLI menghubungi registry resmi untuk mengunduh berkas komponen. Jika komponen yang kamu pasang memerlukan komponen lain (misalnya, `JustInput` tipe OTP yang memerlukan sistem focus atau pendengar keyboard khusus), CLI secara otomatis mengunduh komponen dependensi tersebut secara rekursif.
 
 #### B. Import Rewriting (Penulisan Ulang Jalur Impor)
 
@@ -92,21 +92,21 @@ Komentar ini sangat penting karena digunakan oleh CLI untuk mendeteksi perubahan
 
 #### D. Penambahan Dependensi Pubspec
 
-Jika suatu komponen memerlukan dependensi pub.dev opsional, CLI menggunakan pustaka internal `PubspecEditor` untuk mendaftarkan dependensi tersebut secara otomatis ke dalam berkas `pubspec.yaml` proyek Anda.
+Jika suatu komponen memerlukan dependensi pub.dev opsional, CLI menggunakan pustaka internal `PubspecEditor` untuk mendaftarkan dependensi tersebut secara otomatis ke dalam berkas `pubspec.yaml` proyek kamu.
 
 ---
 
 ## Manajemen Komponen Kustom (`justui create`)
 
-Selain menyalin komponen dari registry resmi, CLI juga membantu Anda membuat komponen kustom Anda sendiri yang mematuhi standar desain JustUI melalui perintah `create`:
+Selain menyalin komponen dari registry resmi, CLI juga membantu kamu membuat komponen kustom kamu sendiri yang mematuhi standar desain JustUI melalui perintah `create`:
 
 ```bash
 justui create my_custom_card
 ```
 
-Perintah ini akan secara otomatis menghasilkan struktur modular berisi 4 berkas templat komponen di folder komponen Anda:
+Perintah ini akan secara otomatis menghasilkan struktur modular berisi 4 berkas templat komponen di folder komponen kamu:
 
 1. `my_custom_card.dart`: Widget utama yang sudah terhubung dengan extension context pembaca aspek tema (`justColors`, `justSpacing`, `justRadius`) untuk optimalisasi rebuild widget.
 2. `my_custom_card_style.dart`: Parameter kustomisasi visual individual.
 3. `my_custom_card_variants.dart`: Definisi enum untuk varian visual dan ukuran.
-4. `my_custom_card_theme.dart`: Pendaftaran jembatan kelas ke sistem `ThemeExtension` milik Flutter agar komponen kustom Anda terintegrasi secara mulus dengan tema global JustUI.
+4. `my_custom_card_theme.dart`: Pendaftaran jembatan kelas ke sistem `ThemeExtension` milik Flutter agar komponen kustom kamu terintegrasi secara mulus dengan tema global JustUI.

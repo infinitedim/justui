@@ -28,6 +28,42 @@ const PALETTE = {
 
 function build(mode: Mode) {
   const p = PALETTE[mode];
+  const tokenRules = [
+    {
+      scope: ['comment', 'punctuation.definition.comment'],
+      settings: { foreground: p.comment, fontStyle: 'italic' },
+    },
+    {
+      scope: ['string', 'string.quoted', 'punctuation.definition.string'],
+      settings: { foreground: p.string },
+    },
+    {
+      scope: ['constant.numeric', 'constant.language', 'constant.character'],
+      settings: { foreground: p.number },
+    },
+    {
+      scope: [
+        'keyword',
+        'keyword.control',
+        'keyword.declaration',
+        'storage',
+        'storage.type',
+        'storage.modifier',
+      ],
+      settings: { foreground: p.keyword },
+    },
+    {
+      scope: [
+        'support.class',
+        'support.type',
+        'entity.name.type',
+        'entity.name.class',
+        'entity.other.inherited-class',
+      ],
+      settings: { foreground: p.type },
+    },
+  ];
+
   return {
     name: `justui-${mode}`,
     type: mode,
@@ -35,42 +71,9 @@ function build(mode: Mode) {
       'editor.foreground': p.fg,
       'editor.background': p.bg,
     },
-    tokenColors: [
-      {
-        scope: ['comment', 'punctuation.definition.comment'],
-        settings: { foreground: p.comment, fontStyle: 'italic' },
-      },
-      {
-        scope: ['string', 'string.quoted', 'punctuation.definition.string'],
-        settings: { foreground: p.string },
-      },
-      {
-        scope: ['constant.numeric', 'constant.language', 'constant.character'],
-        settings: { foreground: p.number },
-      },
-      {
-        scope: [
-          'keyword',
-          'keyword.control',
-          'keyword.declaration',
-          'storage',
-          'storage.type',
-          'storage.modifier',
-        ],
-        settings: { foreground: p.keyword },
-      },
-      {
-        scope: [
-          'support.class',
-          'support.type',
-          'entity.name.type',
-          'entity.name.class',
-          'entity.other.inherited-class',
-        ],
-        settings: { foreground: p.type },
-      },
-    ],
-  } as const;
+    settings: tokenRules,
+    tokenColors: tokenRules,
+  };
 }
 
 export const justuiLight = build('light');

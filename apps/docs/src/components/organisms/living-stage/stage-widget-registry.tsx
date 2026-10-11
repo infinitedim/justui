@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { SIMULATOR_REGISTRY } from '../simulators/simulator-registry';
+import { SIMULATOR_REGISTRY } from '@/components/organisms/simulators/simulator-registry';
 import { components } from '@/lib/components-data';
 
 export interface WidgetDef {

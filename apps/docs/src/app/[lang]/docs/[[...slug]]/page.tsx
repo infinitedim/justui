@@ -8,11 +8,7 @@ import {
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 
-import defaultMdxComponents from 'fumadocs-ui/mdx';
-import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
-import { ButtonPlayground } from '@/components/docs/button-playground';
-import { CheckoutDemo } from '@/components/docs/checkout-demo';
-import { JustButtonPreview } from '@/components/docs/just-button-preview';
+import { mdxComponents } from '@/components/docs/mdx-components';
 
 export async function generateMetadata({
   params,
@@ -68,21 +64,12 @@ export default async function Page({
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
-        <MDX
-          components={{
-            ...defaultMdxComponents,
-            Tabs,
-            Tab,
-            ButtonPlayground,
-            CheckoutDemo,
-            JustButtonPreview,
-          }}
-        />
+        <MDX components={mdxComponents} />
       </DocsBody>
     </DocsPage>
   );
 }
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   return source.generateParams();
 }

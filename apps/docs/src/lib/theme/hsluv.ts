@@ -76,8 +76,7 @@ export function maxChromaForLH(l: number, h: number): number {
       const top2 =
         (838422.0 * m3 + 769860.0 * m2 + 731718.0 * m1) * l * sub2 -
         769860.0 * bound * l;
-      const bottom =
-        (632260.0 * m3 - 126452.0 * m2) * sub2 + 126452.0 * bound;
+      const bottom = (632260.0 * m3 - 126452.0 * m2) * sub2 + 126452.0 * bound;
 
       const denom = bottom * sinH - top1 * cosH;
       if (Math.abs(denom) < 1e-12) continue;

@@ -236,15 +236,28 @@ function generateContent(
   return { content: lines.join('\n'), count: publicComponents.length };
 }
 
+function isRegistryIndex(value: unknown): value is RegistryIndex {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'version' in value &&
+    typeof value.version === 'string' &&
+    'components' in value &&
+    Array.isArray(value.components)
+  );
+}
+
 async function main() {
   const checkOnly = process.argv.includes('--check');
   const registryPath = path.resolve(__dirname, '../../../registry/index.json');
   const cliRoot = path.resolve(__dirname, '../../../packages/cli');
   const outPath = path.resolve(__dirname, '../src/lib/components.generated.ts');
 
-  const registry = JSON.parse(
-    readFileSync(registryPath, 'utf-8')
-  ) as RegistryIndex;
+  const parsed: unknown = JSON.parse(readFileSync(registryPath, 'utf-8'));
+  if (!isRegistryIndex(parsed)) {
+    throw new Error('Invalid registry/index.json shape');
+  }
+  const registry = parsed;
   const { content: rawContent, count } = generateContent(
     registry,
     readCliFacts(cliRoot),

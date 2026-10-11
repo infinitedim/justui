@@ -18,21 +18,23 @@ interface FooterDict {
   footerLabel: string;
 }
 
+const EN_FOOTER: FooterDict = {
+  tagline: 'Flutter components you copy into your project. MIT licensed.',
+  resourcesHeading: 'Docs',
+  docsIntro: 'Introduction',
+  docsCli: 'CLI setup',
+  docsTheming: 'Theming',
+  docsComponents: 'Components',
+  communityHeading: 'Project',
+  github: 'GitHub',
+  issues: 'Issues',
+  changelog: 'Releases',
+  license: 'License',
+  footerLabel: 'Site footer',
+};
+
 const FOOTER_TRANSLATIONS: Record<string, FooterDict> = {
-  en: {
-    tagline: 'Flutter components you copy into your project. MIT licensed.',
-    resourcesHeading: 'Docs',
-    docsIntro: 'Introduction',
-    docsCli: 'CLI setup',
-    docsTheming: 'Theming',
-    docsComponents: 'Components',
-    communityHeading: 'Project',
-    github: 'GitHub',
-    issues: 'Issues',
-    changelog: 'Releases',
-    license: 'License',
-    footerLabel: 'Site footer',
-  },
+  en: EN_FOOTER,
   id: {
     tagline: 'Komponen Flutter yang kamu salin ke proyekmu. Lisensi MIT.',
     resourcesHeading: 'Dokumentasi',
@@ -53,7 +55,7 @@ const linkClass = 'text-secondary hover:text-foreground transition-colors';
 const headingClass = 'text-foreground font-mono text-xs font-medium';
 
 export function Footer({ lang, className }: FooterProps) {
-  const t = FOOTER_TRANSLATIONS[lang] ?? FOOTER_TRANSLATIONS.en;
+  const t = FOOTER_TRANSLATIONS[lang] ?? EN_FOOTER;
   const repo = 'https://github.com/infinitedim/justui';
 
   return (

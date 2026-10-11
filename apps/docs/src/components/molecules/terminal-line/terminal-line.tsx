@@ -38,7 +38,8 @@ export function TerminalLine({
 }: TerminalLineProps) {
   const text = typeof children === 'string' ? children : null;
   const match = text ? /^(\s*)([\u0080-\uffff])(.*)$/s.exec(text) : null;
-  const glyphKind = match ? (GLYPH_KIND[match[2]] ?? kind) : kind;
+  const glyphChar = match?.[2];
+  const glyphKind = glyphChar ? (GLYPH_KIND[glyphChar] ?? kind) : kind;
 
   return (
     <div
@@ -53,11 +54,11 @@ export function TerminalLine({
         <span className="text-muted shrink-0 select-none">{timestamp}</span>
       ) : null}
       <span className="whitespace-pre-wrap">
-        {match ? (
+        {match && glyphChar ? (
           <>
-            {match[1]}
-            <span className={glyphClassMap[glyphKind]}>{match[2]}</span>
-            {match[3]}
+            {match[1] ?? ''}
+            <span className={glyphClassMap[glyphKind]}>{glyphChar}</span>
+            {match[3] ?? ''}
           </>
         ) : (
           children

@@ -2,11 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 
 export type JustButtonVariant =
-  | 'primary'
-  | 'secondary'
-  | 'ghost'
-  | 'destructive'
-  | 'link';
+  'primary' | 'secondary' | 'ghost' | 'destructive' | 'link';
 export type JustButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 const border = 'border-(length:--just-border-width)';
@@ -27,8 +23,10 @@ const SIZE: Record<JustButtonSize, string> = {
   xl: 'h-[52px] px-6 text-lg',
 };
 
-interface JustButtonPreviewProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+interface JustButtonPreviewProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  'children'
+> {
   variant?: JustButtonVariant;
   size?: JustButtonSize;
   loading?: boolean;
@@ -55,7 +53,7 @@ export function JustButtonPreview({
   children,
   ...rest
 }: JustButtonPreviewProps) {
-  const inert = disabled || loading;
+  const inert = disabled === true || loading === true;
   return (
     <button
       type="button"

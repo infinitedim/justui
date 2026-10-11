@@ -36,9 +36,7 @@ describe('Code Generators', () => {
       expect(yaml).toContain('components_dir: lib/widgets');
       expect(yaml).toContain('tokens_dir: lib/tokens');
       expect(yaml).toContain('shared_dir: lib/widgets/shared');
-      expect(yaml).toContain(
-        `registry_url: ${CLI_DEFAULTS.registryUrl}`
-      );
+      expect(yaml).toContain(`registry_url: ${CLI_DEFAULTS.registryUrl}`);
       expect(yaml).toContain('preset: default');
       expect(yaml).toContain('color_space: hsl');
       expect(yaml).toContain('dart_target: standard');
@@ -178,4 +176,3 @@ describe('Code Generators', () => {
     });
   });
 });
-

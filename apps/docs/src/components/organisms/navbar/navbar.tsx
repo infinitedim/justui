@@ -16,7 +16,7 @@ import { LanguageSwitcher } from '@/components/molecules/language-switcher';
 import { PresetToggle } from '@/components/molecules/preset-toggle';
 import { SearchBar } from '@/components/molecules/search-bar';
 import { ThemeSwitcher } from '@/components/molecules/theme-switcher';
-import CustomSearchDialog from '@/components/search';
+import { CustomSearchDialog } from '@/components/search';
 import { getHomepageDictionary } from '@/lib/homepage-translations';
 
 import type { NavbarProps } from './navbar.types';
@@ -100,7 +100,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
                 </span>
               </Link>
               <span
-                className="border-border bg-card text-muted max-sm:hidden inline-flex rounded-(--just-radius-xs) border-(length:--just-border-width) px-1.5 py-0.5 font-mono text-xs leading-none shadow-xs"
+                className="border-border bg-card text-muted inline-flex rounded-(--just-radius-xs) border-(length:--just-border-width) px-1.5 py-0.5 font-mono text-xs leading-none shadow-xs max-sm:hidden"
                 aria-label="Library version"
               >
                 v{versionSlug}-beta
@@ -108,12 +108,12 @@ export function Navbar({ starCount, lang }: NavbarProps) {
             </div>
 
             <div
-              className="bg-border max-md:hidden block h-4 w-px"
+              className="bg-border block h-4 w-px max-md:hidden"
               aria-hidden="true"
             />
 
             <nav
-              className="flex max-md:hidden items-center gap-1"
+              className="flex items-center gap-1 max-md:hidden"
               aria-label={t.mainNavigation}
             >
               {links.map((link) => {
@@ -127,7 +127,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
                       'border-(length:--just-border-width)',
                       active
                         ? 'border-border bg-card text-foreground font-semibold shadow-xs'
-                        : 'border-transparent text-muted hover:border-border/60 hover:bg-card/60 hover:text-foreground'
+                        : 'text-muted hover:border-border/60 hover:bg-card/60 hover:text-foreground border-transparent'
                     )}
                   >
                     {link.label}
@@ -155,7 +155,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
             />
 
             <div
-              className="bg-border max-sm:hidden block h-4 w-px"
+              className="bg-border block h-4 w-px max-sm:hidden"
               aria-hidden="true"
             />
 
@@ -168,7 +168,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
             </div>
 
             <div
-              className="bg-border max-md:hidden block h-4 w-px"
+              className="bg-border block h-4 w-px max-md:hidden"
               aria-hidden="true"
             />
 
@@ -218,7 +218,7 @@ export function Navbar({ starCount, lang }: NavbarProps) {
                   onClick={() => setMobileOpen(false)}
                   className={
                     activeHref === link.activeHref
-                      ? 'bg-accent text-accent-foreground rounded-(--just-radius-md) border-(length:--just-border-width) border-border px-3 py-2.5 font-medium transition-colors'
+                      ? 'bg-accent text-accent-foreground border-border rounded-(--just-radius-md) border-(length:--just-border-width) px-3 py-2.5 font-medium transition-colors'
                       : 'text-muted hover:text-foreground hover:bg-card rounded-(--just-radius-md) px-3 py-2.5 transition-colors'
                   }
                 >

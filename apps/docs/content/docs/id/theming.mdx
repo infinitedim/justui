@@ -118,11 +118,11 @@ extension JustThemeDataMaterialExtension on JustThemeData {
 
 ## 4. Panduan Konsumsi Tema: Build vs Callback
 
-Untuk menjaga performa aplikasi tetap optimal, Anda harus mengikuti aturan tegas mengenai cara mengonsumsi tema dari context.
+Untuk menjaga performa aplikasi tetap optimal, kamu harus mengikuti aturan tegas mengenai cara mengonsumsi tema dari context.
 
 ### Di Dalam Metode `build` (Rebuild Terdaftar)
 
-Saat merender UI, Anda wajib menggunakan getter ekstensi aspek spesifik. Ini mendaftarkan widget sebagai pendengar (_listener_) pada aspek tertentu saja:
+Saat merender UI, kamu wajib menggunakan getter ekstensi aspek spesifik. Ini mendaftarkan widget sebagai pendengar (_listener_) pada aspek tertentu saja:
 
 ```dart
 @override
@@ -145,7 +145,7 @@ Widget build(BuildContext context) {
 
 ### Di Dalam Callback & Handler (Bebas Rebuild)
 
-Pada callback interaktif (seperti `onPressed`, `onTap`) atau metode siklus hidup (seperti `initState`), Anda tidak memerlukan pendaftaran listener. Menggunakan listener di sini hanya akan memicu render ulang yang sia-sia.
+Pada callback interaktif (seperti `onPressed`, `onTap`) atau metode siklus hidup (seperti `initState`), kamu tidak memerlukan pendaftaran listener. Menggunakan listener di sini hanya akan memicu render ulang yang sia-sia.
 
 Gunakan metode `context.readTheme()` untuk mengambil nilai tema secara instan tanpa mendaftarkan ketergantungan rebuild:
 
@@ -165,4 +165,4 @@ JustButton(
 )
 ```
 
-Dengan memisahkan konsumsi bertipe **reactive** di metode `build` dan **imperative** di dalam callback, performa render aplikasi Flutter Anda akan tetap stabil pada 60fps/120fps.
+Dengan memisahkan konsumsi bertipe **reactive** di metode `build` dan **imperative** di dalam callback, performa render aplikasi Flutter kamu akan tetap stabil pada 60fps/120fps.

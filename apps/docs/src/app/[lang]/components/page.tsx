@@ -81,6 +81,6 @@ export default async function ComponentsPage({
   );
 }
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   return localeStaticParams();
 }

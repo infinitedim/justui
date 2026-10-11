@@ -13,7 +13,7 @@ Komponen Toast menyediakan umpan balik singkat tentang suatu operasi melalui not
 
 Toast dipicu secara imperatif dan bukan dideklarasikan secara langsung di tatanan widget. Sistem ini terdiri dari:
 
-- **`JustToastScope`**: Widget pembungkus yang diletakkan di dekat akar aplikasi (atau halaman) Anda untuk menangkap konteks ticker provider dan mengelola overlay.
+- **`JustToastScope`**: Widget pembungkus yang diletakkan di dekat akar aplikasi (atau halaman) kamu untuk menangkap konteks ticker provider dan mengelola overlay.
 - **`JustToastController`**: Pengelola imperatif yang menjadwalkan, membatasi, dan memicu notifikasi.
 - **`context.justToast`**: Ekstensi `BuildContext` untuk memanggil peringatan toast secara mudah dari mana saja di dalam tatanan widget di bawah scope.
 
@@ -31,7 +31,7 @@ justui add toast
 
 ### Penggunaan Dasar
 
-Pertama, pastikan akar aplikasi atau halaman Anda dibungkus dengan `JustToastScope`:
+Pertama, pastikan akar aplikasi atau halaman kamu dibungkus dengan `JustToastScope`:
 
 ```dart
 import 'package:flutter/widgets.dart';
@@ -69,7 +69,7 @@ Widget buildButton(BuildContext context) {
 
 ### Penggunaan Lanjutan
 
-Anda dapat menyesuaikan toast dengan durasi kustom, ikon awalan, dan tombol tindakan, atau mengubah perilaku batas tumpukan secara manual:
+Kamu dapat menyesuaikan toast dengan durasi kustom, ikon awalan, dan tombol tindakan, atau mengubah perilaku batas tumpukan secara manual:
 
 ```dart
 import 'package:flutter/material.dart';

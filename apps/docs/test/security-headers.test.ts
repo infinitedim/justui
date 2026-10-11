@@ -143,7 +143,10 @@ describe('security.txt RFC 9116 validation', () => {
     const isAscii = Buffer.from(content).every((byte) => byte <= 127);
     expect(isAscii).toBe(true);
 
-    const lines = content.split('\n').map((l) => l.trim()).filter(Boolean);
+    const lines = content
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean);
     const fields = new Map<string, string>();
     for (const line of lines) {
       const colonIndex = line.indexOf(':');
@@ -233,7 +236,9 @@ describe('search API route security (/api/search)', () => {
     );
     const blockedRes = await searchGet(blockedReq);
     expect(blockedRes.status).toBe(429);
-    expect(blockedRes.headers.get('Content-Type')).toContain('application/json');
+    expect(blockedRes.headers.get('Content-Type')).toContain(
+      'application/json'
+    );
     expect(blockedRes.headers.get('Retry-After')).toBeDefined();
 
     const retryAfter = Number(blockedRes.headers.get('Retry-After'));
@@ -257,20 +262,18 @@ describe('search API route security (/api/search)', () => {
     }
 
     const blockedRes = await searchGet(
-      createSearchRequest(
-        'https://justui.vercel.app/api/search?query=button',
-        { 'x-forwarded-for': testIp }
-      )
+      createSearchRequest('https://justui.vercel.app/api/search?query=button', {
+        'x-forwarded-for': testIp,
+      })
     );
     expect(blockedRes.status).toBe(429);
 
     _resetRateLimitsForTesting();
 
     const allowedRes = await searchGet(
-      createSearchRequest(
-        'https://justui.vercel.app/api/search?query=button',
-        { 'x-forwarded-for': testIp }
-      )
+      createSearchRequest('https://justui.vercel.app/api/search?query=button', {
+        'x-forwarded-for': testIp,
+      })
     );
     expect(allowedRes.status).toBe(200);
   });

@@ -45,10 +45,18 @@ function Chip({
   );
 }
 
-function Group({ label, children }: { label: string; children: React.ReactNode }) {
+function Group({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div>
-      <div className="text-muted mb-2 font-mono text-xs font-medium">{label}</div>
+      <div className="text-muted mb-2 font-mono text-xs font-medium">
+        {label}
+      </div>
       <div className="flex flex-wrap gap-1.5">{children}</div>
     </div>
   );
@@ -112,7 +120,11 @@ export function ButtonPlayground() {
         <div className="border-border grid gap-x-7 gap-y-5 border-b border-b-(length:--just-border-width) p-5 sm:grid-cols-2">
           <Group label="variant">
             {VARIANTS.map((v) => (
-              <Chip key={v} active={variant === v} onClick={() => setVariant(v)}>
+              <Chip
+                key={v}
+                active={variant === v}
+                onClick={() => setVariant(v)}
+              >
                 {v}
               </Chip>
             ))}
@@ -154,7 +166,9 @@ export function ButtonPlayground() {
         <div className="bg-background relative">
           <button
             type="button"
-            onClick={copy}
+            onClick={() => {
+              void copy();
+            }}
             className="bg-card text-secondary border-border absolute top-2.5 right-2.5 h-[26px] rounded-(--just-radius-sm) border-(length:--just-border-width) px-2.5 font-mono text-xs font-medium"
           >
             {copied ? 'Copied' : 'Copy'}

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import type { Route } from 'next';
+import { localizedHref } from '@/lib/i18n';
 import { cn } from '@/lib/cn';
 import type { ComponentMeta } from '@/lib/components-data';
 import { CopyButton } from '@/components/molecules/copy-button';
@@ -42,7 +42,7 @@ export function LivingComponentCard({
   className,
 }: LivingComponentCardProps) {
   const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
-  const docsHref = `/${lang}/docs/components/${component.slug}` as Route;
+  const docsHref = localizedHref(lang, `/docs/components/${component.slug}`);
   const cliCommand = `justui add ${component.slug}`;
 
   return (

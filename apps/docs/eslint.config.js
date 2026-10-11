@@ -22,6 +22,7 @@ export default [
       '**/*.js',
       '**/.agents/**',
       '**/.source/**',
+      '**/test-results/**',
     ],
   },
 
@@ -37,6 +38,9 @@ export default [
       },
       parser: tseslint.parser,
       parserOptions: {
+        sourceType: 'module',
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
         ecmaFeatures: {
           jsx: true,
         },
@@ -49,7 +53,7 @@ export default [
     ...js.configs.recommended,
   },
 
-  ...tseslint.configs.recommended.map((config) => ({
+  ...tseslint.configs.recommendedTypeChecked.map((config) => ({
     ...config,
     files: ['**/*.{ts,tsx}'],
   })),
@@ -78,7 +82,7 @@ export default [
     },
     rules: {
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/exhaustive-deps': 'error',
     },
   },
 
@@ -114,6 +118,7 @@ export default [
       'import/no-anonymous-default-export': 'off',
       'import/no-unresolved': 'off',
       'import/named': 'off',
+      'import/order': 'off',
     },
   },
 
@@ -130,8 +135,53 @@ export default [
           caughtErrorsIgnorePattern: '^_',
         },
       ],
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+      '@typescript-eslint/prefer-nullish-coalescing': 'warn',
+      '@typescript-eslint/consistent-type-assertions': [
+        'error',
+        { assertionStyle: 'never' },
+      ],
+      '@typescript-eslint/no-non-null-assertion': 'error',
+      '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports' },
+      ],
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['../*'],
+              message: 'Use @/ alias instead of relative parent imports.',
+            },
+          ],
+        },
+      ],
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'process',
+          property: 'env',
+          message:
+            'Direct process.env reads are banned; import env from @/lib/env.',
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'TSEnumDeclaration',
+          message: 'Enums are banned. Use const objects with derived unions.',
+        },
+        {
+          selector: "ExpressionStatement > Literal[value='use server']",
+          message: 'Server actions are banned.',
+        },
+      ],
       'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
       'prefer-const': 'error',
       'no-var': 'error',
@@ -148,10 +198,80 @@ export default [
   },
 
   {
-    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+    files: ['src/components/**/*.tsx'],
+    rules: {
+      'max-lines': [
+        'warn',
+        { max: 200, skipBlankLines: true, skipComments: true },
+      ],
+      'max-lines-per-function': [
+        'warn',
+        { max: 80, skipBlankLines: true, skipComments: true },
+      ],
+    },
+  },
+
+  {
+    files: ['src/lib/**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/explicit-module-boundary-types': 'warn',
+      'jsdoc/require-jsdoc': [
+        'warn',
+        {
+          publicOnly: true,
+          require: {
+            FunctionDeclaration: true,
+            MethodDefinition: true,
+            ClassDeclaration: true,
+            ArrowFunctionExpression: true,
+            FunctionExpression: true,
+          },
+        },
+      ],
+    },
+  },
+
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: [
+      'src/app/**/{page,layout,not-found,error,loading,opengraph-image,sitemap,robots}.tsx',
+      'src/app/**/{page,layout,not-found,error,loading,opengraph-image,sitemap,robots}.ts',
+    ],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ExportDefaultDeclaration',
+          message: 'Default exports are banned; use named exports.',
+        },
+      ],
+    },
+  },
+
+  {
+    files: ['src/lib/env.ts', '*.config.*', 'scripts/**', 'test/**', 'e2e/**'],
+    rules: {
+      'no-restricted-properties': 'off',
+    },
+  },
+
+  {
+    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', 'test/**', 'e2e/**'],
     rules: {
       'no-console': 'off',
+      'no-restricted-imports': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/consistent-type-assertions': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/unbound-method': 'off',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
       '@typescript-eslint/array-type': ['error', { default: 'generic' }],
       'jsdoc/require-jsdoc': 'off',
     },

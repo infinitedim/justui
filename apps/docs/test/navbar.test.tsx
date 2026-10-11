@@ -59,8 +59,8 @@ vi.mock('next/link', () => ({
 // real fetch against /api/search). Its own behavior is covered by
 // test/search.test.tsx; here we only need to verify Navbar correctly wires
 // the open state, keyboard shortcut, and lang prop to it.
-vi.mock('@/components/search', () => ({
-  default: ({
+vi.mock('@/components/search', () => {
+  const MockDialog = ({
     open,
     onOpenChange,
     lang,
@@ -75,8 +75,13 @@ vi.mock('@/components/search', () => ({
           close
         </button>
       </div>
-    ) : null,
-}));
+    ) : null;
+
+  return {
+    CustomSearchDialog: MockDialog,
+    default: MockDialog,
+  };
+});
 
 describe('Navbar & search dialog wiring', () => {
   it('renders correctly with different stargazer counts', () => {
@@ -132,7 +137,7 @@ describe('Navbar & search dialog wiring', () => {
 
     const searchBtn = screen.getAllByRole('button', {
       name: /open search/i,
-    })[0];
+    })[0]!;
     fireEvent.click(searchBtn);
 
     const dialog = screen.getByTestId('search-dialog-stub');

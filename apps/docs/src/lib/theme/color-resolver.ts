@@ -1,4 +1,4 @@
-import type { JustUIPreset } from '../presets';
+import type { JustUIPreset } from '@/lib/presets';
 import {
   type ColorSpace,
   fromPerceptual,
@@ -152,7 +152,9 @@ export function resolveTokens(
   let textSecondary: string;
 
   if (isDark) {
-    background = isNeo ? '#1a1a1a' : generateDarkSurface(normSeed, 3, colorSpace);
+    background = isNeo
+      ? '#1a1a1a'
+      : generateDarkSurface(normSeed, 3, colorSpace);
     card = isNeo ? '#262626' : generateDarkSurface(normSeed, 7, colorSpace);
     textPrimary = isNeo ? '#ffffff' : '#f8fafc';
     textSecondary = isNeo ? '#cccccc' : '#a1a1aa';

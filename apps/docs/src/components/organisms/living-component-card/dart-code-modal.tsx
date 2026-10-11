@@ -26,7 +26,10 @@ export function DartCodeModal({
   // Lock body scroll and move focus into the dialog while it is open.
   useEffect(() => {
     if (!isOpen) return;
-    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const previouslyFocused =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     closeRef.current?.focus();

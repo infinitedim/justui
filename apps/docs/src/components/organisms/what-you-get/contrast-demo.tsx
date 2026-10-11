@@ -5,7 +5,7 @@ import { cn } from '@/lib/cn';
 
 /** WCAG relative luminance from 0-255 sRGB channels. */
 function luminance(r: number, g: number, b: number): number {
-  const [lr, lg, lb] = [r, g, b].map((v) => {
+  const [lr = 0, lg = 0, lb = 0] = [r, g, b].map((v) => {
     const s = v / 255;
     return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
   });

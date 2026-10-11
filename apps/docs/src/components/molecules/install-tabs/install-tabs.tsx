@@ -13,12 +13,14 @@ interface PlatformMeta {
   command: string;
 }
 
+const DEFAULT_PLATFORM: PlatformMeta = {
+  id: 'curl',
+  defaultLabel: 'macOS / Linux',
+  command: `curl -fsSL ${SITE_URL}/install.sh | sh`,
+};
+
 const PLATFORMS: readonly PlatformMeta[] = [
-  {
-    id: 'curl',
-    defaultLabel: 'macOS / Linux',
-    command: `curl -fsSL ${SITE_URL}/install.sh | sh`,
-  },
+  DEFAULT_PLATFORM,
   {
     id: 'powershell',
     defaultLabel: 'Windows',
@@ -37,7 +39,7 @@ export function InstallTabs({ lang = 'en', className }: InstallTabsProps) {
   };
 
   const activeMeta =
-    PLATFORMS.find((p) => p.id === activePlatform) ?? PLATFORMS[0];
+    PLATFORMS.find((p) => p.id === activePlatform) ?? DEFAULT_PLATFORM;
 
   return (
     <div

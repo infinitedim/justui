@@ -25,14 +25,7 @@ export function LogoMark({ size = 22, className }: LogoMarkProps) {
         className="stroke-border fill-card"
         strokeWidth="2"
       />
-      <rect
-        x="6"
-        y="6"
-        width="5"
-        height="5"
-        rx="1"
-        className="fill-accent"
-      />
+      <rect x="6" y="6" width="5" height="5" rx="1" className="fill-accent" />
       <path
         d="M15 7v7a3 3 0 0 1-3 3H9"
         className="stroke-foreground"

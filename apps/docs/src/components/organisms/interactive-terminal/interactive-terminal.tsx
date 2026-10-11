@@ -203,7 +203,7 @@ export const InteractiveTerminal = forwardRef<
     ref,
     () => ({
       runCommand: (command: string) => {
-        runAutomatedTyping(command);
+        void runAutomatedTyping(command);
       },
     }),
     [runAutomatedTyping]
@@ -235,7 +235,10 @@ export const InteractiveTerminal = forwardRef<
       if (commandHistory.length === 0) return;
       const nextIdx = Math.min(historyIndex + 1, commandHistory.length - 1);
       setHistoryIndex(nextIdx);
-      setCurrentInput(commandHistory[nextIdx]);
+      const nextCmd = commandHistory[nextIdx];
+      if (nextCmd !== undefined) {
+        setCurrentInput(nextCmd);
+      }
       return;
     }
 
@@ -248,7 +251,10 @@ export const InteractiveTerminal = forwardRef<
       }
       const nextIdx = historyIndex - 1;
       setHistoryIndex(nextIdx);
-      setCurrentInput(commandHistory[nextIdx]);
+      const nextCmd = commandHistory[nextIdx];
+      if (nextCmd !== undefined) {
+        setCurrentInput(nextCmd);
+      }
       return;
     }
 
@@ -280,7 +286,7 @@ export const InteractiveTerminal = forwardRef<
         const tokens = trimmedStart.split(/\s+/);
         const lastToken = currentInput.endsWith(' ')
           ? ''
-          : tokens[tokens.length - 1];
+          : (tokens[tokens.length - 1] ?? '');
         const match = REGISTRY_COMPONENT_NAMES.find((c) =>
           c.startsWith(lastToken)
         );
@@ -383,7 +389,7 @@ export const InteractiveTerminal = forwardRef<
             disabled={isTyping}
             onClick={(e) => {
               e.stopPropagation();
-              runAutomatedTyping(command);
+              void runAutomatedTyping(command);
             }}
             className={cn(
               'just-press border-border bg-card text-foreground rounded-(--just-radius-sm) border-(length:--just-border-width) px-2 py-1 font-mono text-xs',

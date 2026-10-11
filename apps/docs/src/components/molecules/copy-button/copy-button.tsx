@@ -34,7 +34,9 @@ export function CopyButton({
   return (
     <button
       type="button"
-      onClick={handleCopy}
+      onClick={() => {
+        void handleCopy();
+      }}
       aria-label={label}
       className={cn(
         'inline-flex h-7 w-7 items-center justify-center rounded-(--just-radius-md) transition-colors',

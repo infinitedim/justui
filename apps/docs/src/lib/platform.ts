@@ -20,6 +20,6 @@ const APPLE_PLATFORM_PATTERN = /mac|iphone|ipad|ipod/i;
 export function isApplePlatform(hints: PlatformHints | undefined): boolean {
   if (!hints) return false;
   const platform =
-    hints.userAgentData?.platform || hints.platform || hints.userAgent || '';
+    hints.userAgentData?.platform ?? hints.platform ?? hints.userAgent ?? '';
   return APPLE_PLATFORM_PATTERN.test(platform);
 }
