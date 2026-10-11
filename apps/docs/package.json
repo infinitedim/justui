@@ -11,6 +11,7 @@
     "next": "^16.3.4",
     "@swc/helpers": "^0.5.23"
   },
+  "packageManager": "bun@1.4.0",
   "scripts": {
     "postinstall": "fumadocs-mdx",
     "dev": "next dev",
@@ -26,9 +27,11 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md,mdx}\"",
+    "format:check": "prettier --check .",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",
     "clean": "rm -rf .next node_modules/.cache tsconfig.tsbuildinfo",
-    "generate:components": "bun run scripts/generate-components-data.ts"
+    "generate:components": "bun run scripts/generate-components-data.ts",
+    "budget:check": "bun run scripts/check-bundle-budget.ts"
   },
   "dependencies": {
     "fumadocs-core": "^16.15.7",
@@ -42,6 +45,7 @@
     "zod": "^4.5.4"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^10.0.1",
     "@next/bundle-analyzer": "^16.3.4",
     "@playwright/test": "^1.63.0",

@@ -1,2 +1,10 @@
-.source
+.next
 node_modules
+dist
+build
+out
+coverage
+test-results
+.source
+.agents
+*.tsbuildinfo

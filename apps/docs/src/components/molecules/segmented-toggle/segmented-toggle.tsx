@@ -9,7 +9,11 @@ export interface SegmentedOption<T extends string> {
 
 export interface SegmentedToggleProps<T extends string> {
   value: T;
-  options: readonly [SegmentedOption<T>, SegmentedOption<T>, ...SegmentedOption<T>[]];
+  options: readonly [
+    SegmentedOption<T>,
+    SegmentedOption<T>,
+    ...SegmentedOption<T>[],
+  ];
   onChange: (value: T) => void;
   /** Accessible name of the radio group. */
   label: string;
@@ -49,7 +53,8 @@ export function SegmentedToggle<T extends string>({
             onClick={() => onChange(option.value)}
             className={cn(
               'h-7 px-2.5 font-mono text-xs transition-colors',
-              index > 0 && 'border-border border-l-(length:--just-border-width)',
+              index > 0 &&
+                'border-border border-l-(length:--just-border-width)',
               active
                 ? 'bg-accent text-accent-foreground font-semibold'
                 : 'text-muted hover:text-foreground font-normal'

@@ -52,7 +52,7 @@ const nextConfig: NextConfig = {
   images: {
     qualities: [25, 50, 75, 100],
   },
-  reactCompiler: false,
+  reactCompiler: true,
   typedRoutes: true,
   experimental: {
     typedEnv: true,
@@ -64,7 +64,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   // Proxy-style i18n redirects (replaces middleware.ts)
-  async redirects() {
+  redirects() {
     const redirects = [];
 
     // Redirect root path to default locale
@@ -116,18 +116,18 @@ const nextConfig: NextConfig = {
       permanent: false,
     });
 
-    return redirects;
+    return Promise.resolve(redirects);
   },
   // Proxy rewrites for locale handling
-  async rewrites() {
-    return {
+  rewrites() {
+    return Promise.resolve({
       beforeFiles: [
         // Proxy non-locale prefixed paths to default locale
         // This ensures Fumadocs links with hidePrefix work correctly
       ],
-    };
+    });
   },
-  async headers() {
+  headers() {
     const csp = (isDev ? cspDevelopment : cspProduction)
       .replace(/\n/g, ' ')
       .replace(/\s{2,}/g, ' ')
@@ -172,7 +172,7 @@ const nextConfig: NextConfig = {
       },
     ];
 
-    return headersList;
+    return Promise.resolve(headersList);
   },
 };
 

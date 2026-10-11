@@ -1,11 +1,11 @@
 ---
 title: Instalasi
-description: Langkah-langkah instalasi JustUI CLI dan inisialisasi proyek Flutter Anda.
+description: Langkah-langkah instalasi JustUI CLI dan inisialisasi proyek Flutter kamu.
 ---
 
 # Instalasi
 
-JustUI menyediakan alat baris perintah (CLI) berbasis Rust untuk menyalin komponen ke dalam proyek Flutter Anda dengan cepat.
+JustUI menyediakan alat baris perintah (CLI) berbasis Rust untuk menyalin komponen ke dalam proyek Flutter kamu dengan cepat.
 
 ## Langkah 1: Instalasi JustUI CLI
 
@@ -23,7 +23,7 @@ irm https://justui.vercel.app/install.ps1 | iex
 
 ### Kompilasi dari Source (Zero-Trust)
 
-Bila Anda memilih untuk membangun langsung dari source code:
+Bila kamu memilih untuk membangun langsung dari source code:
 
 ```bash
 git clone https://github.com/infinitedim/justui.git
@@ -39,13 +39,13 @@ justui --version
 
 ## Langkah 2: Inisialisasi Proyek
 
-Jalankan perintah berikut di direktori root proyek Flutter Anda:
+Jalankan perintah berikut di direktori root proyek Flutter kamu:
 
 ```bash
 justui init
 ```
 
-Panduan interaktif akan membuat file konfigurasi `justui.config.yaml` dan menyiapkan file tema di `lib/core/theme/just_theme.dart`. Anda juga akan ditanya pilihan preset visual utama (`default` atau `neobrutalism`).
+Panduan interaktif akan membuat file konfigurasi `justui.config.yaml` dan menyiapkan file tema di `lib/core/theme/just_theme.dart`. kamu juga akan ditanya pilihan preset visual utama (`default` atau `neobrutalism`).
 
 ## Langkah 3: Menambahkan Komponen
 
@@ -55,8 +55,11 @@ Untuk menambahkan komponen baru (misalnya tombol), gunakan perintah `add`:
 justui add button
 ```
 
-Komponen beserta dependensinya akan disalin secara otomatis ke direktori komponen proyek Flutter Anda (default: `lib/widgets/button`).
+Komponen beserta dependensinya akan disalin secara otomatis ke direktori komponen proyek Flutter kamu (default: `lib/widgets/button`).
 
 <Callout title="Placeholder Nama Package" type="info">
-Contoh kode di seluruh dokumentasi menggunakan `your_app` sebagai placeholder. Saat menyalin kode ke dalam proyek, ganti `your_app` dengan nama package Flutter kamu dari `pubspec.yaml` (contoh: `import 'package:proyek_kamu/core/just_ui_core.dart';`).
+  Contoh kode di seluruh dokumentasi menggunakan `your_app` sebagai placeholder.
+  Saat menyalin kode ke dalam proyek, ganti `your_app` dengan nama package
+  Flutter kamu dari `pubspec.yaml` (contoh: `import
+  'package:proyek_kamu/core/just_ui_core.dart';`).
 </Callout>

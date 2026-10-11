@@ -1,8 +1,11 @@
+import { z } from 'zod';
+import { env } from '@/lib/env';
+
 const GITHUB_REPO = 'infinitedim/justui';
 
-interface GitHubRepoResponse {
-  stargazers_count?: number;
-}
+const githubRepoSchema = z.object({
+  stargazers_count: z.number().optional(),
+});
 
 export async function fetchStarCount(): Promise<number | null> {
   try {
@@ -13,7 +16,7 @@ export async function fetchStarCount(): Promise<number | null> {
       'User-Agent': 'JustUI-Docs/1.0',
     };
 
-    const token = process.env.GITHUB_TOKEN;
+    const token = env.GITHUB_TOKEN;
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
@@ -28,10 +31,12 @@ export async function fetchStarCount(): Promise<number | null> {
 
     if (!response.ok) return null;
 
-    const data = (await response.json()) as GitHubRepoResponse;
-    return typeof data.stargazers_count === 'number'
-      ? data.stargazers_count
-      : null;
+    const rawJson: unknown = await response.json();
+    const parsed = githubRepoSchema.safeParse(rawJson);
+    if (!parsed.success || typeof parsed.data.stargazers_count !== 'number') {
+      return null;
+    }
+    return parsed.data.stargazers_count;
   } catch {
     return null;
   }

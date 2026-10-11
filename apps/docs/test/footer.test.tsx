@@ -24,9 +24,10 @@ describe('Footer Organism', () => {
       'href',
       '/en/docs/cli-setup'
     );
-    expect(
-      screen.getByRole('link', { name: /github/i })
-    ).toHaveAttribute('href', 'https://github.com/infinitedim/justui');
+    expect(screen.getByRole('link', { name: /github/i })).toHaveAttribute(
+      'href',
+      'https://github.com/infinitedim/justui'
+    );
   });
 
   it('renders localized links and descriptions in Indonesian', () => {
@@ -43,8 +44,9 @@ describe('Footer Organism', () => {
       'href',
       '/id/docs/introduction'
     );
-    expect(
-      screen.getByRole('link', { name: /issue/i })
-    ).toHaveAttribute('href', 'https://github.com/infinitedim/justui/issues');
+    expect(screen.getByRole('link', { name: /issue/i })).toHaveAttribute(
+      'href',
+      'https://github.com/infinitedim/justui/issues'
+    );
   });
 });

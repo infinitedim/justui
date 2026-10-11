@@ -119,4 +119,3 @@ export function generateCli(
   }
   return parts.join(' ');
 }
-

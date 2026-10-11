@@ -48,15 +48,15 @@ export function ThemeSwitcher({
       onClick={handleToggle}
       className={cn(
         'just-press bg-card text-muted hover:text-foreground relative inline-flex h-7 w-13 items-center justify-between px-1.5',
-        'rounded-(--just-radius-md) border-(length:--just-border-width) border-border shadow-xs',
-        'cursor-pointer select-none transition-colors focus-visible:outline-hidden',
+        'border-border rounded-(--just-radius-md) border-(length:--just-border-width) shadow-xs',
+        'cursor-pointer transition-colors select-none focus-visible:outline-hidden',
         className
       )}
     >
       <Sun
         size={12}
         className={cn(
-          'transition-opacity duration-200 shrink-0 ml-0.5',
+          'ml-0.5 shrink-0 transition-opacity duration-200',
           isDark ? 'opacity-40' : 'opacity-0'
         )}
         aria-hidden="true"
@@ -64,16 +64,16 @@ export function ThemeSwitcher({
       <Moon
         size={12}
         className={cn(
-          'transition-opacity duration-200 shrink-0 mr-0.5',
+          'mr-0.5 shrink-0 transition-opacity duration-200',
           isDark ? 'opacity-0' : 'opacity-40'
         )}
         aria-hidden="true"
       />
       <span
         className={cn(
-          'bg-accent text-accent-foreground absolute top-1/2 -translate-y-1/2 left-1 h-5 w-5',
+          'bg-accent text-accent-foreground absolute top-1/2 left-1 h-5 w-5 -translate-y-1/2',
           'rounded-(--just-radius-sm) shadow-xs transition-transform duration-200 ease-in-out',
-          'flex items-center justify-center pointer-events-none',
+          'pointer-events-none flex items-center justify-center',
           isDark ? 'translate-x-6' : 'translate-x-0'
         )}
       >

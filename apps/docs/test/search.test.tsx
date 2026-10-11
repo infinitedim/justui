@@ -1,6 +1,6 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
-import CustomSearchDialog from '../src/components/search';
+import { CustomSearchDialog } from '@/components/search';
 
 // Mock fumadocs-core hooks
 const mockSetSearch = vi.fn();

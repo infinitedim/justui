@@ -20,20 +20,20 @@ export function levenshteinDistance(a: string, b: string): number {
   }
 
   for (let i = 1; i <= m; i++) {
-    let prevDiagonal = row[0];
+    let prevDiagonal = row[0] ?? 0;
     row[0] = i;
     for (let j = 1; j <= n; j++) {
-      const temp = row[j];
+      const temp = row[j] ?? 0;
       const cost = s1.charCodeAt(i - 1) === s2.charCodeAt(j - 1) ? 0 : 1;
-      const insertion = row[j - 1] + 1;
-      const deletion = row[j] + 1;
+      const insertion = (row[j - 1] ?? 0) + 1;
+      const deletion = (row[j] ?? 0) + 1;
       const substitution = prevDiagonal + cost;
       row[j] = Math.min(insertion, deletion, substitution);
       prevDiagonal = temp;
     }
   }
 
-  return row[n];
+  return row[n] ?? 0;
 }
 
 export function findClosestMatch(

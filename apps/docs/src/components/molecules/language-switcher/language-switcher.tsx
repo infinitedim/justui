@@ -23,7 +23,7 @@ export function LanguageSwitcher({ lang, className }: LanguageSwitcherProps) {
       href={otherPath}
       className={cn(
         'just-press bg-card text-foreground inline-flex h-7 items-center px-2.5 font-mono text-xs',
-        'rounded-(--just-radius-md) border-(length:--just-border-width) border-border shadow-xs',
+        'border-border rounded-(--just-radius-md) border-(length:--just-border-width) shadow-xs',
         className
       )}
       aria-label={t.changeLanguage}

@@ -18,12 +18,16 @@ import type { StudioPreviewProps } from './studio-preview.types';
  * restyled with the palette the studio resolved. Nothing here is specific to
  * the studio: change the tokens and the components follow.
  */
+interface StudioScopeStyle extends CSSProperties {
+  [key: `--${string}`]: string | undefined;
+}
+
 export function StudioPreview({ lang = 'en', className }: StudioPreviewProps) {
   const t = getStudioDictionary(lang);
   const { resolvedTokens: tokens, preset, isDark } = useThemeStudio();
   const [notify, setNotify] = useState(true);
 
-  const scope = {
+  const scope: StudioScopeStyle = {
     '--just-background': tokens.background,
     '--just-card-bg': tokens.card,
     '--just-elevated-bg': tokens.card,
@@ -47,7 +51,7 @@ export function StudioPreview({ lang = 'en', className }: StudioPreviewProps) {
     '--just-shadow-md': tokens.shadowSolid,
     '--just-shadow-solid': tokens.shadowSolid,
     colorScheme: isDark ? 'dark' : 'light',
-  } as CSSProperties;
+  };
 
   return (
     <figure

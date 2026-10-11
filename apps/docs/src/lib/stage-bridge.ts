@@ -79,6 +79,13 @@ export function dispatchStageEvent(
   }
 }
 
+function isStageEventOf<T extends StageBridgeEvent['type']>(
+  event: StageBridgeEvent,
+  expectedType: T
+): event is StageEventOf<T> {
+  return event.type === expectedType;
+}
+
 export function useStageListener<T extends StageBridgeEvent['type']>(
   type: T,
   handler: (event: StageEventOf<T>) => void
@@ -102,8 +109,8 @@ export function useStageListener<T extends StageBridgeEvent['type']>(
       }
 
       const parsed = stageBridgeEventSchema.safeParse(event.data);
-      if (parsed.success && parsed.data.type === type) {
-        handlerRef.current(parsed.data as StageEventOf<T>);
+      if (parsed.success && isStageEventOf(parsed.data, type)) {
+        handlerRef.current(parsed.data);
       }
     };
     window.addEventListener('message', listener);

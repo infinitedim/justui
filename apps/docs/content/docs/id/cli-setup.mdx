@@ -5,7 +5,7 @@ description: Panduan mendalam tentang penggunaan CLI tool JustUI untuk manajemen
 
 # Panduan & Konfigurasi CLI
 
-JustUI menggunakan pendekatan **copy-paste** di mana kode sumber komponen disalin secara lokal ke dalam proyek Anda. Untuk mempermudah alur kerja ini, JustUI menyediakan alat bantu baris perintah (CLI) bernama `justui`.
+JustUI menggunakan pendekatan **copy-paste** di mana kode sumber komponen disalin secara lokal ke dalam proyek kamu. Untuk mempermudah alur kerja ini, JustUI menyediakan alat bantu baris perintah (CLI) bernama `justui`.
 
 Dokumen ini menjelaskan konfigurasi, mekanisme kerja internal CLI, daftar perintah lengkap, serta cara menangani fungsionalitas yang tidak didukung secara bawaan.
 
@@ -13,7 +13,7 @@ Dokumen ini menjelaskan konfigurasi, mekanisme kerja internal CLI, daftar perint
 
 ## 1. Konfigurasi `justui.config.yaml`
 
-Saat Anda menjalankan perintah inisialisasi (`justui init`), berkas konfigurasi bernama `justui.config.yaml` akan dibuat di root proyek Anda. Berkas ini bertindak sebagai _single source of truth_ untuk seluruh operasi CLI selanjutnya.
+Saat kamu menjalankan perintah inisialisasi (`justui init`), berkas konfigurasi bernama `justui.config.yaml` akan dibuat di root proyek kamu. Berkas ini bertindak sebagai _single source of truth_ untuk seluruh operasi CLI selanjutnya.
 
 Contoh isi berkas konfigurasi default:
 
@@ -33,14 +33,14 @@ Alur kerja CLI JustUI dirancang cerdas untuk menangani pemeliharaan kode lokal y
 
 ### A. Penyalinan Kode Lokal & Rekursi Dependensi
 
-Saat Anda menambahkan komponen, CLI tidak hanya menyalin berkas komponen utama. CLI akan membaca bagan dependensi komponen tersebut di registry (`index.json`) dan mengunduh seluruh komponen dependensinya secara rekursif (misalnya, menambahkan `JustFormInput` otomatis akan mengunduh `JustInput` jika belum ada).
+Saat kamu menambahkan komponen, CLI tidak hanya menyalin berkas komponen utama. CLI akan membaca bagan dependensi komponen tersebut di registry (`index.json`) dan mengunduh seluruh komponen dependensinya secara rekursif (misalnya, menambahkan `JustFormInput` otomatis akan mengunduh `JustInput` jika belum ada).
 
 ### B. Import Rewriting (Penulisan Ulang Jalur Impor)
 
 Agar komponen yang disalin dapat langsung dikompilasi tanpa error pemanggilan file (_broken imports_), kelas internal `ImportRewriter` melakukan perubahan otomatis pada kode sumber yang diunduh:
 
 - Jalur impor core (seperti data tema atau provider) dialihkan ke paket global: `package:your_app/core/just_ui_core.dart`.
-- Jalur impor antar komponen lokal diterjemahkan menjadi relatif sesuai dengan lokasi `components_dir` dan `tokens_dir` yang dikonfigurasi di dalam proyek Anda.
+- Jalur impor antar komponen lokal diterjemahkan menjadi relatif sesuai dengan lokasi `components_dir` dan `tokens_dir` yang dikonfigurasi di dalam proyek kamu.
 
 ### C. Verifikasi Keamanan SHA-256 & Kontrol Metadata
 
@@ -57,17 +57,17 @@ Jika komponen membutuhkan package eksternal dari pub.dev (misalnya pustaka pemba
 
 ### E. Resolusi Konflik Modifikasi Lokal
 
-Jika Anda telah memodifikasi kode komponen secara lokal dan ada versi baru di registry, CLI akan mendeteksi perbedaan hash tersebut. CLI tidak akan menimpa file Anda secara sembarangan, melainkan menyajikan dialog interaktif:
+Jika kamu telah memodifikasi kode komponen secara lokal dan ada versi baru di registry, CLI akan mendeteksi perbedaan hash tersebut. CLI tidak akan menimpa file kamu secara sembarangan, melainkan menyajikan dialog interaktif:
 
-- **Overwrite**: Menimpa modifikasi lokal Anda dengan versi registry terbaru.
-- **Skip**: Mengabaikan pembaruan dan mempertahankan kode kustom Anda.
-- **View Diff**: Menampilkan perbedaan baris per baris di terminal untuk membantu Anda mengambil keputusan.
+- **Overwrite**: Menimpa modifikasi lokal kamu dengan versi registry terbaru.
+- **Skip**: Mengabaikan pembaruan dan mempertahankan kode kustom kamu.
+- **View Diff**: Menampilkan perbedaan baris per baris di terminal untuk membantu kamu mengambil keputusan.
 
 ---
 
 ## 3. Daftar Perintah CLI
 
-Setelah menginstal CLI (lihat [Instalasi](./installation)), Anda dapat menggunakan perintah berikut:
+Setelah menginstal CLI (lihat [Instalasi](./installation)), kamu dapat menggunakan perintah berikut:
 
 ### 1. `justui init`
 
@@ -79,7 +79,7 @@ Menginisialisasi konfigurasi dasar JustUI di dalam proyek Flutter baru.
 
 ### 2. `justui add`
 
-Mengunduh komponen dan menyalin kode sumbernya langsung ke folder lokal Anda.
+Mengunduh komponen dan menyalin kode sumbernya langsung ke folder lokal kamu.
 
 - **Argumen**:
   - `[component_names]`: Daftar nama komponen (dipisahkan spasi, misal: `justui add button input`). Jika dibiarkan kosong, CLI akan memunculkan menu daftar centang interaktif untuk memilih komponen secara visual.
@@ -111,7 +111,7 @@ Memindai komponen terpasang dan memperbarui yang usang ke versi terbaru di regis
 Membuat templat dasar untuk komponen kustom lokal baru yang mematuhi standar desain JustUI.
 
 - **Argumen**:
-  - `[custom_component_name]`: Nama komponen kustom baru Anda (misalnya `custom_card`).
+  - `[custom_component_name]`: Nama komponen kustom baru kamu (misalnya `custom_card`).
 - **Kegunaan**: Menghasilkan bundel struktur berkas standar:
   1. `custom_card.dart`: Widget utama yang sudah terhubung ke context extension (`context.justColors`, dll.).
   2. `custom_card_style.dart`: Parameter kustomisasi visual individual.
@@ -126,15 +126,15 @@ Perlu diperhatikan bahwa perintah **`remove`** dan **`doctor`** tidak didukung s
 
 ### Solusi untuk `justui remove` (Menghapus Komponen)
 
-Karena JustUI menggunakan model penyalinan kode sumber langsung (bukan sebagai library package read-only), Anda dapat menghapus komponen secara manual tanpa memengaruhi stabilitas SDK:
+Karena JustUI menggunakan model penyalinan kode sumber langsung (bukan sebagai library package read-only), kamu dapat menghapus komponen secara manual tanpa memengaruhi stabilitas SDK:
 
-1. Hapus file `.dart` terkait komponen tersebut di dalam folder komponen Anda (misalnya `lib/widgets/button/just_button.dart`).
+1. Hapus file `.dart` terkait komponen tersebut di dalam folder komponen kamu (misalnya `lib/widgets/button/just_button.dart`).
 2. Jika ada dependensi eksternal di `pubspec.yaml` yang hanya digunakan oleh komponen tersebut, hapus baris dependensi tersebut secara manual lalu jalankan `flutter pub get`.
 
 ### Solusi untuk `justui doctor` (Mendiagnosis Masalah)
 
-Jika Anda ingin mendiagnosis kondisi integritas instalasi JustUI Anda:
+Jika kamu ingin mendiagnosis kondisi integritas instalasi JustUI kamu:
 
 1. Jalankan perintah `justui diff [nama_komponen]` untuk setiap komponen terpasang untuk mendeteksi apakah ada kerusakan berkas atau modifikasi tidak disengaja.
-2. Periksa apakah jalur direktori di `justui.config.yaml` cocok dengan jalur folder fisik di proyek Anda.
+2. Periksa apakah jalur direktori di `justui.config.yaml` cocok dengan jalur folder fisik di proyek kamu.
 3. Pastikan token tema di `just_theme.dart` terhubung ke root provider di `main.dart`.

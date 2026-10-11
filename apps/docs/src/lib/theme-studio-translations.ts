@@ -45,7 +45,7 @@ export interface StudioDictionary {
   livePlayground: string;
 }
 
-const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
+const studioDictionaries = {
   en: {
     title: 'Theme Studio',
     subtitle:
@@ -136,7 +136,7 @@ const studioDictionaries: Record<StudioLanguage, StudioDictionary> = {
     lightness: 'Kecerahan',
     livePlayground: 'Playground Token Interaktif',
   },
-};
+} satisfies Record<StudioLanguage, StudioDictionary>;
 
 export function getStudioDictionary(lang?: string): StudioDictionary {
   if (lang === 'id') {

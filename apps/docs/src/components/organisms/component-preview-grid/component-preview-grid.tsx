@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import type { Route } from 'next';
 import type { ReactNode } from 'react';
 import { Check } from 'lucide-react';
 import { components } from '@/lib/components-data';
 import { getCatalogDictionary, type CrmStrings } from '@/lib/catalog-i18n';
+import { localizedHref } from '@/lib/i18n';
 
 const box = 'border-border border-(length:--just-border-width)';
 
@@ -31,12 +31,12 @@ function buildPreviews(crm: CrmStrings): Record<string, ReactNode> {
     badge: (
       <span className="flex gap-2">
         <span
-          className={`bg-info/15 text-foreground border-info/40 border-(length:--just-border-width) rounded-(--just-radius-sm) px-2 py-0.5 text-xs font-medium`}
+          className={`bg-info/15 text-foreground border-info/40 rounded-(--just-radius-sm) border-(length:--just-border-width) px-2 py-0.5 text-xs font-medium`}
         >
           {crm.stages.lead}
         </span>
         <span
-          className={`bg-success/15 text-foreground border-success/40 border-(length:--just-border-width) rounded-(--just-radius-sm) px-2 py-0.5 text-xs font-medium`}
+          className={`bg-success/15 text-foreground border-success/40 rounded-(--just-radius-sm) border-(length:--just-border-width) px-2 py-0.5 text-xs font-medium`}
         >
           {crm.stages.won}
         </span>
@@ -127,14 +127,16 @@ interface ComponentPreviewGridProps {
 export function ComponentPreviewGrid({ lang }: ComponentPreviewGridProps) {
   const { crm, descriptions } = getCatalogDictionary(lang);
   const previews = buildPreviews(crm);
-  const items = components.filter((c) => previews[c.slug]).slice(0, 12);
+  const items = components
+    .filter((c) => Boolean(previews[c.slug]))
+    .slice(0, 12);
 
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,240px),1fr))] gap-4">
       {items.map((component) => (
         <Link
           key={component.slug}
-          href={`/${lang}/docs/components/${component.slug}` as Route}
+          href={localizedHref(lang, `/docs/components/${component.slug}`)}
           className="bg-card border-border hover:border-accent-dark flex flex-col overflow-hidden rounded-(--just-radius-lg) border-(length:--just-border-width) shadow-sm transition-colors"
         >
           <div className="bg-background border-border flex h-28 items-center justify-center border-b border-b-(length:--just-border-width) px-5">

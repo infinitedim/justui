@@ -24,6 +24,10 @@ const MAX_RECENT = 6;
 
 const sectionTitle = 'text-foreground text-sm font-semibold';
 
+function isColorSpace(value: string): value is ColorSpace {
+  return value === 'hsl' || value === 'oklch' || value === 'hsluv';
+}
+
 export function ThemeConfigurator({
   lang = 'en',
   className,
@@ -292,7 +296,11 @@ export function ThemeConfigurator({
         <VariantPicker
           options={colorSpaceOptions}
           value={colorSpace}
-          onChange={(val) => setColorSpace(val as ColorSpace)}
+          onChange={(val) => {
+            if (isColorSpace(val)) {
+              setColorSpace(val);
+            }
+          }}
           label={t.colorSpace}
         />
         <p className="text-secondary text-xs leading-relaxed">
@@ -321,7 +329,9 @@ export function ThemeConfigurator({
             <li key={item.token}>
               <button
                 type="button"
-                onClick={() => handleCopyColor(item.token, item.value)}
+                onClick={() => {
+                  void handleCopyColor(item.token, item.value);
+                }}
                 className={cn(
                   'border-border hover:bg-background flex w-full items-center justify-between gap-2 rounded-(--just-radius-md) border-(length:--just-border-width) p-2 text-left transition-colors',
                   copiedToken === item.token && 'bg-accent-muted'

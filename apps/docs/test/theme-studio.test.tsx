@@ -30,6 +30,7 @@ vi.mock('@/lib/github', () => ({
 // CustomSearchDialog needs a fumadocs FrameworkProvider this unit test
 // doesn't set up; its own behavior is covered by test/search.test.tsx.
 vi.mock('@/components/search', () => ({
+  CustomSearchDialog: () => null,
   default: () => null,
 }));
 
@@ -217,7 +218,7 @@ describe('Theme Studio Component & Integration Tests', () => {
 
       const copyButton = screen.getAllByRole('button', {
         name: /^Copy colors\./,
-      })[0];
+      })[0]!;
       fireEvent.click(copyButton);
 
       // Clipboard write hasn't resolved yet: must not claim success early.
@@ -242,7 +243,7 @@ describe('Theme Studio Component & Integration Tests', () => {
 
       const copyButton = screen.getAllByRole('button', {
         name: /^Copy colors\./,
-      })[0];
+      })[0]!;
       fireEvent.click(copyButton);
 
       await screen.findByText('Copy failed');
@@ -425,8 +426,8 @@ describe('Theme Studio Component & Integration Tests', () => {
   });
 
   describe('StudioPage Server Component & Route', () => {
-    it('generates static params for all supported locales', async () => {
-      const params = await generateStaticParams();
+    it('generates static params for all supported locales', () => {
+      const params = generateStaticParams();
       expect(params).toEqual([{ lang: 'en' }, { lang: 'id' }]);
     });
 

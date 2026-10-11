@@ -6,13 +6,11 @@ import type { ButtonProps, ButtonVariant, ButtonSize } from './button.types';
 const border = 'border border-[length:var(--just-border-width)] border-border';
 
 const variantClassMap: Record<ButtonVariant, string> = {
-  primary:
-    `bg-accent text-accent-foreground ${border} hover:opacity-90 font-semibold`,
-  secondary:
-    `bg-card text-foreground ${border} hover:bg-elevated`,
-  ghost: 'bg-transparent text-secondary hover:bg-card hover:text-foreground border border-transparent',
-  outline:
-    `bg-transparent text-foreground ${border} hover:bg-card`,
+  primary: `bg-accent text-accent-foreground ${border} hover:opacity-90 font-semibold`,
+  secondary: `bg-card text-foreground ${border} hover:bg-elevated`,
+  ghost:
+    'bg-transparent text-secondary hover:bg-card hover:text-foreground border border-transparent',
+  outline: `bg-transparent text-foreground ${border} hover:bg-card`,
   danger: `bg-error text-white ${border} hover:opacity-90 active:opacity-80`,
 };
 
@@ -36,7 +34,7 @@ export function Button({
   children,
   ...rest
 }: ButtonProps) {
-  const isDisabled = disabled || loading;
+  const isDisabled = disabled === true || loading;
 
   return (
     <button

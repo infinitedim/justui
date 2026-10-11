@@ -7,9 +7,9 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
       'collections/server': path.resolve(
-        __dirname,
+        import.meta.dirname,
         './test/mocks/collections-server.ts'
       ),
     },
@@ -24,6 +24,14 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       include: ['src/**/*.{ts,tsx}'],
       exclude: ['src/app/api/**', 'src/app/globals.css'],
+      thresholds: {
+        'src/lib/**': {
+          lines: 80,
+          functions: 80,
+          branches: 65,
+          statements: 80,
+        },
+      },
     },
   },
 });

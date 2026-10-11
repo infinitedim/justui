@@ -106,7 +106,11 @@ export function CheckoutDemo() {
                       <X className="mx-auto h-4 w-4" />
                     </JustButtonPreview>
                   </div>
-                  <JustButtonPreview variant="link" size="sm" className="self-center">
+                  <JustButtonPreview
+                    variant="link"
+                    size="sm"
+                    className="self-center"
+                  >
                     Need help?
                   </JustButtonPreview>
                 </div>
@@ -120,7 +124,9 @@ export function CheckoutDemo() {
                   aria-label="Discard this order?"
                   className="bg-card border-border w-full max-w-[260px] rounded-(--just-radius-lg) border-(length:--just-border-width) p-5 shadow-sm"
                 >
-                  <div className="text-[15px] font-medium">Discard this order?</div>
+                  <div className="text-[15px] font-medium">
+                    Discard this order?
+                  </div>
                   <div className="text-secondary mt-1.5 text-[13px]">
                     This cannot be undone.
                   </div>
@@ -152,7 +158,9 @@ export function CheckoutDemo() {
             <div className="bg-card border-border rounded-(--just-radius-md) border-(length:--just-border-width) px-4 py-3.5 font-mono text-[13px] leading-6">
               <div>
                 _paying:{' '}
-                <span className={paying ? 'text-syn-keyword' : 'text-syn-number'}>
+                <span
+                  className={paying ? 'text-syn-keyword' : 'text-syn-number'}
+                >
                   {String(paying)}
                 </span>
               </div>

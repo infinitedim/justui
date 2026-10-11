@@ -11,6 +11,15 @@ import {
 } from '@/lib/i18n';
 import { source } from '@/lib/source';
 import { translations, baseOptions } from '@/lib/layout.shared';
+import { ok, err, unwrapOr, mapResult } from '@/lib/result';
+import {
+  isPreset,
+  parsePresetAlias,
+  PRESETS,
+  DEFAULT_PRESET,
+  PRESET_OPTIONS,
+} from '@/lib/presets';
+import { justuiLight, justuiDark } from '@/lib/justui-shiki-theme';
 
 describe('Library Helpers', () => {
   describe('github.ts', () => {
@@ -113,6 +122,75 @@ describe('Library Helpers', () => {
 
       expect(linkText(baseOptions('en'))).toEqual(['Docs', 'Components']);
       expect(linkText(baseOptions('id'))).toEqual(['Dokumentasi', 'Komponen']);
+    });
+  });
+
+  describe('result.ts', () => {
+    it('creates and unwraps ok results', () => {
+      const success = ok(123);
+      expect(success.ok).toBe(true);
+      if (success.ok) {
+        expect(success.value).toBe(123);
+      }
+      expect(unwrapOr(success, 0)).toBe(123);
+    });
+
+    it('creates and unwraps err results', () => {
+      const failure = err('something failed');
+      expect(failure.ok).toBe(false);
+      if (!failure.ok) {
+        expect(failure.error).toBe('something failed');
+      }
+      expect(unwrapOr(failure, 999)).toBe(999);
+    });
+
+    it('maps successful results correctly', () => {
+      const success = ok(10);
+      const mappedSuccess = mapResult(success, (n) => n * 2);
+      expect(unwrapOr(mappedSuccess, 0)).toBe(20);
+
+      const failure = err('fail');
+      const mappedFailure = mapResult(failure, (n: number) => n * 2);
+      expect(mappedFailure.ok).toBe(false);
+      expect(unwrapOr(mappedFailure, -1)).toBe(-1);
+    });
+  });
+
+  describe('presets.ts', () => {
+    it('validates preset values', () => {
+      expect(PRESETS).toEqual(['default', 'neobrutalism']);
+      expect(DEFAULT_PRESET).toBe('default');
+      expect(isPreset('default')).toBe(true);
+      expect(isPreset('neobrutalism')).toBe(true);
+      expect(isPreset('invalid')).toBe(false);
+      expect(isPreset(123)).toBe(false);
+      expect(isPreset(null)).toBe(false);
+    });
+
+    it('parses preset aliases', () => {
+      expect(parsePresetAlias('d')).toBe('default');
+      expect(parsePresetAlias('default')).toBe('default');
+      expect(parsePresetAlias('neo')).toBe('neobrutalism');
+      expect(parsePresetAlias('neobrutalism')).toBe('neobrutalism');
+      expect(parsePresetAlias('UNKNOWN')).toBeUndefined();
+      expect(parsePresetAlias(undefined)).toBeUndefined();
+    });
+
+    it('provides preset options', () => {
+      expect(PRESET_OPTIONS).toHaveLength(2);
+      expect(PRESET_OPTIONS[0]?.value).toBe('default');
+      expect(PRESET_OPTIONS[1]?.value).toBe('neobrutalism');
+    });
+  });
+
+  describe('justui-shiki-theme.ts', () => {
+    it('exports shiki themes matching token styles', () => {
+      expect(justuiLight.name).toBe('justui-light');
+      expect(justuiLight.type).toBe('light');
+      expect(justuiLight.settings.length).toBeGreaterThan(0);
+      expect(justuiDark.name).toBe('justui-dark');
+      expect(justuiDark.type).toBe('dark');
+      expect(justuiDark.settings.length).toBeGreaterThan(0);
     });
   });
 });

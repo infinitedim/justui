@@ -1,6 +1,7 @@
 import type { GeneratedComponentCategory } from './components.generated';
+import type { Locale } from '@/lib/i18n';
 
-export type HomepageDictionary = {
+export interface HomepageDictionary {
   tagline: string;
   heroTitle: string;
   heroDescription: string;
@@ -64,11 +65,9 @@ export type HomepageDictionary = {
   notFoundTitle: string;
   notFoundBody: string;
   notFoundHome: string;
-};
+}
 
-export const homepageTranslations: Readonly<
-  Record<string, HomepageDictionary>
-> = {
+export const homepageTranslations = {
   en: {
     tagline: 'Copy-paste Flutter components',
     heroTitle: 'One command. One file. Yours.',
@@ -221,10 +220,13 @@ export const homepageTranslations: Readonly<
       'Mungkin tautannya sudah lama, atau halamannya pindah. Coba salah satu ini:',
     notFoundHome: 'Beranda',
   },
-} as const;
+} satisfies Record<Locale, HomepageDictionary>;
 
 export function getHomepageDictionary(lang: string): HomepageDictionary {
-  return homepageTranslations[lang] ?? homepageTranslations.en;
+  if (lang === 'id') {
+    return homepageTranslations.id;
+  }
+  return homepageTranslations.en;
 }
 
 /** Replaces `{name}` placeholders in a dictionary string. */

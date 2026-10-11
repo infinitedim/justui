@@ -22,8 +22,8 @@ export function SearchBar({
       onClick={onActivate}
       aria-label={label}
       className={cn(
-        'just-press bg-card text-muted hover:text-foreground flex max-sm:hidden h-7 items-center gap-2.5 px-2.5 font-mono text-xs',
-        'rounded-(--just-radius-md) border-(length:--just-border-width) border-border shadow-xs',
+        'just-press bg-card text-muted hover:text-foreground flex h-7 items-center gap-2.5 px-2.5 font-mono text-xs max-sm:hidden',
+        'border-border rounded-(--just-radius-md) border-(length:--just-border-width) shadow-xs',
         className
       )}
     >

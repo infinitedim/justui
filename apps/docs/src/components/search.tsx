@@ -14,7 +14,7 @@ interface SharedProps {
   lang: string;
 }
 
-export default function CustomSearchDialog({ lang, ...props }: SharedProps) {
+export function CustomSearchDialog({ lang, ...props }: SharedProps) {
   // No `placeholder`/"no results" text here: SearchDialogInput/List already
   // default to fumadocs' own translated strings (t("Search"), "No results
   // found"), which layout.shared.tsx already registers an Indonesian

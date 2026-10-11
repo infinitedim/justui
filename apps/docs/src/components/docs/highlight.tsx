@@ -36,7 +36,7 @@ export function highlightDart(code: string): CodeLine[] {
       }
       let group = 1;
       while (!match[group]) group += 1;
-      tokens.push({ text: match[0], className: CLASS_BY_GROUP[group] });
+      tokens.push({ text: match[0], className: CLASS_BY_GROUP[group] ?? '' });
       last = match.index + match[0].length;
     }
     if (last < line.length) {

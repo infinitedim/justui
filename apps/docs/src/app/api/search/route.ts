@@ -42,7 +42,8 @@ export function _resetRateLimitsForTesting(): void {
  * Prioritizes x-real-ip, then x-forwarded-for, capped at 64 characters.
  */
 function getClientIp(request: Request | NextRequest): string {
-  const directIp = (request as unknown as { ip?: string }).ip;
+  const directIp =
+    'ip' in request && typeof request.ip === 'string' ? request.ip : undefined;
   if (directIp && directIp.trim().length > 0) {
     return directIp.trim().slice(0, 64);
   }

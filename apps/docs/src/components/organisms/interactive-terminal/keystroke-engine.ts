@@ -64,7 +64,9 @@ export function getAdjacentKey(char: string): string {
   if (adjacent && adjacent.length > 0) {
     const index = Math.floor(Math.random() * adjacent.length);
     const key = adjacent[index];
-    return char === char.toUpperCase() ? key.toUpperCase() : key;
+    if (key !== undefined) {
+      return char === char.toUpperCase() ? key.toUpperCase() : key;
+    }
   }
   return char;
 }

@@ -76,6 +76,7 @@ vi.mock('@/lib/github', () => ({
 // CustomSearchDialog needs a fumadocs FrameworkProvider this unit test
 // doesn't set up; its own behavior is covered by test/search.test.tsx.
 vi.mock('@/components/search', () => ({
+  CustomSearchDialog: () => null,
   default: () => null,
 }));
 
@@ -182,8 +183,8 @@ describe('App Router Pages and Layouts', () => {
   });
 
   describe('HomePage', () => {
-    it('returns static params for all supported languages', async () => {
-      const params = await homeStaticParams();
+    it('returns static params for all supported languages', () => {
+      const params = homeStaticParams();
       expect(params).toEqual([{ lang: 'en' }, { lang: 'id' }]);
     });
   });
@@ -203,8 +204,8 @@ describe('App Router Pages and Layouts', () => {
       ).toBeInTheDocument();
     });
 
-    it('returns static params', async () => {
-      const params = await componentsStaticParams();
+    it('returns static params', () => {
+      const params = componentsStaticParams();
       expect(params).toEqual([{ lang: 'en' }, { lang: 'id' }]);
     });
   });
@@ -348,8 +349,8 @@ describe('App Router Pages and Layouts', () => {
       expect(mockRedirect).toHaveBeenCalledWith('/id/docs/introduction');
     });
 
-    it('returns static params from source generator', async () => {
-      const params = await docsStaticParams();
+    it('returns static params from source generator', () => {
+      const params = docsStaticParams();
       expect(params).toEqual([{ lang: 'en', slug: ['intro'] }]);
     });
   });

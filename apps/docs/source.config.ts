@@ -9,8 +9,8 @@ export default defineConfig({
   mdxOptions: {
     rehypeCodeOptions: {
       themes: {
-        light: justuiLight as never,
-        dark: justuiDark as never,
+        light: justuiLight,
+        dark: justuiDark,
       },
     },
   },

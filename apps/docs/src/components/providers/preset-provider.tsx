@@ -9,10 +9,7 @@ import {
   useState,
 } from 'react';
 
-import {
-  type JustUIPreset,
-  DEFAULT_PRESET,
-} from '@/lib/presets';
+import { type JustUIPreset, DEFAULT_PRESET } from '@/lib/presets';
 
 export type { JustUIPreset };
 
@@ -41,7 +38,7 @@ export function PresetProvider({ children }: { children: React.ReactNode }) {
     // can throw (private browsing, blocked cookies/site data, some embedded
     // webviews); fall back to the default preset rather than crashing.
     try {
-      const stored = localStorage.getItem(STORAGE_KEY) as JustUIPreset | null;
+      const stored = localStorage.getItem(STORAGE_KEY);
       if (
         !chosenRef.current &&
         (stored === 'neobrutalism' || stored === 'default')

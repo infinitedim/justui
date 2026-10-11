@@ -36,6 +36,7 @@ vi.mock('next/link', () => ({
 // CustomSearchDialog needs a fumadocs FrameworkProvider this unit test
 // doesn't set up; its own behavior is covered by test/search.test.tsx.
 vi.mock('@/components/search', () => ({
+  CustomSearchDialog: () => null,
   default: () => null,
 }));
 

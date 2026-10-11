@@ -73,7 +73,9 @@ function StudioContent({ lang }: { lang: string }) {
             type="button"
             variant="primary"
             size="sm"
-            onClick={handleShare}
+            onClick={() => {
+              void handleShare();
+            }}
             className="flex items-center gap-1.5"
             aria-label={t.share}
           >

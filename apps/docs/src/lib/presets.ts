@@ -16,7 +16,7 @@ export const PRESET_OPTIONS = [
 
 export function isPreset(value: unknown): value is JustUIPreset {
   return (
-    typeof value === 'string' && (PRESETS as readonly string[]).includes(value)
+    typeof value === 'string' && PRESETS.some((preset) => preset === value)
   );
 }
 

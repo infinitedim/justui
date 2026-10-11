@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { ButtonMock } from './preview-mocks/button-mock';
 import { IconButtonMock } from './preview-mocks/icon-button-mock';
 import { InputMock } from './preview-mocks/input-mock';

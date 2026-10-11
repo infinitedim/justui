@@ -8,6 +8,11 @@ const KEY_STEP: Record<string, number> = {
   ArrowUp: -1,
 };
 
+export interface UseRovingTabsReturn<T extends string> {
+  registerTab: (id: T) => (node: HTMLButtonElement | null) => void;
+  onKeyDown: (event: KeyboardEvent<HTMLElement>) => void;
+}
+
 /**
  * Keyboard support for a WAI-ARIA tablist with automatic activation:
  * ArrowLeft/ArrowRight (and Up/Down) move to the previous/next tab with
@@ -18,7 +23,7 @@ export function useRovingTabs<T extends string>(
   ids: readonly T[],
   active: T,
   onSelect: (id: T) => void
-) {
+): UseRovingTabsReturn<T> {
   const tabRefs = useRef(new Map<T, HTMLButtonElement | null>());
 
   const registerTab = useCallback(

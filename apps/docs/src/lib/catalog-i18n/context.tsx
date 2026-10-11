@@ -17,9 +17,9 @@ export function CatalogI18nProvider({
 }: {
   lang: string;
   children: ReactNode;
-}) {
+}): ReactNode {
   const value = useMemo(() => getCatalogDictionary(lang), [lang]);
-  
+
   return (
     <CatalogI18nContext.Provider value={value}>
       {children}

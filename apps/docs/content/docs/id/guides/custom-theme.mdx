@@ -3,7 +3,7 @@ title: Kustomisasi Tema & Kontras Dinamis
 description: Panduan mendalam tentang arsitektur theming JustUI, inisialisasi warna dari seed, serta algoritma penjamin kontras WCAG AA.
 ---
 
-Sistem desain JustUI dilengkapi dengan mesin theming dinamis di dalam package `just_ui_core`. Pustaka ini tidak hanya memungkinkan Anda menghasilkan skema warna lengkap secara instan dari satu warna seed merek, tetapi juga secara aktif menjamin bahwa semua kombinasi warna yang dihasilkan memenuhi standar aksesibilitas kontras WCAG AA di runtime tanpa merusak estetika warna asal Anda.
+Sistem desain JustUI dilengkapi dengan mesin theming dinamis di dalam package `just_ui_core`. Pustaka ini tidak hanya memungkinkan kamu menghasilkan skema warna lengkap secara instan dari satu warna seed merek, tetapi juga secara aktif menjamin bahwa semua kombinasi warna yang dihasilkan memenuhi standar aksesibilitas kontras WCAG AA di runtime tanpa merusak estetika warna asal kamu.
 
 ---
 
@@ -13,15 +13,15 @@ JustUI menyediakan metode konstruktor factory `JustThemeData.fromSeed(Color seed
 
 ### Cara Kerja Skala HSL
 
-Di balik layar, JustUI mengonversi warna RGB seed yang Anda berikan ke dalam ruang warna **HSL (Hue, Saturation, Lightness)**. Penggunaan ruang warna HSL sangat penting karena memungkinkan manipulasi nilai kecerahan (_lightness_) dan kejenuhan (_saturation_) warna secara mandiri tanpa mengubah rona dasar (_hue_) dari warna merek Anda.
+Di balik layar, JustUI mengonversi warna RGB seed yang kamu berikan ke dalam ruang warna **HSL (Hue, Saturation, Lightness)**. Penggunaan ruang warna HSL sangat penting karena memungkinkan manipulasi nilai kecerahan (_lightness_) dan kejenuhan (_saturation_) warna secara mandiri tanpa mengubah rona dasar (_hue_) dari warna merek kamu.
 
 Dari warna seed dasar tersebut, JustUI secara otomatis memetakan dan menghasilkan palet warna komplementer untuk berbagai kebutuhan antarmuka, seperti:
 
-- **Warna Utama (Primary)**: Warna seed asli Anda.
+- **Warna Utama (Primary)**: Warna seed asli kamu.
 - **Warna Latar Belakang (Background)**: Warna netral yang sangat terang (pada mode terang) atau sangat gelap (pada mode gelap).
 - **Warna Permukaan (Surface/Card)**: Warna kontainer sekunder.
 - **Warna Teks (Text Primary/Secondary)**: Warna dengan kontras tinggi terhadap latar belakang.
-- **Warna Aksen/Status**: Warna sukses, info, peringatan, dan bahaya yang telah disesuaikan agar serasi dengan saturasi warna seed utama Anda.
+- **Warna Aksen/Status**: Warna sukses, info, peringatan, dan bahaya yang telah disesuaikan agar serasi dengan saturasi warna seed utama kamu.
 
 ---
 
@@ -44,7 +44,7 @@ Pertama, algoritma menghitung luminansi relatif dari latar belakang (`bgLuminanc
 
 #### 2. Pencarian Biner Kecerahan (Binary Search Lightness)
 
-Untuk menjaga agar warna hasil penyesuaian tetap sedekat mungkin dengan warna seed asli Anda (mempertahankan Hue dan Saturation asli), algoritma menjalankan pencarian biner pada rentang Lightness HSL sebanyak **8 iterasi**:
+Untuk menjaga agar warna hasil penyesuaian tetap sedekat mungkin dengan warna seed asli kamu (mempertahankan Hue dan Saturation asli), algoritma menjalankan pencarian biner pada rentang Lightness HSL sebanyak **8 iterasi**:
 
 - Batas awal didefinisikan:
   - Jika `makeLighter` aktif: batas bawah pencarian (`low`) diatur ke lightness awal warna seed, batas atas (`high`) disetel ke `1.0` (putih murni).
