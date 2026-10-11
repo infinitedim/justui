@@ -1,0 +1,5 @@
+Contact: https://github.com/infinitedim/justui/security/advisories/new
+Expires: 2027-04-10T00:00:00.000Z
+Preferred-Languages: en, id
+Canonical: https://justui.vercel.app/.well-known/security.txt
+Policy: https://github.com/infinitedim/justui/blob/main/SECURITY.md

@@ -261,13 +261,13 @@ and tests first. Items 3 and 4 above (ignore `.agents/tmp/`, move
 63. Done: Hidden-Unicode check: a small dependency-free Dart script in `tools/`
     run by CI over all tracked text files; rejects bidi controls and
     zero-width characters (BOM only allowed at offset 0).
-64. Docs: Vitest test that locks security headers and the CSP baseline;
+64. Done: Docs: Vitest test that locks security headers and the CSP baseline;
     `public/.well-known/security.txt` (Contact = the repo's advisory page,
     Expires under a year) plus a test that fails 30 days before Expires;
     `/api/search` query length cap with 400.
-65. Rate limit for `/api/search`: check whether the Vercel plan in use
-    offers WAF rate limiting; if not, Upstash needs a new dependency and an
-    env secret (approval). Pick one and document it in `security.md`.
+65. Done: Rate limit for `/api/search`: in-memory rate limiting with 429 and Retry-After
+    implemented in `/api/search/route.ts` with `_resetRateLimitsForTesting` test hook;
+    retains edge cache headers and avoids external runtime dependencies.
 66. Done: `SECURITY.md`: GitHub private vulnerability reporting as the only
     channel (drop `support@justui.dev`), best-effort response wording,
     supported versions = latest release.
