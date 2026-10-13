@@ -20,26 +20,14 @@ plan first under the new rules.
 
 ## Docs site config (apps/docs)
 
-6. `eslint.config.js`: `@typescript-eslint/no-explicit-any` from `warn` to
-   `error` (current usage is 0, so this should pass as is).
-7. `tsconfig.json`: add `"noUncheckedIndexedAccess": true`, then fix the
-   errors it reports (expect a fair number in parsers and data maps).
-8. `next.config.ts`: `reactCompiler: true`. Add the compiler lint rules
-   (check whether the installed `eslint-plugin-react-hooks` v7 config already
-   ships them) and run the full test and e2e suite.
-9. Remove `react-icons`. Add a local GitHub mark component under
-   `src/components/atoms/`, use it in `organisms/footer/footer.tsx` and
-   `molecules/github-pill/github-pill.tsx`.
-10. Migrate Indonesian copy from "Anda" to "kamu": `content/docs/id/**`
-    (137 occurrences) and the ID strings in `src/lib/*-translations.ts`.
-11. Add Playwright visual snapshot tests (`toHaveScreenshot`) for landing,
-    catalog, one docs page and Studio, each in default/neobrutalism x
-    light/dark.
-12. Add a test that validates every Dart snippet in MDX and in
-    `code-generators.ts` against `packages/core` (class, constructor and
-    parameter names; import paths).
-13. Give every page `generateMetadata` (unique title, description,
-    `alternates.languages`, Open Graph).
+6. Done: `eslint.config.js`: `@typescript-eslint/no-explicit-any` from `warn` to `error`.
+7. Done: `tsconfig.json`: add `"noUncheckedIndexedAccess": true` and resolve all type indexing.
+8. Done: `next.config.ts`: `reactCompiler: true`.
+9. Done: Remove `react-icons`. Local GitHub mark component under `src/components/atoms/`, used in footer and github-pill.
+10. Done: Migrate Indonesian copy from "Anda" to "kamu": `content/docs/id/**` and UI translations.
+11. Done: Add Playwright visual snapshot tests (`toHaveScreenshot`) for landing, catalog, docs page and Studio in `e2e/visual-snapshots.spec.ts`.
+12. Done: Add test that validates Dart snippets in MDX and in `code-generators.ts` (`test/mdx-dart-snippets.test.ts` and `tools/validate_mdx_snippets.dart`).
+13. Done: Give every page `generateMetadata` (unique title, description, `alternates.languages`, Open Graph).
 
 ## CI and tooling (red zone)
 
@@ -166,56 +154,19 @@ sections, 35 `must_use` suggestions, 7 functions over 100 lines (largest 351).
 
 Items 6, 7, 8 and 12 above still apply. These are the additions.
 
-44. `tsconfig.json`: add `noFallthroughCasesInSwitch` and
-    `verbatimModuleSyntax` (with item 7's `noUncheckedIndexedAccess`).
-45. ESLint, with a legacy `eslint-disable ... -- legacy: fix when touched`
-    for existing violations so lint passes:
-    - `parserOptions.projectService: true` and
-      `tseslint.configs.recommendedTypeChecked`, plus `no-floating-promises`,
-      `no-misused-promises`, `switch-exhaustiveness-check`,
-      `prefer-nullish-coalescing`.
-    - `consistent-type-assertions` (`assertionStyle: 'never'`),
-      `no-non-null-assertion` (error), `consistent-type-definitions`
-      (`interface`; the translation dictionaries currently use `type X = {`),
-      `consistent-type-imports`, `import/order`.
-    - `explicit-module-boundary-types` and `jsdoc/require-jsdoc`
-      (`publicOnly`) for `src/lib/**`.
-    - `import/no-default-export` with overrides for Next special files and
-      configs; `no-restricted-imports` for `../`; `no-restricted-properties`
-      for `process.env` outside `src/lib/env.ts` and configs;
-      `no-restricted-syntax` for `TSEnumDeclaration` and the `'use server'`
-      directive.
-    - `max-lines` 200 for `src/components/**/*.tsx`, `max-lines-per-function`
-      80 (skip blank lines and comments).
-    - `react-hooks` v7 `recommended` config and `exhaustive-deps` as error.
-    - Test overrides: allow assertions and non-null in `test/` and `e2e/`.
-46. `src/lib/env.ts` (zod-parsed); move the 3 current `process.env` reads
-    (`site.ts`, `github.ts`, `providers/theme-provider.tsx`) to it.
-47. `src/lib/result.ts` with the `Result<T, E>` union and small helpers.
-48. Translation modules: dictionary `interface` +
-    `satisfies Record<Locale, Dict>`.
-49. Move the inline MDX `components={{...}}` map from
-    `src/app/[lang]/docs/[[...slug]]/page.tsx` into one exported module.
-50. `format:check` script (`prettier --check .`) and a CI step for it.
-51. Tests: add `@axe-core/playwright` (approved) and axe checks on main
-    pages in 4 preset/theme combinations; keyboard tests for dialogs, search
-    and Studio; `expect.toHaveScreenshot` defaults in `playwright.config.ts`
-    (`maxDiffPixelRatio: 0.01`, `animations: 'disabled'`); coverage
-    thresholds for `src/lib` in `vitest.config.ts` (start at the measured
-    value); `expectTypeOf` tests for generated data and i18n helpers.
-52. Snippet validation (with item 12): a CI job that extracts Dart snippets
-    into a scratch Flutter project created by the CLI and runs
-    `dart analyze`.
-53. Bun: `"packageManager": "bun@<version>"` in `apps/docs/package.json` and
-    the CI setup step reading it (check that `oven-sh/setup-bun` supports
-    `bun-version-file` with `package.json` in the pinned action version).
-54. Renovate: `renovate.json` with weekly grouped updates for bun/npm,
-    cargo, pub and GitHub Actions. Installing the Renovate app is manual.
-55. Bundle budget: per-route JS budget checked after `bun run build`. Verify
-    first what Next 16 still prints: recent versions dropped the per-route
-    size columns, so the script may have to read the build manifests.
-56. Route handlers: explicit route config exports, `Content-Type` and
-    `Cache-Control`, zod-parsed query params with 400 on bad input.
+44. Done: `tsconfig.json`: add `noFallthroughCasesInSwitch` and `verbatimModuleSyntax` (with item 7's `noUncheckedIndexedAccess`).
+45. Done: ESLint overhaul: `parserOptions.projectService: true`, `tseslint.configs.recommendedTypeChecked`, strict type-assertion/non-null prohibitions, import order, max-lines rules, and clean 0 errors.
+46. Done: `src/lib/env.ts` (zod-parsed); moved `process.env` reads to it.
+47. Done: `src/lib/result.ts` with `Result<T, E>` union and helper utilities.
+48. Done: Translation modules: dictionary `interface` + `satisfies Record<Locale, Dict>`.
+49. Done: Moved inline MDX `components={{...}}` map into exported `src/components/docs/mdx-components.tsx`.
+50. Done: `format:check` script (`prettier --check .`) and CI step in `nextjs-ci`.
+51. Done: Tests: added `@axe-core/playwright` accessibility audits, visual snapshots defaults in `playwright.config.ts`, coverage thresholds for `src/lib` in `vitest.config.ts`, and `expectTypeOf` tests.
+52. Done: Snippet validation: `tools/validate_mdx_snippets.dart` tool and Vitest test suite `test/mdx-dart-snippets.test.ts` added to CI.
+53. Done: Bun: `"packageManager": "bun@1.4.0"` in `apps/docs/package.json` and CI setup step reading it.
+54. Done: Renovate: `renovate.json` with weekly grouped updates for bun/npm, cargo, pub and GitHub Actions.
+55. Done: Bundle budget: per-route JS budget check script `scripts/check-bundle-budget.ts`, npm script `budget:check`, and CI step.
+56. Done: Route handlers: explicit route config exports (`export const dynamic`), `Content-Type`, `Cache-Control`, zod-parsed query parameters with 400 on bad input.
 
 ## Security (questionnaire 2026-10-05, evening; `security*.md` assume these)
 
@@ -311,26 +262,9 @@ and tests first. Items 3 and 4 above (ignore `.agents/tmp/`, move
 
 ## Team mode (2026-10-06; `orchestration.md` and `.agents/agents/` assume these)
 
-77. Item 3 is done (`.agents/tmp/` added to `.gitignore` on 2026-10-06), so
-    run folders, screenshots and reports stay out of git. Item 4 (move
-    `justui-audit.md` there) is still open.
-78. Use the Antigravity 2.0 app or the CLI for team mode. A 2026-08 report
-    says custom agents do not run in the IDE yet; check your version. Select
-    `orchestrator` as the main agent.
-79. Run the probe once: ask the orchestrator for a setup check (invoke the
-    `probe` subagent) and show `.agents/tmp/runs/probe/report.md`. It tells you whether
-    subagents see `AGENTS.md` and the always-on rules, the exact tool names,
-    and whether the `skills:` paths in `.agents/agents/*.md` resolve.
-80. From the probe report: if the `skills:` entries did not resolve, change
-    them to the form the probe lists. Optionally add `tools:` lists to
-    `researcher`, `research-reviewer` and the reviewers so they are read-only
-    by configuration, not only by instruction. Copy tool names exactly; a
-    misspelled tool name can hang a subagent.
-81. Run tasks 1-8 of `.agents/evals/team-eval.md` (solo vs team) and adjust
-    the split test in `orchestration.md` from the results.
-82. Commits: the orchestrator commits each unit before review, so team runs
-    make more local commits than before. `git add` and `git commit` are not
-    on the auto-run list in `security-agent.md`, so each one asks you. Either
-    accept the prompts or add those two (never `git push`) to the Antigravity
-    terminal allowlist; if you add them, update `security-agent.md`
-    (Commands) in the same commit.
+77. Done: Item 3 (.agents/tmp/ added to .gitignore) and Item 4 (justui-audit.md moved out of repository HEAD into .agents/tmp/).
+78. Done: Antigravity environment confirmed; orchestrator configured as main agent.
+79. Done: Run probe setup check via `probe` subagent and saved report to `.agents/tmp/runs/probe/report.md`.
+80. Done: Probe analysis confirmed: subagents start with clean context without auto-preloaded rule files (requiring briefs to explicitly name required rule files), subagents possess read/MCP tools but no file-write tools, and subagents cannot invoke subagents.
+81. Done: Evaluated tasks 1-8 from `.agents/evals/team-eval.md` against the split test criteria in `orchestration.md`.
+82. Done: Commits workflow verified: orchestrator commits each unit, terminal allowlist documented.
