@@ -52,14 +52,14 @@ Every row runs on the final branch head. Results go into
 | V-1  | Contrast contract (Dart) | `contrast_contract_test.dart` for 2 presets x 2 modes, plus the hand floors                                                                                                                                                                                                                                                                                                                 | Sandbox                      |
 | V-2  | Tint sweep               | Test that builds `inkAndPaper` for hue 0 to 359 step 15 and chroma 0, 0.0035, 0.010, in both modes, and checks every contract rule                                                                                                                                                                                                                                                          | Sandbox                      |
 | V-3  | Generator drift          | `dart run tools/generate_tokens.dart --check`                                                                                                                                                                                                                                                                                                                                               | Sandbox                      |
-| V-4  | Cross-language parity    | Dart parity test (P2) and TS parity test (P7) both green on the same generated data                                                                                                                                                                                                                                                                                                         | Both                         |
+| V-4  | Cross-language parity    | Dart parity test (P2) green, and `tokens.generated.ts` role values equal the Dart generated values (Vitest test from AC-6.2). The Studio TS parity test is deprecated (OS-2)                                                                                                                                                                                                                | Both                         |
 | V-5  | Web contrast             | Vitest role pair test (AC-6.2) and Shiki test (AC-6.3)                                                                                                                                                                                                                                                                                                                                      | Sandbox                      |
 | V-6  | Guards                   | `color_guard_test.dart` at the final state of P4 section 9; `style-guards.test.ts` with closed ratchets                                                                                                                                                                                                                                                                                     | Sandbox                      |
 | V-7  | Flutter widget tests     | `melos exec --flutter --dir-exists="test" -- "flutter test"`                                                                                                                                                                                                                                                                                                                                | Owner machine                |
 | V-8  | Goldens                  | Golden tests for every component family in 4 combinations, reviewed image by image                                                                                                                                                                                                                                                                                                          | Owner machine                |
 | V-9  | Docs snapshots           | `bun run test:e2e` including `visual-snapshots.spec.ts`                                                                                                                                                                                                                                                                                                                                     | Owner machine                |
 | V-10 | axe AAA                  | AC-7.9 pages (docs pages only; non-docs pages are deprecated, see P7 section 0), tags `wcag2a`, `wcag2aa`, `wcag2aaa`, `wcag21a`, `wcag21aa`, `wcag22aa`, 4 combinations                                                                                                                                                                                                                    | Owner machine                |
-| V-11 | Keyboard focus           | Tab through header, search, catalog, Studio and one component page in 4 combinations: ring visible, not obscured by sticky header (2.4.11), width and color as in AC-6.5                                                                                                                                                                                                                    | Owner machine                |
+| V-11 | Keyboard focus           | Tab through header, search, one docs content page and one component docs page in 4 combinations: ring visible, not obscured by sticky header (2.4.11), width and color as in AC-6.5                                                                                                                                                                                                         | Owner machine                |
 | V-12 | Forced colors            | Chromium `forcedColors: 'active'`: buttons keep a border, selected states use `Highlight`, focus visible                                                                                                                                                                                                                                                                                    | Owner machine                |
 | V-13 | Prefers contrast         | `prefers-contrast: more` on the web and `MediaQuery.highContrast` in Flutter both collapse secondary and tertiary to primary and subtle borders to control borders                                                                                                                                                                                                                          | Both                         |
 | V-14 | Color vision review      | Simulate protanopia, deuteranopia and tritanopia with the Machado 2009 matrices on the toast, badge, input error and destructive button screens. The three status colors sit at nearly the same lightness (OKLCH L 0.40 to 0.42 in light mode, about 0.80 in dark mode), so they will look alike under simulation. Pass condition: every status is still identified by glyph and text alone | Sandbox (script) plus review |
@@ -75,18 +75,18 @@ Every row runs on the final branch head. Results go into
 Fill this table in the verification report with the measured value, the
 command or test that produced it, and pass or fail:
 
-| Metric | Target    | Source                                             |
-| ------ | --------- | -------------------------------------------------- |
-| M1     | >= 7.00:1 | V-1, V-2, V-5                                      |
-| M2     | >= 3.00:1 | V-1, V-2, V-11                                     |
-| M3     | 0         | V-10                                               |
-| M4     | 0         | V-6 (CG-1)                                         |
-| M5     | 0         | V-6 (CG-4)                                         |
-| M6     | 0         | V-6 (CG-3)                                         |
-| M7     | 0         | V-6 (accent ban)                                   |
-| M8     | 1         | Review: only the token source authors color values |
-| M9     | 0         | V-17                                               |
-| M10    | <= 3      | V-18                                               |
+| Metric | Target                  | Source                                             |
+| ------ | ----------------------- | -------------------------------------------------- |
+| M1     | >= 7.00:1               | V-1, V-2, V-5                                      |
+| M2     | >= 3.00:1               | V-1, V-2, V-11                                     |
+| M3     | 0                       | V-10                                               |
+| M4     | 0                       | V-6 (CG-1)                                         |
+| M5     | 0                       | V-6 (CG-4)                                         |
+| M6     | 0                       | V-6 (CG-3)                                         |
+| M7     | 0 (in-scope docs files) | V-6 (accent ban)                                   |
+| M8     | 1                       | Review: only the token source authors color values |
+| M9     | 0                       | V-17                                               |
+| M10    | <= 3                    | V-18                                               |
 
 ### FR-9.3 Changesets and versions
 

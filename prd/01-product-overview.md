@@ -51,8 +51,9 @@ One monochrome brand, "Ink and Paper", shared by the docs and the library:
 
 ## 4. Non-goals
 
-1. Changing typography in the Flutter library (Inter stays unless DP-6 says
-   otherwise).
+1. Typography beyond the font family. The family changes to Plus Jakarta
+   Sans in docs and Flutter (DP-6, decided 2026-10-14); sizes, scale and
+   line heights stay.
 2. Redesigning page layouts of the docs site beyond what the color change
    requires. A layout redesign of the landing page is a separate project.
 3. Adding new components or new presets.
@@ -73,18 +74,18 @@ One monochrome brand, "Ink and Paper", shared by the docs and the library:
 
 ## 6. Success metrics
 
-| ID  | Metric                                                             | Target           |
-| --- | ------------------------------------------------------------------ | ---------------- |
-| M1  | Minimum text contrast across all roles, surfaces, presets, modes   | >= 7.00:1        |
-| M2  | Minimum control boundary and focus ring contrast                   | >= 3.00:1        |
-| M3  | axe violations with `wcag2aaa` and `wcag22aa` tags on docs         | 0                |
-| M4  | Hard-coded opaque `Color(0xFF...)` in components (excluding masks) | 0                |
-| M5  | `presetTokens.showsDefaultBorder` reads inside components          | 0                |
-| M6  | `preset == .neobrutalism` comparisons in core and components       | 0                |
-| M7  | Accent utilities (`*-accent*`) in `apps/docs/src`                  | 0                |
-| M8  | Places where a color value is authored by hand                     | 1 (token source) |
-| M9  | Existing user code that stops compiling after upgrade              | 0                |
-| M10 | Files a new preset must touch (excluding tests and docs)           | <= 3             |
+| ID  | Metric                                                               | Target           |
+| --- | -------------------------------------------------------------------- | ---------------- |
+| M1  | Minimum text contrast across all roles, surfaces, presets, modes     | >= 7.00:1        |
+| M2  | Minimum control boundary and focus ring contrast                     | >= 3.00:1        |
+| M3  | axe violations with `wcag2aaa` and `wcag22aa` tags on docs           | 0                |
+| M4  | Hard-coded opaque `Color(0xFF...)` in components (excluding masks)   | 0                |
+| M5  | `presetTokens.showsDefaultBorder` reads inside components            | 0                |
+| M6  | `preset == .neobrutalism` comparisons in core and components         | 0                |
+| M7  | Accent utilities (`*-accent*`) in in-scope docs files (P7 section 0) | 0                |
+| M8  | Places where a color value is authored by hand                       | 1 (token source) |
+| M9  | Existing user code that stops compiling after upgrade                | 0                |
+| M10 | Files a new preset must touch (excluding tests and docs)             | <= 3             |
 
 ## 7. Scope summary per phase
 

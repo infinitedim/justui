@@ -57,7 +57,7 @@ Top-level sections:
 | `roles`    | `light` and `dark` maps from role name to a reference such as `"{neutral.n985}"`                                         |
 | `presets`  | Per preset: `parts` map and `roleOverrides` map (see FR-1.2)                                                             |
 | `contrast` | List of rules (see FR-1.3)                                                                                               |
-| `fonts`    | `sans: "IBM Plex Sans"`, `mono: "IBM Plex Mono"` (docs only for now)                                                     |
+| `fonts`    | `sans: "Plus Jakarta Sans"` (docs and Flutter, DP-6), `mono: "IBM Plex Mono"` (docs code only)                           |
 
 Example (abbreviated):
 
@@ -109,10 +109,28 @@ Example (abbreviated):
 1. `parts` keys (closed set for version 1): `primaryBg`, `primaryFg`,
    `primaryBorder`, `secondaryBg`, `secondaryBorder`, `containerBorder`,
    `controlBorder`, `shadowColor`, `selectedBg`, `selectedFg`.
-2. Every value must be a role name from `roles`.
+2. Every value must be a role name from `roles` or the literal
+   `"transparent"`. `"transparent"` is emitted as `Color(0x00000000)` in Dart
+   and `transparent` in CSS. Any other value fails generation.
 3. `roleOverrides` maps a role name to a neutral or status reference. Any
    other value (a raw hex, an unknown primitive) is rejected.
-4. A preset must define every `parts` key. Missing keys fail generation.
+4. A preset must define every `parts` key. Missing keys fail generation. The
+   JSON example in FR-1.1 is abbreviated; the full mapping is:
+
+| Key             | default       | neobrutalism |
+| --------------- | ------------- | ------------ |
+| primaryBg       | inverse       | surface      |
+| primaryFg       | onInverse     | textPrimary  |
+| primaryBorder   | inverse       | textPrimary  |
+| secondaryBg     | transparent   | transparent  |
+| secondaryBorder | borderControl | textPrimary  |
+| containerBorder | borderSubtle  | textPrimary  |
+| controlBorder   | borderControl | textPrimary  |
+| shadowColor     | textPrimary   | textPrimary  |
+| selectedBg      | inverse       | inverse      |
+| selectedFg      | onInverse     | onInverse    |
+
+The values follow `02-design-spec.md` section 6 (Rule A, DP-2).
 
 ### FR-1.3 Contrast rules
 

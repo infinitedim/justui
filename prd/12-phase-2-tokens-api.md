@@ -163,7 +163,12 @@ Existing methods are unchanged.
 1. `JustTypography` default `fontFamily` changes from `Inter`
    (`typography.dart:9`) to `PlusJakartaSans`.
 2. The library stays zero-dependency: it does not use the `google_fonts`
-   package. The font files are assets. The registry/CLI copies
+   package. The font files are assets. This phase adds them to the repository:
+   `packages/tokens/assets/fonts/PlusJakartaSans-{Regular,Medium,SemiBold,Bold}.ttf`
+   and `OFL.txt` (downloaded on the owner machine; the sandbox is offline).
+   Note: today `typography.dart:9` names Inter but no package bundles it, so
+   Flutter already falls back to the platform font; shipping the files is new
+   work, not a swap. The registry/CLI copies
    `PlusJakartaSans` (OFL license, weights 400, 500, 600, 700) into the user's
    `assets/fonts/` and adds the `fonts:` entry to `pubspec.yaml` (P8, FR-8.9).
 3. If the font asset is missing, Flutter falls back to the platform default
@@ -192,6 +197,8 @@ Existing methods are unchanged.
 | `packages/tokens/lib/src/colors/color_palette.dart`        | Deprecated annotations                          |
 | `packages/tokens/lib/src/colors/colors_accessibility.dart` | AAA helper                                      |
 | `packages/tokens/lib/just_ui_tokens.dart`                  | Export brand palette                            |
+| `packages/tokens/lib/src/typography.dart`                  | Font family                                     |
+| `packages/tokens/assets/fonts/*.ttf`, `OFL.txt`            | New (font files)                                |
 | `packages/tokens/test/*.dart`                              | Updated and new tests                           |
 | `.changeset-polyglot/ink-and-paper-tokens.md`              | New changeset                                   |
 
@@ -205,7 +212,7 @@ Existing methods are unchanged.
 | P2.T4  | `CustomColorScheme` constructor, `fromLegacy`, `copyWith`, deprecate `resolveSemantic`       | P2.T1      |
 | P2.T5  | AAA helper                                                                                   | P2.T1      |
 | P2.T6  | Contrast contract test, parity test, updated specification test                              | P2.T2      |
-| P2.T6b | Typography family change (FR-2.11)                                                           | P2.T1      |
+| P2.T6b | Typography family change and font files (FR-2.11)                                            | P2.T1      |
 | P2.T7  | Changeset (`just_ui_tokens`: minor, or major per DP-1)                                       | P2.T6      |
 
 ## 9. Acceptance criteria

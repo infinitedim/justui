@@ -94,13 +94,15 @@ component supports.
 
 ## 6. Files
 
-| File                                                                       | Change                 |
-| -------------------------------------------------------------------------- | ---------------------- |
-| `registry/components/**`, `registry/index.json`, `registry/index.json.sig` | Generated              |
-| `tools/generate_checksums.dart`                                            | Identical-preset guard |
-| `apps/showcase/lib/{core,tokens,widgets}`                                  | Regenerated            |
-| `apps/showcase/lib/main.dart`                                              | Only if needed         |
-| `apps/preview/lib/usecases/*.dart`                                         | Updated                |
+| File                                                                       | Change                                                                      |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `registry/components/**`, `registry/index.json`, `registry/index.json.sig` | Generated                                                                   |
+| `tools/generate_checksums.dart`                                            | Identical-preset guard                                                      |
+| `apps/showcase/lib/{core,tokens,widgets}`                                  | Regenerated                                                                 |
+| `apps/showcase/lib/main.dart`                                              | Only if needed                                                              |
+| `apps/showcase/pubspec.yaml`, `apps/showcase/assets/fonts/**`              | Written by `justui init` (P8 FR-8.9)                                        |
+| `apps/preview/pubspec.yaml`, `apps/preview/assets/fonts/**`                | `PlusJakartaSans` font entry added by hand (Widgetbook does not run `init`) |
+| `apps/preview/lib/usecases/*.dart`                                         | Updated                                                                     |
 
 ## 7. Tasks
 

@@ -1,7 +1,8 @@
 # JustUI Ink and Paper Rebrand: PRD Set
 
-Status: Draft v2 (2026-10-14)
+Status: Draft v3 (2026-10-15)
 Changes in v2: Plus Jakarta Sans everywhere (P2, P6, P8); non-docs Next.js pages deprecated (P7)
+Changes in v3 (2026-10-15): fixes from an external review (P7 criteria aligned with the deprecated scope, font files and test loading, parts mapping, preset token replacements, focus ring width, guard targets)
 Owner: Dimas (GitHub: infinitedim)
 Repository: https://github.com/infinitedim/justui
 Baseline commit: `development` at `d80b55e` (2026-10-13)

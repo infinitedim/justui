@@ -22,7 +22,8 @@ rendering until the redesign replaces them.
    `studio-preview`, `code-export-drawer`, `theme-studio-context`,
    `not-found-view`).
 3. New task P7.T0 builds the real split from the import graph of the docs
-   route. Files imported by both sides count as in scope. The lists in this
+   route. Rows in the FR-7.1 group table and the FR-7.2 table that land in the
+   deprecated list are skipped. Files imported by both sides count as in scope. The lists in this
    file are a starting guess and P7.T0 overrides them.
 4. Consequences, applied in the sections below:
    - FR-7.3 to FR-7.5 (Studio tint picker, URL compatibility, code export,
@@ -36,8 +37,8 @@ rendering until the redesign replaces them.
      deprecated files still use, carries a "remove with the redesign" comment,
      and the style guards keep an allow-list that contains only deprecated
      files. New files may not use aliases.
-   - AC-7.4 (no `a3e635`) and the M7 metric (zero accent utilities) are
-     measured only on in-scope files. The deprecated list is reported as the
+   - AC-7.1 to AC-7.4 and the M7 metric are measured only on in-scope
+     files; AC-7.5, AC-7.6, AC-7.7 and AC-7.10 are deprecated. The deprecated list is reported as the
      number left for the redesign.
    - The Studio no longer blocks P8 (the `--seed` alias in the CLI still
      exists for it).
@@ -235,9 +236,11 @@ where the parameter type allows it. 4. `seedToArgbHex` is deleted if nothing els
 
 ### FR-7.8 Remove transitional aliases (in-scope files only, see section 0)
 
-1. Delete the alias block added in P6 from `globals.css`.
-2. `ACCENT_ALLOWED` becomes empty and is replaced by a hard ban of the accent
-   pattern.
+1. Shrink the alias block added in P6 in `globals.css` to the aliases that
+   deprecated files still use. The block carries the comment
+   `Deprecated: remove with the non-docs redesign (91-out-of-scope.md OS-2)`.
+2. `ACCENT_ALLOWED` keeps only files from the deprecated list recorded by
+   P7.T0. Any in-scope file in it fails the test. New files may not be added.
 3. The hard bans from P0 (`focus-visible:outline-accent`, `bg-black`,
    `bg-white`, `text-white`) keep an empty allow-list.
 
@@ -288,24 +291,17 @@ change in this phase.
 
 ## 7. Files
 
-| File or folder                                                                              | Change                      |
-| ------------------------------------------------------------------------------------------- | --------------------------- |
-| The 54 accent files listed in FR-7.1                                                        | Class mapping               |
-| The 12 status files listed in FR-7.2                                                        | Status behavior             |
-| `src/lib/theme-studio-context.tsx`                                                          | Tint state                  |
-| `src/lib/theme/ink-and-paper.ts`                                                            | New                         |
-| `src/lib/theme/url-serializer.ts`                                                           | New format, old format read |
-| `src/lib/theme/color-resolver.ts`, `hsluv.ts`, `perceptual.ts`                              | Trimmed                     |
-| `src/components/organisms/code-export-drawer/code-generators.ts`                            | inkAndPaper output          |
-| `src/components/docs/color-role-table.tsx`                                                  | New                         |
-| `src/app/globals.css`                                                                       | Alias block removed         |
-| `content/docs/{en,id}/**`                                                                   | FR-7.9                      |
-| `test/style-guards.test.ts`                                                                 | Ratchets closed             |
-| `test/ink-and-paper-parity.test.ts`                                                         | New                         |
-| `test/code-generators.test.ts`, `test/color-resolver.test.ts`, `test/theme-studio.test.tsx` | Updated                     |
-| `e2e/accessibility.spec.ts`                                                                 | AAA and 2.2 tags            |
-| `e2e/visual-snapshots.spec.ts` baselines                                                    | Regenerated (owner machine) |
-| `README.md`                                                                                 | Badge color                 |
+| File or folder                                        | Change                      |
+| ----------------------------------------------------- | --------------------------- |
+| In-scope files from the P7.T0 list (subset of FR-7.1) | Class mapping               |
+| In-scope files from FR-7.2                            | Status behavior             |
+| `src/components/docs/color-role-table.tsx`            | New                         |
+| `src/app/globals.css`                                 | Alias block removed         |
+| `content/docs/{en,id}/**`                             | FR-7.9                      |
+| `test/style-guards.test.ts`                           | Ratchets closed             |
+| `e2e/accessibility.spec.ts`                           | AAA and 2.2 tags            |
+| `e2e/visual-snapshots.spec.ts` baselines              | Regenerated (owner machine) |
+| `README.md`                                           | Badge color                 |
 
 ## 8. Tasks
 
@@ -325,26 +321,30 @@ change in this phase.
 
 ## 9. Acceptance criteria
 
-1. AC-7.1: `grep -rnE "(bg|text|border|fill|caret|accent|outline|ring|decoration)-accent" apps/docs/src` returns nothing.
-2. AC-7.2: `style-guards.test.ts` passes with `ACCENT_ALLOWED` removed and the
-   hard bans at empty allow-lists.
-3. AC-7.3: Every status utility left in `apps/docs/src` sits next to a glyph
+1. AC-7.1: The accent pattern
+   `(bg|text|border|fill|caret|accent|outline|ring|decoration)-accent` matches
+   no in-scope file from the P7.T0 list. Matches in deprecated files are
+   counted and reported as the number left for the redesign.
+2. AC-7.2: `style-guards.test.ts` passes with `ACCENT_ALLOWED` limited to
+   deprecated files and the hard bans at empty allow-lists for in-scope
+   files.
+3. AC-7.3: Every status utility left in in-scope files sits next to a glyph
    or text label (checked by review of the `STATUS_ALLOWED` list, which has at
    most the files in FR-7.2).
-4. AC-7.4: `grep -rn "a3e635" apps/docs README.md` returns nothing.
-5. AC-7.5: The parity test passes for warm and graphite.
-6. AC-7.6: An old Studio link `?seed=3b82f6&dark=0&preset=def&cs=hsl` loads
-   with a hue near 260 and no console error (Vitest on the serializer plus one
-   Playwright check).
-7. AC-7.7: `code-generators.test.ts` asserts `inkAndPaper` output and no
-   `fromSeed`.
+4. AC-7.4: `a3e635` appears in no in-scope file and not in `README.md`.
+   The Studio files (`theme-studio-context.tsx`, `theme-configurator.tsx`,
+   `perceptual.ts`, `code-generators.ts`) keep it until the redesign.
+5. AC-7.5: DEPRECATED (Studio parity test, moved to OS-2).
+6. AC-7.6: DEPRECATED (Studio URL compatibility, moved to OS-2).
+7. AC-7.7: DEPRECATED (code export, moved to OS-2). `code-generators.test.ts`
+   keeps passing unchanged.
 8. AC-7.8: `mdx-dart-snippets.test.ts` passes; no snippet uses a deprecated
    role or `fromSeed` except inside the migration guide's "before" blocks.
 9. AC-7.9: axe with `wcag2a`, `wcag2aa`, `wcag2aaa`, `wcag21a`, `wcag21aa`,
    `wcag22aa` reports zero violations on the listed pages in 4 combinations
    (owner machine).
-10. AC-7.10: Keyboard pass over the Studio: every control is reachable, shows
-    the focus ring from P6, and announces its value.
+10. AC-7.10: DEPRECATED (Studio keyboard pass, moved to OS-2). Keyboard
+    checks for docs pages are AC-6.5 and V-11.
 11. AC-7.11: `bun run lint`, `bun run type-check`, `bun run test`,
     `bun run build`, `bun run test:e2e` pass (e2e on owner machine).
 
@@ -354,7 +354,6 @@ change in this phase.
 | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | Mapping by name instead of meaning (links lose underline) | Mapping table plus AC-6.7 from P6 still runs                                                                    |
 | The page looks flat without lime                          | Design review of the landing in 4 combinations after P7.T6; emphasis through weight, inverse blocks and shadows |
-| Shared Studio links break                                 | FR-7.4 and AC-7.6                                                                                               |
 | Snapshot churn hides real regressions                     | Regenerate baselines once, after P7.T7, and review the diff image by image                                      |
 | `id` content drifts from `en`                             | Same-commit rule in FR-7.9                                                                                      |
 
