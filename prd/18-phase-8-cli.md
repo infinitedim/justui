@@ -56,10 +56,11 @@ and `packages/core/lib`.
 
 ### FR-8.1 New flags
 
-| Flag               | Values             | Meaning                            |
-| ------------------ | ------------------ | ---------------------------------- |
-| `--tint <name>`    | `warm`, `graphite` | Named tint. Default `warm`         |
-| `--tint-hue <deg>` | integer 0 to 359   | Custom tint hue with chroma 0.0035 |
+| Flag               | Values                 | Meaning                                                            |
+| ------------------ | ---------------------- | ------------------------------------------------------------------ |
+| `--tint <name>`    | `warm`, `graphite`     | Named tint. Default `warm`                                         |
+| `--tint-hue <deg>` | integer 0 to 359       | Custom tint hue with chroma 0.0035                                 |
+| `--no-font`        | boolean, default false | Skip copying Plus Jakarta Sans and editing `pubspec.yaml` (FR-8.9) |
 
 Rules:
 
@@ -146,13 +147,19 @@ branch to update tokens and core, then run "justui diff".`
    reports a missing folder).
 4. The check never edits files and never fails `doctor` on its own (warning,
    not error).
+5. Font check: if the copied `typography.dart` names `PlusJakartaSans` and
+   the project `pubspec.yaml` has no font family with that name, warn:
+   `Plus Jakarta Sans is not bundled; text falls back to the platform font.
+Re-run "justui init" or add the font yourself.` This covers users who ran
+   `init` before the rebrand or used `--no-font`.
 
 ### FR-8.6 Embedded templates
 
 1. Dart sources: no change. The P8 build embeds the P2 and P3 versions of
    `packages/tokens/lib` and `packages/core/lib`. The test in FR-8.7 item 4
    proves the embedded tokens contain the new roles.
-2. Fonts: a code change is needed. The existing `#[derive(RustEmbed)]`
+2. Fonts: a code change is needed. It depends on AC-2.10: the folder must
+   exist with its files before the crate compiles. The existing `#[derive(RustEmbed)]`
    structs only cover `../tokens/lib/` and `../core/lib/`, and
    `extract_tokens` decodes every file as UTF-8 and silently skips files that
    fail (`Err(_) => continue`), so a `.ttf` placed there would be dropped. Add
@@ -178,6 +185,15 @@ and `tests/cli_tests.rs`:
 6. `src/utils/oklch.rs` unit tests: white, black, mid gray, `#3b82f6`,
    `#a3e635` against reference values with a tolerance of 0.001 for L and C
    and 0.5 degree for h.
+7. Font assets: `init -y` copies the four `.ttf` files and `OFL.txt` byte for
+   byte (hash compare with the embedded source) and adds exactly one
+   `PlusJakartaSans` family to `pubspec.yaml`; running it twice does not add
+   a second block; a `pubspec.yaml` that already has a `flutter:` section
+   (for example `uses-material-design: true`) keeps it; `init -y --no-font`
+   creates no `assets/fonts/` folder and leaves `pubspec.yaml` byte-identical.
+8. Doctor font check (FR-8.5 item 5): warns when the family is missing, passes
+   when present, stays silent with `--no-font` projects that set their own
+   `fontFamily`.
 
 ### FR-8.8 Changeset
 
@@ -192,10 +208,15 @@ doctor warning.
    `packages/tokens/lib` and `packages/core/lib`; the fonts live in a new
    `packages/tokens/assets/fonts/` folder that is also embedded) together with
    the `OFL.txt` license.
-2. `init` copies them to `assets/fonts/` in the user's project and adds a
-   `flutter: fonts:` block for `PlusJakartaSans` to `pubspec.yaml` using the
-   existing `pubspec_editor.rs`. If the block already exists, `init` leaves it
-   alone and prints a note.
+2. `init` copies the four `.ttf` files and `OFL.txt` (the OFL requires the
+   license to travel with the font) to `assets/fonts/` in the user's project
+   and adds a `fonts:` entry for family `PlusJakartaSans` under the
+   `flutter:` key of `pubspec.yaml`. `pubspec_editor.rs` today only has
+   `add_dependency`, which inserts under `dependencies:`; this needs a new
+   function that finds or creates the `flutter:` section, keeps existing keys
+   such as `uses-material-design`, writes the same `.bak` backup and uses
+   `path_guard::atomic_write`. If a `PlusJakartaSans` family already exists,
+   `init` leaves it alone and prints a note.
 3. `--no-font` skips both steps for users who want their own font.
 4. Binary size grows by the font files (about 4 files); the size is recorded
    in the P9 report.
@@ -211,20 +232,20 @@ doctor warning.
 
 ## 7. Files
 
-| File                                            | Change                                |
-| ----------------------------------------------- | ------------------------------------- |
-| `packages/cli/src/main.rs`                      | `--tint`, `--tint-hue`, `--seed` help |
-| `packages/cli/src/commands/init.rs`             | Tint resolution, prompt, template     |
-| `packages/cli/src/commands/init_tests.rs`       | Updated and new tests                 |
-| `packages/cli/src/commands/doctor.rs`           | Stale tokens check                    |
-| `packages/cli/src/commands/doctor_tests.rs`     | New tests                             |
-| `packages/cli/src/utils/oklch.rs`               | New                                   |
-| `packages/cli/src/utils/embedded_templates.rs`  | `FontAssets` embed, binary write      |
-| `packages/cli/src/utils/pubspec_editor.rs`      | `fonts:` block insert                 |
-| `packages/cli/src/utils/mod.rs`                 | Register module                       |
-| `packages/cli/tests/cli_tests.rs`               | Flag tests                            |
-| `packages/cli/tests/fixtures/**`                | Old and new token fixtures            |
-| `.changeset-polyglot/cli-ink-and-paper-init.md` | New                                   |
+| File                                            | Change                                             |
+| ----------------------------------------------- | -------------------------------------------------- |
+| `packages/cli/src/main.rs`                      | `--tint`, `--tint-hue`, `--no-font`, `--seed` help |
+| `packages/cli/src/commands/init.rs`             | Tint resolution, prompt, template                  |
+| `packages/cli/src/commands/init_tests.rs`       | Updated and new tests                              |
+| `packages/cli/src/commands/doctor.rs`           | Stale tokens check                                 |
+| `packages/cli/src/commands/doctor_tests.rs`     | New tests                                          |
+| `packages/cli/src/utils/oklch.rs`               | New                                                |
+| `packages/cli/src/utils/embedded_templates.rs`  | `FontAssets` embed, binary write                   |
+| `packages/cli/src/utils/pubspec_editor.rs`      | `fonts:` block insert                              |
+| `packages/cli/src/utils/mod.rs`                 | Register module                                    |
+| `packages/cli/tests/cli_tests.rs`               | Flag tests                                         |
+| `packages/cli/tests/fixtures/**`                | Old and new token fixtures                         |
+| `.changeset-polyglot/cli-ink-and-paper-init.md` | New                                                |
 
 `src/config.rs` is not changed.
 
@@ -256,6 +277,10 @@ doctor warning.
    warning and exits 0.
 6. AC-8.6: `justui.config.yaml` written by the new `init` is byte-identical in
    format to the baseline for the same answers.
+7. AC-8.7: In an empty Flutter project, `justui init -y` produces
+   `assets/fonts/` with five files and a `pubspec.yaml` that `flutter pub get`
+   accepts; `justui init -y --no-font` produces neither change (owner machine
+   for `flutter pub get`).
 
 ## 10. Risks
 

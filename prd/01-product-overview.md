@@ -74,33 +74,33 @@ One monochrome brand, "Ink and Paper", shared by the docs and the library:
 
 ## 6. Success metrics
 
-| ID  | Metric                                                               | Target           |
-| --- | -------------------------------------------------------------------- | ---------------- |
-| M1  | Minimum text contrast across all roles, surfaces, presets, modes     | >= 7.00:1        |
-| M2  | Minimum control boundary and focus ring contrast                     | >= 3.00:1        |
-| M3  | axe violations with `wcag2aaa` and `wcag22aa` tags on docs           | 0                |
-| M4  | Hard-coded opaque `Color(0xFF...)` in components (excluding masks)   | 0                |
-| M5  | `presetTokens.showsDefaultBorder` reads inside components            | 0                |
-| M6  | `preset == .neobrutalism` comparisons in core and components         | 0                |
-| M7  | Accent utilities (`*-accent*`) in in-scope docs files (P7 section 0) | 0                |
-| M8  | Places where a color value is authored by hand                       | 1 (token source) |
-| M9  | Existing user code that stops compiling after upgrade                | 0                |
-| M10 | Files a new preset must touch (excluding tests and docs)             | <= 3             |
+| ID  | Metric                                                                                                                                                                                                                      | Target                   |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| M1  | Minimum text contrast across all roles, surfaces, presets, modes                                                                                                                                                            | >= 7.00:1                |
+| M2  | Minimum control boundary and focus ring contrast                                                                                                                                                                            | >= 3.00:1                |
+| M3  | axe violations with `wcag2aaa` and `wcag22aa` tags on docs                                                                                                                                                                  | 0                        |
+| M4  | Hard-coded opaque `Color(0xFF...)` in components (excluding masks)                                                                                                                                                          | 0                        |
+| M5  | `presetTokens.showsDefaultBorder` reads inside components                                                                                                                                                                   | 0                        |
+| M6  | `preset == .neobrutalism` comparisons in core and components                                                                                                                                                                | 0                        |
+| M7  | Accent utilities (`*-accent*`) in in-scope docs files (P7 section 0)                                                                                                                                                        | 0                        |
+| M8  | Places where a color value is authored by hand                                                                                                                                                                              | 1 (token source)         |
+| M9  | Existing user code that stops compiling after upgrade                                                                                                                                                                       | 0                        |
+| M10 | Hand-edited files a new preset must touch: library (token source, `preset_tokens.dart`, the `JustThemePreset` enum) plus CLI (preset argument enum, preset prompt). Generated files, tests and the docs app are not counted | <= 5 (3 library + 2 CLI) |
 
 ## 7. Scope summary per phase
 
-| Phase | Name                        | Main output                                         |
-| ----- | --------------------------- | --------------------------------------------------- |
-| P0    | Baseline and safety nets    | CSS comment fix, guard tests, rule-change patches   |
-| P1    | Token source and generator  | `ink_and_paper.tokens.json`, `generate_tokens.dart` |
-| P2    | Tokens API                  | New roles in `JustColorScheme`, deprecations        |
-| P3    | Core theme engine           | Preset tokens, `inkAndPaper`, Material bridge       |
-| P4    | Component migration         | 30 component families on the new roles              |
-| P5    | Registry, showcase, preview | Regenerated registry, showcase and Widgetbook       |
-| P6    | Docs foundation             | Generated CSS, Fumadocs map, focus, links, code     |
-| P7    | Docs UI and content         | Accent sweep, Studio, landing, MDX, README          |
-| P8    | CLI                         | `--tint`, new init template, doctor check           |
-| P9    | Verification and release    | Release gate, changelog, migration guide            |
+| Phase | Name                        | Main output                                          |
+| ----- | --------------------------- | ---------------------------------------------------- |
+| P0    | Baseline and safety nets    | CSS comment fix, guard tests, rule-change patches    |
+| P1    | Token source and generator  | `ink_and_paper.tokens.json`, `generate_tokens.dart`  |
+| P2    | Tokens API                  | New roles in `JustColorScheme`, deprecations         |
+| P3    | Core theme engine           | Preset tokens, `inkAndPaper`, Material bridge        |
+| P4    | Component migration         | 30 component families on the new roles               |
+| P5    | Registry, showcase, preview | Regenerated registry, showcase and Widgetbook        |
+| P6    | Docs foundation             | Generated CSS, Fumadocs map, focus, links, code      |
+| P7    | Docs UI and content         | In-scope docs UI sweep, MDX, migration guide, README |
+| P8    | CLI                         | `--tint`, new init template, doctor check            |
+| P9    | Verification and release    | Release gate, changelog, migration guide             |
 
 ## 8. Constraints
 

@@ -112,8 +112,9 @@ The constructor is `const`, so it can only assert, not change values:
 `assert(hue >= 0.0 && hue < 360.0)` and
 `assert(chroma >= 0.0 && chroma <= 0.010)` in the initializer list.
 Clamping and hue normalization happen in a non-const
-`factory JustTint.clamped({double hue, double chroma})` (used by the CLI
-output path and the `fromSeed` conversion) and again defensively inside
+`factory JustTint.clamped({double hue, double chroma})` (used by the
+`fromSeed` conversion; the Rust CLI validates its own input and writes a
+plain `JustTint(hue: ...)` literal, so it never calls this factory) and again defensively inside
 `inkAndPaper()` before calling the color engine. `static const warm` and
 `graphite` stay compile-time constants. The class uses the primary
 constructor syntax already used in the repository (for example
@@ -248,11 +249,11 @@ The line `// CLI:REGISTER_EXTENSIONS` (line 31) must stay byte-identical.
 
 ## 10. Risks
 
-| Risk                                                    | Mitigation                                                                         |
-| ------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Scaffolded user apps call `fromSeed` with the blue seed | Option D keeps them compiling with graphite tint                                   |
-| Re-tint math differs between Dart and the docs Studio   | Parity test in P7                                                                  |
-| New preset contract grows too wide                      | Every member must be used by at least one component in P4, otherwise it is removed |
+| Risk                                                         | Mitigation                                                                                              |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| Scaffolded user apps call `fromSeed` with the blue seed      | Option D keeps them compiling with graphite tint                                                        |
+| Re-tint math differs between Dart, the generator and the CLI | Shared reference values in the P2 parity test and the P8 `oklch.rs` tests (Studio parity moved to OS-2) |
+| New preset contract grows too wide                           | Every member must be used by at least one component in P4, otherwise it is removed                      |
 
 ## 11. Pending decisions
 

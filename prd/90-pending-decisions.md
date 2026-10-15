@@ -22,22 +22,22 @@ and the phases it affects.
 
 ## Summary
 
-| ID    | Topic                         | Default                                                            | Affects        |
-| ----- | ----------------------------- | ------------------------------------------------------------------ | -------------- |
-| DP-1  | Release type                  | Minor (0.15.0) with deprecations                                   | P2, P3, P4, P9 |
-| DP-2  | Neobrutalism primary          | Rule A                                                             | P3, P4, P6, P7 |
-| DP-3  | Badge status variants         | Monochrome with glyph, deprecated                                  | P4, P7         |
-| DP-4  | `fromSeed` future             | Option D (seed hue becomes tint)                                   | P3, P7, P8     |
-| DP-5  | `justui core sync` command    | Out of scope, follow-up                                            | P8             |
-| DP-6  | Fonts                         | Plus Jakarta Sans for docs and Flutter (decided); mono family open | P2, P6, P8     |
-| DP-7  | Exact hex values              | Keep the owner's hex (1-unit tolerance)                            | P1             |
-| DP-8  | Tint choice                   | Warm default, graphite as second named tint                        | P1, P3, P7, P8 |
-| DP-9  | Tint field on `JustThemeData` | No field                                                           | P2, P3         |
-| DP-10 | Icons and logo                | Unchanged                                                          | P5, P7         |
-| DP-11 | Dark dialog edge              | `borderSubtle` edge                                                | P4             |
-| DP-12 | `errorHover` role             | Included                                                           | P1, P2, P4     |
-| DP-13 | Info status color             | No color (forwards to `textPrimary`)                               | P2, P4, P7     |
-| DP-14 | Rule-file changes             | Owner applies the P0 patches before P1                             | P0, P9         |
+| ID    | Topic                         | Default                                                                           | Affects        |
+| ----- | ----------------------------- | --------------------------------------------------------------------------------- | -------------- |
+| DP-1  | Release type                  | Minor (0.15.0) with deprecations                                                  | P2, P3, P4, P9 |
+| DP-2  | Neobrutalism primary          | Rule A                                                                            | P3, P4, P6, P7 |
+| DP-3  | Badge status variants         | Monochrome with glyph, deprecated                                                 | P4, P7         |
+| DP-4  | `fromSeed` future             | Option D (seed hue becomes tint)                                                  | P3, P7, P8     |
+| DP-5  | `justui core sync` command    | Out of scope, follow-up                                                           | P8             |
+| DP-6  | Fonts                         | Plus Jakarta Sans for docs and Flutter; IBM Plex Mono w500 for code (all decided) | P2, P6, P8     |
+| DP-7  | Exact hex values              | Keep the owner's hex (1-unit tolerance)                                           | P1             |
+| DP-8  | Tint choice                   | Warm default, graphite as second named tint                                       | P1, P3, P7, P8 |
+| DP-9  | Tint field on `JustThemeData` | No field                                                                          | P2, P3         |
+| DP-10 | Icons and logo                | Unchanged                                                                         | P5, P7         |
+| DP-11 | Dark dialog edge              | `borderSubtle` edge                                                               | P4             |
+| DP-12 | `errorHover` role             | Included                                                                          | P1, P2, P4     |
+| DP-13 | Info status color             | No color (forwards to `textPrimary`)                                              | P2, P4, P7     |
+| DP-14 | Rule-file changes             | Owner applies the P0 patches before P1                                            | P0, P9         |
 
 ## DP-1 Release type
 

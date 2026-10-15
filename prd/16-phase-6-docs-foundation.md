@@ -83,7 +83,7 @@ Add:
 | warning-tint                                           | `--just-warning-tint`             |
 | primary-bg, primary-fg, primary-border, primary-shadow | part variables from the generator |
 
-Transitional aliases (removed in P7.T7), in one clearly marked block:
+Transitional aliases (shrunk in P7.T7 to what deprecated non-docs files still use; removed by the redesign, OS-2), in one clearly marked block:
 
 | Old utility                            | Alias to      |
 | -------------------------------------- | ------------- |
@@ -161,10 +161,10 @@ Plus `::selection { background: var(--just-selection); color: var(--just-text-pr
    textTertiary italic.
 3. The `--just-syn-*` variables used by the playground (`CodeLines`) map to the
    same roles.
-4. Bold keywords need a mono weight of 600. The font stack changes (DP-6,
-   owner decision 2026-10-14): see FR-6.7. Until DP-6 settles the mono family,
-   keywords use 500 and the difference between classes comes from weight 500
-   vs 400 plus italic comments.
+4. Code stays on IBM Plex Mono and keywords use weight 500 (DP-6, decided
+   2026-10-14). The difference between classes comes from weight 500 vs 400
+   plus italic comments. No Plex Mono 600 is loaded. The sans font change is
+   FR-6.7.
 
 ### FR-6.7 Font: Plus Jakarta Sans
 
@@ -188,15 +188,15 @@ Plus `::selection { background: var(--just-selection); color: var(--just-text-pr
 
 ## 7. Files
 
-| File                                           | Change                                  |
-| ---------------------------------------------- | --------------------------------------- |
-| `apps/docs/src/app/globals.css`                | Import, mapping, aliases, media queries |
-| `apps/docs/src/lib/ui-classes.ts`              | focusRing, link                         |
-| `apps/docs/src/lib/catalog-i18n/ui-classes.ts` | Same as above if it duplicates them     |
-| `apps/docs/src/lib/justui-shiki-theme.ts`      | Generated roles                         |
-| `apps/docs/src/app/[lang]/layout.tsx`          | themeColor only (not the inline script) |
-| `apps/docs/test/*.test.ts`                     | New tests (section 9)                   |
-| `apps/docs/e2e/*.spec.ts`                      | New checks (section 9)                  |
+| File                                           | Change                                                               |
+| ---------------------------------------------- | -------------------------------------------------------------------- |
+| `apps/docs/src/app/globals.css`                | Import, mapping, aliases, media queries                              |
+| `apps/docs/src/lib/ui-classes.ts`              | focusRing, link                                                      |
+| `apps/docs/src/lib/catalog-i18n/ui-classes.ts` | Same as above if it duplicates them                                  |
+| `apps/docs/src/lib/justui-shiki-theme.ts`      | Generated roles                                                      |
+| `apps/docs/src/app/[lang]/layout.tsx`          | `Plus_Jakarta_Sans` font swap and themeColor (not the inline script) |
+| `apps/docs/test/*.test.ts`                     | New tests (section 9)                                                |
+| `apps/docs/e2e/*.spec.ts`                      | New checks (section 9)                                               |
 
 ## 8. Tasks
 
@@ -231,11 +231,11 @@ build` pass.
 
 ## 10. Risks
 
-| Risk                                                                           | Mitigation                                                                    |
-| ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
-| Aliases hide places that still mean "accent"                                   | P7 removes aliases and the guard list must be empty                           |
-| Fumadocs regions look different once mapped                                    | Visual review of 4 combinations after P6.T2                                   |
-| Overriding Tailwind `black` and `white` variables (current globals.css 73, 76) | Remove the overrides in P6.T1; P7 sweeps `bg-black`, `bg-white`, `text-white` |
+| Risk                                                                           | Mitigation                                                                                  |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| Aliases hide places that still mean "accent"                                   | P7 sweeps every in-scope file; the guard list may only keep deprecated files (P7 section 0) |
+| Fumadocs regions look different once mapped                                    | Visual review of 4 combinations after P6.T2                                                 |
+| Overriding Tailwind `black` and `white` variables (current globals.css 73, 76) | Remove the overrides in P6.T1; P7 sweeps `bg-black`, `bg-white`, `text-white`               |
 
 ## 11. Pending decisions
 

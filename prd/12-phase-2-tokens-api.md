@@ -99,10 +99,20 @@ getters are derived and must not be compared.
 
 ### FR-2.6 `CustomColorScheme`
 
-1. New `const` constructor with the new role names (all required except
-   `scrim`, which defaults from `textPrimary`).
-2. `@Deprecated factory CustomColorScheme.fromLegacy(...)` with the 16 old
-   parameter names. Mapping:
+1. New `const CustomColorScheme.roles({...})` named constructor with the new
+   role names (all required except `scrim`, which defaults from
+   `textPrimary`).
+2. The unnamed `const CustomColorScheme({...})` keeps its 16 legacy
+   parameters and its `const`-ness, and is annotated
+   `@Deprecated('Use CustomColorScheme.roles. Removed in the next minor release.')`.
+   This keeps every existing `const CustomColorScheme(...)` call compiling,
+   which M9 (zero compile breaks) and DP-1 (minor release) require. Moving
+   the old parameters to a new factory would break those calls, and a factory
+   cannot be called with `const`. New role getters on the legacy path follow
+   the mapping below: direct mappings return the stored field; derived roles
+   (`inverseHover`, `inversePressed`, `errorHover`, tints) are computed on
+   read. That allocation exists only on the deprecated path and is a
+   documented exemption from NFR-2.1. Mapping:
 
 | New role                        | Derived from (legacy)                             |
 | ------------------------------- | ------------------------------------------------- |
@@ -120,7 +130,7 @@ getters are derived and must not be compared.
 3. `copyWith` for every role, so a user can override one role on purpose.
 4. `CustomColorScheme.resolveSemantic` becomes `@Deprecated`. Its `preset`
    argument is ignored; it returns Ink and Paper roles built from its inputs
-   through `fromLegacy`.
+   through the legacy unnamed constructor.
 
 ### FR-2.7 `JustThemePreset`
 
@@ -152,11 +162,11 @@ Existing methods are unchanged.
 
 ### FR-2.10 Tests that must change on purpose
 
-| Test                                                          | Change                                                                                            |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `packages/tokens/test/colors_test.dart` "match specification" | Assert the Ink and Paper specification. The phase summary states that the specification changed   |
-| New `packages/tokens/test/custom_scheme_test.dart`            | `fromLegacy` mapping, `copyWith`, equality ignores deprecated getters                             |
-| New parity test                                               | `OklchEngine` rebuild of every neutral from (L, warm tint) equals the generated hex within 1 unit |
+| Test                                                          | Change                                                                                                                                                          |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/tokens/test/colors_test.dart` "match specification" | Assert the Ink and Paper specification. The phase summary states that the specification changed                                                                 |
+| New `packages/tokens/test/custom_scheme_test.dart`            | Legacy constructor mapping (including a `const CustomColorScheme(...)` call that must still compile), `.roles`, `copyWith`, equality ignores deprecated getters |
+| New parity test                                               | `OklchEngine` rebuild of every neutral from (L, warm tint) equals the generated hex within 1 unit                                                               |
 
 ### FR-2.11 Typography family: Plus Jakarta Sans (owner decision 2026-10-14)
 
@@ -168,7 +178,13 @@ Existing methods are unchanged.
    and `OFL.txt` (downloaded on the owner machine; the sandbox is offline).
    Note: today `typography.dart:9` names Inter but no package bundles it, so
    Flutter already falls back to the platform font; shipping the files is new
-   work, not a swap. The registry/CLI copies
+   work, not a swap.
+   Do not declare the font in `packages/tokens/pubspec.yaml`. A font declared
+   by a package is registered as `packages/just_ui_tokens/PlusJakartaSans`,
+   which would not match the plain `PlusJakartaSans` family that copied code
+   in user apps uses. The folder is a source for the CLI embed and the test
+   `FontLoader` only; each app (`apps/preview`, `apps/showcase`, user apps)
+   declares the plain family in its own `pubspec.yaml`. The registry/CLI copies
    `PlusJakartaSans` (OFL license, weights 400, 500, 600, 700) into the user's
    `assets/fonts/` and adds the `fonts:` entry to `pubspec.yaml` (P8, FR-8.9).
 3. If the font asset is missing, Flutter falls back to the platform default
@@ -204,16 +220,16 @@ Existing methods are unchanged.
 
 ## 8. Tasks
 
-| ID     | Task                                                                                         | Depends on |
-| ------ | -------------------------------------------------------------------------------------------- | ---------- |
-| P2.T1  | Add abstract roles and deprecated getters; update `==` and `hashCode`                        | P1         |
-| P2.T2  | Generator writes `color_semantic.dart`; schemes read it; neobrutalism schemes become aliases | P2.T1      |
-| P2.T3  | Deprecate palette and re-exports; export brand palette                                       | P2.T2      |
-| P2.T4  | `CustomColorScheme` constructor, `fromLegacy`, `copyWith`, deprecate `resolveSemantic`       | P2.T1      |
-| P2.T5  | AAA helper                                                                                   | P2.T1      |
-| P2.T6  | Contrast contract test, parity test, updated specification test                              | P2.T2      |
-| P2.T6b | Typography family change and font files (FR-2.11)                                            | P2.T1      |
-| P2.T7  | Changeset (`just_ui_tokens`: minor, or major per DP-1)                                       | P2.T6      |
+| ID     | Task                                                                                           | Depends on |
+| ------ | ---------------------------------------------------------------------------------------------- | ---------- |
+| P2.T1  | Add abstract roles and deprecated getters; update `==` and `hashCode`                          | P1         |
+| P2.T2  | Generator writes `color_semantic.dart`; schemes read it; neobrutalism schemes become aliases   | P2.T1      |
+| P2.T3  | Deprecate palette and re-exports; export brand palette                                         | P2.T2      |
+| P2.T4  | `CustomColorScheme.roles`, legacy constructor mapping, `copyWith`, deprecate `resolveSemantic` | P2.T1      |
+| P2.T5  | AAA helper                                                                                     | P2.T1      |
+| P2.T6  | Contrast contract test, parity test, updated specification test                                | P2.T2      |
+| P2.T6b | Typography family change and font files (FR-2.11)                                              | P2.T1      |
+| P2.T7  | Changeset (`just_ui_tokens`: minor, or major per DP-1)                                         | P2.T6      |
 
 ## 9. Acceptance criteria
 
@@ -231,14 +247,20 @@ Existing methods are unchanged.
 8. AC-2.8: `melos exec --no-flutter --dir-exists="test" -- "dart test"` and
    `flutter test` in `packages/tokens` pass (owner machine for Flutter).
 9. AC-2.9: `packages/core` still compiles (deprecation infos allowed).
+10. AC-2.10: `packages/tokens/assets/fonts/` contains
+    `PlusJakartaSans-Regular.ttf`, `PlusJakartaSans-Medium.ttf`,
+    `PlusJakartaSans-SemiBold.ttf`, `PlusJakartaSans-Bold.ttf` and `OFL.txt`,
+    committed on the branch. P4 (golden font loading) and P8 (`RustEmbed`)
+    must not start without them: `#[derive(RustEmbed)]` fails to compile when
+    its folder is missing, and git does not keep an empty folder.
 
 ## 10. Risks
 
-| Risk                                                                | Mitigation                                                     |
-| ------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `borderDefault -> borderControl` makes dividers look heavy until P4 | Accepted on the branch; release gate is P9                     |
-| Direct callers of `CustomColorScheme(...)` break                    | `fromLegacy` and a migration note; DP-1 decides minor vs major |
-| Users relying on vivid neobrutalism colors                          | Changelog "Breaking" entry in P9                               |
+| Risk                                                                      | Mitigation                                                                                                     |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `borderDefault -> borderControl` makes dividers look heavy until P4       | Accepted on the branch; release gate is P9                                                                     |
+| Legacy `CustomColorScheme(...)` output looks different from the old theme | The legacy constructor maps roles one to one where it can; derived roles are documented in the migration guide |
+| Users relying on vivid neobrutalism colors                                | Changelog "Breaking" entry in P9                                                                               |
 
 ## 11. Pending decisions
 
