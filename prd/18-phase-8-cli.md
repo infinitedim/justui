@@ -2,7 +2,7 @@
 
 Status: Draft v1 (2026-10-13)
 Depends on: P3 (the `inkAndPaper` API the template calls)
-Blocks: P5.T5 (showcase regeneration), P7.T5 (code export option names), P9
+Blocks: P5.T5 (showcase regeneration), P9
 Areas: `packages/cli` (Rust crate `justui`)
 
 ## 1. Summary
@@ -127,6 +127,12 @@ Where:
 4. The import line matches what the P3 API needs (`Brightness` comes from
    `dart:ui` through Flutter); the formatter pass after writing stays.
 5. The write keeps using `path_guard::atomic_write`.
+6. `--dart-target` (`primary` or `standard`) only controls constructor syntax
+   in copied library files through `apply_dart_target`; the theme file is
+   written directly and has no constructor declarations, so it is the same
+   for both targets. The template uses the long form (`Brightness.light`,
+   `JustTint.graphite`) on purpose: it is user code and must read clearly.
+   Dot shorthand in user code is the user's choice.
 
 ### FR-8.5 Doctor check
 
@@ -143,9 +149,15 @@ branch to update tokens and core, then run "justui diff".`
 
 ### FR-8.6 Embedded templates
 
-No code change. The P8 build embeds the P2 and P3 versions of
-`packages/tokens/lib` and `packages/core/lib`. The test in FR-8.7 item 4
-proves the embedded tokens contain the new roles.
+1. Dart sources: no change. The P8 build embeds the P2 and P3 versions of
+   `packages/tokens/lib` and `packages/core/lib`. The test in FR-8.7 item 4
+   proves the embedded tokens contain the new roles.
+2. Fonts: a code change is needed. The existing `#[derive(RustEmbed)]`
+   structs only cover `../tokens/lib/` and `../core/lib/`, and
+   `extract_tokens` decodes every file as UTF-8 and silently skips files that
+   fail (`Err(_) => continue`), so a `.ttf` placed there would be dropped. Add
+   a separate `FontAssets` embed for `../tokens/assets/fonts/` and write its
+   files as raw bytes (FR-8.9).
 
 ### FR-8.7 Tests
 
@@ -207,6 +219,8 @@ doctor warning.
 | `packages/cli/src/commands/doctor.rs`           | Stale tokens check                    |
 | `packages/cli/src/commands/doctor_tests.rs`     | New tests                             |
 | `packages/cli/src/utils/oklch.rs`               | New                                   |
+| `packages/cli/src/utils/embedded_templates.rs`  | `FontAssets` embed, binary write      |
+| `packages/cli/src/utils/pubspec_editor.rs`      | `fonts:` block insert                 |
 | `packages/cli/src/utils/mod.rs`                 | Register module                       |
 | `packages/cli/tests/cli_tests.rs`               | Flag tests                            |
 | `packages/cli/tests/fixtures/**`                | Old and new token fixtures            |

@@ -127,9 +127,13 @@ Plus `::selection { background: var(--just-selection); color: var(--just-text-pr
 
 ### FR-6.4 Focus and links
 
-1. `ui-classes.ts` `focusRing` becomes
-   `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus`.
-   Under neobrutalism the width is 2.5px through a CSS variable.
+1. Define `--just-focus-ring-width` in `globals.css`: `2px` on `:root`,
+   `2.5px` on `.theme-neobrutalism`, `3px` inside
+   `@media (prefers-contrast: more)`. `ui-classes.ts` `focusRing` becomes
+   `focus-visible:outline-solid focus-visible:outline-[length:var(--just-focus-ring-width)] focus-visible:outline-offset-2 focus-visible:outline-focus`.
+   A fixed utility such as `outline-2` must not be used: in Tailwind v4
+   (`tailwindcss` ^4.3.3) it compiles to a static `outline-width: 2px`, so the
+   neobrutalism value would never apply and AC-6.5 would fail.
 2. `accentLink` is renamed `link` and is always underlined:
    `underline underline-offset-4 decoration-1 hover:decoration-2`.
 3. Prose links inside MDX content are underlined in `globals.css`.
@@ -217,7 +221,7 @@ Plus `::selection { background: var(--just-selection); color: var(--just-text-pr
    the textPrimary value in 4 combinations.
 5. AC-6.5: Playwright tabs through the header and the search dialog; for each
    focused element, `outline-style` is solid, `outline-width` is 2px (2.5px in
-   neobrutalism), `outline-offset` is 2px, and `outline-color` equals the
+   neobrutalism, 3px with `prefers-contrast: more`), `outline-offset` is 2px, and `outline-color` equals the
    focus ring value.
 6. AC-6.6: Playwright with `emulateMedia({ forcedColors: 'active' })`: primary
    buttons have a computed border width of at least 1px.

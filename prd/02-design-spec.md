@@ -168,7 +168,7 @@ canvas, surface, sunken and raised (dark).
 3. `borderSubtle` is decoration only. Inputs, checkboxes, radios, switch
    tracks in the off state and slider tracks use `borderControl`.
 4. Hierarchy comes from size, weight (400, 500, 600) and IBM Plex Mono for
-   metadata on the web. Never use a gray lighter than `textTertiary` for text.
+   metadata on the web (Plus Jakarta Sans for copy). Never use a gray lighter than `textTertiary` for text.
 5. State colors come from roles (`hoverFill`, `inverseHover`,
    `inversePressed`, `errorHover`). Building state colors with
    `withValues(alpha:)` on brand colors is not allowed. Alpha is allowed only
@@ -273,11 +273,12 @@ the "shadows are ink" rule.
 
 ## 8. Typography links to color
 
-1. Docs: IBM Plex Sans for copy, IBM Plex Mono for metadata and code.
+1. Docs and Flutter: Plus Jakarta Sans for copy (DP-6). Docs: IBM Plex Mono
+   for metadata and code.
 2. Code blocks (on `sunken`): keyword textPrimary bold, type textPrimary,
    string textSecondary, number textSecondary, punctuation textSecondary,
-   comment textTertiary italic. Minimum 7.16 (light) and 8.84 (dark). Bold
-   needs IBM Plex Mono 600 (DP-6); fallback is 500.
+   comment textTertiary italic. Minimum 7.16 (light) and 8.84 (dark).
+   Keywords use weight 500 (DP-6, decided); no Plex Mono 600 is loaded.
 
 ## 9. WCAG 2.2 coverage
 

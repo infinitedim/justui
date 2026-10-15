@@ -114,16 +114,14 @@ its own. P8 adds a `doctor` warning and P7 documents a manual path.
 Decided 2026-10-14 (owner): everything uses Plus Jakarta Sans, the docs and
 the Flutter library default.
 
-Still open:
+Details, all decided with the defaults on 2026-10-14:
 
-1. Mono family for code blocks. Plus Jakarta Sans has no mono sibling. Default:
-   keep IBM Plex Mono, keywords at weight 500. Option: move to another mono
-   (for example JetBrains Mono) and use weight 600 for keywords.
-2. Flutter delivery. The library has no dependencies, so the font ships as
-   asset files copied by `justui init` (P2 FR-2.11, P8 FR-8.9). Default: that.
-   Option: also keep Inter as the fallback family. This affects binary size
-   and the user's `pubspec.yaml`, which the CLI now edits.
-3. Wider metrics: P4 goldens are taken after the font change.
+1. Mono family for code blocks: IBM Plex Mono stays, keywords at weight 500.
+2. Flutter delivery: the font ships as asset files in
+   `packages/tokens/assets/fonts/` (added in P2) and `justui init` copies them
+   and edits the user's `pubspec.yaml` (P8 FR-8.9).
+3. Wider metrics: P4 goldens load the real font and are taken after the
+   change (P4 section 13).
 
 ## DP-7 Exact hex values
 

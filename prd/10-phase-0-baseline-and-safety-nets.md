@@ -110,7 +110,7 @@ Write exact unified-diff patches for the owner, stored outside the repository
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `.agents/rules/design.md`   | Replace the locked lime identity with Ink and Paper; allow the library default to match the docs identity; raise the text floor to 7:1; list the new roles        |
 | `.agents/rules/flutter.md`  | Text floor 7:1; allow the 3px `error` border in neobrutalism; focus ring tokens; ban `showsDefaultBorder` and status getters outside the allow-list in components |
-| `.agents/rules/docs-web.md` | Name `tokens.generated.css` and `tokens.generated.ts` as the color source; the Studio parity test compares one tint                                               |
+| `.agents/rules/docs-web.md` | Name `tokens.generated.css` and `tokens.generated.ts` as the color source; mark the Studio rules as deprecated until the non-docs redesign (OS-2)                 |
 | `AGENTS.md` section 4       | New invariant: never hand-edit generated token outputs                                                                                                            |
 | `AGENTS.md` section 6       | Add `dart run tools/generate_tokens.dart --check` to Definition of done                                                                                           |
 

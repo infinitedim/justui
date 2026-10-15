@@ -67,7 +67,9 @@ Part colors (`primaryBg`, `primaryFg`, `containerBorder`, and so on) come from
 the generated part mapping (P1 FR-1.2). Add
 `JustPresetParts resolveParts(JustColorScheme c)` that returns them as a
 `const`-constructible value object, so components read
-`presetTokens.resolveParts(colors).primaryBg` instead of branching.
+`presetTokens.resolveParts(colors).primaryBg` instead of branching. A part
+mapped to `"transparent"` resolves to `Color(0x00000000)`, not to a role
+getter (`JustColorScheme` has no `transparent` role).
 
 ### FR-3.2 Deprecate `showsDefaultBorder`
 
@@ -106,9 +108,17 @@ class const JustTint({double hue = 80.0, double chroma = 0.0035}) {
 }
 ```
 
-It asserts and clamps `chroma` to `[0, 0.010]` and normalizes `hue` to
-`[0, 360)`. It is exported through `theme_data.dart`, never through a
-component.
+The constructor is `const`, so it can only assert, not change values:
+`assert(hue >= 0.0 && hue < 360.0)` and
+`assert(chroma >= 0.0 && chroma <= 0.010)` in the initializer list.
+Clamping and hue normalization happen in a non-const
+`factory JustTint.clamped({double hue, double chroma})` (used by the CLI
+output path and the `fromSeed` conversion) and again defensively inside
+`inkAndPaper()` before calling the color engine. `static const warm` and
+`graphite` stay compile-time constants. The class uses the primary
+constructor syntax already used in the repository (for example
+`class const JustBadge(`). It is exported through `theme_data.dart`, never
+through a component.
 
 4. New factory:
 
