@@ -47,12 +47,12 @@ rendering until the redesign replaces them.
 
 ## 1. Summary
 
-Move every docs component, the Theme Studio, the landing page and the MDX
-content from the old accent and status utilities to Ink and Paper roles. At the
-end of this phase the transitional aliases from P6 are deleted, no file uses
-an accent utility, status color appears only where it carries meaning, and the
-docs explain the new palette, the tint and the migration path in English and
-Indonesian.
+Move the docs pages, their shared shell and the MDX content from the old
+accent and status utilities to Ink and Paper roles (scope in section 0). At
+the end of this phase no in-scope file uses an accent utility or an alias,
+the alias block holds only what deprecated non-docs files still use, status
+color appears only where it carries meaning, and the docs explain the new
+palette, the tint and the migration path in English and Indonesian.
 
 ## 2. Background
 
@@ -84,12 +84,13 @@ Indonesian.
 
 ## 3. Goals
 
-1. Zero accent utilities and zero transitional aliases.
+1. Zero accent utilities and zero transitional aliases in in-scope files.
 2. Every remaining status color use is on the allow-list in `02-design-spec.md`
    and is paired with a glyph and text.
-3. The Studio edits a tint, not a seed, and its output matches Dart exactly.
+3. DEPRECATED: Studio tint editing moves to the redesign (OS-2).
 4. The docs content tells the truth about colors, contrast levels and APIs.
-5. axe passes with AAA color tags and WCAG 2.2 AA tags in 4 combinations.
+5. axe passes with AAA color tags and WCAG 2.2 AA tags in 4 combinations on
+   the gated docs pages.
 
 ## 4. Non-goals
 
@@ -242,7 +243,9 @@ where the parameter type allows it. 4. `seedToArgbHex` is deleted if nothing els
 2. `ACCENT_ALLOWED` keeps only files from the deprecated list recorded by
    P7.T0. Any in-scope file in it fails the test. New files may not be added.
 3. The hard bans from P0 (`focus-visible:outline-accent`, `bg-black`,
-   `bg-white`, `text-white`) keep an empty allow-list.
+   `bg-white`, `text-white`) have an empty allow-list for in-scope files.
+   Their allow-list may keep only files from the deprecated P7.T0 list, the
+   same rule as `ACCENT_ALLOWED` and AC-7.2.
 
 ### FR-7.9 MDX content (en and id)
 
@@ -251,7 +254,7 @@ where the parameter type allows it. 4. `seedToArgbHex` is deleted if nothing els
 | `tokens/colors.mdx`                               | Rewrite around roles. Uses a new `ColorRoleTable` component that reads `tokens.generated.ts` and shows role, swatch, light hex, dark hex and measured ratio. Remove the old neobrutalism hex claims        |
 | `tokens/shadows.mdx`                              | Shadow colors from roles; neobrutalism shadow is ink, 4px offset                                                                                                                                           |
 | `theming.mdx`                                     | `JustThemeData.inkAndPaper`, `JustTint`, presets own shape not color, deprecation of `fromSeed`                                                                                                            |
-| `guides/custom-theme.mdx`                         | Custom tint, `CustomColorScheme` new constructor and `copyWith`, `fromLegacy`                                                                                                                              |
+| `guides/custom-theme.mdx`                         | Custom tint, `CustomColorScheme.roles` and `copyWith`; the deprecated unnamed constructor                                                                                                                  |
 | `guides/accessibility.mdx`                        | WCAG 2.2, text floor 7:1, non-text 3:1, focus appearance, `isAccessibleAaaWith`, forced colors, status shape plus text rule                                                                                |
 | `guides/copy-paste-workflow.mdx`                  | `init` output now uses `inkAndPaper`                                                                                                                                                                       |
 | `guides/migration.mdx`                            | Link to the new migration guide                                                                                                                                                                            |
@@ -269,8 +272,11 @@ Rules:
 ### FR-7.10 Accessibility test levels
 
 1. `e2e/accessibility.spec.ts` adds the tags `wcag2aaa` and `wcag22aa`.
-2. Runs cover light and dark, default and neobrutalism, on: home, components
-   catalog, one component page, theming page, Studio.
+2. Gated runs cover light and dark, default and neobrutalism, on in-scope
+   docs pages only: the docs index, the theming page, the colors token page
+   and one component docs page (button). The landing page runs in an
+   informational project that reports but never fails the build. Catalog and
+   Studio are not run until the redesign (section 0 item 5).
 3. Any axe rule excluded must be listed with a reason in the spec file. Color
    contrast rules may not be excluded.
 
@@ -284,24 +290,23 @@ change in this phase.
 1. NFR-7.1: No new npm dependency. `ColorRoleTable` is a server component with
    no client JavaScript.
 2. NFR-7.2: All files ASCII (`ascii-purity.test.ts` already enforces this).
-3. NFR-7.3: No layout shift on the landing page (visual snapshot diff limited
-   to color).
-4. NFR-7.4: Studio slider input updates the preview within one frame; color
-   math allocates no new arrays per input event beyond the result object.
+3. NFR-7.3: DEPRECATED (landing page, OS-2). In-scope docs pages show no
+   layout shift from color work; the font swap in P6 is reviewed separately.
+4. NFR-7.4: DEPRECATED (Studio, OS-2).
 
 ## 7. Files
 
-| File or folder                                        | Change                      |
-| ----------------------------------------------------- | --------------------------- |
-| In-scope files from the P7.T0 list (subset of FR-7.1) | Class mapping               |
-| In-scope files from FR-7.2                            | Status behavior             |
-| `src/components/docs/color-role-table.tsx`            | New                         |
-| `src/app/globals.css`                                 | Alias block removed         |
-| `content/docs/{en,id}/**`                             | FR-7.9                      |
-| `test/style-guards.test.ts`                           | Ratchets closed             |
-| `e2e/accessibility.spec.ts`                           | AAA and 2.2 tags            |
-| `e2e/visual-snapshots.spec.ts` baselines              | Regenerated (owner machine) |
-| `README.md`                                           | Badge color                 |
+| File or folder                                        | Change                                         |
+| ----------------------------------------------------- | ---------------------------------------------- |
+| In-scope files from the P7.T0 list (subset of FR-7.1) | Class mapping                                  |
+| In-scope files from FR-7.2                            | Status behavior                                |
+| `src/components/docs/color-role-table.tsx`            | New                                            |
+| `src/app/globals.css`                                 | Alias block shrunk to deprecated uses (FR-7.8) |
+| `content/docs/{en,id}/**`                             | FR-7.9                                         |
+| `test/style-guards.test.ts`                           | Ratchets closed                                |
+| `e2e/accessibility.spec.ts`                           | AAA and 2.2 tags                               |
+| `e2e/visual-snapshots.spec.ts` baselines              | Regenerated (owner machine)                    |
+| `README.md`                                           | Badge color                                    |
 
 ## 8. Tasks
 
@@ -341,8 +346,9 @@ change in this phase.
 8. AC-7.8: `mdx-dart-snippets.test.ts` passes; no snippet uses a deprecated
    role or `fromSeed` except inside the migration guide's "before" blocks.
 9. AC-7.9: axe with `wcag2a`, `wcag2aa`, `wcag2aaa`, `wcag21a`, `wcag21aa`,
-   `wcag22aa` reports zero violations on the listed pages in 4 combinations
-   (owner machine).
+   `wcag22aa` reports zero violations on the gated pages from FR-7.10 item 2
+   in 4 combinations (owner machine). The informational landing run is
+   reported, not gated.
 10. AC-7.10: DEPRECATED (Studio keyboard pass, moved to OS-2). Keyboard
     checks for docs pages are AC-6.5 and V-11.
 11. AC-7.11: `bun run lint`, `bun run type-check`, `bun run test`,
@@ -350,12 +356,12 @@ change in this phase.
 
 ## 10. Risks
 
-| Risk                                                      | Mitigation                                                                                                      |
-| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Mapping by name instead of meaning (links lose underline) | Mapping table plus AC-6.7 from P6 still runs                                                                    |
-| The page looks flat without lime                          | Design review of the landing in 4 combinations after P7.T6; emphasis through weight, inverse blocks and shadows |
-| Snapshot churn hides real regressions                     | Regenerate baselines once, after P7.T7, and review the diff image by image                                      |
-| `id` content drifts from `en`                             | Same-commit rule in FR-7.9                                                                                      |
+| Risk                                                      | Mitigation                                                                                                               |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Mapping by name instead of meaning (links lose underline) | Mapping table plus AC-6.7 from P6 still runs                                                                             |
+| Docs pages look flat without lime                         | Design review of the gated docs pages in 4 combinations after P7.T2; emphasis through weight, inverse blocks and shadows |
+| Snapshot churn hides real regressions                     | Regenerate baselines once, after P7.T7, and review the diff image by image                                               |
+| `id` content drifts from `en`                             | Same-commit rule in FR-7.9                                                                                               |
 
 ## 11. Pending decisions
 
@@ -370,5 +376,7 @@ change in this phase.
 
 ## 12. Exit criteria
 
-All acceptance criteria met. The docs contain no accent utility, no alias, no
-lime and no unpaired status color, and the content matches the shipped API.
+All acceptance criteria met. In-scope docs files contain no accent utility,
+no alias, no lime and no unpaired status color; the alias block and guard
+allow-lists hold only deprecated non-docs files; and the content matches the
+shipped API.

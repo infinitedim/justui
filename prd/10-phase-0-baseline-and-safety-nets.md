@@ -63,15 +63,18 @@ Add `packages/core/test/color_guard_test.dart`. It walks every `.dart` file
 under `packages/core/lib/src/components` and reports, per file, every match
 of:
 
-| Rule ID | Pattern                                 | Meaning                        |
-| ------- | --------------------------------------- | ------------------------------ | -------------------- | ------------------------------- |
-| CG-1    | `Color\(0x(FF                           | ff)[0-9A-Fa-f]{6}\)`           | Opaque color literal |
-| CG-2    | `JustColorPalette\.`                    | Palette bypassing the scheme   |
-| CG-3    | `==\s*(JustThemePreset)?\.neobrutalism` | Preset comparison              |
-| CG-4    | `showsDefaultBorder`                    | Preset flag used in components |
-| CG-5    | `colors\.(warning                       | success                        | info)\b`             | Status color outside allow-list |
-| CG-6    | `\.borderFocus\b`                       | Old focus-as-primary role      |
-| CG-7    | `withValues\(alpha:`                    | Alpha-derived state color      |
+| Rule ID | Pattern                                                                                | Meaning                                            |
+| ------- | -------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| CG-1    | `Color\(0x(FF\|ff)[0-9A-Fa-f]{6}\)`                                                    | Opaque color literal                               |
+| CG-2    | `JustColorPalette\.`                                                                   | Palette bypassing the scheme                       |
+| CG-3    | `(==\|!=)\s*(JustThemePreset)?\.neobrutalism\|case\s+(JustThemePreset)?\.neobrutalism` | Preset comparison, including `!=` and switch cases |
+| CG-4    | `showsDefaultBorder`                                                                   | Preset flag used in components                     |
+| CG-5    | `colors\.(warning\|success\|info)\b`                                                   | Status color outside allow-list                    |
+| CG-6    | `\.borderFocus\b`                                                                      | Old focus-as-primary role                          |
+| CG-7    | `withValues\(alpha:`                                                                   | Alpha-derived state color                          |
+
+In the table above, `\|` is Markdown escaping for the regex alternation `|`;
+the test source uses a plain `|`.
 
 Requirements:
 
@@ -95,9 +98,11 @@ Extend `apps/docs/test/style-guards.test.ts` with two new ratchet lists:
    `/\b[a-z:-]*(bg|text|border|fill|caret|accent|outline|ring|decoration)-accent[a-z/0-9-]*/`.
 2. `STATUS_ALLOWED`: the 12 files that use status utilities today. Pattern:
    `/\b(bg|text|border)-(success|warning|error|info|destructive)\b/`.
-3. New hard bans with an empty allow-list from the start of P7:
-   `focus-visible:outline-accent`, `bg-black`, `bg-white`, `text-white`.
-   During P0 they are recorded with their current files so the test passes.
+3. New hard bans: `focus-visible:outline-accent`, `bg-black`, `bg-white`,
+   `text-white`. During P0 they are recorded with their current files so the
+   test passes. From P7 the allow-list is empty for in-scope docs files;
+   deprecated non-docs files from the P7.T0 list stay allow-listed until the
+   redesign (OS-2).
 4. Same ratchet behavior as FR-0.2 (fail on new files, fail on stale
    allowances).
 
