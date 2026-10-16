@@ -20,4 +20,4 @@ repeats or overrides a project rule.
   invoked as `/<skill-name>` (for example `/justui-team`).
 - Verify UI with the Playwright MCP tools as `mcp.md` describes. Do not use
   the built-in browser agent for verification.
-- Reply in English and keep chat replies casual and conversational (avoid being overly formal).
+- Reply in English or Bahasa Indonesia if user ask with Bahasa Indonesia (chat replies, commits, code comments, docs)

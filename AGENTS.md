@@ -2,7 +2,7 @@
 
 This file is always active. It holds the rules that apply to every task.
 Area rules live in `.agents/rules/` and load by file path or by task type.
-Write and reply in English (chat replies, commits, code comments, docs).
+Write and reply in English or Bahasa Indonesia if user ask with Bahasa Indonesia (chat replies, commits, code comments, docs).
 Use plain ASCII in everything you write: no em dashes, curly quotes or emoji.
 Keep chat replies casual and conversational (avoid being overly formal).
 
@@ -123,16 +123,16 @@ paste the command and its result in your summary. If a check cannot run in
 your environment, say "not verified: <check> (<reason>)". Never claim a check
 passed that you did not run.
 
-| Area                     | Commands (run from repo root unless noted)                                                                     |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| Dart/Flutter             | `melos exec --flutter -- "flutter analyze ."` and `melos exec --flutter --dir-exists="test" -- "flutter test"` |
-| Tokens (pure Dart tests) | `melos exec --no-flutter --dir-exists="test" -- "dart test"`                                                   |
-| Registry sync            | `dart run tools/generate_checksums.dart --dry-run` (read the output: it can report drift and still exit 0)     |
-| Formatting               | `dart format --set-exit-if-changed .`                                                                          |
+| Area                     | Commands (run from repo root unless noted)                                                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Dart/Flutter             | `melos exec --flutter -- "flutter analyze ."` and `melos exec --flutter --dir-exists="test" -- "flutter test"`                                         |
+| Tokens (pure Dart tests) | `melos exec --no-flutter --dir-exists="test" -- "dart test"`                                                                                           |
+| Registry sync            | `dart run tools/generate_checksums.dart --dry-run` (read the output: it can report drift and still exit 0)                                             |
+| Formatting               | `dart format --set-exit-if-changed .`                                                                                                                  |
 | Rust CLI                 | `cargo fmt --all --check`, `cargo clippy --all-targets --all-features -- -D warnings`, `cargo test --all-targets`, `cargo deny check`, `cargo machete` |
-| Docs                     | in `apps/docs`: `bun run lint`, `bun run type-check`, `bun run test`, `bun run build`                          |
-| Docs UI                  | in `apps/docs`: `bun run test:e2e`                                                                             |
-| Generated docs data      | in `apps/docs`: `bun run generate:components -- --check`                                                       |
+| Docs                     | in `apps/docs`: `bun run lint`, `bun run type-check`, `bun run test`, `bun run build`                                                                  |
+| Docs UI                  | in `apps/docs`: `bun run test:e2e`                                                                                                                     |
+| Generated docs data      | in `apps/docs`: `bun run generate:components -- --check`                                                                                               |
 
 ## 7. Summary format at the end of every task
 
