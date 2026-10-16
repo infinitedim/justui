@@ -243,11 +243,64 @@ Dari `mode-persuade.md`:
 404 mewarisi world landing. Isinya harus menyebut masalahnya dan jalan
 keluarnya (`craft-floor.md`: errors name the problem and the recovery).
 
-| Referensi                                                                                          | Diambil                                                        | Ditolak                                                                                       |
-| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| [ilovetypography.com 404](https://ilovetypography.com/this-page-does-not-exist) (screenshot)      | Pencarian langsung di halaman 404                              | Kicker "ERROR 404" di atas judul; copy generik "Nothing Found"                               |
-| [github.com 404](https://github.com/this-page-does-not-exist-xyz-123/nope) (screenshot)           | Kalimat yang punya karakter; pencarian sebagai jalan keluar    | Ilustrasi berwarna penuh; tidak cocok dengan Ink and Paper                                   |
-| [State Library NSW scanned card catalogue](https://scanned-card-catalogue.sl.nsw.gov.au/card/design) | Ide "tidak ada kartu yang diarsip di bawah path ini"         | Halaman di-render JS dan kosong di screenshot headless; tampilan belum diverifikasi          |
+Revisi 2026-10-16: referensi v1 (ilovetypography, GitHub, katalog kartu NSW)
+dibuang. NSW tidak bisa dibuka sama sekali, dan dua lainnya terlalu biasa.
+Penggantinya dipilih dengan satu syarat: 404 itu harus jadi perpanjangan
+world situsnya sendiri, bukan template "Page not found" yang ditempel.
+
+Cara cek: setiap URL di bawah dibuka di Chromium 1440x900. Interaksinya dites
+dengan drag atau gerakan mouse, lalu dibandingkan dua screenshot.
+
+### 5.1 Referensi terpilih (urut kekuatan)
+
+| #   | Referensi                                                                    | Yang terjadi (terverifikasi)                                                                                                                    | Disiplin yang diambil                                                                                       | Yang tidak dibawa                                                 |
+| --- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 1   | [Figma](https://www.figma.com/this-page-does-not-exist-404x)                 | Angka "404" hitam besar ditampilkan sebagai path vektor dengan node. Node bisa di-drag dan bentuk hurufnya ikut berubah (dites)                 | 404 yang membuktikan produknya: pengunjung yang tersesat tetap bisa mencoba mekanisme intinya                | Node biru (aksen); tombol CTA hitam penuh di header              |
+| 2   | [Standards Manual](https://standardsmanual.com/this-page-does-not-exist-404x) | "404 St" ditulis raksasa seperti nama stasiun subway NYC, lalu satu kalimat besar: halaman tidak ada, pakai menu, atau pulang                  | Lelucon yang lahir dari world-nya sendiri, dalam vocabulary world itu                                     | Aksen oranye pada cart                                           |
+| 3   | [Norgram](https://www.norgram.co/404)                                         | "404" hitam setinggi viewport, dipotong jadi irisan horizontal yang bergeser; latar garis vertikal tipis. Tidak ada teks lain (dites)          | Komitmen skala: angkanya adalah halaman. Satu gerakan yang diorkestrasi                                    | Tidak ada jalan keluar yang terlihat (gagal aturan recovery)      |
+| 4   | [Scope Typeface](https://scope-typeface.com/error.html)                       | Layar hitam penuh kata "ERROR" diset dalam typeface yang dijual, lalu menghilang mengikuti mouse (dites). Satu tombol "Back to Scope"         | 404 sebagai spesimen produk: yang dijual adalah materialnya                                                | Hitam total sebagai canvas (Ink and Paper melarang pure black)    |
+| 5   | [SpiralDB](https://spiraldb.com/404)                                          | Bidang isometrik bergaris dengan kubus wireframe yang bergerak (dites), lalu "PAGE NOT FOUND" raksasa kiri bawah dan "Go back home" di kanan  | Komposisi dua bagian: gambar teknis di atas, pernyataan besar plus recovery di bawah. Semuanya geometri    | Kubus generik tanpa makna produk                                  |
+| 6   | [Klim Type Foundry](https://klim.co.nz/this-page-does-not-exist-404x)         | Bentuk hitam putih generatif hasil cacahan glyph, bergerak di antara dua frame (dites). Header tetap: "Page not found"                         | Seni generatif dari material produknya sendiri, tetap monokrom                                             | Tidak ada recovery di first viewport                             |
+
+Pendukung (komposisi saja):
+
+- [Pentagram](https://www.pentagram.com/this-page-does-not-exist-404x): digit
+  "4", "0", "4" raksasa tersebar ke tiga sudut viewport, kalimat penjelas di
+  kiri. Digitnya diam (dites, tidak bereaksi ke mouse). Merah penuhnya tidak
+  dibawa.
+- [Dinamo](https://abcdinamo.com/this-page-does-not-exist-404x): ilustrasi
+  garis tangan asli di world situsnya. Bukti bahwa ilustrasi yang benar-benar
+  dibuat orang itu sah (`craft-floor.md`: real illustration or none). Copy-nya
+  memakai kata kasar dan tidak dibawa.
+- [404s.design](https://www.404s.design): galeri kurasi lebih dari 100 halaman
+  404, sumber kandidat di atas (Norgram, Scope, SpiralDB).
+
+### 5.2 Dicek dan ditolak
+
+| Halaman                                                                                                                                                                                                                                  | Alasan                                                                                    |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [Speakeasy](https://www.speakeasy.com/404)                                                                                                                                                                                               | Angka 404 abu-abu sangat pucat di atas putih: tidak lolos kontras AAA                    |
+| [Coder](https://coder.com/404), [Ethan+](https://ethanplus.ai/404), [Edoardo Lunardi](https://www.edoardolunardi.dev/404), [Gagan Devagiri](https://www.gagandevagiri.com/404), [CodeRabbit](https://www.coderabbit.ai/our404)          | Terminal, BIOS, pixel arcade: kostum alat developer, rut di surface Persuade             |
+| [++hellohello](https://www.hellohello.is/404)                                                                                                                                                                                            | Pecahan foto kantor yang melayang; JustUI tidak punya foto produk yang setara            |
+| [Feldman Studio](https://feldman.studio/this-page-does-not-exist-404x)                                                                                                                                                                   | Game snake yang disebut artikel tidak muncul saat dites; yang terlihat hanya "404" kecil |
+| [Commercial Type](https://commercialtype.com/this-page-does-not-exist-404x), [Teenage Engineering](https://teenage.engineering/this-page-does-not-exist-404x), [IKEA](https://www.ikea.com/us/en/this-page-does-not-exist-404x), [Stripe](https://stripe.com/this-page-does-not-exist-404x), [Apple](https://www.apple.com/this-page-does-not-exist-404x), [Cosmos](https://www.cosmos.so/this-page-does-not-exist-404x), [rauno.me](https://rauno.me/this-page-does-not-exist-404x) | Template "page not found" biasa, atau kartu sama besar (Stripe)                           |
+| [Katalog kartu State Library NSW](https://scanned-card-catalogue.sl.nsw.gov.au/card/design)                                                                                                                                              | Tidak bisa dibuka                                                                         |
+
+### 5.3 Yang diambil untuk 404 JustUI
+
+1. **404 yang membuktikan produk (dari Figma).** Path yang diminta
+   diperlakukan sebagai nama komponen: "`/xyz` tidak ada di registry", lalu
+   komponen asli terdekat ditampilkan hidup dan bisa langsung di-copy
+   perintah `justui add`-nya. Jalan keluar dan bukti mekanisme ada di satu
+   tempat. Data registry nyata, tidak dikarang.
+2. **Lelucon dari vocabulary world (dari Standards Manual).** 404 ditulis
+   dalam bahasa world yang terpilih nanti (lihat tabel per world di bawah),
+   bukan "Oops".
+3. **Angka sebagai halaman (dari Norgram dan Pentagram).** Kalau ada angka,
+   angkanya sebesar viewport dan bergerak sekali, bukan teks 404 kecil di
+   atas judul (itu kicker, dilarang).
+4. **Recovery selalu terlihat (dari SpiralDB).** Norgram dan Klim keren
+   tapi tidak menyediakan jalan keluar di first viewport; JustUI harus.
 
 Terjemahan per world (ide, belum desain):
 
