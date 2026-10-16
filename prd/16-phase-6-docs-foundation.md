@@ -162,22 +162,39 @@ Plus `::selection { background: var(--just-selection); color: var(--just-text-pr
 3. The `--just-syn-*` variables used by the playground (`CodeLines`) map to the
    same roles.
 4. Code stays on IBM Plex Mono and keywords use weight 500 (DP-6, decided
-   2026-10-14). The difference between classes comes from weight 500 vs 400
-   plus italic comments. No Plex Mono 600 is loaded. The sans font change is
-   FR-6.7.
+   2026-10-14, scope narrowed 2026-10-16). The difference between classes
+   comes from weight 500 vs 400 plus italic comments. No Plex Mono 600 is
+   loaded. The sans font change is FR-6.7; the mono scope is FR-6.8.
 
 ### FR-6.7 Font: Plus Jakarta Sans
 
 1. `src/app/[lang]/layout.tsx` loads `Plus_Jakarta_Sans` through
    `next/font/google` as `--font-sans`, replacing `IBM_Plex_Sans`. Weights:
    400, 500, 600, 700. The inline preset script is not touched.
-2. Plus Jakarta Sans has no monospace sibling. The mono family for code
-   stays IBM Plex Mono until the owner picks another (DP-6).
+2. Plus Jakarta Sans has no monospace sibling, so IBM Plex Mono stays as
+   `--font-mono`, loaded at weights 400 and 500 only. `IBM_Plex_Sans` is
+   removed from `layout.tsx` and from the `@theme` block; no other code path
+   may load it (DP-6 item 1).
 3. Check after the swap: heading sizes and line heights (Plus Jakarta Sans is
    wider than IBM Plex Sans), table and navbar overflow, and layout shift
    (NFR-6.3 is relaxed for this task; the visual diff is reviewed manually).
 4. Contrast is unaffected, but 7:1 text at weight 400 must stay legible:
    body copy uses weight 400 or 500, never 300.
+
+### FR-6.8 Mono scope (DP-6 item 1, decided 2026-10-16)
+
+1. `font-mono` (IBM Plex Mono) is allowed only for text that must be
+   monospaced: code blocks, inline `code`, shell commands, terminal output,
+   file paths, token and role names, and keyboard keys (`kbd`).
+2. Labels, metadata, taglines, counters, badges, navigation and button text
+   use Plus Jakarta Sans. A monospace face is never a hierarchy or
+   "technical" styling device.
+3. Numeric table columns use `tabular-nums` in Plus Jakarta Sans. P6.T4b
+   checks in the browser that the loaded font renders tabular figures; if it
+   does not, those columns use `font-mono` and the phase summary records it.
+4. P6 defines the rule and fixes the shared helpers it touches
+   (`ui-classes.ts`, `layout.shared.tsx`). The per-file sweep of
+   `font-mono` in components happens in P7 (FR-7.1 rule 4).
 
 ## 6. Non-functional requirements
 
@@ -206,7 +223,7 @@ Plus `::selection { background: var(--just-selection); color: var(--just-text-pr
 | P6.T2  | `@theme` and Fumadocs mapping, `::selection`                  | P6.T1           |
 | P6.T3  | Focus, links, forced colors, prefers-contrast, themeColor     | P6.T2           |
 | P6.T4  | Monochrome Shiki and playground                               | P6.T1           |
-| P6.T4b | Font swap to Plus Jakarta Sans (FR-6.7)                       | P6.T1           |
+| P6.T4b | Font swap to Plus Jakarta Sans and mono scope (FR-6.7, 6.8)   | P6.T1           |
 | P6.T5  | Tests                                                         | P6.T1 to P6.T4b |
 
 ## 9. Tests and acceptance criteria
@@ -228,6 +245,9 @@ Plus `::selection { background: var(--just-selection); color: var(--just-text-pr
 7. AC-6.7: Every link inside MDX prose has `text-decoration-line: underline`.
 8. AC-6.8: `bun run lint`, `bun run type-check`, `bun run test`, `bun run
 build` pass.
+9. AC-6.9: `IBM_Plex_Sans` and `IBM Plex Sans` appear nowhere under
+   `apps/docs/src` (Vitest text search), and the only `next/font` families
+   loaded are `Plus_Jakarta_Sans` and `IBM_Plex_Mono`.
 
 ## 10. Risks
 
@@ -241,7 +261,7 @@ build` pass.
 
 | Decision | Default assumed                                                        |
 | -------- | ---------------------------------------------------------------------- |
-| DP-6     | Plus Jakarta Sans for sans; Plex Mono stays for code; keywords use 500 |
+| DP-6     | Plus Jakarta Sans for all text; Plex Mono only for monospaced text     |
 | DP-8     | Warm tint                                                              |
 
 ## 12. Exit criteria

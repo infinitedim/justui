@@ -321,7 +321,7 @@ Gunakan kotak centang (`[ ]` / `[x]`) di bawah ini untuk memantau progres penger
 - [ ] **`P6.T2`** — Petakan `@theme` Tailwind v4, variabel `--color-fd-*` Fumadocs di blok `body`, dan `::selection` (`FR-6.2`, `FR-6.3`, `AC-6.4`).
 - [ ] **`P6.T3`** — Definisikan `--just-focus-ring-width` (`2px` / `2.5px` / `3px`), perbarui `focusRing` dan `link` di `ui-classes.ts`, tambahkan `@media (forced-colors: active)` & `@media (prefers-contrast: more)`, serta `viewport.themeColor` (`FR-6.4`, `FR-6.5`, `AC-6.5` s/d `AC-6.7`).
 - [ ] **`P6.T4`** — Hubungkan `src/lib/justui-shiki-theme.ts` dan `--just-syn-*` ke `tokens.generated.ts` dengan IBM Plex Mono weight 500 untuk keyword (`FR-6.6`, `AC-6.3`).
-- [ ] **`P6.T4b`** — Ganti `IBM_Plex_Sans` menjadi `Plus_Jakarta_Sans` (weights 400, 500, 600, 700) di `src/app/[lang]/layout.tsx` tanpa menyentuh _inline preset script_ (`FR-6.7`).
+- [ ] **`P6.T4b`** - Ganti `IBM_Plex_Sans` menjadi `Plus_Jakarta_Sans` (weights 400, 500, 600, 700) di `src/app/[lang]/layout.tsx` tanpa menyentuh _inline preset script_, hapus IBM Plex Sans sepenuhnya, dan batasi IBM Plex Mono hanya untuk teks monospace (`FR-6.7`, `FR-6.8`, `AC-6.9`).
 - [ ] **`P6.T5`** — Tambahkan Vitest contrast & Shiki tests serta Playwright foundation specs; jalankan `bun run lint`, `type-check`, `test`, dan `build` (`Section 9`, `AC-6.2`, `AC-6.8`).
 
 #### Phase 7: Docs UI and Content (Non-Docs Pages Deprecated)

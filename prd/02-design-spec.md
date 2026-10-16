@@ -167,8 +167,9 @@ canvas, surface, sunken and raised (dark).
    adjacent colors (1.4.11).
 3. `borderSubtle` is decoration only. Inputs, checkboxes, radios, switch
    tracks in the off state and slider tracks use `borderControl`.
-4. Hierarchy comes from size, weight (400, 500, 600) and IBM Plex Mono for
-   metadata on the web (Plus Jakarta Sans for copy). Never use a gray lighter than `textTertiary` for text.
+4. Hierarchy comes from size and weight (400, 500, 600) in Plus Jakarta Sans,
+   including metadata and labels. A monospace face is never used for
+   hierarchy (section 8). Never use a gray lighter than `textTertiary` for text.
 5. State colors come from roles (`hoverFill`, `inverseHover`,
    `inversePressed`, `errorHover`). Building state colors with
    `withValues(alpha:)` on brand colors is not allowed. Alpha is allowed only
@@ -273,9 +274,16 @@ the "shadows are ink" rule.
 
 ## 8. Typography links to color
 
-1. Docs and Flutter: Plus Jakarta Sans for copy (DP-6). Docs: IBM Plex Mono
-   for metadata and code.
-2. Code blocks (on `sunken`): keyword textPrimary bold, type textPrimary,
+1. Docs and Flutter: Plus Jakarta Sans for all text, including labels and
+   metadata (DP-6). Docs: IBM Plex Mono only for text that must be
+   monospaced: code blocks, inline code, shell commands, terminal output,
+   file paths, token and role names, and keyboard keys. IBM Plex Sans is not
+   used.
+2. Numeric columns in tables use Plus Jakarta Sans with
+   `font-variant-numeric: tabular-nums`. P6 checks that the loaded font
+   renders tabular figures; if it does not, those columns fall back to
+   IBM Plex Mono and the P6 summary says so.
+3. Code blocks (on `sunken`): keyword textPrimary bold, type textPrimary,
    string textSecondary, number textSecondary, punctuation textSecondary,
    comment textTertiary italic. Minimum 7.16 (light) and 8.84 (dark).
    Keywords use weight 500 (DP-6, decided); no Plex Mono 600 is loaded.

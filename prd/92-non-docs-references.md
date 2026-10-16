@@ -17,7 +17,7 @@ keputusan desain. Filter dan cara menyusunnya mengikuti skill Impeccable
 | Dihapus nanti           | `/[lang]/components` dan `/[lang]/studio`. Tidak dicarikan referensi                            |
 | Tidak disentuh          | `/install.sh` dan `/install.ps1`                                                                |
 | Palette                 | Wajib Ink and Paper (`02-design-spec.md`): monokrom, tanpa aksen, teks AAA 7:1                  |
-| Font                    | Plus Jakarta Sans untuk teks, IBM Plex Mono untuk kode (DP-6, sudah diputuskan)                 |
+| Font                    | Plus Jakarta Sans untuk semua teks. IBM Plex Mono hanya untuk teks monospace (DP-6, 2026-10-16) |
 | Mode Impeccable landing | Persuade: visitor harus paham offer-nya dan langsung ambil aksi                                 |
 | Mode Impeccable 404     | Ikut world landing. Impeccable: surface di dalam world yang sudah ada mewarisi world itu        |
 
@@ -297,9 +297,10 @@ di browser headless, perlu dilihat manual),
 1. **Font.** `new-work.md` section 4 menyebut Plus Jakarta Sans dan IBM Plex
    sebagai default training data untuk surface Persuade, dan memakainya butuh
    alasan yang tidak bisa dipenuhi font lain. DP-6 sudah mengunci Plus Jakarta
-   Sans. Impeccable bilang brief menang, jadi ini tetap dihormati. Kalau kamu
-   mau landing punya display face sendiri, itu perubahan DP-6 dan harus
-   diputuskan eksplisit.
+   Sans untuk semua teks (2026-10-16), dengan IBM Plex Mono hanya untuk teks
+   monospace seperti perintah install. Impeccable bilang brief menang, jadi
+   ini tetap dihormati. Kalau kamu mau landing punya display face sendiri,
+   itu perubahan DP-6 dan harus diputuskan eksplisit.
 2. **Kicker di landing dan 404 sekarang.** Impeccable melarangnya total.
    Redesign harus menghapusnya.
 3. **Neobrutalism sebagai gaya halaman.** Shadow offset keras hanya sah
