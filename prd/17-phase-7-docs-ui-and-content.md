@@ -134,6 +134,12 @@ Rules:
    thickness (links) or the inverse step.
 3. The 54 files are swept in the groups below so review stays small. After
    each group the `ACCENT_ALLOWED` list in `style-guards.test.ts` shrinks.
+4. Mono scope (P6 FR-6.8, DP-6 item 1): while a file is open for the accent
+   sweep, every `font-mono` on text that is not code, a command, terminal
+   output, a path, a token name or a key moves to Plus Jakarta Sans (drop
+   `font-mono`; keep size and weight). Taglines, counters, badges, nav
+   labels and "view all" links are the usual cases. Deprecated non-docs files
+   (P7.T0 list) are not swept.
 
 | Group | Files (under `apps/docs/src/`)                                                                                                                                                                                                                    |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -353,6 +359,9 @@ change in this phase.
     checks for docs pages are AC-6.5 and V-11.
 11. AC-7.11: `bun run lint`, `bun run type-check`, `bun run test`,
     `bun run build`, `bun run test:e2e` pass (e2e on owner machine).
+12. AC-7.12: every `font-mono` left in an in-scope file sits on text that
+    FR-6.8 item 1 allows (checked by review; the P7 summary lists each file
+    with its remaining `font-mono` uses).
 
 ## 10. Risks
 
@@ -369,7 +378,7 @@ change in this phase.
 | -------- | ------------------------------------------------------- |
 | DP-3     | Badge status variants monochrome with glyph             |
 | DP-4     | Option D (seed hue becomes tint), used for old URLs too |
-| DP-6     | Plus Jakarta Sans (set in P6, FR-6.7)                   |
+| DP-6     | Plus Jakarta Sans (P6 FR-6.7); mono scope (P6 FR-6.8)   |
 | DP-8     | Warm default, graphite as the second named tint         |
 | DP-10    | Logo shape and icons unchanged                          |
 | DP-13    | Info has no color                                       |

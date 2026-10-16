@@ -140,7 +140,7 @@ One monochrome brand, "Ink and Paper", shared by the docs and the library:
 | --- | ----------------------------------------------------------- | ---------------------------------------------- |
 | R1  | Existing users get compile errors after updating components | Deprecated forwarding getters, doctor check    |
 | R2  | Web and Flutter drift again                                 | Generator plus `--check` in Definition of done |
-| R3  | All text at 7:1 flattens hierarchy                          | Hierarchy by size, weight and Plex Mono        |
+| R3  | All text at 7:1 flattens hierarchy                          | Hierarchy by size and weight (DP-6)            |
 | R4  | Neobrutalism loses its character                            | Rule A in `02-design-spec.md` section 6        |
 | R5  | Status colors are indistinguishable without hue             | Mandatory icon shape and text                  |
 | R6  | Sandbox cannot run visual tests                             | Owner-machine checks are part of the P9 gate   |

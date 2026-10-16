@@ -19,6 +19,7 @@ and the phases it affects.
 | 2026-10-14 | All defaults in the summary table accepted (DP-1 to DP-14). For DP-6: IBM Plex Mono stays for code, the CLI copies the font assets and edits pubspec.yaml | all        |
 | 2026-10-14 | DP-10: no logo exists yet; default Flutter and Next.js icons stay as placeholders                                                                         | P5, P7     |
 | 2026-10-14 | Next.js pages that are not docs pages are deprecated; the owner redesigns them separately                                                                 | P7, P9     |
+| 2026-10-16 | DP-6 update: IBM Plex Sans is removed everywhere. IBM Plex Mono stays only for text that must be monospaced (see DP-6 item 1); everything else is Plus Jakarta Sans | P6, P7     |
 
 ## Summary
 
@@ -29,7 +30,7 @@ and the phases it affects.
 | DP-3  | Badge status variants         | Monochrome with glyph, deprecated                                                 | P4, P7         |
 | DP-4  | `fromSeed` future             | Option D (seed hue becomes tint)                                                  | P3, P7, P8     |
 | DP-5  | `justui core sync` command    | Out of scope, follow-up                                                           | P8             |
-| DP-6  | Fonts                         | Plus Jakarta Sans for docs and Flutter; IBM Plex Mono w500 for code (all decided) | P2, P6, P8     |
+| DP-6  | Fonts                         | Plus Jakarta Sans for all text; IBM Plex Mono only for monospaced text (decided)  | P2, P6, P7, P8 |
 | DP-7  | Exact hex values              | Keep the owner's hex (1-unit tolerance)                                           | P1             |
 | DP-8  | Tint choice                   | Warm default, graphite as second named tint                                       | P1, P3, P7, P8 |
 | DP-9  | Tint field on `JustThemeData` | No field                                                                          | P2, P3         |
@@ -116,7 +117,12 @@ the Flutter library default.
 
 Details, all decided with the defaults on 2026-10-14:
 
-1. Mono family for code blocks: IBM Plex Mono stays, keywords at weight 500.
+1. Mono family (updated 2026-10-16): Plus Jakarta Sans has no monospace
+   sibling, so IBM Plex Mono stays, but only for text that must be
+   monospaced: code blocks, inline code, shell commands, terminal output,
+   file paths, token and role names, and keyboard keys. Labels, metadata,
+   taglines, counters and navigation use Plus Jakarta Sans. IBM Plex Sans is
+   not loaded anywhere. Keywords in code use weight 500.
 2. Flutter delivery: the font ships as asset files in
    `packages/tokens/assets/fonts/` (added in P2) and `justui init` copies them
    and edits the user's `pubspec.yaml` (P8 FR-8.9).

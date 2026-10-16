@@ -1,9 +1,10 @@
 # JustUI Ink and Paper Rebrand: PRD Set
 
-Status: Draft v4 (2026-10-15)
+Status: Draft v5 (2026-10-16)
 Changes in v2: Plus Jakarta Sans everywhere (P2, P6, P8); non-docs Next.js pages deprecated (P7)
 Changes in v3 (2026-10-15): fixes from an external review (P7 criteria aligned with the deprecated scope, font files and test loading, parts mapping, preset token replacements, focus ring width, guard targets)
 Changes in v4 (2026-10-15): residuals from the second review (P7 scope wording, axe pages, hard bans, `--no-font`, font folder gate) and own audit (`CustomColorScheme` compatibility for M9, realistic M10, font family naming, doctor font check, golden platform match, carousel theme factory, CG-3 gaps)
+Changes in v5 (2026-10-16): IBM Plex Sans removed everywhere; IBM Plex Mono kept only for text that must be monospaced (DP-6 update). Added `92-non-docs-references.md`
 Owner: Dimas (GitHub: infinitedim)
 Repository: https://github.com/infinitedim/justui
 Baseline commit: `development` at `d80b55e` (2026-10-13)
@@ -50,6 +51,7 @@ Read the files in this order:
 | 19-phase-9-verification-and-release.md   | Release gate, changelog, migration guide          |
 | 90-pending-decisions.md                  | Open questions with the assumed defaults          |
 | 91-out-of-scope.md                       | Follow-up work outside this rebrand               |
+| 92-non-docs-references.md                | Reference research for the landing and 404 pages  |
 
 ## 3. Phase map
 
