@@ -80,6 +80,9 @@ Pola di landing dan 404 sekarang yang kena craft floor:
 
 ## 3. Tujuh world untuk landing (urut resonansi)
 
+Catatan 2026-10-17: urutan di bawah adalah urutan resonansi awal. Kalau
+dukungan banyak preset dijadikan syarat, urutannya berubah (section 10.4).
+
 Mekanisme yang harus dibawa setiap world dalam satu kalimat: **kamu ambil
 satu komponen, file-nya mendarat di project kamu, dan file itu milikmu.**
 
@@ -365,3 +368,139 @@ Screenshot 1440x900 dari setiap situs yang dicek ada di scratchpad sesi ini
 (tidak di-commit):
 `/tmp/claude-1000/-home-yourblooo-development-justui/b4a57eb4-ecd0-4fd2-8707-249ef775d9eb/scratchpad/refs/`.
 Folder itu akan hilang setelah sesi selesai.
+
+## 10. Uji multi-preset (2026-10-17)
+
+Pertanyaan: apakah referensi di dokumen ini masih cocok kalau JustUI punya
+banyak preset, masing-masing dengan karakter sendiri?
+
+### 10.1 Fakta yang diverifikasi
+
+1. **Docs sekarang mengunci model dua preset.**
+   `apps/docs/src/components/providers/preset-provider.tsx` hanya menerima
+   `'neobrutalism'` atau `'default'`, lalu memasang `theme-neobrutalism` di
+   `<html>` dan `<body>`. Script inline di `src/app/[lang]/layout.tsx:61`
+   juga hanya mengenal `'neobrutalism'`. `what-you-get.tsx` memasang dua
+   sampel tetap, `simulator-harness.tsx` memakai ternary dua nilai, dan
+   navbar memakai `PresetToggle` dua posisi.
+2. **Preset switcher me-reskin seluruh situs, termasuk landing.** Class-nya
+   dipasang di root, jadi chrome landing ikut berubah setiap kali preset
+   diganti.
+3. **Token set per preset sudah bisa dipakai scoped.** `globals.css`
+   mendefinisikan `.preset-default` dan `.theme-neobrutalism` sebagai token
+   set lengkap, dan keduanya sudah dipasang per region di `what-you-get` dan
+   `simulator-harness`.
+4. **Preseden eksternal: shadcn/ui.** Sejak Desember 2025 shadcn punya
+   beberapa style
+   ([changelog shadcn create](https://ui.shadcn.com/docs/changelog/2025-12-shadcn-create),
+   [ringkasan shadcnblocks](https://www.shadcnblocks.com/blog/shadcn-component-styles-vega-nova-maia-lyra-mira)).
+   Dicek langsung di [ui.shadcn.com/create](https://ui.shadcn.com/create)
+   (2026-10-17): menu style berisi delapan nama (Vega, Nova, Maia, Lyra,
+   Mira, Luma, Sera, Rhea). Mengganti Nova ke Lyra hanya mengubah area
+   preview (radius jadi None, lebih rapat). Nav atas dan panel kontrol tetap
+   identik.
+5. **Batas kontrak preset JustUI.** Preset hanya boleh mengubah shape, motion
+   dan part mapping, tidak boleh menambah hue (`02-design-spec.md` section 1;
+   P3 FR-3.1). Kontrak itu tidak punya spacing atau density, tidak punya
+   typography, dan alpha hanya boleh untuk scrim dan shadow
+   (`02-design-spec.md` 5.1 rule 5).
+
+### 10.2 Preset uji
+
+Dua preset nyata dan lima preset hipotetis. Yang hipotetis hanya dipakai
+untuk menguji referensi, bukan rencana. Sumbunya diambil dari style shadcn
+yang terverifikasi di atas.
+
+| ID  | Preset                    | Ciri                                                     | Bisa dibuat dengan kontrak sekarang?                         |
+| --- | ------------------------- | -------------------------------------------------------- | ------------------------------------------------------------ |
+| T1  | default (nyata)           | Garis tipis, shadow ink lembut, motion standar           | Ya                                                           |
+| T2  | neobrutalism (nyata)      | Border ink 2.5px, shadow offset keras, motion instan     | Ya                                                           |
+| T3  | bulat lega (mirip Maia)   | Radius besar, ruang lega, shadow lembut                  | Sebagian: radius ya, ruang lega tidak (spacing bukan preset) |
+| T4  | rapat (mirip Mira/Nova)   | Padat untuk data                                         | Tidak: density bukan bagian kontrak preset                  |
+| T5  | kotak datar (mirip Lyra)  | Radius nol, tanpa shadow                                 | Ya, kecuali font mono Lyra (bertentangan dengan DP-6)       |
+| T6  | motion-led                | Gerak pegas, shape tenang                                | Ya (`defaultMotion`)                                         |
+| T7  | glass                     | Permukaan tembus pandang, blur                           | Tidak: alpha dibatasi untuk scrim dan shadow                |
+
+### 10.3 Kriteria
+
+| ID  | Kriteria                     | Lolos kalau                                                                                                        |
+| --- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| K1  | Bingkai, bukan kostum        | Chrome world tidak memakai ciri khas preset mana pun (shadow offset keras, border ink tebal, pill, radius nol mutlak, blur) |
+| K2  | Memperlihatkan yang asli     | Preset tampil sebagai komponen hidup. Gambar garis tidak bisa memperlihatkan shadow lembut, density atau motion   |
+| K3  | Skala ke N preset            | Slot preset berupa daftar atau urutan, bukan pasangan dua                                                         |
+| K4  | Tidak butuh reskin           | World tetap terbaca tanpa harus ikut berubah tiap preset diganti                                                   |
+
+### 10.4 Hasil: tujuh world landing
+
+| World                 | K1                                                              | K2                                                                | K3                                          | K4                                              | Vonis                                    |
+| --------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------- | ---------------------------------------- |
+| W6 spesimen foundry   | Lolos. Di klim.co.nz/fonts chrome tetap netral, tiap baris memakai font-nya sendiri | Lolos, setiap baris komponen hidup                          | Lolos, foundry memuat puluhan keluarga     | Lolos                                           | **Paling tahan. Naik ke posisi 1**       |
+| W1 runner kit model   | Lolos kalau rangka hairline netral; outline ink tebal terbaca neobrutalism | Bersyarat: part harus komponen hidup, bukan gambar garis | Lolos: satu runner per preset (A, B, C...) | Lolos                                           | Lolos dengan syarat                      |
+| W5 instruksi perakitan | Lolos                                                          | Bersyarat: hasil tiap langkah harus komponen hidup               | Lolos, alurnya sama untuk semua preset     | Lolos                                           | Lolos dengan syarat                      |
+| W3 bookplate          | Lolos                                                           | Tidak relevan (soal kepemilikan, bukan preset)                   | Tidak relevan                               | Lolos                                           | Netral; cocok sebagai detail, bukan etalase |
+| W7 katalog industri   | Lolos                                                           | Lemah: di ukuran thumbnail, shadow dan motion hilang              | Lolos                                       | Lolos                                           | Bersyarat; hanya untuk daftar komponen   |
+| W4 standards manual   | Berisiko: band hitam plus radius nol terbaca seperti T5, pengunjung bisa mengira JustUI = gaya datar | Lolos kalau tiap bab berisi komponen hidup | Lolos: satu bab per preset          | Gagal kalau di-reskin: band membulat di T3     | Turun; aman hanya dengan chrome tetap    |
+| W2 gambar paten       | Berisiko: estetika garis tinta paling dekat dengan T2 dan T5    | Gagal untuk T3, T4, T6, T7: gambar garis hanya memperlihatkan outline | Lolos (FIG. 1 sampai N)                | Lolos                                           | **Turun. Hanya untuk section anatomi role** |
+| Terminal (rut)        | Lolos                                                           | Gagal: output teks tidak bisa memperlihatkan preset              | -                                           | Lolos                                           | Tetap ditolak                            |
+
+Catatan W2: angka referensi yang menunjuk ke part (`primaryBg`, `primaryFg`,
+dan seterusnya) justru berguna, karena part mapping memang berbeda per preset
+(`resolveParts`). Jadi gambar paten tetap berguna untuk menjelaskan anatomi,
+tapi tidak bisa jadi world yang memamerkan preset.
+
+Urutan baru kalau multi-preset dijadikan syarat: W6, W1, W5, W3, W7, W4, W2.
+Urutan ini hanya masukan untuk `concept-seed`; undian tetap jalan.
+
+### 10.5 Hasil: referensi 404
+
+Semua referensi 404 terpilih berbasis tipografi atau geometri, bukan gaya
+preset, jadi semuanya lolos K1, K3 dan K4. Dua catatan:
+
+- **Ide registry ala Figma** (path diperlakukan sebagai nama komponen, lalu
+  komponen terdekat tampil hidup) lolos K2 dengan syarat: komponennya
+  dirender dalam preset yang terakhir dipilih pengunjung (`justui-preset` di
+  localStorage) atau default, dan tidak boleh ada preset yang di-hardcode.
+- **Gerak angka besar ala Norgram** harus memakai motion milik situs, bukan
+  motion preset. Kalau ikut `defaultMotion`, angkanya akan diam di T2
+  (instan) dan memantul di T6.
+
+### 10.6 Temuan di luar referensi
+
+Ketakutan lu benar, tapi sumber masalah utamanya bukan di referensi.
+Masalahnya ada di cara situs memakai preset:
+
+1. **Chrome situs ikut preset.** Dengan N preset, world landing harus tampil
+   benar dalam N kulit, padahal Impeccable minta satu world yang memiliki
+   halaman. Usulan: chrome landing dan 404 tetap ("house style" Ink and
+   Paper dengan bahasa bentuknya sendiri, tidak sama dengan preset mana pun).
+   Preset hanya hidup di region panggung lewat token set scoped yang sudah
+   ada. Ini yang dilakukan shadcn /create (10.1 item 4). Docs shell perlu
+   keputusan terpisah, karena P6 sekarang memetakan border shell per preset.
+2. **Pemilih preset dua posisi.** `PresetToggle`, `preset-provider.tsx`,
+   script inline, `what-you-get` dan `simulator-harness` semuanya menganggap
+   dua preset. Dengan N preset perlu pemilih berbentuk daftar (shadcn memakai
+   menu berisi delapan item), dan daftar presetnya harus datang dari data
+   yang di-generate, bukan ditulis tangan.
+3. **M10 tidak menghitung biaya di docs.** M10 mengecualikan docs app, padahal
+   setiap preset baru sekarang menyentuh minimal lima file docs (item 2).
+   Usulan PRD: P1 generator mengeluarkan daftar preset ke
+   `tokens.generated.ts` dan satu class per preset ke
+   `tokens.generated.css` dari map `presets`, bukan nama
+   `.theme-neobrutalism` yang ditulis eksplisit (FR-1.5), lalu docs membaca
+   daftar itu.
+4. **Kontrak preset membatasi "karakter unik".** Preset hanya bisa beda di
+   shape, border, shadow, motion, emphasis dan part. Density (T4), ruang lega
+   (T3), font (Lyra) dan glass (T7) tidak bisa jadi preset dengan kontrak
+   sekarang. Kalau kamu mau preset seberagam style shadcn, kontrak P3 FR-3.1
+   dan aturan alpha di `02-design-spec.md` harus diubah lebih dulu.
+
+### 10.7 Perlu kamu putuskan
+
+1. Chrome landing dan 404: tetap (rekomendasi) atau ikut preset?
+2. Docs shell: ikut preset seperti sekarang, atau ikut pola yang sama?
+3. Ubah PRD untuk daftar preset hasil generate (10.6 item 3)?
+4. Apakah kontrak preset perlu dibuka untuk density, spacing atau font
+   (10.6 item 4)? Ini menyentuh DP-6 dan aturan alpha.
+
+Belum ada perubahan kode atau PRD fase karena temuan ini; semuanya menunggu
+keputusan di atas.
