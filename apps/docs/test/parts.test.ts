@@ -2,10 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   PART_COUNT,
   PART_SLUGS,
-  isPartSlug,
   partCode,
   partDir,
-  partFileCount,
   partFiles,
   partMainFile,
   partSharedDeps,
@@ -31,8 +29,6 @@ describe('parts', () => {
     expect(partCode('button')).toBe('07');
     expect(partCode('tooltip')).toBe('33');
     expect(partCode('shared')).toBe('--');
-    expect(isPartSlug('date-picker')).toBe(true);
-    expect(isPartSlug('date_picker')).toBe(false);
   });
 
   it('derives the files `justui add button` writes', () => {
@@ -50,7 +46,9 @@ describe('parts', () => {
       '_shared_focus_indicator',
       '_shared_progress_spinner',
     ]);
-    expect(partFileCount('button')).toBe(8);
+    expect(partFiles('button').length + partSharedDeps('button').length).toBe(
+      8
+    );
     expect(partFiles('missing')).toEqual([]);
   });
 });
