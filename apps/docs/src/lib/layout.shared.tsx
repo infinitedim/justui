@@ -47,8 +47,8 @@ export function baseOptions(lang: string): BaseLayoutProps {
       },
       {
         text: t.components,
-        url: `/${lang}#parts`,
-        active: 'none',
+        url: `/${lang}/docs/components`,
+        active: 'url',
       },
     ],
     i18n: true,

@@ -6,6 +6,8 @@ test.describe('Accessibility (WCAG AA Compliance)', () => {
   const routes = [
     { path: '/en', status: 200, knownFailure: false },
     { path: '/id', status: 200, knownFailure: false },
+    { path: '/en/docs/components', status: 200, knownFailure: false },
+    { path: '/id/docs/components', status: 200, knownFailure: false },
     // Known and pre-existing, not from the landing work: the Fumadocs token
     // mapping in globals.css is commented out (PRD P0.T4), so docs sidebar
     // and search text fall back to Fumadocs' #737373 (4.19:1 on #f1f1f1),

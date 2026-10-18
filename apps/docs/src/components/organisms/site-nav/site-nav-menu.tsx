@@ -40,7 +40,7 @@ export function SiteNavMenu({ lang, showSearch }: SiteNavMenuProps) {
           {t.docs}
         </Link>
         <Link
-          href={{ pathname: localizedHref(lang, ''), hash: 'parts' }}
+          href={localizedHref(lang, '/docs/components')}
           onClick={() => setOpen(false)}
           className={item}
         >

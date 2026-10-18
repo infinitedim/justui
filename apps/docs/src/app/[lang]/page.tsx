@@ -4,7 +4,6 @@ import { CutSequence } from '@/components/organisms/cut-sequence';
 import { FeatureRows } from '@/components/organisms/feature-rows';
 import { InstallSteps } from '@/components/organisms/install-steps';
 import { LandingHero } from '@/components/organisms/landing-hero';
-import { PartsIndex } from '@/components/organisms/parts-index';
 import { SiteFooter } from '@/components/organisms/site-footer';
 import { SiteNav } from '@/components/organisms/site-nav';
 import { TwoRunners } from '@/components/organisms/two-runners';
@@ -61,7 +60,6 @@ export default async function HomePage({
         <TwoRunners lang={lang} />
         <InstallSteps lang={lang} />
         <FeatureRows lang={lang} />
-        <PartsIndex lang={lang} />
       </InstallOsProvider>
     </InkPaperPage>
   );

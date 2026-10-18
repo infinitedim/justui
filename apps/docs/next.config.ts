@@ -88,16 +88,17 @@ const nextConfig: NextConfig = {
       permanent: false,
     });
 
-    // The components catalog and the Theme Studio were removed. Old links
-    // land on the parts index of the landing, or on the landing itself.
+    // The components catalog and the Theme Studio were removed. Old catalog
+    // links land on the components page and the part docs, old Studio links
+    // on the landing.
     redirects.push({
       source: '/components/:path*',
-      destination: `/${defaultLocale}#parts`,
+      destination: `/${defaultLocale}/docs/components/:path*`,
       permanent: false,
     });
     redirects.push({
       source: '/:lang(en|id)/components/:path*',
-      destination: '/:lang#parts',
+      destination: '/:lang/docs/components/:path*',
       permanent: false,
     });
     redirects.push({

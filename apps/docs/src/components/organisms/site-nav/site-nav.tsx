@@ -48,7 +48,7 @@ export function SiteNav({
               {t.docs}
             </Link>
             <Link
-              href={{ pathname: localizedHref(lang, ''), hash: 'parts' }}
+              href={localizedHref(lang, '/docs/components')}
               className={navLink}
             >
               {t.components}
