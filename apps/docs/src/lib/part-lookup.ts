@@ -51,7 +51,9 @@ export function normalizePartQuery(input: string): string {
       .replace(/^\/+|\/+$/g, '')
       .split('/')
       .pop() ?? '';
-  return safeDecode(segment).toLowerCase().replace(/[_\s]+/g, '-');
+  return safeDecode(segment)
+    .toLowerCase()
+    .replace(/[_\s]+/g, '-');
 }
 
 /** `%20` and friends decoded; a malformed escape is kept as typed. */
