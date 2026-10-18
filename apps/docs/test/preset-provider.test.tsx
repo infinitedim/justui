@@ -52,11 +52,41 @@ describe('PresetProvider localStorage resilience', () => {
     expect(screen.getByTestId('preset-val')).toHaveTextContent('neobrutalism');
   });
 
-  it('lets a preset chosen on mount (a shared ?preset= link) win over the stored one', () => {
+  it('never applies the preset class to <html> or <body>', () => {
+    render(
+      <PresetProvider>
+        <Consumer />
+      </PresetProvider>
+    );
+
+    fireEvent.click(screen.getByText('switch'));
+
+    expect(screen.getByTestId('preset-val')).toHaveTextContent('neobrutalism');
+    expect(localStorage.getItem('justui-preset')).toBe('neobrutalism');
+    expect(document.documentElement.classList).not.toContain(
+      'theme-neobrutalism'
+    );
+    expect(document.body.classList).not.toContain('theme-neobrutalism');
+    localStorage.clear();
+  });
+
+  it('ignores a stored value that is not a known preset', () => {
+    localStorage.setItem('justui-preset', '<script>');
+
+    render(
+      <PresetProvider>
+        <Consumer />
+      </PresetProvider>
+    );
+
+    expect(screen.getByTestId('preset-val')).toHaveTextContent('default');
+    localStorage.clear();
+  });
+
+  it('lets a preset chosen on mount win over the stored one', () => {
     localStorage.setItem('justui-preset', 'default');
 
-    // Child effects run before the provider's own mount effect, which is
-    // exactly how the Studio applies ?preset=neo.
+    // Child effects run before the provider's own mount effect.
     function ApplyOnMount() {
       const { setPreset } = usePreset();
       useEffect(() => setPreset('neobrutalism'), [setPreset]);
@@ -72,8 +102,6 @@ describe('PresetProvider localStorage resilience', () => {
 
     expect(screen.getByTestId('preset-val')).toHaveTextContent('neobrutalism');
     expect(localStorage.getItem('justui-preset')).toBe('neobrutalism');
-    document.body.classList.remove('theme-neobrutalism');
-    document.documentElement.classList.remove('theme-neobrutalism');
     localStorage.clear();
   });
 });
