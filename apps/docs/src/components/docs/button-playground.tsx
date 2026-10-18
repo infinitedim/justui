@@ -101,7 +101,7 @@ export function ButtonPlayground() {
         <div
           className={cn(
             scopeClass,
-            'bg-background text-foreground border-border flex min-h-[200px] items-center justify-center border-b border-b-(length:--just-border-width) p-8'
+            'bg-background text-foreground border-border flex min-h-[200px] items-center justify-center border-b-(length:--just-border-width) p-8'
           )}
         >
           <div className={cn(fullWidth ? 'w-full' : 'w-auto')}>
@@ -117,7 +117,7 @@ export function ButtonPlayground() {
           </div>
         </div>
 
-        <div className="border-border grid gap-x-7 gap-y-5 border-b border-b-(length:--just-border-width) p-5 sm:grid-cols-2">
+        <div className="border-border grid gap-x-7 gap-y-5 border-b-(length:--just-border-width) p-5 sm:grid-cols-2">
           <Group label="variant">
             {VARIANTS.map((v) => (
               <Chip
