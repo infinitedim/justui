@@ -19,7 +19,7 @@ export function KitBadge({ children, className }: KitBadgeProps) {
   return (
     <span
       className={cn(
-        'bg-ip-sunken border-ip-border-subtle text-ip-text-primary inline-flex h-6 items-center rounded-full border px-2.5 text-xs [font-weight:var(--ip-strong-weight)]',
+        'bg-ip-sunken border-ip-border-subtle text-ip-text-primary inline-flex h-6 items-center rounded-full border px-2.5 text-xs font-(--ip-strong-weight)',
         'neo:bg-ip-surface neo:border-[2.5px] neo:border-ip-text-primary',
         className
       )}

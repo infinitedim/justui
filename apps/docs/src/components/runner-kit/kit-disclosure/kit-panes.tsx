@@ -22,7 +22,7 @@ export function KitScrollArea({ lines, className }: KitScrollAreaProps) {
       ))}
       <span
         aria-hidden="true"
-        className="bg-ip-sunken neo:rounded-none absolute top-1.5 right-1.5 bottom-1.5 w-1.5 rounded-full"
+        className="bg-ip-sunken neo:rounded-none absolute inset-y-1.5 right-1.5 w-1.5 rounded-full"
       >
         <span className="bg-ip-border-control neo:bg-ip-text-primary neo:rounded-none absolute top-0 left-0 h-[45%] w-1.5 rounded-full" />
       </span>
@@ -50,7 +50,7 @@ export function KitResizable({ start, end, className }: KitResizableProps) {
         <span
           className={cn(
             controlBox,
-            'neo:rounded-none absolute top-1/2 left-1/2 h-5 w-2 -translate-x-1/2 -translate-y-1/2 rounded-[4px]'
+            'neo:rounded-none absolute top-1/2 left-1/2 h-5 w-2 -translate-1/2 rounded-[4px]'
           )}
         />
       </div>

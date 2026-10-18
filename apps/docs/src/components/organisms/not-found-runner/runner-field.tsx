@@ -23,7 +23,7 @@ export function RunnerField({ parts, t, kit, site }: RunnerFieldProps) {
       animated={false}
       className="border-ip-border-control relative flex flex-col rounded-[20px] border-[1.5px]"
     >
-      <div className="bg-ip-canvas absolute -top-[15px] right-6 flex h-7 items-center px-2.5">
+      <div className="bg-ip-canvas absolute top-[-15px] right-6 flex h-7 items-center px-2.5">
         <span className="text-ip-text-secondary text-sm font-semibold">
           {PRESET_LABELS[preset]}
         </span>

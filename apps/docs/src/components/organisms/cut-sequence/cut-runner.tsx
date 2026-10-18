@@ -87,10 +87,8 @@ export function CutRunner({ kit, cutEmpty, partsCount }: CutRunnerProps) {
   const { preset } = usePreset();
   return (
     <PresetStage className="border-ip-border-control relative flex min-w-0 flex-[1_1_340px] items-start rounded-[20px] border-[1.5px] px-[clamp(16px,2.5vw,28px)] pb-7">
-      <div className="bg-ip-canvas absolute right-6 -bottom-[15px] flex items-center gap-2.5 px-2.5">
-        <span className="text-2xl leading-7 font-bold">
-          {PRESET_LABELS[preset]}
-        </span>
+      <div className="bg-ip-canvas absolute right-6 bottom-[-15px] flex items-center gap-2.5 px-2.5">
+        <span className="text-2xl/7 font-bold">{PRESET_LABELS[preset]}</span>
         <span className="text-ip-text-secondary text-sm font-semibold">
           {partsCount}
         </span>

@@ -72,7 +72,7 @@ export function JustButtonPreview({
     >
       {loading ? (
         <span
-          className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+          className="inline-block size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
           aria-hidden="true"
         />
       ) : (

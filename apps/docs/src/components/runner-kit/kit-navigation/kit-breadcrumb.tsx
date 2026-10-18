@@ -27,7 +27,7 @@ export function KitBreadcrumb({
       ))}
       <span
         aria-current="page"
-        className="text-ip-text-primary text-sm [font-weight:var(--ip-strong-weight)]"
+        className="text-ip-text-primary text-sm font-(--ip-strong-weight)"
       >
         {current}
       </span>

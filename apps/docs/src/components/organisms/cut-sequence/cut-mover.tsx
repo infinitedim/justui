@@ -12,7 +12,7 @@ export function CutMover({ label, file }: CutMoverProps) {
     <div
       data-cut="mover"
       aria-hidden="true"
-      className="pointer-events-none absolute top-0 left-0 z-[2] opacity-0"
+      className="pointer-events-none absolute top-0 left-0 z-2 opacity-0"
     >
       <span data-cut="mover-button" className={partButton}>
         {label}
