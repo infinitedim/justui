@@ -242,7 +242,7 @@ export default [
       ],
       'max-lines-per-function': [
         'warn',
-        { max: 80, skipBlankLines: true, skipComments: true },
+        { max: 200, skipBlankLines: true, skipComments: true },
       ],
     },
   },

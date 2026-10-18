@@ -63,7 +63,7 @@ function RunnerColumn({
         <PresetSwatch preset={preset} size={28} />
         <span className="text-base font-semibold">{PRESET_LABELS[preset]}</span>
         {preset === current ? (
-          <span className="bg-ip-inverse text-ip-on-inverse flex h-[26px] items-center rounded-[6px] px-2.5 text-xs font-semibold">
+          <span className="bg-ip-inverse text-ip-on-inverse flex h-6.5 items-center rounded-[6px] px-2.5 text-xs font-semibold">
             {inHand}
           </span>
         ) : null}
@@ -99,7 +99,7 @@ export function TwoRunners({ lang }: TwoRunnersProps) {
       aria-labelledby="landing-runners"
       className="border-ip-border-subtle border-t"
     >
-      <div className="mx-auto max-w-[1440px] px-[clamp(20px,4vw,48px)] py-[clamp(72px,9vw,128px)]">
+      <div className="mx-auto max-w-360 px-[clamp(20px,4vw,48px)] py-[clamp(72px,9vw,128px)]">
         <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-4">
           <h2
             id="landing-runners"

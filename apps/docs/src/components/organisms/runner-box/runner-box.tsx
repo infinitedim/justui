@@ -30,7 +30,7 @@ export function RunnerBox({ lang, kit, partsCount, landsAs }: RunnerBoxProps) {
   return (
     <div className="flex min-w-0 flex-col gap-4">
       <PresetStage className="border-ip-border-control relative flex flex-col rounded-[20px] border-[1.5px]">
-        <div className="bg-ip-canvas absolute right-6 bottom-[-15px] flex items-center gap-2.5 px-2.5">
+        <div className="bg-ip-canvas absolute right-6 -bottom-3.75 flex items-center gap-2.5 px-2.5">
           <span className="text-2xl/7 font-bold">{PRESET_LABELS[preset]}</span>
           <span className="text-ip-text-secondary text-sm font-semibold">
             {partsCount}
@@ -56,11 +56,11 @@ export function RunnerBox({ lang, kit, partsCount, landsAs }: RunnerBoxProps) {
           <RunnerPart
             slug="input"
             {...part}
-            className="min-w-[200px] flex-[0_1_250px]"
+            className="min-w-50 flex-[0_1_250px]"
           >
             <KitInput
               label={kit.project}
-              defaultValue="my_app"
+              defaultValue="just_ui"
               rule="project"
               errorMessage={kit.badProject}
             />
@@ -68,7 +68,7 @@ export function RunnerBox({ lang, kit, partsCount, landsAs }: RunnerBoxProps) {
           <RunnerPart
             slug="slider"
             {...part}
-            className="min-w-[180px] flex-[0_1_200px]"
+            className="min-w-45 flex-[0_1_200px]"
           >
             <KitSlider label={kit.volume} />
           </RunnerPart>

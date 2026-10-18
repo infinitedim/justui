@@ -13,7 +13,7 @@ interface CutBarProps {
 export function CutBar({ cut, site, landsAs }: CutBarProps) {
   const command = `justui add ${cut}`;
   return (
-    <div className="bg-ip-sunken flex min-h-14 flex-wrap items-center gap-x-3.5 gap-y-2.5 rounded-[12px] py-2 pr-2 pl-[18px]">
+    <div className="bg-ip-sunken flex min-h-14 flex-wrap items-center gap-x-3.5 gap-y-2.5 rounded-[12px] py-2 pr-2 pl-4.5">
       <Scissors size={16} aria-hidden="true" />
       <span className="text-sm font-bold whitespace-nowrap">
         {partCode(cut)}

@@ -16,7 +16,7 @@ export function PartsIndex({ lang }: PartsIndexProps) {
   const t = getComponentsPageDictionary(lang);
   const site = getSiteDictionary(lang);
   return (
-    <div className="mx-auto max-w-[1440px] px-[clamp(20px,4vw,48px)] pt-[clamp(40px,5vw,64px)] pb-[clamp(72px,9vw,128px)]">
+    <div className="mx-auto max-w-360 px-[clamp(20px,4vw,48px)] pt-[clamp(40px,5vw,64px)] pb-[clamp(72px,9vw,128px)]">
       <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-4">
         <h1 className="text-[clamp(32px,4.2vw,56px)] leading-[1.06] font-bold tracking-[-0.03em]">
           {t.title}
@@ -37,7 +37,7 @@ export function PartsIndex({ lang }: PartsIndexProps) {
               href={localizedHref(lang, `/docs/components/${slug}`)}
               className="text-ip-text-primary hover:bg-ip-hover flex h-12 min-w-0 flex-1 items-center gap-3 px-3"
             >
-              <span className="text-ip-text-secondary w-[34px] shrink-0 text-[13px] font-bold tabular-nums">
+              <span className="text-ip-text-secondary w-8.5 shrink-0 text-[13px] font-bold tabular-nums">
                 {partCode(slug)}
               </span>{' '}
               <code className="min-w-0 flex-1 truncate font-mono text-sm">

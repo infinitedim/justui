@@ -101,7 +101,7 @@ export function ButtonPlayground() {
         <div
           className={cn(
             scopeClass,
-            'bg-background text-foreground border-border flex min-h-[200px] items-center justify-center border-b-(length:--just-border-width) p-8'
+            'bg-background text-foreground border-border flex min-h-50 items-center justify-center border-b-(length:--just-border-width) p-8'
           )}
         >
           <div className={cn(fullWidth ? 'w-full' : 'w-auto')}>
@@ -169,7 +169,7 @@ export function ButtonPlayground() {
             onClick={() => {
               void copy();
             }}
-            className="bg-card text-secondary border-border absolute top-2.5 right-2.5 h-[26px] rounded-(--just-radius-sm) border-(length:--just-border-width) px-2.5 font-mono text-xs font-medium"
+            className="bg-card text-secondary border-border absolute top-2.5 right-2.5 h-6.5 rounded-(--just-radius-sm) border-(length:--just-border-width) px-2.5 font-mono text-xs font-medium"
           >
             {copied ? 'Copied' : 'Copy'}
           </button>

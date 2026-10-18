@@ -73,8 +73,8 @@ export function KitSkeleton({ className }: KitSkeletonProps) {
     >
       <span className="bg-ip-selection size-10 shrink-0 rounded-full" />
       <span className="flex flex-col gap-2">
-        <span className={cn(bar, 'w-[150px]')} />
-        <span className={cn(bar, 'w-[100px]')} />
+        <span className={cn(bar, 'w-37.5')} />
+        <span className={cn(bar, 'w-25')} />
       </span>
     </span>
   );

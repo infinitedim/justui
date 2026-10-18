@@ -117,7 +117,7 @@ export function CutRunner({ kit, cutEmpty, partsCount }: CutRunnerProps) {
           <Hanging slug="input">
             <input
               aria-label={kit.project}
-              value="my_app"
+              value="just_ui"
               readOnly
               className={cn(kitField, 'w-[180px]')}
             />

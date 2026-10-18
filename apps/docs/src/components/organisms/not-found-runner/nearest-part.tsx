@@ -18,7 +18,7 @@ export function NearestPart({ slug, kit, site }: NearestPartProps) {
       <div className="flex min-h-28 w-full flex-1 items-center">
         <KitPart slug={slug} t={kit} uid={`nf-${slug}`} />
       </div>
-      <div className="bg-ip-sunken flex h-10 w-full max-w-[280px] items-center gap-1 rounded-[10px] pr-1 pl-3">
+      <div className="bg-ip-sunken flex h-10 w-full max-w-70 items-center gap-1 rounded-[10px] pr-1 pl-3">
         <code className="text-ip-text-primary min-w-0 flex-1 truncate font-mono text-[13px]">
           {command}
         </code>

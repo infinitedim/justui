@@ -55,11 +55,11 @@ export function TextWipe({ onPaper, onInk, save, saveDraft }: TextWipeProps) {
   return (
     <div
       ref={wipe}
-      className="border-ip-border-subtle relative h-[172px] min-w-0 overflow-hidden rounded-[12px] border"
+      className="border-ip-border-subtle relative h-43 min-w-0 overflow-hidden rounded-[12px] border"
     >
       <PresetStage
         animated={false}
-        className="bg-ip-canvas absolute inset-0 flex flex-col px-[18px] py-4"
+        className="bg-ip-canvas absolute inset-0 flex flex-col px-4.5 py-4"
       >
         <span className="text-ip-text-tertiary text-[13px] font-semibold">
           {onPaper}
@@ -75,7 +75,7 @@ export function TextWipe({ onPaper, onInk, save, saveDraft }: TextWipeProps) {
       >
         <PresetStage
           animated={false}
-          className="flex h-full flex-col px-[18px] py-4"
+          className="flex h-full flex-col px-4.5 py-4"
         >
           <span className="text-ip-text-tertiary self-end text-[13px] font-semibold">
             {onInk}

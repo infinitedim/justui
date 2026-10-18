@@ -43,9 +43,9 @@ export function InstallCommand({
       <div
         role="tabpanel"
         aria-label={INSTALL_PLATFORM_LABELS[platform]}
-        className="bg-ip-sunken flex min-h-14 items-center gap-3 rounded-[12px] py-2 pr-2 pl-[18px]"
+        className="bg-ip-sunken flex min-h-14 items-center gap-3 rounded-[12px] py-2 pr-2 pl-4.5"
       >
-        <code className="text-ip-text-primary min-w-0 flex-1 font-mono text-sm leading-[22px]">
+        <code className="text-ip-text-primary min-w-0 flex-1 font-mono text-sm/5.5">
           {commandSegments(command).map((segment, index) => (
             <Fragment key={`${segment}-${index}`}>
               {index > 0 ? <wbr /> : null}

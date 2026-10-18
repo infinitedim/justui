@@ -15,7 +15,7 @@ export function InstallStep({ number, title, children }: InstallStepProps) {
       <div
         data-step-rule
         aria-hidden="true"
-        className="bg-ip-text-primary absolute inset-x-0 -top-0.5 h-[3px] origin-left"
+        className="bg-ip-text-primary absolute inset-x-0 -top-0.5 h-0.75 origin-left"
       />
       <span
         data-step-number

@@ -12,13 +12,13 @@ const exit =
 /** "Part 404 isn't on this runner." and the path that was asked for. */
 export function NotFoundStatement({ path, t }: NotFoundStatementProps) {
   return (
-    <div className="max-w-[820px] min-w-0 flex-[1_1_480px]">
+    <div className="max-w-205 min-w-0 flex-[1_1_480px]">
       <h1 className="text-[clamp(36px,4.8vw,68px)] leading-[1.04] font-bold tracking-[-0.03em] text-balance">
         {t.title}
       </h1>
       <p className="text-ip-text-secondary mt-5 max-w-[60ch] text-lg leading-[1.6] text-pretty">
         {path ? (
-          <code className="bg-ip-sunken text-ip-text-primary rounded-[4px] px-2 py-[3px] font-mono text-base wrap-anywhere">
+          <code className="bg-ip-sunken text-ip-text-primary rounded-[4px] px-2 py-0.75 font-mono text-base wrap-anywhere">
             {path}
           </code>
         ) : (

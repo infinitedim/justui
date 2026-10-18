@@ -22,7 +22,7 @@ export function KitAccordion({
   const id = useId();
   const [open, setOpen] = useState(false);
   return (
-    <div className={cn('w-full max-w-[240px]', className)}>
+    <div className={cn('w-full max-w-60', className)}>
       <button
         type="button"
         aria-expanded={open}

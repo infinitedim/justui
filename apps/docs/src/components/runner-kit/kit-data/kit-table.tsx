@@ -11,7 +11,7 @@ export function KitTable({ columns, rows, className }: KitTableProps) {
   return (
     <table
       className={cn(
-        'text-ip-text-primary w-full max-w-[250px] border-collapse border-(length:--ip-line) border-(--ip-part-container-border) text-[13px]',
+        'text-ip-text-primary w-full max-w-62.5 border-collapse border-(length:--ip-line) border-(--ip-part-container-border) text-[13px]',
         className
       )}
     >
@@ -24,7 +24,7 @@ export function KitTable({ columns, rows, className }: KitTableProps) {
               className={cn(
                 cell,
                 rule,
-                'bg-ip-sunken neo:bg-ip-surface text-ip-text-secondary font-semibold'
+                'bg-ip-sunken text-ip-text-secondary font-semibold'
               )}
             >
               {column}

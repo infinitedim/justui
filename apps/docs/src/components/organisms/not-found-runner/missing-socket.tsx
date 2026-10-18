@@ -64,7 +64,7 @@ export function MissingSocket({ missing }: MissingSocketProps) {
           <span className={cn(line, 'origin-top')} />
           <span className={cn(line, 'origin-bottom')} />
         </div>
-        <span className="bg-ip-inverse text-ip-on-inverse mt-[3px] flex h-[26px] items-center gap-1.5 rounded-[6px] px-2 text-xs font-bold whitespace-nowrap">
+        <span className="bg-ip-inverse text-ip-on-inverse mt-0.75 flex h-6.5 items-center gap-1.5 rounded-[6px] px-2 text-xs font-bold whitespace-nowrap">
           404<span className="font-medium">{missing}</span>
         </span>
       </div>

@@ -78,14 +78,14 @@ export function PartLookupField({ value, onChange, t }: PartLookupFieldProps) {
           aria-invalid={invalid}
           aria-describedby={`${id}-status`}
           className={cn(
-            'bg-ip-surface text-ip-text-primary placeholder:text-ip-text-tertiary h-12 w-full rounded-[10px] pr-3.5 pl-10 font-mono text-[15px]',
+            'bg-ip-surface text-ip-text-primary h-12 w-full rounded-[10px] pr-3.5 pl-10 font-mono text-[15px]',
             invalid
               ? 'border-ip-error border-2'
               : 'border-ip-border-control border'
           )}
         />
       </div>
-      <div id={`${id}-status`} role="status" className="min-h-[18px]">
+      <div id={`${id}-status`} role="status" className="min-h-4.5">
         {message ? (
           <StatusMessage tone={message.tone}>{message.text}</StatusMessage>
         ) : null}

@@ -51,7 +51,7 @@ export function NotFoundRunner() {
       footer={null}
     >
       <HtmlLang lang={lang} />
-      <div className="mx-auto max-w-[1440px] px-[clamp(20px,4vw,48px)] pt-[clamp(40px,5vw,64px)] pb-[clamp(48px,6vw,80px)]">
+      <div className="mx-auto max-w-360 px-[clamp(20px,4vw,48px)] pt-[clamp(40px,5vw,64px)] pb-[clamp(48px,6vw,80px)]">
         <RunnerField
           parts={nearestParts(normalizePartQuery(query))}
           t={t}
@@ -60,7 +60,7 @@ export function NotFoundRunner() {
         />
         <div className="mt-[clamp(36px,4.5vw,64px)] flex flex-wrap items-end justify-between gap-x-16 gap-y-8">
           <NotFoundStatement path={path} t={t} />
-          <div className="flex w-full max-w-[420px] min-w-0 flex-[0_1_420px] flex-col gap-4">
+          <div className="flex w-full max-w-105 min-w-0 flex-[0_1_420px] flex-col gap-4">
             <PartLookupField value={query} onChange={setTyped} t={t} />
             <NotFoundExits lang={lang} t={t} />
           </div>

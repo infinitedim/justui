@@ -36,16 +36,16 @@ export function KitSwitch({
       <span
         aria-hidden="true"
         className={cn(
-          'bg-ip-border-control peer-checked:bg-ip-inverse block h-[22px] w-10 shrink-0 rounded-full',
-          'neo:bg-ip-surface neo:peer-checked:bg-ip-inverse neo:h-[26px] neo:w-[46px] neo:border-[2.5px] neo:border-ip-text-primary',
+          'peer-checked:bg-ip-inverse block h-5.5 w-10 shrink-0 rounded-full',
+          'neo:peer-checked:bg-ip-inverse neo:h-6.5 neo:w-11.5 neo:border-[2.5px] neo:border-ip-text-primary',
           focusRing
         )}
       />
       <span
         aria-hidden="true"
         className={cn(
-          'bg-ip-canvas absolute top-0.5 left-0.5 size-[18px] rounded-full shadow-(--ip-shadow-thumb) transition-transform duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] peer-checked:translate-x-[18px]',
-          'neo:bg-ip-text-primary neo:peer-checked:bg-ip-on-inverse neo:top-[5.5px] neo:left-[5.5px] neo:size-[15px] neo:shadow-none neo:peer-checked:translate-x-5'
+          'bg-ip-canvas absolute top-0.5 left-0.5 size-4.5 rounded-full shadow-(--ip-shadow-thumb) transition-transform duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] peer-checked:translate-x-4.5',
+          'neo:peer-checked:bg-ip-on-inverse neo:top-[5.5px] neo:left-[5.5px] neo:size-3.75 neo:shadow-none neo:peer-checked:translate-x-5'
         )}
       />
       <span className={hideLabel ? 'sr-only' : kitLabel}>{label}</span>
@@ -75,8 +75,8 @@ export function KitCheckbox({
       <span
         aria-hidden="true"
         className={cn(
-          'bg-ip-surface text-ip-on-inverse peer-checked:border-ip-inverse peer-checked:bg-ip-inverse flex size-[18px] shrink-0 items-center justify-center rounded-[4px] border-(length:--ip-line) border-(--ip-part-control-border) [&>svg]:invisible peer-checked:[&>svg]:visible',
-          'neo:size-[22px] neo:rounded-none',
+          'text-ip-on-inverse peer-checked:border-ip-inverse peer-checked:bg-ip-inverse flex size-4.5 shrink-0 items-center justify-center rounded-[4px] border-(length:--ip-line) [&>svg]:invisible',
+          'neo:size-5.5 neo:rounded-none',
           focusRing
         )}
       >
@@ -115,12 +115,12 @@ export function KitRadioGroup({
           <span
             aria-hidden="true"
             className={cn(
-              'bg-ip-surface peer-checked:border-ip-inverse flex size-[18px] shrink-0 items-center justify-center rounded-full border-(length:--ip-line) border-(--ip-part-control-border) [&>span]:scale-0 peer-checked:[&>span]:scale-100',
-              'neo:size-[22px] neo:peer-checked:border-ip-text-primary',
+              'bg-ip-surface peer-checked:border-ip-inverse flex size-4.5 shrink-0 items-center justify-center rounded-full border-(length:--ip-line) [&>span]:scale-0',
+              'neo:size-5.5 neo:peer-checked:border-ip-text-primary',
               focusRing
             )}
           >
-            <span className="bg-ip-inverse neo:size-2.5 size-2 rounded-full transition-transform duration-150" />
+            <span className="bg-ip-inverse neo:size-2.5 rounded-full transition-transform duration-150" />
           </span>
           <span className={kitLabel}>{option}</span>
         </label>

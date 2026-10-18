@@ -34,7 +34,7 @@ export function FeatureRows({ lang }: FeatureRowsProps) {
   const notes = [t.dryRunNote, t.diffNote];
   return (
     <section aria-labelledby="landing-features">
-      <div className="mx-auto max-w-[1440px] px-[clamp(20px,4vw,48px)] py-[clamp(72px,9vw,128px)]">
+      <div className="mx-auto max-w-360 px-[clamp(20px,4vw,48px)] py-[clamp(72px,9vw,128px)]">
         <h2
           id="landing-features"
           className="text-[clamp(32px,4.2vw,56px)] leading-[1.06] font-bold tracking-[-0.03em]"
@@ -43,7 +43,7 @@ export function FeatureRows({ lang }: FeatureRowsProps) {
         </h2>
         <div className="mt-[clamp(32px,4vw,48px)] flex flex-col">
           <FeatureRow title={t.sourceTitle} body={t.sourceBody}>
-            <div className="bg-ip-sunken flex flex-col gap-3 rounded-[12px] px-[18px] py-4">
+            <div className="bg-ip-sunken flex flex-col gap-3 rounded-[12px] px-4.5 py-4">
               {PREVIEW_COMMANDS.map((command, index) => (
                 <div key={command} className="flex flex-col gap-0.5">
                   <code className="text-ip-text-primary font-mono text-[13px]">
