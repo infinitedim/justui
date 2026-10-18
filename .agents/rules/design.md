@@ -18,10 +18,11 @@ This file holds the constraints.
 
 Do not copy docs-site identity choices into library defaults, or the reverse.
 
-## Landing and 404 identity (Ink and Paper)
+## Landing, components page and 404 identity (Ink and Paper)
 
-The landing (`src/app/[lang]/page.tsx`) and the 404 pages use the Ink and
-Paper system from `prd/02-design-spec.md`, not the docs identity below.
+The landing (`src/app/[lang]/page.tsx`), the components page
+(`src/app/[lang]/docs/components/page.tsx`) and the 404 pages use the Ink
+and Paper system from `prd/02-design-spec.md`, not the docs identity below.
 
 - Type: Plus Jakarta Sans 400/500/600/700 for all text, including labels and
   metadata. IBM Plex Mono 400/500 only for commands, code, paths, token
@@ -51,12 +52,12 @@ You may not add a new color, font, radius or shadow style. If a design needs
 one, stop and propose it (value, token name, where it is used, why existing
 tokens do not work). Raw numbers for layout and sizing are allowed. Raw color
 values are allowed only inside token definitions (`globals.css`,
-`color-resolver.ts`, `justui-shiki-theme.ts`).
+`justui-shiki-theme.ts`).
 
 ## Presets
 
-On the landing and 404, presets apply only to stage regions that render
-demo parts; the page chrome is the same in every preset.
+On the Ink and Paper pages, presets apply only to stage regions that
+render demo parts; the page chrome is the same in every preset.
 
 Every UI must look intentional in 4 combinations: default light, default
 dark, neobrutalism light, neobrutalism dark.
@@ -79,8 +80,8 @@ press transform equal to the shadow offset.
 - Filler copy: "seamless", "unlock", "supercharge", "next-level",
   "effortless", "beautifully crafted".
 
-Intentional exceptions: the interactive terminal and the live component
-demos are product features, not decoration. Keep them; make them accurate.
+Intentional exceptions: the live component demos (the runner kit) are
+product features, not decoration. Keep them; make them accurate.
 
 ## Layout and type
 
