@@ -88,31 +88,26 @@ const nextConfig: NextConfig = {
       permanent: false,
     });
 
-    // Redirect components root to default locale components
-    redirects.push({
-      source: '/components',
-      destination: `/${defaultLocale}/components`,
-      permanent: false,
-    });
-
-    // Redirect all /components/:path* without locale to default locale
+    // The components catalog and the Theme Studio were removed. Old links
+    // land on the parts index of the landing, or on the landing itself.
     redirects.push({
       source: '/components/:path*',
-      destination: `/${defaultLocale}/components/:path*`,
+      destination: `/${defaultLocale}#parts`,
       permanent: false,
     });
-
-    // Redirect studio root to default locale studio
     redirects.push({
-      source: '/studio',
-      destination: `/${defaultLocale}/studio`,
+      source: '/:lang(en|id)/components/:path*',
+      destination: '/:lang#parts',
       permanent: false,
     });
-
-    // Redirect all /studio/:path* without locale to default locale
     redirects.push({
       source: '/studio/:path*',
-      destination: `/${defaultLocale}/studio/:path*`,
+      destination: `/${defaultLocale}`,
+      permanent: false,
+    });
+    redirects.push({
+      source: '/:lang(en|id)/studio/:path*',
+      destination: '/:lang',
       permanent: false,
     });
 

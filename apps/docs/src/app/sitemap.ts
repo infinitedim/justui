@@ -17,22 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: lang === defaultLocale ? 1.0 : 0.8,
     });
-
-    // Components catalog
-    entries.push({
-      url: `${BASE_URL}/${lang}/components`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    });
-
-    // Studio
-    entries.push({
-      url: `${BASE_URL}/${lang}/studio`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    });
   }
 
   // Documentation pages from fumadocs source

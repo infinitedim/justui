@@ -67,7 +67,7 @@ describe('HomePage Component', () => {
     );
     expect(
       screen.getByRole('link', { name: /browse components/i })
-    ).toHaveAttribute('href', '/en/components');
+    ).toHaveAttribute('href', '/en/docs/components/button');
   });
 
   it('renders the install tabs and interactive hero section', async () => {

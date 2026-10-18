@@ -123,6 +123,13 @@ describe('Library Helpers', () => {
       expect(linkText(baseOptions('en'))).toEqual(['Docs', 'Components']);
       expect(linkText(baseOptions('id'))).toEqual(['Dokumentasi', 'Komponen']);
     });
+
+    it('points the Components link at the landing parts index', () => {
+      const urls = baseOptions('id').links?.map(
+        (l) => (l as { url: string }).url
+      );
+      expect(urls).toEqual(['/id/docs/introduction', '/id#parts']);
+    });
   });
 
   describe('result.ts', () => {

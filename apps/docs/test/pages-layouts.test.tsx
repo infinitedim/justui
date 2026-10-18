@@ -105,18 +105,11 @@ import LangLayout, {
   dynamicParams as langDynamicParams,
 } from '@/app/[lang]/layout';
 import { generateStaticParams as homeStaticParams } from '@/app/[lang]/page';
-import ComponentsPage, {
-  generateStaticParams as componentsStaticParams,
-} from '@/app/[lang]/components/page';
 import Layout from '@/app/[lang]/docs/layout';
 import Page, {
   generateStaticParams as docsStaticParams,
 } from '@/app/[lang]/docs/[[...slug]]/page';
-import {
-  LandingTemplate,
-  CatalogTemplate,
-  StudioTemplate,
-} from '@/components/templates';
+import { LandingTemplate } from '@/components/templates';
 import { usePreset } from '@/components/providers';
 
 describe('App Router Pages and Layouts', () => {
@@ -189,27 +182,6 @@ describe('App Router Pages and Layouts', () => {
     });
   });
 
-  describe('ComponentsPage', () => {
-    it('renders components catalog and footer correctly', async () => {
-      const page = await ComponentsPage({
-        params: Promise.resolve({ lang: 'en' }),
-      });
-      render(page);
-      expect(
-        screen.getByRole('heading', { level: 1, name: 'Components' })
-      ).toBeInTheDocument();
-      expect(screen.getByText('JustButton')).toBeInTheDocument();
-      expect(
-        screen.getByRole('contentinfo', { name: /site footer/i })
-      ).toBeInTheDocument();
-    });
-
-    it('returns static params', () => {
-      const params = componentsStaticParams();
-      expect(params).toEqual([{ lang: 'en' }, { lang: 'id' }]);
-    });
-  });
-
   describe('Templates', () => {
     describe('LandingTemplate', () => {
       it('renders all structural slots correctly', () => {
@@ -248,40 +220,6 @@ describe('App Router Pages and Layouts', () => {
         );
 
         expect(screen.getByTestId('landing-workbench')).toBeInTheDocument();
-      });
-    });
-
-    describe('CatalogTemplate', () => {
-      it('renders all structural slots correctly', () => {
-        render(
-          <CatalogTemplate
-            navbar={<div data-testid="catalog-navbar" />}
-            header={<div data-testid="catalog-header" />}
-            catalog={<div data-testid="catalog-content" />}
-            footer={<div data-testid="catalog-footer" />}
-          />
-        );
-
-        expect(screen.getByTestId('catalog-navbar')).toBeInTheDocument();
-        expect(screen.getByTestId('catalog-header')).toBeInTheDocument();
-        expect(screen.getByTestId('catalog-content')).toBeInTheDocument();
-        expect(screen.getByTestId('catalog-footer')).toBeInTheDocument();
-      });
-    });
-
-    describe('StudioTemplate', () => {
-      it('renders all structural slots correctly', () => {
-        render(
-          <StudioTemplate
-            navbar={<div data-testid="studio-navbar" />}
-            studioContent={<div data-testid="studio-content" />}
-            footer={<div data-testid="studio-footer" />}
-          />
-        );
-
-        expect(screen.getByTestId('studio-navbar')).toBeInTheDocument();
-        expect(screen.getByTestId('studio-content')).toBeInTheDocument();
-        expect(screen.getByTestId('studio-footer')).toBeInTheDocument();
       });
     });
   });

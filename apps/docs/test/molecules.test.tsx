@@ -6,13 +6,9 @@ import { PresetToggle } from '@/components/molecules/preset-toggle';
 import { LanguageSwitcher } from '@/components/molecules/language-switcher';
 import { ThemeSwitcher } from '@/components/molecules/theme-switcher';
 import { GitHubPill } from '@/components/molecules/github-pill';
-import { CategoryFilterPill } from '@/components/molecules/category-filter-pill';
 import { TerminalLine } from '@/components/molecules/terminal-line';
 import { TerminalPrompt } from '@/components/molecules/terminal-prompt';
 import { ViewportSwitch } from '@/components/molecules/viewport-switch';
-import { VariantPicker } from '@/components/molecules/variant-picker';
-import { StateToggle } from '@/components/molecules/state-toggle';
-import { LightnessSlider } from '@/components/molecules/lightness-slider';
 import { PresetProvider } from '@/components/providers';
 
 describe('Molecules Components', () => {
@@ -91,15 +87,6 @@ describe('Molecules Components', () => {
     });
   });
 
-  describe('CategoryFilterPill', () => {
-    it('renders a pressed label with no count badge', () => {
-      render(<CategoryFilterPill label="Layout" active />);
-      expect(
-        screen.getByRole('button', { name: 'Layout', pressed: true })
-      ).toBeInTheDocument();
-    });
-  });
-
   describe('TerminalLine', () => {
     it('renders output with timestamp', () => {
       render(
@@ -140,49 +127,6 @@ describe('Molecules Components', () => {
       });
       fireEvent.click(tabletRadio);
       expect(onChange).toHaveBeenCalledWith('tablet');
-    });
-  });
-
-  describe('VariantPicker', () => {
-    it('renders options and fires onChange', () => {
-      const onChange = vi.fn();
-      render(
-        <VariantPicker
-          options={[
-            { value: 'primary', label: 'Primary' },
-            { value: 'ghost', label: 'Ghost' },
-          ]}
-          value="primary"
-          onChange={onChange}
-        />
-      );
-      const ghostBtn = screen.getByRole('radio', { name: 'Ghost' });
-      fireEvent.click(ghostBtn);
-      expect(onChange).toHaveBeenCalledWith('ghost');
-    });
-  });
-
-  describe('StateToggle', () => {
-    it('toggles switch state on click', () => {
-      const onChange = vi.fn();
-      render(
-        <StateToggle value={false} onChange={onChange} label="Disabled" />
-      );
-      const toggle = screen.getByRole('switch');
-      fireEvent.click(toggle);
-      expect(onChange).toHaveBeenCalledWith(true);
-    });
-  });
-
-  describe('LightnessSlider', () => {
-    it('renders slider and handles change', () => {
-      const onChange = vi.fn();
-      render(
-        <LightnessSlider value={50} onChange={onChange} label="Lightness" />
-      );
-      const slider = screen.getByRole('slider', { name: 'Lightness' });
-      fireEvent.change(slider, { target: { value: '70' } });
-      expect(onChange).toHaveBeenCalledWith(70);
     });
   });
 });

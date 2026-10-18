@@ -43,11 +43,7 @@ const ROUNDED_FULL_ALLOWED = new Set([
   'components/organisms/simulators/preview-mocks/badge-mock.tsx',
   'components/organisms/simulators/preview-mocks/skeleton-mock.tsx',
   'components/organisms/component-preview-grid/component-preview-grid.tsx',
-  'components/organisms/studio-preview/studio-preview.tsx',
-  'components/molecules/state-toggle/state-toggle.tsx',
   'components/molecules/color-swatch-item/color-swatch-item.tsx',
-  'components/atoms/slider/slider.tsx',
-  'components/atoms/button/button.tsx',
 ]);
 
 /** Raw Tailwind palette colors bypass the tokens. */

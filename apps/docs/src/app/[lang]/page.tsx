@@ -63,7 +63,7 @@ function HeroSection({ lang, t }: { lang: string; t: HomepageDictionary }) {
           {t.getStarted}
         </Link>
         <Link
-          href={`/${lang}/components`}
+          href={`/${lang}/docs/components/button`}
           className={`${ctaBase} text-foreground hover:bg-accent-muted bg-transparent`}
         >
           {t.browseComponents}
@@ -92,7 +92,7 @@ function ComponentShowcase({
           </p>
         </div>
         <Link
-          href={`/${lang}/components`}
+          href={`/${lang}/docs/components/button`}
           className="text-accent-text font-mono text-[13px] font-medium"
         >
           {t.componentsAll}
