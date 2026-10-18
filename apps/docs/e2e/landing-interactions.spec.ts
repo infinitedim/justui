@@ -66,4 +66,29 @@ test.describe('Landing interactions', () => {
       expect(overflow, path).toBe(0);
     }
   });
+
+  test('Shift+Tab never leaves focus under the sticky nav', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/en');
+    const first = page
+      .locator('#parts')
+      .getByRole('button', { name: 'Copy justui add accordion' });
+    await first.focus();
+    await first.evaluate((el) => {
+      window.scrollBy(0, el.getBoundingClientRect().top - 120);
+    });
+    await page.keyboard.press('Shift+Tab');
+    const gap = await page.evaluate(() => {
+      const active = document.activeElement;
+      const header = document.querySelector('header');
+      if (!active || !header) return Number.NaN;
+      return (
+        active.getBoundingClientRect().top -
+        header.getBoundingClientRect().bottom
+      );
+    });
+    expect(gap).toBeGreaterThanOrEqual(0);
+  });
 });

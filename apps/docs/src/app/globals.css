@@ -554,8 +554,11 @@ body:has(.ink-paper) {
   transition: none !important;
 }
 
+/* Keeps focused controls and #anchors clear of the 64px sticky nav plus the
+   focus ring (WCAG 2.4.11). */
 html:has(.ink-paper) {
   scrollbar-color: var(--ip-border-control) var(--ip-canvas);
+  scroll-padding-top: 72px;
 }
 
 html:has(.ink-paper) ::-webkit-scrollbar {
