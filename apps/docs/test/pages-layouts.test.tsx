@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 vi.mock('next/font/google', () => ({
   IBM_Plex_Mono: () => ({ variable: 'font-mono' }),
   IBM_Plex_Sans: () => ({ variable: 'font-sans' }),
+  Plus_Jakarta_Sans: () => ({ variable: 'font-jakarta' }),
 }));
 
 // Mock next-themes
