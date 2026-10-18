@@ -57,6 +57,7 @@ export function KitSwitch({
 export function KitCheckbox({
   label,
   defaultChecked,
+  hideLabel,
   className,
 }: KitCheckboxProps) {
   return (
@@ -81,7 +82,7 @@ export function KitCheckbox({
       >
         <Check size={14} strokeWidth={3} />
       </span>
-      <span className={kitLabel}>{label}</span>
+      <span className={hideLabel ? 'sr-only' : kitLabel}>{label}</span>
     </label>
   );
 }
