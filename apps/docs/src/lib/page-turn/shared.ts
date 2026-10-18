@@ -74,3 +74,21 @@ export function isOffscreen(rect: DOMRect, viewportHeight: number): boolean {
     (rect.bottom < -120 || rect.top > viewportHeight + 120)
   );
 }
+
+/**
+ * Makes a page copy safe to put in the document next to the original:
+ * named form controls would join the original's radio groups (and uncheck
+ * them), so the copy's controls lose their names.
+ */
+export function detachClone(clone: Element): void {
+  for (const control of clone.querySelectorAll('[name]')) {
+    if (
+      control instanceof HTMLInputElement ||
+      control instanceof HTMLSelectElement ||
+      control instanceof HTMLTextAreaElement ||
+      control instanceof HTMLButtonElement
+    ) {
+      control.removeAttribute('name');
+    }
+  }
+}
