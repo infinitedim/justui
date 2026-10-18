@@ -43,6 +43,14 @@ export interface KitDictionary {
   files: string;
   editor: string;
   settings: string;
+  add: string;
+  bold: string;
+  breadcrumb: string;
+  sidebarLabel: string;
+  bottomNavLabel: string;
+  tabsLabel: string;
+  daysLabel: string;
+  slidesLabel: string;
 }
 
 export const kitTranslations = {
@@ -88,6 +96,14 @@ export const kitTranslations = {
     files: 'Files',
     editor: 'Editor',
     settings: 'Settings',
+    add: 'Add',
+    bold: 'Bold',
+    breadcrumb: 'Breadcrumb',
+    sidebarLabel: 'Sections',
+    bottomNavLabel: 'App navigation',
+    tabsLabel: 'Settings sections',
+    daysLabel: 'Days in October',
+    slidesLabel: 'Slides',
   },
   id: {
     saveChanges: 'Simpan perubahan',
@@ -131,6 +147,14 @@ export const kitTranslations = {
     files: 'File',
     editor: 'Editor',
     settings: 'Pengaturan',
+    add: 'Tambah',
+    bold: 'Tebal',
+    breadcrumb: 'Jejak navigasi',
+    sidebarLabel: 'Bagian',
+    bottomNavLabel: 'Navigasi aplikasi',
+    tabsLabel: 'Bagian pengaturan',
+    daysLabel: 'Hari di bulan Oktober',
+    slidesLabel: 'Slide',
   },
 } satisfies Record<Locale, KitDictionary>;
 
