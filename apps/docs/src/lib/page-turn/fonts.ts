@@ -86,7 +86,7 @@ export function selectFace(
   if (loaded.size > 0 && !loaded.has(key)) return null;
   if (!coversBasicLatin(rule.range)) return null;
   const raw = fontUrl(rule.src);
-  if (!raw) return null;
+  if (!raw || !URL.canParse(raw, base)) return null;
   const url = new URL(raw, base);
   if (url.origin !== origin) return null;
   return { cssText: rule.cssText.replace(raw, url.href), url: url.href };
