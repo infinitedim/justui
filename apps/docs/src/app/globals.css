@@ -421,6 +421,7 @@ body:has(.ink-paper),
   --ip-warning-tint: #faf2e9;
   --ip-canvas-opposite: #0d0c0a;
   --ip-ink-shadow: rgb(17 16 15 / 0.06);
+  --ip-shadow-thumb: 0 1px 2px rgb(17 16 15 / 0.25);
   color-scheme: light;
 }
 
@@ -452,6 +453,7 @@ body:has(.ink-paper),
   --ip-warning-tint: #21170c;
   --ip-canvas-opposite: #fbfaf8;
   --ip-ink-shadow: rgb(17 16 15 / 0.4);
+  --ip-shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.45);
   color-scheme: dark;
 }
 
@@ -489,7 +491,59 @@ body:has(.ink-paper),
   --ip-press-secondary: translate(2px, 2px);
 }
 
-@custom-variant neo (&:where(.theme-neobrutalism, .theme-neobrutalism *));
+/* Part mapping (PRD FR-1.2): which role paints which part. Stage parts
+   read only these, so a new preset is one more block, not component code. */
+.ink-paper,
+.ink-paper .preset-default {
+  --ip-part-primary-bg: var(--ip-inverse);
+  --ip-part-primary-fg: var(--ip-on-inverse);
+  --ip-part-primary-border: var(--ip-inverse);
+  --ip-part-primary-hover: var(--ip-inverse-hover);
+  --ip-part-primary-pressed: var(--ip-inverse-pressed);
+  --ip-part-secondary-border: var(--ip-border-control);
+  --ip-part-container-border: var(--ip-border-subtle);
+  --ip-part-control-border: var(--ip-border-control);
+  --ip-part-separator: var(--ip-border-subtle);
+  --ip-part-danger-bg: var(--ip-error);
+  --ip-part-danger-fg: var(--ip-on-inverse);
+  --ip-part-danger-border: var(--ip-error);
+  --ip-part-danger-pressed: var(--ip-error-hover);
+  --ip-part-selected-item-bg: var(--ip-selection);
+  --ip-part-selected-item-fg: var(--ip-text-primary);
+  --ip-surface-line: 0px;
+  --ip-separator-width: 1px;
+  --ip-primary-weight: 600;
+  --ip-secondary-weight: 600;
+  --ip-strong-weight: 600;
+}
+
+.ink-paper .theme-neobrutalism {
+  --ip-part-primary-bg: var(--ip-surface);
+  --ip-part-primary-fg: var(--ip-text-primary);
+  --ip-part-primary-border: var(--ip-text-primary);
+  --ip-part-primary-hover: var(--ip-surface);
+  --ip-part-primary-pressed: var(--ip-hover);
+  --ip-part-secondary-border: var(--ip-text-primary);
+  --ip-part-container-border: var(--ip-text-primary);
+  --ip-part-control-border: var(--ip-text-primary);
+  --ip-part-separator: var(--ip-text-primary);
+  --ip-part-danger-bg: var(--ip-error-tint);
+  --ip-part-danger-fg: var(--ip-error);
+  --ip-part-danger-border: var(--ip-text-primary);
+  --ip-part-danger-pressed: var(--ip-error-tint);
+  --ip-part-selected-item-bg: var(--ip-inverse);
+  --ip-part-selected-item-fg: var(--ip-on-inverse);
+  --ip-surface-line: 2.5px;
+  --ip-separator-width: 2px;
+  --ip-primary-weight: 700;
+  --ip-secondary-weight: 500;
+  --ip-strong-weight: 700;
+}
+
+/* :is() (not :where()) so neo: utilities outrank the base utility they
+   replace regardless of Tailwind's property-based output order, while
+   state variants such as peer-checked: still win over them. */
+@custom-variant neo (&:is(.theme-neobrutalism, .theme-neobrutalism *));
 
 @theme inline {
   --color-ip-canvas: var(--ip-canvas);
@@ -570,4 +624,85 @@ html:has(.ink-paper) ::-webkit-scrollbar-thumb:hover {
 html:has(.ink-paper) ::-webkit-scrollbar-thumb:active {
   border-width: 3px;
   background: var(--ip-text-primary);
+}
+
+/* Native range input for the runner-kit slider (keyboard accessible). The
+   filled part is a two-stop background driven by --ip-range-value. */
+.ip-range {
+  appearance: none;
+  width: 100%;
+  height: 26px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ip-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--ip-inverse) 0 var(--ip-range-value, 50%),
+    var(--ip-border-control) var(--ip-range-value, 50%) 100%
+  );
+}
+
+.ip-range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--ip-inverse) 0 var(--ip-range-value, 50%),
+    var(--ip-border-control) var(--ip-range-value, 50%) 100%
+  );
+}
+
+.ip-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -7px;
+  border: 2px solid var(--ip-inverse);
+  border-radius: 999px;
+  background: var(--ip-canvas);
+  box-shadow: 0 1px 2px var(--ip-ink-shadow);
+}
+
+.ip-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  border: 2px solid var(--ip-inverse);
+  border-radius: 999px;
+  background: var(--ip-canvas);
+}
+
+.ink-paper .theme-neobrutalism .ip-range::-webkit-slider-runnable-track {
+  height: 10px;
+  border: 2.5px solid var(--ip-text-primary);
+  border-radius: 0;
+  background: linear-gradient(
+    to right,
+    var(--ip-inverse) 0 var(--ip-range-value, 50%),
+    var(--ip-surface) var(--ip-range-value, 50%) 100%
+  );
+}
+
+.ink-paper .theme-neobrutalism .ip-range::-moz-range-track {
+  height: 10px;
+  border: 2.5px solid var(--ip-text-primary);
+  border-radius: 0;
+}
+
+.ink-paper .theme-neobrutalism .ip-range::-webkit-slider-thumb {
+  width: 22px;
+  height: 22px;
+  margin-top: -8.5px;
+  border: 2.5px solid var(--ip-text-primary);
+  box-shadow: none;
+}
+
+.ink-paper .theme-neobrutalism .ip-range::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid var(--ip-text-primary);
 }
