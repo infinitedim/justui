@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { CutSequence } from '@/components/organisms/cut-sequence';
 import { LandingHero } from '@/components/organisms/landing-hero';
 import { SiteFooter } from '@/components/organisms/site-footer';
 import { SiteNav } from '@/components/organisms/site-nav';
@@ -52,6 +53,7 @@ export default async function HomePage({
     >
       <InstallOsProvider>
         <LandingHero lang={lang} />
+        <CutSequence lang={lang} />
       </InstallOsProvider>
     </InkPaperPage>
   );
