@@ -33,17 +33,6 @@ const uiFiles = files.filter(
  * radio, slider thumb, spinner, color swatch, semantic status dot.
  */
 const ROUNDED_FULL_ALLOWED = new Set([
-  'components/organisms/simulators/preview-mocks/switch-mock.tsx',
-  'components/organisms/simulators/preview-mocks/avatar-mock.tsx',
-  'components/organisms/simulators/preview-mocks/avatar-group-mock.tsx',
-  'components/organisms/simulators/preview-mocks/carousel-mock.tsx',
-  'components/organisms/simulators/preview-mocks/progress-mock.tsx',
-  'components/organisms/simulators/preview-mocks/radio-group-mock.tsx',
-  'components/organisms/simulators/preview-mocks/radio-mock.tsx',
-  'components/organisms/simulators/preview-mocks/badge-mock.tsx',
-  'components/organisms/simulators/preview-mocks/skeleton-mock.tsx',
-  'components/organisms/component-preview-grid/component-preview-grid.tsx',
-  'components/molecules/color-swatch-item/color-swatch-item.tsx',
   'components/runner-kit/kit-data/kit-data.tsx',
   'components/runner-kit/kit-disclosure/kit-disclosure.tsx',
   'components/runner-kit/kit-disclosure/kit-panes.tsx',
@@ -52,11 +41,6 @@ const ROUNDED_FULL_ALLOWED = new Set([
   'components/runner-kit/kit-range/kit-range.tsx',
   'components/runner-kit/kit-selection/kit-selection.tsx',
   'components/runner-kit/kit-surfaces/kit-surfaces.tsx',
-]);
-
-/** Old landing file, deleted with the old landing in S8. */
-const MEDIA_DISPLAY_ALLOWED = new Set([
-  'components/organisms/interactive-terminal/interactive-terminal.tsx',
 ]);
 
 /** Raw Tailwind palette colors bypass the tokens. */
@@ -84,7 +68,7 @@ const BANNED: Array<{ name: string; pattern: RegExp }> = [
 
 describe('style guards (UI audit)', () => {
   it('scans the source tree', () => {
-    expect(uiFiles.length).toBeGreaterThan(50);
+    expect(uiFiles.length).toBeGreaterThan(40);
   });
 
   it.each(BANNED)('no $name', ({ pattern }) => {
@@ -132,7 +116,6 @@ describe('style guards (UI audit)', () => {
       /^(?:sm|md|lg|xl|2xl|(?:max|min)-[^:]+|@[^:]*|dark|motion-safe|motion-reduce|pointer-[a-z]+|print|portrait|landscape):/;
     const offenders: Array<string> = [];
     for (const f of uiFiles) {
-      if (MEDIA_DISPLAY_ALLOWED.has(f.rel)) continue;
       for (const [, , literal = ''] of f.text.matchAll(
         /(['"`])([^'"`\n]*)\1/g
       )) {
@@ -152,13 +135,20 @@ describe('style guards (UI audit)', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('keeps preview mocks free of a preset prop', () => {
-    const mocks = uiFiles.filter((f) =>
-      f.rel.includes('simulators/preview-mocks/')
+  it('keeps the runner kit free of preset props and preset reads', () => {
+    // Preset differences come from the stage's scope class (neo: variant),
+    // so a kit part never takes or reads a preset.
+    const kit = uiFiles.filter((f) =>
+      f.rel.startsWith('components/runner-kit/')
     );
-    expect(mocks).toHaveLength(33);
-    for (const mock of mocks) {
-      expect(/preset\??:\s*'default'/.test(mock.text), mock.rel).toBe(false);
+    expect(kit.length).toBeGreaterThanOrEqual(10);
+    for (const part of kit) {
+      expect(
+        /\bpreset\??:\s*(?:[A-Z]\w*|['"])|\bpreset=\{|\busePreset\b/.test(
+          part.text
+        ),
+        part.rel
+      ).toBe(false);
     }
   });
 });

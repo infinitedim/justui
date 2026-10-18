@@ -1,7 +1,7 @@
 import { i18n } from '@/lib/i18n';
 import { uiTranslations } from 'fumadocs-ui/i18n';
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
-import { getHomepageDictionary } from '@/lib/homepage-translations';
+import { getSiteDictionary } from '@/lib/site-translations';
 
 export const translations = i18n
   .translations()
@@ -26,7 +26,7 @@ export const translations = i18n
   });
 
 export function baseOptions(lang: string): BaseLayoutProps {
-  const t = getHomepageDictionary(lang);
+  const t = getSiteDictionary(lang);
   return {
     nav: {
       title: (
@@ -40,12 +40,12 @@ export function baseOptions(lang: string): BaseLayoutProps {
     githubUrl: 'https://github.com/infinitedim/justui',
     links: [
       {
-        text: t.navDocs,
+        text: t.docs,
         url: `/${lang}/docs/introduction`,
         active: 'nested-url',
       },
       {
-        text: t.navComponents,
+        text: t.components,
         url: `/${lang}#parts`,
         active: 'none',
       },

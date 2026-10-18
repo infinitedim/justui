@@ -2,7 +2,7 @@ import { RunnerShelf } from '@/components/molecules/runner-shelf';
 import { InstallCommand } from '@/components/organisms/install-command';
 import { RunnerBox } from '@/components/organisms/runner-box';
 import { cn } from '@/lib/cn';
-import { formatMessage } from '@/lib/homepage-translations';
+import { formatMessage } from '@/lib/format-message';
 import { getKitDictionary } from '@/lib/kit-translations';
 import { getLandingDictionary } from '@/lib/landing-translations';
 import { PART_COUNT } from '@/lib/parts';

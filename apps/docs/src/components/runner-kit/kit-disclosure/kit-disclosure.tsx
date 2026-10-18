@@ -4,7 +4,7 @@
 import { useId, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { formatMessage } from '@/lib/homepage-translations';
+import { formatMessage } from '@/lib/format-message';
 import { kitSurface } from '@/lib/kit-classes';
 import type {
   KitAccordionProps,

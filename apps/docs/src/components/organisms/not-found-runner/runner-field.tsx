@@ -1,6 +1,6 @@
 import { PresetStage } from '@/components/organisms/preset-stage';
 import { usePreset } from '@/components/providers';
-import { formatMessage } from '@/lib/homepage-translations';
+import { formatMessage } from '@/lib/format-message';
 import { PART_SLUGS, partCode } from '@/lib/parts';
 import { PRESET_LABELS } from '@/lib/presets';
 import { MissingSocket } from './missing-socket';

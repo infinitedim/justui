@@ -318,60 +318,10 @@ body {
   --color-fd-ring: var(--just-accent-dark);
 }
 
-/* Stage entrance: a short fade-up timed by the preset's motion token
-   (0ms under neobrutalism, so widgets appear instantly there). */
-@keyframes stage-enter {
-  0% {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-stage-enter {
-  animation: stage-enter var(--just-motion-duration) ease-out both;
-}
-
-/* Toast micro-animations referencing JustUI tokens */
-@keyframes toast-enter {
-  0% {
-    opacity: 0;
-    transform: translateY(6px) scale(0.96);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes toast-exit {
-  0% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-4px) scale(0.96);
-  }
-}
-
-.animate-toast-enter {
-  animation: toast-enter 200ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
-}
-
-.animate-toast-exit {
-  animation: toast-exit 150ms cubic-bezier(0.3, 0, 0.8, 0.15) both;
-}
-
-/* Smooth View Transition for theme toggles */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 200ms;
-  animation-timing-function: ease;
-}
+/* This comment's end closes the Fumadocs comment above, which is never
+   closed before body {} (PRD P0.T4 fixes that). Keep a closing marker here
+   until then. The stage and toast animations and the view-transition rule
+   that sat here went with the old landing. */
 
 /* Reduced motion safeguard */
 @media (prefers-reduced-motion: reduce) {

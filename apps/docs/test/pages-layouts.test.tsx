@@ -68,12 +68,6 @@ vi.mock('fumadocs-ui/page', () => ({
   DocsDescription: ({ children }: { children: ReactNode }) => <p>{children}</p>,
 }));
 
-// Mock github API stars fetch
-vi.mock('@/lib/github', () => ({
-  fetchStarCount: vi.fn().mockResolvedValue(150),
-  githubUrl: 'https://github.com/infinitedim/justui',
-}));
-
 // CustomSearchDialog needs a fumadocs FrameworkProvider this unit test
 // doesn't set up; its own behavior is covered by test/search.test.tsx.
 vi.mock('@/components/search', () => ({
@@ -110,7 +104,7 @@ import Layout from '@/app/[lang]/docs/layout';
 import Page, {
   generateStaticParams as docsStaticParams,
 } from '@/app/[lang]/docs/[[...slug]]/page';
-import { LandingTemplate } from '@/components/templates';
+import { InkPaperPage } from '@/components/templates/ink-paper-page';
 import { usePreset } from '@/components/providers';
 
 describe('App Router Pages and Layouts', () => {
@@ -184,43 +178,24 @@ describe('App Router Pages and Layouts', () => {
   });
 
   describe('Templates', () => {
-    describe('LandingTemplate', () => {
-      it('renders all structural slots correctly', () => {
-        render(
-          <LandingTemplate
-            navbar={<div data-testid="landing-navbar" />}
-            hero={<div data-testid="landing-hero" />}
-            installStrip={<div data-testid="landing-install-strip" />}
-            whatYouGet={<div data-testid="landing-what-you-get" />}
-            componentShowcase={<div data-testid="landing-component-showcase" />}
-            footer={<div data-testid="landing-footer" />}
-          />
+    describe('InkPaperPage', () => {
+      it('renders the nav, the page and the footer in the scoped shell', () => {
+        const { container } = render(
+          <InkPaperPage
+            nav={<div data-testid="ink-nav" />}
+            footer={<div data-testid="ink-footer" />}
+          >
+            <div data-testid="ink-content" />
+          </InkPaperPage>
         );
 
-        expect(screen.getByTestId('landing-navbar')).toBeInTheDocument();
-        expect(screen.getByTestId('landing-hero')).toBeInTheDocument();
-        expect(screen.getByTestId('landing-install-strip')).toBeInTheDocument();
-        expect(screen.getByTestId('landing-what-you-get')).toBeInTheDocument();
-        expect(
-          screen.getByTestId('landing-component-showcase')
-        ).toBeInTheDocument();
-        expect(screen.getByTestId('landing-footer')).toBeInTheDocument();
-      });
-
-      it('renders workbench slot when provided', () => {
-        render(
-          <LandingTemplate
-            navbar={<div data-testid="landing-navbar" />}
-            hero={<div data-testid="landing-hero" />}
-            workbench={<div data-testid="landing-workbench" />}
-            installStrip={<div data-testid="landing-install-strip" />}
-            whatYouGet={<div data-testid="landing-what-you-get" />}
-            componentShowcase={<div data-testid="landing-component-showcase" />}
-            footer={<div data-testid="landing-footer" />}
-          />
+        expect(screen.getByTestId('ink-nav')).toBeInTheDocument();
+        expect(screen.getByRole('main')).toContainElement(
+          screen.getByTestId('ink-content')
         );
-
-        expect(screen.getByTestId('landing-workbench')).toBeInTheDocument();
+        expect(screen.getByTestId('ink-footer')).toBeInTheDocument();
+        const root = container.querySelector('[data-page-root]');
+        expect(root).toHaveClass('ink-paper');
       });
     });
   });

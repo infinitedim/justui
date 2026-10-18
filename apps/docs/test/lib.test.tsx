@@ -1,6 +1,5 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import { fetchStarCount, githubUrl } from '@/lib/github';
 import {
   i18n,
   isLocale,
@@ -11,7 +10,6 @@ import {
 } from '@/lib/i18n';
 import { source } from '@/lib/source';
 import { translations, baseOptions } from '@/lib/layout.shared';
-import { ok, err, unwrapOr, mapResult } from '@/lib/result';
 import {
   isPreset,
   parsePresetAlias,
@@ -22,54 +20,6 @@ import {
 import { justuiLight, justuiDark } from '@/lib/justui-shiki-theme';
 
 describe('Library Helpers', () => {
-  describe('github.ts', () => {
-    const originalFetch = global.fetch;
-
-    beforeEach(() => {
-      vi.stubEnv('GITHUB_TOKEN', 'test-token');
-    });
-
-    afterEach(() => {
-      global.fetch = originalFetch;
-      vi.unstubAllEnvs();
-    });
-
-    it('fetches star count successfully with GITHUB_TOKEN', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ stargazers_count: 42 }),
-      });
-
-      const stars = await fetchStarCount();
-      expect(stars).toBe(42);
-      expect(global.fetch).toHaveBeenCalledWith(
-        'https://api.github.com/repos/infinitedim/justui',
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'Bearer test-token',
-          }),
-        })
-      );
-    });
-
-    it('returns null on fetch error or non-ok response', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: false,
-      });
-
-      let stars = await fetchStarCount();
-      expect(stars).toBeNull();
-
-      global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
-      stars = await fetchStarCount();
-      expect(stars).toBeNull();
-    });
-
-    it('exports the correct githubUrl', () => {
-      expect(githubUrl).toBe('https://github.com/infinitedim/justui');
-    });
-  });
-
   describe('i18n.ts', () => {
     it('defines i18n object correctly', () => {
       expect(i18n.languages).toContain('en');
@@ -129,37 +79,6 @@ describe('Library Helpers', () => {
         (l) => (l as { url: string }).url
       );
       expect(urls).toEqual(['/id/docs/introduction', '/id#parts']);
-    });
-  });
-
-  describe('result.ts', () => {
-    it('creates and unwraps ok results', () => {
-      const success = ok(123);
-      expect(success.ok).toBe(true);
-      if (success.ok) {
-        expect(success.value).toBe(123);
-      }
-      expect(unwrapOr(success, 0)).toBe(123);
-    });
-
-    it('creates and unwraps err results', () => {
-      const failure = err('something failed');
-      expect(failure.ok).toBe(false);
-      if (!failure.ok) {
-        expect(failure.error).toBe('something failed');
-      }
-      expect(unwrapOr(failure, 999)).toBe(999);
-    });
-
-    it('maps successful results correctly', () => {
-      const success = ok(10);
-      const mappedSuccess = mapResult(success, (n) => n * 2);
-      expect(unwrapOr(mappedSuccess, 0)).toBe(20);
-
-      const failure = err('fail');
-      const mappedFailure = mapResult(failure, (n: number) => n * 2);
-      expect(mappedFailure.ok).toBe(false);
-      expect(unwrapOr(mappedFailure, -1)).toBe(-1);
     });
   });
 
