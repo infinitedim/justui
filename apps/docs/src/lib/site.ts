@@ -6,3 +6,6 @@ import { env } from '@/lib/env';
  * with NEXT_PUBLIC_SITE_URL.
  */
 export const SITE_URL = env.NEXT_PUBLIC_SITE_URL ?? 'https://justui.vercel.app';
+
+/** Source repository, linked from the page nav and footer. */
+export const GITHUB_URL = 'https://github.com/infinitedim/justui';

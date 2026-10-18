@@ -1,6 +1,8 @@
 export interface KitSwitchProps {
   label: string;
   defaultChecked?: boolean;
+  /** Keep the label for assistive tech only. */
+  hideLabel?: boolean;
   className?: string;
 }
 
