@@ -2,6 +2,7 @@ import { RootProvider } from 'fumadocs-ui/provider/next';
 import { i18nProvider } from 'fumadocs-ui/i18n';
 import { translations } from '@/lib/layout.shared';
 import { HtmlLang } from '@/components/html-lang';
+import { CustomSearchDialog } from '@/components/search';
 import { notFound } from 'next/navigation';
 import { isLocale, localeStaticParams } from '@/lib/i18n';
 import type { ReactNode } from 'react';
@@ -47,11 +48,9 @@ export default async function LangLayout({
         <RootProvider
           theme={{ enabled: false }}
           i18n={i18nProvider(translations, lang)}
-          // The app provides its own Ctrl+K search UI (Navbar ->
-          // CustomSearchDialog). Without this, fumadocs' own default search
-          // dialog stays mounted and bound to the same hotkey, so Ctrl+K opens
-          // two independent, unstyled-vs-styled dialogs at once.
-          search={{ enabled: false }}
+          // One search dialog for the whole site: Ctrl+K and the search
+          // triggers (landing nav, docs sidebar) all open CustomSearchDialog.
+          search={{ SearchDialog: CustomSearchDialog }}
         >
           {children}
         </RootProvider>

@@ -17,6 +17,7 @@ const focusRing =
 export function KitSwitch({
   label,
   defaultChecked,
+  hideLabel,
   className,
 }: KitSwitchProps) {
   return (
@@ -47,7 +48,7 @@ export function KitSwitch({
           'neo:bg-ip-text-primary neo:peer-checked:bg-ip-on-inverse neo:top-[5.5px] neo:left-[5.5px] neo:size-[15px] neo:shadow-none neo:peer-checked:translate-x-5'
         )}
       />
-      <span className={kitLabel}>{label}</span>
+      <span className={hideLabel ? 'sr-only' : kitLabel}>{label}</span>
     </label>
   );
 }

@@ -420,6 +420,7 @@ body:has(.ink-paper),
   --ip-warning: #723f00;
   --ip-warning-tint: #faf2e9;
   --ip-canvas-opposite: #0d0c0a;
+  --ip-band: #f1f0ee;
   --ip-ink-shadow: rgb(17 16 15 / 0.06);
   --ip-shadow-thumb: 0 1px 2px rgb(17 16 15 / 0.25);
   color-scheme: light;
@@ -452,6 +453,7 @@ body:has(.ink-paper),
   --ip-warning: #e3b47d;
   --ip-warning-tint: #21170c;
   --ip-canvas-opposite: #fbfaf8;
+  --ip-band: #11100f;
   --ip-ink-shadow: rgb(17 16 15 / 0.4);
   --ip-shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.45);
   color-scheme: dark;
@@ -462,6 +464,10 @@ body:has(.ink-paper),
    spec section 7: default md/lg are one ink layer, blur 2x elevation;
    neobrutalism offsets are flat textPrimary (primary 4px, secondary 2px,
    md 6px, lg 8px). */
+.ink-paper {
+  --ip-shadow-swatch: 3px 3px 0 0 currentColor;
+}
+
 .ink-paper,
 .ink-paper .preset-default {
   --ip-line: 1px;

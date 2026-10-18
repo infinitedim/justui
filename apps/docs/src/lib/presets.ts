@@ -9,6 +9,12 @@ export type JustUIPreset = (typeof PRESETS)[number];
 
 export const DEFAULT_PRESET: JustUIPreset = 'default';
 
+/** Display names of the presets (product names, not translated). */
+export const PRESET_LABELS = {
+  default: 'Default',
+  neobrutalism: 'Neobrutalism',
+} as const satisfies Record<JustUIPreset, string>;
+
 export const PRESET_OPTIONS = [
   { value: 'default', label: 'default' },
   { value: 'neobrutalism', label: 'neobrutalism' },

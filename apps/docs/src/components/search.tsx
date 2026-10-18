@@ -1,6 +1,7 @@
 'use client';
 
 import { useDocsSearch } from 'fumadocs-core/search/client';
+import { useI18n } from 'fumadocs-ui/contexts/i18n';
 import {
   SearchDialog,
   SearchDialogContent,
@@ -11,17 +12,19 @@ import {
 interface SharedProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  lang: string;
+  /** Defaults to the fumadocs i18n locale of the page. */
+  lang?: string;
 }
 
 export function CustomSearchDialog({ lang, ...props }: SharedProps) {
+  const { locale } = useI18n();
   // No `placeholder`/"no results" text here: SearchDialogInput/List already
   // default to fumadocs' own translated strings (t("Search"), "No results
   // found"), which layout.shared.tsx already registers an Indonesian
   // override for. Overriding them here would hardcode a single locale.
   const { search, setSearch, query } = useDocsSearch({
     type: 'fetch',
-    locale: lang,
+    locale: lang ?? locale,
   });
 
   return (

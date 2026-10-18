@@ -54,6 +54,11 @@ const ROUNDED_FULL_ALLOWED = new Set([
   'components/runner-kit/kit-surfaces/kit-surfaces.tsx',
 ]);
 
+/** Old landing file, deleted with the old landing in S8. */
+const MEDIA_DISPLAY_ALLOWED = new Set([
+  'components/organisms/interactive-terminal/interactive-terminal.tsx',
+]);
+
 /** Raw Tailwind palette colors bypass the tokens. */
 const RAW_PALETTE_ALLOWED = new Set<string>();
 
@@ -105,6 +110,45 @@ describe('style guards (UI audit)', () => {
     const offenders = uiFiles
       .filter((f) => palette.test(f.text) && !RAW_PALETTE_ALLOWED.has(f.rel))
       .map((f) => f.rel);
+    expect(offenders).toEqual([]);
+  });
+
+  it('never overrides a fumadocs display class with our own media variant', () => {
+    // fumadocs-ui/style.css is precompiled Tailwind. Its rules land later in
+    // the same utilities layer, and the minifier keeps only the last copy of
+    // a duplicate rule. A base class it ships (.flex, .hidden, .sr-only)
+    // therefore beats a media, container or dark variant that only we use.
+    const fumadocsCss = fs.readFileSync(
+      path.resolve(__dirname, '..', 'node_modules/fumadocs-ui/dist/style.css'),
+      'utf8'
+    );
+    const shipsClass = (token: string) =>
+      fumadocsCss.includes(
+        `.${token.replace(/[^a-zA-Z0-9_-]/g, (char) => `\\${char}`)} {`
+      );
+    const display =
+      /^(?:flex|inline-flex|block|inline-block|inline|grid|inline-grid|hidden|contents|table|sr-only|not-sr-only)$/;
+    const mediaVariant =
+      /^(?:sm|md|lg|xl|2xl|(?:max|min)-[^:]+|@[^:]*|dark|motion-safe|motion-reduce|pointer-[a-z]+|print|portrait|landscape):/;
+    const offenders: Array<string> = [];
+    for (const f of uiFiles) {
+      if (MEDIA_DISPLAY_ALLOWED.has(f.rel)) continue;
+      for (const [, , literal = ''] of f.text.matchAll(
+        /(['"`])([^'"`\n]*)\1/g
+      )) {
+        const tokens = literal.split(/\s+/);
+        const base = tokens.some(
+          (token) => display.test(token) && shipsClass(token)
+        );
+        const variant = tokens.some(
+          (token) =>
+            mediaVariant.test(token) &&
+            display.test(token.slice(token.lastIndexOf(':') + 1)) &&
+            !shipsClass(token)
+        );
+        if (base && variant) offenders.push(`${f.rel}: ${literal}`);
+      }
+    }
     expect(offenders).toEqual([]);
   });
 
