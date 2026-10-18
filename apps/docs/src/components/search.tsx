@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import { useDocsSearch } from 'fumadocs-core/search/client';
 import { useI18n } from 'fumadocs-ui/contexts/i18n';
 import {
@@ -27,9 +28,30 @@ export function CustomSearchDialog({ lang, ...props }: SharedProps) {
     locale: lang ?? locale,
   });
 
+  // The dialog opens through the search context (nav buttons, Ctrl K), not
+  // a Radix trigger, so Radix has nowhere to send focus on close. Remember
+  // the element that opened it and return focus there.
+  const opener = useRef<HTMLElement | null>(null);
+
   return (
     <SearchDialog search={search} onSearchChange={setSearch} {...props}>
-      <SearchDialogContent className="border-border bg-card max-w-2xl rounded-lg border [border-width:var(--just-border-width)] [box-shadow:var(--just-shadow-solid)]">
+      <SearchDialogContent
+        onOpenAutoFocus={() => {
+          const active = document.activeElement;
+          opener.current =
+            active instanceof HTMLElement && active !== document.body
+              ? active
+              : null;
+        }}
+        onCloseAutoFocus={(event) => {
+          const target = opener.current;
+          opener.current = null;
+          if (!target?.isConnected) return;
+          event.preventDefault();
+          target.focus();
+        }}
+        className="border-border bg-card max-w-2xl rounded-lg border [border-width:var(--just-border-width)] [box-shadow:var(--just-shadow-solid)]"
+      >
         <SearchDialogInput className="border-border bg-card text-foreground placeholder:text-muted w-full border-b [border-bottom-width:var(--just-border-width)] px-4 py-3 text-lg focus:outline-none" />
         <SearchDialogList
           items={query.data !== 'empty' ? query.data : null}

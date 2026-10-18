@@ -49,10 +49,9 @@ export function SiteNavMenu({ lang, showSearch }: SiteNavMenuProps) {
         {showSearch ? (
           <button
             type="button"
-            onClick={() => {
-              setOpen(false);
-              setOpenSearch(true);
-            }}
+            // The menu stays open under the dialog so focus can return
+            // to this button when search closes.
+            onClick={() => setOpenSearch(true)}
             className={item}
           >
             {t.search}

@@ -33,6 +33,22 @@ test.describe('Search dialog', () => {
     await expect(page.getByRole('dialog')).toHaveCount(0);
   });
 
+  test('closing search returns focus to the button that opened it', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto('/en');
+    const trigger = page
+      .locator('header')
+      .getByRole('button', { name: 'Search docs' });
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('dialog')).toHaveCount(1);
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+  });
+
   test('focus moves into the dialog input when opened', async ({ page }) => {
     await page.goto('/en');
     await expect(page.getByRole('dialog')).toHaveCount(0);

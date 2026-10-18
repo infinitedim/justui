@@ -91,4 +91,21 @@ test.describe('Landing interactions', () => {
     });
     expect(gap).toBeGreaterThanOrEqual(0);
   });
+
+  test('closing search from the mobile menu returns focus', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 360, height: 780 });
+    await page.goto('/en');
+    await page.getByRole('button', { name: 'Menu' }).click();
+    const search = page
+      .getByRole('navigation', { name: 'Main navigation' })
+      .getByRole('button', { name: 'Search docs' });
+    await search.focus();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toBeHidden();
+    await expect(search).toBeFocused();
+  });
 });
