@@ -61,4 +61,42 @@ describe('useSlidingPill', () => {
     });
     expect(pill.style.width).toBe('120px');
   });
+
+  it('jumps on a change before the first paint and slides after it', async () => {
+    const animate = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, 'animate', {
+      configurable: true,
+      value: animate,
+    });
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn().mockReturnValue({
+        matches: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })
+    );
+    try {
+      const { rerender } = render(<Harness value="a" />);
+      Object.defineProperty(
+        screen.getByRole('button', { name: 'b' }),
+        'offsetLeft',
+        {
+          configurable: true,
+          value: 100,
+        }
+      );
+      // The stored preset is read right after hydration: no slide.
+      rerender(<Harness value="b" />);
+      expect(animate).not.toHaveBeenCalled();
+      await act(
+        () =>
+          new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+      );
+      rerender(<Harness value="a" />);
+      expect(animate).toHaveBeenCalledTimes(1);
+    } finally {
+      Reflect.deleteProperty(HTMLElement.prototype, 'animate');
+    }
+  });
 });
