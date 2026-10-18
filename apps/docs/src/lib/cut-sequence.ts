@@ -7,6 +7,8 @@
  * styles in effects only.
  */
 
+import { clamp01, expoOut } from '@/lib/scroll-progress';
+
 export const CUT_EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
 const FADE = `opacity 220ms ${CUT_EASE}`;
@@ -59,18 +61,9 @@ export interface CutFrame {
   lift: number;
 }
 
-/** Exponential ease-out: fast start, long settle. */
-export function expoOut(t: number): number {
-  return t >= 1 ? 1 : 1 - 2 ** (-10 * t);
-}
-
 /** A style number without float noise (`0.44999999999999996` -> `0.45`). */
 function fixed(value: number): string {
   return String(Math.round(value * 1e4) / 1e4);
-}
-
-function clamp01(value: number): number {
-  return Math.min(1, Math.max(0, value));
 }
 
 /** Local progress of `p` through the window [from, to]. */

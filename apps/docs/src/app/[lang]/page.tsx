@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CutSequence } from '@/components/organisms/cut-sequence';
+import { FeatureRows } from '@/components/organisms/feature-rows';
+import { InstallSteps } from '@/components/organisms/install-steps';
 import { LandingHero } from '@/components/organisms/landing-hero';
+import { PartsIndex } from '@/components/organisms/parts-index';
 import { SiteFooter } from '@/components/organisms/site-footer';
 import { SiteNav } from '@/components/organisms/site-nav';
+import { TwoRunners } from '@/components/organisms/two-runners';
 import { InstallOsProvider } from '@/components/providers/install-os-provider';
 import { InkPaperPage } from '@/components/templates/ink-paper-page';
 import { isLocale, localeStaticParams, localizedHref } from '@/lib/i18n';
@@ -54,6 +58,10 @@ export default async function HomePage({
       <InstallOsProvider>
         <LandingHero lang={lang} />
         <CutSequence lang={lang} />
+        <TwoRunners lang={lang} />
+        <InstallSteps lang={lang} />
+        <FeatureRows lang={lang} />
+        <PartsIndex lang={lang} />
       </InstallOsProvider>
     </InkPaperPage>
   );

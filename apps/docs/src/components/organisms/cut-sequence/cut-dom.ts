@@ -1,4 +1,5 @@
 import type { CutFrame, CutGeometry, CutStyle } from '@/lib/cut-sequence';
+import { clamp01 } from '@/lib/scroll-progress';
 
 /**
  * DOM side of the cut sequence: nodes carry `data-cut="<name>"`, so the
@@ -51,10 +52,6 @@ export function measureCut(stage: HTMLElement, lift: number): CutGeometry {
   mover.style.left = `${from.left - base.left}px`;
   mover.style.top = `${top - base.top}px`;
   return { dx: to.left - from.left, dy: to.top - top };
-}
-
-function clamp01(value: number): number {
-  return Math.min(1, Math.max(0, value));
 }
 
 /** Progress through a pinned section: 0 when it docks, 1 when it leaves. */
