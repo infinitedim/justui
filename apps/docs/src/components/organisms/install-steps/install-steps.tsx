@@ -19,7 +19,7 @@ const INIT_WRITES = ['justui.config.yaml', 'lib/core/theme/just_theme.dart'];
 
 const PART = 'button';
 const path =
-  'text-ip-text-primary flex items-center gap-2 text-[13px] leading-6';
+  'text-ip-text-primary flex items-center gap-2 font-mono text-[13px] leading-6';
 const icon = { size: 14, 'aria-hidden': true, className: 'shrink-0' } as const;
 
 /** Draws each step's rule in turn; `done` shows the finished state. */
@@ -92,10 +92,10 @@ export function InstallSteps({ lang }: InstallStepsProps) {
                 <Folder {...icon} />
                 {`${partDir(PART)}/`}
               </code>
-              <code className="text-ip-text-secondary pl-[22px] text-[13px] leading-6">
+              <code className="text-ip-text-secondary pl-[22px] font-mono text-[13px] leading-6">
                 {partMainFile(PART)}
               </code>
-              <code className="text-ip-text-secondary pl-[22px] text-[13px] leading-6">
+              <code className="text-ip-text-secondary pl-[22px] font-mono text-[13px] leading-6">
                 {formatMessage(t.moreFiles, {
                   count: partFiles(PART).length - 1,
                 })}

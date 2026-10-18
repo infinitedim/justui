@@ -250,4 +250,21 @@ describe('landing page', () => {
     expect(id.title).toBe('Satu perintah. Satu file. Milikmu.');
     expect(en.alternates?.languages).toEqual({ en: '/en', id: '/id' });
   });
+
+  it.each(['en', 'id'])(
+    'keeps the headline line height in %s',
+    async (lang) => {
+      await renderLanding(lang);
+      const title = screen.getByRole('heading', { level: 1 });
+      expect(title).toHaveClass('leading-[1.04]', 'min-[960px]:leading-[1.02]');
+    }
+  );
+
+  it('sets every code element in IBM Plex Mono', async () => {
+    const { container } = await renderLanding('en');
+    const codes = Array.from(container.querySelectorAll('code'));
+    expect(codes.length).toBeGreaterThan(0);
+    const plain = codes.filter((code) => !code.classList.contains('font-mono'));
+    expect(plain.map((code) => code.textContent)).toEqual([]);
+  });
 });

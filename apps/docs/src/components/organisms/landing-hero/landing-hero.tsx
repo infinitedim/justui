@@ -20,10 +20,13 @@ export function LandingHero({ lang }: LandingHeroProps) {
     <section className="mx-auto w-full max-w-[1440px] px-[clamp(20px,4vw,48px)] pt-[clamp(40px,6vw,64px)] pb-[clamp(64px,8vw,112px)]">
       <h1
         className={cn(
-          'text-[44px] leading-[1.04] font-bold tracking-[-0.03em] text-balance min-[960px]:leading-[1.02] min-[960px]:tracking-[-0.035em] min-[960px]:text-nowrap',
+          'text-[44px] font-bold tracking-[-0.03em] text-balance min-[960px]:tracking-[-0.035em] min-[960px]:text-nowrap',
           lang === 'id'
             ? 'text-[40px] min-[960px]:text-[clamp(36px,5vw,72px)]'
-            : 'min-[960px]:text-[clamp(40px,5.9vw,84px)]'
+            : 'min-[960px]:text-[clamp(40px,5.9vw,84px)]',
+          // After the sizes: tailwind-merge drops a leading-* that a later
+          // text-* size overrides.
+          'leading-[1.04] min-[960px]:leading-[1.02]'
         )}
       >
         {t.heroTitle}
