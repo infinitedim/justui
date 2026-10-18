@@ -5,19 +5,7 @@ import { HtmlLang } from '@/components/html-lang';
 import { notFound } from 'next/navigation';
 import { isLocale, localeStaticParams } from '@/lib/i18n';
 import type { ReactNode } from 'react';
-import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
-
-const sans = IBM_Plex_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-sans',
-});
-
-const mono = IBM_Plex_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-mono',
-});
+import { fontVariables } from '@/lib/fonts';
 
 /**
  * Only the statically known locales are valid `[lang]` segments.
@@ -46,7 +34,7 @@ export default async function LangLayout({
     <html lang={lang} suppressHydrationWarning>
       <head />
       <body
-        className={`${sans.variable} ${mono.variable} bg-background text-foreground flex min-h-screen flex-col font-sans antialiased`}
+        className={`${fontVariables} bg-background text-foreground flex min-h-screen flex-col font-sans antialiased`}
       >
         {/* Update <html lang> on client-side route transitions */}
         <HtmlLang lang={lang} />

@@ -384,3 +384,190 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Ink and Paper (scoped) -- replace with tokens.generated.css in PRD P6.
+   Role values come from prd/02-design-spec.md section 4. They apply only
+   inside `.ink-paper` (the landing and the 404); docs pages keep the
+   `--just-*` identity above. `.ink-paper-invert` renders a subtree in the
+   opposite mode (the install band, the ink half of the text wipe).
+   ------------------------------------------------------------------------- */
+
+.ink-paper,
+body:has(.ink-paper),
+.dark .ink-paper .ink-paper-invert {
+  --ip-canvas: #fbfaf8;
+  --ip-surface: #ffffff;
+  --ip-raised: #ffffff;
+  --ip-sunken: #f3f1ef;
+  --ip-hover: #f3f1ef;
+  --ip-selection: #e1dfdd;
+  --ip-text-primary: #11100f;
+  --ip-text-secondary: #42413f;
+  --ip-text-tertiary: #51504d;
+  --ip-text-disabled: #93928f;
+  --ip-border-subtle: #e1dfdd;
+  --ip-border-control: #81807d;
+  --ip-inverse: #11100f;
+  --ip-inverse-hover: #2b2a28;
+  --ip-inverse-pressed: #3b3a38;
+  --ip-on-inverse: #fbfaf8;
+  --ip-error: #901114;
+  --ip-error-hover: #9a1f1d;
+  --ip-error-tint: #fef0ee;
+  --ip-success: #115629;
+  --ip-success-tint: #edf6ee;
+  --ip-warning: #723f00;
+  --ip-warning-tint: #faf2e9;
+  --ip-canvas-opposite: #0d0c0a;
+  --ip-ink-shadow: rgb(17 16 15 / 0.06);
+  color-scheme: light;
+}
+
+.dark .ink-paper,
+.dark body:has(.ink-paper),
+.ink-paper .ink-paper-invert {
+  --ip-canvas: #0d0c0a;
+  --ip-surface: #151412;
+  --ip-raised: #1d1c1a;
+  --ip-sunken: #090807;
+  --ip-hover: #1d1c1a;
+  --ip-selection: #3b3a38;
+  --ip-text-primary: #f1f0ee;
+  --ip-text-secondary: #c4c2c0;
+  --ip-text-tertiary: #aeaca9;
+  --ip-text-disabled: #646361;
+  --ip-border-subtle: #2b2a28;
+  --ip-border-control: #767472;
+  --ip-inverse: #f1f0ee;
+  --ip-inverse-hover: #d2d1ce;
+  --ip-inverse-pressed: #bfbdbb;
+  --ip-on-inverse: #0d0c0a;
+  --ip-error: #f8a59b;
+  --ip-error-hover: #e9978d;
+  --ip-error-tint: #241513;
+  --ip-success: #99cda3;
+  --ip-success-tint: #111d13;
+  --ip-warning: #e3b47d;
+  --ip-warning-tint: #21170c;
+  --ip-canvas-opposite: #fbfaf8;
+  --ip-ink-shadow: rgb(17 16 15 / 0.4);
+  color-scheme: dark;
+}
+
+/* Preset shape tokens. The default preset sits on the scope root; stage
+   regions switch to neobrutalism through presetScopeClass(). Shadows follow
+   spec section 7: default md/lg are one ink layer, blur 2x elevation;
+   neobrutalism offsets are flat textPrimary (primary 4px, secondary 2px,
+   md 6px, lg 8px). */
+.ink-paper,
+.ink-paper .preset-default {
+  --ip-line: 1px;
+  --ip-radius-control: 8px;
+  --ip-radius-card: 12px;
+  --ip-shadow-primary: none;
+  --ip-shadow-secondary: none;
+  --ip-shadow-md: 0 4px 8px var(--ip-ink-shadow);
+  --ip-shadow-lg: 0 10px 20px var(--ip-ink-shadow);
+  --ip-focus-width: 2px;
+  --ip-error-width: 2px;
+  --ip-press-primary: scale(0.97);
+  --ip-press-secondary: scale(0.97);
+}
+
+.ink-paper .theme-neobrutalism {
+  --ip-line: 2.5px;
+  --ip-radius-control: 0px;
+  --ip-radius-card: 0px;
+  --ip-shadow-primary: 4px 4px 0 0 var(--ip-text-primary);
+  --ip-shadow-secondary: 2px 2px 0 0 var(--ip-text-primary);
+  --ip-shadow-md: 6px 6px 0 0 var(--ip-text-primary);
+  --ip-shadow-lg: 8px 8px 0 0 var(--ip-text-primary);
+  --ip-focus-width: 2.5px;
+  --ip-error-width: 3px;
+  --ip-press-primary: translate(4px, 4px);
+  --ip-press-secondary: translate(2px, 2px);
+}
+
+@custom-variant neo (&:where(.theme-neobrutalism, .theme-neobrutalism *));
+
+@theme inline {
+  --color-ip-canvas: var(--ip-canvas);
+  --color-ip-surface: var(--ip-surface);
+  --color-ip-raised: var(--ip-raised);
+  --color-ip-sunken: var(--ip-sunken);
+  --color-ip-hover: var(--ip-hover);
+  --color-ip-selection: var(--ip-selection);
+  --color-ip-text-primary: var(--ip-text-primary);
+  --color-ip-text-secondary: var(--ip-text-secondary);
+  --color-ip-text-tertiary: var(--ip-text-tertiary);
+  --color-ip-text-disabled: var(--ip-text-disabled);
+  --color-ip-border-subtle: var(--ip-border-subtle);
+  --color-ip-border-control: var(--ip-border-control);
+  --color-ip-inverse: var(--ip-inverse);
+  --color-ip-inverse-hover: var(--ip-inverse-hover);
+  --color-ip-inverse-pressed: var(--ip-inverse-pressed);
+  --color-ip-on-inverse: var(--ip-on-inverse);
+  --color-ip-error: var(--ip-error);
+  --color-ip-error-hover: var(--ip-error-hover);
+  --color-ip-error-tint: var(--ip-error-tint);
+  --color-ip-success: var(--ip-success);
+  --color-ip-success-tint: var(--ip-success-tint);
+  --color-ip-warning: var(--ip-warning);
+  --color-ip-warning-tint: var(--ip-warning-tint);
+  --font-ip: var(--font-jakarta), system-ui, sans-serif;
+}
+
+body:has(.ink-paper) {
+  background-color: var(--ip-canvas);
+  color: var(--ip-text-primary);
+}
+
+.ink-paper {
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  background-color: var(--ip-canvas);
+  color: var(--ip-text-primary);
+}
+
+.ink-paper ::selection {
+  background-color: var(--ip-selection);
+  color: var(--ip-text-primary);
+}
+
+.ink-paper :focus-visible {
+  outline: var(--ip-focus-width, 2px) solid var(--ip-text-primary);
+  outline-offset: 2px;
+}
+
+/* The page curl rasterizes the page; nothing may animate while it does. */
+[data-theme-switching] * {
+  transition: none !important;
+}
+
+html:has(.ink-paper) {
+  scrollbar-color: var(--ip-border-control) var(--ip-canvas);
+}
+
+html:has(.ink-paper) ::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+html:has(.ink-paper) ::-webkit-scrollbar-track {
+  background: var(--ip-canvas);
+}
+
+html:has(.ink-paper) ::-webkit-scrollbar-thumb {
+  border: 4px solid var(--ip-canvas);
+  border-radius: 999px;
+  background: var(--ip-border-control);
+}
+
+html:has(.ink-paper) ::-webkit-scrollbar-thumb:hover {
+  background: var(--ip-text-secondary);
+}
+
+html:has(.ink-paper) ::-webkit-scrollbar-thumb:active {
+  border-width: 3px;
+  background: var(--ip-text-primary);
+}
