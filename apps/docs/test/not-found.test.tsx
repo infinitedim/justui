@@ -126,6 +126,23 @@ describe('404 page', () => {
     expect(screen.getByRole('textbox')).toHaveValue('date-picker');
   });
 
+  it('decodes a percent-encoded path before the lookup', () => {
+    renderAt('/en/date%20picker');
+    expect(screen.getByRole('textbox')).toHaveValue('date-picker');
+    expect(screen.getByRole('textbox')).toHaveAttribute(
+      'aria-invalid',
+      'false'
+    );
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'date-picker is 11 on this runner.'
+    );
+  });
+
+  it('survives a malformed escape in the path', () => {
+    renderAt('/en/%E0%A4%A');
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+  });
+
   it('has an English title for the prerendered page', () => {
     expect(metadata.title).toBe('Part not found');
   });
