@@ -57,12 +57,12 @@ export function CodeLines({
   return (
     <div
       className={cn(
-        'text-foreground overflow-x-auto py-5 font-mono text-[13px] leading-[22px]',
+        'text-foreground overflow-x-auto py-5 font-mono text-[13px]/5.5',
         className
       )}
     >
       {lines.map((line, i) => (
-        <div key={i} className="min-h-[22px] px-5 whitespace-pre">
+        <div key={i} className="min-h-5.5 px-5 whitespace-pre">
           {line.tokens.map((token, j) => (
             <span key={j} className={token.className}>
               {token.text}

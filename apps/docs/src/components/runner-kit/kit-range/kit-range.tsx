@@ -16,7 +16,7 @@ export function KitProgress({ label, value, className }: KitProgressProps) {
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={value}
-        className="bg-ip-border-control neo:h-3 neo:rounded-none neo:border-[2.5px] neo:border-ip-text-primary neo:bg-ip-surface relative h-2 w-full overflow-hidden rounded-full"
+        className="bg-ip-border-control neo:h-3 neo:rounded-none neo:border-[2.5px] neo:border-ip-text-primary relative w-full overflow-hidden"
       >
         <div
           className="bg-ip-inverse absolute inset-0 origin-left"

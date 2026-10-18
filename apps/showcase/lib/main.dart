@@ -126,7 +126,7 @@ class _ComponentGalleryState extends State<ComponentGallery> {
               child: Column(
                 crossAxisAlignment: .stretch,
                 children: <Widget>[
-                  const JustInput(label: 'Project name', hint: 'my_app'),
+                  const JustInput(label: 'Project name', hint: 'just_ui'),
                   SizedBox(height: spacing.md),
                   JustSelect<String>(
                     label: 'Framework',

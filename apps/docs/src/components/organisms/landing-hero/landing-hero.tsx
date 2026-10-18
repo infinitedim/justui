@@ -17,7 +17,7 @@ export function LandingHero({ lang }: LandingHeroProps) {
   const t = getLandingDictionary(lang);
   const site = getSiteDictionary(lang);
   return (
-    <section className="mx-auto w-full max-w-[1440px] px-[clamp(20px,4vw,48px)] pt-[clamp(40px,6vw,64px)] pb-[clamp(64px,8vw,112px)]">
+    <section className="mx-auto w-full max-w-360 px-[clamp(20px,4vw,48px)] pt-[clamp(40px,6vw,64px)] pb-[clamp(64px,8vw,112px)]">
       <h1
         className={cn(
           'text-[44px] font-bold tracking-[-0.03em] text-balance min-[960px]:tracking-[-0.035em] min-[960px]:text-nowrap',
@@ -32,7 +32,7 @@ export function LandingHero({ lang }: LandingHeroProps) {
         {t.heroTitle}
       </h1>
       <div className="mt-[clamp(28px,3vw,40px)] flex flex-wrap items-start gap-x-14 gap-y-12">
-        <div className="flex max-w-[560px] min-w-0 flex-[1_1_380px] flex-col gap-8">
+        <div className="flex max-w-140 min-w-0 flex-[1_1_380px] flex-col gap-8">
           <p className="text-ip-text-secondary text-lg leading-[1.6] text-pretty">
             {t.heroDescription}
           </p>

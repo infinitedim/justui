@@ -15,7 +15,7 @@ export function SiteFooter({ lang }: SiteFooterProps) {
       aria-label={t.footerLabel}
       className="border-ip-border-subtle border-t"
     >
-      <div className="mx-auto flex max-w-[1440px] flex-wrap items-start justify-between gap-6 px-[clamp(20px,4vw,48px)] py-10">
+      <div className="mx-auto flex max-w-360 flex-wrap items-start justify-between gap-6 px-[clamp(20px,4vw,48px)] py-10">
         <div className="flex flex-col gap-1.5">
           <Wordmark />
           <p className="text-ip-text-secondary text-sm">{t.license}</p>

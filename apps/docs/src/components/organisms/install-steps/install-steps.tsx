@@ -60,7 +60,7 @@ export function InstallSteps({ lang }: InstallStepsProps) {
       aria-labelledby="landing-install"
       className="ink-paper-invert text-ip-text-primary bg-(--ip-band)"
     >
-      <div className="mx-auto max-w-[1440px] px-[clamp(20px,4vw,48px)] py-[clamp(72px,9vw,128px)]">
+      <div className="mx-auto max-w-360 px-[clamp(20px,4vw,48px)] py-[clamp(72px,9vw,128px)]">
         <h2
           id="landing-install"
           className="text-[clamp(32px,4.2vw,56px)] leading-[1.06] font-bold tracking-[-0.03em]"
@@ -92,10 +92,10 @@ export function InstallSteps({ lang }: InstallStepsProps) {
                 <Folder {...icon} />
                 {`${partDir(PART)}/`}
               </code>
-              <code className="text-ip-text-secondary pl-[22px] font-mono text-[13px]/6">
+              <code className="text-ip-text-secondary pl-5.5 font-mono text-[13px]/6">
                 {partMainFile(PART)}
               </code>
-              <code className="text-ip-text-secondary pl-[22px] font-mono text-[13px]/6">
+              <code className="text-ip-text-secondary pl-5.5 font-mono text-[13px]/6">
                 {formatMessage(t.moreFiles, {
                   count: partFiles(PART).length - 1,
                 })}

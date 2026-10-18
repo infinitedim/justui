@@ -64,7 +64,7 @@ export const KIT_PARTS: Readonly<Record<string, KitPartRenderer>> = {
   avatar: () => (
     <span className="flex items-center gap-2.5">
       <KitAvatar initials="JU" />
-      <span className={kitLabel}>my_app</span>
+      <span className={kitLabel}>just_ui</span>
     </span>
   ),
   'avatar-group': () => <KitAvatarGroup initials={['JU', 'MA', '+3']} />,
@@ -111,14 +111,14 @@ export const KIT_PARTS: Readonly<Record<string, KitPartRenderer>> = {
   input: (t) => (
     <KitInput
       label={t.project}
-      defaultValue="my_app"
+      defaultValue="just_ui"
       rule="project"
       errorMessage={t.badProject}
-      className="max-w-[240px]"
+      className="max-w-60"
     />
   ),
   progress: (t) => (
-    <KitProgress label={t.uploading} value={65} className="max-w-[220px]" />
+    <KitProgress label={t.uploading} value={65} className="max-w-55" />
   ),
   radio: radios,
   'radio-group': radios,
@@ -136,14 +136,14 @@ export const KIT_PARTS: Readonly<Record<string, KitPartRenderer>> = {
     <KitSelect
       label={t.frequency}
       options={[t.weekly, t.monthly]}
-      className="max-w-[220px]"
+      className="max-w-55"
     />
   ),
   separator: (t) => <KitSeparator start={t.tabs[0]} end={t.tabs[1]} />,
   sheet: (t) => <KitSheet title={t.share} />,
   sidebar: (t) => <KitSidebar label={t.sidebarLabel} items={t.sidebar} />,
   skeleton: () => <KitSkeleton />,
-  slider: (t) => <KitSlider label={t.volume} className="max-w-[220px]" />,
+  slider: (t) => <KitSlider label={t.volume} className="max-w-55" />,
   switch: (t) => <KitSwitch label={t.wifi} defaultChecked />,
   table: (t) => (
     <KitTable

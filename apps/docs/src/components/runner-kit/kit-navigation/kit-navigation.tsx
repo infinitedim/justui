@@ -35,9 +35,9 @@ export function KitTabs({ label, tabs, className }: KitTabsProps) {
             onClick={() => setActive(tab)}
             onKeyDown={onKeyDown}
             className={cn(
-              'h-[38px] cursor-pointer px-3 text-sm whitespace-nowrap transition-shadow duration-200',
+              'h-9.5 cursor-pointer px-3 text-sm whitespace-nowrap transition-shadow duration-200',
               selected
-                ? 'text-ip-text-primary neo:shadow-[inset_0_-4px_0_var(--ip-inverse)] font-(--ip-strong-weight) shadow-[inset_0_-2px_0_var(--ip-inverse)]'
+                ? 'text-ip-text-primary neo:shadow-[inset_0_-4px_0_var(--ip-inverse)] font-(--ip-strong-weight)'
                 : 'text-ip-text-tertiary font-medium'
             )}
           >
@@ -62,7 +62,7 @@ export function KitSidebar({
       role="group"
       aria-label={label}
       className={cn(
-        'bg-ip-surface flex w-[180px] flex-col gap-0.5 rounded-(--ip-radius-card) border-(length:--ip-line) border-(--ip-part-container-border) p-1.5',
+        'bg-ip-surface flex w-45 flex-col gap-0.5 rounded-(--ip-radius-card) border-(length:--ip-line) border-(--ip-part-container-border) p-1.5',
         className
       )}
     >
@@ -73,7 +73,7 @@ export function KitSidebar({
           aria-current={index === current ? 'page' : undefined}
           onClick={() => setCurrent(index)}
           className={cn(
-            'neo:rounded-none cursor-pointer rounded-[6px] px-2.5 py-2 text-left text-[13px]',
+            'cursor-pointer rounded-[6px] px-2.5 py-2 text-left text-[13px]',
             index === current
               ? 'bg-(--ip-part-selected-item-bg) font-(--ip-strong-weight) text-(--ip-part-selected-item-fg)'
               : 'text-ip-text-primary hover:bg-ip-hover font-medium'
@@ -99,7 +99,7 @@ export function KitBottomNav({
       role="group"
       aria-label={label}
       className={cn(
-        'bg-ip-surface flex w-full max-w-[250px] justify-around border-t-(length:--ip-line) border-(--ip-part-container-border) pt-2 pb-1',
+        'bg-ip-surface flex w-full max-w-62.5 justify-around border-t-(length:--ip-line) border-(--ip-part-container-border) pt-2 pb-1',
         className
       )}
     >
@@ -120,7 +120,7 @@ export function KitBottomNav({
           <span
             aria-hidden="true"
             className={cn(
-              'bg-ip-inverse neo:h-1 neo:rounded-none h-[3px] w-5 rounded-full transition-transform duration-200',
+              'bg-ip-inverse neo:h-1 neo:rounded-none w-5 transition-transform duration-200',
               index === current ? 'scale-x-100' : 'scale-x-0'
             )}
           />

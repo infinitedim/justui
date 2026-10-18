@@ -21,9 +21,9 @@ export function FileTree({
     <div className="bg-ip-sunken min-w-0 flex-[1_1_340px] rounded-[16px] px-[clamp(16px,2.5vw,28px)] py-5 font-mono text-sm/7">
       <div className={existing}>
         <Folder {...icon} />
-        my_app/
+        just_ui/
       </div>
-      <div className={`${existing} pl-[22px]`}>
+      <div className={`${existing} pl-5.5`}>
         <Folder {...icon} />
         lib/
       </div>
@@ -37,14 +37,14 @@ export function FileTree({
           {folder}
         </span>
       </div>
-      <div className="pl-[66px]">
+      <div className="pl-16.5">
         <span data-cut="landing" className={`${written} font-semibold`}>
           <FilePlus {...icon} />
           {main}
         </span>
       </div>
       {rest.map((file) => (
-        <div key={file} className="pl-[66px]">
+        <div key={file} className="pl-16.5">
           <span data-cut="row" className={written}>
             <FilePlus {...icon} />
             {file}
@@ -56,11 +56,11 @@ export function FileTree({
         <span>{shared}</span>
         <span className="text-ip-text-tertiary">{sharedMore}</span>
       </div>
-      <div className={`${existing} pl-[22px]`}>
+      <div className={`${existing} pl-5.5`}>
         <File {...icon} />
         justui.config.yaml
       </div>
-      <div className={`${existing} pl-[22px]`}>
+      <div className={`${existing} pl-5.5`}>
         <File {...icon} />
         pubspec.yaml
       </div>

@@ -67,7 +67,7 @@ export function RunnerShelf({
               className={cn(
                 'relative z-1 flex w-full cursor-pointer items-center gap-3.5 rounded-[12px] px-3 py-2.5 text-left transition-colors duration-360',
                 selected
-                  ? 'bg-ip-inverse text-ip-on-inverse group-data-ready/shelf:bg-transparent'
+                  ? 'text-ip-on-inverse group-data-ready/shelf:bg-transparent'
                   : 'text-ip-text-primary hover:bg-ip-hover'
               )}
             >
@@ -78,7 +78,7 @@ export function RunnerShelf({
                 </span>
                 <span
                   className={cn(
-                    'text-[13px] leading-[18px]',
+                    'text-[13px]/4.5',
                     selected ? 'text-ip-on-inverse' : 'text-ip-text-secondary'
                   )}
                 >

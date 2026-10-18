@@ -52,7 +52,7 @@ export function CutSequence({ lang }: CutSequenceProps) {
             : 'relative'
         }
       >
-        <div className="mx-auto flex h-full max-w-[1440px] flex-col justify-center px-[clamp(20px,4vw,48px)] py-10">
+        <div className="mx-auto flex h-full max-w-360 flex-col justify-center px-[clamp(20px,4vw,48px)] py-10">
           <div
             ref={content}
             className="flex flex-col gap-[clamp(28px,3.5vw,48px)]"

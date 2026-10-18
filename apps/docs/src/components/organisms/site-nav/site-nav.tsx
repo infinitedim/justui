@@ -32,7 +32,7 @@ export function SiteNav({
       data-raster-sticky
       className="bg-ip-canvas border-ip-border-subtle sticky top-0 z-30 h-16 border-b"
     >
-      <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-4 px-[clamp(20px,4vw,48px)]">
+      <div className="mx-auto flex h-full max-w-360 items-center justify-between gap-4 px-[clamp(20px,4vw,48px)]">
         <div className="flex items-center gap-10">
           <Link href={localizedHref(lang, '')} aria-label={t.homeLabel}>
             <Wordmark />

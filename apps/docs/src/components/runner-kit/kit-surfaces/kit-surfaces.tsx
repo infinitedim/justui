@@ -14,7 +14,7 @@ import type {
 } from './kit-surfaces.types';
 
 const cardSizes = {
-  sm: 'max-w-[240px] p-4',
+  sm: 'max-w-60 p-4',
   md: 'max-w-[420px] p-[22px]',
 } as const;
 
@@ -59,7 +59,7 @@ export function KitToast({
       className={cn(
         kitSurface,
         'bg-ip-raised flex max-w-full items-start gap-3 px-4 py-3.5 shadow-(--ip-shadow-lg)',
-        size === 'sm' ? 'w-[260px]' : 'w-[300px]',
+        size === 'sm' ? 'w-65' : 'w-75',
         className
       )}
     >
@@ -72,9 +72,7 @@ export function KitToast({
         <span className="text-ip-success text-sm font-(--ip-strong-weight)">
           {title}
         </span>
-        <span className="text-ip-text-secondary text-[13px] leading-[18px]">
-          {body}
-        </span>
+        <span className="text-ip-text-secondary text-[13px]/4.5">{body}</span>
       </div>
     </div>
   );
@@ -93,7 +91,7 @@ export function KitDialog({
       aria-label={title}
       className={cn(
         kitSurface,
-        'bg-ip-raised w-full max-w-[250px] p-4 shadow-(--ip-shadow-lg)',
+        'bg-ip-raised w-full max-w-62.5 p-4 shadow-(--ip-shadow-lg)',
         className
       )}
     >
@@ -116,7 +114,7 @@ export function KitSheet({ title, className }: KitSheetProps) {
     <div
       className={cn(
         kitSurface,
-        'bg-ip-raised neo:rounded-none w-full max-w-[240px] rounded-t-[12px] rounded-b-none px-4 pb-5 shadow-(--ip-shadow-lg)',
+        'bg-ip-raised neo:rounded-none w-full max-w-60 rounded-t-[12px] rounded-b-none px-4 pb-5 shadow-(--ip-shadow-lg)',
         className
       )}
     >

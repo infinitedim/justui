@@ -13,7 +13,7 @@ export function KitScrollArea({ lines, className }: KitScrollAreaProps) {
     <div
       className={cn(
         controlBox,
-        'text-ip-text-secondary relative w-[210px] py-2 pr-[22px] pl-3 font-mono text-xs leading-[22px]',
+        'text-ip-text-secondary relative w-52.5 py-2 pr-5.5 pl-3 font-mono text-xs/5.5',
         className
       )}
     >
@@ -22,9 +22,9 @@ export function KitScrollArea({ lines, className }: KitScrollAreaProps) {
       ))}
       <span
         aria-hidden="true"
-        className="bg-ip-sunken neo:rounded-none absolute inset-y-1.5 right-1.5 w-1.5 rounded-full"
+        className="bg-ip-sunken absolute inset-y-1.5 right-1.5 w-1.5 rounded-full"
       >
-        <span className="bg-ip-border-control neo:bg-ip-text-primary neo:rounded-none absolute top-0 left-0 h-[45%] w-1.5 rounded-full" />
+        <span className="neo:bg-ip-text-primary neo:rounded-none absolute top-0 left-0 h-[45%] w-1.5" />
       </span>
     </div>
   );
@@ -36,7 +36,7 @@ export function KitResizable({ start, end, className }: KitResizableProps) {
     <div
       className={cn(
         controlBox,
-        'text-ip-text-secondary flex h-[72px] w-[220px] overflow-hidden text-xs font-semibold',
+        'text-ip-text-secondary flex h-18 w-55 overflow-hidden text-xs font-semibold',
         className
       )}
     >
@@ -50,7 +50,7 @@ export function KitResizable({ start, end, className }: KitResizableProps) {
         <span
           className={cn(
             controlBox,
-            'neo:rounded-none absolute top-1/2 left-1/2 h-5 w-2 -translate-1/2 rounded-[4px]'
+            'absolute top-1/2 left-1/2 h-5 w-2 -translate-1/2 rounded-[4px]'
           )}
         />
       </div>

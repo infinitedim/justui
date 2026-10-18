@@ -26,7 +26,7 @@ export function StatusMessage({
   return (
     <span
       className={cn(
-        'flex items-start gap-1.5 text-[13px] leading-[18px] font-medium',
+        'flex items-start gap-1.5 text-[13px]/4.5 font-medium',
         color,
         className
       )}

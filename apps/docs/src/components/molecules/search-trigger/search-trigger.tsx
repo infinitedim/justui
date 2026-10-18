@@ -23,7 +23,7 @@ export function SearchTrigger({ label, className }: SearchTriggerProps) {
       <span>{label}</span>
       <kbd
         aria-hidden="true"
-        className="bg-ip-surface text-ip-text-secondary rounded-[4px] px-2 py-[3px] font-mono text-xs"
+        className="bg-ip-surface text-ip-text-secondary rounded-[4px] px-2 py-0.75 font-mono text-xs"
       >
         Ctrl K
       </kbd>

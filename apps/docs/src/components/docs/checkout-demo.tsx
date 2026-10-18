@@ -53,9 +53,9 @@ export function CheckoutDemo() {
         )}
       >
         <div className="mx-auto grid max-w-3xl items-center gap-8 md:grid-cols-2">
-          <div className="bg-card border-border relative min-h-[340px] overflow-hidden rounded-(--just-radius-lg) border-(length:--just-border-width) p-6 shadow-sm">
+          <div className="bg-card border-border relative min-h-85 overflow-hidden rounded-(--just-radius-lg) border-(length:--just-border-width) p-6 shadow-sm">
             {pay === 'discarded' ? (
-              <div className="flex h-[290px] flex-col items-center justify-center gap-4 text-center">
+              <div className="flex h-72.5 flex-col items-center justify-center gap-4 text-center">
                 <div className="text-base font-medium">Order discarded</div>
                 <JustButtonPreview variant="secondary" onClick={reset}>
                   Restore order
@@ -122,7 +122,7 @@ export function CheckoutDemo() {
                 <div
                   role="alertdialog"
                   aria-label="Discard this order?"
-                  className="bg-card border-border w-full max-w-[260px] rounded-(--just-radius-lg) border-(length:--just-border-width) p-5 shadow-sm"
+                  className="bg-card border-border w-full max-w-65 rounded-(--just-radius-lg) border-(length:--just-border-width) p-5 shadow-sm"
                 >
                   <div className="text-[15px] font-medium">
                     Discard this order?
