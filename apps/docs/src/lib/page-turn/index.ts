@@ -1,6 +1,6 @@
 import { inlinedFontCss } from './fonts';
 import { glTurn } from './gl-turn';
-import { rasterize } from './raster';
+import { rasterize, type Raster } from './raster';
 import {
   SWITCHING,
   TOP_LAYER,
@@ -59,10 +59,10 @@ async function reverseTurn(options: TurnOptions): Promise<void> {
   }
 }
 
-async function forwardTurn(options: TurnOptions): Promise<void> {
+/** The WebGL curl over the raster, or the strip turn when it cannot run. */
+function curl(sheet: Raster, options: TurnOptions): Promise<void> {
   try {
-    const sheet = await rasterize(options.root, options.paper);
-    await glTurn(
+    return glTurn(
       {
         paper: options.paper,
         dark: options.dark,
@@ -74,22 +74,39 @@ async function forwardTurn(options: TurnOptions): Promise<void> {
       () => void options.commit()
     );
   } catch {
-    await stripTurn(options);
+    return stripTurn(options);
   }
 }
 
-/** Switches the theme with the page turn. Resolves when the turn ends. */
+/**
+ * Switches the theme with the page turn. Resolves when the turn ends. A
+ * switch while the old page is still being rasterized is ignored; one
+ * during the forward curl finishes it at once and starts its own.
+ */
 export function pageTurn(options: TurnOptions): Promise<void> {
   if (pending) return pending;
   turnState.finish?.();
   if (!document.body) return options.commit();
   if (options.reduced) return stripTurn(options);
-  pending = (
-    options.reverse ? reverseTurn(options) : forwardTurn(options)
-  ).finally(() => {
-    pending = null;
-  });
-  return pending;
+  if (options.reverse) {
+    pending = reverseTurn(options).finally(() => {
+      pending = null;
+    });
+    return pending;
+  }
+  const sheet = rasterize(options.root, options.paper);
+  pending = sheet
+    .then(
+      () => undefined,
+      () => undefined
+    )
+    .finally(() => {
+      pending = null;
+    });
+  return sheet.then(
+    (raster) => curl(raster, options),
+    () => stripTurn(options)
+  );
 }
 
 /** Inlines the fonts ahead of the first switch so the raster is quick. */

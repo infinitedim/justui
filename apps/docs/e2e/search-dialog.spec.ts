@@ -41,4 +41,19 @@ test.describe('Search dialog', () => {
     const input = page.getByRole('dialog').locator('input');
     await expect(input).toBeFocused();
   });
+
+  test('the nav search button opens the same single dialog', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto('/en');
+    await page.getByRole('button', { name: /Search docs/ }).click();
+    await expect(page.getByRole('dialog')).toHaveCount(1);
+  });
+
+  test('docs pages have search too', async ({ page }) => {
+    await page.goto('/en/docs/introduction');
+    await page.keyboard.press('Control+k');
+    await expect(page.getByRole('dialog')).toHaveCount(1);
+  });
 });

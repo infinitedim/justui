@@ -55,6 +55,9 @@ export function useSlidingPill(
 ): RefObject<HTMLSpanElement | null> {
   const pill = useRef<HTMLSpanElement | null>(null);
   const last = useRef<Box | null>(null);
+  // A change before the pill has painted (the stored preset read right
+  // after hydration) jumps; only changes the visitor can see slide.
+  const painted = useRef(false);
 
   useLayoutEffect(() => {
     const node = pill.current;
@@ -66,6 +69,12 @@ export function useSlidingPill(
     host.dataset.ready = 'true';
     const previous = last.current;
     last.current = next;
+    if (!painted.current) {
+      requestAnimationFrame(() => {
+        painted.current = true;
+      });
+      return;
+    }
     if (!previous || prefersReducedMotion() || !node.animate) return;
     if (Math.abs(previous.start - next.start) < 1) return;
     const forward = next.start > previous.start;
