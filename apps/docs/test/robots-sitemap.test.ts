@@ -40,10 +40,10 @@ describe('sitemap metadata route', () => {
     // Static pages
     expect(urls).toContain('https://justui.vercel.app/en');
     expect(urls).toContain('https://justui.vercel.app/id');
-    expect(urls).toContain('https://justui.vercel.app/en/components');
-    expect(urls).toContain('https://justui.vercel.app/id/components');
-    expect(urls).toContain('https://justui.vercel.app/en/studio');
-    expect(urls).toContain('https://justui.vercel.app/id/studio');
+    // The components catalog and the Theme Studio were removed
+    expect(urls.some((u) => /\/(en|id)\/(components|studio)$/.test(u))).toBe(
+      false
+    );
 
     // Should also include documentation pages
     const hasDocPages = urls.some((u) => u.includes('/docs/'));

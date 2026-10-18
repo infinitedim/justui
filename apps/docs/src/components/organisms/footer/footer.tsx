@@ -92,7 +92,7 @@ export function Footer({ lang, className }: FooterProps) {
           <Link href={`/${lang}/docs/theming`} className={linkClass}>
             {t.docsTheming}
           </Link>
-          <Link href={`/${lang}/components`} className={linkClass}>
+          <Link href={`/${lang}/docs/components/button`} className={linkClass}>
             {t.docsComponents}
           </Link>
         </div>

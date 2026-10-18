@@ -46,8 +46,8 @@ export function baseOptions(lang: string): BaseLayoutProps {
       },
       {
         text: t.navComponents,
-        url: `/${lang}/components`,
-        active: 'nested-url',
+        url: `/${lang}#parts`,
+        active: 'none',
       },
     ],
     i18n: true,
