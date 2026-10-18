@@ -57,6 +57,11 @@ describe('page-turn font inlining', () => {
     ).toBeNull();
   });
 
+  it('drops a face whose url cannot be parsed', () => {
+    const broken = rule({ src: 'url(http://[)' });
+    expect(selectFace(broken, SHEET, ORIGIN, new Set())).toBeNull();
+  });
+
   it('inlines each file once as a data URL', async () => {
     const load = vi.fn((url: string) =>
       Promise.resolve(`data:font/woff2;base64,${url.length}`)
