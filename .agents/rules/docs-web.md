@@ -41,10 +41,11 @@ code, fix it and remove the comment. Never add a new legacy disable.
   `no-floating-promises`, `no-misused-promises`,
   `switch-exhaustiveness-check`, `prefer-nullish-coalescing`. Mark
   intentional fire-and-forget with `void`.
-- Expected failures (bad input, missing data, fetch failure) return
-  `Result<T, E>` from `src/lib/result.ts`
-  (`{ ok: true, value } | { ok: false, error }`). Throw only for bugs. Why:
-  the caller is forced to handle the failure, and a bad URL never becomes a 500.
+- Expected failures (bad input, missing data, fetch failure) return a
+  `Result<T, E>` (`{ ok: true, value } | { ok: false, error }`); add
+  `src/lib/result.ts` with that type when the first one is needed. Throw
+  only for bugs. Why: the caller is forced to handle the failure, and a bad
+  URL never becomes a 500.
 
 ## Validation and env
 
@@ -74,9 +75,11 @@ code, fix it and remove the comment. Never add a new legacy disable.
 
 ## Structure
 
-- Routes: `src/app/[lang]/...` (`page.tsx` landing, `docs/[[...slug]]`,
-  `[...rest]` and `not-found.tsx` for the 404), plus the root
-  `not-found.tsx`. Content: `content/docs/{en,id}/`.
+- Routes: `src/app/[lang]/...` (`page.tsx` landing,
+  `docs/(fumadocs)/[[...slug]]` for the Fumadocs pages,
+  `docs/components/page.tsx` for the components page), plus the root
+  `not-found.tsx`, which serves every unknown URL as the 404. Content:
+  `content/docs/{en,id}/`.
 - UI: `src/components/{atoms,molecules,organisms,templates}`, `providers/`,
   `docs/` (components used inside MDX). Atomic design stays.
 - Every atom, molecule and organism is a folder with exactly
@@ -107,7 +110,7 @@ code, fix it and remove the comment. Never add a new legacy disable.
 - Do not add `useMemo`/`useCallback`. Remove existing ones in files you
   change, unless the value is an effect dependency whose identity matters.
 - Effects only sync with outside systems, never derive state.
-- State: shareable state lives in the URL (Studio), local state in
+- State: shareable state lives in the URL, local state in
   `useState`, Context only for state many distant components read.
 - Variants: `cn` plus a typed map,
   `const sizes = { sm: '...', md: '...' } satisfies Record<Size, string>`.
@@ -174,9 +177,9 @@ as text: `Cmd`, `Ctrl`, `Shift`.
 - MDX may only use components registered in the single MDX component map
   (passed to `<MDXContent components>`). Register new ones there. Why: keeps
   per-page bundles under control.
-- Every Dart snippet (MDX, catalog cards, Studio export,
-  `code-generators.ts`) must compile against the real API: check class,
-  constructor and parameter names in `packages/core`, never invent parameters.
+- Every Dart snippet (MDX and any page that shows Dart code) must compile
+  against the real API: check class, constructor and parameter names in
+  `packages/core`, never invent parameters.
   Imports match what the CLI installs (default `justui.config.yaml` paths),
   never `package:just_ui_core` or `package:just_ui_tokens`.
 - CLI commands shown to users must exist in `packages/cli/src/main.rs` with
@@ -207,7 +210,7 @@ as text: `Cmd`, `Ctrl`, `Shift`.
   checked with Vitest `expectTypeOf`.
 - E2E in `e2e/` (Playwright, against `bun run start`). Main pages run
   `@axe-core/playwright` in all 4 preset/theme combinations, and dialogs,
-  search and Studio have keyboard tests (tab order, focus return, Escape).
+  search and menus have keyboard tests (tab order, focus return, Escape).
 - Visual snapshots: every new page or demo gets `toHaveScreenshot` for the 4
   combinations. Global `maxDiffPixelRatio: 0.01`, animations disabled, fonts
   from the bundle. Update a baseline only for an intended change and say so.

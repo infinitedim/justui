@@ -97,7 +97,7 @@ Validate before any value reaches a path, a URL, a file or `pubspec.yaml`:
 ## Web input (docs)
 
 Everything that crosses a trust boundary is parsed before use: URL segments
-(`[lang]`, slugs), search params (Studio state), route handler query params,
+(`[lang]`, slugs), search params, route handler query params,
 `postMessage` data, `localStorage`/`sessionStorage`, fetched JSON.
 
 - Parse with zod or an explicit whitelist (like `isPreset` in
