@@ -100,10 +100,10 @@ import LangLayout, {
   dynamicParams as langDynamicParams,
 } from '@/app/[lang]/layout';
 import { generateStaticParams as homeStaticParams } from '@/app/[lang]/page';
-import Layout from '@/app/[lang]/docs/layout';
+import Layout from '@/app/[lang]/docs/(fumadocs)/layout';
 import Page, {
   generateStaticParams as docsStaticParams,
-} from '@/app/[lang]/docs/[[...slug]]/page';
+} from '@/app/[lang]/docs/(fumadocs)/[[...slug]]/page';
 import { InkPaperPage } from '@/components/templates/ink-paper-page';
 import { usePreset } from '@/components/providers';
 
