@@ -7,6 +7,8 @@ export interface SiteNavProps {
   localeHrefs: Record<Locale, Route>;
   /** Hide the search entry (the 404 nav has none). */
   showSearch?: boolean;
+  /** Prefetch the locale switch targets (off on the 404: they 404 too). */
+  prefetchLocales?: boolean;
 }
 
 export interface SiteNavMenuProps {

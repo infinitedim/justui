@@ -41,6 +41,12 @@ function isSlashString(str: string): str is `/${string}` {
   return str.startsWith('/');
 }
 
+/** The locale a path starts with (`/id/buton` -> `id`), else the default. */
+export function localeFromPath(pathname: string): Locale {
+  const prefix = LOCALE_PREFIX.exec(pathname)?.[1] ?? '';
+  return isLocale(prefix) ? prefix : defaultLocale;
+}
+
 /**
  * Returns [pathname] with its locale segment swapped for [target]. Paths
  * without a locale prefix fall back to the target locale's home page.

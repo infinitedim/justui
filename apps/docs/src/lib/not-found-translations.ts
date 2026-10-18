@@ -3,7 +3,10 @@ import { isLocale, type Locale } from '@/lib/i18n';
 /** 404 copy. `{name}` placeholders are filled with `formatMessage`. */
 export interface NotFoundDictionary {
   metaTitle: string;
+  description: string;
   title: string;
+  /** Stands in for the path before the page knows it (prerender). */
+  thisPage: string;
   pathTail: string;
   missing: string;
   runnerNote: string;
@@ -20,7 +23,10 @@ export interface NotFoundDictionary {
 export const notFoundTranslations = {
   en: {
     metaTitle: 'Part not found',
+    description:
+      'This page is not part of JustUI. The closest real components are one command away.',
     title: "Part 404 isn't on this runner.",
+    thisPage: 'This page',
     pathTail:
       " isn't in the registry. The closest real parts are on the runner above, live in your preset, each one command away.",
     missing: 'missing',
@@ -36,7 +42,10 @@ export const notFoundTranslations = {
   },
   id: {
     metaTitle: 'Part tidak ditemukan',
+    description:
+      'Halaman ini bukan bagian dari JustUI. Komponen asli yang paling mirip cukup satu perintah.',
     title: 'Part 404 tidak ada di runner ini.',
+    thisPage: 'Halaman ini',
     pathTail:
       ' tidak ada di registry. Part asli yang paling mirip ada di runner di atas, hidup di preset kamu, masing-masing cukup satu perintah.',
     missing: 'tidak ada',
