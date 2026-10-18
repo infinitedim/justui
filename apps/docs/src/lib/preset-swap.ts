@@ -1,5 +1,6 @@
 'use client';
 
+import { detachClone } from '@/lib/page-turn/shared';
 import { prefersReducedMotion } from '@/lib/use-reduced-motion';
 
 const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
@@ -35,7 +36,10 @@ export function animatePresetSwap(apply: () => void): void {
       zIndex: '5',
     });
     const clone = box.cloneNode(true);
-    if (clone instanceof HTMLElement) clone.removeAttribute('data-pbox');
+    if (clone instanceof HTMLElement) {
+      clone.removeAttribute('data-pbox');
+      detachClone(clone);
+    }
     ghost.append(clone);
     document.body.append(ghost);
     pairs.push({ box, ghost });

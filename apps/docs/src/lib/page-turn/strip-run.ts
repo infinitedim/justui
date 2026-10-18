@@ -1,6 +1,7 @@
 import {
   SWITCHING,
   TOP_LAYER,
+  detachClone,
   emptyBox,
   isOffscreen,
   overlayDiv,
@@ -38,6 +39,7 @@ export function snapshot(
   };
   walk(root, copy, 0);
   copy.removeAttribute('id');
+  detachClone(copy);
   return copy;
 }
 
@@ -94,6 +96,7 @@ export function createRun(root: HTMLElement): Run {
     `position:fixed;inset:0;z-index:${TOP_LAYER};pointer-events:none;overflow:hidden`
   );
   layer.setAttribute('aria-hidden', 'true');
+  layer.setAttribute('inert', '');
   const faces: HTMLDivElement[] = [];
   const holders: HTMLElement[] = [];
   let raf = 0;
