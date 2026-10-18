@@ -143,6 +143,12 @@ describe('404 page', () => {
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
   });
 
+  it('titles the page in the locale of the path', () => {
+    document.title = 'Part not found | JustUI';
+    renderAt('/id/buton');
+    expect(document.title).toBe('Part tidak ditemukan | JustUI');
+  });
+
   it('has an English title for the prerendered page', () => {
     expect(metadata.title).toBe('Part not found');
   });

@@ -2,7 +2,7 @@
 
 // Client leaf: the one static 404 learns the requested path, its locale
 // and the lookup query in the browser.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HtmlLang } from '@/components/html-lang';
 import { SiteNav } from '@/components/organisms/site-nav';
 import { InkPaperPage } from '@/components/templates/ink-paper-page';
@@ -28,6 +28,12 @@ export function NotFoundRunner() {
   const t = getNotFoundDictionary(lang);
   const [typed, setTyped] = useState<string | null>(null);
   const query = typed ?? normalizePartQuery(path);
+  useEffect(() => {
+    // The page is prerendered once in English; swap the title text in place
+    // so the layout's title template stays the single source.
+    const english = getNotFoundDictionary('en').metaTitle;
+    document.title = document.title.replace(english, t.metaTitle);
+  }, [t.metaTitle]);
   const localeHrefs = {
     en: switchLocalePath(path, 'en'),
     id: switchLocalePath(path, 'id'),
