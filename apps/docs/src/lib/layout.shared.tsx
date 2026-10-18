@@ -2,6 +2,7 @@ import { i18n } from '@/lib/i18n';
 import { uiTranslations } from 'fumadocs-ui/i18n';
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { getSiteDictionary } from '@/lib/site-translations';
+import { GITHUB_URL } from '@/lib/site';
 
 export const translations = i18n
   .translations()
@@ -37,7 +38,7 @@ export function baseOptions(lang: string): BaseLayoutProps {
       ),
       url: `/${lang}`,
     },
-    githubUrl: 'https://github.com/infinitedim/justui',
+    githubUrl: GITHUB_URL,
     links: [
       {
         text: t.docs,
