@@ -8,6 +8,7 @@ import jsdoc from 'eslint-plugin-jsdoc';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import promise from 'eslint-plugin-promise';
 import reactHooks from 'eslint-plugin-react-hooks';
+import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 
 export default [
   {
@@ -83,6 +84,41 @@ export default [
     rules: {
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
+    },
+  },
+
+  // Tailwind class checks against the real theme in globals.css (unknown,
+  // conflicting, duplicate and deprecated classes, also inside cn()). Class
+  // order and line wrapping stay with prettier-plugin-tailwindcss.
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    plugins: {
+      'better-tailwindcss': betterTailwindcss,
+    },
+    settings: {
+      'better-tailwindcss': {
+        entryPoint: `${import.meta.dirname}/src/app/globals.css`,
+      },
+    },
+    rules: {
+      ...betterTailwindcss.configs['recommended-error'].rules,
+      'better-tailwindcss/enforce-consistent-class-order': 'off',
+      'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
+      // Plain CSS classes, not Tailwind utilities: the first four are
+      // selectors in src/app/globals.css, not-prose is the Fumadocs prose
+      // opt-out.
+      'better-tailwindcss/no-unknown-classes': [
+        'error',
+        {
+          ignore: [
+            '^ink-paper$',
+            '^ink-paper-invert$',
+            '^ip-range$',
+            '^just-press$',
+            '^not-prose$',
+          ],
+        },
+      ],
     },
   },
 
