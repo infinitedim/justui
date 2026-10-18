@@ -26,23 +26,6 @@ export function isPreset(value: unknown): value is JustUIPreset {
   );
 }
 
-/**
- * Parses user input the way the CLI does: `neo` and `d` are accepted aliases
- * (packages/cli/src/main.rs), everything else is rejected.
- */
-export function parsePresetAlias(
-  value: string | undefined
-): JustUIPreset | undefined {
-  const normalized = value?.trim().toLowerCase();
-  if (normalized === 'neobrutalism' || normalized === 'neo') {
-    return 'neobrutalism';
-  }
-  if (normalized === 'default' || normalized === 'd') {
-    return 'default';
-  }
-  return undefined;
-}
-
 /** CSS class that applies a preset's complete token set to a subtree. */
 export function presetScopeClass(preset: JustUIPreset): string {
   return preset === 'neobrutalism' ? 'theme-neobrutalism' : 'preset-default';

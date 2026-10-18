@@ -47,6 +47,3 @@ export const kitCardTitle = 'text-[15px] font-bold text-ip-text-primary';
 /** Description under a small card title. */
 export const kitCardDescription =
   'mt-1 text-[13px] leading-[19px] text-ip-text-secondary';
-
-/** Lucide icon defaults shared by the parts. */
-export const kitIcon = { strokeWidth: 2, 'aria-hidden': true } as const;

@@ -12,7 +12,6 @@ import { source } from '@/lib/source';
 import { translations, baseOptions } from '@/lib/layout.shared';
 import {
   isPreset,
-  parsePresetAlias,
   PRESETS,
   DEFAULT_PRESET,
   PRESET_OPTIONS,
@@ -91,15 +90,6 @@ describe('Library Helpers', () => {
       expect(isPreset('invalid')).toBe(false);
       expect(isPreset(123)).toBe(false);
       expect(isPreset(null)).toBe(false);
-    });
-
-    it('parses preset aliases', () => {
-      expect(parsePresetAlias('d')).toBe('default');
-      expect(parsePresetAlias('default')).toBe('default');
-      expect(parsePresetAlias('neo')).toBe('neobrutalism');
-      expect(parsePresetAlias('neobrutalism')).toBe('neobrutalism');
-      expect(parsePresetAlias('UNKNOWN')).toBeUndefined();
-      expect(parsePresetAlias(undefined)).toBeUndefined();
     });
 
     it('provides preset options', () => {

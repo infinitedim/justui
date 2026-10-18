@@ -12,11 +12,6 @@ export const PART_SLUGS: readonly string[] = GENERATED_COMPONENTS.map(
 /** Number of public parts on every runner. */
 export const PART_COUNT: number = PART_SLUGS.length;
 
-/** True when `slug` names a public part. */
-export function isPartSlug(slug: string): boolean {
-  return PART_SLUGS.includes(slug);
-}
-
 /**
  * Preset-independent part code: the 1-based alphabetical position,
  * zero-padded to two digits (`button` -> `07`). Unknown slugs return `--`.
@@ -54,9 +49,4 @@ export function partSharedDeps(slug: string): readonly string[] {
   return (entry?.registryDependencies ?? []).filter((dep) =>
     dep.startsWith('_shared_')
   );
-}
-
-/** Total files `justui add <slug>` writes: its own files plus shared ones. */
-export function partFileCount(slug: string): number {
-  return partFiles(slug).length + partSharedDeps(slug).length;
 }
