@@ -24,6 +24,7 @@ export function SiteNav({
   lang,
   localeHrefs,
   showSearch = true,
+  prefetchLocales,
 }: SiteNavProps) {
   const t = getSiteDictionary(lang);
   return (
@@ -60,7 +61,12 @@ export function SiteNav({
               <SearchTrigger label={t.search} />
             </div>
           ) : null}
-          <LocaleSwitch lang={lang} label={t.language} hrefs={localeHrefs} />
+          <LocaleSwitch
+            lang={lang}
+            label={t.language}
+            hrefs={localeHrefs}
+            prefetch={prefetchLocales}
+          />
           <ThemeToggle toDarkLabel={t.toDark} toLightLabel={t.toLight} />
           <a
             href={GITHUB_URL}

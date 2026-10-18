@@ -11,6 +11,7 @@ export function LocaleSwitch({
   lang,
   label,
   hrefs,
+  prefetch,
   className,
 }: LocaleSwitchProps) {
   return (
@@ -24,6 +25,7 @@ export function LocaleSwitch({
           key={locale}
           href={hrefs[locale]}
           hrefLang={locale}
+          prefetch={prefetch}
           aria-current={locale === lang ? 'page' : undefined}
           className={cn(
             'flex h-8 items-center rounded-[6px] px-3 text-[13px] font-semibold uppercase transition-colors duration-150',

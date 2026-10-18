@@ -8,5 +8,7 @@ export interface LocaleSwitchProps {
   label: string;
   /** Where each locale's button leads. */
   hrefs: Record<Locale, Route>;
+  /** Set false when the targets are not real pages (the 404). */
+  prefetch?: boolean;
   className?: string;
 }
