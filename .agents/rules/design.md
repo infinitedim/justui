@@ -18,6 +18,20 @@ This file holds the constraints.
 
 Do not copy docs-site identity choices into library defaults, or the reverse.
 
+## Landing and 404 identity (Ink and Paper)
+
+The landing (`src/app/[lang]/page.tsx`) and the 404 pages use the Ink and
+Paper system from `prd/02-design-spec.md`, not the docs identity below.
+
+- Type: Plus Jakarta Sans 400/500/600/700 for all text, including labels and
+  metadata. IBM Plex Mono 400/500 only for commands, code, paths, token
+  names and keys.
+- Color: role tokens (`--ip-*`) from the scoped Ink and Paper block in
+  `src/app/globals.css`. No accent color. Status color only for validation,
+  destructive actions, and the icon and title of alerts and toasts.
+- The block is temporary: PRD phase P6 replaces it and the docs identity
+  below with generated tokens.
+
 ## Docs site identity (locked)
 
 - Type: IBM Plex Sans (UI and text), IBM Plex Mono (code, terminal, numbers in
@@ -40,6 +54,9 @@ values are allowed only inside token definitions (`globals.css`,
 `color-resolver.ts`, `justui-shiki-theme.ts`).
 
 ## Presets
+
+On the landing and 404, presets apply only to stage regions that render
+demo parts; the page chrome is the same in every preset.
 
 Every UI must look intentional in 4 combinations: default light, default
 dark, neobrutalism light, neobrutalism dark.
@@ -78,7 +95,12 @@ demos are product features, not decoration. Keep them; make them accurate.
 
 - Landing page: expressive motion is allowed (entrance, stagger, interactive
   hero), using transform and opacity only, up to about 600ms.
-- Docs, catalog and Studio: functional motion only, 200ms or less.
+- Landing exceptions (owner decision): the theme-switch page curl (WebGL,
+  1250ms, falls back to a strip bend or a 220ms crossfade under reduced
+  motion) and the 280vh sticky cut sequence (native scroll, finished layout
+  at rest, not pinned under reduced motion). Landing motion may also use
+  clip-path, filter and a pill's left/width.
+- Docs pages: functional motion only, 200ms or less.
 - Always honor `prefers-reduced-motion` (web) and `animations.resolve(context)`
   (Flutter). Reduced motion removes movement, not feedback.
 - No scroll-jacking, no parallax on text, no animation that delays reading.
