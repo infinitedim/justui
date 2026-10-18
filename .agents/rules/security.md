@@ -38,8 +38,7 @@ Who attacks, and how:
 - Install scripts `packages/cli/install/install.{sh,ps1}` and the docs routes
   that serve them (`apps/docs/src/app/install.{sh,ps1}/route.ts`)
 - Registry and checksums: `registry/`, `tools/generate_checksums.dart`
-- Docs: `next.config.ts` `headers()`, `vercel.json`, the inline preset
-  script in `src/app/layout.tsx`, `src/lib/env.ts`, `src/lib/stage-bridge.ts`,
+- Docs: `next.config.ts` `headers()`, `vercel.json`, `src/lib/env.ts`,
   `public/.well-known/security.txt`
 - CI, release and repo config: `.github/`, `tools/apply_changesets*`,
   `deny.toml`, `rust-toolchain.toml`, `bunfig.toml`, `renovate.json`
@@ -101,13 +100,13 @@ Everything that crosses a trust boundary is parsed before use: URL segments
 (`[lang]`, slugs), search params (Studio state), route handler query params,
 `postMessage` data, `localStorage`/`sessionStorage`, fetched JSON.
 
-- Parse with zod or an explicit whitelist (like
-  `src/lib/theme/url-serializer.ts`). Invalid input falls back to a default,
+- Parse with zod or an explicit whitelist (like `isPreset` in
+  `src/lib/presets.ts`). Invalid input falls back to a default,
   `notFound()` or a 400. Never a 500.
 - Storage access is wrapped in try/catch; it can throw or be empty.
-- `postMessage`: check `event.origin`, parse with the schema in
-  `src/lib/stage-bridge.ts`, send with an explicit target origin. No new
-  `'*'` targets; the opaque-origin fallback is revisited with the Flutter embed.
+- `postMessage`: none today. Any new use checks `event.origin`, parses
+  every message with a zod schema, and sends with an explicit target
+  origin. No `'*'` targets.
 - No `dangerouslySetInnerHTML` except constant strings you wrote. No `eval`,
   `new Function`, or HTML built from input.
 - `/api/search`: query length is capped and over-long queries get a 400; the
@@ -123,8 +122,8 @@ Everything that crosses a trust boundary is parsed before use: URL segments
 - Do not add domains, `unsafe-*` keywords, inline scripts or new
   `frame-src`/`connect-src` entries without approval; put the exact CSP diff
   in the plan.
-- `'unsafe-inline'` in `script-src` stays (App Router inline RSC payload and
-  the preset bootstrap need it without nonces; nonces would make every page
+- `'unsafe-inline'` in `script-src` stays (the App Router inline RSC payload
+  and the next-themes bootstrap need it without nonces; nonces would make every page
   dynamic). New code must not rely on it.
 - `/.well-known/security.txt` exists with `Contact` (the GitHub advisory
   page) and `Expires` under one year away. A test fails 30 days before

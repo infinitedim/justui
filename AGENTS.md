@@ -17,7 +17,7 @@ polyglot monorepo:
 | `packages/tokens` | Dart                                            | Tokens, OKLCH/HSLuv color engines, motion, typography                  |
 | `packages/core`   | Flutter                                         | Theme engine and components (4-file convention)                        |
 | `packages/cli`    | Rust                                            | `justui` CLI: init, add, diff, update, preset, create, doctor, upgrade |
-| `apps/docs`       | Next.js 16, React 19, Fumadocs, Tailwind 4, Bun | Docs site, catalog, Studio                                             |
+| `apps/docs`       | Next.js 16, React 19, Fumadocs, Tailwind 4, Bun | Docs site and landing                                                  |
 | `apps/preview`    | Flutter + Widgetbook                            | Component workbench                                                    |
 | `apps/showcase`   | Flutter                                         | CLI sandbox; `lib/core`, `lib/tokens`, `lib/widgets` are generated     |
 | `registry/`       | JSON + Dart                                     | What the CLI downloads; generated from `packages/core`                 |

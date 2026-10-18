@@ -74,8 +74,9 @@ code, fix it and remove the comment. Never add a new legacy disable.
 
 ## Structure
 
-- Routes: `src/app/[lang]/...` (`page.tsx`, `docs/[[...slug]]`,
-  `components`, `studio`). Content: `content/docs/{en,id}/`.
+- Routes: `src/app/[lang]/...` (`page.tsx` landing, `docs/[[...slug]]`,
+  `[...rest]` and `not-found.tsx` for the 404), plus the root
+  `not-found.tsx`. Content: `content/docs/{en,id}/`.
 - UI: `src/components/{atoms,molecules,organisms,templates}`, `providers/`,
   `docs/` (components used inside MDX). Atomic design stays.
 - Every atom, molecule and organism is a folder with exactly
@@ -129,8 +130,9 @@ code, fix it and remove the comment. Never add a new legacy disable.
   `alternates.languages` for both locales, and Open Graph data.
 - Locale-less paths redirect via `next.config.ts` `redirects()`. No
   `proxy.ts` (formerly middleware) without approval: it makes pages dynamic.
-- CSP keeps `'unsafe-inline'` in `script-src` only for theme and preset
-  bootstrapping. New code must not depend on it. See `security.md`.
+- CSP keeps `'unsafe-inline'` in `script-src` only for theme
+  bootstrapping and the RSC payload. New code must not depend on it.
+  See `security.md`.
 
 ## Styling
 
@@ -140,7 +142,9 @@ code, fix it and remove the comment. Never add a new legacy disable.
 - Class order follows `prettier-plugin-tailwindcss`; CI runs
   `prettier --check`.
 - Both presets in light and dark must work: `.preset-default` and
-  `.theme-neobrutalism`.
+  `.theme-neobrutalism`. Preset classes go only on stage regions through
+  `presetScopeClass()` from `src/lib/presets.ts`, never on `<html>` or
+  `<body>`.
 - Icons: `lucide-react` only. Brand marks are local SVG atoms.
 
 ## i18n
@@ -184,13 +188,9 @@ as text: `Cmd`, `Ctrl`, `Shift`.
 
 - Direction: demos render the real Flutter components (Flutter web embed).
   Building the embed is red-zone work (CSP, frames, bundle size): plan first.
-- Do not add new React mocks to `src/components/organisms/simulators/`.
-  When you must touch one, keep its values sourced from the tokens that
-  mirror `packages/core`.
-- Page/stage messages use `src/lib/stage-bridge.ts`: origin check and zod
-  parse on every incoming message.
-- Studio color math (`src/lib/theme/color-resolver.ts`) must match
-  `packages/tokens`; a change to one adds a test comparing both for one seed.
+- The landing and 404 demo parts live in `src/components/runner-kit/`, one
+  folder per part family. Their values follow `prd/02-design-spec.md` and
+  the design handoff; preset differences come from CSS, not from props.
 - Component facts come from `src/lib/components.generated.ts`; regenerate
   with `bun run generate:components`, check with `-- --check`.
 
