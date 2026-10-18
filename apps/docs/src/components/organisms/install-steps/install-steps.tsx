@@ -92,10 +92,10 @@ export function InstallSteps({ lang }: InstallStepsProps) {
                 <Folder {...icon} />
                 {`${partDir(PART)}/`}
               </code>
-              <code className="text-ip-text-secondary pl-[22px] font-mono text-[13px] leading-6">
+              <code className="text-ip-text-secondary pl-[22px] font-mono text-[13px]/6">
                 {partMainFile(PART)}
               </code>
-              <code className="text-ip-text-secondary pl-[22px] font-mono text-[13px] leading-6">
+              <code className="text-ip-text-secondary pl-[22px] font-mono text-[13px]/6">
                 {formatMessage(t.moreFiles, {
                   count: partFiles(PART).length - 1,
                 })}

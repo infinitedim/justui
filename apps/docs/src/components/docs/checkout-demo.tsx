@@ -80,9 +80,9 @@ export function CheckoutDemo() {
                     onClick={startPay}
                     trailing={
                       paid ? (
-                        <Check className="h-4 w-4" />
+                        <Check className="size-4" />
                       ) : (
-                        <ArrowRight className="h-4 w-4" />
+                        <ArrowRight className="size-4" />
                       )
                     }
                   >
@@ -103,7 +103,7 @@ export function CheckoutDemo() {
                       className="w-9 shrink-0 px-0"
                       onClick={() => setConfirm(true)}
                     >
-                      <X className="mx-auto h-4 w-4" />
+                      <X className="mx-auto size-4" />
                     </JustButtonPreview>
                   </div>
                   <JustButtonPreview
@@ -155,7 +155,7 @@ export function CheckoutDemo() {
             <div className="text-muted font-mono text-xs font-medium">
               widget state
             </div>
-            <div className="bg-card border-border rounded-(--just-radius-md) border-(length:--just-border-width) px-4 py-3.5 font-mono text-[13px] leading-6">
+            <div className="bg-card border-border rounded-(--just-radius-md) border-(length:--just-border-width) px-4 py-3.5 font-mono text-[13px]/6">
               <div>
                 _paying:{' '}
                 <span

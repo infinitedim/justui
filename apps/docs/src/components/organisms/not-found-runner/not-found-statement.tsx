@@ -18,7 +18,7 @@ export function NotFoundStatement({ path, t }: NotFoundStatementProps) {
       </h1>
       <p className="text-ip-text-secondary mt-5 max-w-[60ch] text-lg leading-[1.6] text-pretty">
         {path ? (
-          <code className="bg-ip-sunken text-ip-text-primary rounded-[4px] px-2 py-[3px] font-mono text-base [overflow-wrap:anywhere]">
+          <code className="bg-ip-sunken text-ip-text-primary rounded-[4px] px-2 py-[3px] font-mono text-base wrap-anywhere">
             {path}
           </code>
         ) : (

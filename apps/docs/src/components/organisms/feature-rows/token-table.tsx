@@ -20,7 +20,7 @@ const cell = 'py-2 pr-3 text-left align-top';
 export function TokenTable({ tokenColumn }: TokenTableProps) {
   return (
     <div className="bg-ip-sunken overflow-x-auto rounded-[12px] px-[18px] py-2">
-      <table className="w-full border-collapse text-[13px] leading-5">
+      <table className="w-full border-collapse text-[13px]/5">
         <thead>
           <tr className="text-ip-text-tertiary">
             <th scope="col" className={`${cell} font-semibold`}>

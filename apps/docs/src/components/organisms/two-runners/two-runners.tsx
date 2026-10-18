@@ -120,7 +120,7 @@ export function TwoRunners({ lang }: TwoRunnersProps) {
             inHand={t.inHand}
             current={preset}
             columnRef={first}
-            className="bg-ip-canvas z-[2]"
+            className="bg-ip-canvas z-2"
           >
             <SettingsScreen kit={kit} />
           </RunnerColumn>
@@ -129,7 +129,7 @@ export function TwoRunners({ lang }: TwoRunnersProps) {
             inHand={t.inHand}
             current={preset}
             columnRef={second}
-            className="z-[1]"
+            className="z-1"
           >
             <SettingsScreen kit={kit} />
           </RunnerColumn>

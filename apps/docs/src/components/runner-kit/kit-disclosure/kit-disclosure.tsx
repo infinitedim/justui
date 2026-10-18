@@ -48,7 +48,7 @@ export function KitAccordion({
         id={id}
         hidden={!open}
         className={cn(
-          'text-ip-text-secondary border-b-(length:--ip-separator-width) pb-3 text-[13px] leading-5',
+          'text-ip-text-secondary border-b-(length:--ip-separator-width) pb-3 text-[13px]/5',
           separator
         )}
       >

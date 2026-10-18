@@ -37,7 +37,7 @@ export function KitTabs({ label, tabs, className }: KitTabsProps) {
             className={cn(
               'h-[38px] cursor-pointer px-3 text-sm whitespace-nowrap transition-shadow duration-200',
               selected
-                ? 'text-ip-text-primary neo:shadow-[inset_0_-4px_0_var(--ip-inverse)] [font-weight:var(--ip-strong-weight)] shadow-[inset_0_-2px_0_var(--ip-inverse)]'
+                ? 'text-ip-text-primary neo:shadow-[inset_0_-4px_0_var(--ip-inverse)] font-(--ip-strong-weight) shadow-[inset_0_-2px_0_var(--ip-inverse)]'
                 : 'text-ip-text-tertiary font-medium'
             )}
           >
@@ -75,7 +75,7 @@ export function KitSidebar({
           className={cn(
             'neo:rounded-none cursor-pointer rounded-[6px] px-2.5 py-2 text-left text-[13px]',
             index === current
-              ? 'bg-(--ip-part-selected-item-bg) [font-weight:var(--ip-strong-weight)] text-(--ip-part-selected-item-fg)'
+              ? 'bg-(--ip-part-selected-item-bg) font-(--ip-strong-weight) text-(--ip-part-selected-item-fg)'
               : 'text-ip-text-primary hover:bg-ip-hover font-medium'
           )}
         >

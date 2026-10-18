@@ -35,12 +35,10 @@ export function KitCard({
         className
       )}
     >
-      <p className={cn(kitCardTitle, size === 'md' && 'text-[17px] leading-6')}>
+      <p className={cn(kitCardTitle, size === 'md' && 'text-[17px]/6')}>
         {title}
       </p>
-      <p
-        className={cn(kitCardDescription, size === 'md' && 'text-sm leading-5')}
-      >
+      <p className={cn(kitCardDescription, size === 'md' && 'text-sm/5')}>
         {description}
       </p>
       {children}
@@ -71,7 +69,7 @@ export function KitToast({
         className="text-ip-success mt-px shrink-0"
       />
       <div className="flex flex-col gap-0.5">
-        <span className="text-ip-success text-sm [font-weight:var(--ip-strong-weight)]">
+        <span className="text-ip-success text-sm font-(--ip-strong-weight)">
           {title}
         </span>
         <span className="text-ip-text-secondary text-[13px] leading-[18px]">

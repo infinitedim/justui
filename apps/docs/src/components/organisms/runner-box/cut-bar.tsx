@@ -29,7 +29,7 @@ export function CutBar({ cut, site, landsAs }: CutBarProps) {
         <span className="text-ip-text-tertiary text-[13px] whitespace-nowrap">
           {landsAs}
         </span>
-        <code className="font-mono text-[13px] [overflow-wrap:anywhere]">
+        <code className="font-mono text-[13px] wrap-anywhere">
           {`${partDir(cut)}/${partMainFile(cut)}`}
         </code>
       </span>

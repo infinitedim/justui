@@ -50,9 +50,9 @@ export function SegmentedPill<T extends string>({
             onClick={() => onChange(option.value)}
             onKeyDown={isTabs ? onKeyDown : undefined}
             className={cn(
-              'relative z-[1] h-8 shrink-0 cursor-pointer rounded-[6px] px-3 text-[13px] font-semibold whitespace-nowrap transition-colors duration-300',
+              'relative z-1 h-8 shrink-0 cursor-pointer rounded-[6px] px-3 text-[13px] font-semibold whitespace-nowrap transition-colors duration-300',
               selected
-                ? 'text-ip-on-inverse bg-ip-inverse group-data-[ready]/seg:bg-transparent'
+                ? 'text-ip-on-inverse bg-ip-inverse group-data-ready/seg:bg-transparent'
                 : 'text-ip-text-secondary hover:text-ip-text-primary'
             )}
           >

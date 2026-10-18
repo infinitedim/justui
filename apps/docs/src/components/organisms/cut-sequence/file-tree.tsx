@@ -18,7 +18,7 @@ export function FileTree({
 }: FileTreeProps) {
   const [main = '', ...rest] = files;
   return (
-    <div className="bg-ip-sunken min-w-0 flex-[1_1_340px] rounded-[16px] px-[clamp(16px,2.5vw,28px)] py-5 font-mono text-sm leading-7">
+    <div className="bg-ip-sunken min-w-0 flex-[1_1_340px] rounded-[16px] px-[clamp(16px,2.5vw,28px)] py-5 font-mono text-sm/7">
       <div className={existing}>
         <Folder {...icon} />
         my_app/
@@ -66,7 +66,7 @@ export function FileTree({
       </div>
       <div
         data-cut="verify"
-        className="border-ip-border-subtle text-ip-text-primary font-ip mt-3.5 flex items-start gap-2 border-t pt-3.5 text-[13px] leading-5 font-semibold"
+        className="border-ip-border-subtle text-ip-text-primary font-ip mt-3.5 flex items-start gap-2 border-t pt-3.5 text-[13px]/5 font-semibold"
       >
         <Check size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
         <span>{verify}</span>
