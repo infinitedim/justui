@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { cutFrame, expoOut } from '@/lib/cut-sequence';
+import { cutFrame } from '@/lib/cut-sequence';
+import { expoOut, viewportProgress } from '@/lib/scroll-progress';
 
 const geometry = { dx: 400, dy: 120 };
 const scroll = (p: number) =>
@@ -12,6 +13,15 @@ describe('expoOut', () => {
     expect(expoOut(0)).toBe(0);
     expect(expoOut(1)).toBe(1);
     expect(expoOut(0.5)).toBeGreaterThan(0.9);
+  });
+});
+
+describe('viewportProgress', () => {
+  it('runs from 0 to 1 as the element rises through the window', () => {
+    expect(viewportProgress(900, 800, 0.9, 0.5)).toBe(0);
+    expect(viewportProgress(720, 800, 0.9, 0.5)).toBe(0);
+    expect(viewportProgress(520, 800, 0.9, 0.5)).toBeCloseTo(0.5);
+    expect(viewportProgress(-100, 800, 0.9, 0.5)).toBe(1);
   });
 });
 
