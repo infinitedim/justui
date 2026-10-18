@@ -1,19 +1,12 @@
 'use client';
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
-import { type JustUIPreset, DEFAULT_PRESET } from '@/lib/presets';
+import { type JustUIPreset, DEFAULT_PRESET, isPreset } from '@/lib/presets';
 
 export type { JustUIPreset };
 
-const STORAGE_KEY = 'justui-preset';
+export const PRESET_STORAGE_KEY = 'justui-preset';
 
 interface PresetContextValue {
   preset: JustUIPreset;
@@ -25,53 +18,47 @@ const PresetContext = createContext<PresetContextValue>({
   setPreset: () => {},
 });
 
+/**
+ * Holds the visitor's preset choice and persists it. The choice is never
+ * applied to `<html>` or `<body>`: only stage regions (landing runner parts,
+ * docs demos) apply it, through `presetScopeClass()`, so the page chrome
+ * looks the same in every preset.
+ */
 export function PresetProvider({ children }: { children: React.ReactNode }) {
   const [preset, setPresetState] = useState<JustUIPreset>(DEFAULT_PRESET);
   const [mounted, setMounted] = useState(false);
   // Set when a child picks a preset before this provider has read storage
-  // (child effects run first), e.g. the studio applying ?preset= from a
-  // share link. That choice must win over the stored one.
+  // (child effects run first). That choice must win over the stored one.
   const chosenRef = useRef(false);
 
   useEffect(() => {
-    // Read from localStorage on mount -- avoid SSR mismatch. Storage access
-    // can throw (private browsing, blocked cookies/site data, some embedded
-    // webviews); fall back to the default preset rather than crashing.
+    // Read on mount to avoid an SSR mismatch. Storage can throw (private
+    // browsing, blocked site data, embedded webviews); the default preset
+    // is then kept, which is safe.
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (
-        !chosenRef.current &&
-        (stored === 'neobrutalism' || stored === 'default')
-      ) {
+      const stored = localStorage.getItem(PRESET_STORAGE_KEY);
+      if (!chosenRef.current && isPreset(stored)) {
         setPresetState(stored);
       }
     } catch {
-      // Ignore: default preset already applied.
+      // Intentional fallback: keep the default preset.
     }
     setMounted(true);
   }, []);
 
   useEffect(() => {
     if (!mounted) return;
-    // Apply/remove theme-neobrutalism class on <html> and <body>
-    if (preset === 'neobrutalism') {
-      document.documentElement.classList.add('theme-neobrutalism');
-      document.body.classList.add('theme-neobrutalism');
-    } else {
-      document.documentElement.classList.remove('theme-neobrutalism');
-      document.body.classList.remove('theme-neobrutalism');
-    }
     try {
-      localStorage.setItem(STORAGE_KEY, preset);
+      localStorage.setItem(PRESET_STORAGE_KEY, preset);
     } catch {
-      // Ignore: preset still applies for this session, just isn't persisted.
+      // Intentional fallback: the preset still applies for this session.
     }
   }, [preset, mounted]);
 
-  const setPreset = useCallback((next: JustUIPreset) => {
+  function setPreset(next: JustUIPreset) {
     chosenRef.current = true;
     setPresetState(next);
-  }, []);
+  }
 
   return (
     <PresetContext.Provider value={{ preset, setPreset }}>
