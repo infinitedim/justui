@@ -17,6 +17,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: lang === defaultLocale ? 1.0 : 0.8,
     });
+    // The components page lives outside the fumadocs source.
+    entries.push({
+      url: `${BASE_URL}/${lang}/docs/components`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    });
   }
 
   // Documentation pages from fumadocs source

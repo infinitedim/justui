@@ -73,11 +73,11 @@ describe('Library Helpers', () => {
       expect(linkText(baseOptions('id'))).toEqual(['Dokumentasi', 'Komponen']);
     });
 
-    it('points the Components link at the landing parts index', () => {
+    it('points the Components link at the components page', () => {
       const urls = baseOptions('id').links?.map(
         (l) => (l as { url: string }).url
       );
-      expect(urls).toEqual(['/id/docs/introduction', '/id#parts']);
+      expect(urls).toEqual(['/id/docs/introduction', '/id/docs/components']);
     });
   });
 

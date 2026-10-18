@@ -43,9 +43,6 @@ export interface LandingDictionary {
   textBody: string;
   onPaper: string;
   onInk: string;
-  partsTitle: string;
-  partsLead: string;
-  copyPart: string;
 }
 
 export const landingTranslations = {
@@ -97,9 +94,6 @@ export const landingTranslations = {
       'Text color is resolved from the surface it sits on, so the same component stays legible on paper and on ink.',
     onPaper: 'On paper',
     onInk: 'On ink',
-    partsTitle: 'Every part on the runner',
-    partsLead: '{count} parts. Select one to copy its command.',
-    copyPart: 'Copy justui add {name}',
   },
   id: {
     metaTitle: 'Satu perintah. Satu file. Milikmu.',
@@ -149,9 +143,6 @@ export const landingTranslations = {
       'Warna teks ditentukan dari permukaan tempatnya berada, jadi komponen yang sama tetap terbaca di kertas maupun tinta.',
     onPaper: 'Di kertas',
     onInk: 'Di tinta',
-    partsTitle: 'Semua part di runner',
-    partsLead: '{count} part. Pilih satu untuk menyalin perintahnya.',
-    copyPart: 'Salin justui add {name}',
   },
 } satisfies Record<Locale, LandingDictionary>;
 

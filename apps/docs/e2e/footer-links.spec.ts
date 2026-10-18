@@ -10,7 +10,7 @@ test.describe('Footer links', () => {
     );
     await expect(
       footer.getByRole('link', { name: 'Components' })
-    ).toHaveAttribute('href', '/en#parts');
+    ).toHaveAttribute('href', '/en/docs/components');
     await expect(footer.getByRole('link', { name: 'GitHub' })).toHaveAttribute(
       'href',
       'https://github.com/infinitedim/justui'

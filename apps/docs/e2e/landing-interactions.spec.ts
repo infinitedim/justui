@@ -34,29 +34,30 @@ test.describe('Landing interactions', () => {
 
   test('copies the add command of a part', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-    await page.goto('/en');
-    await page
-      .locator('#parts')
-      .getByRole('button', { name: 'Copy justui add switch' })
-      .click();
+    await page.goto('/en/docs/components');
+    await page.getByRole('button', { name: 'Copy justui add switch' }).click();
     const copied = await page.evaluate(() => navigator.clipboard.readText());
     expect(copied).toBe('justui add switch');
   });
 
-  test('the Components link lands on the parts index', async ({ page }) => {
+  test('the Components link opens the components page', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('/en');
     await page
       .getByRole('navigation', { name: 'Main navigation' })
       .getByRole('link', { name: 'Components' })
       .click();
-    await expect(page).toHaveURL(/\/en#parts$/);
-    await expect(page.locator('#parts')).toBeInViewport();
+    await expect(page).toHaveURL(/\/en\/docs\/components$/);
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Every part on the runner' })
+    ).toBeVisible();
+    await page.getByRole('link', { name: '07 button' }).click();
+    await expect(page).toHaveURL(/\/en\/docs\/components\/button$/);
   });
 
   test('has no horizontal scroll at 360px', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 780 });
-    for (const path of ['/en', '/id', '/en/buton']) {
+    for (const path of ['/en', '/id', '/en/docs/components', '/en/buton']) {
       await page.goto(path);
       const overflow = await page.evaluate(
         () =>
@@ -72,9 +73,11 @@ test.describe('Landing interactions', () => {
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto('/en');
+    // The band's first OS tab: the previous focusable control sits far
+    // above it, in the two runners section.
     const first = page
-      .locator('#parts')
-      .getByRole('button', { name: 'Copy justui add accordion' });
+      .getByRole('region', { name: 'Three steps, in order.' })
+      .getByRole('tab', { name: 'macOS / Linux' });
     await first.focus();
     await first.evaluate((el) => {
       window.scrollBy(0, el.getBoundingClientRect().top - 120);
@@ -107,5 +110,23 @@ test.describe('Landing interactions', () => {
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).toBeHidden();
     await expect(search).toBeFocused();
+  });
+
+  test('the components page shows every part name in full', async ({
+    page,
+  }) => {
+    for (const width of [360, 768, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/en/docs/components');
+      const clipped = await page
+        .getByRole('main')
+        .locator('li code')
+        .evaluateAll((codes) =>
+          codes
+            .filter((code) => code.scrollWidth > code.clientWidth)
+            .map((code) => code.textContent)
+        );
+      expect(clipped, `${width}px`).toEqual([]);
+    }
   });
 });

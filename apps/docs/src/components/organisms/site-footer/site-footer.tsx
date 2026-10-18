@@ -27,10 +27,7 @@ export function SiteFooter({ lang }: SiteFooterProps) {
           >
             {t.docs}
           </Link>
-          <Link
-            href={{ pathname: localizedHref(lang, ''), hash: 'parts' }}
-            className={link}
-          >
+          <Link href={localizedHref(lang, '/docs/components')} className={link}>
             {t.components}
           </Link>
           <a href={GITHUB_URL} className={link}>

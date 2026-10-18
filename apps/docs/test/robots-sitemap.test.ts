@@ -40,6 +40,9 @@ describe('sitemap metadata route', () => {
     // Static pages
     expect(urls).toContain('https://justui.vercel.app/en');
     expect(urls).toContain('https://justui.vercel.app/id');
+    // The components page lives outside the fumadocs source
+    expect(urls).toContain('https://justui.vercel.app/en/docs/components');
+    expect(urls).toContain('https://justui.vercel.app/id/docs/components');
     // The components catalog and the Theme Studio were removed
     expect(urls.some((u) => /\/(en|id)\/(components|studio)$/.test(u))).toBe(
       false

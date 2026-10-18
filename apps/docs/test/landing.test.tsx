@@ -216,16 +216,17 @@ describe('landing page', () => {
     expect(container.querySelectorAll('[inert]')).toHaveLength(2);
   });
 
-  it('indexes every part at #parts with a copy action', async () => {
+  it('leaves the parts index to the components page', async () => {
     const { container } = await renderLanding('en');
-    const parts = container.querySelector('#parts');
-    expect(parts).not.toBeNull();
-    const buttons = within(parts as HTMLElement).getAllByRole('button', {
-      name: /^Copy justui add /,
-    });
-    expect(buttons).toHaveLength(33);
-    expect(buttons[6]).toHaveAccessibleName('Copy justui add button');
-    expect(buttons[6]).toHaveTextContent('07button');
+    expect(container.querySelector('#parts')).toBeNull();
+    expect(
+      screen.queryByRole('button', { name: 'Copy justui add accordion' })
+    ).not.toBeInTheDocument();
+    expect(
+      within(
+        screen.getByRole('navigation', { name: 'Main navigation' })
+      ).getByRole('link', { name: 'Components' })
+    ).toHaveAttribute('href', '/en/docs/components');
   });
 
   it('renders the Indonesian copy on /id', async () => {

@@ -33,9 +33,11 @@ test.describe('Routes and Locales', () => {
     );
   });
 
-  test('removed pages redirect to the landing', async ({ page }) => {
+  test('removed pages redirect to their replacements', async ({ page }) => {
     await page.goto('/en/components/button');
-    await expect(page).toHaveURL(/\/en#parts$/);
+    await expect(page).toHaveURL(/\/en\/docs\/components\/button$/);
+    await page.goto('/components');
+    await expect(page).toHaveURL(/\/en\/docs\/components$/);
     await page.goto('/studio');
     await expect(page).toHaveURL(/\/en$/);
   });
