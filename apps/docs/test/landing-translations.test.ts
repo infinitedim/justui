@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatMessage } from '@/lib/homepage-translations';
+import { formatMessage } from '@/lib/format-message';
 import { kitTranslations, getKitDictionary } from '@/lib/kit-translations';
 import {
   landingTranslations,

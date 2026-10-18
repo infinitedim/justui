@@ -5,7 +5,7 @@ import {
   type StatusTone,
 } from '@/components/atoms/status-message';
 import { cn } from '@/lib/cn';
-import { formatMessage } from '@/lib/homepage-translations';
+import { formatMessage } from '@/lib/format-message';
 import type { NotFoundDictionary } from '@/lib/not-found-translations';
 import { classifyPartLookup, normalizePartQuery } from '@/lib/part-lookup';
 import { partCode } from '@/lib/parts';
