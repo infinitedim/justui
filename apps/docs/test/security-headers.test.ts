@@ -96,6 +96,9 @@ describe('security headers and CSP baseline', () => {
     expect(directives.get('form-action')).toEqual(["'self'"]);
     expect(directives.get('frame-ancestors')).toEqual(["'self'"]);
     expect(directives.get('frame-src')).toEqual(["'self'"]);
+    // Multi-threaded skwasm (the Flutter bridge) starts its workers from
+    // blob: URLs; nothing else may be a worker source.
+    expect(directives.get('worker-src')).toEqual(["'self'", 'blob:']);
 
     const scriptSrc = directives.get('script-src') ?? [];
     expect(scriptSrc).toContain("'self'");
