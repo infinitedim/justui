@@ -1,5 +1,13 @@
 import { test, expect, type Page } from '@playwright/test';
-import { PRESETS, THEMES, fontsReady, visitAs } from './helpers';
+import {
+  PRESETS,
+  THEMES,
+  blockFlutter,
+  flutterSettled,
+  fontsReady,
+  hasFlutterBundle,
+  visitAs,
+} from './helpers';
 
 /**
  * Landing, components page and 404 in every preset and theme at three
@@ -35,6 +43,10 @@ test.describe('Visual Regression Snapshots', () => {
       for (const preset of PRESETS) {
         for (const theme of THEMES) {
           test(`${name} ${width}px (${preset}-${theme})`, async ({ page }) => {
+            // These baselines lock the React parts, which is what every
+            // browser without Blink + WasmGC shows; the live Flutter parts
+            // are locked by the showcase goldens and the masked run below.
+            await blockFlutter(page);
             await visitAs(page, preset, theme);
             await page.emulateMedia({
               colorScheme: theme,
@@ -51,6 +63,34 @@ test.describe('Visual Regression Snapshots', () => {
           });
         }
       }
+    }
+  }
+
+  // The page with live Flutter parts: the Flutter canvas is masked (GPU
+  // output differs between machines), so this locks the layout around it.
+  for (const preset of PRESETS) {
+    for (const theme of THEMES) {
+      test(`not-found live 1280px (${preset}-${theme})`, async ({ page }) => {
+        test.skip(!hasFlutterBundle(), 'no Flutter bundle: run flutter:build');
+        await visitAs(page, preset, theme);
+        await page.emulateMedia({
+          colorScheme: theme,
+          reducedMotion: 'reduce',
+        });
+        await page.setViewportSize({ width: 1280, height: 900 });
+        await page.goto('/en/buton');
+        await expect(hydrated['not-found'](page)).toBeVisible();
+        await fontsReady(page);
+        await flutterSettled(page);
+        await expect(page).toHaveScreenshot(
+          `not-found-live-1280-${preset}-${theme}.png`,
+          {
+            fullPage: true,
+            animations: 'disabled',
+            mask: [page.locator('[data-live-host]')],
+          }
+        );
+      });
     }
   }
 });
