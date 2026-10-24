@@ -798,7 +798,7 @@ fn test_run_command_execution() {
     std::fs::write(registry_dir.join("index.json"), index_json).unwrap();
 
     let config_file = temp_dir.path().join("justui.config.yaml");
-    let config_yaml = format!("registry_url: \"{}\"", registry_dir.to_string_lossy());
+    let config_yaml = format!("registry_url: '{}'", registry_dir.to_string_lossy());
     std::fs::write(&config_file, config_yaml).unwrap();
 
     let _guard = crate::utils::set_dir(temp_dir.path());

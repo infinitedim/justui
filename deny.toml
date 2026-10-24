@@ -31,13 +31,11 @@ allow = [
 ]
 
 [bans]
-version = 2
 multiple-versions = "warn"
 wildcards = "allow"
 deny = []
 
 [sources]
-version = 2
 unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
