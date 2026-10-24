@@ -53,27 +53,28 @@ fn test_doctor_all_ok_and_toolchain_edge_cases() {
             .any(|c| c.title == "JustUI Packages" && c.status == CheckStatus::Ok)
     );
 
-    // Create mock binary dir for toolchain edge cases
-    let bin_dir = temp_dir.path().join("mock_bin");
-    fs::create_dir_all(&bin_dir).unwrap();
-
-    // Mock Dart script returning empty stdout and stderr
-    let dart_empty_bin = bin_dir.join("dart");
-    fs::write(&dart_empty_bin, "#!/bin/sh\n").unwrap();
+    // Mock toolchain binaries are `#!/bin/sh` scripts, so this part is unix only.
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
+
+        let bin_dir = temp_dir.path().join("mock_bin");
+        fs::create_dir_all(&bin_dir).unwrap();
+
+        // Mock Dart script returning empty stdout and stderr
+        let dart_empty_bin = bin_dir.join("dart");
+        fs::write(&dart_empty_bin, "#!/bin/sh\n").unwrap();
         fs::set_permissions(&dart_empty_bin, fs::Permissions::from_mode(0o755)).unwrap();
+
+        set_test_toolchain_dir(Some(bin_dir));
+
+        let checks_empty_dart = perform_checks();
+        let dart_check = checks_empty_dart
+            .iter()
+            .find(|c| c.title == "Dart SDK")
+            .unwrap();
+        assert_eq!(dart_check.message, "Dart SDK active");
     }
-
-    set_test_toolchain_dir(Some(bin_dir));
-
-    let checks_empty_dart = perform_checks();
-    let dart_check = checks_empty_dart
-        .iter()
-        .find(|c| c.title == "Dart SDK")
-        .unwrap();
-    assert_eq!(dart_check.message, "Dart SDK active");
 
     // Set override to test CLI missing warning
     set_test_toolchain_dir(None);
@@ -233,6 +234,8 @@ dart_target: standard
     );
 }
 
+// Mock toolchain binaries are `#!/bin/sh` scripts, which Windows cannot run.
+#[cfg(unix)]
 #[test]
 fn test_doctor_toolchain_version_parsing_fallbacks() {
     let _lock = crate::utils::lock_test_mutex();
