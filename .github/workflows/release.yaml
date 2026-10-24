@@ -34,9 +34,10 @@ jobs:
         run: bun ci
 
       - name: Setup Flutter SDK
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          channel: stable
+        # Same installer as CI: the .fvmrc release, SHA-256 checked, no cache.
+        run: |
+          root="$(bash apps/docs/scripts/install-flutter.sh "$RUNNER_TEMP/flutter-sdk")"
+          echo "$root/bin" >> "$GITHUB_PATH"
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # v1
