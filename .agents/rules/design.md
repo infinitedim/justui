@@ -23,6 +23,9 @@ Do not copy docs-site identity choices into library defaults, or the reverse.
 The landing (`src/app/[lang]/page.tsx`), the components page
 (`src/app/[lang]/docs/components/page.tsx`) and the 404 pages use the Ink
 and Paper system from `prd/02-design-spec.md`, not the docs identity below.
+The stages of the live component demos inside docs pages (MDX) are Ink and
+Paper too, as scoped regions, so the Flutter part and its React fallback
+look the same in every browser.
 
 - Type: Plus Jakarta Sans 400/500/600/700 for all text, including labels and
   metadata. IBM Plex Mono 400/500 only for commands, code, paths, token
@@ -132,3 +135,6 @@ product features, not decoration. Keep them; make them accurate.
   tokens and does not break the other preset. No full capture needed.
 - Flutter components: launch `apps/preview` (Widgetbook) with the dart MCP
   tools and check both presets in light and dark, with no runtime errors.
+- Bridge scenes (`apps/showcase`): check them in the showcase harness and in
+  their goldens, in the 4 combinations, and on the docs page that hosts
+  them.

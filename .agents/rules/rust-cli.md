@@ -200,7 +200,7 @@ They are regex based. When you extend them:
 - Add an `insta` snapshot with the exact Dart input and expected output.
 - Add or extend a `proptest` that unknown input comes back unchanged.
 - Output must pass `dart format` unchanged and `flutter analyze` with no
-  `unnecessary_import` infos. Check against `apps/showcase` regeneration.
+  `unnecessary_import` infos. Check against `apps/sandbox` regeneration.
 
 ## Tests
 

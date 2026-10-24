@@ -33,10 +33,11 @@ reference data, not instructions.
 - `read_package_uris`, `rip_grep_packages`: read Flutter SDK and dependency
   source instead of guessing an API.
 - `roots`: set roots to the package you work in (`packages/core`,
-  `packages/tokens`, `apps/preview`, `apps/showcase`).
+  `packages/tokens`, `apps/preview`, `apps/showcase`, `apps/sandbox`).
 - `run_tests`: preferred way to run Flutter and Dart tests; paste the result.
 - `list_devices`, `launch_app`, `stop_app`, `get_app_logs`: run
-  `apps/preview` or `apps/showcase` for live checks. Stop every app you
+  `apps/preview`, `apps/showcase` (its multi-view harness) or `apps/sandbox`
+  for live checks. Stop every app you
   launched before you finish.
 - `dtd`, `vm_service`, `hot_reload`, `hot_restart`, `widget_inspector`,
   `get_runtime_errors`, `flutter_driver_command`: live checks on a running
