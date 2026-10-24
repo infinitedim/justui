@@ -13,32 +13,32 @@ and the phases it affects.
 
 ## Decided
 
-| Date       | Decision                                                                                                                                                  | Applied in |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| 2026-10-14 | Plus Jakarta Sans for everything (docs and Flutter)                                                                                                       | P2, P6, P8 |
-| 2026-10-14 | All defaults in the summary table accepted (DP-1 to DP-14). For DP-6: IBM Plex Mono stays for code, the CLI copies the font assets and edits pubspec.yaml | all        |
-| 2026-10-14 | DP-10: no logo exists yet; default Flutter and Next.js icons stay as placeholders                                                                         | P5, P7     |
-| 2026-10-14 | Next.js pages that are not docs pages are deprecated; the owner redesigns them separately                                                                 | P7, P9     |
+| Date       | Decision                                                                                                                                                            | Applied in |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| 2026-10-14 | Plus Jakarta Sans for everything (docs and Flutter)                                                                                                                 | P2, P6, P8 |
+| 2026-10-14 | All defaults in the summary table accepted (DP-1 to DP-14). For DP-6: IBM Plex Mono stays for code, the CLI copies the font assets and edits pubspec.yaml           | all        |
+| 2026-10-14 | DP-10: no logo exists yet; default Flutter and Next.js icons stay as placeholders                                                                                   | P5, P7     |
+| 2026-10-14 | Next.js pages that are not docs pages are deprecated; the owner redesigns them separately                                                                           | P7, P9     |
 | 2026-10-16 | DP-6 update: IBM Plex Sans is removed everywhere. IBM Plex Mono stays only for text that must be monospaced (see DP-6 item 1); everything else is Plus Jakarta Sans | P6, P7     |
 
 ## Summary
 
-| ID    | Topic                         | Default                                                                           | Affects        |
-| ----- | ----------------------------- | --------------------------------------------------------------------------------- | -------------- |
-| DP-1  | Release type                  | Minor (0.15.0) with deprecations                                                  | P2, P3, P4, P9 |
-| DP-2  | Neobrutalism primary          | Rule A                                                                            | P3, P4, P6, P7 |
-| DP-3  | Badge status variants         | Monochrome with glyph, deprecated                                                 | P4, P7         |
-| DP-4  | `fromSeed` future             | Option D (seed hue becomes tint)                                                  | P3, P7, P8     |
-| DP-5  | `justui core sync` command    | Out of scope, follow-up                                                           | P8             |
-| DP-6  | Fonts                         | Plus Jakarta Sans for all text; IBM Plex Mono only for monospaced text (decided)  | P2, P6, P7, P8 |
-| DP-7  | Exact hex values              | Keep the owner's hex (1-unit tolerance)                                           | P1             |
-| DP-8  | Tint choice                   | Warm default, graphite as second named tint                                       | P1, P3, P7, P8 |
-| DP-9  | Tint field on `JustThemeData` | No field                                                                          | P2, P3         |
-| DP-10 | Icons and logo                | Unchanged                                                                         | P5, P7         |
-| DP-11 | Dark dialog edge              | `borderSubtle` edge                                                               | P4             |
-| DP-12 | `errorHover` role             | Included                                                                          | P1, P2, P4     |
-| DP-13 | Info status color             | No color (forwards to `textPrimary`)                                              | P2, P4, P7     |
-| DP-14 | Rule-file changes             | Owner applies the P0 patches before P1                                            | P0, P9         |
+| ID    | Topic                         | Default                                                                          | Affects        |
+| ----- | ----------------------------- | -------------------------------------------------------------------------------- | -------------- |
+| DP-1  | Release type                  | Minor (0.15.0) with deprecations                                                 | P2, P3, P4, P9 |
+| DP-2  | Neobrutalism primary          | Rule A                                                                           | P3, P4, P6, P7 |
+| DP-3  | Badge status variants         | Monochrome with glyph, deprecated                                                | P4, P7         |
+| DP-4  | `fromSeed` future             | Option D (seed hue becomes tint)                                                 | P3, P7, P8     |
+| DP-5  | `justui core sync` command    | Out of scope, follow-up                                                          | P8             |
+| DP-6  | Fonts                         | Plus Jakarta Sans for all text; IBM Plex Mono only for monospaced text (decided) | P2, P6, P7, P8 |
+| DP-7  | Exact hex values              | Keep the owner's hex (1-unit tolerance)                                          | P1             |
+| DP-8  | Tint choice                   | Warm default, graphite as second named tint                                      | P1, P3, P7, P8 |
+| DP-9  | Tint field on `JustThemeData` | No field                                                                         | P2, P3         |
+| DP-10 | Icons and logo                | Unchanged                                                                        | P5, P7         |
+| DP-11 | Dark dialog edge              | `borderSubtle` edge                                                              | P4             |
+| DP-12 | `errorHover` role             | Included                                                                         | P1, P2, P4     |
+| DP-13 | Info status color             | No color (forwards to `textPrimary`)                                             | P2, P4, P7     |
+| DP-14 | Rule-file changes             | Owner applies the P0 patches before P1                                           | P0, P9         |
 
 ## DP-1 Release type
 

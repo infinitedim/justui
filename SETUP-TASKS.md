@@ -63,6 +63,7 @@ The agent may not change MCP config, so these are manual.
     (it is the fallback for `NEXT_PUBLIC_SITE_URL` in `src/lib/site.ts`).
     If the config is global, add the dev-server origins of your other
     projects too, or they will be blocked.
+
 22. Disable `browser_run_code_unsafe` in the Playwright tool list (the panel
     shows per-server tool counts, so per-tool toggles are likely; if not,
     the rule in `mcp.md` is the only guard).
@@ -108,7 +109,7 @@ sections, 35 `must_use` suggestions, 7 functions over 100 lines (largest 351).
     test suite. Own commit, no other changes.
 31. Done: Lints: `[workspace.lints]` in the root `Cargo.toml` with
     `rust.unsafe_code = "forbid"`, `clippy.pedantic = { level = "warn",
-    priority = -1 }`, deny `unwrap_used`, `panic`, `todo`, `dbg_macro`,
+priority = -1 }`, deny `unwrap_used`, `panic`, `todo`, `dbg_macro`,
     `print_stdout`, `print_stderr`, `allow_attributes_without_reason`,
     warn `redundant_clone` (it lives in nursery, so pedantic does not turn
     it on), allow `must_use_candidate` (noise). Add
@@ -122,7 +123,7 @@ sections, 35 `must_use` suggestions, 7 functions over 100 lines (largest 351).
     `#![expect(clippy::x, reason = "legacy: fix when touched")]` to each file
     that still fails, so `-D warnings` passes.
 32. Done: `rustfmt.toml` with stable options only: `use_field_init_shorthand =
-    true`, `use_try_shorthand = true`. Add `cargo fmt --all --check` to CI.
+true`, `use_try_shorthand = true`. Add `cargo fmt --all --check` to CI.
 33. Done: Errors: add `thiserror`; typed errors in `errors.rs` (`CliError`, `RegistryError`, `ConfigError`);
     mapped to exit code table in `main.rs` (0, 1, 2, 3, 4, 5, 130); `hint:`
     output in logger; custom panic hook. Added `[profile.release]`
@@ -190,7 +191,7 @@ and tests first. Items 3 and 4 above (ignore `.agents/tmp/`, move
     non-TTY. `justui doctor` prints the registry source and trust state.
 59. Done: Workflows: pin every action to a full SHA with a version comment;
     `permissions: {}` at the top, minimal per job; `persist-credentials:
-    false`; no caches in `release.yaml`; release builds with
+false`; no caches in `release.yaml`; release builds with
     `cargo auditable build --release --locked` (install the tool pinned);
     `bun ci` everywhere; release jobs use `environment: release`; add a
     `zizmor` job (fail on high). Do this before turning on the SHA-pinning
@@ -200,7 +201,7 @@ and tests first. Items 3 and 4 above (ignore `.agents/tmp/`, move
     the `main` URLs in `upgrade.rs`, README and docs snippets with the docs
     route.
 61. Done: (red zone) Install scripts: run `gh attestation verify <archive> --repo
-    infinitedim/justui` when `gh` is installed and logged in; otherwise
+infinitedim/justui` when `gh` is installed and logged in; otherwise
     print that it was skipped.
 62. Done: Renovate: `renovate.json` with weekly grouped updates for cargo, bun,
     pub and GitHub Actions, `minimumReleaseAge: "7 days"`, action digests

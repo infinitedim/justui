@@ -56,11 +56,11 @@ belum diundi. Langkah resminya ada di section 7.
 
 ## 2. Rut kategori
 
-| Rut                                      | Bentuknya                                                                                                     | Contoh nyata                                                                                 |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Halaman yang selalu dibuat kategori ini  | Badge "New" kecil, headline di tengah, subcopy, dua tombol (Get Started / View Components), grid kartu demo  | [ui.shadcn.com](https://ui.shadcn.com), dan landing JustUI sekarang                         |
-| Kebalikan yang mudah ditebak             | Hero gelap bergaya terminal, glow neon, ASCII art                                                             | [ghostty.org](https://ghostty.org)                                                           |
-| Kluster AI yang dekat dengan Ink and Paper | (a) hairline editorial ala koran, display serif italic, label mono kecil ber-tracking. (b) tinta datar, kotak hitam, shadow offset keras | Disebut di `new-work.md` section 4 sebagai tanda self-check gagal                            |
+| Rut                                        | Bentuknya                                                                                                                                | Contoh nyata                                                        |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Halaman yang selalu dibuat kategori ini    | Badge "New" kecil, headline di tengah, subcopy, dua tombol (Get Started / View Components), grid kartu demo                              | [ui.shadcn.com](https://ui.shadcn.com), dan landing JustUI sekarang |
+| Kebalikan yang mudah ditebak               | Hero gelap bergaya terminal, glow neon, ASCII art                                                                                        | [ghostty.org](https://ghostty.org)                                  |
+| Kluster AI yang dekat dengan Ink and Paper | (a) hairline editorial ala koran, display serif italic, label mono kecil ber-tracking. (b) tinta datar, kotak hitam, shadow offset keras | Disebut di `new-work.md` section 4 sebagai tanda self-check gagal   |
 
 Kenapa poin terakhir penting: Ink and Paper itu monokrom dan hangat. Tanpa
 world yang kuat, hasilnya gampang jatuh ke kluster (a). Neobrutalism adalah
@@ -71,12 +71,12 @@ neobrutalist").
 
 Pola di landing dan 404 sekarang yang kena craft floor:
 
-| Pola sekarang                                                     | Aturan Impeccable                                                       |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Tagline mono kecil di atas H1 ("Copy-paste Flutter components")  | Kicker atau eyebrow di atas heading: dilarang total, tanpa pengecualian |
-| "404" mono kecil di atas judul di `not-found-view.tsx`           | Sama, kicker                                                            |
-| `WhatYouGet`: tiga kartu sama besar ikon + judul + teks          | Kartu sama besar sebagai struktur halaman: default yang ditolak         |
-| Label mono untuk kesan "teknis"                                   | Monospace sebagai kostum, bukan untuk kode atau data                    |
+| Pola sekarang                                                   | Aturan Impeccable                                                       |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Tagline mono kecil di atas H1 ("Copy-paste Flutter components") | Kicker atau eyebrow di atas heading: dilarang total, tanpa pengecualian |
+| "404" mono kecil di atas judul di `not-found-view.tsx`          | Sama, kicker                                                            |
+| `WhatYouGet`: tiga kartu sama besar ikon + judul + teks         | Kartu sama besar sebagai struktur halaman: default yang ditolak         |
+| Label mono untuk kesan "teknis"                                 | Monospace sebagai kostum, bukan untuk kode atau data                    |
 
 ## 3. Tujuh world untuk landing (urut resonansi)
 
@@ -256,14 +256,14 @@ dengan drag atau gerakan mouse, lalu dibandingkan dua screenshot.
 
 ### 5.1 Referensi terpilih (urut kekuatan)
 
-| #   | Referensi                                                                    | Yang terjadi (terverifikasi)                                                                                                                    | Disiplin yang diambil                                                                                       | Yang tidak dibawa                                                 |
-| --- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| 1   | [Figma](https://www.figma.com/this-page-does-not-exist-404x)                 | Angka "404" hitam besar ditampilkan sebagai path vektor dengan node. Node bisa di-drag dan bentuk hurufnya ikut berubah (dites)                 | 404 yang membuktikan produknya: pengunjung yang tersesat tetap bisa mencoba mekanisme intinya                | Node biru (aksen); tombol CTA hitam penuh di header              |
-| 2   | [Standards Manual](https://standardsmanual.com/this-page-does-not-exist-404x) | "404 St" ditulis raksasa seperti nama stasiun subway NYC, lalu satu kalimat besar: halaman tidak ada, pakai menu, atau pulang                  | Lelucon yang lahir dari world-nya sendiri, dalam vocabulary world itu                                     | Aksen oranye pada cart                                           |
-| 3   | [Norgram](https://www.norgram.co/404)                                         | "404" hitam setinggi viewport, dipotong jadi irisan horizontal yang bergeser; latar garis vertikal tipis. Tidak ada teks lain (dites)          | Komitmen skala: angkanya adalah halaman. Satu gerakan yang diorkestrasi                                    | Tidak ada jalan keluar yang terlihat (gagal aturan recovery)      |
-| 4   | [Scope Typeface](https://scope-typeface.com/error.html)                       | Layar hitam penuh kata "ERROR" diset dalam typeface yang dijual, lalu menghilang mengikuti mouse (dites). Satu tombol "Back to Scope"         | 404 sebagai spesimen produk: yang dijual adalah materialnya                                                | Hitam total sebagai canvas (Ink and Paper melarang pure black)    |
-| 5   | [SpiralDB](https://spiraldb.com/404)                                          | Bidang isometrik bergaris dengan kubus wireframe yang bergerak (dites), lalu "PAGE NOT FOUND" raksasa kiri bawah dan "Go back home" di kanan  | Komposisi dua bagian: gambar teknis di atas, pernyataan besar plus recovery di bawah. Semuanya geometri    | Kubus generik tanpa makna produk                                  |
-| 6   | [Klim Type Foundry](https://klim.co.nz/this-page-does-not-exist-404x)         | Bentuk hitam putih generatif hasil cacahan glyph, bergerak di antara dua frame (dites). Header tetap: "Page not found"                         | Seni generatif dari material produknya sendiri, tetap monokrom                                             | Tidak ada recovery di first viewport                             |
+| #   | Referensi                                                                     | Yang terjadi (terverifikasi)                                                                                                                 | Disiplin yang diambil                                                                                   | Yang tidak dibawa                                              |
+| --- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| 1   | [Figma](https://www.figma.com/this-page-does-not-exist-404x)                  | Angka "404" hitam besar ditampilkan sebagai path vektor dengan node. Node bisa di-drag dan bentuk hurufnya ikut berubah (dites)              | 404 yang membuktikan produknya: pengunjung yang tersesat tetap bisa mencoba mekanisme intinya           | Node biru (aksen); tombol CTA hitam penuh di header            |
+| 2   | [Standards Manual](https://standardsmanual.com/this-page-does-not-exist-404x) | "404 St" ditulis raksasa seperti nama stasiun subway NYC, lalu satu kalimat besar: halaman tidak ada, pakai menu, atau pulang                | Lelucon yang lahir dari world-nya sendiri, dalam vocabulary world itu                                   | Aksen oranye pada cart                                         |
+| 3   | [Norgram](https://www.norgram.co/404)                                         | "404" hitam setinggi viewport, dipotong jadi irisan horizontal yang bergeser; latar garis vertikal tipis. Tidak ada teks lain (dites)        | Komitmen skala: angkanya adalah halaman. Satu gerakan yang diorkestrasi                                 | Tidak ada jalan keluar yang terlihat (gagal aturan recovery)   |
+| 4   | [Scope Typeface](https://scope-typeface.com/error.html)                       | Layar hitam penuh kata "ERROR" diset dalam typeface yang dijual, lalu menghilang mengikuti mouse (dites). Satu tombol "Back to Scope"        | 404 sebagai spesimen produk: yang dijual adalah materialnya                                             | Hitam total sebagai canvas (Ink and Paper melarang pure black) |
+| 5   | [SpiralDB](https://spiraldb.com/404)                                          | Bidang isometrik bergaris dengan kubus wireframe yang bergerak (dites), lalu "PAGE NOT FOUND" raksasa kiri bawah dan "Go back home" di kanan | Komposisi dua bagian: gambar teknis di atas, pernyataan besar plus recovery di bawah. Semuanya geometri | Kubus generik tanpa makna produk                               |
+| 6   | [Klim Type Foundry](https://klim.co.nz/this-page-does-not-exist-404x)         | Bentuk hitam putih generatif hasil cacahan glyph, bergerak di antara dua frame (dites). Header tetap: "Page not found"                       | Seni generatif dari material produknya sendiri, tetap monokrom                                          | Tidak ada recovery di first viewport                           |
 
 Pendukung (komposisi saja):
 
@@ -280,14 +280,14 @@ Pendukung (komposisi saja):
 
 ### 5.2 Dicek dan ditolak
 
-| Halaman                                                                                                                                                                                                                                  | Alasan                                                                                    |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| [Speakeasy](https://www.speakeasy.com/404)                                                                                                                                                                                               | Angka 404 abu-abu sangat pucat di atas putih: tidak lolos kontras AAA                    |
-| [Coder](https://coder.com/404), [Ethan+](https://ethanplus.ai/404), [Edoardo Lunardi](https://www.edoardolunardi.dev/404), [Gagan Devagiri](https://www.gagandevagiri.com/404), [CodeRabbit](https://www.coderabbit.ai/our404)          | Terminal, BIOS, pixel arcade: kostum alat developer, rut di surface Persuade             |
-| [++hellohello](https://www.hellohello.is/404)                                                                                                                                                                                            | Pecahan foto kantor yang melayang; JustUI tidak punya foto produk yang setara            |
-| [Feldman Studio](https://feldman.studio/this-page-does-not-exist-404x)                                                                                                                                                                   | Game snake yang disebut artikel tidak muncul saat dites; yang terlihat hanya "404" kecil |
-| [Commercial Type](https://commercialtype.com/this-page-does-not-exist-404x), [Teenage Engineering](https://teenage.engineering/this-page-does-not-exist-404x), [IKEA](https://www.ikea.com/us/en/this-page-does-not-exist-404x), [Stripe](https://stripe.com/this-page-does-not-exist-404x), [Apple](https://www.apple.com/this-page-does-not-exist-404x), [Cosmos](https://www.cosmos.so/this-page-does-not-exist-404x), [rauno.me](https://rauno.me/this-page-does-not-exist-404x) | Template "page not found" biasa, atau kartu sama besar (Stripe)                           |
-| [Katalog kartu State Library NSW](https://scanned-card-catalogue.sl.nsw.gov.au/card/design)                                                                                                                                              | Tidak bisa dibuka                                                                         |
+| Halaman                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Alasan                                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| [Speakeasy](https://www.speakeasy.com/404)                                                                                                                                                                                                                                                                                                                                                                                                                                           | Angka 404 abu-abu sangat pucat di atas putih: tidak lolos kontras AAA                    |
+| [Coder](https://coder.com/404), [Ethan+](https://ethanplus.ai/404), [Edoardo Lunardi](https://www.edoardolunardi.dev/404), [Gagan Devagiri](https://www.gagandevagiri.com/404), [CodeRabbit](https://www.coderabbit.ai/our404)                                                                                                                                                                                                                                                       | Terminal, BIOS, pixel arcade: kostum alat developer, rut di surface Persuade             |
+| [++hellohello](https://www.hellohello.is/404)                                                                                                                                                                                                                                                                                                                                                                                                                                        | Pecahan foto kantor yang melayang; JustUI tidak punya foto produk yang setara            |
+| [Feldman Studio](https://feldman.studio/this-page-does-not-exist-404x)                                                                                                                                                                                                                                                                                                                                                                                                               | Game snake yang disebut artikel tidak muncul saat dites; yang terlihat hanya "404" kecil |
+| [Commercial Type](https://commercialtype.com/this-page-does-not-exist-404x), [Teenage Engineering](https://teenage.engineering/this-page-does-not-exist-404x), [IKEA](https://www.ikea.com/us/en/this-page-does-not-exist-404x), [Stripe](https://stripe.com/this-page-does-not-exist-404x), [Apple](https://www.apple.com/this-page-does-not-exist-404x), [Cosmos](https://www.cosmos.so/this-page-does-not-exist-404x), [rauno.me](https://rauno.me/this-page-does-not-exist-404x) | Template "page not found" biasa, atau kartu sama besar (Stripe)                          |
+| [Katalog kartu State Library NSW](https://scanned-card-catalogue.sl.nsw.gov.au/card/design)                                                                                                                                                                                                                                                                                                                                                                                          | Tidak bisa dibuka                                                                        |
 
 ### 5.3 Yang diambil untuk 404 JustUI
 
@@ -307,13 +307,13 @@ Pendukung (komposisi saja):
 
 Terjemahan per world (ide, belum desain):
 
-| World                | 404 versi world itu                                                                        |
-| -------------------- | ------------------------------------------------------------------------------------------ |
-| W1 runner            | Slot kosong di runner dengan kode part-nya; "part ini tidak ada di kit" plus daftar part   |
-| W2 paten             | "FIG. 404" dengan leader line ke ruang kosong; keterangan berisi path yang diminta         |
-| W3 bookplate         | Bookplate tanpa nama pemilik                                                               |
-| W4 standards manual  | Halaman manual yang hilang dari urutan, dengan indeks di bawahnya                          |
-| W6 spesimen          | Baris spesimen yang mengetik path yang diminta, diikuti komponen terdekat                  |
+| World               | 404 versi world itu                                                                      |
+| ------------------- | ---------------------------------------------------------------------------------------- |
+| W1 runner           | Slot kosong di runner dengan kode part-nya; "part ini tidak ada di kit" plus daftar part |
+| W2 paten            | "FIG. 404" dengan leader line ke ruang kosong; keterangan berisi path yang diminta       |
+| W3 bookplate        | Bookplate tanpa nama pemilik                                                             |
+| W4 standards manual | Halaman manual yang hilang dari urutan, dengan indeks di bawahnya                        |
+| W6 spesimen         | Baris spesimen yang mengetik path yang diminta, diikuti komponen terdekat                |
 
 ## 6. Standing exit (standar kategori)
 
@@ -321,10 +321,10 @@ Kalau nanti kamu memilih jalan yang familiar, Impeccable minta dua atau tiga
 produk sebagai patokan craft, lalu standar kategori dikerjakan dengan
 kualitas penuh tanpa ironi. Kandidat patokan yang sudah dicek:
 
-| Produk                                                       | Patokan apa                                                                                       |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| [ui.shadcn.com](https://ui.shadcn.com) (screenshot)          | Monokrom, demo komponen asli di bawah hero. Ini juga persis rut kategori                          |
-| [base-ui.com](https://base-ui.com) (screenshot)              | Headline rata kiri, link bergaris bawah, prosa yang tenang, hampir tanpa chrome                  |
+| Produk                                                                 | Patokan apa                                                                                   |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| [ui.shadcn.com](https://ui.shadcn.com) (screenshot)                    | Monokrom, demo komponen asli di bawah hero. Ini juga persis rut kategori                      |
+| [base-ui.com](https://base-ui.com) (screenshot)                        | Headline rata kiri, link bergaris bawah, prosa yang tenang, hampir tanpa chrome               |
 | [vercel.com/geist](https://vercel.com/geist/introduction) (screenshot) | Grid bergaris tipis dengan tanda plus di sudut. Hati-hati: grid overlay dilarang tanpa alasan |
 
 Situs yang dicek tapi tidak dipakai: [htmx.org](https://htmx.org) (dokumen
@@ -411,37 +411,37 @@ Dua preset nyata dan lima preset hipotetis. Yang hipotetis hanya dipakai
 untuk menguji referensi, bukan rencana. Sumbunya diambil dari style shadcn
 yang terverifikasi di atas.
 
-| ID  | Preset                    | Ciri                                                     | Bisa dibuat dengan kontrak sekarang?                         |
-| --- | ------------------------- | -------------------------------------------------------- | ------------------------------------------------------------ |
-| T1  | default (nyata)           | Garis tipis, shadow ink lembut, motion standar           | Ya                                                           |
-| T2  | neobrutalism (nyata)      | Border ink 2.5px, shadow offset keras, motion instan     | Ya                                                           |
-| T3  | bulat lega (mirip Maia)   | Radius besar, ruang lega, shadow lembut                  | Sebagian: radius ya, ruang lega tidak (spacing bukan preset) |
-| T4  | rapat (mirip Mira/Nova)   | Padat untuk data                                         | Tidak: density bukan bagian kontrak preset                  |
-| T5  | kotak datar (mirip Lyra)  | Radius nol, tanpa shadow                                 | Ya, kecuali font mono Lyra (bertentangan dengan DP-6)       |
-| T6  | motion-led                | Gerak pegas, shape tenang                                | Ya (`defaultMotion`)                                         |
-| T7  | glass                     | Permukaan tembus pandang, blur                           | Tidak: alpha dibatasi untuk scrim dan shadow                |
+| ID  | Preset                   | Ciri                                                 | Bisa dibuat dengan kontrak sekarang?                         |
+| --- | ------------------------ | ---------------------------------------------------- | ------------------------------------------------------------ |
+| T1  | default (nyata)          | Garis tipis, shadow ink lembut, motion standar       | Ya                                                           |
+| T2  | neobrutalism (nyata)     | Border ink 2.5px, shadow offset keras, motion instan | Ya                                                           |
+| T3  | bulat lega (mirip Maia)  | Radius besar, ruang lega, shadow lembut              | Sebagian: radius ya, ruang lega tidak (spacing bukan preset) |
+| T4  | rapat (mirip Mira/Nova)  | Padat untuk data                                     | Tidak: density bukan bagian kontrak preset                   |
+| T5  | kotak datar (mirip Lyra) | Radius nol, tanpa shadow                             | Ya, kecuali font mono Lyra (bertentangan dengan DP-6)        |
+| T6  | motion-led               | Gerak pegas, shape tenang                            | Ya (`defaultMotion`)                                         |
+| T7  | glass                    | Permukaan tembus pandang, blur                       | Tidak: alpha dibatasi untuk scrim dan shadow                 |
 
 ### 10.3 Kriteria
 
-| ID  | Kriteria                     | Lolos kalau                                                                                                        |
-| --- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| K1  | Bingkai, bukan kostum        | Chrome world tidak memakai ciri khas preset mana pun (shadow offset keras, border ink tebal, pill, radius nol mutlak, blur) |
-| K2  | Memperlihatkan yang asli     | Preset tampil sebagai komponen hidup. Gambar garis tidak bisa memperlihatkan shadow lembut, density atau motion   |
-| K3  | Skala ke N preset            | Slot preset berupa daftar atau urutan, bukan pasangan dua                                                         |
-| K4  | Tidak butuh reskin           | World tetap terbaca tanpa harus ikut berubah tiap preset diganti                                                   |
+| ID  | Kriteria                 | Lolos kalau                                                                                                                 |
+| --- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| K1  | Bingkai, bukan kostum    | Chrome world tidak memakai ciri khas preset mana pun (shadow offset keras, border ink tebal, pill, radius nol mutlak, blur) |
+| K2  | Memperlihatkan yang asli | Preset tampil sebagai komponen hidup. Gambar garis tidak bisa memperlihatkan shadow lembut, density atau motion             |
+| K3  | Skala ke N preset        | Slot preset berupa daftar atau urutan, bukan pasangan dua                                                                   |
+| K4  | Tidak butuh reskin       | World tetap terbaca tanpa harus ikut berubah tiap preset diganti                                                            |
 
 ### 10.4 Hasil: tujuh world landing
 
-| World                 | K1                                                              | K2                                                                | K3                                          | K4                                              | Vonis                                    |
-| --------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------- | ---------------------------------------- |
-| W6 spesimen foundry   | Lolos. Di klim.co.nz/fonts chrome tetap netral, tiap baris memakai font-nya sendiri | Lolos, setiap baris komponen hidup                          | Lolos, foundry memuat puluhan keluarga     | Lolos                                           | **Paling tahan. Naik ke posisi 1**       |
-| W1 runner kit model   | Lolos kalau rangka hairline netral; outline ink tebal terbaca neobrutalism | Bersyarat: part harus komponen hidup, bukan gambar garis | Lolos: satu runner per preset (A, B, C...) | Lolos                                           | Lolos dengan syarat                      |
-| W5 instruksi perakitan | Lolos                                                          | Bersyarat: hasil tiap langkah harus komponen hidup               | Lolos, alurnya sama untuk semua preset     | Lolos                                           | Lolos dengan syarat                      |
-| W3 bookplate          | Lolos                                                           | Tidak relevan (soal kepemilikan, bukan preset)                   | Tidak relevan                               | Lolos                                           | Netral; cocok sebagai detail, bukan etalase |
-| W7 katalog industri   | Lolos                                                           | Lemah: di ukuran thumbnail, shadow dan motion hilang              | Lolos                                       | Lolos                                           | Bersyarat; hanya untuk daftar komponen   |
-| W4 standards manual   | Berisiko: band hitam plus radius nol terbaca seperti T5, pengunjung bisa mengira JustUI = gaya datar | Lolos kalau tiap bab berisi komponen hidup | Lolos: satu bab per preset          | Gagal kalau di-reskin: band membulat di T3     | Turun; aman hanya dengan chrome tetap    |
-| W2 gambar paten       | Berisiko: estetika garis tinta paling dekat dengan T2 dan T5    | Gagal untuk T3, T4, T6, T7: gambar garis hanya memperlihatkan outline | Lolos (FIG. 1 sampai N)                | Lolos                                           | **Turun. Hanya untuk section anatomi role** |
-| Terminal (rut)        | Lolos                                                           | Gagal: output teks tidak bisa memperlihatkan preset              | -                                           | Lolos                                           | Tetap ditolak                            |
+| World                  | K1                                                                                                   | K2                                                                    | K3                                         | K4                                         | Vonis                                       |
+| ---------------------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------ | ------------------------------------------- |
+| W6 spesimen foundry    | Lolos. Di klim.co.nz/fonts chrome tetap netral, tiap baris memakai font-nya sendiri                  | Lolos, setiap baris komponen hidup                                    | Lolos, foundry memuat puluhan keluarga     | Lolos                                      | **Paling tahan. Naik ke posisi 1**          |
+| W1 runner kit model    | Lolos kalau rangka hairline netral; outline ink tebal terbaca neobrutalism                           | Bersyarat: part harus komponen hidup, bukan gambar garis              | Lolos: satu runner per preset (A, B, C...) | Lolos                                      | Lolos dengan syarat                         |
+| W5 instruksi perakitan | Lolos                                                                                                | Bersyarat: hasil tiap langkah harus komponen hidup                    | Lolos, alurnya sama untuk semua preset     | Lolos                                      | Lolos dengan syarat                         |
+| W3 bookplate           | Lolos                                                                                                | Tidak relevan (soal kepemilikan, bukan preset)                        | Tidak relevan                              | Lolos                                      | Netral; cocok sebagai detail, bukan etalase |
+| W7 katalog industri    | Lolos                                                                                                | Lemah: di ukuran thumbnail, shadow dan motion hilang                  | Lolos                                      | Lolos                                      | Bersyarat; hanya untuk daftar komponen      |
+| W4 standards manual    | Berisiko: band hitam plus radius nol terbaca seperti T5, pengunjung bisa mengira JustUI = gaya datar | Lolos kalau tiap bab berisi komponen hidup                            | Lolos: satu bab per preset                 | Gagal kalau di-reskin: band membulat di T3 | Turun; aman hanya dengan chrome tetap       |
+| W2 gambar paten        | Berisiko: estetika garis tinta paling dekat dengan T2 dan T5                                         | Gagal untuk T3, T4, T6, T7: gambar garis hanya memperlihatkan outline | Lolos (FIG. 1 sampai N)                    | Lolos                                      | **Turun. Hanya untuk section anatomi role** |
+| Terminal (rut)         | Lolos                                                                                                | Gagal: output teks tidak bisa memperlihatkan preset                   | -                                          | Lolos                                      | Tetap ditolak                               |
 
 Catatan W2: angka referensi yang menunjuk ke part (`primaryBg`, `primaryFg`,
 dan seterusnya) justru berguna, karena part mapping memang berbeda per preset
