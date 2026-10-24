@@ -54,6 +54,7 @@ export function NotFoundRunner() {
       <div className="mx-auto max-w-360 px-[clamp(20px,4vw,48px)] pt-[clamp(40px,5vw,64px)] pb-[clamp(48px,6vw,80px)]">
         <RunnerField
           parts={nearestParts(normalizePartQuery(query))}
+          lang={lang}
           t={t}
           kit={getKitDictionary(lang)}
           site={getSiteDictionary(lang)}

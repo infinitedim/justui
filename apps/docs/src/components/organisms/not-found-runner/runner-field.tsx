@@ -16,7 +16,7 @@ const range = {
  * The 404 runner in the visitor's preset: the empty socket for part 404
  * and the nearest real parts, live.
  */
-export function RunnerField({ parts, t, kit, site }: RunnerFieldProps) {
+export function RunnerField({ parts, lang, t, kit, site }: RunnerFieldProps) {
   const { preset } = usePreset();
   return (
     <PresetStage
@@ -31,7 +31,13 @@ export function RunnerField({ parts, t, kit, site }: RunnerFieldProps) {
       <div className="flex flex-wrap items-stretch gap-x-10 gap-y-7 px-[clamp(16px,2.5vw,32px)] pb-7">
         <MissingSocket missing={t.missing} />
         {parts.map((slug) => (
-          <NearestPart key={slug} slug={slug} kit={kit} site={site} />
+          <NearestPart
+            key={slug}
+            slug={slug}
+            lang={lang}
+            kit={kit}
+            site={site}
+          />
         ))}
       </div>
       <div className="border-ip-border-control text-ip-text-secondary flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t-[1.5px] px-[clamp(16px,2.5vw,32px)] py-3.5 text-[13px]">
