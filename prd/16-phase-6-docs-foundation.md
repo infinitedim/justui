@@ -259,10 +259,10 @@ build` pass.
 
 ## 11. Pending decisions
 
-| Decision | Default assumed                                                        |
-| -------- | ---------------------------------------------------------------------- |
-| DP-6     | Plus Jakarta Sans for all text; Plex Mono only for monospaced text     |
-| DP-8     | Warm tint                                                              |
+| Decision | Default assumed                                                    |
+| -------- | ------------------------------------------------------------------ |
+| DP-6     | Plus Jakarta Sans for all text; Plex Mono only for monospaced text |
+| DP-8     | Warm tint                                                          |
 
 ## 12. Exit criteria
 

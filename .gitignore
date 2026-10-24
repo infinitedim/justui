@@ -542,3 +542,6 @@ $RECYCLE.BIN/
 
 # Agent scratch output: plans, briefs, reviews, screenshots, audit reports
 .agents/tmp/
+# Widget Preview related
+.widget_preview/
+design_handoff_justui_landing
