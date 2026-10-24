@@ -43,7 +43,8 @@ justui/
 ├── apps/
 │   ├── docs/            # Next.js + Fumadocs documentation site
 │   ├── preview/         # Widgetbook component workbench
-│   └── showcase/        # CLI sandbox (components installed via `justui add --all`)
+│   ├── showcase/        # Flutter Wasm bridge: live core components on the docs pages
+│   └── sandbox/         # CLI sandbox (components installed via `justui add --all`)
 └── docs/                # Phase specs and architecture decision records
 ```
 
