@@ -122,10 +122,14 @@ Rust is pinned in `rust-toolchain.toml`, Flutter in `.fvmrc` and CI, Bun in
 it is, change every place together and verify the lockfile still installs
 with the pinned version.
 
-The Vercel build downloads the Flutter SDK in
-`apps/docs/scripts/vercel-build.sh`. That script pins the same version as
-`.fvmrc` plus the SHA-256 of the official archive, and aborts on a mismatch.
-Change the version there together with `.fvmrc` and CI. Font files in
+Flutter follows the release `.fvmrc` names: the `stable` channel since
+2026-10-24 (owner decision), or an exact version. CI installs the same
+channel. The Vercel build (`apps/docs/scripts/vercel-build.sh`) resolves it
+through Flutter's official `releases_linux.json` over HTTPS
+(`scripts/flutter-release.ts`), downloads that archive and aborts unless its
+SHA-256 matches the one the index lists. The resolved version is part of
+the bundle cache key. A stable bump can move the showcase goldens; check
+them in the same change. Font files in
 `packages/tokens/assets/fonts/` come from the upstream releases named in its
 README, with their SHA-256; a font change updates both.
 

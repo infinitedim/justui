@@ -45,7 +45,7 @@ Who attacks, and how:
 - Flutter bridge: `apps/docs/src/lib/flutter-bridge/`,
   `apps/docs/src/components/molecules/live-part/`,
   `apps/showcase/lib/bridge/`, `apps/showcase/web/`, and the bundle build
-  scripts `apps/docs/scripts/{build-flutter.ts,vercel-build.sh,flutter-cache-key.ts}`
+  scripts `apps/docs/scripts/{build-flutter.ts,vercel-build.sh,flutter-cache-key.ts,flutter-release.ts}`
 - Agent instructions: `AGENTS.md`, `GEMINI.md`, `.agents/` except the
   git-ignored scratch folder `.agents/tmp/` (see
   `security-agent.md`)
