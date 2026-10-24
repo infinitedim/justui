@@ -30,7 +30,7 @@ tokio = { version = "1", features = [
     "sync",
     "time",
 ] }
-sha2 = "0.10"
+sha2 = "0.11"
 ed25519-compact = "2"
 hex = "0.4"
 regex = "1"
