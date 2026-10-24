@@ -122,6 +122,13 @@ Rust is pinned in `rust-toolchain.toml`, Flutter in `.fvmrc` and CI, Bun in
 it is, change every place together and verify the lockfile still installs
 with the pinned version.
 
+The Vercel build downloads the Flutter SDK in
+`apps/docs/scripts/vercel-build.sh`. That script pins the same version as
+`.fvmrc` plus the SHA-256 of the official archive, and aborts on a mismatch.
+Change the version there together with `.fvmrc` and CI. Font files in
+`packages/tokens/assets/fonts/` come from the upstream releases named in its
+README, with their SHA-256; a font change updates both.
+
 ## Repo settings (maintainer-managed, agents cannot change)
 
 Report it if you notice one of these is off:

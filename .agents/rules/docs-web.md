@@ -189,11 +189,28 @@ as text: `Cmd`, `Ctrl`, `Shift`.
 
 ## Interactive demos
 
-- Direction: demos render the real Flutter components (Flutter web embed).
-  Building the embed is red-zone work (CSP, frames, bundle size): plan first.
-- The landing and 404 demo parts live in `src/components/runner-kit/`, one
-  folder per part family. Their values follow `prd/02-design-spec.md` and
-  the design handoff; preset differences come from CSS, not from props.
+- Live parts are real Flutter components from the `apps/showcase` bridge
+  (see `flutter.md`). `bun run flutter:build` builds it into
+  `public/flutter/` (gitignored; Vercel and CI build it themselves). The
+  bridge code lives only in `src/lib/flutter-bridge/` and
+  `src/components/molecules/live-part/`; both are red zones.
+- Contract for every live part:
+  - The React part from `src/components/runner-kit/` renders first (SSR)
+    and stays as the fallback for no JS and a failed or missing bundle.
+    Browsers other than Blink with WasmGC (Firefox, Safari, iOS) never
+    load Flutter.
+  - The engine loads when a host nears the viewport, on idle. Views are
+    added on enter and removed after they leave.
+  - The host box is locked to the fallback box (no layout shift). The swap
+    is a 150ms opacity crossfade, instant under reduced motion.
+  - No new globals and no `postMessage`: the loader and the Dart controller
+    stay inside the bridge module. Every value sent to Dart is parsed with
+    `zod/mini` first.
+  - Page clones (page curl, preset swap) show the React fallback, and live
+    hosts fall back while `data-theme-switching` is set.
+- The runner-kit parts live in `src/components/runner-kit/`, one folder per
+  part family. Their values follow `prd/02-design-spec.md` and the design
+  handoff; preset differences come from CSS, not from props.
 - Component facts come from `src/lib/components.generated.ts`; regenerate
   with `bun run generate:components`, check with `-- --check`.
 
@@ -214,6 +231,10 @@ as text: `Cmd`, `Ctrl`, `Shift`.
 - Visual snapshots: every new page or demo gets `toHaveScreenshot` for the 4
   combinations. Global `maxDiffPixelRatio: 0.01`, animations disabled, fonts
   from the bundle. Update a baseline only for an intended change and say so.
+- Live parts: visual snapshots mask the Flutter hosts (Flutter goldens lock
+  them), and a separate project blocks `/flutter/**` so the React fallbacks
+  stay pixel-tested. axe always includes the hosts. Flutter e2e checks skip
+  with a printed reason when the bundle is missing locally; CI requires it.
 - Bug fix = failing test first (see `workflow.md`).
 
 ## Tooling and dependencies
@@ -223,7 +244,9 @@ as text: `Cmd`, `Ctrl`, `Shift`.
 - Version ranges stay caret with the lockfile committed. Renovate opens
   grouped weekly updates; do not bump versions by hand outside a task.
 - No new dependency without approval (see `security.md`).
-- Each route has a JS budget checked in CI after `bun run build`. If your
-  change breaks a budget, report it instead of raising the budget.
+- The shared JS bundle has a budget (`bun run budget:check`, after
+  `bun run build`), and the Flutter bundle has its own
+  (`bun run flutter:budget`). If your change breaks a budget, report it
+  instead of raising the budget.
 - Images via `next/image`, fonts via `next/font`. No layout shift from theme
   or preset switching.

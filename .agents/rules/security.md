@@ -42,6 +42,10 @@ Who attacks, and how:
   `public/.well-known/security.txt`
 - CI, release and repo config: `.github/`, `tools/apply_changesets*`,
   `deny.toml`, `rust-toolchain.toml`, `bunfig.toml`, `renovate.json`
+- Flutter bridge: `apps/docs/src/lib/flutter-bridge/`,
+  `apps/docs/src/components/molecules/live-part/`,
+  `apps/showcase/lib/bridge/`, `apps/showcase/web/`, and the bundle build
+  scripts `apps/docs/scripts/{build-flutter.ts,vercel-build.sh,flutter-cache-key.ts}`
 - Agent instructions: `AGENTS.md`, `GEMINI.md`, `.agents/` except the
   git-ignored scratch folder `.agents/tmp/` (see
   `security-agent.md`)
@@ -107,6 +111,13 @@ Everything that crosses a trust boundary is parsed before use: URL segments
 - `postMessage`: none today. Any new use checks `event.origin`, parses
   every message with a zod schema, and sends with an explicit target
   origin. No `'*'` targets.
+- Flutter bridge (JS interop between the docs page and `apps/showcase`):
+  the Flutter loader and the Dart controller stay private to the bridge
+  module. The bridge adds no globals (Flutter's own `_flutter` and
+  `_flutter_skwasmInstance` are the only ones) and uses no `postMessage`.
+  Every value is validated twice: `zod/mini` in TS before it is sent and a
+  whitelist in Dart when it arrives. Free text (playground labels) is
+  printable ASCII with a length cap.
 - No `dangerouslySetInnerHTML` except constant strings you wrote. No `eval`,
   `new Function`, or HTML built from input.
 - `/api/search`: query length is capped and over-long queries get a 400; the
@@ -125,6 +136,9 @@ Everything that crosses a trust boundary is parsed before use: URL segments
 - `'unsafe-inline'` in `script-src` stays (the App Router inline RSC payload
   and the next-themes bootstrap need it without nonces; nonces would make every page
   dynamic). New code must not rely on it.
+- `worker-src 'self' blob:` exists for the Flutter bridge: multi-threaded
+  skwasm starts its workers from `blob:` URLs, and the site is already
+  cross-origin isolated (COOP/COEP). It allows no other origin.
 - `/.well-known/security.txt` exists with `Contact` (the GitHub advisory
   page) and `Expires` under one year away. A test fails 30 days before
   `Expires`; renewing it is a normal task.

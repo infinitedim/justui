@@ -1,6 +1,6 @@
 ---
 trigger: glob
-globs: "packages/core/**, packages/tokens/**, apps/preview/**, apps/showcase/**, registry/**, tools/**"
+globs: "packages/core/**, packages/tokens/**, apps/preview/**, apps/showcase/**, apps/sandbox/**, registry/**, tools/**"
 description: "Flutter and Dart rules for the JustUI theme engine, tokens, components, registry and workbench apps."
 ---
 
@@ -112,23 +112,57 @@ dart run tools/generate_checksums.dart             # write
 The dry run can report drift and still exit 0. Read its output.
 Never edit files in `registry/components/` by hand.
 
-## apps/showcase (generated)
+## apps/sandbox (generated)
 
-Never edit `apps/showcase/lib/core`, `lib/tokens` or `lib/widgets` by hand.
-Regenerate after changes to `packages/core` or the CLI:
+`apps/sandbox` is the CLI sandbox: the only place where real CLI output
+(transpiled constructors, rewritten imports) is compiled, analyzed and tested
+in CI. Never edit `apps/sandbox/lib/core`, `lib/tokens` or `lib/widgets` by
+hand. Regenerate after changes to `packages/core` or the CLI:
 
 ```bash
 cargo build --release
-cd apps/showcase
+cd apps/sandbox
 rm -rf lib/core lib/tokens lib/widgets
 ../../target/release/justui init -y --preset neobrutalism --color-space oklch --dart-target standard
 sed -i 's#^registry_url:.*#registry_url: ../../registry#' justui.config.yaml
-../../target/release/justui add --all -y
+../../target/release/justui add --all -y --trust-registry
 dart format lib && flutter analyze && flutter test
 ```
 
 `rm -rf` here deletes generated folders only; it still counts as deleting
-files, so include it in your plan.
+files, so include it in your plan. `--trust-registry` is needed when the run
+is not interactive. The sandbox keeps the plain `flutter_lints` analysis of a
+user project, not the strict root options.
+
+## apps/showcase (bridge)
+
+`apps/showcase` is a Flutter web app (Wasm, multi-view embedded mode) that
+renders real core components into host elements on the docs pages. Its bundle
+is built into `apps/docs/public/flutter/` (see `docs-web.md`).
+
+- It imports `packages/core` and `packages/tokens` by path. Components come in
+  through implementation imports (`package:just_ui_core/src/components/...`)
+  with `// ignore_for_file: implementation_imports`, as in `apps/preview`.
+  Invariant 3 still holds.
+- The Ink and Paper look lives in showcase (`lib/theme/`): a
+  `CustomColorScheme`, typography and component `ThemeExtension` overrides.
+  Do not change core or the docs runner-kit to match it. The constants are
+  locked to the `--ip-*` blocks in `apps/docs/src/app/globals.css` by a drift
+  test, and the role pairs by a contrast test.
+- Register every core `*Theme.defaults` (what the CLI writes at
+  `// CLI:REGISTER_EXTENSIONS`) through `toThemeData(additionalExtensions:)`;
+  a drift test lists them.
+- One `MaterialApp(title: null)` per view: a title rewrites the host page's
+  `document.title`, and the route scope is what lets Tab leave the view.
+- Semantics are always on (`SemanticsBinding.instance.ensureSemantics()`).
+- JS interop uses SDK libraries only (`dart:js_interop`, `dart:ui_web`) behind
+  a conditional import. No `package:web`, no `postMessage`, no new globals.
+  Every value that comes from JS is checked against a whitelist; invalid
+  input keeps the defaults.
+- Scenes mirror the composition of the docs `KitPart` for the same slug.
+- Golden tests run on Linux with the Flutter version in `.fvmrc` and load the
+  real font files. Update a golden only for an intended change, and look at
+  the new image before committing it.
 
 ## apps/preview (Widgetbook)
 

@@ -68,13 +68,14 @@ do the visual check in `design.md`.
 - Conventional Commits: `type(scope): subject`, imperative, lowercase subject,
   no trailing period. Types: feat, fix, refactor, perf, test, docs, style,
   chore, ci, build. Scopes: core, tokens, cli, docs, preview, showcase,
-  registry, tools, ci, rules.
+  sandbox, registry, tools, ci, rules.
 - One logical change per commit. Do not mix refactors with behavior changes.
 - Never push. Never force-push. Never amend or rebase commits that already
   exist on the remote.
 - Never commit: audit or security reports, ad-hoc screenshots, `.env*`
-  files, scratch files, build output. Playwright visual baselines next to
-  their spec are allowed.
+  files, scratch files, build output (including `apps/docs/public/flutter/`).
+  Playwright visual baselines next to their spec and Flutter golden PNGs next
+  to the showcase golden tests are allowed.
 
 ## Changesets
 
