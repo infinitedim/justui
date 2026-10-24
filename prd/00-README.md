@@ -105,5 +105,5 @@ released to users on its own.
    constructor syntax exactly as the surrounding code writes them.
 3. Add no pub, npm or cargo dependency.
 4. Write plain ASCII in every file. No em dashes, curly quotes or emoji.
-5. Never hand-edit generated files (registry, showcase, `*.generated.*`).
+5. Never hand-edit generated files (registry, `apps/sandbox`, `*.generated.*`).
 6. Never push, tag or open pull requests unless the owner asks.

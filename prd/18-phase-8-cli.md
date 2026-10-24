@@ -2,7 +2,7 @@
 
 Status: Draft v1 (2026-10-13)
 Depends on: P3 (the `inkAndPaper` API the template calls)
-Blocks: P5.T5 (showcase regeneration), P9
+Blocks: P5.T5 (sandbox regeneration), P9
 Areas: `packages/cli` (Rust crate `justui`)
 
 ## 1. Summary
@@ -269,7 +269,7 @@ doctor warning.
 2. AC-8.2: In an empty Flutter project, `justui init -y` writes a
    `just_theme.dart` that contains `inkAndPaper` and no `fromSeed`, and
    `flutter analyze` on that project reports no warning (owner machine; P5.T5
-   is the same check on the showcase).
+   is the same check on `apps/sandbox`).
 3. AC-8.3: `justui init -y --seed 3b82f6` succeeds, prints exactly one
    deprecation line and writes a custom hue near 260.
 4. AC-8.4: `justui init --tint warm --tint-hue 10` exits 2.

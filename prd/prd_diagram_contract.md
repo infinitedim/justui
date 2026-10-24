@@ -84,7 +84,7 @@ flowchart LR
     direction LR
     P5_T1["P5.T1: Final Registry Checksum & Sign"] --> P5_T2["P5.T2: Identical-Preset Guard"]
     P5_T3["P5.T3: Preview tokens_usecases.dart"] --> P5_T4["P5.T4: 29 Component Usecases (4 Combos)"]
-    P5_T2 --> P5_T5["P5.T5: Regenerate apps/showcase via CLI"]
+    P5_T2 --> P5_T5["P5.T5: Regenerate apps/sandbox via CLI"]
     P5_T4 --> P5_T5
   end
 
@@ -313,7 +313,7 @@ Gunakan kotak centang (`[ ]` / `[x]`) di bawah ini untuk memantau progres penger
 - [ ] **`P5.T2`** — Tambahkan _identical-preset guard_ di `tools/generate_checksums.dart` dan uji dengan folder preset tiruan yang identik (`FR-5.2`, `AC-5.2`).
 - [ ] **`P5.T3`** — Tulis ulang `apps/preview/lib/usecases/tokens_usecases.dart` (tabel role live dengan rasio kontras runtime, knob tint hue/chroma, nol literal warna) dan daftarkan font `PlusJakartaSans` di `apps/preview/pubspec.yaml` (`FR-5.4`, `AC-5.6`).
 - [ ] **`P5.T4`** — Perbarui 29 file component use-case di `apps/preview/lib/usecases/` untuk mencakup 4 kombinasi dan semua state; jalankan `build_runner` (`FR-5.5`, `AC-5.5`).
-- [ ] **`P5.T5`** — Regenerasi `apps/showcase` menggunakan biner CLI baru (`justui init -y --preset neobrutalism ...` + `justui add --all -y`), format, analyze, dan jalankan `flutter test` (`FR-5.3`, `AC-5.3`, `AC-5.4`).
+- [ ] **`P5.T5`** — Regenerasi `apps/sandbox` menggunakan biner CLI baru (`justui init -y --preset neobrutalism ...` + `justui add --all -y`), format, analyze, dan jalankan `flutter test` (`FR-5.3`, `AC-5.3`, `AC-5.4`).
 
 #### Phase 6: Docs Foundation
 
