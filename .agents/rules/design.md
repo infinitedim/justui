@@ -133,8 +133,9 @@ product features, not decoration. Keep them; make them accurate.
   (see `docs-web.md`).
 - Small changes (spacing, a color token swap, copy): confirm the change uses
   tokens and does not break the other preset. No full capture needed.
-- Flutter components: launch `apps/preview` (Widgetbook) with the dart MCP
-  tools and check both presets in light and dark, with no runtime errors.
+- Flutter components: run the component's scene in the `apps/showcase`
+  harness with the dart MCP tools and check both presets in light and dark,
+  with no runtime errors.
 - Bridge scenes (`apps/showcase`): check them in the showcase harness and in
   their goldens, in the 4 combinations, and on the docs page that hosts
   them.

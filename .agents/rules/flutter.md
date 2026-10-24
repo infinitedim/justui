@@ -1,6 +1,6 @@
 ---
 trigger: glob
-globs: "packages/core/**, packages/tokens/**, apps/preview/**, apps/showcase/**, apps/sandbox/**, registry/**, tools/**"
+globs: "packages/core/**, packages/tokens/**, apps/showcase/**, apps/sandbox/**, registry/**, tools/**"
 description: "Flutter and Dart rules for the JustUI theme engine, tokens, components, registry and workbench apps."
 ---
 
@@ -142,7 +142,7 @@ is built into `apps/docs/public/flutter/` (see `docs-web.md`).
 
 - It imports `packages/core` and `packages/tokens` by path. Components come in
   through implementation imports (`package:just_ui_core/src/components/...`)
-  with `// ignore_for_file: implementation_imports`, as in `apps/preview`.
+  with `// ignore_for_file: implementation_imports`.
   Invariant 3 still holds.
 - The Ink and Paper look lives in showcase (`lib/theme/`): a
   `CustomColorScheme`, typography and component `ThemeExtension` overrides.
@@ -163,12 +163,6 @@ is built into `apps/docs/public/flutter/` (see `docs-web.md`).
 - Golden tests run on Linux with the Flutter version in `.fvmrc` and load the
   real font files. Update a golden only for an intended change, and look at
   the new image before committing it.
-
-## apps/preview (Widgetbook)
-
-Use cases live in `apps/preview/lib/usecases/`. After adding one, run
-`dart run build_runner build --delete-conflicting-outputs` in `apps/preview`.
-Each component needs use cases for default and neobrutalism, light and dark.
 
 ## Tests
 
