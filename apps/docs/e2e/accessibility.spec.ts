@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
-import { PRESETS, THEMES, fontsReady, visitAs } from './helpers';
+import {
+  PRESETS,
+  THEMES,
+  flutterSettled,
+  fontsReady,
+  visitAs,
+} from './helpers';
 
 test.describe('Accessibility (WCAG AA Compliance)', () => {
   const routes = [
@@ -28,6 +34,8 @@ test.describe('Accessibility (WCAG AA Compliance)', () => {
           const response = await page.goto(path);
           expect(response?.status()).toBe(status);
           await fontsReady(page);
+          // Live Flutter parts are scanned too: axe sees their semantics DOM.
+          await flutterSettled(page);
           const results = await new AxeBuilder({ page })
             .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
             .analyze();
