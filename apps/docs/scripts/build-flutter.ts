@@ -1,18 +1,12 @@
 // Builds the apps/showcase bridge (Flutter web, Wasm) into public/flutter/.
 //
-// Local: `bun run flutter:build` uses `fvm flutter`. CI and Vercel set
-// FLUTTER_BIN to the pinned SDK. Commands run with argument arrays (no
+// Local: `bun run flutter:build` uses `fvm flutter` (the .fvmrc release).
+// CI and Vercel set FLUTTER_BIN to their SDK. bundle.json records the
+// version that built the bundle. Commands run with argument arrays (no
 // shell). The output is pruned to BUNDLE_KEEP and described in bundle.json
 // (sizes and SHA-256) for the budget check and the Vercel cache.
 import { spawnSync } from 'node:child_process';
-import {
-  cpSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
+import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import {
   BUNDLE_KEEP,
@@ -33,33 +27,32 @@ function fail(message: string): never {
   process.exit(1);
 }
 
-/** The pinned Flutter version from .fvmrc. */
-function pinnedFlutter(): string {
-  const parsed: unknown = JSON.parse(
-    readFileSync(path.join(repoRoot, '.fvmrc'), 'utf-8')
-  );
-  if (
-    typeof parsed === 'object' &&
-    parsed !== null &&
-    'flutter' in parsed &&
-    typeof parsed.flutter === 'string' &&
-    /^\d+\.\d+\.\d+$/.test(parsed.flutter)
-  ) {
-    return parsed.flutter;
-  }
-  return fail('.fvmrc has no valid "flutter" version');
-}
-
-function flutter(args: readonly string[]): void {
+/** Runs the Flutter tool in apps/showcase; returns its stdout when piped. */
+function flutter(args: readonly string[], pipe = false): string {
   const bin = process.env.FLUTTER_BIN;
   const [cmd, prefix] = bin ? [bin, []] : ['fvm', ['flutter']];
-  console.log(`$ ${cmd} ${[...prefix, ...args].join(' ')}`);
+  if (!pipe) console.log(`$ ${cmd} ${[...prefix, ...args].join(' ')}`);
   const result = spawnSync(cmd, [...prefix, ...args], {
     cwd: showcaseDir,
-    stdio: 'inherit',
+    stdio: pipe ? ['ignore', 'pipe', 'inherit'] : 'inherit',
+    encoding: 'utf-8',
   });
   if (result.error) fail(`cannot run ${cmd}: ${result.error.message}`);
   if (result.status !== 0) fail(`${cmd} exited with ${result.status}`);
+  return result.stdout ?? '';
+}
+
+/** The framework version of the SDK that builds the bundle. */
+function flutterVersion(): string {
+  const parsed: unknown = JSON.parse(flutter(['--version', '--machine'], true));
+  const version: unknown =
+    typeof parsed === 'object' && parsed !== null
+      ? Reflect.get(parsed, 'frameworkVersion')
+      : undefined;
+  if (typeof version === 'string' && /^\d+\.\d+\.\d+$/.test(version)) {
+    return version;
+  }
+  return fail('cannot read the Flutter version');
 }
 
 function build(): void {
@@ -91,7 +84,7 @@ function copyPruned(): string[] {
 }
 
 function main(): void {
-  const version = pinnedFlutter();
+  const version = flutterVersion();
   build();
   if (!existsSync(buildDir)) fail(`no build output at ${buildDir}`);
   const files = copyPruned().map((file) => describeFile(outDir, file));
