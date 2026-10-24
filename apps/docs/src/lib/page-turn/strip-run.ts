@@ -5,6 +5,7 @@ import {
   emptyBox,
   isOffscreen,
   overlayDiv,
+  showFallbacksInClone,
   turnState,
 } from './shared';
 
@@ -40,6 +41,7 @@ export function snapshot(
   walk(root, copy, 0);
   copy.removeAttribute('id');
   detachClone(copy);
+  showFallbacksInClone(copy);
   return copy;
 }
 

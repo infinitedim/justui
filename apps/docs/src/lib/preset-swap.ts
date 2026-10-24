@@ -1,6 +1,6 @@
 'use client';
 
-import { detachClone } from '@/lib/page-turn/shared';
+import { detachClone, showFallbacksInClone } from '@/lib/page-turn/shared';
 import { prefersReducedMotion } from '@/lib/use-reduced-motion';
 
 const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
@@ -39,6 +39,7 @@ export function animatePresetSwap(apply: () => void): void {
     if (clone instanceof HTMLElement) {
       clone.removeAttribute('data-pbox');
       detachClone(clone);
+      showFallbacksInClone(clone);
     }
     ghost.append(clone);
     document.body.append(ghost);

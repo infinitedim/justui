@@ -1,5 +1,11 @@
 import { inlinedFontCss } from './fonts';
-import { emptyBox, isOffscreen, nextPaint, wait } from './shared';
+import {
+  emptyBox,
+  isOffscreen,
+  nextPaint,
+  showFallbacksInClone,
+  wait,
+} from './shared';
 
 export interface Raster {
   canvas: HTMLCanvasElement;
@@ -67,6 +73,7 @@ function rasterClone(root: HTMLElement, height: number): HTMLElement | null {
   };
   walk(root, copy);
   copy.removeAttribute('id');
+  showFallbacksInClone(copy);
   return copy;
 }
 

@@ -92,3 +92,15 @@ export function detachClone(clone: Element): void {
     }
   }
 }
+
+/**
+ * Live Flutter parts (`[data-live-part]`) show their React fallback in a
+ * page copy: a Flutter canvas cannot be cloned or rasterized, so the copy
+ * would show an empty box.
+ */
+export function showFallbacksInClone(clone: Element): void {
+  for (const part of clone.querySelectorAll('[data-live-part]')) {
+    part.setAttribute('data-state', 'fallback');
+    part.querySelector('[data-live-host]')?.replaceChildren();
+  }
+}
