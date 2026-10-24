@@ -336,6 +336,12 @@ mod cli_integration {
     fn justui() -> Command {
         let mut cmd = Command::cargo_bin("justui").unwrap();
         cmd.env("JUSTUI_TRUST_REGISTRY", "1");
+        // The trust store writes to the user config dir; keep it inside the
+        // target dir so tests never touch (or need write access to) the real one.
+        cmd.env(
+            "JUSTUI_CONFIG_DIR",
+            std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join("justui-config"),
+        );
         cmd
     }
 
