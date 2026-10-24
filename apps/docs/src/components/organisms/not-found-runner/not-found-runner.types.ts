@@ -6,6 +6,8 @@ import type { SiteDictionary } from '@/lib/site-translations';
 export interface RunnerFieldProps {
   /** The nearest real parts, best match first. */
   parts: readonly string[];
+  /** Locale of the page, for the live parts' copy. */
+  lang: Locale;
   t: NotFoundDictionary;
   kit: KitDictionary;
   site: SiteDictionary;
@@ -18,6 +20,8 @@ export interface MissingSocketProps {
 
 export interface NearestPartProps {
   slug: string;
+  /** Locale of the page, for the live part's copy. */
+  lang: Locale;
   kit: KitDictionary;
   site: SiteDictionary;
 }
