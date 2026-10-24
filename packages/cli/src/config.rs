@@ -37,11 +37,9 @@ impl JustUIConfig {
         "dart_target",
     ];
 
-    fn check_unknown_fields(map: &serde_yaml::Mapping) {
-        for (key, _) in map {
-            if let Some(k) = key.as_str()
-                && !Self::KNOWN_FIELDS.contains(&k)
-            {
+    fn check_unknown_fields(map: &serde_json::Map<String, serde_json::Value>) {
+        for k in map.keys() {
+            if !Self::KNOWN_FIELDS.contains(&k.as_str()) {
                 crate::utils::logger::warning(&format!(
                     "Unknown configuration field in {}: '{k}'",
                     Self::CONFIG_FILE_NAME
@@ -50,7 +48,10 @@ impl JustUIConfig {
         }
     }
 
-    fn migrate_version(from_version: u32, _map: &serde_yaml::Mapping) -> u32 {
+    fn migrate_version(
+        from_version: u32,
+        _map: &serde_json::Map<String, serde_json::Value>,
+    ) -> u32 {
         if from_version == 0 {
             // Unversioned legacy configuration migrated to current schema
             return Self::CURRENT_VERSION;
@@ -59,11 +60,11 @@ impl JustUIConfig {
     }
 
     pub fn from_yaml(content: &str) -> Self {
-        let Ok(parsed) = serde_yaml::from_str::<serde_yaml::Value>(content) else {
+        let Ok(parsed) = serde_saphyr::from_str::<serde_json::Value>(content) else {
             return Self::default();
         };
 
-        let Some(map) = parsed.as_mapping() else {
+        let Some(map) = parsed.as_object() else {
             return Self::default();
         };
 
@@ -71,7 +72,7 @@ impl JustUIConfig {
 
         let raw_version = map
             .get("version")
-            .and_then(serde_yaml::Value::as_u64)
+            .and_then(serde_json::Value::as_u64)
             .and_then(|v| u32::try_from(v).ok())
             .unwrap_or(0);
 
@@ -199,5 +200,28 @@ mod tests {
         let parsed = JustUIConfig::from_yaml(legacy_yaml);
         assert_eq!(parsed.version, 1);
         assert_eq!(parsed.components_dir, "lib/custom");
+    }
+
+    #[test]
+    fn test_config_from_yaml_falls_back_on_invalid_or_non_mapping_input() {
+        for content in ["", "- a\n- b\n", "plain string", "components_dir: [broken"] {
+            assert_eq!(JustUIConfig::from_yaml(content), JustUIConfig::default());
+        }
+    }
+
+    #[test]
+    fn test_config_from_yaml_reads_typed_values() {
+        let parsed = JustUIConfig::from_yaml(
+            "version: 1\nversion_note: &d lib/ui\ncomponents_dir: *d\ndart_target: primary\n",
+        );
+        assert_eq!(parsed.version, 1);
+        assert_eq!(parsed.components_dir, "lib/ui");
+        assert_eq!(parsed.shared_dir, "lib/ui/shared");
+        assert_eq!(
+            parsed.dart_target,
+            crate::utils::env_resolver::DartTarget::Primary
+        );
+        // A non-integer version is treated as unversioned and migrated.
+        assert_eq!(JustUIConfig::from_yaml("version: 1.5\n").version, 1);
     }
 }
