@@ -15,9 +15,12 @@ const isDev = process.env.NODE_ENV === 'development';
 // 'unsafe-inline' in script-src is retained because next-themes injects an inline
 // script for theme initialisation; remove it only after adopting CSP nonces.
 // img-src is scoped to known domains instead of the broad 'https:' wildcard.
+// worker-src allows blob: workers only for multi-threaded skwasm (the Flutter
+// bridge on live-part pages; security.md, Headers and CSP).
 const cspProduction = `
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://va.vercel-scripts.com;
+  worker-src 'self' blob:;
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https://github.com https://raw.githubusercontent.com https://avatars.githubusercontent.com https://opengraph.githubassets.com;
   font-src 'self' data:;
@@ -35,6 +38,7 @@ const cspProduction = `
 const cspDevelopment = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval';
+  worker-src 'self' blob:;
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https:;
   font-src 'self' data:;
