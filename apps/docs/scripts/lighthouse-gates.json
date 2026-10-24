@@ -1,0 +1,7 @@
+{
+  "note": "Lighthouse Performance gates (owner decisions 44 and 59). Paths run against a production server (bun run start).",
+  "pages": {
+    "/en/buton": { "desktop": 80, "mobile": 60 },
+    "/en/docs/components": { "desktop": 80, "mobile": 60 }
+  }
+}

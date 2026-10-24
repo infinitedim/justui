@@ -379,3 +379,6 @@ $RECYCLE.BIN/
 
 # Flutter bridge bundle (bun run flutter:build; CI and Vercel build it)
 /public/flutter/
+
+# Lighthouse reports (bun run perf:lighthouse)
+/.lighthouse/
