@@ -1,0 +1,4 @@
+tags:
+  golden:
+    # Goldens are rendered on Linux with the Flutter version in .fvmrc; CI
+    # runs them in the showcase-web job and excludes them elsewhere.
