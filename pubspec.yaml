@@ -5,7 +5,6 @@ environment:
 workspace:
   - packages/tokens
   - packages/core
-  - apps/preview
   - apps/showcase
   - apps/sandbox
 
