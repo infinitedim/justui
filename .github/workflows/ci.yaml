@@ -20,12 +20,20 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up Flutter SDK
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - name: Setup Bun Runtime
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          # Follows .fvmrc ("stable"); vercel-build.sh resolves the same channel.
-          channel: stable
-          cache: true
+          bun-version-file: "apps/docs/package.json"
+
+      - name: Set up Flutter SDK
+        # Third-party Flutter setup actions pull actions/cache by tag, which
+        # the repo's full-SHA pinning policy rejects. This installs the
+        # release .fvmrc names ("stable") and checks the archive SHA-256
+        # against Flutter's official release index.
+        run: |
+          root="$(bash apps/docs/scripts/install-flutter.sh "$RUNNER_TEMP/flutter-sdk")"
+          echo "$root/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
 
       - name: Install Dart & global tools
         run: |
@@ -76,16 +84,20 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up Flutter SDK
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          channel: stable
-          cache: true
-
       - name: Setup Bun Runtime
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version-file: "apps/docs/package.json"
+
+      - name: Set up Flutter SDK
+        # Third-party Flutter setup actions pull actions/cache by tag, which
+        # the repo's full-SHA pinning policy rejects. This installs the
+        # release .fvmrc names ("stable") and checks the archive SHA-256
+        # against Flutter's official release index.
+        run: |
+          root="$(bash apps/docs/scripts/install-flutter.sh "$RUNNER_TEMP/flutter-sdk")"
+          echo "$root/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
 
       - name: Showcase golden tests
         run: |

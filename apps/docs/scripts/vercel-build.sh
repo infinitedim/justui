@@ -38,20 +38,15 @@ ensure_tools() {
 
 # install_sdk <version> <url> <sha256>
 install_sdk() {
-  local archive="${SDK_PARENT}/flutter.tar.xz"
-  rm -rf "${SDK_PARENT}"
-  mkdir -p "${SDK_PARENT}"
-  log "downloading Flutter $1"
-  curl --proto '=https' --tlsv1.2 -fsSL "$2" -o "${archive}"
-  echo "$3  ${archive}" | sha256sum -c -
-  tar -xJf "${archive}" -C "${SDK_PARENT}"
-  rm "${archive}"
-  # The archive is a git checkout owned by another user id. The exception
-  # goes through the environment, so no git config file is written.
+  local root
+  root="$(bash scripts/install-flutter.sh "${SDK_PARENT}" "$1" "$2" "$3")"
+  # As root (Vercel), tar keeps the archive's owner, so git sees a checkout
+  # owned by another user. The exception goes through the environment, so
+  # no git config file is written.
   export GIT_CONFIG_COUNT=1
   export GIT_CONFIG_KEY_0="safe.directory"
-  export GIT_CONFIG_VALUE_0="${SDK_PARENT}/flutter"
-  export FLUTTER_BIN="${SDK_PARENT}/flutter/bin/flutter"
+  export GIT_CONFIG_VALUE_0="${root}"
+  export FLUTTER_BIN="${root}/bin/flutter"
   "${FLUTTER_BIN}" --disable-analytics >/dev/null
   "${FLUTTER_BIN}" --version
 }
