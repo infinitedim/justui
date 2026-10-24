@@ -376,3 +376,6 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/nextjs,vercel,react,sublimetext,visualstudiocode,node,yarn,bower,macos,powershell,windows,linux,vim,dotenv,typings
 .source
+
+# Flutter bridge bundle (bun run flutter:build; CI and Vercel build it)
+/public/flutter/
