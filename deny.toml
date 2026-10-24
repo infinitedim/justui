@@ -28,6 +28,10 @@ allow = [
     "Unicode-DFS-2016",
     "Zlib",
     "CC0-1.0",
+    # colored (file-level copyleft; used unmodified as a dependency).
+    "MPL-2.0",
+    # webpki-roots (Mozilla root certificate data).
+    "CDLA-Permissive-2.0",
 ]
 
 [bans]

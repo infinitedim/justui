@@ -1,0 +1,3 @@
+# The registry is signed (index.json.sig) and checksummed byte for byte.
+# Never convert line endings on checkout, or Windows clones fail verification.
+registry/** -text

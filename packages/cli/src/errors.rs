@@ -52,7 +52,7 @@ pub enum ConfigError {
     #[error("failed to parse configuration file '{path}': {source}")]
     Yaml {
         path: String,
-        source: serde_yaml::Error,
+        source: serde_saphyr::Error,
     },
 
     /// Unsupported configuration version.
