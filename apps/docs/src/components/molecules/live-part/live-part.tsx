@@ -30,7 +30,9 @@ function kitStrings(dict: KitDictionary): Record<string, string | string[]> {
  * The live view sits in an absolutely placed host with the fallback's box,
  * so the swap cannot shift the layout; it crossfades in 150ms (instant
  * under reduced motion) and drops back to the fallback while the theme
- * switch runs.
+ * switch runs. Flutter sets `touch-action: none` on its view, which traps
+ * page scrolling on touch screens; `pan-y` gives vertical pans back to the
+ * page while taps and horizontal drags still reach Flutter.
  */
 export function LivePart({
   scene,
@@ -73,7 +75,7 @@ export function LivePart({
         data-live-host=""
         inert={!live}
         aria-hidden={live ? undefined : true}
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-150 group-data-[state=live]/live:pointer-events-auto group-data-[state=live]/live:opacity-100 motion-reduce:transition-none"
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-150 group-data-[state=live]/live:pointer-events-auto group-data-[state=live]/live:opacity-100 motion-reduce:transition-none [&_flutter-view]:touch-pan-y!"
       />
     </div>
   );
