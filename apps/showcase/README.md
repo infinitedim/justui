@@ -1,17 +1,29 @@
 # showcase
 
-A new Flutter project.
+The JustUI bridge: a Flutter web app (Wasm, multi-view embedded mode) that
+renders the real `packages/core` components on the docs pages. The docs load
+it from `/flutter/` and add one view per live part; the React parts in
+`apps/docs/src/components/runner-kit/` stay as the SSR fallback.
 
-## Getting Started
+- `lib/bridge/`: multi-view app, per-view host, the validated config and the
+  JS interop (`initialData` in, `onReady(controller)` out).
+- `lib/theme/`: the Ink and Paper theme, locked to the docs `--ip-*` tokens
+  by `test/theme/ink_paper_drift_test.dart`.
+- `lib/scenes/`: one demo per part, keyed by registry slug, mirroring the
+  docs `KitPart`.
+- `web/`: the bootstrap template (no `load()` call) and a development
+  harness.
 
-This project is a starting point for a Flutter application.
+Run the harness (multi-view, preset/theme/locale controls):
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+fvm flutter run -d chrome --wasm
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Build the bundle the docs serve (from `apps/docs`):
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+bun run flutter:build
+```
+
+Rules: `.agents/rules/flutter.md`, section "apps/showcase (bridge)".

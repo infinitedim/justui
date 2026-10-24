@@ -1,46 +1,34 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="showcase">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>showcase</title>
-  <link rel="manifest" href="manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="JustUI bridge harness: multi-view host for the showcase scenes.">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>JustUI bridge harness</title>
+  <style>
+    body { margin: 0; padding: 24px; font: 14px/1.5 system-ui, sans-serif; background: #fbfaf8; color: #11100f; }
+    body.dark { background: #0d0c0a; color: #f1f0ee; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 24px; }
+    .hosts { display: flex; flex-wrap: wrap; gap: 16px; }
+    .host { position: relative; width: 240px; height: 112px; overflow: hidden; outline: 1px dashed #81807d; }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
-  <script src="flutter_bootstrap.js" async></script>
+  <!-- Development harness only: the docs page never loads this file. It
+       mimics the docs bridge: multi-view engine, one host per part, and the
+       same controller.update(patch) calls the docs use. -->
+  <div class="controls">
+    <label>Preset <select id="preset"><option>default</option><option>neobrutalism</option></select></label>
+    <label>Theme <select id="theme"><option>light</option><option>dark</option></select></label>
+    <label>Locale <select id="locale"><option>en</option><option>id</option></select></label>
+    <span>Hosts: add <code>?count=33</code> to the URL to probe many views.</span>
+  </div>
+  <a href="#before">Focus before the hosts</a>
+  <div id="hosts" class="hosts"></div>
+  <a href="#after">Focus after the hosts</a>
+  <script src="flutter_bootstrap.js"></script>
+  <script src="harness.js"></script>
 </body>
 </html>
