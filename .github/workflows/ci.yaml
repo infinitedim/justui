@@ -23,7 +23,8 @@ jobs:
       - name: Set up Flutter SDK
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version: "3.47.5"
+          # Follows .fvmrc ("stable"); vercel-build.sh resolves the same channel.
+          channel: stable
           cache: true
 
       - name: Install Dart & global tools
@@ -61,12 +62,60 @@ jobs:
 
       - name: Run Tests
         run: |
-          melos exec --flutter --dir-exists="test" -- "flutter test"
+          melos exec --flutter --dir-exists="test" -- "flutter test --exclude-tags golden"
           melos exec --no-flutter --dir-exists="test" -- "dart test"
+
+  # Job 1b: the Flutter bridge bundle (apps/showcase, Wasm) for the docs
+  showcase-web:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          cache: true
+
+      - name: Setup Bun Runtime
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: "apps/docs/package.json"
+
+      - name: Showcase golden tests
+        run: |
+          cd apps/showcase
+          flutter pub get --enforce-lockfile
+          flutter test --tags golden
+
+      - name: Build the bridge bundle
+        run: |
+          cd apps/docs
+          FLUTTER_BIN="$(command -v flutter)" bun scripts/build-flutter.ts
+
+      - name: Verify the bundle budget
+        run: |
+          cd apps/docs
+          bun scripts/check-flutter-budget.ts
+
+      - name: Upload the bridge bundle
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        with:
+          name: flutter-bundle
+          path: apps/docs/public/flutter
+          if-no-files-found: error
+          retention-days: 3
 
   # Job 2: Validasi dan testing Next.js Documentation Portal (Bun)
   nextjs-ci:
     runs-on: ubuntu-latest
+    # The e2e suite mounts the live Flutter parts from this bundle.
+    needs: showcase-web
     permissions:
       contents: read
     steps:
@@ -84,6 +133,18 @@ jobs:
         run: |
           cd apps/docs
           bun ci
+
+      - name: Download the bridge bundle
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: flutter-bundle
+          path: apps/docs/public/flutter
+
+      - name: Verify the bridge bundle
+        run: |
+          test -f apps/docs/public/flutter/flutter_bootstrap.js
+          cd apps/docs
+          bun scripts/check-flutter-budget.ts
 
       - name: Verify Formatting & Linting
         run: |
