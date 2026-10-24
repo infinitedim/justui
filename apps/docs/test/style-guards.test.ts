@@ -151,4 +151,25 @@ describe('style guards (UI audit)', () => {
       ).toBe(false);
     }
   });
+
+  it('keeps the Flutter bridge free of postMessage and new globals', () => {
+    // security.md (Flutter bridge): the loader and the Dart controller stay
+    // inside the bridge module; nothing talks through postMessage.
+    expect(
+      files.filter((f) => /\bpostMessage\b/.test(f.text)).map((f) => f.rel)
+    ).toEqual([]);
+    const bridge = files.filter(
+      (f) =>
+        f.rel.startsWith('lib/flutter-bridge/') ||
+        f.rel.startsWith('components/molecules/live-part/') ||
+        f.rel === 'lib/use-live-part.ts'
+    );
+    expect(bridge.length).toBeGreaterThanOrEqual(6);
+    for (const file of bridge) {
+      expect(
+        /\b(?:window|globalThis)\.\w+\s*=[^=]|Reflect\.set\(/.test(file.text),
+        file.rel
+      ).toBe(false);
+    }
+  });
 });
