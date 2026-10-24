@@ -1,0 +1,385 @@
+// justui-meta: registry=06af8d1aa9264876ba11390dfa2c04d060479a732fcd05dad85d087f24019e7e local=79aa6381e639c5c04d5c9429fd502ff1674f6f4dbc24e9f5838802a3b071940c
+import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:sandbox/core/just_ui_core.dart';
+
+import '../shared/just_focus_indicator.dart';
+import '../shared/just_pressable.dart';
+import 'just_switch_style.dart';
+import 'just_switch_theme.dart';
+
+/// A highly customizable, performant, and accessible Switch component.
+///
+/// Follows zero-Material visual widget policy and supports smooth 60fps translation
+/// animations via [Transform.translate], haptic feedback, tap-to-toggle, drag-to-toggle,
+/// and keyboard navigation.
+/// A highly customizable, performant, and accessible Switch component.
+///
+/// Follows zero-Material visual widget policy and supports smooth 60fps translation
+/// animations via [Transform.translate], haptic feedback, tap-to-toggle, drag-to-toggle,
+/// and keyboard navigation.
+class JustSwitch extends StatefulWidget {
+  /// Whether the switch is active (ON) or inactive (OFF).
+  final bool value;
+
+  /// If null, the switch is disabled.
+  final ValueChanged<bool>? onChanged;
+
+  /// Optional text label placed alongside the switch. Tapping the label also toggles the switch.
+  final Widget? label;
+
+  /// The size classification for the switch track. Defaults to [.md].
+  final JustSwitchSize size;
+
+  /// Whether the switch is explicitly disabled.
+  final bool isDisabled;
+
+  /// Per-instance style overrides.
+  final JustSwitchStyle? style;
+
+  /// If null, falls back to the theme extension setting.
+  final bool? enableHaptic;
+
+  /// Optional active track color override.
+  final Color? activeColor;
+
+  /// Optional builder to display an icon or widget inside the thumb.
+  final Widget? Function(bool value)? thumbIcon;
+
+  /// Optional external [FocusNode] to manage focus.
+  final FocusNode? focusNode;
+
+  const JustSwitch({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.label,
+    this.size = .md,
+    this.isDisabled = false,
+    this.style,
+    this.enableHaptic,
+    this.activeColor,
+    this.thumbIcon,
+    this.focusNode,
+  });
+
+  @override
+  State<JustSwitch> createState() => _JustSwitchState();
+}
+
+class _JustSwitchState extends State<JustSwitch>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late FocusNode _focusNode;
+  bool _isDragging = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: JustDuration.fast,
+      value: widget.value ? 1.0 : 0.0,
+    );
+
+    _initFocusNode();
+  }
+
+  void _initFocusNode() {
+    _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.onKeyEvent = _handleKeyEvent;
+  }
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is KeyDownEvent && !widget.isDisabled) {
+      if (event.logicalKey == .space || event.logicalKey == .enter) {
+        _handleToggle();
+        return .handled;
+      }
+    }
+    return .ignored;
+  }
+
+  @override
+  void didUpdateWidget(JustSwitch oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.focusNode != oldWidget.focusNode) {
+      _focusNode.onKeyEvent = null;
+      if (oldWidget.focusNode == null) {
+        _focusNode.dispose();
+      }
+      _initFocusNode();
+    }
+    if (widget.value != oldWidget.value && !_isDragging) {
+      if (widget.value) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.onKeyEvent = null;
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    }
+    super.dispose();
+  }
+
+  void _handleToggle() {
+    if (widget.isDisabled || widget.onChanged == null) return;
+    _triggerToggle(!widget.value);
+  }
+
+  void _triggerToggle(bool newValue) {
+    final JustSwitchTheme? switchTheme = Theme.of(context)
+        .extension<JustSwitchTheme>();
+    final bool finalEnableHaptic =
+        widget.enableHaptic ??
+        switchTheme?.enableHaptic ??
+        JustThemeProvider.read(context)
+            .theme
+            .presetTokens
+            .selectionHapticDefault;
+
+    if (finalEnableHaptic) {
+      HapticFeedback.selectionClick();
+    }
+    widget.onChanged?.call(newValue);
+  }
+
+  void _handleDragStart(DragStartDetails details) {
+    if (widget.isDisabled || widget.onChanged == null) return;
+    _isDragging = true;
+  }
+
+  void _handleDragUpdate(DragUpdateDetails details, double maxTravel) {
+    if (!_isDragging) return;
+    final double delta = details.primaryDelta ?? 0.0;
+    _controller.value = (_controller.value + delta / maxTravel).clamp(0.0, 1.0);
+  }
+
+  void _handleDragEnd(DragEndDetails details) {
+    if (!_isDragging) return;
+    _isDragging = false;
+
+    final bool targetValue = _controller.value >= 0.5;
+    if (targetValue != widget.value) {
+      _triggerToggle(targetValue);
+      if (targetValue) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    } else {
+      widget.value ? _controller.forward() : _controller.reverse();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustSwitchTheme? switchTheme = Theme.of(context)
+        .extension<JustSwitchTheme>();
+
+    final JustColorScheme colors = JustThemeProvider.of(
+      context,
+      aspect: .colors,
+    ).theme.colors;
+    final JustTypographyScheme typography = JustThemeProvider.of(
+      context,
+      aspect: .typography,
+    ).theme.typography;
+    final JustSpacingScheme spacing = JustThemeProvider.of(
+      context,
+      aspect: .spacing,
+    ).theme.spacing;
+
+    final bool isInteractive = !widget.isDisabled && widget.onChanged != null;
+
+    final bool hasBorder = customTheme.presetTokens.showsDefaultBorder;
+    final double borderWidth = hasBorder
+        ? customTheme.presetTokens.borderWidth
+        : 0.0;
+
+    // Resolve sizing values
+    double trackWidth;
+    double trackHeight;
+    TextStyle textStyle;
+
+    switch (widget.size) {
+      case .sm:
+        trackWidth = 32.0;
+        trackHeight = 18.0;
+        textStyle = typography.bodySm;
+        break;
+      case .md:
+        trackWidth = 40.0;
+        trackHeight = 22.0;
+        textStyle = typography.bodyMd;
+        break;
+      case .lg:
+        trackWidth = 48.0;
+        trackHeight = 26.0;
+        textStyle = typography.bodyLg;
+        break;
+    }
+
+    const double trackInnerPadding = 2.0;
+    final double resolvedThumbSize = hasBorder
+        ? trackHeight - (2 * borderWidth) - (2 * trackInnerPadding)
+        : trackHeight - (2 * trackInnerPadding);
+
+    // Resolve theme styles
+    final JustSwitchStyle? themeStyle = switchTheme?.style;
+    final Color resolvedActiveTrackColor =
+        widget.activeColor ??
+        widget.style?.activeTrackColor ??
+        themeStyle?.activeTrackColor ??
+        (hasBorder ? colors.success : colors.borderFocus);
+    final Color resolvedInactiveTrackColor =
+        widget.style?.inactiveTrackColor ??
+        themeStyle?.inactiveTrackColor ??
+        (hasBorder ? colors.background : colors.borderDefault);
+    final Color resolvedActiveThumbColor =
+        widget.style?.activeThumbColor ??
+        themeStyle?.activeThumbColor ??
+        colors.textInverse;
+    final Color resolvedInactiveThumbColor =
+        widget.style?.inactiveThumbColor ??
+        themeStyle?.inactiveThumbColor ??
+        colors.textInverse;
+    final TextStyle resolvedTextStyle =
+        widget.style?.textStyle ??
+        themeStyle?.textStyle ??
+        textStyle.copyWith(color: colors.textPrimary);
+
+    final double maxTravel =
+        trackWidth -
+        trackInnerPadding * 2 -
+        resolvedThumbSize -
+        borderWidth * 2;
+
+    return Semantics(
+      toggled: widget.value,
+      enabled: isInteractive,
+      label: 'Switch',
+      child: JustPressable(
+        enabled: isInteractive,
+        onTap: _handleToggle,
+        focusNode: _focusNode,
+        builder: (BuildContext context, JustInteractionState state) {
+          return Opacity(
+            opacity: widget.isDisabled ? 0.5 : 1.0,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48.0),
+              child: Row(
+                mainAxisSize: .min,
+                crossAxisAlignment: .center,
+                children: <Widget>[
+                  RepaintBoundary(
+                    child: FocusIndicator(
+                      isFocused: state.isFocusVisible,
+                      borderRadius: .all(.circular(trackHeight / 2)),
+                      child: GestureDetector(
+                        onTap: _handleToggle,
+                        onHorizontalDragStart: _handleDragStart,
+                        onHorizontalDragUpdate: (DragUpdateDetails details) =>
+                            _handleDragUpdate(details, maxTravel),
+                        onHorizontalDragEnd: _handleDragEnd,
+                        child: AnimatedBuilder(
+                          animation: _controller,
+                          builder: (BuildContext context, Widget? child) {
+                            final double rawProgress = _controller.value;
+                            final Curve curvedCurve = hasBorder
+                                ? Curves.linear
+                                : JustCurves.default_;
+                            final double progress = curvedCurve.transform(
+                              rawProgress,
+                            );
+
+                            // LERP track and thumb colors
+                            final Color currentTrackColor = .lerp(
+                              resolvedInactiveTrackColor,
+                              resolvedActiveTrackColor,
+                              rawProgress,
+                            )!;
+
+                            final Color currentThumbColor = .lerp(
+                              resolvedInactiveThumbColor,
+                              resolvedActiveThumbColor,
+                              rawProgress,
+                            )!;
+
+                            return Container(
+                              width: trackWidth,
+                              height: trackHeight,
+                              padding: const .all(trackInnerPadding),
+                              decoration: BoxDecoration(
+                                color: currentTrackColor,
+                                borderRadius: .all(.circular(trackHeight / 2)),
+                                border: hasBorder
+                                    ? .all(
+                                        color: colors.textPrimary,
+                                        width: borderWidth,
+                                      )
+                                    : null,
+                              ),
+                              child: Align(
+                                alignment: Alignment(2.0 * progress - 1.0, 0.0),
+                                child: Container(
+                                  width: resolvedThumbSize,
+                                  height: resolvedThumbSize,
+                                  decoration: BoxDecoration(
+                                    color: currentThumbColor,
+                                    shape: .circle,
+                                    border: hasBorder
+                                        ? .all(
+                                            color: colors.textPrimary,
+                                            width: 1.5,
+                                          )
+                                        : null,
+                                    boxShadow: hasBorder
+                                        ? null
+                                        : customTheme.presetTokens
+                                              .resolveShadow(
+                                                customTheme.shadows,
+                                                JustShadowLevel.xs,
+                                                isPressed: false,
+                                              ),
+                                  ),
+                                  child: widget.thumbIcon != null
+                                      ? Center(
+                                          child: widget.thumbIcon!(
+                                            widget.value,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (widget.label != null) ...<Widget>[
+                    SizedBox(width: spacing.sm),
+                    DefaultTextStyle(
+                      style: resolvedTextStyle,
+                      child: widget.label!,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

@@ -1,0 +1,104 @@
+// justui-meta: registry=6c93bd5cb34f4ca169945dd94d7e186f2ca654ac8b255282fe5ce201601a048c local=1311bb94299e612cec6d41bb9d477175e52634f1792f2a432ca7dd20a7545a09
+import 'package:flutter/material.dart' show ThemeExtension;
+
+import 'just_button_style.dart';
+import 'just_button_variants.dart';
+
+/// Alias for [JustButtonTheme] for convention parity.
+typedef JustButtonThemeData = JustButtonTheme;
+
+/// Global theme configuration for buttons, extending Flutter's [ThemeExtension].
+class JustButtonTheme extends ThemeExtension<JustButtonTheme> {
+  /// Style override for the primary button.
+  final JustButtonStyle? primaryStyle;
+
+  /// Style override for the secondary button.
+  final JustButtonStyle? secondaryStyle;
+
+  /// Style override for the ghost button.
+  final JustButtonStyle? ghostStyle;
+
+  /// Style override for the destructive button.
+  final JustButtonStyle? destructiveStyle;
+
+  /// Style override for the link button.
+  final JustButtonStyle? linkStyle;
+
+  /// Whether to enable haptic feedback on button presses by default.
+  final bool? enableHaptic;
+
+  const JustButtonTheme({
+    this.primaryStyle,
+    this.secondaryStyle,
+    this.ghostStyle,
+    this.destructiveStyle,
+    this.linkStyle,
+    this.enableHaptic,
+  });
+
+  /// Default configuration for the theme.
+  static const JustButtonTheme defaults = JustButtonTheme();
+
+  @override
+  JustButtonTheme copyWith({
+    JustButtonStyle? primaryStyle,
+    JustButtonStyle? secondaryStyle,
+    JustButtonStyle? ghostStyle,
+    JustButtonStyle? destructiveStyle,
+    JustButtonStyle? linkStyle,
+    bool? enableHaptic,
+  }) {
+    return JustButtonTheme(
+      primaryStyle: primaryStyle ?? this.primaryStyle,
+      secondaryStyle: secondaryStyle ?? this.secondaryStyle,
+      ghostStyle: ghostStyle ?? this.ghostStyle,
+      destructiveStyle: destructiveStyle ?? this.destructiveStyle,
+      linkStyle: linkStyle ?? this.linkStyle,
+      enableHaptic: enableHaptic ?? this.enableHaptic,
+    );
+  }
+
+  @override
+  JustButtonTheme lerp(ThemeExtension<JustButtonTheme>? other, double t) {
+    if (other is! JustButtonTheme) return this;
+    return JustButtonTheme(
+      primaryStyle: .lerp(primaryStyle, other.primaryStyle, t),
+      secondaryStyle: .lerp(secondaryStyle, other.secondaryStyle, t),
+      ghostStyle: .lerp(ghostStyle, other.ghostStyle, t),
+      destructiveStyle: .lerp(destructiveStyle, other.destructiveStyle, t),
+      linkStyle: .lerp(linkStyle, other.linkStyle, t),
+      enableHaptic: t < 0.5 ? enableHaptic : other.enableHaptic,
+    );
+  }
+
+  /// Returns the style override configured for [variant], if any.
+  JustButtonStyle? styleFor(JustButtonVariant variant) => switch (variant) {
+    .primary => primaryStyle,
+    .secondary => secondaryStyle,
+    .ghost => ghostStyle,
+    .destructive => destructiveStyle,
+    .link => linkStyle,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JustButtonTheme &&
+          runtimeType == other.runtimeType &&
+          primaryStyle == other.primaryStyle &&
+          secondaryStyle == other.secondaryStyle &&
+          ghostStyle == other.ghostStyle &&
+          destructiveStyle == other.destructiveStyle &&
+          linkStyle == other.linkStyle &&
+          enableHaptic == other.enableHaptic;
+
+  @override
+  int get hashCode => Object.hash(
+    primaryStyle,
+    secondaryStyle,
+    ghostStyle,
+    destructiveStyle,
+    linkStyle,
+    enableHaptic,
+  );
+}
