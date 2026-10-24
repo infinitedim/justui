@@ -24,6 +24,7 @@ export default [
       '**/.agents/**',
       '**/.source/**',
       '**/test-results/**',
+      'public/flutter/**',
     ],
   },
 

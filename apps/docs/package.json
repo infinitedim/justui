@@ -31,7 +31,9 @@
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",
     "clean": "rm -rf .next node_modules/.cache tsconfig.tsbuildinfo",
     "generate:components": "bun run scripts/generate-components-data.ts",
-    "budget:check": "bun run scripts/check-bundle-budget.ts"
+    "budget:check": "bun run scripts/check-bundle-budget.ts",
+    "flutter:build": "bun run scripts/build-flutter.ts",
+    "flutter:budget": "bun run scripts/check-flutter-budget.ts"
   },
   "dependencies": {
     "fumadocs-core": "^16.15.7",
