@@ -33,7 +33,8 @@
     "generate:components": "bun run scripts/generate-components-data.ts",
     "budget:check": "bun run scripts/check-bundle-budget.ts",
     "flutter:build": "bun run scripts/build-flutter.ts",
-    "flutter:budget": "bun run scripts/check-flutter-budget.ts"
+    "flutter:budget": "bun run scripts/check-flutter-budget.ts",
+    "perf:lighthouse": "bun run scripts/lighthouse.ts"
   },
   "dependencies": {
     "fumadocs-core": "^16.15.7",
@@ -78,6 +79,7 @@
     "fumadocs-mdx": "^15.4.0",
     "globals": "^17.12.0",
     "jsdom": "^30.0.1",
+    "lighthouse": "^13.5.0",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.3",
