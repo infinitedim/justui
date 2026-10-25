@@ -32,6 +32,9 @@ JustButtonTheme buttonInkPaper(JustThemePreset preset, InkPaperRoles r) {
       foregroundColor: r.textPrimary,
       borderColor: r.textPrimary,
       borderRadius: .zero,
+      // Elevation 1 resolves to the xs shadow: Rule A gives secondary
+      // actions a 2 px ink shadow, and the icon button would cast 4 px.
+      elevation: 1,
     ),
     destructiveStyle: JustButtonStyle(
       backgroundColor: r.errorTint,

@@ -5,7 +5,7 @@ import 'package:just_ui_core/src/components/button/just_icon_button.dart';
 
 import '../scene.dart';
 
-/// Part 08, icon-button: a square secondary button that holds one plus
+/// Part 14, icon-button: a square secondary button that holds one plus
 /// icon, like `KitPart` `icon-button` (`KitIconButton`, size 40).
 ///
 /// The tooltip is the accessible name, the `aria-label` of the React demo.

@@ -44,7 +44,7 @@ Widget progressScene(BuildContext context, SceneContext scene) {
             JustProgress(
               value: _percent / 100,
               // React: an 8 px bar, 12 px with the ink outline in neobrutalism.
-              size: look.neo ? JustProgressSize.lg : JustProgressSize.md,
+              size: look.bold ? JustProgressSize.lg : JustProgressSize.md,
               animationDuration: Duration.zero,
             ),
           ],

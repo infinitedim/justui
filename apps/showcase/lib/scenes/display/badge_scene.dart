@@ -30,7 +30,7 @@ JustBadge _pill(DisplayLook look, String label) {
     color: .neutral,
     variant: .outline,
     style: JustBadgeStyle(
-      backgroundColor: look.neo ? look.roles.surface : look.roles.sunken,
+      backgroundColor: look.bold ? look.roles.surface : look.roles.sunken,
       foregroundColor: look.roles.textPrimary,
       borderColor: look.roles.borderSubtle,
       borderRadius: const BorderRadius.all(Radius.circular(999)),

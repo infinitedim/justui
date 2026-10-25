@@ -1,6 +1,8 @@
 // ignore_for_file: implementation_imports
 import 'package:flutter/widgets.dart';
+import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/input/just_input.dart';
+import 'package:just_ui_core/src/components/input/just_input_style.dart';
 
 import '../scene.dart';
 
@@ -52,6 +54,11 @@ class _ProjectFieldState extends State<_ProjectField> {
   @override
   Widget build(BuildContext context) {
     return JustInput(
+      // Ink and Paper squares the neobrutalism field (spec section 6, like
+      // the docs `--ip-radius-control: 0px`); core has no radius token for it.
+      style: context.justPresetTokens.showsDefaultBorder
+          ? const JustInputStyle(borderRadius: .zero)
+          : null,
       label: widget.label,
       controller: _controller,
       onChanged: _validate,

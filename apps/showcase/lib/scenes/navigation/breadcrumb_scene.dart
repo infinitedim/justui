@@ -6,7 +6,7 @@ import 'package:just_ui_core/src/components/breadcrumb/just_breadcrumb.dart';
 
 import '../scene.dart';
 
-/// Part 20, breadcrumb: the trail `lib > widgets > button` with `button` as
+/// Part 06, breadcrumb: the trail `lib > widgets > button` with `button` as
 /// the current page, like `KitPart` `breadcrumb` (`KitBreadcrumb`).
 ///
 /// The trail items are plain text as in React (no links), so the scene has
