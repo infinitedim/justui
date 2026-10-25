@@ -413,94 +413,91 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       borderRadius: presetTokens.showsDefaultBorder ? .zero : v.borderRadius,
     );
 
-    return Focus(
+    // One Tab stop: the pressable owns the trigger node, draws the focus
+    // ring and takes the select's keys (open, move, pick, close).
+    return JustPressable(
       focusNode: _triggerFocusNode,
-      onKeyEvent: (FocusNode node, KeyEvent event) =>
-          _handleKeyEvent(node, event),
-      child: JustPressable(
-        enabled: widget.enabled,
-        onTap: _toggleDropdown,
-        builder: (BuildContext context, JustInteractionState state) {
-          Widget inner = Container(
-            height: v.height,
-            padding: .symmetric(horizontal: spacing.md),
-            decoration: triggerDecoration,
-            child: Row(
-              children: <Widget>[
-                if (widget.prefixIcon != null) ...<Widget>[
-                  widget.prefixIcon!,
-                  SizedBox(width: spacing.sm),
-                ],
-                Expanded(
-                  child: selectedOption != null
-                      ? Row(
-                          children: <Widget>[
-                            if (selectedOption.icon != null) ...<Widget>[
-                              selectedOption.icon!,
-                              SizedBox(width: spacing.sm),
-                            ],
-                            Expanded(
-                              child: Text(
-                                selectedOption.label,
-                                style: v.textStyle.copyWith(color: v.textColor),
-                                overflow: .ellipsis,
-                              ),
-                            ),
-                          ],
-                        )
-                      : Text(
-                          widget.placeholder ?? 'Select option...',
-                          style: v.textStyle.copyWith(
-                            color: v.placeholderColor,
-                          ),
-                          overflow: .ellipsis,
-                        ),
-                ),
+      onKeyEvent: _handleKeyEvent,
+      enabled: widget.enabled,
+      onTap: _toggleDropdown,
+      builder: (BuildContext context, JustInteractionState state) {
+        Widget inner = Container(
+          height: v.height,
+          padding: .symmetric(horizontal: spacing.md),
+          decoration: triggerDecoration,
+          child: Row(
+            children: <Widget>[
+              if (widget.prefixIcon != null) ...<Widget>[
+                widget.prefixIcon!,
                 SizedBox(width: spacing.sm),
-                // Chevron Icon
-                AnimatedRotation(
-                  turns: _overlayController.isShowing ? 0.5 : 0.0,
-                  duration: presetTokens.dropdownOpenDuration,
-                  curve: presetTokens.dropdownOpenCurve,
-                  child: Icon(
-                    Icons.expand_more,
-                    size: widget.size == .sm ? 16 : 20,
-                    color: hasError
-                        ? colors.error
-                        : (widget.enabled
-                              ? v.textColor
-                              : v.textColor.withValues(alpha: 0.5)),
-                  ),
-                ),
               ],
+              Expanded(
+                child: selectedOption != null
+                    ? Row(
+                        children: <Widget>[
+                          if (selectedOption.icon != null) ...<Widget>[
+                            selectedOption.icon!,
+                            SizedBox(width: spacing.sm),
+                          ],
+                          Expanded(
+                            child: Text(
+                              selectedOption.label,
+                              style: v.textStyle.copyWith(color: v.textColor),
+                              overflow: .ellipsis,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Text(
+                        widget.placeholder ?? 'Select option...',
+                        style: v.textStyle.copyWith(color: v.placeholderColor),
+                        overflow: .ellipsis,
+                      ),
+              ),
+              SizedBox(width: spacing.sm),
+              // Chevron Icon
+              AnimatedRotation(
+                turns: _overlayController.isShowing ? 0.5 : 0.0,
+                duration: presetTokens.dropdownOpenDuration,
+                curve: presetTokens.dropdownOpenCurve,
+                child: Icon(
+                  Icons.expand_more,
+                  size: widget.size == .sm ? 16 : 20,
+                  color: hasError
+                      ? colors.error
+                      : (widget.enabled
+                            ? v.textColor
+                            : v.textColor.withValues(alpha: 0.5)),
+                ),
+              ),
+            ],
+          ),
+        );
+
+        if (presetTokens.showsDefaultBorder) {
+          inner = v.theme.buildPressEffect(
+            isPressed: state.isPressed,
+            child: Container(
+              decoration: BoxDecoration(
+                boxShadow: v.theme.resolveShadows(
+                  v.theme.shadows.md,
+                  isPressed: state.isPressed,
+                ),
+                borderRadius: .zero,
+              ),
+              child: inner,
             ),
           );
+        }
 
-          if (presetTokens.showsDefaultBorder) {
-            inner = v.theme.buildPressEffect(
-              isPressed: state.isPressed,
-              child: Container(
-                decoration: BoxDecoration(
-                  boxShadow: v.theme.resolveShadows(
-                    v.theme.shadows.md,
-                    isPressed: state.isPressed,
-                  ),
-                  borderRadius: .zero,
-                ),
-                child: inner,
-              ),
-            );
-          }
-
-          return FocusIndicator(
-            isFocused: state.isFocusVisible,
-            borderRadius: presetTokens.showsDefaultBorder
-                ? .zero
-                : v.borderRadius,
-            child: inner,
-          );
-        },
-      ),
+        return FocusIndicator(
+          isFocused: state.isFocusVisible,
+          borderRadius: presetTokens.showsDefaultBorder
+              ? .zero
+              : v.borderRadius,
+          child: inner,
+        );
+      },
     );
   }
 
