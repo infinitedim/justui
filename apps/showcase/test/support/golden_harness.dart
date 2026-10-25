@@ -28,6 +28,7 @@ Future<void> pumpScene(
   required JustThemePreset preset,
   required InkPaperMode mode,
   Size size = const Size(320, 160),
+  Map<String, Object> strings = const <String, Object>{},
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -39,7 +40,12 @@ Future<void> pumpScene(
         padding: const EdgeInsets.all(16),
         child: ViewHost(
           viewId: 0,
-          fallbackConfig: ViewConfig(scene: scene, preset: preset, mode: mode),
+          fallbackConfig: ViewConfig(
+            scene: scene,
+            preset: preset,
+            mode: mode,
+            strings: strings,
+          ),
         ),
       ),
     ),

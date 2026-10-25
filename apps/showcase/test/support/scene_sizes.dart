@@ -13,9 +13,13 @@ const Map<String, Size> sceneSizes = <String, Size>{
   'radio-group': Size(320, 160),
   'switch': Size(320, 160),
   'slider': Size(320, 160),
+  'date-picker': Size(372, 400),
+  'date-range-picker': Size(372, 400),
   // Navigation
   'breadcrumb': Size(320, 96),
   // Display
+  'accordion': Size(272, 170),
+  'carousel': Size(280, 168),
   'avatar': Size(240, 96),
   'avatar-group': Size(200, 96),
   'badge': Size(200, 80),
