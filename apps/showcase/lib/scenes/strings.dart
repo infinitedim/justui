@@ -60,6 +60,8 @@ class const KitStrings({
     'tabsLabel': 'Settings sections',
     'daysLabel': 'Days in October',
     'slidesLabel': 'Slides',
+    'weekdays': <String>['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    'dayLabel': '{month} {day}, {year}',
   };
 
   /// The text for [key]: the page value, else the EN default, else [key].
