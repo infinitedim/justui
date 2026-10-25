@@ -203,8 +203,8 @@ as text: `Cmd`, `Ctrl`, `Shift`.
     added on enter and removed after they leave.
   - The host box is locked to the part's box (no layout shift). The swap
     is a 150ms opacity crossfade, instant under reduced motion.
-  - Every Flutter view has one fixed size (320 x 344), centered in the
-    host box and clipped to it: Flutter 3.47 rasterizes all views through
+  - Every Flutter view has one fixed size (320 x 344), centered
+    vertically in the host box, pinned to its left edge and clipped to it: Flutter 3.47 rasterizes all views through
     one shared surface and cuts off a view larger than another
     (flutter/flutter#194401, not in stable yet). Scenes stay within
     280 x 328 and within their components-page stage

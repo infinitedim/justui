@@ -32,13 +32,16 @@ function kitStrings(dict: KitDictionary): Record<string, string | string[]> {
  * under reduced motion) and drops back to the fallback while the theme
  * switch runs.
  *
- * Every Flutter view has the same fixed size, centered on the box and
- * clipped to it. The engine (3.47) rasterizes all views through one shared
- * surface and can resize it for another view before this one renders
+ * Every Flutter view has the same fixed size, centered vertically on the
+ * box, pinned to its left edge and clipped to it. The engine (3.47)
+ * rasterizes all views through one shared surface and can resize it for
+ * another view before this one renders
  * (fixed upstream in flutter/flutter#194401, not yet in stable), which cuts
  * off any view larger than another. Equal sizes make that harmless. Scenes
- * stay within 280 x 328 (`apps/showcase/test/scenes/stage_heights_test.dart`). Flutter sets `touch-action: none` on its view, which traps
- * page scrolling on touch screens; `pan-y` gives vertical pans back to the
+ * stay within 280 x 328 (`apps/showcase/test/scenes/stage_heights_test.dart`).
+ *
+ * Flutter sets `touch-action: none` on its view, which traps page
+ * scrolling on touch screens; `pan-y` gives vertical pans back to the
  * page while taps and horizontal drags still reach Flutter.
  */
 export function LivePart({
