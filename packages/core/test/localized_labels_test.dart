@@ -1,13 +1,15 @@
 import 'dart:ui' show Tristate;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart' show SemanticsData, SemanticsNode;
+import 'package:flutter/semantics.dart'
+    show SemanticsAction, SemanticsData, SemanticsNode;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/accordion/just_accordion.dart';
 import 'package:just_ui_core/src/components/carousel/just_carousel.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_picker.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_picker_variants.dart';
+import 'package:just_ui_core/src/components/switch/just_switch.dart';
 
 /// Screen reader labels that used to be English-only can be translated;
 /// the defaults keep the old English text.
@@ -123,6 +125,33 @@ void main() {
       ),
       isNotEmpty,
     );
+    handle.dispose();
+  });
+
+  testWidgets('a labelled switch is one named, toggled control', (
+    WidgetTester tester,
+  ) async {
+    final SemanticsHandle handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      app(
+        JustSwitch(value: true, onChanged: (_) {}, label: const Text('Wi-Fi')),
+      ),
+    );
+    final List<SemanticsData> nodes = <SemanticsData>[];
+    bool visit(SemanticsNode node) {
+      nodes.add(node.getSemanticsData());
+      node.visitChildren(visit);
+      return true;
+    }
+
+    visit(tester.getSemantics(find.byType(JustSwitch)));
+    final Iterable<SemanticsData> tappable = nodes.where(
+      (SemanticsData d) => d.hasAction(SemanticsAction.tap),
+    );
+    expect(tappable, hasLength(1));
+    expect(tappable.single.label, 'Wi-Fi');
+    expect(tappable.single.flagsCollection.isToggled, Tristate.isTrue);
+    expect(nodes.map((SemanticsData d) => d.label), isNot(contains('Switch')));
     handle.dispose();
   });
 }
