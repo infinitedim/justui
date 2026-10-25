@@ -51,8 +51,22 @@ install_sdk() {
   "${FLUTTER_BIN}" --version
 }
 
+# Vercel picks its own Bun ("Bun >=1.2" for bun.lock) and Corepack does not
+# cover Bun, so the deploy fails unless it runs the packageManager pin.
+check_bun() {
+  local want have
+  want="$(bun -e 'const p = await Bun.file("package.json").json(); console.log(String(p.packageManager ?? "").replace(/^bun@/, ""))')"
+  have="$(bun --version)"
+  log "Bun ${have} (packageManager: bun@${want})"
+  if [ -z "${want}" ] || [ "${have}" != "${want}" ]; then
+    log "Bun ${have} does not match packageManager bun@${want}"
+    exit 1
+  fi
+}
+
 main() {
   cd "${DOCS_DIR}"
+  check_bun
   local version url sha key
   local release
   release="$(bun scripts/flutter-release.ts)"
