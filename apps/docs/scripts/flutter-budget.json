@@ -1,9 +1,9 @@
 {
-  "note": "Brotli KB. Measured in the 2026-10-24 spike (button scene only) plus about 10%. Raising a value needs owner approval (docs-web.md).",
-  "startupKb": 2125,
+  "note": "Brotli KB. Measured with the 27 live scenes on 2026-10-25 (main.dart.wasm 553.7, startup 2071.7) plus about 10%. Raising a value needs owner approval (docs-web.md).",
+  "startupKb": 2280,
   "filesKb": {
     "canvaskit/skwasm.wasm": 1300,
-    "main.dart.wasm": 460,
+    "main.dart.wasm": 610,
     "canvaskit/skwasm_heavy.wasm": 2000
   }
 }
