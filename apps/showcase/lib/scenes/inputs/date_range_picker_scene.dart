@@ -13,7 +13,10 @@ Widget dateRangePickerScene(BuildContext context, SceneContext scene) {
   return Semantics(
     container: true,
     label: scene.strings.text('daysLabel'),
-    child: _RangePicker(scene: scene),
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: demoCalendarWidth),
+      child: _RangePicker(scene: scene),
+    ),
   );
 }
 

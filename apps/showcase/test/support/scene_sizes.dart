@@ -12,7 +12,6 @@ const Map<String, Size> sceneSizes = <String, Size>{
   'radio': Size(320, 160),
   'radio-group': Size(320, 160),
   'switch': Size(320, 160),
-  'slider': Size(320, 160),
   'date-picker': Size(372, 400),
   'date-range-picker': Size(372, 400),
   // Navigation
@@ -29,5 +28,4 @@ const Map<String, Size> sceneSizes = <String, Size>{
   'table': Size(320, 160),
   // Layout
   'separator': Size(240, 80),
-  'resizable': Size(260, 110),
 };

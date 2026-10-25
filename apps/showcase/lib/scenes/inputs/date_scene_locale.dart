@@ -14,6 +14,11 @@ import '../scene.dart';
 /// day. A past October keeps them stable.
 const int _demoYear = 2025;
 
+/// Widest the calendars grow: core's grid scales with its width, and the
+/// docs give each live part a stage of fixed height
+/// (`apps/docs/src/components/organisms/parts-index/stage-heights.ts`).
+const double demoCalendarWidth = 280;
+
 /// Day [day] of the demo month (October).
 DateTime demoDay(int day) => DateTime(_demoYear, 10, day);
 

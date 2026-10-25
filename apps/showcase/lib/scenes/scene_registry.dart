@@ -43,6 +43,11 @@ const Set<String> reactOnlyScenes = <String>{
   'bottom-nav',
   'sidebar',
   'tabs',
+  // Flutter web (3.47) names a slider on its wrapper, not on the range
+  // input that takes focus, so the input has no accessible name (axe
+  // `label`); the resizable splitter is a slider too.
+  'slider',
+  'resizable',
   // Core shows its bar only while content overflows, and then the area is
   // a Tab stop with no visible focus.
   'scroll-area',

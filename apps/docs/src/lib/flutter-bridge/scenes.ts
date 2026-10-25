@@ -19,10 +19,8 @@ export const FLUTTER_SCENES = [
   'progress',
   'radio',
   'radio-group',
-  'resizable',
   'separator',
   'skeleton',
-  'slider',
   'switch',
   'table',
 ] as const;

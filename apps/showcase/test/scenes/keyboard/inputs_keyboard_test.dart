@@ -16,7 +16,6 @@ const List<String> _scenes = <String>[
   'radio',
   'radio-group',
   'switch',
-  'slider',
   'date-picker',
   'date-range-picker',
 ];
@@ -54,13 +53,6 @@ void _controlTests() {
       find.byType(JustRadioGroup<int>),
     );
     expect(group.value, 1);
-  });
-
-  testWidgets('slider moves with the arrow keys', (WidgetTester tester) async {
-    await pumpDefault(tester, 'slider');
-    await press(tester, LogicalKeyboardKey.tab);
-    await press(tester, LogicalKeyboardKey.arrowRight);
-    expect(find.text('65%'), findsOneWidget);
   });
 
   testWidgets('input shows the rule message for an invalid name', (
