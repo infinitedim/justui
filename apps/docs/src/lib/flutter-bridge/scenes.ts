@@ -3,7 +3,25 @@
  * `test/flutter-scenes.test.ts` keeps this list equal to the Dart registry;
  * every other part stays React.
  */
-export const FLUTTER_SCENES = ['button'] as const;
+export const FLUTTER_SCENES = [
+  'avatar',
+  'avatar-group',
+  'badge',
+  'breadcrumb',
+  'button',
+  'card',
+  'icon-button',
+  'input',
+  'progress',
+  'radio',
+  'radio-group',
+  'resizable',
+  'separator',
+  'skeleton',
+  'slider',
+  'switch',
+  'table',
+] as const;
 
 export type FlutterScene = (typeof FLUTTER_SCENES)[number];
 

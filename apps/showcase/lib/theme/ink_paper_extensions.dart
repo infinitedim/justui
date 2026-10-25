@@ -28,7 +28,14 @@ import 'package:just_ui_core/src/components/toast/just_toast_theme.dart';
 import 'package:just_ui_core/src/components/toggle/just_toggle_theme.dart';
 import 'package:just_ui_core/src/components/tooltip/just_tooltip_theme.dart';
 
-import 'extensions/button_ink_paper.dart';
+import 'package:just_ui_core/src/components/button/just_button_theme.dart';
+
+import 'extensions/actions_overrides.dart';
+import 'extensions/display_overrides.dart';
+import 'extensions/inputs_overrides.dart';
+import 'extensions/layout_overrides.dart';
+import 'extensions/navigation_overrides.dart';
+import 'extensions/overlays_overrides.dart';
 import 'ink_paper_tokens.dart';
 
 /// Every component theme extension for one preset and mode.
@@ -42,33 +49,53 @@ List<ThemeExtension<dynamic>> inkPaperExtensions(
   JustThemePreset preset,
   InkPaperRoles roles,
 ) {
-  return <ThemeExtension<dynamic>>[
-    buttonInkPaper(preset, roles),
-    JustInputTheme.defaults,
-    JustCheckboxTheme.defaults,
-    JustRadioTheme.defaults,
-    JustSwitchTheme.defaults,
-    JustCardTheme.defaults,
-    JustSeparatorTheme.defaults,
-    JustScrollAreaTheme.defaults,
-    JustResizableTheme.defaults,
-    JustCarouselTheme.defaults,
-    JustSkeletonTheme.defaults,
-    JustSliderTheme.defaults,
-    JustBreadcrumbTheme.defaults,
-    JustTabsTheme.defaults,
-    JustBottomNavTheme.defaults,
-    JustTooltipTheme.defaults,
-    JustSidebarTheme.defaults,
-    JustToastTheme.defaults,
-    JustDialogTheme.defaults,
-    JustSheetTheme.defaults,
-    JustSelectTheme.defaults,
-    JustProgressTheme.defaults,
-    JustAccordionTheme.defaults,
-    JustToggleTheme.defaults,
-    JustTableTheme.defaults,
-    JustDatePickerTheme.defaults,
-    JustTimePickerTheme.defaults,
-  ];
+  final Map<Object, ThemeExtension<dynamic>> overrides =
+      <Object, ThemeExtension<dynamic>>{};
+  for (final List<ThemeExtension<dynamic>> group
+      in <List<ThemeExtension<dynamic>>>[
+        actionsOverrides(preset, roles),
+        inputsOverrides(preset, roles),
+        navigationOverrides(preset, roles),
+        overlaysOverrides(preset, roles),
+        displayOverrides(preset, roles),
+        layoutOverrides(preset, roles),
+      ]) {
+    for (final ThemeExtension<dynamic> e in group) {
+      overrides[e.type] = e;
+    }
+  }
+  return _coreDefaults
+      .map((ThemeExtension<dynamic> e) => overrides[e.type] ?? e)
+      .toList();
 }
+
+/// What the CLI registers at `// CLI:REGISTER_EXTENSIONS`.
+const List<ThemeExtension<dynamic>> _coreDefaults = <ThemeExtension<dynamic>>[
+  JustButtonTheme.defaults,
+  JustInputTheme.defaults,
+  JustCheckboxTheme.defaults,
+  JustRadioTheme.defaults,
+  JustSwitchTheme.defaults,
+  JustCardTheme.defaults,
+  JustSeparatorTheme.defaults,
+  JustScrollAreaTheme.defaults,
+  JustResizableTheme.defaults,
+  JustCarouselTheme.defaults,
+  JustSkeletonTheme.defaults,
+  JustSliderTheme.defaults,
+  JustBreadcrumbTheme.defaults,
+  JustTabsTheme.defaults,
+  JustBottomNavTheme.defaults,
+  JustTooltipTheme.defaults,
+  JustSidebarTheme.defaults,
+  JustToastTheme.defaults,
+  JustDialogTheme.defaults,
+  JustSheetTheme.defaults,
+  JustSelectTheme.defaults,
+  JustProgressTheme.defaults,
+  JustAccordionTheme.defaults,
+  JustToggleTheme.defaults,
+  JustTableTheme.defaults,
+  JustDatePickerTheme.defaults,
+  JustTimePickerTheme.defaults,
+];

@@ -67,7 +67,7 @@ do the visual check in `design.md`.
   (`orchestration.md`, Commits).
 - Conventional Commits: `type(scope): subject`, imperative, lowercase subject,
   no trailing period. Types: feat, fix, refactor, perf, test, docs, style,
-  chore, ci, build. Scopes: core, tokens, cli, docs, preview, showcase,
+  chore, ci, build. Scopes: core, tokens, cli, docs, showcase,
   sandbox, registry, tools, ci, rules.
 - One logical change per commit. Do not mix refactors with behavior changes.
 - Never push. Never force-push. Never amend or rebase commits that already

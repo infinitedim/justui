@@ -5,6 +5,8 @@ import 'package:showcase/bridge/view_config.dart';
 import 'package:showcase/bridge/view_host.dart';
 import 'package:showcase/theme/ink_paper_theme.dart';
 
+import 'scene_sizes.dart';
+
 /// The four preset and mode combinations every scene is locked in.
 const List<(JustThemePreset, InkPaperMode)> goldenCombos =
     <(JustThemePreset, InkPaperMode)>[
@@ -44,3 +46,13 @@ Future<void> pumpScene(
   );
   await tester.pumpAndSettle();
 }
+
+/// Pumps [scene] in the default preset, light mode, at its locked size
+/// (keyboard and behavior tests).
+Future<void> pumpDefault(WidgetTester tester, String scene) => pumpScene(
+  tester,
+  scene: scene,
+  preset: .default_,
+  mode: .light,
+  size: sceneSizes[scene]!,
+);
