@@ -1,4 +1,4 @@
-// justui-meta: registry=307459c19acd24b7b39c5b766237f6510ba6098b79877c16731173118db23a41 local=d138703adcf9725824298dc03d7b90c9801972112792b2f272bca877f47ff60d
+// justui-meta: registry=9b37253c3a176078784844464e3eb44ff0ea2e597e4c3209be451ab98b98c1c6 local=77383790d5b4ff97ac5191ae467e8560604fd7cdf1674e57c7fc1d3a38d415cc
 import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/widgets.dart';
 
@@ -499,10 +499,11 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       children: <Widget>[headerButton, contentArea],
     );
 
+    // The title inside the header names the panel; the expanded flag lets
+    // each screen reader announce the state in the user's language.
     final Semantics semanticItemWidget = Semantics(
       container: true,
-      label: 'Accordion Panel: ${widget.item.title}',
-      value: widget.isExpanded ? 'Expanded' : 'Collapsed',
+      expanded: widget.isExpanded,
       enabled: widget.item.enabled,
       child: itemWidget,
     );

@@ -896,7 +896,7 @@
           {
             "name": "just_sidebar.dart",
             "path": "components/sidebar/default/just_sidebar.dart",
-            "checksum": "sha256:783aaa6a687811bf160772cc9540579e8ac02b7e28b2fdc216f0464069cb6a13"
+            "checksum": "sha256:38eebb99570893d2638d6e659f05f40f9be67ebb2eb8af6c922c0eb5dd8d3755"
           }
         ]
       },
@@ -1175,7 +1175,7 @@
           {
             "name": "just_accordion.dart",
             "path": "components/accordion/default/just_accordion.dart",
-            "checksum": "sha256:307459c19acd24b7b39c5b766237f6510ba6098b79877c16731173118db23a41"
+            "checksum": "sha256:9b37253c3a176078784844464e3eb44ff0ea2e597e4c3209be451ab98b98c1c6"
           }
         ]
       },

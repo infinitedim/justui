@@ -474,10 +474,11 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       children: <Widget>[headerButton, contentArea],
     );
 
+    // The title inside the header names the panel; the expanded flag lets
+    // each screen reader announce the state in the user's language.
     final Semantics semanticItemWidget = Semantics(
       container: true,
-      label: 'Accordion Panel: ${widget.item.title}',
-      value: widget.isExpanded ? 'Expanded' : 'Collapsed',
+      expanded: widget.isExpanded,
       enabled: widget.item.enabled,
       child: itemWidget,
     );
