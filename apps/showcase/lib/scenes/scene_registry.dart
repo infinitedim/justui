@@ -33,4 +33,24 @@ const Set<String> reactOnlyScenes = <String>{
   'sheet',
   'toast',
   'tooltip',
+  // Neobrutalism draws an ink shadow under the selected ink fill (Ink and
+  // Paper Rule A: no shadow there), and the styles have no hook to drop it.
+  'checkbox',
+  'toggle',
+  // Off-center spinner values are drawn at 40% opacity (2.1:1 contrast) in
+  // a shadowed card inside the picker card.
+  'time-picker',
+  // No visible focus on their items (WCAG 2.4.7); tabs also add an
+  // unlabelled stop. Neobrutalism borders stay grey or rounded.
+  'bottom-nav',
+  'sidebar',
+  'tabs',
+  // Screen readers hear core's English-only labels ("Day 20, ...",
+  // "Slide 1") on every locale.
+  'carousel',
+  'date-picker',
+  'date-range-picker',
+  // Core shows its bar only while content overflows, and then the area is
+  // a Tab stop with no visible focus.
+  'scroll-area',
 };

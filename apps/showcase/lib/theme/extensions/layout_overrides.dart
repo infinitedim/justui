@@ -3,7 +3,6 @@ import 'package:just_ui_core/just_ui_core.dart';
 
 import '../ink_paper_tokens.dart';
 import 'resizable_ink_paper.dart';
-import 'scroll_area_ink_paper.dart';
 import 'separator_ink_paper.dart';
 
 /// Ink and Paper theme overrides for the v3 "Layout" group. Each entry replaces
@@ -13,6 +12,5 @@ List<ThemeExtension<dynamic>> layoutOverrides(
   InkPaperRoles roles,
 ) => <ThemeExtension<dynamic>>[
   separatorInkPaper(preset, roles),
-  scrollAreaInkPaper(preset, roles),
   resizableInkPaper(preset, roles),
 ];

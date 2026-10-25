@@ -1,28 +1,19 @@
 // ignore_for_file: implementation_imports
-import 'package:flutter/material.dart' show DateTimeRange, TimeOfDay;
 import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:just_ui_core/src/components/checkbox/just_checkbox.dart';
-import 'package:just_ui_core/src/components/date_picker/just_date_picker.dart';
-import 'package:just_ui_core/src/components/date_picker/just_date_range_picker.dart';
 import 'package:just_ui_core/src/components/radio/just_radio_group.dart';
 import 'package:just_ui_core/src/components/switch/just_switch.dart';
-import 'package:just_ui_core/src/components/time_picker/just_time_picker.dart';
 
 import '../../support/golden_harness.dart';
 import '../../support/keyboard.dart';
 
 const List<String> _scenes = <String>[
   'input',
-  'checkbox',
   'radio',
   'radio-group',
   'switch',
   'slider',
-  'date-picker',
-  'date-range-picker',
-  'time-picker',
 ];
 
 void _traversalTests() {
@@ -43,13 +34,6 @@ void _traversalTests() {
 
 // One scene per test: ViewHost reads its config once, in initState.
 void _controlTests() {
-  testWidgets('checkbox toggles with Space', (WidgetTester tester) async {
-    await pumpDefault(tester, 'checkbox');
-    await tabTo(tester, nodeOf(tester, find.text('Remember this device')));
-    await press(tester, LogicalKeyboardKey.space);
-    expect(tester.widget<JustCheckbox>(find.byType(JustCheckbox)).value, false);
-  });
-
   testWidgets('switch toggles with Space', (WidgetTester tester) async {
     await pumpDefault(tester, 'switch');
     await tabTo(tester, nodeOf(tester, find.text('Wi-Fi')));
@@ -90,58 +74,9 @@ void _controlTests() {
   });
 }
 
-void _pickerTests() {
-  testWidgets('date picker picks a day with Enter', (
-    WidgetTester tester,
-  ) async {
-    await pumpDefault(tester, 'date-picker');
-    await tabTo(tester, nodeOf(tester, find.text('20')));
-    await press(tester, LogicalKeyboardKey.enter);
-    final JustDatePicker picker = tester.widget<JustDatePicker>(
-      find.byType(JustDatePicker),
-    );
-    expect(picker.value?.day, 20);
-  });
-
-  testWidgets('date range picker picks two ends with Enter', (
-    WidgetTester tester,
-  ) async {
-    await pumpDefault(tester, 'date-range-picker');
-    await tabTo(tester, nodeOf(tester, find.text('20')));
-    await press(tester, LogicalKeyboardKey.enter);
-    await tabTo(tester, nodeOf(tester, find.text('22')));
-    await press(tester, LogicalKeyboardKey.enter);
-    final DateTimeRange? range = tester
-        .widget<JustDateRangePicker>(find.byType(JustDateRangePicker))
-        .value;
-    expect(<int?>[range?.start.day, range?.end.day], <int>[20, 22]);
-  });
-
-  testWidgets('time picker spinner steps the hour with Arrow Down', (
-    WidgetTester tester,
-  ) async {
-    await pumpDefault(tester, 'time-picker');
-    final Focus spinnerFocus = tester.widget<Focus>(
-      find
-          .descendant(
-            of: find.byType(TimePickerSpinner),
-            matching: find.byType(Focus),
-          )
-          .first,
-    );
-    await tabTo(tester, spinnerFocus.focusNode!);
-    await press(tester, LogicalKeyboardKey.arrowDown);
-    final TimeOfDay? time = tester
-        .widget<JustTimePicker>(find.byType(JustTimePicker))
-        .value;
-    expect(time, const TimeOfDay(hour: 10, minute: 41));
-  });
-}
-
 /// AC12 for the Inputs scenes: Tab in, through and out, and each control
 /// works from the keyboard.
 void main() {
   _traversalTests();
   _controlTests();
-  _pickerTests();
 }
