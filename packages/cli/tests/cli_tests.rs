@@ -334,8 +334,21 @@ mod cli_integration {
     use tempfile::TempDir;
 
     fn justui() -> Command {
+        static NEXT_CONFIG_DIR: std::sync::atomic::AtomicUsize =
+            std::sync::atomic::AtomicUsize::new(0);
+
         let mut cmd = Command::cargo_bin("justui").unwrap();
         cmd.env("JUSTUI_TRUST_REGISTRY", "1");
+        // The trust store writes to the user config dir; keep it inside the
+        // target dir so tests never touch (or need write access to) the real one.
+        // Each run gets its own dir: parallel runs replacing the same store
+        // file fail on Windows, which denies renaming over an open file.
+        let id = NEXT_CONFIG_DIR.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        cmd.env(
+            "JUSTUI_CONFIG_DIR",
+            std::path::Path::new(env!("CARGO_TARGET_TMPDIR"))
+                .join(format!("justui-config-{}-{id}", std::process::id())),
+        );
         cmd
     }
 
@@ -1949,9 +1962,13 @@ mod cli_integration {
         )
         .unwrap();
 
+        // Keep the trust store this test writes out of the real user config dir.
+        let config_dir = dir.path().join("config");
+
         // 1. Without --trust-registry and without env var, non-interactive add fails with code 2
         let mut cmd = Command::cargo_bin("justui").unwrap();
         cmd.current_dir(dir.path())
+            .env("JUSTUI_CONFIG_DIR", &config_dir)
             .env_remove("JUSTUI_TRUST_REGISTRY")
             .args(["add", "button"])
             .assert()
@@ -1965,10 +1982,15 @@ mod cli_integration {
         let mut trusted_cmd = Command::cargo_bin("justui").unwrap();
         trusted_cmd
             .current_dir(dir.path())
+            .env("JUSTUI_CONFIG_DIR", &config_dir)
             .env_remove("JUSTUI_TRUST_REGISTRY")
             .args(["--trust-registry", "add", "button"])
             .assert()
             .failure() // Fails later because index.json doesn't exist, but NOT with code 2 / untrusted!
             .code(1);
+        assert!(
+            config_dir.join("trusted_registries.json").exists(),
+            "--trust-registry must persist trust in the isolated config dir"
+        );
     }
 }

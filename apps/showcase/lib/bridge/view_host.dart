@@ -1,3 +1,6 @@
+import 'dart:async' show scheduleMicrotask;
+import 'dart:ui' show ViewFocusDirection, ViewFocusEvent, ViewFocusState;
+
 import 'package:flutter/material.dart'
     show Material, MaterialApp, MaterialType, ThemeMode;
 import 'package:flutter/scheduler.dart' show SchedulerBinding;
@@ -32,12 +35,13 @@ class const ViewHost({
   State<ViewHost> createState() => _ViewHostState();
 }
 
-class _ViewHostState extends State<ViewHost> {
+class _ViewHostState extends State<ViewHost> with WidgetsBindingObserver {
   ViewConfig? _config;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _config =
         ViewConfig.parse(bridgePlatform.initialConfig(widget.viewId)) ??
         widget.fallbackConfig;
@@ -48,6 +52,48 @@ class _ViewHostState extends State<ViewHost> {
         bridgePlatform.announce(widget.viewId, _update);
       }
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// Tab from the page into this view must land on its first control
+  /// (Shift+Tab on its last).
+  ///
+  /// The framework's `View` focuses the first traversal node of the view,
+  /// which is the route's focus scope. Each view's route takes the startup
+  /// autofocus in turn, so only the last view mounted remembers a focused
+  /// child there; in every other view the scope itself takes focus and the
+  /// DOM focus stays on the empty flutter-view element. This runs after the
+  /// framework's handler and moves on to the control.
+  @override
+  void didChangeViewFocus(ViewFocusEvent event) {
+    if (event.viewId != widget.viewId ||
+        event.state != ViewFocusState.focused) {
+      return;
+    }
+    scheduleMicrotask(() => _focusEdge(event.direction));
+  }
+
+  void _focusEdge(ViewFocusDirection direction) {
+    if (!mounted) return;
+    final FocusScopeNode view = FocusScope.of(context);
+    final FocusNode? primary = FocusManager.instance.primaryFocus;
+    final bool onControl =
+        primary != null &&
+        primary is! FocusScopeNode &&
+        primary.ancestors.contains(view);
+    if (onControl) return;
+    // Tree order is the scenes' Tab order: they use the default reading
+    // order and lay out their controls in it.
+    final List<FocusNode> controls = view.traversalDescendants
+        .where((FocusNode node) => node is! FocusScopeNode)
+        .toList();
+    if (controls.isEmpty) return;
+    (direction == .backward ? controls.last : controls.first).requestFocus();
   }
 
   Future<void> _update(Object? patch) {

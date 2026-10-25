@@ -1,5 +1,6 @@
 import { err, ok, type Result } from '@/lib/result';
 import { callMethod, loadEngine } from './engine';
+import { keepEmptyViewOutOfTabOrder } from './tab-stop';
 import {
   ViewConfigSchema,
   ViewPatchSchema,
@@ -53,7 +54,9 @@ export async function mountView(
   const app = engine.value;
   return new Promise((resolve) => {
     let viewId: number | null = null;
+    let unwatch = () => {};
     const remove = () => {
+      unwatch();
       if (viewId !== null) app.removeView(viewId);
       viewId = null;
     };
@@ -67,8 +70,10 @@ export async function mountView(
         config: parsed.data,
         onReady: (controller: unknown) => {
           window.clearTimeout(timer);
-          if (hasUpdate(controller)) resolve(ok(liveView(controller, remove)));
-          else {
+          if (hasUpdate(controller)) {
+            unwatch = keepEmptyViewOutOfTabOrder(host);
+            resolve(ok(liveView(controller, remove)));
+          } else {
             remove();
             resolve(err('the view sent no controller'));
           }

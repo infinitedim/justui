@@ -18,7 +18,6 @@ polyglot monorepo:
 | `packages/core`   | Flutter                                         | Theme engine and components (4-file convention)                        |
 | `packages/cli`    | Rust                                            | `justui` CLI: init, add, diff, update, preset, create, doctor, upgrade |
 | `apps/docs`       | Next.js 16, React 19, Fumadocs, Tailwind 4, Bun | Docs site and landing                                                  |
-| `apps/preview`    | Flutter + Widgetbook                            | Component workbench                                                    |
 | `apps/showcase`   | Flutter (Wasm)                                  | Bridge: renders core components on docs pages (multi-view embed)       |
 | `apps/sandbox`    | Flutter                                         | CLI sandbox; `lib/core`, `lib/tokens`, `lib/widgets` are generated     |
 | `registry/`       | JSON + Dart                                     | What the CLI downloads; generated from `packages/core`                 |
@@ -32,7 +31,7 @@ polyglot monorepo:
 | `.agents/rules/orchestration.md`         | Always                                                                          |
 | `.agents/rules/mcp.md`                   | Always                                                                          |
 | `.agents/rules/security-agent.md`        | Always                                                                          |
-| `.agents/rules/flutter.md`               | Files under `packages/{core,tokens}`, `apps/{preview,showcase,sandbox}`         |
+| `.agents/rules/flutter.md`               | Files under `packages/{core,tokens}`, `apps/{showcase,sandbox}`                 |
 | `.agents/rules/rust-cli.md`              | Files under `packages/cli`                                                      |
 | `.agents/rules/docs-web.md`              | Files under `apps/docs`                                                         |
 | `.agents/rules/design.md`                | Any UI, visual, copy or layout work                                             |

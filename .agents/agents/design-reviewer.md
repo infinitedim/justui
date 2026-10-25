@@ -25,7 +25,7 @@ when your brief says it is your turn.
   the widths it lists, and reduced motion ("Motion").
 - Docs site: Playwright as `mcp.md` describes (`browser_resize`,
   `browser_emulate_media`, `browser_snapshot`, console and network checks).
-  Flutter: `apps/preview` or `apps/showcase` with the dart-mcp tools, and
+  Flutter: `apps/showcase` (harness or goldens) with the dart-mcp tools, and
   `get_runtime_errors` must be clean. Stop every app you launched.
 - Measure instead of judging: contrast ratios, tap target sizes, focus order
   and visible focus, accessible names, token use instead of hard-coded

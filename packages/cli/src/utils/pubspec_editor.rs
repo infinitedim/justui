@@ -92,7 +92,7 @@ pub fn add_dependency(
         )
     })?;
 
-    if let Ok(doc) = serde_yaml::from_str::<serde_yaml::Value>(&content)
+    if let Ok(doc) = serde_saphyr::from_str::<serde_json::Value>(&content)
         && let Some(deps) = doc.get("dependencies")
         && deps.get(dependency_name).is_some()
     {
@@ -137,7 +137,7 @@ pub fn get_package_name(pubspec_path: &Path) -> Result<String> {
         )
     })?;
 
-    if let Ok(doc) = serde_yaml::from_str::<serde_yaml::Value>(&content)
+    if let Ok(doc) = serde_saphyr::from_str::<serde_json::Value>(&content)
         && let Some(name) = doc.get("name").and_then(|v| v.as_str())
     {
         return Ok(name.to_string());
@@ -184,13 +184,13 @@ pub fn supports_primary_constructors(pubspec_path: &Path) -> Result<bool> {
         Err(_) => return Ok(false),
     };
 
-    let doc: serde_yaml::Value = match serde_yaml::from_str(&content) {
+    let doc: serde_json::Value = match serde_saphyr::from_str(&content) {
         Ok(d) => d,
         Err(_) => return Ok(false),
     };
 
     let env = match doc.get("environment") {
-        Some(e) if e.is_mapping() => e,
+        Some(e) if e.is_object() => e,
         _ => return Ok(false),
     };
 
@@ -334,6 +334,25 @@ mod tests {
         let p11 = dir.path().join("p11.yaml");
         std::fs::write(&p11, "environment:\n  flutter: '>=3.47.0'\n").unwrap();
         assert!(supports_primary_constructors(&p11).unwrap());
+    }
+
+    #[test]
+    fn test_yaml_parsing_handles_real_world_pubspec_syntax() {
+        let dir = tempdir().unwrap();
+        let path = dir.path().join("pubspec.yaml");
+        let content = "# comment\n\
+            name: \"quoted_app\"\n\
+            1: numeric key\n\
+            versions: &v '>=3.13.0 <4.0.0'\n\
+            environment:\n  sdk: *v\n\
+            dependencies:\n  flutter: {sdk: flutter}\n  http: ^1.0.0\n";
+        std::fs::write(&path, content).unwrap();
+
+        assert_eq!(get_package_name(&path).unwrap(), "quoted_app");
+        assert!(supports_primary_constructors(&path).unwrap());
+        // Existing dependency is detected, so the file is left untouched.
+        add_dependency(&path, "http", "^1.0.0").unwrap();
+        assert_eq!(std::fs::read_to_string(&path).unwrap(), content);
     }
 
     #[test]

@@ -98,6 +98,13 @@ test.describe('Flutter bridge on the 404', () => {
     await expect(button).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(copy).toBeFocused();
+    // The next part (badge) has no control: its view is not a Tab stop.
+    await page.keyboard.press('Tab');
+    await expect(
+      page.getByRole('button', { name: 'Copy justui add badge' })
+    ).toBeFocused();
+    await page.keyboard.press('Shift+Tab');
+    await expect(copy).toBeFocused();
     await page.keyboard.press('Shift+Tab');
     await expect(button).toBeFocused();
     await page.keyboard.press('Shift+Tab');
@@ -153,8 +160,8 @@ test.describe('Flutter bridge on the 404', () => {
     expect(
       await page.evaluate(() => Reflect.get(window, '__liveShifts'))
     ).toEqual([]);
-    const duration = await page
-      .locator('[data-live-host]')
+    const duration = await livePart(page)
+      .part.locator('[data-live-host]')
       .evaluate((host) => getComputedStyle(host).transitionDuration);
     // The global reduced-motion rule sets 0.01ms: effectively instant.
     expect(parseFloat(duration)).toBeLessThan(0.001);
@@ -178,10 +185,14 @@ test.describe('Flutter bridge on touch screens', () => {
   }) => {
     await visitAs(page, 'default', 'light');
     await page.goto(PATH);
-    const part = page.locator('[data-live-part="button"]');
+    const { part } = livePart(page);
     await part.scrollIntoViewIfNeeded();
-    await flutterSettled(page);
-    const box = await page.locator('[data-live-host]').boundingBox();
+    // Parts far below the fold never load on this viewport, so wait for
+    // this one instead of every part (flutterSettled).
+    await expect(part).toHaveAttribute('data-state', 'live', {
+      timeout: 30_000,
+    });
+    const box = await part.locator('[data-live-host]').boundingBox();
     expect(box).not.toBeNull();
     if (!box) return;
     const before = await page.evaluate(() => window.scrollY);

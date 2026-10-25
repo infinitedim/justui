@@ -168,7 +168,7 @@ pub fn run(
     if !effective_dry_run {
         let pubspec_path = std::path::Path::new("pubspec.yaml");
         let content = std::fs::read_to_string(pubspec_path).unwrap_or_default();
-        let doc: Option<serde_yaml::Value> = serde_yaml::from_str(&content).ok();
+        let doc: Option<serde_json::Value> = serde_saphyr::from_str(&content).ok();
         let existing_deps = doc.as_ref().and_then(|d| d.get("dependencies"));
 
         for comp_name in &resolved_components {
