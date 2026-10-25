@@ -43,22 +43,25 @@ Set<String> wideParts() {
       .toSet();
 }
 
-/// Size of [scene]'s own widget when its view is [width] wide.
-Future<Size> measure(
-  WidgetTester tester,
-  String scene,
-  JustThemePreset preset,
-  double width,
-) async {
-  // The harness pads the view by 16 on each side; the scene sits in an
-  // Align, so it takes its own size up to the width it is given.
-  await pumpScene(
-    tester,
-    scene: scene,
-    preset: preset,
-    mode: InkPaperMode.light,
-    size: Size(width + 32, 900),
-  );
+/// The [lang] block of the docs `kitTranslations`, one `key: value,` per
+/// line (the same parse as `strings_drift_test.dart`).
+Map<String, Object> kitCopy(String lang) {
+  final String source = File('$_docs/lib/kit-translations.ts')
+      .readAsStringSync();
+  final int start = source.indexOf('  $lang: {');
+  final int end = lang == 'en' ? source.indexOf('  id: {') : source.length;
+  final RegExp entry = RegExp(r"^    (\w+): (\[.*\]|'.*'),$", multiLine: true);
+  final RegExp quoted = RegExp(r"'([^']*)'");
+  return <String, Object>{
+    for (final RegExpMatch m in entry.allMatches(source.substring(start, end)))
+      m[1]!: m[2]!.startsWith('[')
+          ? quoted.allMatches(m[2]!).map((RegExpMatch q) => q[1]!).toList()
+          : m[2]!.substring(1, m[2]!.length - 1),
+  };
+}
+
+/// Size of the scene's own widget in the view as it is now.
+Size sceneSize(WidgetTester tester) {
   final RenderBox align = tester.renderObject<RenderBox>(
     find
         .descendant(of: find.byType(Material), matching: find.byType(Align))
@@ -69,6 +72,27 @@ Future<Size> measure(
     size = (child as RenderBox).size;
   });
   return size;
+}
+
+/// Size of [scene]'s own widget when its view is [width] wide.
+Future<Size> measure(
+  WidgetTester tester,
+  String scene,
+  JustThemePreset preset,
+  double width, {
+  Map<String, Object> strings = const <String, Object>{},
+}) async {
+  // The harness pads the view by 16 on each side; the scene sits in an
+  // Align, so it takes its own size up to the width it is given.
+  await pumpScene(
+    tester,
+    scene: scene,
+    preset: preset,
+    mode: InkPaperMode.light,
+    size: Size(width + 32, 900),
+    strings: strings,
+  );
+  return sceneSize(tester);
 }
 
 /// Every live scene fits the stage the components page gives it, in both
@@ -97,6 +121,32 @@ void main() {
         expect(size.width, lessThanOrEqualTo(maxWidth));
         expect(size.height + 8, lessThanOrEqualTo(stage));
         expect(stage - 8, lessThanOrEqualTo(328), reason: 'view is 344 tall');
+      });
+    }
+  }
+
+  // Growth a visitor can trigger, with the copy each locale sends.
+  for (final String lang in <String>['en', 'id']) {
+    for (final JustThemePreset preset in JustThemePreset.values) {
+      testWidgets('input with its error fits ($lang, ${preset.name})', (
+        WidgetTester tester,
+      ) async {
+        await measure(tester, 'input', preset, 320, strings: kitCopy(lang));
+        await tester.enterText(find.byType(EditableText), 'Just UI');
+        await tester.pumpAndSettle();
+        final double stage = heights['input'] ?? fallback;
+        expect(sceneSize(tester).height + 8, lessThanOrEqualTo(stage));
+      });
+
+      testWidgets('open accordion fits ($lang, ${preset.name})', (
+        WidgetTester tester,
+      ) async {
+        final Map<String, Object> copy = kitCopy(lang);
+        await measure(tester, 'accordion', preset, 320, strings: copy);
+        await tester.tap(find.text(copy['accordionQuestion']! as String));
+        await tester.pumpAndSettle();
+        final double stage = heights['accordion'] ?? fallback;
+        expect(sceneSize(tester).height + 8, lessThanOrEqualTo(stage));
       });
     }
   }
