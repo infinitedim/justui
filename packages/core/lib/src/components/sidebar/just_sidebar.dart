@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 
@@ -525,9 +525,7 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
     final Widget chevronIcon = RotationTransition(
       turns: _expandAnimation.drive(Tween<double>(begin: 0.0, end: 0.25)),
       child: Icon(
-        isRtl
-            ? const IconData(0xEA60, fontFamily: 'MaterialIcons')
-            : const IconData(0xEA61, fontFamily: 'MaterialIcons'),
+        isRtl ? Icons.chevron_left : Icons.chevron_right,
         size: 16.0,
         color: widget.inactiveColor,
       ),

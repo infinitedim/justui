@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/services.dart'
     show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
@@ -463,7 +463,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                   duration: presetTokens.dropdownOpenDuration,
                   curve: presetTokens.dropdownOpenCurve,
                   child: Icon(
-                    const IconData(0xe150, fontFamily: 'MaterialIcons'),
+                    Icons.expand_more,
                     size: widget.size == .sm ? 16 : 20,
                     color: hasError
                         ? colors.error
@@ -709,11 +709,7 @@ class const _SelectSearchField({
           padding: .symmetric(horizontal: spacing.sm),
           child: Row(
             children: <Widget>[
-              Icon(
-                const IconData(0xe554, fontFamily: 'MaterialIcons'),
-                size: 16,
-                color: colors.textSecondary,
-              ),
+              Icon(Icons.search, size: 16, color: colors.textSecondary),
               SizedBox(width: spacing.xs),
               Expanded(
                 child: EditableText(
@@ -808,11 +804,7 @@ class const _SelectOptionTile<T>({
               ),
               if (isSelected && !presetTokens.showsDefaultBorder) ...<Widget>[
                 SizedBox(width: spacing.sm),
-                Icon(
-                  const IconData(0xe156, fontFamily: 'MaterialIcons'),
-                  size: 16,
-                  color: optionText,
-                ),
+                Icon(Icons.check, size: 16, color: optionText),
               ],
             ],
           ),
