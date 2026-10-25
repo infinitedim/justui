@@ -25,4 +25,11 @@ void main() {
     expect(slugs.containsAll(reactOnlyScenes), isTrue);
     expect(sceneRegistry.keys.toSet().intersection(reactOnlyScenes), isEmpty);
   });
+
+  test('live and React-only scenes cover every public part', () {
+    expect(<String>{
+      ...sceneRegistry.keys,
+      ...reactOnlyScenes,
+    }, registrySlugs());
+  });
 }

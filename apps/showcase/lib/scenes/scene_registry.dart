@@ -18,8 +18,19 @@ final Map<String, SceneBuilder> sceneRegistry = <String, SceneBuilder>{
   ...layoutScenes,
 };
 
-/// Parts that stay React on the docs pages for now (they need a core change
-/// or are not ported yet). Together with [sceneRegistry] they must cover all
-/// 33 public parts once every group lands; `test/scenes/scene_registry_test.dart`
-/// checks the slugs.
-const Set<String> reactOnlyScenes = <String>{};
+/// Parts that stay React on the docs pages because they need a core change
+/// first. Together with [sceneRegistry] they cover all 33 public parts
+/// (`test/scenes/scene_registry_test.dart`).
+const Set<String> reactOnlyScenes = <String>{
+  // Core draws the chevron with codepoint 0xe5c5, which is `smart_toy` in
+  // Flutter's Material icon font.
+  'accordion',
+  // Same for its chevron: 0xe150 is `change_circle`.
+  'select',
+  // Core paints these surfaces only in private widgets inside an overlay
+  // entry or portal, so they cannot render inline in a view yet.
+  'dialog',
+  'sheet',
+  'toast',
+  'tooltip',
+};
