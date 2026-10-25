@@ -4,12 +4,16 @@
  * every other part stays React.
  */
 export const FLUTTER_SCENES = [
+  'accordion',
   'avatar',
   'avatar-group',
   'badge',
   'breadcrumb',
   'button',
   'card',
+  'carousel',
+  'date-picker',
+  'date-range-picker',
   'icon-button',
   'input',
   'progress',
