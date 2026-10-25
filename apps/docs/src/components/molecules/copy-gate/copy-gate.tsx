@@ -24,23 +24,25 @@ export function CopyGate({
   return (
     <div className={cn('flex items-start gap-2', className)}>
       <GateLines />
+      {/* The visible code and name lead the accessible name (WCAG 2.5.3,
+          label in name); the hidden hint says what the button does. */}
       <button
         type="button"
-        aria-label={label}
         onClick={() => void copy()}
         className="text-ip-text-primary hover:bg-ip-hover mt-[3px] flex h-[26px] cursor-pointer items-center gap-1.5 rounded-[6px] px-2 text-xs font-bold whitespace-nowrap transition-colors duration-150"
       >
-        <span>{code}</span>
-        <code className="font-sans font-medium">{name}</code>
+        <span>{code}</span>{' '}
+        <code className="font-sans font-medium">{name}</code>{' '}
+        <span className="sr-only">- {label}</span>
         <Icon
           size={12}
           aria-hidden="true"
           className={copied ? undefined : 'opacity-70'}
         />
-        <span className="sr-only" aria-live="polite">
-          {copied ? copiedText : ''}
-        </span>
       </button>
+      <span className="sr-only" aria-live="polite">
+        {copied ? copiedText : ''}
+      </span>
     </div>
   );
 }

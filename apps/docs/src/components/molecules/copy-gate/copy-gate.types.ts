@@ -5,7 +5,7 @@ export interface CopyGateProps {
   name: string;
   /** Text the label copies (`justui add <name>`). */
   text: string;
-  /** Accessible name of the label button. */
+  /** What the button does, read after the visible code and name. */
   label: string;
   /** Announced after a copy. */
   copiedText: string;

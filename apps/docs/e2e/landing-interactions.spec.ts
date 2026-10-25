@@ -35,7 +35,9 @@ test.describe('Landing interactions', () => {
   test('copies the add command of a part', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto('/en/docs/components');
-    await page.getByRole('button', { name: 'Copy justui add switch' }).click();
+    await page
+      .getByRole('button', { name: '27 switch - Copy justui add switch' })
+      .click();
     const copied = await page.evaluate(() => navigator.clipboard.readText());
     expect(copied).toBe('justui add switch');
   });
