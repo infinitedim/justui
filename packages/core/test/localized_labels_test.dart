@@ -1,6 +1,10 @@
+import 'dart:ui' show Tristate;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart' show SemanticsData, SemanticsNode;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_core/src/components/accordion/just_accordion.dart';
 import 'package:just_ui_core/src/components/carousel/just_carousel.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_picker.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_picker_variants.dart';
@@ -85,5 +89,40 @@ void main() {
       find.bySemanticsLabel(RegExp('^Day 20, October 2025')),
       findsOneWidget,
     );
+  });
+
+  testWidgets('accordion states its expansion as a flag, not English text', (
+    WidgetTester tester,
+  ) async {
+    final SemanticsHandle handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      app(
+        const JustAccordion(
+          items: <JustAccordionItem>[
+            JustAccordionItem(title: 'Apa itu runner?', content: Text('Isi')),
+          ],
+        ),
+      ),
+    );
+    final List<SemanticsData> nodes = <SemanticsData>[];
+    bool visit(SemanticsNode node) {
+      nodes.add(node.getSemanticsData());
+      node.visitChildren(visit);
+      return true;
+    }
+
+    visit(tester.getSemantics(find.byType(JustAccordion)));
+    final String words = nodes
+        .map((SemanticsData d) => '${d.label} ${d.value}')
+        .join(' ');
+    expect(words, isNot(contains('Accordion Panel')));
+    expect(words, isNot(contains('Collapsed')));
+    expect(
+      nodes.where(
+        (SemanticsData d) => d.flagsCollection.isExpanded == Tristate.isFalse,
+      ),
+      isNotEmpty,
+    );
+    handle.dispose();
   });
 }

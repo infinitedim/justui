@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/accordion/just_accordion.dart';
 import 'package:just_ui_core/src/components/select/just_select.dart';
+import 'package:just_ui_core/src/components/sidebar/just_sidebar.dart';
 import 'package:just_ui_core/src/components/table/just_table.dart';
 
 /// Core draws Material icons through the `Icons` constants. A raw codepoint
@@ -84,5 +85,40 @@ void main() {
     expect(icons(tester), contains(Icons.arrow_drop_up));
     await tester.pumpWidget(table(sorted: 0, ascending: false));
     expect(icons(tester), contains(Icons.arrow_drop_down));
+  });
+
+  testWidgets('sidebar folder chevron points to the reading side', (
+    WidgetTester tester,
+  ) async {
+    for (final TextDirection direction in TextDirection.values) {
+      await tester.pumpWidget(
+        app(
+          Directionality(
+            textDirection: direction,
+            child: const JustSidebar(
+              items: <JustSidebarItem>[
+                JustSidebarItem(
+                  label: 'Folder',
+                  icon: SizedBox(width: 16, height: 16),
+                  children: <JustSidebarItem>[
+                    JustSidebarItem(
+                      label: 'Child',
+                      icon: SizedBox(width: 16, height: 16),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      // Flutter mirrors chevron_right in RTL itself (matchTextDirection).
+      expect(
+        icons(tester),
+        contains(Icons.chevron_right),
+        reason: '$direction',
+      );
+      expect(Icons.chevron_right.matchTextDirection, isTrue);
+    }
   });
 }

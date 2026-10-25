@@ -521,14 +521,14 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
     final BorderRadius itemRadius =
         widget.themeStyle?.itemBorderRadius ?? .all(radius.md);
 
-    // Chevron pointing side (or left in RTL) when collapsed, down when expanded
+    // Chevron pointing to the reading side when collapsed, down when
+    // expanded. Flutter mirrors chevron_right in RTL itself, so RTL turns
+    // the other way to reach down.
     final Widget chevronIcon = RotationTransition(
-      turns: _expandAnimation.drive(Tween<double>(begin: 0.0, end: 0.25)),
-      child: Icon(
-        isRtl ? Icons.chevron_left : Icons.chevron_right,
-        size: 16.0,
-        color: widget.inactiveColor,
+      turns: _expandAnimation.drive(
+        Tween<double>(begin: 0.0, end: isRtl ? -0.25 : 0.25),
       ),
+      child: Icon(Icons.chevron_right, size: 16.0, color: widget.inactiveColor),
     );
 
     // Wrap the base item row layout to support folder toggling on folder header click
