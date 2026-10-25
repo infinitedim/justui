@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
@@ -325,9 +325,9 @@ class _JustTableState<T> extends State<JustTable<T>> {
             Icon(
               isSorted
                   ? (widget.sortAscending
-                        ? const IconData(0xe5c7, fontFamily: 'MaterialIcons')
-                        : const IconData(0xe5c5, fontFamily: 'MaterialIcons'))
-                  : const IconData(0xe5d2, fontFamily: 'MaterialIcons'),
+                        ? Icons.arrow_drop_up
+                        : Icons.arrow_drop_down)
+                  : Icons.unfold_more,
               size: 16,
               color: isSorted ? headerText : headerText.withValues(alpha: 0.4),
             ),
@@ -559,11 +559,7 @@ class const _CustomCheckbox({
           ),
           alignment: .center,
           child: value
-              ? Icon(
-                  const IconData(0xe156, fontFamily: 'MaterialIcons'),
-                  size: 14,
-                  color: colors.textInverse,
-                )
+              ? Icon(Icons.check, size: 14, color: colors.textInverse)
               : null,
         );
 

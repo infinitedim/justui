@@ -1,5 +1,5 @@
-// justui-meta: registry=3b7f97c2dd093405782bc865d671ccba98e45ea6d231036e918bd742a7e175ed local=ff6ca9f2c20148e4d8cdfbf001289e0e633646209c689043791f1c9b39a78b38
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=49ad31f88d0b289ed1d592c3da62e44cbe264c0781bbc6490b49dc4daa61a486 local=76295bd8b24ac80f4e9be13c1f2fb9e936300a7cb30867dc1e80fc2e38c84adc
+import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/services.dart'
     show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
@@ -461,7 +461,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                   duration: presetTokens.dropdownOpenDuration,
                   curve: presetTokens.dropdownOpenCurve,
                   child: Icon(
-                    const IconData(0xe150, fontFamily: 'MaterialIcons'),
+                    Icons.expand_more,
                     size: widget.size == .sm ? 16 : 20,
                     color: hasError
                         ? colors.error
@@ -715,11 +715,7 @@ class _SelectSearchField extends StatelessWidget {
           padding: .symmetric(horizontal: spacing.sm),
           child: Row(
             children: <Widget>[
-              Icon(
-                const IconData(0xe554, fontFamily: 'MaterialIcons'),
-                size: 16,
-                color: colors.textSecondary,
-              ),
+              Icon(Icons.search, size: 16, color: colors.textSecondary),
               SizedBox(width: spacing.xs),
               Expanded(
                 child: EditableText(
@@ -823,11 +819,7 @@ class _SelectOptionTile<T> extends StatelessWidget {
               ),
               if (isSelected && !presetTokens.showsDefaultBorder) ...<Widget>[
                 SizedBox(width: spacing.sm),
-                Icon(
-                  const IconData(0xe156, fontFamily: 'MaterialIcons'),
-                  size: 16,
-                  color: optionText,
-                ),
+                Icon(Icons.check, size: 16, color: optionText),
               ],
             ],
           ),

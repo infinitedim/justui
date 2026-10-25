@@ -537,7 +537,7 @@
           {
             "name": "just_carousel.dart",
             "path": "components/carousel/default/just_carousel.dart",
-            "checksum": "sha256:96faf13949072224758503fa49ead9605776d0d1c23b7c71a3c97aef4e5cfb81"
+            "checksum": "sha256:8c1a1bf206c158eb9e71374d36b695266a331035511cfb0fb5afebb367efbb1f"
           }
         ]
       },
@@ -896,7 +896,7 @@
           {
             "name": "just_sidebar.dart",
             "path": "components/sidebar/default/just_sidebar.dart",
-            "checksum": "sha256:59ab3cf9e9a969e1cbe204067906cf40a6daf68a5f915c512200892689d7d7ba"
+            "checksum": "sha256:783aaa6a687811bf160772cc9540579e8ac02b7e28b2fdc216f0464069cb6a13"
           }
         ]
       },
@@ -1094,7 +1094,7 @@
           {
             "name": "just_select.dart",
             "path": "components/select/default/just_select.dart",
-            "checksum": "sha256:3b7f97c2dd093405782bc865d671ccba98e45ea6d231036e918bd742a7e175ed"
+            "checksum": "sha256:49ad31f88d0b289ed1d592c3da62e44cbe264c0781bbc6490b49dc4daa61a486"
           }
         ]
       },
@@ -1175,7 +1175,7 @@
           {
             "name": "just_accordion.dart",
             "path": "components/accordion/default/just_accordion.dart",
-            "checksum": "sha256:094b184d63cf355becae63591fc3e2ee330645f35565223c75b9effc6d0181fa"
+            "checksum": "sha256:307459c19acd24b7b39c5b766237f6510ba6098b79877c16731173118db23a41"
           }
         ]
       },
@@ -1264,7 +1264,7 @@
           {
             "name": "just_table.dart",
             "path": "components/table/default/just_table.dart",
-            "checksum": "sha256:62394129d54ebe4f198c5eb5ef6acb2bf3618bfe57d33f509552f3c36633b971"
+            "checksum": "sha256:088ce9296f8074754f0f5115a0dbf12b8c6751b39c496d63cf31b2b9adc9c363"
           }
         ]
       },
@@ -1292,7 +1292,7 @@
           {
             "name": "just_date_picker_variants.dart",
             "path": "components/date_picker/just_date_picker_variants.dart",
-            "checksum": "sha256:033f977fbeb91050e785b6c4d4b429d8e03b6b650f797a955422dbd618121f5f"
+            "checksum": "sha256:7104f09c1aad84d6c14db02f020c6fae84131fe39f16df6e57816440b94860a6"
           },
           {
             "name": "just_date_picker_style.dart",
@@ -1314,7 +1314,7 @@
           {
             "name": "_date_picker_calendar.dart",
             "path": "components/date_picker/default/_date_picker_calendar.dart",
-            "checksum": "sha256:50bcab9746bc51e2cbf57e9512815cb7ad164703688a810e0add583700fb76ce"
+            "checksum": "sha256:4392ae8d8864b038124ba60a4a7aa9cb452d34877e75f7d9c3a6728e0f967538"
           }
         ]
       },

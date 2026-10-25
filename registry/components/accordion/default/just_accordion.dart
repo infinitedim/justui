@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
@@ -377,7 +377,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
         RotationTransition(
           turns: _rotationAnimation,
           child: Icon(
-            const IconData(0xe5c5, fontFamily: 'MaterialIcons'),
+            Icons.expand_more,
             color: widget.item.enabled
                 ? iconColor
                 : iconColor.withValues(alpha: 0.4),

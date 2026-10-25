@@ -72,7 +72,18 @@ class const JustDatePickerLocale({
     'Sat',
     'Sun',
   ],
-});
+
+  /// What screen readers say for a day cell. `{day}`, `{month}` (from
+  /// [monthNames]) and `{year}` are filled in, so the order can follow the
+  /// language (for example '{day} {month} {year}').
+  final String dayLabel = 'Day {day}, {month} {year}',
+}) {
+  /// [dayLabel] filled in for [date].
+  String dayLabelFor(DateTime date) => dayLabel
+      .replaceAll('{day}', '${date.day}')
+      .replaceAll('{month}', monthNames[date.month - 1])
+      .replaceAll('{year}', '${date.year}');
+}
 
 /// Quick-select date range preset definition for [JustDateRangePicker].
 class const JustDateRangePreset({

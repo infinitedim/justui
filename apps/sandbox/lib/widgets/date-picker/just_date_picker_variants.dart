@@ -1,4 +1,4 @@
-// justui-meta: registry=033f977fbeb91050e785b6c4d4b429d8e03b6b650f797a955422dbd618121f5f local=256f213bff00a5e13b4346f506c7316f4af57b1dd016e0c0ffc887473aac660c
+// justui-meta: registry=7104f09c1aad84d6c14db02f020c6fae84131fe39f16df6e57816440b94860a6 local=2bc4848113ef3b93a90165348c40be27b0975bc04c2e2cdd268740251618f3da
 import 'package:flutter/material.dart' show DateTimeRange;
 
 /// Display variant for [JustDatePicker].
@@ -40,6 +40,11 @@ class JustDatePickerLocale {
   /// Weekday abbreviation headers starting from Monday (index 0).
   final List<String> weekdayHeaders;
 
+  /// What screen readers say for a day cell. `{day}`, `{month}` (from
+  /// [monthNames]) and `{year}` are filled in, so the order can follow the
+  /// language (for example '{day} {month} {year}').
+  final String dayLabel;
+
   const JustDatePickerLocale({
     this.monthNames = const <String>[
       'January',
@@ -78,7 +83,14 @@ class JustDatePickerLocale {
       'Sat',
       'Sun',
     ],
+    this.dayLabel = 'Day {day}, {month} {year}',
   });
+
+  /// [dayLabel] filled in for [date].
+  String dayLabelFor(DateTime date) => dayLabel
+      .replaceAll('{day}', '${date.day}')
+      .replaceAll('{month}', monthNames[date.month - 1])
+      .replaceAll('{year}', '${date.year}');
 }
 
 /// Quick-select date range preset definition for [JustDateRangePicker].

@@ -1,6 +1,6 @@
-// justui-meta: registry=59ab3cf9e9a969e1cbe204067906cf40a6daf68a5f915c512200892689d7d7ba local=6218e3fa0863053720fe9fc8820380decc8c94c89d07ad3265d2655df2d92009
+// justui-meta: registry=783aaa6a687811bf160772cc9540579e8ac02b7e28b2fdc216f0464069cb6a13 local=1ed7ae7270b35c67d8669f33d831a5a45a3413f5e289691c348fb8de2c9f47a1
 import 'package:flutter/widgets.dart';
-import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:sandbox/core/just_ui_core.dart';
 
 import '../shared/just_tooltip_overlay.dart';
@@ -545,9 +545,7 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
     final Widget chevronIcon = RotationTransition(
       turns: _expandAnimation.drive(Tween<double>(begin: 0.0, end: 0.25)),
       child: Icon(
-        isRtl
-            ? const IconData(0xEA60, fontFamily: 'MaterialIcons')
-            : const IconData(0xEA61, fontFamily: 'MaterialIcons'),
+        isRtl ? Icons.chevron_left : Icons.chevron_right,
         size: 16.0,
         color: widget.inactiveColor,
       ),

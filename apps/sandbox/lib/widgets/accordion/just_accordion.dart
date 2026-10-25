@@ -1,5 +1,5 @@
-// justui-meta: registry=094b184d63cf355becae63591fc3e2ee330645f35565223c75b9effc6d0181fa local=ca5cc34762e7ee80ace7d274f1c0c165f7b898325ca87d6e8f209b0be26cd61c
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=307459c19acd24b7b39c5b766237f6510ba6098b79877c16731173118db23a41 local=d138703adcf9725824298dc03d7b90c9801972112792b2f272bca877f47ff60d
+import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/widgets.dart';
 
 import 'package:sandbox/core/just_ui_core.dart';
@@ -402,7 +402,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
         RotationTransition(
           turns: _rotationAnimation,
           child: Icon(
-            const IconData(0xe5c5, fontFamily: 'MaterialIcons'),
+            Icons.expand_more,
             color: widget.item.enabled
                 ? iconColor
                 : iconColor.withValues(alpha: 0.4),
