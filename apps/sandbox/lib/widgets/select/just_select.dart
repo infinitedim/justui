@@ -1,5 +1,5 @@
-// justui-meta: registry=3b7f97c2dd093405782bc865d671ccba98e45ea6d231036e918bd742a7e175ed local=ff6ca9f2c20148e4d8cdfbf001289e0e633646209c689043791f1c9b39a78b38
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=74013ea57ecbe928b3fe8d5450a28647295a0e86dbd79310a8c022cf84c65ea1 local=c0940b5f690858ab4b914b51638accadef7b0087bc0a1258c636edc95af85b33
+import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/services.dart'
     show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
@@ -411,94 +411,91 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       borderRadius: presetTokens.showsDefaultBorder ? .zero : v.borderRadius,
     );
 
-    return Focus(
+    // One Tab stop: the pressable owns the trigger node, draws the focus
+    // ring and takes the select's keys (open, move, pick, close).
+    return JustPressable(
       focusNode: _triggerFocusNode,
-      onKeyEvent: (FocusNode node, KeyEvent event) =>
-          _handleKeyEvent(node, event),
-      child: JustPressable(
-        enabled: widget.enabled,
-        onTap: _toggleDropdown,
-        builder: (BuildContext context, JustInteractionState state) {
-          Widget inner = Container(
-            height: v.height,
-            padding: .symmetric(horizontal: spacing.md),
-            decoration: triggerDecoration,
-            child: Row(
-              children: <Widget>[
-                if (widget.prefixIcon != null) ...<Widget>[
-                  widget.prefixIcon!,
-                  SizedBox(width: spacing.sm),
-                ],
-                Expanded(
-                  child: selectedOption != null
-                      ? Row(
-                          children: <Widget>[
-                            if (selectedOption.icon != null) ...<Widget>[
-                              selectedOption.icon!,
-                              SizedBox(width: spacing.sm),
-                            ],
-                            Expanded(
-                              child: Text(
-                                selectedOption.label,
-                                style: v.textStyle.copyWith(color: v.textColor),
-                                overflow: .ellipsis,
-                              ),
-                            ),
-                          ],
-                        )
-                      : Text(
-                          widget.placeholder ?? 'Select option...',
-                          style: v.textStyle.copyWith(
-                            color: v.placeholderColor,
-                          ),
-                          overflow: .ellipsis,
-                        ),
-                ),
+      onKeyEvent: _handleKeyEvent,
+      enabled: widget.enabled,
+      onTap: _toggleDropdown,
+      builder: (BuildContext context, JustInteractionState state) {
+        Widget inner = Container(
+          height: v.height,
+          padding: .symmetric(horizontal: spacing.md),
+          decoration: triggerDecoration,
+          child: Row(
+            children: <Widget>[
+              if (widget.prefixIcon != null) ...<Widget>[
+                widget.prefixIcon!,
                 SizedBox(width: spacing.sm),
-                // Chevron Icon
-                AnimatedRotation(
-                  turns: _overlayController.isShowing ? 0.5 : 0.0,
-                  duration: presetTokens.dropdownOpenDuration,
-                  curve: presetTokens.dropdownOpenCurve,
-                  child: Icon(
-                    const IconData(0xe150, fontFamily: 'MaterialIcons'),
-                    size: widget.size == .sm ? 16 : 20,
-                    color: hasError
-                        ? colors.error
-                        : (widget.enabled
-                              ? v.textColor
-                              : v.textColor.withValues(alpha: 0.5)),
-                  ),
-                ),
               ],
+              Expanded(
+                child: selectedOption != null
+                    ? Row(
+                        children: <Widget>[
+                          if (selectedOption.icon != null) ...<Widget>[
+                            selectedOption.icon!,
+                            SizedBox(width: spacing.sm),
+                          ],
+                          Expanded(
+                            child: Text(
+                              selectedOption.label,
+                              style: v.textStyle.copyWith(color: v.textColor),
+                              overflow: .ellipsis,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Text(
+                        widget.placeholder ?? 'Select option...',
+                        style: v.textStyle.copyWith(color: v.placeholderColor),
+                        overflow: .ellipsis,
+                      ),
+              ),
+              SizedBox(width: spacing.sm),
+              // Chevron Icon
+              AnimatedRotation(
+                turns: _overlayController.isShowing ? 0.5 : 0.0,
+                duration: presetTokens.dropdownOpenDuration,
+                curve: presetTokens.dropdownOpenCurve,
+                child: Icon(
+                  Icons.expand_more,
+                  size: widget.size == .sm ? 16 : 20,
+                  color: hasError
+                      ? colors.error
+                      : (widget.enabled
+                            ? v.textColor
+                            : v.textColor.withValues(alpha: 0.5)),
+                ),
+              ),
+            ],
+          ),
+        );
+
+        if (presetTokens.showsDefaultBorder) {
+          inner = v.theme.buildPressEffect(
+            isPressed: state.isPressed,
+            child: Container(
+              decoration: BoxDecoration(
+                boxShadow: v.theme.resolveShadows(
+                  v.theme.shadows.md,
+                  isPressed: state.isPressed,
+                ),
+                borderRadius: .zero,
+              ),
+              child: inner,
             ),
           );
+        }
 
-          if (presetTokens.showsDefaultBorder) {
-            inner = v.theme.buildPressEffect(
-              isPressed: state.isPressed,
-              child: Container(
-                decoration: BoxDecoration(
-                  boxShadow: v.theme.resolveShadows(
-                    v.theme.shadows.md,
-                    isPressed: state.isPressed,
-                  ),
-                  borderRadius: .zero,
-                ),
-                child: inner,
-              ),
-            );
-          }
-
-          return FocusIndicator(
-            isFocused: state.isFocusVisible,
-            borderRadius: presetTokens.showsDefaultBorder
-                ? .zero
-                : v.borderRadius,
-            child: inner,
-          );
-        },
-      ),
+        return FocusIndicator(
+          isFocused: state.isFocusVisible,
+          borderRadius: presetTokens.showsDefaultBorder
+              ? .zero
+              : v.borderRadius,
+          child: inner,
+        );
+      },
     );
   }
 
@@ -715,11 +712,7 @@ class _SelectSearchField extends StatelessWidget {
           padding: .symmetric(horizontal: spacing.sm),
           child: Row(
             children: <Widget>[
-              Icon(
-                const IconData(0xe554, fontFamily: 'MaterialIcons'),
-                size: 16,
-                color: colors.textSecondary,
-              ),
+              Icon(Icons.search, size: 16, color: colors.textSecondary),
               SizedBox(width: spacing.xs),
               Expanded(
                 child: EditableText(
@@ -823,11 +816,7 @@ class _SelectOptionTile<T> extends StatelessWidget {
               ),
               if (isSelected && !presetTokens.showsDefaultBorder) ...<Widget>[
                 SizedBox(width: spacing.sm),
-                Icon(
-                  const IconData(0xe156, fontFamily: 'MaterialIcons'),
-                  size: 16,
-                  color: optionText,
-                ),
+                Icon(Icons.check, size: 16, color: optionText),
               ],
             ],
           ),

@@ -51,6 +51,10 @@ export interface KitDictionary {
   tabsLabel: string;
   daysLabel: string;
   slidesLabel: string;
+  /** Weekday abbreviations from Monday (live date pickers). */
+  weekdays: readonly [string, string, string, string, string, string, string];
+  /** Screen reader name of a day cell: `{day}`, `{month}`, `{year}`. */
+  dayLabel: string;
 }
 
 export const kitTranslations = {
@@ -104,6 +108,8 @@ export const kitTranslations = {
     tabsLabel: 'Settings sections',
     daysLabel: 'Days in October',
     slidesLabel: 'Slides',
+    weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    dayLabel: '{month} {day}, {year}',
   },
   id: {
     saveChanges: 'Simpan perubahan',
@@ -155,6 +161,8 @@ export const kitTranslations = {
     tabsLabel: 'Bagian pengaturan',
     daysLabel: 'Hari di bulan Oktober',
     slidesLabel: 'Slide',
+    weekdays: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+    dayLabel: '{day} {month} {year}',
   },
 } satisfies Record<Locale, KitDictionary>;
 

@@ -1,5 +1,5 @@
-// justui-meta: registry=62394129d54ebe4f198c5eb5ef6acb2bf3618bfe57d33f509552f3c36633b971 local=83b77df8abd4a9cef999942e6d9954666e5900a70e0260547dd022f66d780c88
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=088ce9296f8074754f0f5115a0dbf12b8c6751b39c496d63cf31b2b9adc9c363 local=5188d592a8eb7de471ba20de152596fffb90cc2be63abf6dfd9813da4268b218
+import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
@@ -323,9 +323,9 @@ class _JustTableState<T> extends State<JustTable<T>> {
             Icon(
               isSorted
                   ? (widget.sortAscending
-                        ? const IconData(0xe5c7, fontFamily: 'MaterialIcons')
-                        : const IconData(0xe5c5, fontFamily: 'MaterialIcons'))
-                  : const IconData(0xe5d2, fontFamily: 'MaterialIcons'),
+                        ? Icons.arrow_drop_up
+                        : Icons.arrow_drop_down)
+                  : Icons.unfold_more,
               size: 16,
               color: isSorted ? headerText : headerText.withValues(alpha: 0.4),
             ),
@@ -564,11 +564,7 @@ class _CustomCheckbox extends StatelessWidget {
           ),
           alignment: .center,
           child: value
-              ? Icon(
-                  const IconData(0xe156, fontFamily: 'MaterialIcons'),
-                  size: 14,
-                  color: colors.textInverse,
-                )
+              ? Icon(Icons.check, size: 14, color: colors.textInverse)
               : null,
         );
 

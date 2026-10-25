@@ -201,8 +201,14 @@ as text: `Cmd`, `Ctrl`, `Shift`.
     load Flutter.
   - The engine loads when a host nears the viewport, on idle. Views are
     added on enter and removed after they leave.
-  - The host box is locked to the fallback box (no layout shift). The swap
+  - The host box is locked to the part's box (no layout shift). The swap
     is a 150ms opacity crossfade, instant under reduced motion.
+  - Every Flutter view has one fixed size (320 x 344), centered
+    vertically in the host box, pinned to its left edge and clipped to it: Flutter 3.47 rasterizes all views through
+    one shared surface and cuts off a view larger than another
+    (flutter/flutter#194401, not in stable yet). Scenes stay within
+    280 x 328 and within their components-page stage
+    (`apps/showcase/test/scenes/stage_heights_test.dart`).
   - No new globals and no `postMessage`: the loader and the Dart controller
     stay inside the bridge module. Every value sent to Dart is parsed with
     `zod/mini` first.

@@ -1,4 +1,4 @@
-// justui-meta: registry=06af8d1aa9264876ba11390dfa2c04d060479a732fcd05dad85d087f24019e7e local=79aa6381e639c5c04d5c9429fd502ff1674f6f4dbc24e9f5838802a3b071940c
+// justui-meta: registry=64d38d1db2175ae8aab21316fc85a152ac4d6e661701f7b076e83b659bd21d5a local=6a59456f097178552ad6adc5e64ef7c991d96023126883f0f25fb4215ebf812f
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -264,121 +264,135 @@ class _JustSwitchState extends State<JustSwitch>
         resolvedThumbSize -
         borderWidth * 2;
 
-    return Semantics(
-      toggled: widget.value,
-      enabled: isInteractive,
-      label: 'Switch',
-      child: JustPressable(
+    // One node for screen readers: the toggled state, the tap and the
+    // visible label as its name (the track's own gesture node would
+    // otherwise be an unnamed button). 'Switch' only names a switch that
+    // has no label.
+    return MergeSemantics(
+      child: Semantics(
+        toggled: widget.value,
         enabled: isInteractive,
-        onTap: _handleToggle,
-        focusNode: _focusNode,
-        builder: (BuildContext context, JustInteractionState state) {
-          return Opacity(
-            opacity: widget.isDisabled ? 0.5 : 1.0,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 48.0),
-              child: Row(
-                mainAxisSize: .min,
-                crossAxisAlignment: .center,
-                children: <Widget>[
-                  RepaintBoundary(
-                    child: FocusIndicator(
-                      isFocused: state.isFocusVisible,
-                      borderRadius: .all(.circular(trackHeight / 2)),
-                      child: GestureDetector(
-                        onTap: _handleToggle,
-                        onHorizontalDragStart: _handleDragStart,
-                        onHorizontalDragUpdate: (DragUpdateDetails details) =>
-                            _handleDragUpdate(details, maxTravel),
-                        onHorizontalDragEnd: _handleDragEnd,
-                        child: AnimatedBuilder(
-                          animation: _controller,
-                          builder: (BuildContext context, Widget? child) {
-                            final double rawProgress = _controller.value;
-                            final Curve curvedCurve = hasBorder
-                                ? Curves.linear
-                                : JustCurves.default_;
-                            final double progress = curvedCurve.transform(
-                              rawProgress,
-                            );
+        label: widget.label == null ? 'Switch' : null,
+        child: JustPressable(
+          enabled: isInteractive,
+          onTap: _handleToggle,
+          focusNode: _focusNode,
+          builder: (BuildContext context, JustInteractionState state) {
+            return Opacity(
+              opacity: widget.isDisabled ? 0.5 : 1.0,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48.0),
+                child: Row(
+                  mainAxisSize: .min,
+                  crossAxisAlignment: .center,
+                  children: <Widget>[
+                    RepaintBoundary(
+                      child: FocusIndicator(
+                        isFocused: state.isFocusVisible,
+                        borderRadius: .all(.circular(trackHeight / 2)),
+                        child: GestureDetector(
+                          // The merged node above carries the tap for
+                          // screen readers; the drag is pointer-only.
+                          excludeFromSemantics: true,
+                          onTap: _handleToggle,
+                          onHorizontalDragStart: _handleDragStart,
+                          onHorizontalDragUpdate: (DragUpdateDetails details) =>
+                              _handleDragUpdate(details, maxTravel),
+                          onHorizontalDragEnd: _handleDragEnd,
+                          child: AnimatedBuilder(
+                            animation: _controller,
+                            builder: (BuildContext context, Widget? child) {
+                              final double rawProgress = _controller.value;
+                              final Curve curvedCurve = hasBorder
+                                  ? Curves.linear
+                                  : JustCurves.default_;
+                              final double progress = curvedCurve.transform(
+                                rawProgress,
+                              );
 
-                            // LERP track and thumb colors
-                            final Color currentTrackColor = .lerp(
-                              resolvedInactiveTrackColor,
-                              resolvedActiveTrackColor,
-                              rawProgress,
-                            )!;
+                              // LERP track and thumb colors
+                              final Color currentTrackColor = .lerp(
+                                resolvedInactiveTrackColor,
+                                resolvedActiveTrackColor,
+                                rawProgress,
+                              )!;
 
-                            final Color currentThumbColor = .lerp(
-                              resolvedInactiveThumbColor,
-                              resolvedActiveThumbColor,
-                              rawProgress,
-                            )!;
+                              final Color currentThumbColor = .lerp(
+                                resolvedInactiveThumbColor,
+                                resolvedActiveThumbColor,
+                                rawProgress,
+                              )!;
 
-                            return Container(
-                              width: trackWidth,
-                              height: trackHeight,
-                              padding: const .all(trackInnerPadding),
-                              decoration: BoxDecoration(
-                                color: currentTrackColor,
-                                borderRadius: .all(.circular(trackHeight / 2)),
-                                border: hasBorder
-                                    ? .all(
-                                        color: colors.textPrimary,
-                                        width: borderWidth,
-                                      )
-                                    : null,
-                              ),
-                              child: Align(
-                                alignment: Alignment(2.0 * progress - 1.0, 0.0),
-                                child: Container(
-                                  width: resolvedThumbSize,
-                                  height: resolvedThumbSize,
-                                  decoration: BoxDecoration(
-                                    color: currentThumbColor,
-                                    shape: .circle,
-                                    border: hasBorder
-                                        ? .all(
-                                            color: colors.textPrimary,
-                                            width: 1.5,
-                                          )
-                                        : null,
-                                    boxShadow: hasBorder
-                                        ? null
-                                        : customTheme.presetTokens
-                                              .resolveShadow(
-                                                customTheme.shadows,
-                                                JustShadowLevel.xs,
-                                                isPressed: false,
-                                              ),
+                              return Container(
+                                width: trackWidth,
+                                height: trackHeight,
+                                padding: const .all(trackInnerPadding),
+                                decoration: BoxDecoration(
+                                  color: currentTrackColor,
+                                  borderRadius: .all(
+                                    .circular(trackHeight / 2),
                                   ),
-                                  child: widget.thumbIcon != null
-                                      ? Center(
-                                          child: widget.thumbIcon!(
-                                            widget.value,
-                                          ),
+                                  border: hasBorder
+                                      ? .all(
+                                          color: colors.textPrimary,
+                                          width: borderWidth,
                                         )
                                       : null,
                                 ),
-                              ),
-                            );
-                          },
+                                child: Align(
+                                  alignment: Alignment(
+                                    2.0 * progress - 1.0,
+                                    0.0,
+                                  ),
+                                  child: Container(
+                                    width: resolvedThumbSize,
+                                    height: resolvedThumbSize,
+                                    decoration: BoxDecoration(
+                                      color: currentThumbColor,
+                                      shape: .circle,
+                                      border: hasBorder
+                                          ? .all(
+                                              color: colors.textPrimary,
+                                              width: 1.5,
+                                            )
+                                          : null,
+                                      boxShadow: hasBorder
+                                          ? null
+                                          : customTheme.presetTokens
+                                                .resolveShadow(
+                                                  customTheme.shadows,
+                                                  JustShadowLevel.xs,
+                                                  isPressed: false,
+                                                ),
+                                    ),
+                                    child: widget.thumbIcon != null
+                                        ? Center(
+                                            child: widget.thumbIcon!(
+                                              widget.value,
+                                            ),
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  if (widget.label != null) ...<Widget>[
-                    SizedBox(width: spacing.sm),
-                    DefaultTextStyle(
-                      style: resolvedTextStyle,
-                      child: widget.label!,
-                    ),
+                    if (widget.label != null) ...<Widget>[
+                      SizedBox(width: spacing.sm),
+                      DefaultTextStyle(
+                        style: resolvedTextStyle,
+                        child: widget.label!,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

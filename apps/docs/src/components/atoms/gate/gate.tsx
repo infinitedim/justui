@@ -1,9 +1,19 @@
 import { Scissors } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import type { GateProps } from './gate.types';
+import type { GateLinesProps, GateProps } from './gate.types';
 
 const line =
   'bg-ip-border-control h-4 w-[1.5px] transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]';
+
+/** The two short lines a part hangs from. */
+export function GateLines({ narrow = false }: GateLinesProps) {
+  return (
+    <div aria-hidden="true" className="flex w-0.5 flex-col">
+      <span className={cn(line, 'origin-top', narrow && 'scale-y-[0.45]')} />
+      <span className={cn(line, 'origin-bottom', narrow && 'scale-y-[0.45]')} />
+    </div>
+  );
+}
 
 /**
  * The gate a part hangs from on the runner: two short lines and a code
@@ -33,14 +43,7 @@ export function Gate({ code, name, selected, onSelect, className }: GateProps) {
   );
   return (
     <div className={cn('flex items-start gap-2', className)}>
-      <div aria-hidden="true" className="flex w-0.5 flex-col">
-        <span
-          className={cn(line, 'origin-top', selected && 'scale-y-[0.45]')}
-        />
-        <span
-          className={cn(line, 'origin-bottom', selected && 'scale-y-[0.45]')}
-        />
-      </div>
+      <GateLines narrow={selected} />
       {onSelect ? (
         <button
           type="button"

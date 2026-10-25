@@ -39,14 +39,12 @@ async function renderPage(lang: string) {
   return render(<PresetProvider>{page}</PresetProvider>);
 }
 
-function partList(): HTMLElement {
-  const list = screen.getByRole('main').querySelector('ul');
-  if (!list) throw new Error('part list missing');
-  return list;
+function runners(): Array<HTMLElement> {
+  return screen.getAllByRole('region');
 }
 
 describe('components page', () => {
-  it('lists every part, linking to its docs', async () => {
+  it('shows every part on six named runners', async () => {
     await renderPage('en');
     expect(
       screen.getByRole('heading', {
@@ -54,19 +52,48 @@ describe('components page', () => {
         name: 'Every part on the runner',
       })
     ).toBeInTheDocument();
-    const links = within(partList()).getAllByRole('link');
-    expect(links).toHaveLength(33);
-    expect(links[6]).toHaveAttribute('href', '/en/docs/components/button');
-    expect(links[6]).toHaveAccessibleName('07 button');
+    expect(
+      screen
+        .getAllByRole('heading', { level: 2 })
+        .map((heading) => heading.textContent)
+    ).toEqual([
+      'Actions',
+      'Inputs',
+      'Navigation',
+      'Overlays',
+      'Display',
+      'Layout',
+    ]);
+    const parts = runners().flatMap((runner) =>
+      within(runner).getAllByRole('listitem')
+    );
+    expect(parts).toHaveLength(33);
+    expect(
+      within(runners()[0] ?? document.body).getAllByRole('listitem')
+    ).toHaveLength(3);
   });
 
-  it('copies the add command of each part', async () => {
+  it('labels copy the add command and arrows open the docs', async () => {
     await renderPage('en');
-    const buttons = within(partList()).getAllByRole('button', {
-      name: /^Copy justui add /,
+    const copies = screen.getAllByRole('button', {
+      name: / - Copy justui add /,
     });
-    expect(buttons).toHaveLength(33);
-    expect(buttons[6]).toHaveAccessibleName('Copy justui add button');
+    expect(copies).toHaveLength(33);
+    expect(copies[0]).toHaveAccessibleName(
+      '07 button - Copy justui add button'
+    );
+    expect(copies[0]).toHaveTextContent(/^07 button/);
+    const docs = screen.getAllByRole('link', { name: /^Open .* docs$/ });
+    expect(docs).toHaveLength(33);
+    expect(
+      screen.getByRole('link', { name: 'Open button docs' })
+    ).toHaveAttribute('href', '/en/docs/components/button');
+  });
+
+  it('names each copy label with its visible text first (WCAG 2.5.3)', async () => {
+    await renderPage('en');
+    const label = screen.getByRole('button', { name: /^07 button\b/ });
+    expect(label).toHaveAccessibleName('07 button - Copy justui add button');
   });
 
   it('renders the Indonesian page on /id', async () => {
@@ -74,11 +101,15 @@ describe('components page', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: 'Semua part di runner' })
     ).toBeInTheDocument();
-    const links = within(partList()).getAllByRole('link');
-    expect(links[0]).toHaveAttribute('href', '/id/docs/components/accordion');
     expect(
-      within(partList()).getByRole('button', {
-        name: 'Salin justui add tooltip',
+      screen.getByRole('heading', { level: 2, name: 'Aksi' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Buka dokumentasi accordion' })
+    ).toHaveAttribute('href', '/id/docs/components/accordion');
+    expect(
+      screen.getByRole('button', {
+        name: '33 tooltip - Salin justui add tooltip',
       })
     ).toBeInTheDocument();
   });

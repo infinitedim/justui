@@ -35,7 +35,9 @@ test.describe('Landing interactions', () => {
   test('copies the add command of a part', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto('/en/docs/components');
-    await page.getByRole('button', { name: 'Copy justui add switch' }).click();
+    await page
+      .getByRole('button', { name: '27 switch - Copy justui add switch' })
+      .click();
     const copied = await page.evaluate(() => navigator.clipboard.readText());
     expect(copied).toBe('justui add switch');
   });
@@ -51,7 +53,7 @@ test.describe('Landing interactions', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: 'Every part on the runner' })
     ).toBeVisible();
-    await page.getByRole('link', { name: '07 button' }).click();
+    await page.getByRole('link', { name: 'Open button docs' }).click();
     await expect(page).toHaveURL(/\/en\/docs\/components\/button$/);
   });
 

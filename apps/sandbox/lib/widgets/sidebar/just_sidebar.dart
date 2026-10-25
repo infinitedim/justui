@@ -1,6 +1,6 @@
-// justui-meta: registry=59ab3cf9e9a969e1cbe204067906cf40a6daf68a5f915c512200892689d7d7ba local=6218e3fa0863053720fe9fc8820380decc8c94c89d07ad3265d2655df2d92009
+// justui-meta: registry=38eebb99570893d2638d6e659f05f40f9be67ebb2eb8af6c922c0eb5dd8d3755 local=310de2ad772fe28f81c1b024267c01cb11420ae4a0838ff193d6e646f7420d4b
 import 'package:flutter/widgets.dart';
-import 'package:flutter/material.dart' show Theme;
+import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:sandbox/core/just_ui_core.dart';
 
 import '../shared/just_tooltip_overlay.dart';
@@ -541,16 +541,14 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
     final BorderRadius itemRadius =
         widget.themeStyle?.itemBorderRadius ?? .all(radius.md);
 
-    // Chevron pointing side (or left in RTL) when collapsed, down when expanded
+    // Chevron pointing to the reading side when collapsed, down when
+    // expanded. Flutter mirrors chevron_right in RTL itself, so RTL turns
+    // the other way to reach down.
     final Widget chevronIcon = RotationTransition(
-      turns: _expandAnimation.drive(Tween<double>(begin: 0.0, end: 0.25)),
-      child: Icon(
-        isRtl
-            ? const IconData(0xEA60, fontFamily: 'MaterialIcons')
-            : const IconData(0xEA61, fontFamily: 'MaterialIcons'),
-        size: 16.0,
-        color: widget.inactiveColor,
+      turns: _expandAnimation.drive(
+        Tween<double>(begin: 0.0, end: isRtl ? -0.25 : 0.25),
       ),
+      child: Icon(Icons.chevron_right, size: 16.0, color: widget.inactiveColor),
     );
 
     // Wrap the base item row layout to support folder toggling on folder header click

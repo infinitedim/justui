@@ -1,15 +1,13 @@
 'use client';
 
 // Client leaf: clipboard access and the copied state.
-import { useEffect, useRef, useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { useCopyText } from '@/lib/use-copy-text';
 import type {
   CopyControlProps,
   CopyControlVariant,
 } from './copy-control.types';
-
-const RESET_MS = 1600;
 
 const variants = {
   labelled:
@@ -33,22 +31,7 @@ export function CopyControl({
   className,
   children,
 }: CopyControlProps) {
-  const [copied, setCopied] = useState(false);
-  const timer = useRef<number | undefined>(undefined);
-
-  useEffect(() => () => window.clearTimeout(timer.current), []);
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      window.clearTimeout(timer.current);
-      timer.current = window.setTimeout(() => setCopied(false), RESET_MS);
-    } catch {
-      // Intentional fallback: clipboard access can be denied (insecure
-      // context, permissions); the command stays visible to select by hand.
-    }
-  }
+  const { copied, copy } = useCopyText(text);
 
   const Icon = copied ? Check : Copy;
   return (

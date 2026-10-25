@@ -1,4 +1,4 @@
-// justui-meta: registry=50bcab9746bc51e2cbf57e9512815cb7ad164703688a810e0add583700fb76ce local=72a444ff3daead2174706d48a5846a3ac19c0346e68f88f8e6399caafc13091a
+// justui-meta: registry=4392ae8d8864b038124ba60a4a7aa9cb452d34877e75f7d9c3a6728e0f967538 local=9f93bca7943c52e0277b8241401cc00e4b8cbf58f7cf101c6e9fa1d77cb18cb7
 import 'package:flutter/material.dart'
     show Colors, DateUtils, DateTimeRange, Icon, Icons, Theme;
 import 'package:flutter/services.dart'
@@ -662,8 +662,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
         : null;
 
     return Semantics(
-      label:
-          'Day ${date.day}, ${widget.locale.monthNames[date.month - 1]} ${date.year}',
+      label: widget.locale.dayLabelFor(date),
       selected: isHighlight,
       enabled: isSelectable,
       child: JustPressable(

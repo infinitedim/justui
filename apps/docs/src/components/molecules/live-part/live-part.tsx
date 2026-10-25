@@ -27,11 +27,21 @@ function kitStrings(dict: KitDictionary): Record<string, string | string[]> {
  * A part rendered by the real Flutter component (`apps/showcase`) over its
  * React fallback. The fallback renders on the server, holds the layout and
  * stays for no-JS, a missing bundle and browsers without Blink + WasmGC.
- * The live view sits in an absolutely placed host with the fallback's box,
+ * The live view sits in an absolutely placed box over the fallback's box,
  * so the swap cannot shift the layout; it crossfades in 150ms (instant
  * under reduced motion) and drops back to the fallback while the theme
- * switch runs. Flutter sets `touch-action: none` on its view, which traps
- * page scrolling on touch screens; `pan-y` gives vertical pans back to the
+ * switch runs.
+ *
+ * Every Flutter view has the same fixed size, centered vertically on the
+ * box, pinned to its left edge and clipped to it. The engine (3.47)
+ * rasterizes all views through one shared surface and can resize it for
+ * another view before this one renders
+ * (fixed upstream in flutter/flutter#194401, not yet in stable), which cuts
+ * off any view larger than another. Equal sizes make that harmless. Scenes
+ * stay within 280 x 328 (`apps/showcase/test/scenes/stage_heights_test.dart`).
+ *
+ * Flutter sets `touch-action: none` on its view, which traps page
+ * scrolling on touch screens; `pan-y` gives vertical pans back to the
  * page while taps and horizontal drags still reach Flutter.
  */
 export function LivePart({
@@ -71,12 +81,16 @@ export function LivePart({
         {children}
       </div>
       <div
-        ref={host}
         data-live-host=""
         inert={!live}
         aria-hidden={live ? undefined : true}
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-150 group-data-[state=live]/live:pointer-events-auto group-data-[state=live]/live:opacity-100 motion-reduce:transition-none [&_flutter-view]:touch-pan-y!"
-      />
+        className="pointer-events-none absolute inset-0 overflow-hidden opacity-0 transition-opacity duration-150 group-data-[state=live]/live:pointer-events-auto group-data-[state=live]/live:opacity-100 motion-reduce:transition-none"
+      >
+        <div
+          ref={host}
+          className="absolute top-[calc(50%-172px)] left-0 h-[344px] w-[320px] [&_flutter-view]:touch-pan-y!"
+        />
+      </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
-// justui-meta: registry=094b184d63cf355becae63591fc3e2ee330645f35565223c75b9effc6d0181fa local=ca5cc34762e7ee80ace7d274f1c0c165f7b898325ca87d6e8f209b0be26cd61c
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=9b37253c3a176078784844464e3eb44ff0ea2e597e4c3209be451ab98b98c1c6 local=77383790d5b4ff97ac5191ae467e8560604fd7cdf1674e57c7fc1d3a38d415cc
+import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/widgets.dart';
 
 import 'package:sandbox/core/just_ui_core.dart';
@@ -402,7 +402,7 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
         RotationTransition(
           turns: _rotationAnimation,
           child: Icon(
-            const IconData(0xe5c5, fontFamily: 'MaterialIcons'),
+            Icons.expand_more,
             color: widget.item.enabled
                 ? iconColor
                 : iconColor.withValues(alpha: 0.4),
@@ -499,10 +499,11 @@ class _JustAccordionItemWidgetState extends State<_JustAccordionItemWidget>
       children: <Widget>[headerButton, contentArea],
     );
 
+    // The title inside the header names the panel; the expanded flag lets
+    // each screen reader announce the state in the user's language.
     final Semantics semanticItemWidget = Semantics(
       container: true,
-      label: 'Accordion Panel: ${widget.item.title}',
-      value: widget.isExpanded ? 'Expanded' : 'Collapsed',
+      expanded: widget.isExpanded,
       enabled: widget.item.enabled,
       child: itemWidget,
     );

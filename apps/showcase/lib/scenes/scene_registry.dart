@@ -22,10 +22,8 @@ final Map<String, SceneBuilder> sceneRegistry = <String, SceneBuilder>{
 /// first. Together with [sceneRegistry] they cover all 33 public parts
 /// (`test/scenes/scene_registry_test.dart`).
 const Set<String> reactOnlyScenes = <String>{
-  // Core draws the chevron with codepoint 0xe5c5, which is `smart_toy` in
-  // Flutter's Material icon font.
-  'accordion',
-  // Same for its chevron: 0xe150 is `change_circle`.
+  // Its menu opens below the field, and a view has a fixed size: the
+  // options would be clipped (the React fallback is a native select).
   'select',
   // Core paints these surfaces only in private widgets inside an overlay
   // entry or portal, so they cannot render inline in a view yet.
@@ -45,11 +43,11 @@ const Set<String> reactOnlyScenes = <String>{
   'bottom-nav',
   'sidebar',
   'tabs',
-  // Screen readers hear core's English-only labels ("Day 20, ...",
-  // "Slide 1") on every locale.
-  'carousel',
-  'date-picker',
-  'date-range-picker',
+  // Flutter web (3.47) names a slider on its wrapper, not on the range
+  // input that takes focus, so the input has no accessible name (axe
+  // `label`); the resizable splitter is a slider too.
+  'slider',
+  'resizable',
   // Core shows its bar only while content overflows, and then the area is
   // a Tab stop with no visible focus.
   'scroll-area',

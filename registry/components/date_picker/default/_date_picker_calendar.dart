@@ -661,8 +661,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
         : null;
 
     return Semantics(
-      label:
-          'Day ${date.day}, ${widget.locale.monthNames[date.month - 1]} ${date.year}',
+      label: widget.locale.dayLabelFor(date),
       selected: isHighlight,
       enabled: isSelectable,
       child: JustPressable(

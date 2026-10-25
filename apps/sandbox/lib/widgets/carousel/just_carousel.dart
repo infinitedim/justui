@@ -1,4 +1,4 @@
-// justui-meta: registry=96faf13949072224758503fa49ead9605776d0d1c23b7c71a3c97aef4e5cfb81 local=e5e1cb138ff93267f7c93c86c93eed30a24869661b11b4d17854b535a7b3621d
+// justui-meta: registry=8c1a1bf206c158eb9e71374d36b695266a331035511cfb0fb5afebb367efbb1f local=d3de6fe25d8d23c97463c2354846bb8293917f144b0f71f35c82d2eef59a3622
 import 'dart:async' show Timer, unawaited;
 import 'dart:math' as math;
 
@@ -122,6 +122,7 @@ class JustCarousel extends StatefulWidget {
     this.autoScroll,
     this.indicator,
     this.indicatorPosition,
+    this.indicatorSemanticsLabel = 'Slide {index}',
     this.transition,
     this.transitionBuilder,
     this.interactiveIndicators,
@@ -166,6 +167,11 @@ class JustCarousel extends StatefulWidget {
 
   /// Relative placement of page indicators (inside vs outside slide bounds).
   final JustCarouselIndicatorPosition? indicatorPosition;
+
+  /// What screen readers say for each dot or line segment. `{index}` is the
+  /// 1-based slide number, so apps can pass a translation
+  /// (for example 'Ke slide {index}').
+  final String indicatorSemanticsLabel;
 
   /// Visual transition animation between adjacent slides.
   final JustCarouselTransition? transition;
@@ -748,7 +754,10 @@ class _JustCarouselState extends State<JustCarousel> {
           dotWidgets.add(
             Semantics(
               button: isInteractive,
-              label: 'Slide ${i + 1}',
+              label: widget.indicatorSemanticsLabel.replaceAll(
+                '{index}',
+                '${i + 1}',
+              ),
               selected: isActive,
               child: dot,
             ),
@@ -826,7 +835,10 @@ class _JustCarouselState extends State<JustCarousel> {
           segments.add(
             Semantics(
               button: isInteractive,
-              label: 'Slide ${i + 1}',
+              label: widget.indicatorSemanticsLabel.replaceAll(
+                '{index}',
+                '${i + 1}',
+              ),
               selected: isActive,
               child: segment,
             ),

@@ -76,6 +76,25 @@ describe('LivePart', () => {
     expect(host?.previousElementSibling).toHaveAttribute('aria-hidden', 'true');
   });
 
+  it('mounts every view at one fixed size, clipped to the part box', async () => {
+    const fake = installFakeFlutter();
+    const { part } = await renderPart();
+    await waitFor(() => expect(part.dataset.state).toBe('live'));
+    const options: unknown = fake.app.addView.mock.calls[0]?.[0];
+    const hostElement: unknown =
+      typeof options === 'object' && options !== null
+        ? Reflect.get(options, 'hostElement')
+        : undefined;
+    const clip = part.querySelector('[data-live-host]');
+    expect(hostElement).toBeInstanceOf(HTMLElement);
+    expect(
+      clip?.contains(hostElement instanceof Node ? hostElement : null)
+    ).toBe(true);
+    expect(hostElement).not.toBe(clip);
+    expect(clip).toHaveClass('overflow-hidden');
+    expect(hostElement).toHaveClass('w-[320px]', 'h-[344px]');
+  });
+
   it('shows the fallback until Flutter applied a new theme', async () => {
     const fake = installFakeFlutter();
     let resolveUpdate: () => void = () => {};

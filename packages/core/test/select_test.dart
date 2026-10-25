@@ -355,15 +355,8 @@ void main() {
         ),
       );
 
-      // Focus trigger
-      final Finder focusFinder = find
-          .descendant(
-            of: find.byType(JustSelect<String>),
-            matching: find.byType(Focus),
-          )
-          .first;
-      final FocusNode? focusNode = tester.widget<Focus>(focusFinder).focusNode;
-      focusNode?.requestFocus();
+      // Focus the trigger the way a keyboard user does.
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.pump();
 
       // Press Enter to open dropdown
