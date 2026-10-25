@@ -121,6 +121,7 @@ class JustCarousel extends StatefulWidget {
     this.autoScroll,
     this.indicator,
     this.indicatorPosition,
+    this.indicatorSemanticsLabel = 'Slide {index}',
     this.transition,
     this.transitionBuilder,
     this.interactiveIndicators,
@@ -165,6 +166,11 @@ class JustCarousel extends StatefulWidget {
 
   /// Relative placement of page indicators (inside vs outside slide bounds).
   final JustCarouselIndicatorPosition? indicatorPosition;
+
+  /// What screen readers say for each dot or line segment. `{index}` is the
+  /// 1-based slide number, so apps can pass a translation
+  /// (for example 'Ke slide {index}').
+  final String indicatorSemanticsLabel;
 
   /// Visual transition animation between adjacent slides.
   final JustCarouselTransition? transition;
@@ -747,7 +753,10 @@ class _JustCarouselState extends State<JustCarousel> {
           dotWidgets.add(
             Semantics(
               button: isInteractive,
-              label: 'Slide ${i + 1}',
+              label: widget.indicatorSemanticsLabel.replaceAll(
+                '{index}',
+                '${i + 1}',
+              ),
               selected: isActive,
               child: dot,
             ),
@@ -825,7 +834,10 @@ class _JustCarouselState extends State<JustCarousel> {
           segments.add(
             Semantics(
               button: isInteractive,
-              label: 'Slide ${i + 1}',
+              label: widget.indicatorSemanticsLabel.replaceAll(
+                '{index}',
+                '${i + 1}',
+              ),
               selected: isActive,
               child: segment,
             ),
