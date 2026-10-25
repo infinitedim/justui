@@ -233,7 +233,7 @@ test.describe('Flutter bridge on the components page', () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto('/en/docs/components');
     const first = page.locator('[data-live-part="button"]');
-    const last = page.locator('[data-live-part="resizable"]');
+    const last = page.locator('[data-live-part="separator"]');
     await expect(first).toHaveAttribute('data-state', 'live', {
       timeout: 30_000,
     });
