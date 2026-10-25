@@ -9,3 +9,8 @@ export interface GateProps {
   onSelect?: () => void;
   className?: string;
 }
+
+export interface GateLinesProps {
+  /** Pull the lines to 45%, as a gate does while its part is cut. */
+  narrow?: boolean;
+}

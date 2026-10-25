@@ -1,12 +1,43 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
 import {
   PRESETS,
   THEMES,
   flutterSettled,
   fontsReady,
+  hasFlutterBundle,
   visitAs,
 } from './helpers';
+
+const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
+
+/**
+ * The components page is long and loads its live parts near the viewport,
+ * so not every part is live at once. Each runner is brought to the middle
+ * of the screen, its parts go live, and axe scans it with the Flutter DOM.
+ */
+async function runnerViolations(page: Page): Promise<Array<unknown>> {
+  const violations: Array<unknown> = [];
+  const runners = page.getByRole('region');
+  const count = await runners.count();
+  for (let index = 0; index < count; index++) {
+    const runner = runners.nth(index);
+    await runner.evaluate((node) => node.scrollIntoView({ block: 'center' }));
+    const parts = runner.locator('[data-live-part]');
+    for (const part of await parts.all()) {
+      await expect(part).toHaveAttribute('data-state', 'live', {
+        timeout: 30_000,
+      });
+    }
+    const id = await runner.getAttribute('aria-labelledby');
+    const results = await new AxeBuilder({ page })
+      .withTags(WCAG)
+      .include(`section[aria-labelledby="${id ?? ''}"]`)
+      .analyze();
+    violations.push(...results.violations);
+  }
+  return violations;
+}
 
 test.describe('Accessibility (WCAG AA Compliance)', () => {
   const routes = [
@@ -35,9 +66,13 @@ test.describe('Accessibility (WCAG AA Compliance)', () => {
           expect(response?.status()).toBe(status);
           await fontsReady(page);
           // Live Flutter parts are scanned too: axe sees their semantics DOM.
-          await flutterSettled(page);
+          if (path.endsWith('/docs/components') && hasFlutterBundle()) {
+            expect(await runnerViolations(page)).toEqual([]);
+          } else {
+            await flutterSettled(page);
+          }
           const results = await new AxeBuilder({ page })
-            .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+            .withTags(WCAG)
             .analyze();
           expect(results.violations).toEqual([]);
         });

@@ -218,3 +218,61 @@ test.describe('Flutter bridge on touch screens', () => {
       .toBeGreaterThan(before + 50);
   });
 });
+
+test.describe('Flutter bridge on the components page', () => {
+  test.skip(
+    !hasFlutterBundle(),
+    'no Flutter bundle: run bun run flutter:build'
+  );
+
+  test('mounts parts near the viewport and removes them after they leave', async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await visitAs(page, 'default', 'light');
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/en/docs/components');
+    const first = page.locator('[data-live-part="button"]');
+    const last = page.locator('[data-live-part="resizable"]');
+    await expect(first).toHaveAttribute('data-state', 'live', {
+      timeout: 30_000,
+    });
+    await expect(last).toHaveAttribute('data-state', 'fallback');
+    await last.scrollIntoViewIfNeeded();
+    await expect(last).toHaveAttribute('data-state', 'live', {
+      timeout: 30_000,
+    });
+    // Views that left the viewport go away after a short grace period.
+    await expect(first.locator('flutter-view')).toHaveCount(0, {
+      timeout: 10_000,
+    });
+    expect(errors).toEqual([]);
+  });
+
+  test('every view has the same size and its scene is not cut off', async ({
+    page,
+  }) => {
+    await visitAs(page, 'neobrutalism', 'dark');
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/en/docs/components');
+    const calendar = page.locator('[data-live-part="date-picker"]');
+    await calendar.evaluate((part) => part.scrollIntoView({ block: 'center' }));
+    await expect(calendar).toHaveAttribute('data-state', 'live', {
+      timeout: 30_000,
+    });
+    const sizes = await page.locator('flutter-view').evaluateAll((views) =>
+      views.map((view) => {
+        const box = view.getBoundingClientRect();
+        return `${Math.round(box.width)}x${Math.round(box.height)}`;
+      })
+    );
+    expect(new Set(sizes)).toEqual(new Set(['320x344']));
+    // The last day of the month sits at the bottom of the calendar: it is
+    // exposed (so drawn) inside the visible part box.
+    const box = await calendar.boundingBox();
+    const day = await calendar
+      .getByRole('button', { name: /^October 31, 2025/ })
+      .boundingBox();
+    expect(box && day && day.y + day.height <= box.y + box.height).toBe(true);
+  });
+});

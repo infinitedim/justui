@@ -51,7 +51,7 @@ test.describe('Landing interactions', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: 'Every part on the runner' })
     ).toBeVisible();
-    await page.getByRole('link', { name: '07 button' }).click();
+    await page.getByRole('link', { name: 'Open button docs' }).click();
     await expect(page).toHaveURL(/\/en\/docs\/components\/button$/);
   });
 
