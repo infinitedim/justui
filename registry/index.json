@@ -1,9 +1,9 @@
 {
-  "version": "0.15.0",
+  "version": "0.16.0",
   "components": [
     {
       "name": "button",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Versatile interactive button with dynamic variant and scale-down state animations.",
       "category": "primitive",
       "hidden": false,
@@ -44,11 +44,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "icon-button",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Premium icon button with tooltip assertions and press interactions. Requires base button component.",
       "category": "composite",
       "hidden": false,
@@ -68,11 +71,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "input",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Interactive text field component with dynamic label animations and form state bindings.",
       "category": "primitive",
       "hidden": false,
@@ -104,11 +110,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "badge",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Tag indicator widget supporting outline states and animated pulsing dot halos.",
       "category": "primitive",
       "hidden": false,
@@ -135,15 +144,21 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "avatar",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Image avatar with fallback initials generator and presence status indicators.",
       "category": "primitive",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable", "_shared_focus_indicator"],
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -171,15 +186,20 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "avatar-group",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Avatar stack container displaying overlapping avatars with remainder counts. Requires base avatar component.",
       "category": "composite",
       "hidden": false,
-      "registryDependencies": ["avatar"],
+      "registryDependencies": [
+        "avatar"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -190,15 +210,21 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "checkbox",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "High-performance checkbox selection primitive supporting checked, unchecked, and mixed states.",
       "category": "selection",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable", "_shared_focus_indicator"],
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -221,15 +247,21 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "radio",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "High-performance radio button selection primitive with custom paint animations.",
       "category": "selection",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable", "_shared_focus_indicator"],
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -257,15 +289,20 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "radio-group",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Radio button container laying out radio options in horizontal or vertical lists. Requires base radio component.",
       "category": "composite",
       "hidden": false,
-      "registryDependencies": ["radio"],
+      "registryDependencies": [
+        "radio"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -276,15 +313,21 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "switch",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Premium animated toggle switch component with tap and horizontal drag gestures.",
       "category": "selection",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable", "_shared_focus_indicator"],
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -307,15 +350,21 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "card",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Customizable content card supporting elevated, outlined, and filled states.",
       "category": "layout",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable", "_shared_focus_indicator"],
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -338,11 +387,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "separator",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Visual divider widget supporting horizontal and vertical directions and centered text labels.",
       "category": "layout",
       "hidden": false,
@@ -369,15 +421,21 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "scroll-area",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Performance-optimized scroll viewport with custom scrollbars, fade edges, and scroll-to-top overlays.",
       "category": "layout",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable", "_shared_focus_indicator"],
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -400,15 +458,20 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "resizable",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Flexible resizable panel layout with isolated fraction drag math, keyboard navigation, and splitter handles.",
       "category": "layout",
       "hidden": false,
-      "registryDependencies": ["_shared_focus_indicator"],
+      "registryDependencies": [
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -436,15 +499,21 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "carousel",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Accessible and performant carousel with infinite looping, auto-scroll, interactive indicators, and smooth transitions.",
       "category": "layout",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable", "_shared_focus_indicator"],
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -472,11 +541,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "_shared_pressable",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Internal shared interactive press/hover state tracker.",
       "category": "internal",
       "internal": true,
@@ -492,11 +564,13 @@
           }
         ]
       },
-      "supportedPresets": ["default"]
+      "supportedPresets": [
+        "default"
+      ]
     },
     {
       "name": "_shared_focus_indicator",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Internal shared focus outline indicator ring overlay.",
       "category": "internal",
       "internal": true,
@@ -512,11 +586,13 @@
           }
         ]
       },
-      "supportedPresets": ["default"]
+      "supportedPresets": [
+        "default"
+      ]
     },
     {
       "name": "skeleton",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Structure-aware skeleton loading placeholder with recursive transformation and custom manual shape named constructors.",
       "category": "layout",
       "hidden": false,
@@ -550,15 +626,20 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "slider",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Accessible and performant slider component for single value and range selection.",
       "category": "form",
       "hidden": false,
-      "registryDependencies": ["_shared_focus_indicator"],
+      "registryDependencies": [
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -581,11 +662,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "_shared_progress_spinner",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Internal shared rotatory loading progress spinner.",
       "category": "internal",
       "internal": true,
@@ -601,15 +685,19 @@
           }
         ]
       },
-      "supportedPresets": ["default"]
+      "supportedPresets": [
+        "default"
+      ]
     },
     {
       "name": "breadcrumb",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Premium text link layout breadcrumbs with collapsible middle items and custom overlay dropdown.",
       "category": "navigation",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable"],
+      "registryDependencies": [
+        "_shared_pressable"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -637,15 +725,20 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "tabs",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Tabs component supporting line, enclosed, pill, and vertical variants with lazy loading and keyboard navigation.",
       "category": "navigation",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable"],
+      "registryDependencies": [
+        "_shared_pressable"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -678,15 +771,20 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "bottom-nav",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Navigation bar component supporting fixed, shifting, and floating layout structures.",
       "category": "navigation",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable"],
+      "registryDependencies": [
+        "_shared_pressable"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -714,11 +812,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "_shared_overlay_transition",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Internal shared overlay transition animations.",
       "category": "internal",
       "internal": true,
@@ -734,16 +835,20 @@
           }
         ]
       },
-      "supportedPresets": ["default"]
+      "supportedPresets": [
+        "default"
+      ]
     },
     {
       "name": "_shared_tooltip_overlay",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Internal shared layout-phase tooltip overlay portal.",
       "category": "internal",
       "internal": true,
       "hidden": true,
-      "registryDependencies": ["tooltip"],
+      "registryDependencies": [
+        "tooltip"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -754,15 +859,20 @@
           }
         ]
       },
-      "supportedPresets": ["default"]
+      "supportedPresets": [
+        "default"
+      ]
     },
     {
       "name": "sidebar",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Collapsible navigation sidebar supporting recursive folder sub-menus and hover tooltips.",
       "category": "navigation",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable", "_shared_tooltip_overlay"],
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_tooltip_overlay"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -790,11 +900,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "toast",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Stacked/queued notification toasts with auto-dismiss, swipe-to-dismiss, and variant icons.",
       "category": "overlay",
       "hidden": false,
@@ -826,11 +939,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "dialog",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Modal dialog overlay with barrier, focus trapping, and position-aware animations.",
       "category": "overlay",
       "hidden": false,
@@ -862,11 +978,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "sheet",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Slide-in sheet overlay with drag-to-dismiss, directional animations, and barrier support.",
       "category": "overlay",
       "hidden": false,
@@ -898,11 +1017,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "tooltip",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Declarative tooltip widget with auto-positioning, hover/long-press triggers, and delay controls.",
       "category": "overlay",
       "hidden": false,
@@ -934,15 +1056,21 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "select",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Dropdown select component with customizable overlay positioning and optional search filter.",
       "category": "primitive",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable", "_shared_focus_indicator"],
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -970,11 +1098,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "progress",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Linear progress bar and circular progress indicator supporting both determinate and indeterminate states.",
       "category": "primitive",
       "hidden": false,
@@ -1006,15 +1137,21 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "accordion",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Expandable panel accordion with single-expand or multi-expand modes.",
       "category": "primitive",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable", "_shared_focus_indicator"],
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -1042,15 +1179,21 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "toggle",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Single toggle button and toggle groups for radio or checkbox behaviors.",
       "category": "primitive",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable", "_shared_focus_indicator"],
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -1083,15 +1226,21 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "table",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Data table supporting sorting, selection, and sticky header.",
       "category": "primitive",
       "hidden": false,
-      "registryDependencies": ["_shared_pressable", "_shared_focus_indicator"],
+      "registryDependencies": [
+        "_shared_pressable",
+        "_shared_focus_indicator"
+      ],
       "pubDependencies": {},
       "files": {
         "common": [
@@ -1119,11 +1268,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "date-picker",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Full-featured calendar date picker with inline, modal, and dropdown variants.",
       "category": "composite",
       "hidden": false,
@@ -1166,15 +1318,21 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "date-range-picker",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Date range selection picker with quick presets (Today, Last 7 Days, etc.).",
       "category": "composite",
       "hidden": false,
-      "registryDependencies": ["date-picker", "_shared_pressable"],
+      "registryDependencies": [
+        "date-picker",
+        "_shared_pressable"
+      ],
       "pubDependencies": {},
       "files": {
         "default": [
@@ -1185,15 +1343,21 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     },
     {
       "name": "time-picker",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "description": "Full-featured clock time picker with dial, spinner, and direct numeric input modes.",
       "category": "composite",
       "hidden": false,
-      "dependencies": ["button", "input"],
+      "dependencies": [
+        "button",
+        "input"
+      ],
       "registryDependencies": [
         "button",
         "input",
@@ -1245,8 +1409,14 @@
           }
         ]
       },
-      "supportedPresets": ["default", "neobrutalism"]
+      "supportedPresets": [
+        "default",
+        "neobrutalism"
+      ]
     }
   ],
-  "presets": ["default", "neobrutalism"]
+  "presets": [
+    "default",
+    "neobrutalism"
+  ]
 }
