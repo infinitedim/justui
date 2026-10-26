@@ -737,7 +737,7 @@ import 'package:just_ui_tokens/just_ui_tokens.dart'
 
         let shared_comp = RegistryComponent {
             name: "_shared_pressable".to_string(),
-            version: "0.14.0".to_string(),
+            version: "0.15.0".to_string(),
             description: String::new(),
             category: "internal".to_string(),
             internal: true,
@@ -759,7 +759,7 @@ import 'package:just_ui_tokens/just_ui_tokens.dart'
 
         let accordion_comp = RegistryComponent {
             name: "accordion".to_string(),
-            version: "0.14.0".to_string(),
+            version: "0.15.0".to_string(),
             description: String::new(),
             category: "primitive".to_string(),
             internal: false,
@@ -826,7 +826,7 @@ import 'package:just_ui_tokens/just_ui_tokens.dart'
 
         let tooltip_comp = RegistryComponent {
             name: "tooltip".to_string(),
-            version: "0.14.0".to_string(),
+            version: "0.15.0".to_string(),
             description: String::new(),
             category: "overlay".to_string(),
             internal: false,
@@ -848,7 +848,7 @@ import 'package:just_ui_tokens/just_ui_tokens.dart'
 
         let shared_overlay_comp = RegistryComponent {
             name: "_shared_tooltip_overlay".to_string(),
-            version: "0.14.0".to_string(),
+            version: "0.15.0".to_string(),
             description: String::new(),
             category: "internal".to_string(),
             internal: true,

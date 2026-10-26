@@ -65,7 +65,7 @@ mod tests {
         let keypair = official_keypair();
         assert_eq!(keypair.pk.as_ref(), JUSTUI_REGISTRY_PUBKEY);
 
-        let data = b"{\"version\": \"0.14.0\", \"components\": []}";
+        let data = b"{\"version\": \"0.15.0\", \"components\": []}";
         let sig_hex = sign_content(data, &keypair);
         assert_eq!(sig_hex.len(), 128);
 
@@ -74,7 +74,7 @@ mod tests {
         assert!(verify_res.is_ok());
 
         // Tampered data fails verification
-        let tampered_data = b"{\"version\": \"0.14.0\", \"components\": [\"malicious\"]}";
+        let tampered_data = b"{\"version\": \"0.15.0\", \"components\": [\"malicious\"]}";
         let fail_res = verify_signature(tampered_data, &sig_hex, JUSTUI_REGISTRY_PUBKEY);
         assert!(fail_res.is_err());
         let err_msg = fail_res.unwrap_err().to_string();
@@ -107,7 +107,7 @@ mod tests {
             "https://raw.githubusercontent.com/infinitedim/justui/main/registry"
         ));
         assert!(is_official_registry(
-            "https://raw.githubusercontent.com/infinitedim/justui/v0.14.0/registry"
+            "https://raw.githubusercontent.com/infinitedim/justui/v0.15.0/registry"
         ));
         assert!(!is_official_registry("https://evil.com/registry"));
         assert!(!is_official_registry("/tmp/local-registry"));
