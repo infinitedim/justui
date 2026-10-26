@@ -131,7 +131,7 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Install cargo-auditable and cross
-        uses: taiki-e/install-action@2c41309d51ede152b6f2ee6bf3b71e6dc9a8b7df # v2.49.27
+        uses: taiki-e/install-action@1e29709c0ec63babbe8f266397a465f29a825f91 # v2.87.31
         with:
           tool: cargo-auditable,cross
 
@@ -180,7 +180,7 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Install cargo-auditable
-        uses: taiki-e/install-action@2c41309d51ede152b6f2ee6bf3b71e6dc9a8b7df # v2.49.27
+        uses: taiki-e/install-action@1e29709c0ec63babbe8f266397a465f29a825f91 # v2.87.31
         with:
           tool: cargo-auditable
 
@@ -222,7 +222,7 @@ jobs:
           targets: x86_64-pc-windows-msvc
 
       - name: Install cargo-auditable
-        uses: taiki-e/install-action@2c41309d51ede152b6f2ee6bf3b71e6dc9a8b7df # v2.49.27
+        uses: taiki-e/install-action@1e29709c0ec63babbe8f266397a465f29a825f91 # v2.87.31
         with:
           tool: cargo-auditable
 
