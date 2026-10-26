@@ -139,10 +139,25 @@ test.describe('Flutter bridge on the 404', () => {
   }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.addInitScript(() => {
+      // Count only shifts from the swap: the window opens once the fonts
+      // are in and Flutter has attached a view. Earlier shifts (the font
+      // swap, the 404 picking its parts from the path) are page load; they
+      // move a part along with its row and are not the swap's doing.
       const shifts: Array<string> = [];
       Reflect.set(window, '__liveShifts', shifts);
+      let opened = Number.POSITIVE_INFINITY;
+      const views = new MutationObserver(() => {
+        if (!document.querySelector('[data-live-host] flutter-view')) return;
+        views.disconnect();
+        void (async () => {
+          await document.fonts.ready;
+          opened = performance.now();
+        })();
+      });
+      views.observe(document, { childList: true, subtree: true });
       new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
+          if (entry.startTime < opened) continue;
           const sources: Array<{ node?: Node | null }> =
             Reflect.get(entry, 'sources') ?? [];
           for (const source of sources) {
