@@ -159,6 +159,7 @@ test.describe('Flutter bridge on the 404: theme and layout', () => {
         void (async () => {
           await document.fonts.ready;
           opened = performance.now();
+          Reflect.set(window, '__liveWindowOpened', true);
         })();
       });
       views.observe(document, { childList: true, subtree: true });
@@ -179,6 +180,10 @@ test.describe('Flutter bridge on the 404: theme and layout', () => {
     await visitAs(page, 'default', 'light');
     await page.goto(PATH);
     await flutterSettled(page);
+    // The window must have opened, or the check below proves nothing.
+    expect(
+      await page.evaluate(() => Reflect.get(window, '__liveWindowOpened'))
+    ).toBe(true);
     expect(
       await page.evaluate(() => Reflect.get(window, '__liveShifts'))
     ).toEqual([]);

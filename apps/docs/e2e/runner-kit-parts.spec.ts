@@ -12,6 +12,12 @@ import { PRESETS, blockFlutter, visitAs } from './helpers';
 
 const TRANSPARENT = 'rgba(0, 0, 0, 0)';
 
+/** The active-tab underline: 2px by default, 4px in neobrutalism. */
+const UNDERLINE = {
+  default: /0px -2px 0px 0px inset/,
+  neobrutalism: /0px -4px 0px 0px inset/,
+} as const;
+
 /** The decorative box a native control draws right after its input. */
 function controlBox(control: Locator): Locator {
   return control.locator(
@@ -52,7 +58,8 @@ for (const preset of PRESETS) {
         .first()
         .getByRole('radio', { checked: true });
       const dot = controlBox(radio).locator('span');
-      await expect(dot).not.toHaveCSS('transform', 'matrix(0, 0, 0, 0, 0, 0)');
+      // Tailwind 4 scales with the `scale` property, not `transform`.
+      await expect(dot).toHaveCSS('scale', '1');
       await expectHeight(dot);
     });
 
@@ -68,7 +75,7 @@ for (const preset of PRESETS) {
       const tab = page
         .getByRole('tablist', { name: 'Settings sections' })
         .getByRole('tab', { selected: true });
-      await expect(tab).not.toHaveCSS('box-shadow', 'none');
+      await expect(tab).toHaveCSS('box-shadow', UNDERLINE[preset]);
     });
 
     test('the current bottom-nav item has its indicator', async ({ page }) => {
