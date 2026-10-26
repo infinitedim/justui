@@ -52,7 +52,7 @@ export function CustomSearchDialog({ lang, ...props }: SharedProps) {
         }}
         className="border-border bg-card max-w-2xl rounded-lg border-(length:--just-border-width) [box-shadow:var(--just-shadow-solid)]"
       >
-        <SearchDialogInput className="border-border bg-card text-foreground w-full border-b-(length:--just-border-width) px-4 py-3 text-lg focus:outline-none" />
+        <SearchDialogInput className="border-border bg-card text-foreground placeholder:text-muted w-full border-b-(length:--just-border-width) px-4 py-3 text-lg focus:outline-none" />
         <SearchDialogList
           items={query.data !== 'empty' ? query.data : null}
           className="max-h-100 overflow-y-auto p-2"

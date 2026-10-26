@@ -37,7 +37,7 @@ export function KitTabs({ label, tabs, className }: KitTabsProps) {
             className={cn(
               'h-9.5 cursor-pointer px-3 text-sm whitespace-nowrap transition-shadow duration-200',
               selected
-                ? 'text-ip-text-primary neo:shadow-[inset_0_-4px_0_var(--ip-inverse)] font-(--ip-strong-weight)'
+                ? 'text-ip-text-primary neo:shadow-[inset_0_-4px_0_var(--ip-inverse)] font-(--ip-strong-weight) shadow-[inset_0_-2px_0_var(--ip-inverse)]'
                 : 'text-ip-text-tertiary font-medium'
             )}
           >
@@ -73,7 +73,7 @@ export function KitSidebar({
           aria-current={index === current ? 'page' : undefined}
           onClick={() => setCurrent(index)}
           className={cn(
-            'cursor-pointer rounded-[6px] px-2.5 py-2 text-left text-[13px]',
+            'neo:rounded-none cursor-pointer rounded-[6px] px-2.5 py-2 text-left text-[13px]',
             index === current
               ? 'bg-(--ip-part-selected-item-bg) font-(--ip-strong-weight) text-(--ip-part-selected-item-fg)'
               : 'text-ip-text-primary hover:bg-ip-hover font-medium'
@@ -120,7 +120,7 @@ export function KitBottomNav({
           <span
             aria-hidden="true"
             className={cn(
-              'bg-ip-inverse neo:h-1 neo:rounded-none w-5 transition-transform duration-200',
+              'bg-ip-inverse neo:h-1 neo:rounded-none h-0.75 w-5 rounded-full transition-transform duration-200',
               index === current ? 'scale-x-100' : 'scale-x-0'
             )}
           />

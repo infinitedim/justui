@@ -24,7 +24,7 @@ export function KitTable({ columns, rows, className }: KitTableProps) {
               className={cn(
                 cell,
                 rule,
-                'bg-ip-sunken text-ip-text-secondary font-semibold'
+                'bg-ip-sunken neo:bg-ip-surface text-ip-text-secondary font-semibold'
               )}
             >
               {column}

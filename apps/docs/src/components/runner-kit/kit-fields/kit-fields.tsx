@@ -54,7 +54,7 @@ export function KitInput({
       {invalid ? (
         <p
           id={`${id}-error`}
-          className="text-ip-error neo:font-bold flex items-start gap-1.5 text-[13px]/4.5"
+          className="text-ip-error neo:font-bold flex items-start gap-1.5 text-[13px]/4.5 font-medium"
         >
           <OctagonX size={16} aria-hidden="true" className="mt-px shrink-0" />
           {errorMessage}

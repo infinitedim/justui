@@ -23,7 +23,7 @@ export function KitToggle({
         'text-ip-text-primary flex size-10 cursor-pointer items-center justify-center rounded-(--ip-radius-control) border-(length:--ip-line) border-(--ip-part-control-border)',
         pressed
           ? 'bg-(--ip-part-selected-item-bg) text-(--ip-part-selected-item-fg)'
-          : 'neo:bg-ip-surface shadow-(--ip-shadow-primary)',
+          : 'neo:bg-ip-surface bg-transparent shadow-(--ip-shadow-primary)',
         className
       )}
     >
