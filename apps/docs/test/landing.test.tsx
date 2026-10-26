@@ -130,7 +130,9 @@ describe('landing page', () => {
       )
     ).toBeInTheDocument();
   });
+});
 
+describe('landing page sections', () => {
   it('switches between before and after under reduced motion', async () => {
     const { container } = await renderLanding('en');
     const slot = container.querySelector<HTMLElement>('[data-cut="slot"]');
@@ -197,7 +199,9 @@ describe('landing page', () => {
     expect(within(band).getByText('lib/widgets/button/')).toBeInTheDocument();
     expect(within(band).getByText('+ 4 more files')).toBeInTheDocument();
   });
+});
 
+describe('landing page tokens, locales and fonts', () => {
   it('compares the preset tokens and keeps covered demo buttons inert', async () => {
     const { container } = await renderLanding('en');
     const features = screen.getByRole('region', {

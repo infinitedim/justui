@@ -36,19 +36,19 @@ async function renderPart() {
   return { ...view, part };
 }
 
+beforeEach(() => {
+  vi.resetModules();
+  theme = 'light';
+  vi.stubGlobal('IntersectionObserver', VisibleObserver);
+});
+
+afterEach(() => {
+  removeFakeFlutter();
+  vi.unstubAllGlobals();
+  document.documentElement.removeAttribute('data-theme-switching');
+});
+
 describe('LivePart', () => {
-  beforeEach(() => {
-    vi.resetModules();
-    theme = 'light';
-    vi.stubGlobal('IntersectionObserver', VisibleObserver);
-  });
-
-  afterEach(() => {
-    removeFakeFlutter();
-    vi.unstubAllGlobals();
-    document.documentElement.removeAttribute('data-theme-switching');
-  });
-
   it('keeps the fallback where Flutter cannot run', async () => {
     const { part } = await renderPart();
     expect(part.dataset.state).toBe('fallback');
@@ -94,7 +94,9 @@ describe('LivePart', () => {
     expect(clip).toHaveClass('overflow-hidden');
     expect(hostElement).toHaveClass('w-[320px]', 'h-[344px]');
   });
+});
 
+describe('LivePart and the theme', () => {
   it('shows the fallback until Flutter applied a new theme', async () => {
     const fake = installFakeFlutter();
     let resolveUpdate: () => void = () => {};

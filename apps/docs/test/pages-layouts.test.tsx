@@ -169,7 +169,9 @@ describe('App Router Pages and Layouts', () => {
       expect(langStaticParams()).toEqual([{ lang: 'en' }, { lang: 'id' }]);
     });
   });
+});
 
+describe('App Router Pages and Layouts (home, templates, docs layout)', () => {
   describe('HomePage', () => {
     it('returns static params for all supported languages', () => {
       const params = homeStaticParams();
@@ -211,7 +213,9 @@ describe('App Router Pages and Layouts', () => {
       expect(screen.getByTestId('docs-child')).toBeInTheDocument();
     });
   });
+});
 
+describe('App Router Pages and Layouts (docs page)', () => {
   describe('Page (SlugPage)', () => {
     it('renders documentation page when page exists', async () => {
       const mockMDX = () => <div data-testid="mdx-content">MDX Text</div>;

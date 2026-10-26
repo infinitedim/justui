@@ -241,9 +241,17 @@ export default [
         'warn',
         { max: 200, skipBlankLines: true, skipComments: true },
       ],
+    },
+  },
+
+  // Functions stay under 80 lines in every file, tests and scripts included
+  // (docs-web.md). An error, so CI fails on it: `eslint .` passes warnings.
+  {
+    files: ['**/*.{js,mjs,ts,tsx}'],
+    rules: {
       'max-lines-per-function': [
-        'warn',
-        { max: 200, skipBlankLines: true, skipComments: true },
+        'error',
+        { max: 80, skipBlankLines: true, skipComments: true },
       ],
     },
   },

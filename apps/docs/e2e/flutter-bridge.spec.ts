@@ -110,6 +110,13 @@ test.describe('Flutter bridge on the 404', () => {
     await page.keyboard.press('Shift+Tab');
     await expect(github).toBeFocused();
   });
+});
+
+test.describe('Flutter bridge on the 404: theme and layout', () => {
+  test.skip(
+    !hasFlutterBundle(),
+    'no Flutter bundle: run bun run flutter:build'
+  );
 
   test('follows the theme switch, the preset and the locale', async ({
     page,

@@ -80,7 +80,9 @@ describe('Library Helpers', () => {
       expect(urls).toEqual(['/id/docs/introduction', '/id/docs/components']);
     });
   });
+});
 
+describe('Library Helpers (presets and themes)', () => {
   describe('presets.ts', () => {
     it('validates preset values', () => {
       expect(PRESETS).toEqual(['default', 'neobrutalism']);

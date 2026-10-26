@@ -95,7 +95,9 @@ describe('components page', () => {
     const label = screen.getByRole('button', { name: /^07 button\b/ });
     expect(label).toHaveAccessibleName('07 button - Copy justui add button');
   });
+});
 
+describe('components page locales and links', () => {
   it('renders the Indonesian page on /id', async () => {
     await renderPage('id');
     expect(

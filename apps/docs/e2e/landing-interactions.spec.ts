@@ -56,7 +56,9 @@ test.describe('Landing interactions', () => {
     await page.getByRole('link', { name: 'Open button docs' }).click();
     await expect(page).toHaveURL(/\/en\/docs\/components\/button$/);
   });
+});
 
+test.describe('Landing layout and focus', () => {
   test('has no horizontal scroll at 360px', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 780 });
     for (const path of ['/en', '/id', '/en/docs/components', '/en/buton']) {

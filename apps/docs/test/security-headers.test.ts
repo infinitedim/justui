@@ -28,33 +28,54 @@ function createSearchRequest(
   return req as unknown as NextRequest;
 }
 
-describe('security headers and CSP baseline', () => {
-  it('locks all required production security headers and CSP directives', async () => {
-    const resolvedConfig =
-      typeof nextConfig === 'function'
-        ? await (
-            nextConfig as (
-              phase: string,
-              context: { defaultConfig: unknown }
-            ) => Promise<{ headers?: () => Promise<Array<unknown>> }>
-          )('phase-production-build', { defaultConfig: {} })
-        : nextConfig;
+/** The headers next.config.ts sends on every route, by name. */
+async function productionHeaders(): Promise<Map<string, string>> {
+  const resolvedConfig =
+    typeof nextConfig === 'function'
+      ? await (
+          nextConfig as (
+            phase: string,
+            context: { defaultConfig: unknown }
+          ) => Promise<{ headers?: () => Promise<Array<unknown>> }>
+        )('phase-production-build', { defaultConfig: {} })
+      : nextConfig;
 
-    expect(resolvedConfig).toBeDefined();
-    expect(typeof resolvedConfig.headers).toBe('function');
+  expect(resolvedConfig).toBeDefined();
+  expect(typeof resolvedConfig.headers).toBe('function');
 
-    const headersList = (await resolvedConfig.headers!()) as Array<{
-      source: string;
-      headers: Array<{ key: string; value: string }>;
-    }>;
+  const headersList = (await resolvedConfig.headers!()) as Array<{
+    source: string;
+    headers: Array<{ key: string; value: string }>;
+  }>;
 
-    const rootRule = headersList.find((entry) => entry.source === '/(.*)');
-    expect(rootRule).toBeDefined();
+  const rootRule = headersList.find((entry) => entry.source === '/(.*)');
+  expect(rootRule).toBeDefined();
 
-    const headerMap = new Map<string, string>();
-    for (const item of rootRule!.headers) {
-      headerMap.set(item.key, item.value);
+  const headerMap = new Map<string, string>();
+  for (const item of rootRule!.headers) {
+    headerMap.set(item.key, item.value);
+  }
+  return headerMap;
+}
+
+/** The CSP split into its directives and their sources. */
+function cspDirectives(csp: string): Map<string, Array<string>> {
+  const directives = new Map<string, Array<string>>();
+  for (const rawDirective of csp.split(';')) {
+    const trimmed = rawDirective.trim();
+    if (!trimmed) {
+      continue;
     }
+    const parts = trimmed.split(/\s+/);
+    const name = parts[0]!;
+    directives.set(name, parts.slice(1));
+  }
+  return directives;
+}
+
+describe('security headers and CSP baseline', () => {
+  it('locks all required production security headers', async () => {
+    const headerMap = await productionHeaders();
 
     // Required security headers
     expect(headerMap.get('X-Content-Type-Options')).toBe('nosniff');
@@ -74,21 +95,14 @@ describe('security headers and CSP baseline', () => {
     expect(headerMap.get('Strict-Transport-Security')).toBe(
       'max-age=31536000; includeSubDomains; preload'
     );
+  });
 
+  it('locks the CSP directives', async () => {
+    const headerMap = await productionHeaders();
     // CSP directive validation
     const csp = headerMap.get('Content-Security-Policy');
     expect(csp).toBeDefined();
-
-    const directives = new Map<string, Array<string>>();
-    for (const rawDirective of csp!.split(';')) {
-      const trimmed = rawDirective.trim();
-      if (!trimmed) {
-        continue;
-      }
-      const parts = trimmed.split(/\s+/);
-      const name = parts[0]!;
-      directives.set(name, parts.slice(1));
-    }
+    const directives = cspDirectives(csp!);
 
     expect(directives.get('default-src')).toEqual(["'self'"]);
     expect(directives.get('object-src')).toEqual(["'none'"]);

@@ -96,7 +96,9 @@ describe('style guards (UI audit)', () => {
       .map((f) => f.rel);
     expect(offenders).toEqual([]);
   });
+});
 
+describe('style guards (component boundaries)', () => {
   it('never overrides a fumadocs display class with our own media variant', () => {
     // fumadocs-ui/style.css is precompiled Tailwind. Its rules land later in
     // the same utilities layer, and the minifier keeps only the last copy of
