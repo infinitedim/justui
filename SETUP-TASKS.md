@@ -235,30 +235,47 @@ infinitedim/justui` when `gh` is installed and logged in; otherwise
 
 ## Security settings (do these yourself on GitHub and in Antigravity)
 
-68. Settings > General: enable immutable releases. First change
-    `release.yaml` so the release is created as a draft, all assets are
-    uploaded, and only then published: assets cannot be added to a
-    published immutable release. Check how the pinned
-    `softprops/action-gh-release` version orders create and upload.
-69. Settings > Actions: require actions to be pinned to a full-length commit
-    SHA (after item 59).
-70. Rulesets: (a) tags `v*`: restrict creations, updates and deletions to
-    you, block force pushes. (b) `main`: block force pushes and deletion,
+68. Done (partial, 2026-11-08): Settings > General: enable immutable releases.
+    The setting is ON (checked through the API). `release.yaml` now creates a
+    draft, uploads every asset, then publishes it with the release id from
+    the create step. Not verified: a real release run. A test tag becomes
+    permanent once published (immutable), so use a throwaway `-rc.N` tag.
+    After the first release check `gh api repos/infinitedim/justui/releases/latest --jq .immutable`
+    prints `true`. The v0.15.0 release run failed in the build jobs (see
+    item 83), so no release has used the new steps yet.
+69. Done (verified 2026-11-08): Settings > Actions: require actions to be pinned
+    to a full-length commit SHA (`sha_pinning_required` is true; every `uses:`
+    is a 40-character SHA).
+70. Open (checked 2026-11-08): Rulesets: (a) tags `v*`: restrict creations, updates and deletions to
+    you, block force pushes. No tag ruleset exists yet. (b) `main`: block force pushes and deletion,
     require CI status checks, require a pull request with review. You
     cannot approve your own PR, so add yourself to the bypass list (or set
     required approvals to 0 and rely on the PR plus checks). The
     `apply-changesets` job pushes straight to `main` with `GITHUB_TOKEN`,
     which this ruleset will reject: either let it open a PR instead, or add
     the GitHub Actions app to the bypass list (weaker).
-71. Environment `release`: you as required reviewer, deployment limited to
-    `v*` tags.
-72. Code security: confirm secret scanning, push protection, Dependabot
+    Found on 2026-11-08: ruleset `protect-main` exists but its target list
+    is empty (a bot pushed to `main` directly on 2026-10-26), it has no
+    required status checks, it needs linear history (no merge commits) and
+    code owner review without a CODEOWNERS file. Required checks must be
+    green first: `nextjs-ci`, `CLI - Coverage` and `CLI - Test` fail on
+    every recent PR.
+71. Open (checked 2026-11-08): Environment `release`: you as required reviewer, deployment limited to
+    `v*` tags. No environment exists yet, so the release job would create it
+    unprotected on its first run. Leave "Prevent self-review" off or you
+    cannot approve your own release.
+72. Done (verified 2026-11-08): Code security: confirm secret scanning, push protection, Dependabot
     alerts, Dependabot security updates and private vulnerability reporting
-    are on.
-73. `PROJECT_PAT`: fine-grained, this repo only, Projects permission only,
+    are on. All five are enabled (checked through the API).
+73. Open (partial, 2026-11-08): `PROJECT_PAT`: fine-grained, this repo only, Projects permission only,
     90-day expiry. Check that fine-grained tokens support the owner type of
     project 2; if not, use a classic token with only the `project` scope and
-    the same expiry.
+    the same expiry. The secret exists (updated 2026-09-01), so it likely
+    expires around 2026-11-30: check the date. The job failed on every run
+    because `project-url` used the repository URL form; it now uses
+    `https://github.com/users/infinitedim/projects/2` (the project itself is
+    not verified). Runs started by Dependabot read Dependabot secrets, so add
+    `PROJECT_PAT` there too.
 74. Antigravity: terminal allowlist as listed in `security-agent.md`
     (Commands); everything else on review.
 75. While agents work, `.env.local` holds dummy values only; real values
@@ -276,3 +293,18 @@ infinitedim/justui` when `gh` is installed and logged in; otherwise
 80. Done: Probe analysis confirmed: subagents start with clean context without auto-preloaded rule files (requiring briefs to explicitly name required rule files), subagents possess read/MCP tools but no file-write tools, and subagents cannot invoke subagents.
 81. Done: Evaluated tasks 1-8 from `.agents/evals/team-eval.md` against the split test criteria in `orchestration.md`.
 82. Done: Commits workflow verified: orchestrator commits each unit, terminal allowlist documented.
+
+## Release pipeline (found 2026-11-08)
+
+83. Open: The v0.15.0 release run (run 40294053675, tag `v0.15.0`) failed and no
+    GitHub Release exists for it; the latest is still v0.14.0. Failing jobs:
+    `Build macOS (x86_64-apple-darwin)` (`error[E0463]: can't find crate for
+    core`) and `Build Linux (aarch64-unknown-linux-gnu)` (`ring` build script:
+    `failed to find tool "aarch64-linux-gnu-gcc"`); `Create GitHub Release`
+    was skipped. Likely causes, NOT proven: (a) `release.yaml` installs
+    `toolchain: stable` while `rust-toolchain.toml` pins 1.98.1, so cargo uses
+    the pinned toolchain, which has no `x86_64-apple-darwin` target installed
+    (`ci.yaml` already installs 1.98.1); (b) `cross auditable build` is not a
+    subcommand `cross` wraps, so it runs host cargo without the cross
+    container and has no aarch64 C compiler. Needs its own plan (red zone,
+    `.github/`); a fix can only be proven by a tag run.
