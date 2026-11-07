@@ -19,8 +19,8 @@ fn test_target_triple_not_empty() {
 #[test]
 fn test_parse_tag_from_location() {
     assert_eq!(
-        parse_tag_from_location("https://github.com/infinitedim/justui/releases/tag/v0.14.0"),
-        Some("v0.14.0".to_string())
+        parse_tag_from_location("https://github.com/infinitedim/justui/releases/tag/v0.15.0"),
+        Some("v0.15.0".to_string())
     );
     assert_eq!(
         parse_tag_from_location("/infinitedim/justui/releases/tag/v1.0.0"),
@@ -228,20 +228,20 @@ fn test_replace_executable_at() {
 fn test_plan_upgrade_matrix() {
     // 1. Up-to-date version with force=false
     let up_to_date_release = GitHubRelease {
-        tag_name: "v0.14.0".to_string(),
+        tag_name: "v0.15.0".to_string(),
         html_url: "https://example.com/rel".to_string(),
         body: Some("Release notes".to_string()),
         assets: vec![],
     };
-    let action = plan_upgrade("0.14.0", &up_to_date_release, false, false).unwrap();
+    let action = plan_upgrade("0.15.0", &up_to_date_release, false, false).unwrap();
     assert_eq!(action, UpgradeAction::AlreadyUpToDate);
 
     // 1b. Up-to-date version with force=true
-    let action_force = plan_upgrade("0.14.0", &up_to_date_release, false, true).unwrap();
+    let action_force = plan_upgrade("0.15.0", &up_to_date_release, false, true).unwrap();
     assert_eq!(
         action_force,
         UpgradeAction::NoMatchingAsset {
-            target_version: "0.14.0".to_string()
+            target_version: "0.15.0".to_string()
         }
     );
 
@@ -277,7 +277,7 @@ fn test_plan_upgrade_matrix() {
             },
         ],
     };
-    let action_check = plan_upgrade("0.14.0", &new_release, true, false).unwrap();
+    let action_check = plan_upgrade("0.15.0", &new_release, true, false).unwrap();
     assert_eq!(
         action_check,
         UpgradeAction::CheckOnly {
@@ -286,7 +286,7 @@ fn test_plan_upgrade_matrix() {
     );
 
     // 3. Newer version download flow with matching asset
-    let action_dl = plan_upgrade("0.14.0", &new_release, false, false).unwrap();
+    let action_dl = plan_upgrade("0.15.0", &new_release, false, false).unwrap();
     assert!(matches!(action_dl, UpgradeAction::PerformDownload { .. }));
 
     // 4. Newer version without matching asset
@@ -299,7 +299,7 @@ fn test_plan_upgrade_matrix() {
             browser_download_url: "https://example.com/dl_other".to_string(),
         }],
     };
-    let action_no_asset = plan_upgrade("0.14.0", &no_asset_release, false, false).unwrap();
+    let action_no_asset = plan_upgrade("0.15.0", &no_asset_release, false, false).unwrap();
     assert_eq!(
         action_no_asset,
         UpgradeAction::NoMatchingAsset {
@@ -339,7 +339,7 @@ fn test_plan_upgrade_matrix() {
             },
         ],
     };
-    let action_checksum = plan_upgrade("0.14.0", &release_with_checksum, false, false).unwrap();
+    let action_checksum = plan_upgrade("0.15.0", &release_with_checksum, false, false).unwrap();
     match action_checksum {
         UpgradeAction::PerformDownload { download_url, .. } => {
             assert!(
@@ -357,7 +357,7 @@ fn test_plan_upgrade_matrix() {
         body: None,
         assets: vec![],
     };
-    let action_invalid = plan_upgrade("0.14.0", &invalid_semver_release, false, false).unwrap();
+    let action_invalid = plan_upgrade("0.15.0", &invalid_semver_release, false, false).unwrap();
     assert_eq!(
         action_invalid,
         UpgradeAction::InvalidVersion {

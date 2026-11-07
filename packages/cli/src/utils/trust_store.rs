@@ -278,7 +278,7 @@ mod tests {
     fn test_ensure_registry_trusted_official() {
         assert!(
             ensure_registry_trusted(
-                "https://raw.githubusercontent.com/infinitedim/justui/v0.14.0/registry",
+                "https://raw.githubusercontent.com/infinitedim/justui/v0.15.0/registry",
                 false
             )
             .is_ok()

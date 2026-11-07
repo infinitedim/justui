@@ -16,7 +16,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  crypto: ^3.0.7
+  crypto: ^3.0.8
   path: ^1.9.1
 
 melos:

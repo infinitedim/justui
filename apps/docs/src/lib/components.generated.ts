@@ -57,15 +57,15 @@ export const GENERATED_COMPONENTS: readonly GeneratedComponentMeta[] = [
 ] as const;
 
 /** `version` in packages/cli/Cargo.toml. */
-export const CLI_VERSION = '0.14.0';
+export const CLI_VERSION = '0.15.0';
 /** `version` in registry/index.json. */
-export const REGISTRY_VERSION = '0.14.0';
+export const REGISTRY_VERSION = '0.15.0';
 export const REGISTRY_PRESETS: readonly string[] = ['default', 'neobrutalism'];
 
 /** Defaults from packages/cli/src/config.rs (`justui init -y`). */
 export const CLI_DEFAULTS = {
   registryUrl:
-    'https://raw.githubusercontent.com/infinitedim/justui/v0.14.0/registry',
+    'https://raw.githubusercontent.com/infinitedim/justui/v0.15.0/registry',
   componentsDir: 'lib/widgets',
   sharedDir: 'lib/widgets/shared',
   tokensDir: 'lib/tokens',
