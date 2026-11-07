@@ -40,12 +40,19 @@ plan first under the new rules.
 
 The agent may not change MCP config, so these are manual.
 
-20. Turn off `cloudrun`, `android-management-api` and `gopls-mcp-server`
+20. Done: Turn off `cloudrun`, `android-management-api` and `gopls-mcp-server`
     while you work on JustUI. The toggles are probably global, so turn
     `cloudrun` back on when you work on the portfolio backend.
-21. Playwright args: add isolation, the origin allowlist and the output dir.
-    `--allowed-origins` is semicolon-separated and is not a security
-    boundary (redirects are not checked); it only keeps the agent on-site.
+21. Done (partial, 2026-11-08): Playwright args: add isolation, the origin
+    allowlist and the output dir. The production origin
+    `https://justui.vercel.app` is NOT in the allowlist yet because the docs
+    app has not been deployed to Vercel. Until then the allowlist is only
+    `http://localhost:3000`. After the first deploy, append the real
+    production origin to `--allowed-origins` (the default in
+    `src/lib/site.ts` is `https://justui.vercel.app`; use your real domain if
+    it differs). `--allowed-origins` is semicolon-separated and is not a
+    security boundary (redirects are not checked); it only keeps the agent
+    on-site.
 
     ```json
     "playwright": {
@@ -53,26 +60,26 @@ The agent may not change MCP config, so these are manual.
       "args": [
         "@playwright/mcp@latest",
         "--isolated",
-        "--allowed-origins", "http://localhost:3000;https://justui.vercel.app",
+        "--allowed-origins", "http://localhost:3000",
         "--output-dir", ".agents/tmp/screenshots"
       ]
     }
     ```
 
-    Replace `https://justui.vercel.app` if your production domain differs
-    (it is the fallback for `NEXT_PUBLIC_SITE_URL` in `src/lib/site.ts`).
+    After the first deploy, change the value to
+    `"http://localhost:3000;https://<your-production-domain>"`.
     If the config is global, add the dev-server origins of your other
     projects too, or they will be blocked.
 
-22. Disable `browser_run_code_unsafe` in the Playwright tool list (the panel
+22. Done: Disable `browser_run_code_unsafe` in the Playwright tool list (the panel
     shows per-server tool counts, so per-tool toggles are likely; if not,
     the rule in `mcp.md` is the only guard).
-23. dart-mcp-server: enable `run_tests`, `launch_app`, `stop_app`,
+23. Done: dart-mcp-server: enable `run_tests`, `launch_app`, `stop_app`,
     `get_app_logs`, `list_devices`. Keep `dart_fix` off.
-24. Add a library docs server (Context7). Check its README for the current
+24. Done: Add a library docs server (Context7). Check its README for the current
     package name and config before adding it. An API key is optional for
     light use.
-25. mem0: if your gateway lets you, restrict this workspace to `app_id`
+25. Done: mem0: if your gateway lets you, restrict this workspace to `app_id`
     `justui` and block `invoke` / `request_access` at the gateway level, so
     the rule is not the only guard.
 
