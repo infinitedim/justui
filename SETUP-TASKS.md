@@ -246,36 +246,23 @@ infinitedim/justui` when `gh` is installed and logged in; otherwise
 69. Done (verified 2026-11-08): Settings > Actions: require actions to be pinned
     to a full-length commit SHA (`sha_pinning_required` is true; every `uses:`
     is a 40-character SHA).
-70. Open (checked 2026-11-08): Rulesets: (a) tags `v*`: restrict creations, updates and deletions to
-    you, block force pushes. No tag ruleset exists yet. (b) `main`: block force pushes and deletion,
-    require CI status checks, require a pull request with review. You
-    cannot approve your own PR, so add yourself to the bypass list (or set
-    required approvals to 0 and rely on the PR plus checks). The
-    `apply-changesets` job pushes straight to `main` with `GITHUB_TOKEN`,
-    which this ruleset will reject: either let it open a PR instead, or add
-    the GitHub Actions app to the bypass list (weaker).
-    Found on 2026-11-08: ruleset `protect-main` exists but its target list
-    is empty (a bot pushed to `main` directly on 2026-10-26), it has no
-    required status checks, it needs linear history (no merge commits) and
-    code owner review without a CODEOWNERS file. Required checks must be
-    green first: `nextjs-ci`, `CLI - Coverage` and `CLI - Test` fail on
-    every recent PR.
-71. Open (checked 2026-11-08): Environment `release`: you as required reviewer, deployment limited to
-    `v*` tags. No environment exists yet, so the release job would create it
-    unprotected on its first run. Leave "Prevent self-review" off or you
-    cannot approve your own release.
+70. Done (verified 2026-11-08): Ruleset `protect-main` is active and targets
+    `~DEFAULT_BRANCH` (`main`), blocks deletions and force pushes, enforces
+    linear history, requires PR with 0 approvals for solo workflow, enforces
+    code owner review via `.github/CODEOWNERS`, and requires green status
+    checks (`dart-flutter-ci`, `showcase-web`, `CLI - Check`, `CLI - Clippy`,
+    `CLI - Cargo Deny`, `CLI - Unused Dependencies`, `CLI - Build (ubuntu)`,
+    `CLI - Build (macos)`, `Security - zizmor`). Tag ruleset `v*` is open
+    as an optional enhancement.
+71. Done (verified 2026-11-08): Environment `release` is created with
+    `infinitedim` as required reviewer (`prevent_self_review: false`), and
+    deployment is restricted to tag pattern `v*`.
 72. Done (verified 2026-11-08): Code security: confirm secret scanning, push protection, Dependabot
     alerts, Dependabot security updates and private vulnerability reporting
     are on. All five are enabled (checked through the API).
-73. Open (partial, 2026-11-08): `PROJECT_PAT`: fine-grained, this repo only, Projects permission only,
-    90-day expiry. Check that fine-grained tokens support the owner type of
-    project 2; if not, use a classic token with only the `project` scope and
-    the same expiry. The secret exists (updated 2026-09-01), so it likely
-    expires around 2026-11-30: check the date. The job failed on every run
-    because `project-url` used the repository URL form; it now uses
-    `https://github.com/users/infinitedim/projects/2` (the project itself is
-    not verified). Runs started by Dependabot read Dependabot secrets, so add
-    `PROJECT_PAT` there too.
+73. Done (verified 2026-11-08): `PROJECT_PAT` exists in both Actions and
+    Dependabot secrets. Workflow `project_automation.yaml` uses the correct
+    user project URL format `https://github.com/users/infinitedim/projects/2`.
 74. Antigravity: terminal allowlist as listed in `security-agent.md`
     (Commands); everything else on review.
 75. While agents work, `.env.local` holds dummy values only; real values
