@@ -297,11 +297,14 @@ jobs:
           sha256sum "${archives[@]}" | sort -k 2 > SHA256SUMS
           cp SHA256SUMS checksums.txt
 
-      - name: Create Release
+      # Releases are immutable: assets cannot be added once a release is
+      # published. Create a draft, upload every asset, then publish.
+      - name: Create draft release and upload assets
+        id: draft
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           name: JustUI CLI ${{ github.ref_name }}
-          draft: false
+          draft: true
           prerelease: ${{ contains(github.ref_name, '-') }}
           files: |
             release_assets/*.tar.gz
@@ -311,3 +314,15 @@ jobs:
             release_assets/install.sh
             release_assets/install.ps1
           generate_release_notes: true
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.draft.outputs.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$RELEASE_ID" ]; then
+            echo "::error::The draft release id is empty; nothing to publish."
+            exit 1
+          fi
+          gh api --method PATCH "repos/${REPO}/releases/${RELEASE_ID}" -F draft=false
