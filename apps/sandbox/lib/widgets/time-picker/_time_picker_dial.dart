@@ -1,8 +1,8 @@
-// justui-meta: registry=4190957650f770ded05ece53aa6526cc72f32ac22564c7e719f8f493901cd9e3 local=9ae50cc2268f55ca7282c62e698fb5f3cf6d88f7f7f068a8d89e7b86eca420dd
+// justui-meta: registry=fb0856e7bae57ff9f852865454bac93ca6aed34017e70f42c702687cf420187c local=bab1a0d226678ff39bfc82e88eef5c75d6d21f5345fa3db9fc285627366e824a
 import 'dart:async' show Timer;
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart' show Theme, TimeOfDay, DayPeriod;
+import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/rendering.dart' show SemanticsService, TextDirection;
 import 'package:flutter/services.dart'
     show
@@ -28,19 +28,19 @@ import 'just_time_picker_variants.dart';
 /// screen reader accessibility.
 class TimePickerDial extends StatefulWidget {
   /// Currently selected time value.
-  final TimeOfDay? selectedTime;
+  final JustTimeOfDay? selectedTime;
 
   /// Callback fired when the selected time changes.
-  final ValueChanged<TimeOfDay>? onChanged;
+  final ValueChanged<JustTimeOfDay>? onChanged;
 
   /// Earliest selectable time (inclusive).
-  final TimeOfDay? firstTime;
+  final JustTimeOfDay? firstTime;
 
   /// Latest selectable time (inclusive).
-  final TimeOfDay? lastTime;
+  final JustTimeOfDay? lastTime;
 
   /// Predicate to selectively disable specific times.
-  final bool Function(TimeOfDay)? selectableTimePredicate;
+  final bool Function(JustTimeOfDay)? selectableTimePredicate;
 
   /// Time format (12-hour or 24-hour).
   final JustTimeFormat timeFormat;
@@ -91,7 +91,7 @@ class TimePickerDial extends StatefulWidget {
 class _TimePickerDialState extends State<TimePickerDial>
     with SingleTickerProviderStateMixin {
   late JustTimePickerSegment _activeSegment;
-  late TimeOfDay _currentTime;
+  late JustTimeOfDay _currentTime;
   late double _currentAngle;
   late double _currentRadius;
   bool _isDragging = false;
@@ -114,7 +114,8 @@ class _TimePickerDialState extends State<TimePickerDial>
   void initState() {
     super.initState();
     _activeSegment = widget.activeSegment;
-    _currentTime = widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
+    _currentTime =
+        widget.selectedTime ?? const JustTimeOfDay(hour: 12, minute: 0);
     _handController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),
@@ -213,7 +214,7 @@ class _TimePickerDialState extends State<TimePickerDial>
       _resolveOuterRadius(dialSize) * 0.68;
 
   double _angleForTime(
-    TimeOfDay time,
+    JustTimeOfDay time,
     JustTimePickerSegment segment,
     JustTimeFormat format,
   ) {
@@ -231,7 +232,7 @@ class _TimePickerDialState extends State<TimePickerDial>
   }
 
   double _radiusForTime(
-    TimeOfDay time,
+    JustTimeOfDay time,
     JustTimePickerSegment segment,
     JustTimeFormat format,
     double outerR,
@@ -263,7 +264,7 @@ class _TimePickerDialState extends State<TimePickerDial>
     _handController.forward(from: 0.0);
   }
 
-  bool _isTimeAllowed(TimeOfDay time) {
+  bool _isTimeAllowed(JustTimeOfDay time) {
     if (!time.isWithin(widget.firstTime, widget.lastTime)) {
       return false;
     }
@@ -288,7 +289,7 @@ class _TimePickerDialState extends State<TimePickerDial>
     }
   }
 
-  void _announceTime(TimeOfDay time) {
+  void _announceTime(JustTimeOfDay time) {
     _announceTimer?.cancel();
     _announceTimer = Timer(const Duration(milliseconds: 300), () {
       final String periodStr = time.period == .am
@@ -315,8 +316,8 @@ class _TimePickerDialState extends State<TimePickerDial>
       if (!mounted || _isDragging) return;
       setState(() {
         _activeSegment = .minute;
-        final TimeOfDay time =
-            widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
+        final JustTimeOfDay time =
+            widget.selectedTime ?? const JustTimeOfDay(hour: 12, minute: 0);
         final double size = widget.style?.dialSize ?? 240.0;
         final double outerR = _resolveOuterRadius(size);
         final double innerR = _resolveInnerRadius(size);
@@ -360,8 +361,8 @@ class _TimePickerDialState extends State<TimePickerDial>
     final double innerR = _resolveInnerRadius(size.width);
     final double thresholdR = (outerR + innerR) / 2;
 
-    final TimeOfDay currentTime = _currentTime;
-    TimeOfDay newTime;
+    final JustTimeOfDay currentTime = _currentTime;
+    JustTimeOfDay newTime;
     double targetAngle;
     double targetRadius;
     int hapticVal;
@@ -381,7 +382,7 @@ class _TimePickerDialState extends State<TimePickerDial>
       } else {
         final int sector = ((theta * 12) / (2 * math.pi)).round() % 12;
         final int hour12 = sector == 0 ? 12 : sector;
-        final DayPeriod period = currentTime.period;
+        final JustDayPeriod period = currentTime.period;
         newTime = currentTime.withHour12(hour12, period);
         targetAngle = (sector * 2 * math.pi) / 12;
         targetRadius = outerR;
@@ -452,13 +453,13 @@ class _TimePickerDialState extends State<TimePickerDial>
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent) return .ignored;
 
-    final TimeOfDay currentTime =
-        widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
+    final JustTimeOfDay currentTime =
+        widget.selectedTime ?? const JustTimeOfDay(hour: 12, minute: 0);
     final double size = widget.style?.dialSize ?? 240.0;
     final double outerR = _resolveOuterRadius(size);
     final double innerR = _resolveInnerRadius(size);
 
-    TimeOfDay? nextTime;
+    JustTimeOfDay? nextTime;
 
     if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
         event.logicalKey == LogicalKeyboardKey.arrowRight) {
@@ -490,9 +491,9 @@ class _TimePickerDialState extends State<TimePickerDial>
       final int newHour = (currentTime.hour - 1 + 24) % 24;
       nextTime = currentTime.replacing(hour: newHour);
     } else if (event.logicalKey == LogicalKeyboardKey.home) {
-      nextTime = widget.firstTime ?? const TimeOfDay(hour: 0, minute: 0);
+      nextTime = widget.firstTime ?? const JustTimeOfDay(hour: 0, minute: 0);
     } else if (event.logicalKey == LogicalKeyboardKey.end) {
-      nextTime = widget.lastTime ?? const TimeOfDay(hour: 23, minute: 59);
+      nextTime = widget.lastTime ?? const JustTimeOfDay(hour: 23, minute: 59);
     } else if (event.logicalKey == LogicalKeyboardKey.enter ||
         event.logicalKey == LogicalKeyboardKey.space) {
       if (_activeSegment == .hour) {
@@ -549,8 +550,8 @@ class _TimePickerDialState extends State<TimePickerDial>
 
     final double dialSize =
         widget.style?.dialSize ?? presetTokens.resolveTimePickerDialSize();
-    final TimeOfDay time =
-        widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
+    final JustTimeOfDay time =
+        widget.selectedTime ?? const JustTimeOfDay(hour: 12, minute: 0);
     final Color dialFaceColor = widget.style?.dialFaceColor ?? colors.muted;
     final Color handColor = widget.style?.handColor ?? colors.borderFocus;
     final Color dialTextColor =
@@ -702,10 +703,10 @@ class _ClockFacePainter extends CustomPainter {
   final JustTimeFormat timeFormat;
   final JustTimePickerSegment activeSegment;
   final int minuteInterval;
-  final TimeOfDay currentTime;
-  final TimeOfDay? firstTime;
-  final TimeOfDay? lastTime;
-  final bool Function(TimeOfDay)? selectableTimePredicate;
+  final JustTimeOfDay currentTime;
+  final JustTimeOfDay? firstTime;
+  final JustTimeOfDay? lastTime;
+  final bool Function(JustTimeOfDay)? selectableTimePredicate;
   final double outerRadius;
   final double innerRadius;
   final TextStyle textStyle;
@@ -734,12 +735,12 @@ class _ClockFacePainter extends CustomPainter {
   });
 
   bool _isNumberAllowed(int value, bool isInnerRing) {
-    TimeOfDay testTime;
+    JustTimeOfDay testTime;
     if (activeSegment == .hour) {
       if (timeFormat == .twentyFourHour) {
         testTime = currentTime.replacing(hour: value);
       } else {
-        final DayPeriod period = currentTime.period;
+        final JustDayPeriod period = currentTime.period;
         testTime = currentTime.withHour12(value, period);
       }
     } else {

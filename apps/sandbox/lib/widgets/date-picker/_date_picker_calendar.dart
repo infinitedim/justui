@@ -1,6 +1,5 @@
-// justui-meta: registry=4392ae8d8864b038124ba60a4a7aa9cb452d34877e75f7d9c3a6728e0f967538 local=9f93bca7943c52e0277b8241401cc00e4b8cbf58f7cf101c6e9fa1d77cb18cb7
-import 'package:flutter/material.dart'
-    show Colors, DateUtils, DateTimeRange, Icon, Icons, Theme;
+// justui-meta: registry=0a2b77660c9ab92e7fb2da3c905ba5cbca3e2b6de9bc73d21540b5173991f6c6 local=2f92e8bec37101f928fe790beb78ef4e7731e1e2fb050d2c08a6f2bea8283502
+import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/services.dart'
     show HapticFeedback, KeyDownEvent, KeyEvent, LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
@@ -12,6 +11,17 @@ import 'just_date_picker_style.dart';
 import 'just_date_picker_theme.dart';
 import 'just_date_picker_variants.dart';
 
+/// Returns the number of days in the given month and year.
+int _getDaysInMonth(int year, int month) => DateTime(year, month + 1, 0).day;
+
+/// Returns true if [a] and [b] represent the same calendar day.
+bool _isSameDay(DateTime? a, DateTime? b) =>
+    a != null &&
+    b != null &&
+    a.year == b.year &&
+    a.month == b.month &&
+    a.day == b.day;
+
 /// Internal shared calendar grid widget that powers both single date
 /// selection and date range selection.
 class DatePickerCalendar extends StatefulWidget {
@@ -19,13 +29,13 @@ class DatePickerCalendar extends StatefulWidget {
   final DateTime? selectedDate;
 
   /// Currently selected date range (for range selection mode).
-  final DateTimeRange? selectedRange;
+  final JustDateTimeRange? selectedRange;
 
   /// Callback when a single date is selected.
   final ValueChanged<DateTime>? onDateSelected;
 
   /// Callback when a range of dates is selected.
-  final ValueChanged<DateTimeRange>? onRangeSelected;
+  final ValueChanged<JustDateTimeRange>? onRangeSelected;
 
   /// Earliest selectable date.
   final DateTime? firstDate;
@@ -195,7 +205,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
         setState(() {
           _rangeStart = null;
         });
-        widget.onRangeSelected!(DateTimeRange(start: start, end: end));
+        widget.onRangeSelected!(JustDateTimeRange(start: start, end: end));
       }
     } else {
       widget.onDateSelected?.call(date);
@@ -268,7 +278,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
               });
             },
             .end: () {
-              final int daysInMonth = DateUtils.getDaysInMonth(
+              final int daysInMonth = _getDaysInMonth(
                 _activeDate.year,
                 _activeDate.month,
               );
@@ -426,7 +436,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
             return Container(
               padding: .all(spacing.xs),
               decoration: BoxDecoration(
-                color: state.isHovered ? colors.muted : Colors.transparent,
+                color: state.isHovered ? colors.muted : const Color(0x00000000),
                 borderRadius: .all(context.justRadius.sm),
               ),
               child: Icon(
@@ -443,7 +453,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
             return Container(
               padding: .symmetric(horizontal: spacing.sm, vertical: spacing.xs),
               decoration: BoxDecoration(
-                color: state.isHovered ? colors.muted : Colors.transparent,
+                color: state.isHovered ? colors.muted : const Color(0x00000000),
                 borderRadius: .all(context.justRadius.sm),
               ),
               child: Text(
@@ -459,7 +469,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
             return Container(
               padding: .all(spacing.xs),
               decoration: BoxDecoration(
-                color: state.isHovered ? colors.muted : Colors.transparent,
+                color: state.isHovered ? colors.muted : const Color(0x00000000),
                 borderRadius: .all(context.justRadius.sm),
               ),
               child: Icon(
@@ -503,7 +513,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
       _activeDate.month,
       1,
     );
-    final int daysInMonth = DateUtils.getDaysInMonth(
+    final int daysInMonth = _getDaysInMonth(
       _activeDate.year,
       _activeDate.month,
     );
@@ -591,11 +601,10 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     JustPresetTokens presetTokens,
   ) {
     final DateTime now = .now();
-    final bool isToday = DateUtils.isSameDay(date, now);
+    final bool isToday = _isSameDay(date, now);
     final bool isSelected =
-        widget.selectedDate != null &&
-        DateUtils.isSameDay(date, widget.selectedDate!);
-    final bool isFocused = DateUtils.isSameDay(date, _focusedDate);
+        widget.selectedDate != null && _isSameDay(date, widget.selectedDate!);
+    final bool isFocused = _isSameDay(date, _focusedDate);
     final bool isSelectable = _isDateSelectable(date);
 
     // Range checking
@@ -606,11 +615,11 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     if (widget.selectedRange != null) {
       final DateTime start = widget.selectedRange!.start;
       final DateTime end = widget.selectedRange!.end;
-      isRangeStart = DateUtils.isSameDay(date, start);
-      isRangeEnd = DateUtils.isSameDay(date, end);
+      isRangeStart = _isSameDay(date, start);
+      isRangeEnd = _isSameDay(date, end);
       isInRange = date.isAfter(start) && date.isBefore(end);
     } else if (_rangeStart != null) {
-      isRangeStart = DateUtils.isSameDay(date, _rangeStart!);
+      isRangeStart = _isSameDay(date, _rangeStart!);
     }
 
     if (widget.dayBuilder != null) {
@@ -628,7 +637,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
         ? presetTokens.resolveBorderRadius(radius, isCircle: true)
         : presetTokens.resolveBorderRadius(radius);
 
-    Color cellBgColor = Colors.transparent;
+    Color cellBgColor = const Color(0x00000000);
     if (isHighlight) {
       cellBgColor = widget.style?.selectedDayColor ?? colors.borderFocus;
     } else if (isInRange) {
@@ -731,7 +740,9 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
                 decoration: BoxDecoration(
                   color: isSelectedMonth
                       ? colors.borderFocus
-                      : (state.isHovered ? colors.muted : Colors.transparent),
+                      : (state.isHovered
+                            ? colors.muted
+                            : const Color(0x00000000)),
                   borderRadius: presetTokens.resolveBorderRadius(radius),
                   border: presetTokens.showsDefaultBorder
                       ? .all(
@@ -796,7 +807,9 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
                 decoration: BoxDecoration(
                   color: isSelectedYear
                       ? colors.borderFocus
-                      : (state.isHovered ? colors.muted : Colors.transparent),
+                      : (state.isHovered
+                            ? colors.muted
+                            : const Color(0x00000000)),
                   borderRadius: presetTokens.resolveBorderRadius(radius),
                   border: presetTokens.showsDefaultBorder
                       ? .all(

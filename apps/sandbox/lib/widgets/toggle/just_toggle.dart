@@ -1,4 +1,4 @@
-// justui-meta: registry=fc009f8be3d2aabaa5b1272aa65b72eb45f6f2b4fc492600ad29362e35158776 local=a28473cdff4a843a192732ae1e4210c145a4817f7a03c1dd23676cecd153564b
+// justui-meta: registry=3d85af9e3d8beabe44e7077b8a6295c642883f19aff2bcb86e3e52cf625be605 local=eca7d5e48c932b8b5c97af2e70b12f435b3f466b07cbfd57d079fd0cc5aa5925
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
@@ -275,30 +275,38 @@ class JustToggle extends StatelessWidget {
             ),
           );
 
-          if (hasBorder) {
-            if (selected) {
-              buttonContent = customTheme.presetTokens.buildPressEffect(
-                isPressed: isPressed,
-                animations: customTheme.animations,
-                child: Container(
-                  decoration: BoxDecoration(
-                    boxShadow: customTheme.presetTokens.resolveShadow(
+          final List<BoxShadow>? customShadows = selected
+              ? (style?.selectedShadows ?? themeStyle?.selectedShadows)
+              : (style?.unselectedShadows ?? themeStyle?.unselectedShadows);
+
+          final List<BoxShadow> currentShadows =
+              customShadows ??
+              (hasBorder && selected
+                  ? customTheme.presetTokens.resolveShadow(
                       shadows,
                       JustShadowLevel.md,
                       isPressed: isPressed,
-                    ),
-                    borderRadius: .zero,
-                  ),
-                  child: buttonContent,
+                    )
+                  : const <BoxShadow>[]);
+
+          if (currentShadows.isNotEmpty) {
+            buttonContent = customTheme.presetTokens.buildPressEffect(
+              isPressed: isPressed,
+              animations: customTheme.animations,
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: currentShadows,
+                  borderRadius: hasBorder ? .zero : resolvedRadius,
                 ),
-              );
-            } else {
-              buttonContent = customTheme.presetTokens.buildPressEffect(
-                isPressed: isPressed,
-                animations: customTheme.animations,
                 child: buttonContent,
-              );
-            }
+              ),
+            );
+          } else if (hasBorder) {
+            buttonContent = customTheme.presetTokens.buildPressEffect(
+              isPressed: isPressed,
+              animations: customTheme.animations,
+              child: buttonContent,
+            );
           }
 
           return FocusIndicator(

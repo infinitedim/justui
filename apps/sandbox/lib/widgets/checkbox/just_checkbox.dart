@@ -1,4 +1,4 @@
-// justui-meta: registry=c583f09b961dc6819db5778913d40fa8a2415cfe0c2c59425307c260f1d498a1 local=1b5b77280758b59c165a553b00e88b524f52f3d3da42d2a78655045f23b9f7cd
+// justui-meta: registry=f6bc1edba20b4195d82a0b63bcce2d5777d16f15f3bbac5a17350cca2baf2b53 local=c0e2189232e2b13e3280a9bcc7794dc345d01f1fc4a04d3f19b928492935a446
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -236,6 +236,8 @@ class _JustCheckboxState extends State<JustCheckbox>
                     minHeight: 48.0,
                   ),
                   child: Center(
+                    widthFactor: 1.0,
+                    heightFactor: 1.0,
                     child: RepaintBoundary(
                       child: FocusIndicator(
                         isFocused: state.isFocusVisible,
@@ -265,13 +267,24 @@ class _JustCheckboxState extends State<JustCheckbox>
                                           progress,
                                         )!);
 
-                            final List<BoxShadow> currentShadows = hasBorder
-                                ? customTheme.presetTokens.resolveShadow(
-                                    customTheme.shadows,
-                                    JustShadowLevel.sm,
-                                    isPressed: state.isPressed,
-                                  )
-                                : const <BoxShadow>[];
+                            final List<BoxShadow>? customShadows =
+                                progress > 0.5
+                                ? (widget.style?.activeShadows ??
+                                      themeStyle?.activeShadows ??
+                                      widget.style?.shadows ??
+                                      themeStyle?.shadows)
+                                : (widget.style?.shadows ??
+                                      themeStyle?.shadows);
+
+                            final List<BoxShadow> currentShadows =
+                                customShadows ??
+                                (hasBorder
+                                    ? customTheme.presetTokens.resolveShadow(
+                                        customTheme.shadows,
+                                        JustShadowLevel.sm,
+                                        isPressed: state.isPressed,
+                                      )
+                                    : const <BoxShadow>[]);
 
                             final Container checkboxBox = Container(
                               width: boxSize,

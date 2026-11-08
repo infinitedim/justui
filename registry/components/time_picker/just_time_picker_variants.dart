@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart' show DayPeriod, TimeOfDay;
-
 /// Display variant for time pickers (mirrors date picker variants).
 enum JustTimePickerVariant {
   /// Renders directly in the widget tree without overlay.
@@ -81,42 +79,138 @@ class const JustTimePickerLocale({
   final String spinnerModeTooltip = 'Switch to spinner mode',
 });
 
-/// Boundary and formatting helper extensions on [TimeOfDay].
-extension TimeOfDayBoundary on TimeOfDay {
+/// Represents whether a 12-hour time is before noon (AM) or after noon (PM).
+enum JustDayPeriod {
+  /// Ante meridiem (before noon).
+  am,
+
+  /// Post meridiem (after noon).
+  pm,
+}
+
+/// An immutable representation of a time of day with [hour] and [minute].
+class JustTimeOfDay implements Comparable<JustTimeOfDay> {
+  /// The number of hours in one day (24).
+  static const int hoursPerDay = 24;
+
+  /// The number of hours in one day period (12).
+  static const int hoursPerPeriod = 12;
+
+  /// The number of minutes in one hour (60).
+  static const int minutesPerHour = 60;
+
+  /// The selected hour, in 24-hour time (0..23).
+  final int hour;
+
+  /// The selected minute (0..59).
+  final int minute;
+
+  /// Creates a [JustTimeOfDay].
+  const JustTimeOfDay({required this.hour, required this.minute})
+    : assert(hour >= 0 && hour < hoursPerDay, 'hour must be between 0 and 23'),
+      assert(
+        minute >= 0 && minute < minutesPerHour,
+        'minute must be between 0 and 59',
+      );
+
+  /// Creates a [JustTimeOfDay] from a [DateTime].
+  JustTimeOfDay.fromDateTime(DateTime time)
+    : hour = time.hour,
+      minute = time.minute;
+
+  /// Creates a [JustTimeOfDay] representing the current time.
+  factory JustTimeOfDay.now() => JustTimeOfDay.fromDateTime(DateTime.now());
+
+  /// Whether this time of day is before noon (AM) or after noon (PM).
+  JustDayPeriod get period => hour < hoursPerPeriod ? .am : .pm;
+
+  /// Which hour of the current period this time is (1..12).
+  ///
+  /// For 12AM (midnight) and 12PM (noon) this returns 12.
+  int get hourOfPeriod => hour == 0 || hour == 12 ? 12 : hour - periodOffset;
+
+  /// The hour at which the current period starts (0 for AM, 12 for PM).
+  int get periodOffset => period == .am ? 0 : hoursPerPeriod;
+
+  /// Returns a new [JustTimeOfDay] with the hour and/or minute replaced.
+  JustTimeOfDay replacing({int? hour, int? minute}) {
+    assert(hour == null || (hour >= 0 && hour < hoursPerDay));
+    assert(minute == null || (minute >= 0 && minute < minutesPerHour));
+    return JustTimeOfDay(
+      hour: hour ?? this.hour,
+      minute: minute ?? this.minute,
+    );
+  }
+
+  /// Whether this time occurs earlier than [other].
+  bool isBefore(JustTimeOfDay other) => compareTo(other) < 0;
+
+  /// Whether this time occurs later than [other].
+  bool isAfter(JustTimeOfDay other) => compareTo(other) > 0;
+
+  /// Whether this time occurs at the same time as [other].
+  bool isAtSameTimeAs(JustTimeOfDay other) => compareTo(other) == 0;
+
+  @override
+  int compareTo(JustTimeOfDay other) {
+    final int hourComparison = hour.compareTo(other.hour);
+    return hourComparison == 0
+        ? minute.compareTo(other.minute)
+        : hourComparison;
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JustTimeOfDay && other.hour == hour && other.minute == minute;
+
+  @override
+  int get hashCode => Object.hash(hour, minute);
+
+  @override
+  String toString() {
+    final String hourStr = hour < 10 ? '0$hour' : '$hour';
+    final String minuteStr = minute < 10 ? '0$minute' : '$minute';
+    return 'JustTimeOfDay($hourStr:$minuteStr)';
+  }
+}
+
+/// Boundary and formatting helper extensions on [JustTimeOfDay].
+extension TimeOfDayBoundary on JustTimeOfDay {
   /// Total minutes since midnight for comparison and arithmetic.
   int get totalMinutes => hour * 60 + minute;
 
   /// Whether this time falls within inclusive [min] and [max] bounds.
-  bool isWithin(TimeOfDay? min, TimeOfDay? max) {
+  bool isWithin(JustTimeOfDay? min, JustTimeOfDay? max) {
     if (min != null && totalMinutes < min.totalMinutes) return false;
     if (max != null && totalMinutes > max.totalMinutes) return false;
     return true;
   }
 
   /// Clamps this time to the nearest valid value within [min] and [max] bounds.
-  TimeOfDay clampTo(TimeOfDay? min, TimeOfDay? max) {
+  JustTimeOfDay clampTo(JustTimeOfDay? min, JustTimeOfDay? max) {
     if (min != null && totalMinutes < min.totalMinutes) return min;
     if (max != null && totalMinutes > max.totalMinutes) return max;
     return this;
   }
 
   /// Snaps minute to the nearest valid interval step.
-  TimeOfDay snapMinute(int interval) {
+  JustTimeOfDay snapMinute(int interval) {
     assert(60 % interval == 0, 'Interval must evenly divide 60');
     final int snapped = ((minute / interval).round() * interval) % 60;
     return replacing(minute: snapped);
   }
 
-  /// Returns a copy with the period toggled (AM↔PM).
-  TimeOfDay togglePeriod() {
+  /// Returns a copy with the period toggled (AM<->PM).
+  JustTimeOfDay togglePeriod() {
     final int newHour = hour < 12 ? hour + 12 : hour - 12;
     return replacing(hour: newHour);
   }
 
   /// Returns a copy with a specific 12-hour value (1..12) and period.
-  TimeOfDay withHour12(int hour12, DayPeriod period) {
+  JustTimeOfDay withHour12(int hour12, JustDayPeriod period) {
     assert(hour12 >= 1 && hour12 <= 12, 'Hour in 12-hour format must be 1..12');
-    final int new24 = period == DayPeriod.am
+    final int new24 = period == .am
         ? (hour12 == 12 ? 0 : hour12)
         : (hour12 == 12 ? 12 : hour12 + 12);
     return replacing(hour: new24);

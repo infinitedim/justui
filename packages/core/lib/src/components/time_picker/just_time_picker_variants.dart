@@ -107,13 +107,16 @@ class JustTimeOfDay implements Comparable<JustTimeOfDay> {
 
   /// Creates a [JustTimeOfDay].
   const JustTimeOfDay({required this.hour, required this.minute})
-      : assert(hour >= 0 && hour < hoursPerDay, 'hour must be between 0 and 23'),
-        assert(minute >= 0 && minute < minutesPerHour, 'minute must be between 0 and 59');
+    : assert(hour >= 0 && hour < hoursPerDay, 'hour must be between 0 and 23'),
+      assert(
+        minute >= 0 && minute < minutesPerHour,
+        'minute must be between 0 and 59',
+      );
 
   /// Creates a [JustTimeOfDay] from a [DateTime].
   JustTimeOfDay.fromDateTime(DateTime time)
-      : hour = time.hour,
-        minute = time.minute;
+    : hour = time.hour,
+      minute = time.minute;
 
   /// Creates a [JustTimeOfDay] representing the current time.
   factory JustTimeOfDay.now() => JustTimeOfDay.fromDateTime(DateTime.now());
@@ -133,7 +136,10 @@ class JustTimeOfDay implements Comparable<JustTimeOfDay> {
   JustTimeOfDay replacing({int? hour, int? minute}) {
     assert(hour == null || (hour >= 0 && hour < hoursPerDay));
     assert(minute == null || (minute >= 0 && minute < minutesPerHour));
-    return JustTimeOfDay(hour: hour ?? this.hour, minute: minute ?? this.minute);
+    return JustTimeOfDay(
+      hour: hour ?? this.hour,
+      minute: minute ?? this.minute,
+    );
   }
 
   /// Whether this time occurs earlier than [other].
@@ -148,7 +154,9 @@ class JustTimeOfDay implements Comparable<JustTimeOfDay> {
   @override
   int compareTo(JustTimeOfDay other) {
     final int hourComparison = hour.compareTo(other.hour);
-    return hourComparison == 0 ? minute.compareTo(other.minute) : hourComparison;
+    return hourComparison == 0
+        ? minute.compareTo(other.minute)
+        : hourComparison;
   }
 
   @override

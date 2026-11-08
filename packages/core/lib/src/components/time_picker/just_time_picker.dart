@@ -1144,7 +1144,8 @@ class _ModalTimePickerContentState extends State<_ModalTimePickerContent> {
   @override
   void initState() {
     super.initState();
-    _selectedTime = widget.initialTime ?? const JustTimeOfDay(hour: 12, minute: 0);
+    _selectedTime =
+        widget.initialTime ?? const JustTimeOfDay(hour: 12, minute: 0);
   }
 
   @override

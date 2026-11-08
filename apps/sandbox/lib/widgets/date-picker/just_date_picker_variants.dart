@@ -1,6 +1,4 @@
-// justui-meta: registry=7104f09c1aad84d6c14db02f020c6fae84131fe39f16df6e57816440b94860a6 local=2bc4848113ef3b93a90165348c40be27b0975bc04c2e2cdd268740251618f3da
-import 'package:flutter/material.dart' show DateTimeRange;
-
+// justui-meta: registry=2be1df9f805b0d685f58b52ae974efb147d7f3864575093dff4be3355778a3c5 local=f8f27a3205c0685512fa1d235bc1814ede5844e1a5f44363c684fd9ea68ba473
 /// Display variant for [JustDatePicker].
 enum JustDatePickerVariant {
   /// Calendar renders directly in the widget tree (no overlay).
@@ -93,13 +91,40 @@ class JustDatePickerLocale {
       .replaceAll('{year}', '${date.year}');
 }
 
+/// An immutable date range consisting of [start] and [end] timestamps.
+class JustDateTimeRange {
+  /// The start of the range.
+  final DateTime start;
+
+  /// The end of the range.
+  final DateTime end;
+
+  /// Creates a [JustDateTimeRange].
+  JustDateTimeRange({required this.start, required this.end})
+    : assert(!start.isAfter(end), 'start cannot be after end');
+
+  /// The duration between [start] and [end].
+  Duration get duration => end.difference(start);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JustDateTimeRange && other.start == start && other.end == end;
+
+  @override
+  int get hashCode => Object.hash(start, end);
+
+  @override
+  String toString() => '$start - $end';
+}
+
 /// Quick-select date range preset definition for [JustDateRangePicker].
 class JustDateRangePreset {
   /// Display label shown on the preset button (e.g. 'Last 7 Days').
   final String label;
 
-  /// Callback returning the corresponding [DateTimeRange].
-  final DateTimeRange Function() resolve;
+  /// Callback returning the corresponding [JustDateTimeRange].
+  final JustDateTimeRange Function() resolve;
 
   const JustDateRangePreset({required this.label, required this.resolve});
 }

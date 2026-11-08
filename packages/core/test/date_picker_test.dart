@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/date_picker/_date_picker_calendar.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_picker.dart';
-import 'package:just_ui_core/src/components/date_picker/just_date_picker_variants.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_range_picker.dart';
 
 void main() {
@@ -214,7 +213,10 @@ void main() {
 
       expect(range.start, equals(start));
       expect(range.end, equals(end));
-      expect(range.duration, equals(const Duration(days: 4, hours: 2, minutes: 30)));
+      expect(
+        range.duration,
+        equals(const Duration(days: 4, hours: 2, minutes: 30)),
+      );
       expect(range.toString(), equals('$start - $end'));
     });
 

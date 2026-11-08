@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
-import 'package:flutter/material.dart' show Colors, Theme;
+import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
@@ -99,8 +99,6 @@ class JustTabController extends ChangeNotifier {
   }
 }
 
-/// A premium, Material-free tabs component supporting sliding indicators, swiping,
-/// lazy loading/caching, and keyboard navigation.
 /// A premium, Material-free tabs component supporting sliding indicators, swiping,
 /// lazy loading/caching, and keyboard navigation.
 class const JustTabs({
@@ -562,7 +560,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
                                       typography.bodyMd.copyWith(
                                         fontWeight: .w600,
                                       ))
-                                  .copyWith(color: Colors.transparent),
+                                  .copyWith(color: const Color(0x00000000)),
                         ),
                       ),
                       Text(

@@ -314,7 +314,10 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   }
 
   bool _isMinuteAllowed(int minute) {
-    final JustTimeOfDay time = JustTimeOfDay(hour: _currentTime.hour, minute: minute);
+    final JustTimeOfDay time = JustTimeOfDay(
+      hour: _currentTime.hour,
+      minute: minute,
+    );
     return _isTimeAllowed(time);
   }
 
@@ -433,9 +436,8 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
 
     if (key == .end) {
       final JustTimeOfDay target =
-          (widget.lastTime ?? const JustTimeOfDay(hour: 23, minute: 59)).snapMinute(
-            widget.minuteInterval,
-          );
+          (widget.lastTime ?? const JustTimeOfDay(hour: 23, minute: 59))
+              .snapMinute(widget.minuteInterval);
       _updateTime(target);
       _syncControllers(target);
       return .handled;

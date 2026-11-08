@@ -113,7 +113,8 @@ class _TimePickerDialState extends State<TimePickerDial>
   void initState() {
     super.initState();
     _activeSegment = widget.activeSegment;
-    _currentTime = widget.selectedTime ?? const JustTimeOfDay(hour: 12, minute: 0);
+    _currentTime =
+        widget.selectedTime ?? const JustTimeOfDay(hour: 12, minute: 0);
     _handController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),

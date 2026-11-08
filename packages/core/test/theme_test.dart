@@ -413,8 +413,7 @@ void main() {
                     context.readTheme();
                     return ElevatedButton(
                       onPressed: () {
-                        JustThemeProvider.read(context)
-                            .setThemeMode(.dark);
+                        JustThemeProvider.read(context).setThemeMode(.dark);
                       },
                       child: const Text('Change Theme'),
                     );

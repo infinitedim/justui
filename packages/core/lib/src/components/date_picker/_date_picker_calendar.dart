@@ -602,8 +602,7 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     final DateTime now = .now();
     final bool isToday = _isSameDay(date, now);
     final bool isSelected =
-        widget.selectedDate != null &&
-        _isSameDay(date, widget.selectedDate!);
+        widget.selectedDate != null && _isSameDay(date, widget.selectedDate!);
     final bool isFocused = _isSameDay(date, _focusedDate);
     final bool isSelectable = _isDateSelectable(date);
 
@@ -740,7 +739,9 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
                 decoration: BoxDecoration(
                   color: isSelectedMonth
                       ? colors.borderFocus
-                      : (state.isHovered ? colors.muted : const Color(0x00000000)),
+                      : (state.isHovered
+                            ? colors.muted
+                            : const Color(0x00000000)),
                   borderRadius: presetTokens.resolveBorderRadius(radius),
                   border: presetTokens.showsDefaultBorder
                       ? .all(
@@ -805,7 +806,9 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
                 decoration: BoxDecoration(
                   color: isSelectedYear
                       ? colors.borderFocus
-                      : (state.isHovered ? colors.muted : const Color(0x00000000)),
+                      : (state.isHovered
+                            ? colors.muted
+                            : const Color(0x00000000)),
                   borderRadius: presetTokens.resolveBorderRadius(radius),
                   border: presetTokens.showsDefaultBorder
                       ? .all(

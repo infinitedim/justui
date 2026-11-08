@@ -29,7 +29,10 @@ class _RangePicker extends StatefulWidget {
 }
 
 class _RangePickerState extends State<_RangePicker> {
-  JustDateTimeRange _range = JustDateTimeRange(start: demoDay(16), end: demoDay(18));
+  JustDateTimeRange _range = JustDateTimeRange(
+    start: demoDay(16),
+    end: demoDay(18),
+  );
 
   @override
   Widget build(BuildContext context) {

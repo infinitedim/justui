@@ -93,7 +93,7 @@ class JustDateTimeRange {
 
   /// Creates a [JustDateTimeRange].
   JustDateTimeRange({required this.start, required this.end})
-      : assert(!start.isAfter(end), 'start cannot be after end');
+    : assert(!start.isAfter(end), 'start cannot be after end');
 
   /// The duration between [start] and [end].
   Duration get duration => end.difference(start);

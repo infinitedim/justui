@@ -79,7 +79,8 @@ class _TimePickerInputState extends State<TimePickerInput> {
   @override
   void initState() {
     super.initState();
-    _currentTime = widget.selectedTime ?? const JustTimeOfDay(hour: 12, minute: 0);
+    _currentTime =
+        widget.selectedTime ?? const JustTimeOfDay(hour: 12, minute: 0);
 
     _hourController = TextEditingController(text: _formatHour(_currentTime));
     _minuteController = TextEditingController(
