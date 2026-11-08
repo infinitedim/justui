@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show DayPeriod, Theme, TimeOfDay;
+import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
@@ -15,19 +15,19 @@ import 'just_time_picker_variants.dart';
 /// automatic focus traversal, input sanitization, and an AM/PM segmented toggle.
 class TimePickerInput extends StatefulWidget {
   /// Currently selected time value.
-  final TimeOfDay? selectedTime;
+  final JustTimeOfDay? selectedTime;
 
   /// Callback fired when the selected time changes.
-  final ValueChanged<TimeOfDay>? onChanged;
+  final ValueChanged<JustTimeOfDay>? onChanged;
 
   /// Earliest selectable time (inclusive).
-  final TimeOfDay? firstTime;
+  final JustTimeOfDay? firstTime;
 
   /// Latest selectable time (inclusive).
-  final TimeOfDay? lastTime;
+  final JustTimeOfDay? lastTime;
 
   /// Predicate to selectively disable specific times.
-  final bool Function(TimeOfDay)? selectableTimePredicate;
+  final bool Function(JustTimeOfDay)? selectableTimePredicate;
 
   /// Time format (12-hour or 24-hour).
   final JustTimeFormat timeFormat;
@@ -73,13 +73,13 @@ class _TimePickerInputState extends State<TimePickerInput> {
   late FocusNode _hourFocusNode;
   late FocusNode _minuteFocusNode;
 
-  late TimeOfDay _currentTime;
+  late JustTimeOfDay _currentTime;
   bool _isInternalUpdate = false;
 
   @override
   void initState() {
     super.initState();
-    _currentTime = widget.selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
+    _currentTime = widget.selectedTime ?? const JustTimeOfDay(hour: 12, minute: 0);
 
     _hourController = TextEditingController(text: _formatHour(_currentTime));
     _minuteController = TextEditingController(
@@ -115,7 +115,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
     super.dispose();
   }
 
-  String _formatHour(TimeOfDay time) {
+  String _formatHour(JustTimeOfDay time) {
     if (widget.timeFormat == .twentyFourHour) {
       return time.hour.toString().padLeft(2, '0');
     } else {
@@ -124,7 +124,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
     }
   }
 
-  String _formatMinute(TimeOfDay time) {
+  String _formatMinute(JustTimeOfDay time) {
     return time.minute.toString().padLeft(2, '0');
   }
 
@@ -241,8 +241,8 @@ class _TimePickerInputState extends State<TimePickerInput> {
     }
   }
 
-  void _applyTimeChange(TimeOfDay newTime) {
-    TimeOfDay validTime = newTime;
+  void _applyTimeChange(JustTimeOfDay newTime) {
+    JustTimeOfDay validTime = newTime;
 
     if (!validTime.isWithin(widget.firstTime, widget.lastTime)) {
       validTime = validTime.clampTo(widget.firstTime, widget.lastTime);
@@ -264,13 +264,13 @@ class _TimePickerInputState extends State<TimePickerInput> {
     }
   }
 
-  void _setPeriod(DayPeriod period) {
+  void _setPeriod(JustDayPeriod period) {
     if (_currentTime.period == period) return;
 
     final int hour12 = _currentTime.hourOfPeriod == 0
         ? 12
         : _currentTime.hourOfPeriod;
-    final TimeOfDay newTime = _currentTime.withHour12(hour12, period);
+    final JustTimeOfDay newTime = _currentTime.withHour12(hour12, period);
     _applyTimeChange(newTime);
   }
 
@@ -395,7 +395,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
     final JustTypographyScheme typo = context.justTypo;
     final JustPresetTokens presetTokens = theme.presetTokens;
 
-    final bool isAm = _currentTime.period == DayPeriod.am;
+    final bool isAm = _currentTime.period == .am;
     final Color activeBg =
         widget.style?.periodActiveColor ?? colors.borderFocus;
     final Color activeFg =
@@ -434,7 +434,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
             selected: isAm,
             child: GestureDetector(
               behavior: .opaque,
-              onTap: () => _setPeriod(DayPeriod.am),
+              onTap: () => _setPeriod(.am),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 curve: Curves.easeInOut,
@@ -460,7 +460,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
             selected: !isAm,
             child: GestureDetector(
               behavior: .opaque,
-              onTap: () => _setPeriod(DayPeriod.pm),
+              onTap: () => _setPeriod(.pm),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 curve: Curves.easeInOut,

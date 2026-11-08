@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show DayPeriod, Theme, TimeOfDay;
+import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/rendering.dart' show SemanticsService, TextDirection;
 import 'package:flutter/services.dart'
     show HapticFeedback, KeyDownEvent, KeyEvent, LogicalKeyboardKey;
@@ -20,19 +20,19 @@ import 'just_time_picker_variants.dart';
 /// keyboard navigation support, and full semantic accessibility.
 class TimePickerSpinner extends StatefulWidget {
   /// The currently selected time value.
-  final TimeOfDay? value;
+  final JustTimeOfDay? value;
 
   /// Callback fired when the selected time changes.
-  final ValueChanged<TimeOfDay>? onChanged;
+  final ValueChanged<JustTimeOfDay>? onChanged;
 
   /// Earliest selectable time (inclusive).
-  final TimeOfDay? firstTime;
+  final JustTimeOfDay? firstTime;
 
   /// Latest selectable time (inclusive).
-  final TimeOfDay? lastTime;
+  final JustTimeOfDay? lastTime;
 
   /// Predicate to selectively disable specific times.
-  final bool Function(TimeOfDay)? selectableTimePredicate;
+  final bool Function(JustTimeOfDay)? selectableTimePredicate;
 
   /// Time format: 12-hour (with AM/PM column) or 24-hour.
   final JustTimeFormat timeFormat;
@@ -81,7 +81,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   late FixedExtentScrollController _minuteController;
   late FixedExtentScrollController _periodController;
 
-  late TimeOfDay _currentTime;
+  late JustTimeOfDay _currentTime;
   late JustTimePickerSegment _focusedSegment;
   final FocusNode _focusNode = FocusNode();
 
@@ -94,8 +94,8 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   @override
   void initState() {
     super.initState();
-    final TimeOfDay rawTime =
-        widget.value ?? const TimeOfDay(hour: 12, minute: 0);
+    final JustTimeOfDay rawTime =
+        widget.value ?? const JustTimeOfDay(hour: 12, minute: 0);
     _currentTime = _clampAndSnapTime(rawTime);
     _focusedSegment = widget.initialSegment;
 
@@ -132,7 +132,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     if (widget.value != null &&
         widget.value != _currentTime &&
         !_isProgrammaticUpdate) {
-      final TimeOfDay clamped = _clampAndSnapTime(widget.value!);
+      final JustTimeOfDay clamped = _clampAndSnapTime(widget.value!);
       _currentTime = clamped;
       _syncControllers(clamped);
     }
@@ -149,7 +149,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     super.dispose();
   }
 
-  int _calculateHourIndex(TimeOfDay time) {
+  int _calculateHourIndex(JustTimeOfDay time) {
     if (widget.is24Hour) {
       return time.hour;
     }
@@ -157,16 +157,16 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     return hourOfPeriod - 1;
   }
 
-  int _calculateMinuteIndex(TimeOfDay time) {
+  int _calculateMinuteIndex(JustTimeOfDay time) {
     return time.minute ~/ widget.minuteInterval;
   }
 
-  int _calculatePeriodIndex(TimeOfDay time) {
-    return time.period == DayPeriod.am ? 0 : 1;
+  int _calculatePeriodIndex(JustTimeOfDay time) {
+    return time.period == .am ? 0 : 1;
   }
 
-  TimeOfDay _clampAndSnapTime(TimeOfDay time) {
-    TimeOfDay result = time.snapMinute(widget.minuteInterval);
+  JustTimeOfDay _clampAndSnapTime(JustTimeOfDay time) {
+    JustTimeOfDay result = time.snapMinute(widget.minuteInterval);
     if (widget.firstTime != null &&
         result.totalMinutes < widget.firstTime!.totalMinutes) {
       result = widget.firstTime!.snapMinute(widget.minuteInterval);
@@ -178,7 +178,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     return result;
   }
 
-  void _syncControllers(TimeOfDay time) {
+  void _syncControllers(JustTimeOfDay time) {
     _isProgrammaticUpdate = true;
     try {
       final int targetHourIndex = _calculateHourIndex(time);
@@ -219,7 +219,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
       newHour24 = normIndex;
     } else {
       final int hour12 = normIndex + 1;
-      final bool isAm = _currentTime.period == DayPeriod.am;
+      final bool isAm = _currentTime.period == .am;
       newHour24 = isAm
           ? (hour12 == 12 ? 0 : hour12)
           : (hour12 == 12 ? 12 : hour12 + 12);
@@ -230,7 +230,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
       _triggerHaptic();
     }
 
-    final TimeOfDay newTime = TimeOfDay(
+    final JustTimeOfDay newTime = JustTimeOfDay(
       hour: newHour24,
       minute: _currentTime.minute,
     );
@@ -249,7 +249,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
       _triggerHaptic();
     }
 
-    final TimeOfDay newTime = TimeOfDay(
+    final JustTimeOfDay newTime = JustTimeOfDay(
       hour: _currentTime.hour,
       minute: newMinute,
     );
@@ -273,14 +273,14 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
         ? (hour12 == 12 ? 0 : hour12)
         : (hour12 == 12 ? 12 : hour12 + 12);
 
-    final TimeOfDay newTime = TimeOfDay(
+    final JustTimeOfDay newTime = JustTimeOfDay(
       hour: newHour24,
       minute: _currentTime.minute,
     );
     _updateTime(newTime);
   }
 
-  void _updateTime(TimeOfDay newTime) {
+  void _updateTime(JustTimeOfDay newTime) {
     setState(() {
       _currentTime = newTime;
     });
@@ -288,7 +288,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     _announceTimeChange(newTime);
   }
 
-  bool _isTimeAllowed(TimeOfDay time) {
+  bool _isTimeAllowed(JustTimeOfDay time) {
     if (widget.firstTime != null &&
         time.totalMinutes < widget.firstTime!.totalMinutes) {
       return false;
@@ -307,34 +307,44 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   bool _isHourAllowed(int hour24) {
     final int minuteInterval = widget.minuteInterval;
     for (int m = 0; m < 60; m += minuteInterval) {
-      final TimeOfDay time = TimeOfDay(hour: hour24, minute: m);
+      final JustTimeOfDay time = JustTimeOfDay(hour: hour24, minute: m);
       if (_isTimeAllowed(time)) return true;
     }
     return false;
   }
 
   bool _isMinuteAllowed(int minute) {
-    final TimeOfDay time = TimeOfDay(hour: _currentTime.hour, minute: minute);
+    final JustTimeOfDay time = JustTimeOfDay(hour: _currentTime.hour, minute: minute);
     return _isTimeAllowed(time);
   }
 
-  bool _isPeriodAllowed(DayPeriod period) {
+  bool _isPeriodAllowed(JustDayPeriod period) {
     final int hour12 = _currentTime.hourOfPeriod == 0
         ? 12
         : _currentTime.hourOfPeriod;
-    final int hour24 = period == DayPeriod.am
+    final int hour24 = period == .am
         ? (hour12 == 12 ? 0 : hour12)
         : (hour12 == 12 ? 12 : hour12 + 12);
     return _isHourAllowed(hour24);
   }
 
-  void _announceTimeChange(TimeOfDay time) {
+  void _announceTimeChange(JustTimeOfDay time) {
     _announceTimer?.cancel();
     _announceTimer = Timer(const Duration(milliseconds: 300), () {
       if (!mounted) return;
+      final String periodStr = time.period == .am
+          ? widget.locale.amLabel
+          : widget.locale.pmLabel;
+      final String hourStr = widget.is24Hour
+          ? time.hour.toString().padLeft(2, '0')
+          : (time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod).toString();
+      final String minuteStr = time.minute.toString().padLeft(2, '0');
+      final String message = widget.is24Hour
+          ? '$hourStr:$minuteStr'
+          : '$hourStr:$minuteStr $periodStr';
       SemanticsService.sendAnnouncement(
         View.of(context),
-        time.format(context),
+        message,
         TextDirection.ltr,
       );
     });
@@ -414,16 +424,16 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     }
 
     if (key == .home) {
-      final TimeOfDay target =
-          widget.firstTime ?? const TimeOfDay(hour: 0, minute: 0);
+      final JustTimeOfDay target =
+          widget.firstTime ?? const JustTimeOfDay(hour: 0, minute: 0);
       _updateTime(target);
       _syncControllers(target);
       return .handled;
     }
 
     if (key == .end) {
-      final TimeOfDay target =
-          (widget.lastTime ?? const TimeOfDay(hour: 23, minute: 59)).snapMinute(
+      final JustTimeOfDay target =
+          (widget.lastTime ?? const JustTimeOfDay(hour: 23, minute: 59)).snapMinute(
             widget.minuteInterval,
           );
       _updateTime(target);
@@ -523,7 +533,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   }
 
   void _togglePeriod() {
-    final int nextIndex = _currentTime.period == DayPeriod.am ? 1 : 0;
+    final int nextIndex = _currentTime.period == .am ? 1 : 0;
     _animatePeriodTo(nextIndex);
   }
 
@@ -732,7 +742,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
             final int displayHour = widget.is24Hour ? i : i + 1;
             final int hour24 = widget.is24Hour
                 ? i
-                : (_currentTime.period == DayPeriod.am
+                : (_currentTime.period == .am
                       ? (displayHour == 12 ? 0 : displayHour)
                       : (displayHour == 12 ? 12 : displayHour + 12));
             final bool isSelected = widget.is24Hour
@@ -812,7 +822,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     required JustTypographyScheme typo,
     required JustTimePickerLocale locale,
   }) {
-    final bool isAm = _currentTime.period == DayPeriod.am;
+    final bool isAm = _currentTime.period == .am;
     return Semantics(
       container: true,
       label: locale.periodLabel,
@@ -837,7 +847,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
             _buildWheelItem(
               text: locale.amLabel,
               isSelected: isAm,
-              isDisabled: !_isPeriodAllowed(DayPeriod.am),
+              isDisabled: !_isPeriodAllowed(.am),
               colors: colors,
               typo: typo,
               itemExtent: itemExtent,
@@ -846,7 +856,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
             _buildWheelItem(
               text: locale.pmLabel,
               isSelected: !isAm,
-              isDisabled: !_isPeriodAllowed(DayPeriod.pm),
+              isDisabled: !_isPeriodAllowed(.pm),
               colors: colors,
               typo: typo,
               itemExtent: itemExtent,

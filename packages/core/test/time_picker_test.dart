@@ -1,6 +1,6 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart'
-    show DayPeriod, Icons, MaterialApp, Scaffold, ThemeData, TimeOfDay;
+    show Icons, MaterialApp, Scaffold, ThemeData;
 import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter/src/material/theme_data.dart';
 import 'package:flutter/src/semantics/semantics.dart';
@@ -49,8 +49,8 @@ void main() {
     testWidgets('Renders TimePickerDial and updates time via tap', (
       WidgetTester tester,
     ) async {
-      TimeOfDay? selectedTime;
-      const TimeOfDay initialTime = TimeOfDay(hour: 12, minute: 0);
+      JustTimeOfDay? selectedTime;
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 12, minute: 0);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -58,7 +58,7 @@ void main() {
             value: initialTime,
             mode: .dial,
             timeFormat: .twelveHour,
-            onChanged: (TimeOfDay time) => selectedTime = time,
+            onChanged: (JustTimeOfDay time) => selectedTime = time,
           ),
         ),
       );
@@ -85,10 +85,10 @@ void main() {
     testWidgets('Restricts time selection with firstTime and lastTime bounds', (
       WidgetTester tester,
     ) async {
-      TimeOfDay? selectedTime;
-      const TimeOfDay initialTime = TimeOfDay(hour: 12, minute: 0);
-      const TimeOfDay firstTime = TimeOfDay(hour: 10, minute: 0);
-      const TimeOfDay lastTime = TimeOfDay(hour: 16, minute: 0);
+      JustTimeOfDay? selectedTime;
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 12, minute: 0);
+      const JustTimeOfDay firstTime = JustTimeOfDay(hour: 10, minute: 0);
+      const JustTimeOfDay lastTime = JustTimeOfDay(hour: 16, minute: 0);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -98,7 +98,7 @@ void main() {
             lastTime: lastTime,
             timeFormat: .twelveHour,
             activeSegment: .hour,
-            onChanged: (TimeOfDay time) => selectedTime = time,
+            onChanged: (JustTimeOfDay time) => selectedTime = time,
           ),
         ),
       );
@@ -125,17 +125,17 @@ void main() {
     testWidgets('Respects selectableTimePredicate', (
       WidgetTester tester,
     ) async {
-      TimeOfDay? selectedTime;
-      const TimeOfDay initialTime = TimeOfDay(hour: 12, minute: 0);
+      JustTimeOfDay? selectedTime;
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 12, minute: 0);
 
       await tester.pumpWidget(
         buildTestApp(
           TimePickerDial(
             selectedTime: initialTime,
-            selectableTimePredicate: (TimeOfDay time) => time.hour % 2 == 0,
+            selectableTimePredicate: (JustTimeOfDay time) => time.hour % 2 == 0,
             timeFormat: .twentyFourHour,
             activeSegment: .hour,
-            onChanged: (TimeOfDay time) => selectedTime = time,
+            onChanged: (JustTimeOfDay time) => selectedTime = time,
           ),
         ),
       );
@@ -157,8 +157,8 @@ void main() {
     testWidgets('Snaps minutes to minuteInterval on dial', (
       WidgetTester tester,
     ) async {
-      TimeOfDay? selectedTime;
-      const TimeOfDay initialTime = TimeOfDay(hour: 12, minute: 0);
+      JustTimeOfDay? selectedTime;
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 12, minute: 0);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -166,7 +166,7 @@ void main() {
             selectedTime: initialTime,
             minuteInterval: 15,
             activeSegment: .minute,
-            onChanged: (TimeOfDay time) => selectedTime = time,
+            onChanged: (JustTimeOfDay time) => selectedTime = time,
           ),
         ),
       );
@@ -185,7 +185,7 @@ void main() {
       WidgetTester tester,
     ) async {
       JustTimePickerSegment? activeSegment;
-      const TimeOfDay initialTime = TimeOfDay(hour: 12, minute: 0);
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 12, minute: 0);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -218,7 +218,7 @@ void main() {
     testWidgets('Renders TimePickerSpinner with 3 columns in 12h mode', (
       WidgetTester tester,
     ) async {
-      const TimeOfDay initialTime = TimeOfDay(hour: 9, minute: 30);
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 9, minute: 30);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -236,7 +236,7 @@ void main() {
     testWidgets('Renders TimePickerSpinner with 2 columns in 24h mode', (
       WidgetTester tester,
     ) async {
-      const TimeOfDay initialTime = TimeOfDay(hour: 14, minute: 45);
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 14, minute: 45);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -256,15 +256,15 @@ void main() {
     testWidgets('Scrolls hour wheel and updates time', (
       WidgetTester tester,
     ) async {
-      TimeOfDay? selectedTime;
-      const TimeOfDay initialTime = TimeOfDay(hour: 10, minute: 0);
+      JustTimeOfDay? selectedTime;
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 10, minute: 0);
 
       await tester.pumpWidget(
         buildTestApp(
           TimePickerSpinner(
             value: initialTime,
             timeFormat: .twelveHour,
-            onChanged: (TimeOfDay time) => selectedTime = time,
+            onChanged: (JustTimeOfDay time) => selectedTime = time,
           ),
         ),
       );
@@ -280,15 +280,15 @@ void main() {
     testWidgets('Scrolls minute wheel and updates time', (
       WidgetTester tester,
     ) async {
-      TimeOfDay? selectedTime;
-      const TimeOfDay initialTime = TimeOfDay(hour: 10, minute: 15);
+      JustTimeOfDay? selectedTime;
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 10, minute: 15);
 
       await tester.pumpWidget(
         buildTestApp(
           TimePickerSpinner(
             value: initialTime,
             minuteInterval: 5,
-            onChanged: (TimeOfDay time) => selectedTime = time,
+            onChanged: (JustTimeOfDay time) => selectedTime = time,
           ),
         ),
       );
@@ -303,9 +303,9 @@ void main() {
     testWidgets('Clamps and snaps time to bounds in spinner', (
       WidgetTester tester,
     ) async {
-      const TimeOfDay initialTime = TimeOfDay(hour: 8, minute: 0);
-      const TimeOfDay firstTime = TimeOfDay(hour: 9, minute: 0);
-      const TimeOfDay lastTime = TimeOfDay(hour: 17, minute: 0);
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 8, minute: 0);
+      const JustTimeOfDay firstTime = JustTimeOfDay(hour: 9, minute: 0);
+      const JustTimeOfDay lastTime = JustTimeOfDay(hour: 17, minute: 0);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -331,15 +331,15 @@ void main() {
     testWidgets('Renders TimePickerInput and enters valid numeric text', (
       WidgetTester tester,
     ) async {
-      TimeOfDay? selectedTime;
-      const TimeOfDay initialTime = TimeOfDay(hour: 10, minute: 20);
+      JustTimeOfDay? selectedTime;
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 10, minute: 20);
 
       await tester.pumpWidget(
         buildTestApp(
           TimePickerInput(
             selectedTime: initialTime,
             timeFormat: .twelveHour,
-            onChanged: (TimeOfDay time) => selectedTime = time,
+            onChanged: (JustTimeOfDay time) => selectedTime = time,
           ),
         ),
       );
@@ -362,15 +362,15 @@ void main() {
     testWidgets('Clamps out-of-range hours on submit', (
       WidgetTester tester,
     ) async {
-      TimeOfDay? selectedTime;
-      const TimeOfDay initialTime = TimeOfDay(hour: 10, minute: 0);
+      JustTimeOfDay? selectedTime;
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 10, minute: 0);
 
       await tester.pumpWidget(
         buildTestApp(
           TimePickerInput(
             selectedTime: initialTime,
             timeFormat: .twentyFourHour,
-            onChanged: (TimeOfDay time) => selectedTime = time,
+            onChanged: (JustTimeOfDay time) => selectedTime = time,
           ),
         ),
       );
@@ -387,14 +387,14 @@ void main() {
     testWidgets('Clamps out-of-range minutes on submit', (
       WidgetTester tester,
     ) async {
-      TimeOfDay? selectedTime;
-      const TimeOfDay initialTime = TimeOfDay(hour: 10, minute: 0);
+      JustTimeOfDay? selectedTime;
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 10, minute: 0);
 
       await tester.pumpWidget(
         buildTestApp(
           TimePickerInput(
             selectedTime: initialTime,
-            onChanged: (TimeOfDay time) => selectedTime = time,
+            onChanged: (JustTimeOfDay time) => selectedTime = time,
           ),
         ),
       );
@@ -411,15 +411,15 @@ void main() {
     testWidgets('Sanitizes non-numeric characters in input fields', (
       WidgetTester tester,
     ) async {
-      TimeOfDay? selectedTime;
-      const TimeOfDay initialTime = TimeOfDay(hour: 10, minute: 0);
+      JustTimeOfDay? selectedTime;
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 10, minute: 0);
 
       await tester.pumpWidget(
         buildTestApp(
           TimePickerInput(
             selectedTime: initialTime,
             timeFormat: .twelveHour,
-            onChanged: (TimeOfDay time) => selectedTime = time,
+            onChanged: (JustTimeOfDay time) => selectedTime = time,
           ),
         ),
       );
@@ -440,7 +440,7 @@ void main() {
       await tester.pumpWidget(
         buildTestApp(
           const TimePickerInput(
-            selectedTime: TimeOfDay(hour: 1, minute: 0),
+            selectedTime: JustTimeOfDay(hour: 1, minute: 0),
             timeFormat: .twelveHour,
             autofocus: true,
           ),
@@ -467,15 +467,15 @@ void main() {
     testWidgets('Displays 12-hour format with AM/PM toggle', (
       WidgetTester tester,
     ) async {
-      TimeOfDay? selectedTime;
-      const TimeOfDay initialTime = TimeOfDay(hour: 9, minute: 15);
+      JustTimeOfDay? selectedTime;
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 9, minute: 15);
 
       await tester.pumpWidget(
         buildTestApp(
           JustTimePicker(
             value: initialTime,
             timeFormat: .twelveHour,
-            onChanged: (TimeOfDay time) => selectedTime = time,
+            onChanged: (JustTimeOfDay time) => selectedTime = time,
           ),
         ),
       );
@@ -491,13 +491,13 @@ void main() {
 
       expect(selectedTime, isNotNull);
       expect(selectedTime!.hour, equals(21)); // 9 AM -> 9 PM = 21:15
-      expect(selectedTime!.period, equals(DayPeriod.pm));
+      expect(selectedTime!.period, equals(JustDayPeriod.pm));
     });
 
     testWidgets('Displays 24-hour format without AM/PM toggle', (
       WidgetTester tester,
     ) async {
-      const TimeOfDay initialTime = TimeOfDay(hour: 21, minute: 45);
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 21, minute: 45);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -514,7 +514,7 @@ void main() {
     testWidgets('Switches active segment between hour and minute in header', (
       WidgetTester tester,
     ) async {
-      const TimeOfDay initialTime = TimeOfDay(hour: 10, minute: 25);
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 10, minute: 25);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -536,7 +536,7 @@ void main() {
     testWidgets('Cycles picker interaction modes via header switch button', (
       WidgetTester tester,
     ) async {
-      const TimeOfDay initialTime = TimeOfDay(hour: 12, minute: 0);
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 12, minute: 0);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -574,7 +574,7 @@ void main() {
     testWidgets('Renders JustTimePicker under Neobrutalism preset', (
       WidgetTester tester,
     ) async {
-      const TimeOfDay initialTime = TimeOfDay(hour: 14, minute: 30);
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 14, minute: 30);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -592,7 +592,7 @@ void main() {
     testWidgets('Applies custom JustTimePickerStyle overrides', (
       WidgetTester tester,
     ) async {
-      const TimeOfDay initialTime = TimeOfDay(hour: 8, minute: 0);
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 8, minute: 0);
       const JustTimePickerStyle customStyle = JustTimePickerStyle(
         backgroundColor: Color(0xFF1E1E2E),
         dialFaceColor: Color(0xFF2E2E3E),
@@ -620,7 +620,7 @@ void main() {
     testWidgets('Applies JustTimePickerTheme extension defaults', (
       WidgetTester tester,
     ) async {
-      const TimeOfDay initialTime = TimeOfDay(hour: 11, minute: 45);
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 11, minute: 45);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -649,15 +649,15 @@ void main() {
     testWidgets('Renders dropdown variant and toggles popover overlay', (
       WidgetTester tester,
     ) async {
-      TimeOfDay? selectedTime;
-      const TimeOfDay initialTime = TimeOfDay(hour: 10, minute: 30);
+      JustTimeOfDay? selectedTime;
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 10, minute: 30);
 
       await tester.pumpWidget(
         buildTestApp(
           JustTimePicker.dropdown(
             value: initialTime,
             placeholder: 'Select time',
-            onChanged: (TimeOfDay time) => selectedTime = time,
+            onChanged: (JustTimeOfDay time) => selectedTime = time,
           ),
         ),
       );
@@ -684,7 +684,7 @@ void main() {
     testWidgets('Renders modal trigger button and opens dialog', (
       WidgetTester tester,
     ) async {
-      const TimeOfDay initialTime = TimeOfDay(hour: 15, minute: 0);
+      const JustTimeOfDay initialTime = JustTimeOfDay(hour: 15, minute: 0);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -718,7 +718,7 @@ void main() {
     testWidgets('showJustTimePicker returns selected time on confirm', (
       WidgetTester tester,
     ) async {
-      TimeOfDay? resultTime;
+      JustTimeOfDay? resultTime;
 
       await tester.pumpWidget(
         buildTestApp(
@@ -729,7 +729,7 @@ void main() {
                 onPressed: () async {
                   resultTime = await showJustTimePicker(
                     context: context,
-                    initialTime: const TimeOfDay(hour: 10, minute: 0),
+                    initialTime: const JustTimeOfDay(hour: 10, minute: 0),
                   );
                 },
               );
@@ -761,7 +761,7 @@ void main() {
       'TimePickerDial exposes container semantics and increase/decrease actions',
       (WidgetTester tester) async {
         final SemanticsHandle handle = tester.ensureSemantics();
-        const TimeOfDay initialTime = TimeOfDay(hour: 10, minute: 0);
+        const JustTimeOfDay initialTime = JustTimeOfDay(hour: 10, minute: 0);
 
         await tester.pumpWidget(
           buildTestApp(
@@ -792,7 +792,7 @@ void main() {
       'TimePickerSpinner wheels expose semantics with label and value',
       (WidgetTester tester) async {
         final SemanticsHandle handle = tester.ensureSemantics();
-        const TimeOfDay initialTime = TimeOfDay(hour: 8, minute: 30);
+        const JustTimeOfDay initialTime = JustTimeOfDay(hour: 8, minute: 30);
 
         await tester.pumpWidget(
           buildTestApp(
@@ -822,7 +822,7 @@ void main() {
     testWidgets('TimePickerDial navigates with keyboard arrow keys', (
       WidgetTester tester,
     ) async {
-      TimeOfDay selectedTime = const TimeOfDay(hour: 10, minute: 0);
+      JustTimeOfDay selectedTime = const JustTimeOfDay(hour: 10, minute: 0);
 
       await tester.pumpWidget(
         buildTestApp(
@@ -831,7 +831,7 @@ void main() {
               return TimePickerDial(
                 selectedTime: selectedTime,
                 activeSegment: .hour,
-                onChanged: (TimeOfDay time) {
+                onChanged: (JustTimeOfDay time) {
                   setState(() {
                     selectedTime = time;
                   });
@@ -871,7 +871,7 @@ void main() {
       'AM/PM toggle buttons expose button semantics and selected state',
       (WidgetTester tester) async {
         final SemanticsHandle handle = tester.ensureSemantics();
-        const TimeOfDay initialTime = TimeOfDay(hour: 9, minute: 0);
+        const JustTimeOfDay initialTime = JustTimeOfDay(hour: 9, minute: 0);
 
         await tester.pumpWidget(
           buildTestApp(
@@ -898,5 +898,78 @@ void main() {
         handle.dispose();
       },
     );
+  });
+
+  group('JustTimeOfDay Unit Tests', () {
+    test('Hour, minute, period, and hourOfPeriod calculations', () {
+      const JustTimeOfDay midnight = JustTimeOfDay(hour: 0, minute: 0);
+      expect(midnight.period, equals(JustDayPeriod.am));
+      expect(midnight.hourOfPeriod, equals(12));
+      expect(midnight.periodOffset, equals(0));
+
+      const JustTimeOfDay morning = JustTimeOfDay(hour: 9, minute: 30);
+      expect(morning.period, equals(JustDayPeriod.am));
+      expect(morning.hourOfPeriod, equals(9));
+
+      const JustTimeOfDay noon = JustTimeOfDay(hour: 12, minute: 0);
+      expect(noon.period, equals(JustDayPeriod.pm));
+      expect(noon.hourOfPeriod, equals(12));
+      expect(noon.periodOffset, equals(12));
+
+      const JustTimeOfDay evening = JustTimeOfDay(hour: 21, minute: 45);
+      expect(evening.period, equals(JustDayPeriod.pm));
+      expect(evening.hourOfPeriod, equals(9));
+    });
+
+    test('replacing, fromDateTime, and now', () {
+      const JustTimeOfDay time = JustTimeOfDay(hour: 10, minute: 20);
+      final JustTimeOfDay replacedHour = time.replacing(hour: 14);
+      expect(replacedHour.hour, equals(14));
+      expect(replacedHour.minute, equals(20));
+
+      final JustTimeOfDay replacedMin = time.replacing(minute: 45);
+      expect(replacedMin.hour, equals(10));
+      expect(replacedMin.minute, equals(45));
+
+      final DateTime dt = DateTime(2026, 8, 15, 16, 25);
+      final JustTimeOfDay fromDt = JustTimeOfDay.fromDateTime(dt);
+      expect(fromDt.hour, equals(16));
+      expect(fromDt.minute, equals(25));
+
+      final JustTimeOfDay now = JustTimeOfDay.now();
+      expect(now.hour, inInclusiveRange(0, 23));
+      expect(now.minute, inInclusiveRange(0, 59));
+    });
+
+    test('Comparisons and equality', () {
+      const JustTimeOfDay t1 = JustTimeOfDay(hour: 9, minute: 0);
+      const JustTimeOfDay t2 = JustTimeOfDay(hour: 9, minute: 30);
+      const JustTimeOfDay t3 = JustTimeOfDay(hour: 10, minute: 0);
+      const JustTimeOfDay t1Copy = JustTimeOfDay(hour: 9, minute: 0);
+
+      expect(t1.isBefore(t2), isTrue);
+      expect(t2.isAfter(t1), isTrue);
+      expect(t1.isAtSameTimeAs(t1Copy), isTrue);
+      expect(t1, equals(t1Copy));
+      expect(t1.hashCode, equals(t1Copy.hashCode));
+      expect(t1, isNot(equals(t2)));
+      expect(t1.compareTo(t2), isNegative);
+      expect(t3.compareTo(t2), isPositive);
+    });
+
+    test('toString formatting with zero padding', () {
+      const JustTimeOfDay singleDigit = JustTimeOfDay(hour: 4, minute: 7);
+      expect(singleDigit.toString(), equals('JustTimeOfDay(04:07)'));
+
+      const JustTimeOfDay doubleDigit = JustTimeOfDay(hour: 15, minute: 42);
+      expect(doubleDigit.toString(), equals('JustTimeOfDay(15:42)'));
+    });
+
+    test('Assertions on invalid hour and minute', () {
+      expect(() => JustTimeOfDay(hour: -1, minute: 0), throwsAssertionError);
+      expect(() => JustTimeOfDay(hour: 24, minute: 0), throwsAssertionError);
+      expect(() => JustTimeOfDay(hour: 12, minute: -1), throwsAssertionError);
+      expect(() => JustTimeOfDay(hour: 12, minute: 60), throwsAssertionError);
+    });
   });
 }
