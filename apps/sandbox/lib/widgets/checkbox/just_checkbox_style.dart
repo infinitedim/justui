@@ -1,4 +1,5 @@
-// justui-meta: registry=e2169e308cf72c1d23f36dce87157684557ae96535ae0c91cd9b860471dfad8e local=5d430da044be3c0029145c97e25843d11db4fad3e6f9c492f255a3b459ec3a0f
+// justui-meta: registry=8fe56b6b3caa3f2c39f74758665b6fc3a03bb7ec639b83313ed89ba1f22573c8 local=eac38e643c46747d7b5ed65e2cf1d82d4ac43b0594b999f877667e32e21320be
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/widgets.dart';
 
 /// The physical size classification for [JustCheckbox].
@@ -30,12 +31,20 @@ class JustCheckboxStyle {
   /// Text style of the checkbox label.
   final TextStyle? textStyle;
 
+  /// Custom box shadow when unchecked. If null, follows preset tokens.
+  final List<BoxShadow>? shadows;
+
+  /// Custom box shadow when checked/active. If null, follows [shadows] or preset tokens.
+  final List<BoxShadow>? activeShadows;
+
   const JustCheckboxStyle({
     this.activeColor,
     this.checkColor,
     this.borderColor,
     this.borderRadius,
     this.textStyle,
+    this.shadows,
+    this.activeShadows,
   });
 
   /// Returns a copy with given fields replaced.
@@ -45,6 +54,8 @@ class JustCheckboxStyle {
     Color? borderColor,
     BorderRadius? borderRadius,
     TextStyle? textStyle,
+    List<BoxShadow>? shadows,
+    List<BoxShadow>? activeShadows,
   }) {
     return JustCheckboxStyle(
       activeColor: activeColor ?? this.activeColor,
@@ -52,6 +63,8 @@ class JustCheckboxStyle {
       borderColor: borderColor ?? this.borderColor,
       borderRadius: borderRadius ?? this.borderRadius,
       textStyle: textStyle ?? this.textStyle,
+      shadows: shadows ?? this.shadows,
+      activeShadows: activeShadows ?? this.activeShadows,
     );
   }
 
@@ -68,6 +81,8 @@ class JustCheckboxStyle {
       borderColor: .lerp(a?.borderColor, b?.borderColor, t),
       borderRadius: .lerp(a?.borderRadius, b?.borderRadius, t),
       textStyle: .lerp(a?.textStyle, b?.textStyle, t),
+      shadows: t < 0.5 ? a?.shadows : b?.shadows,
+      activeShadows: t < 0.5 ? a?.activeShadows : b?.activeShadows,
     );
   }
 
@@ -80,7 +95,9 @@ class JustCheckboxStyle {
           checkColor == other.checkColor &&
           borderColor == other.borderColor &&
           borderRadius == other.borderRadius &&
-          textStyle == other.textStyle;
+          textStyle == other.textStyle &&
+          listEquals(shadows, other.shadows) &&
+          listEquals(activeShadows, other.activeShadows);
 
   @override
   int get hashCode => Object.hash(
@@ -89,5 +106,7 @@ class JustCheckboxStyle {
     borderColor,
     borderRadius,
     textStyle,
+    shadows == null ? null : Object.hashAll(shadows!),
+    activeShadows == null ? null : Object.hashAll(activeShadows!),
   );
 }

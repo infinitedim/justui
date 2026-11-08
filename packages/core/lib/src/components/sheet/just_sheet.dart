@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Theme, showGeneralDialog;
+import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
@@ -217,7 +217,6 @@ class JustSheetController extends JustOverlayController {
   }
 }
 
-/// The internal widget for rendering the sheet content with drag-to-dismiss and focus trapping.
 /// The internal widget for rendering the sheet content with drag-to-dismiss and focus trapping.
 class const _JustSheetWidget({
   required final _SheetInstance<dynamic> instance,
@@ -560,7 +559,6 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
   }
 }
 
-/// Scope widget that binds a [JustSheetController] and handles the Flutter context/ticker binding.
 /// Scope widget that binds a [JustSheetController] and handles the Flutter context/ticker binding.
 class const JustSheetScope({
   super.key,

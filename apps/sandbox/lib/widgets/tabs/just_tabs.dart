@@ -1,6 +1,6 @@
-// justui-meta: registry=2f9addd45983d5d42ff643ccd9c8a00961e265b494a9e2eb5b916cdc181277c2 local=6fc2a99b2bd397a50bb9a52f390ec1e569f6c6196f709ace2ace66640300799a
+// justui-meta: registry=a1058d760641b65ab5360010aa231a65ab8dcfa3dbd4ceccb31720b017949fa1 local=cca2c92a2c8f46491b24a74175c26f1caa46d19163f14dfc3db8c1be6799f4de
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
-import 'package:flutter/material.dart' show Colors, Theme;
+import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
@@ -97,8 +97,6 @@ class JustTabController extends ChangeNotifier {
   }
 }
 
-/// A premium, Material-free tabs component supporting sliding indicators, swiping,
-/// lazy loading/caching, and keyboard navigation.
 /// A premium, Material-free tabs component supporting sliding indicators, swiping,
 /// lazy loading/caching, and keyboard navigation.
 class JustTabs extends StatefulWidget {
@@ -569,7 +567,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
                                       typography.bodyMd.copyWith(
                                         fontWeight: .w600,
                                       ))
-                                  .copyWith(color: Colors.transparent),
+                                  .copyWith(color: const Color(0x00000000)),
                         ),
                       ),
                       Text(

@@ -14,7 +14,7 @@ void main() {
     return MaterialApp(
       theme: effectiveTheme.toThemeData(),
       home: JustThemeProvider(
-        initialThemeMode: ThemeMode.light,
+        initialThemeMode: .light,
         lightTheme: effectiveTheme,
         child: Scaffold(body: Center(child: child)),
       ),

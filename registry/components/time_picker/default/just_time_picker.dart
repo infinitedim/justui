@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart'
-    show DayPeriod, Icon, Icons, Theme, TimeOfDay, showGeneralDialog;
+import 'package:flutter/material.dart' show Icons, Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 
@@ -36,19 +35,19 @@ export 'just_time_picker_variants.dart';
 /// - [JustTimePickerVariant.responsive]: adaptively switches between dropdown on desktop (≥640px) and bottom sheet on mobile (<640px).
 class JustTimePicker extends StatefulWidget {
   /// Currently selected time value.
-  final TimeOfDay? value;
+  final JustTimeOfDay? value;
 
   /// Callback fired when the selected time changes.
-  final ValueChanged<TimeOfDay>? onChanged;
+  final ValueChanged<JustTimeOfDay>? onChanged;
 
   /// Earliest selectable time (inclusive).
-  final TimeOfDay? firstTime;
+  final JustTimeOfDay? firstTime;
 
   /// Latest selectable time (inclusive).
-  final TimeOfDay? lastTime;
+  final JustTimeOfDay? lastTime;
 
   /// Predicate to selectively disable specific times.
-  final bool Function(TimeOfDay)? selectableTimePredicate;
+  final bool Function(JustTimeOfDay)? selectableTimePredicate;
 
   /// Display variant ([JustTimePickerVariant.inline], [JustTimePickerVariant.modal],
   /// [JustTimePickerVariant.dropdown], [JustTimePickerVariant.responsive]).
@@ -114,11 +113,11 @@ class JustTimePicker extends StatefulWidget {
   /// Named constructor for inline time picker mode.
   const JustTimePicker.inline({
     Key? key,
-    TimeOfDay? value,
-    ValueChanged<TimeOfDay>? onChanged,
-    TimeOfDay? firstTime,
-    TimeOfDay? lastTime,
-    bool Function(TimeOfDay)? selectableTimePredicate,
+    JustTimeOfDay? value,
+    ValueChanged<JustTimeOfDay>? onChanged,
+    JustTimeOfDay? firstTime,
+    JustTimeOfDay? lastTime,
+    bool Function(JustTimeOfDay)? selectableTimePredicate,
     JustTimePickerMode mode = .dial,
     JustTimeFormat timeFormat = .twelveHour,
     int minuteInterval = 1,
@@ -150,11 +149,11 @@ class JustTimePicker extends StatefulWidget {
   /// Named constructor for dropdown popup mode anchored to a trigger field.
   const JustTimePicker.dropdown({
     Key? key,
-    TimeOfDay? value,
-    ValueChanged<TimeOfDay>? onChanged,
-    TimeOfDay? firstTime,
-    TimeOfDay? lastTime,
-    bool Function(TimeOfDay)? selectableTimePredicate,
+    JustTimeOfDay? value,
+    ValueChanged<JustTimeOfDay>? onChanged,
+    JustTimeOfDay? firstTime,
+    JustTimeOfDay? lastTime,
+    bool Function(JustTimeOfDay)? selectableTimePredicate,
     JustTimePickerMode mode = .dial,
     JustTimeFormat timeFormat = .twelveHour,
     int minuteInterval = 1,
@@ -188,11 +187,11 @@ class JustTimePicker extends StatefulWidget {
   /// Named constructor for modal trigger button mode.
   const JustTimePicker.modal({
     Key? key,
-    TimeOfDay? value,
-    ValueChanged<TimeOfDay>? onChanged,
-    TimeOfDay? firstTime,
-    TimeOfDay? lastTime,
-    bool Function(TimeOfDay)? selectableTimePredicate,
+    JustTimeOfDay? value,
+    ValueChanged<JustTimeOfDay>? onChanged,
+    JustTimeOfDay? firstTime,
+    JustTimeOfDay? lastTime,
+    bool Function(JustTimeOfDay)? selectableTimePredicate,
     JustTimePickerMode mode = .dial,
     JustTimeFormat timeFormat = .twelveHour,
     int minuteInterval = 1,
@@ -229,11 +228,11 @@ class JustTimePicker extends StatefulWidget {
   /// and draggable bottom sheet (< 640px) based on screen width.
   const JustTimePicker.responsive({
     Key? key,
-    TimeOfDay? value,
-    ValueChanged<TimeOfDay>? onChanged,
-    TimeOfDay? firstTime,
-    TimeOfDay? lastTime,
-    bool Function(TimeOfDay)? selectableTimePredicate,
+    JustTimeOfDay? value,
+    ValueChanged<JustTimeOfDay>? onChanged,
+    JustTimeOfDay? firstTime,
+    JustTimeOfDay? lastTime,
+    bool Function(JustTimeOfDay)? selectableTimePredicate,
     JustTimePickerMode mode = .dial,
     JustTimeFormat timeFormat = .twelveHour,
     int minuteInterval = 1,
@@ -269,7 +268,7 @@ class JustTimePicker extends StatefulWidget {
 }
 
 class _JustTimePickerState extends State<JustTimePicker> {
-  late TimeOfDay _currentTime;
+  late JustTimeOfDay _currentTime;
   late JustTimePickerMode _currentMode;
   late JustTimePickerSegment _activeSegment;
 
@@ -278,7 +277,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
   @override
   void initState() {
     super.initState();
-    _currentTime = widget.value ?? const TimeOfDay(hour: 12, minute: 0);
+    _currentTime = widget.value ?? const JustTimeOfDay(hour: 12, minute: 0);
     _currentMode = widget.mode;
     _activeSegment = widget.initialSegment;
   }
@@ -298,7 +297,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
     _overlayController.toggle();
   }
 
-  void _onTimeSelected(TimeOfDay time) {
+  void _onTimeSelected(JustTimeOfDay time) {
     setState(() {
       _currentTime = time;
     });
@@ -319,7 +318,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
     });
   }
 
-  String _formatTime(TimeOfDay time) {
+  String _formatTime(JustTimeOfDay time) {
     if (widget.timeFormat == .twentyFourHour) {
       final String hourStr = time.hour.toString().padLeft(2, '0');
       final String minuteStr = time.minute.toString().padLeft(2, '0');
@@ -328,7 +327,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
       final int hourOfPeriod = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
       final String hourStr = hourOfPeriod.toString().padLeft(2, '0');
       final String minuteStr = time.minute.toString().padLeft(2, '0');
-      final String periodStr = time.period == DayPeriod.am
+      final String periodStr = time.period == .am
           ? widget.locale.amLabel
           : widget.locale.pmLabel;
       return '$hourStr:$minuteStr $periodStr';
@@ -359,7 +358,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
 
   Widget _buildTimePickerBody(
     BuildContext context, {
-    ValueChanged<TimeOfDay>? onTimeSelected,
+    ValueChanged<JustTimeOfDay>? onTimeSelected,
   }) {
     final JustColorScheme colors = context.justColors;
     final JustSpacingScheme spacing = context.justSpacing;
@@ -391,7 +390,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
         .all(spacing.md);
     final double borderWidth = presetTokens.borderWidth;
 
-    final void Function(TimeOfDay value) effectiveOnChanged =
+    final void Function(JustTimeOfDay value) effectiveOnChanged =
         onTimeSelected ?? _onTimeSelected;
 
     return Container(
@@ -485,7 +484,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
 
     final bool isHourActive = _activeSegment == .hour;
     final bool isMinuteActive = _activeSegment == .minute;
-    final bool isAm = _currentTime.period == DayPeriod.am;
+    final bool isAm = _currentTime.period == .am;
 
     final BorderRadius resolvedRadius = presetTokens.resolveBorderRadius(
       radius,
@@ -634,7 +633,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
                       child: JustPressable(
                         onTap: () {
                           if (!isAm) {
-                            final TimeOfDay toggled = _currentTime
+                            final JustTimeOfDay toggled = _currentTime
                                 .togglePeriod();
                             _onTimeSelected(toggled);
                           }
@@ -672,7 +671,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
                       child: JustPressable(
                         onTap: () {
                           if (isAm) {
-                            final TimeOfDay toggled = _currentTime
+                            final JustTimeOfDay toggled = _currentTime
                                 .togglePeriod();
                             _onTimeSelected(toggled);
                           }
@@ -915,7 +914,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
       onTap: () {
         final Widget pickerWidget = _buildTimePickerBody(
           context,
-          onTimeSelected: (TimeOfDay time) {
+          onTimeSelected: (JustTimeOfDay time) {
             _onTimeSelected(time);
             try {
               JustSheetScope.of(context).dismiss();
@@ -1046,7 +1045,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
 
     return JustPressable(
       onTap: () async {
-        final TimeOfDay? selected = await showJustTimePicker(
+        final JustTimeOfDay? selected = await showJustTimePicker(
           context: context,
           initialTime: widget.value,
           firstTime: widget.firstTime,
@@ -1106,17 +1105,17 @@ class _JustTimePickerState extends State<JustTimePicker> {
 
 /// Content wrapper for modal dialogs and bottom sheets, including action buttons.
 class _ModalTimePickerContent extends StatefulWidget {
-  final TimeOfDay? initialTime;
-  final TimeOfDay? firstTime;
-  final TimeOfDay? lastTime;
-  final bool Function(TimeOfDay)? selectableTimePredicate;
+  final JustTimeOfDay? initialTime;
+  final JustTimeOfDay? firstTime;
+  final JustTimeOfDay? lastTime;
+  final bool Function(JustTimeOfDay)? selectableTimePredicate;
   final JustTimePickerMode mode;
   final JustTimeFormat timeFormat;
   final int minuteInterval;
   final JustTimePickerLocale locale;
   final JustTimePickerStyle? style;
   final bool? enableHaptic;
-  final ValueChanged<TimeOfDay> onConfirm;
+  final ValueChanged<JustTimeOfDay> onConfirm;
   final VoidCallback onCancel;
 
   const _ModalTimePickerContent({
@@ -1140,12 +1139,13 @@ class _ModalTimePickerContent extends StatefulWidget {
 }
 
 class _ModalTimePickerContentState extends State<_ModalTimePickerContent> {
-  late TimeOfDay _selectedTime;
+  late JustTimeOfDay _selectedTime;
 
   @override
   void initState() {
     super.initState();
-    _selectedTime = widget.initialTime ?? const TimeOfDay(hour: 12, minute: 0);
+    _selectedTime =
+        widget.initialTime ?? const JustTimeOfDay(hour: 12, minute: 0);
   }
 
   @override
@@ -1168,7 +1168,7 @@ class _ModalTimePickerContentState extends State<_ModalTimePickerContent> {
           showContainer: false,
           style: widget.style,
           enableHaptic: widget.enableHaptic,
-          onChanged: (TimeOfDay time) {
+          onChanged: (JustTimeOfDay time) {
             setState(() {
               _selectedTime = time;
             });
@@ -1202,12 +1202,12 @@ class _ModalTimePickerContentState extends State<_ModalTimePickerContent> {
 ///
 /// Automatically uses a draggable bottom sheet ([JustSheetScope]) on mobile (< 640px)
 /// and a centered dialog ([JustDialogScope]) on desktop/tablet (≥ 640px).
-Future<TimeOfDay?> showJustTimePicker({
+Future<JustTimeOfDay?> showJustTimePicker({
   required BuildContext context,
-  TimeOfDay? initialTime,
-  TimeOfDay? firstTime,
-  TimeOfDay? lastTime,
-  bool Function(TimeOfDay)? selectableTimePredicate,
+  JustTimeOfDay? initialTime,
+  JustTimeOfDay? firstTime,
+  JustTimeOfDay? lastTime,
+  bool Function(JustTimeOfDay)? selectableTimePredicate,
   JustTimePickerMode mode = .dial,
   JustTimeFormat timeFormat = .twelveHour,
   int minuteInterval = 1,
@@ -1215,7 +1215,7 @@ Future<TimeOfDay?> showJustTimePicker({
   JustTimePickerStyle? style,
   bool? enableHaptic,
 }) async {
-  TimeOfDay? result;
+  JustTimeOfDay? result;
 
   final JustThemeProviderState? themeState = JustThemeProvider.maybeOf(context);
   final JustThemeData? theme = themeState?.theme;
@@ -1239,7 +1239,7 @@ Future<TimeOfDay?> showJustTimePicker({
   final bool isMobile = MediaQuery.sizeOf(context).width < JustBreakpoints.sm;
 
   if (isMobile) {
-    return showJustBottomSheet<TimeOfDay>(
+    return showJustBottomSheet<JustTimeOfDay>(
       context: context,
       content: wrapWithTheme(
         SizedBox(
@@ -1255,7 +1255,7 @@ Future<TimeOfDay?> showJustTimePicker({
             locale: locale,
             style: style,
             enableHaptic: enableHaptic,
-            onConfirm: (TimeOfDay time) {
+            onConfirm: (JustTimeOfDay time) {
               result = time;
               final JustSheetController? scope = JustSheetScope.maybeOf(
                 context,
@@ -1302,7 +1302,7 @@ Future<TimeOfDay?> showJustTimePicker({
             locale: locale,
             style: style,
             enableHaptic: enableHaptic,
-            onConfirm: (TimeOfDay time) {
+            onConfirm: (JustTimeOfDay time) {
               result = time;
               dialogScope.dismiss();
             },
@@ -1339,7 +1339,7 @@ Future<TimeOfDay?> showJustTimePicker({
                     locale: locale,
                     style: style,
                     enableHaptic: enableHaptic,
-                    onConfirm: (TimeOfDay time) {
+                    onConfirm: (JustTimeOfDay time) {
                       result = time;
                       Navigator.of(dialogContext).pop();
                     },

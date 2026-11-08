@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
@@ -7,6 +6,18 @@ import 'theme_aspects.dart';
 export 'theme_aspects.dart';
 import 'theme_data.dart';
 
+/// Represents the active theme brightness mode for JustUI.
+enum JustThemeMode {
+  /// Follows the system or platform brightness setting.
+  system,
+
+  /// Forces light theme mode.
+  light,
+
+  /// Forces dark theme mode.
+  dark,
+}
+
 /// A stateful provider that manages the theme mode and active theme data for JustUI.
 ///
 /// Under the hood, it propagates the active theme down the tree using an [InheritedModel],
@@ -14,8 +25,8 @@ import 'theme_data.dart';
 class const JustThemeProvider({
   super.key,
   required final Widget child,
-  final void Function(ThemeMode)? onThemeChanged,
-  final ThemeMode? initialThemeMode,
+  final void Function(JustThemeMode)? onThemeChanged,
+  final JustThemeMode? initialThemeMode,
   final JustThemeData? lightTheme,
   final JustThemeData? darkTheme,
   final Duration transitionDuration = JustDuration.normal,
@@ -72,12 +83,12 @@ class const JustThemeProvider({
 /// The active state of [JustThemeProvider].
 class JustThemeProviderState extends State<JustThemeProvider>
     with WidgetsBindingObserver {
-  late ThemeMode _themeMode;
+  late JustThemeMode _themeMode;
   late JustThemeData _lightTheme;
   late JustThemeData _darkTheme;
 
   /// Retrieves the active theme mode.
-  ThemeMode get themeMode => _themeMode;
+  JustThemeMode get themeMode => _themeMode;
 
   /// The transition duration used when switching themes.
   Duration get transitionDuration => widget.transitionDuration;
@@ -212,7 +223,7 @@ class JustThemeProviderState extends State<JustThemeProvider>
   /// Updates the active theme mode.
   ///
   /// Triggers [JustThemeProvider.onThemeChanged] if provided.
-  void setThemeMode(ThemeMode mode) {
+  void setThemeMode(JustThemeMode mode) {
     if (_themeMode == mode) return;
     _invalidateThemeCache();
     setState(() {
@@ -249,7 +260,7 @@ class JustThemeProviderState extends State<JustThemeProvider>
 class const _JustThemeModel({
   required super.child,
   required final JustThemeProviderState state,
-  required final ThemeMode themeMode,
+  required final JustThemeMode themeMode,
   required final JustThemeData themeData,
 }) extends InheritedModel<JustThemeAspect> {
   @override

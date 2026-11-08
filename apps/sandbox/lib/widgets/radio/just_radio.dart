@@ -1,4 +1,4 @@
-// justui-meta: registry=3342c365adf93a202307a44bde6e3f6d449ac353bdab720cd09cfd568c00703c local=c016d5e337e2eded3613c792075c4246d5c41b31153332dcd9c9a6df548811ab
+// justui-meta: registry=ee4bf457c02a0840067d1d67be66725d53c1b19f560f393452777d6d9afda52a local=0d87c71970ae9e50acb2536543c32ebd88aeb25ad465ac7b39e03e23ca3b4867
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -227,6 +227,8 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                     minHeight: 48.0,
                   ),
                   child: Center(
+                    widthFactor: 1.0,
+                    heightFactor: 1.0,
                     // RepaintBoundary placed directly inside JustRadio visual indicator
                     child: RepaintBoundary(
                       child: FocusIndicator(

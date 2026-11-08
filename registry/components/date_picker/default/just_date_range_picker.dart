@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart' show Colors, DateTimeRange;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 
@@ -7,13 +6,15 @@ import '_date_picker_calendar.dart';
 import 'just_date_picker_style.dart';
 import 'just_date_picker_variants.dart';
 
+export 'just_date_picker_variants.dart';
+
 /// A date range selection component supporting multi-day selection and quick presets.
 class JustDateRangePicker extends StatelessWidget {
   /// Currently selected range.
-  final DateTimeRange? value;
+  final JustDateTimeRange? value;
 
   /// Callback executed when a new range is selected.
-  final ValueChanged<DateTimeRange>? onChanged;
+  final ValueChanged<JustDateTimeRange>? onChanged;
 
   /// Earliest selectable date.
   final DateTime? firstDate;
@@ -83,18 +84,18 @@ class JustDateRangePicker extends StatelessWidget {
     return <JustDateRangePreset>[
       JustDateRangePreset(
         label: 'Today',
-        resolve: () => DateTimeRange(start: today, end: today),
+        resolve: () => JustDateTimeRange(start: today, end: today),
       ),
       JustDateRangePreset(
         label: 'Last 7 Days',
-        resolve: () => DateTimeRange(
+        resolve: () => JustDateTimeRange(
           start: today.subtract(const Duration(days: 6)),
           end: today,
         ),
       ),
       JustDateRangePreset(
         label: 'Last 30 Days',
-        resolve: () => DateTimeRange(
+        resolve: () => JustDateTimeRange(
           start: today.subtract(const Duration(days: 29)),
           end: today,
         ),
@@ -104,7 +105,7 @@ class JustDateRangePicker extends StatelessWidget {
         resolve: () {
           final DateTime start = DateTime(today.year, today.month, 1);
           final DateTime end = DateTime(today.year, today.month + 1, 0);
-          return DateTimeRange(start: start, end: end);
+          return JustDateTimeRange(start: start, end: end);
         },
       ),
       JustDateRangePreset(
@@ -112,7 +113,7 @@ class JustDateRangePicker extends StatelessWidget {
         resolve: () {
           final DateTime start = DateTime(today.year, 1, 1);
           final DateTime end = DateTime(today.year, 12, 31);
-          return DateTimeRange(start: start, end: end);
+          return JustDateTimeRange(start: start, end: end);
         },
       ),
     ];
@@ -174,7 +175,7 @@ class JustDateRangePicker extends StatelessWidget {
                     padding: .only(bottom: spacing.xs),
                     child: JustPressable(
                       onTap: () {
-                        final DateTimeRange<DateTime> range = preset.resolve();
+                        final JustDateTimeRange range = preset.resolve();
                         onChanged?.call(range);
                       },
                       builder:
@@ -188,7 +189,7 @@ class JustDateRangePicker extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: state.isHovered
                                     ? colors.muted
-                                    : Colors.transparent,
+                                    : const Color(0x00000000),
                                 borderRadius: .all(context.justRadius.sm),
                               ),
                               child: Text(

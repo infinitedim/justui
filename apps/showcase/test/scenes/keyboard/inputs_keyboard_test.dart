@@ -1,5 +1,4 @@
 // ignore_for_file: implementation_imports
-import 'package:flutter/material.dart' show DateTimeRange;
 import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -92,7 +91,7 @@ void _pickerTests() {
     await press(tester, LogicalKeyboardKey.enter);
     await tabTo(tester, nodeOf(tester, find.text('22')));
     await press(tester, LogicalKeyboardKey.enter);
-    final DateTimeRange? range = tester
+    final JustDateTimeRange? range = tester
         .widget<JustDateRangePicker>(find.byType(JustDateRangePicker))
         .value;
     expect(<int?>[range?.start.day, range?.end.day], <int>[20, 22]);

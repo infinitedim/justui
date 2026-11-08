@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/date_picker/_date_picker_calendar.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_picker.dart';
-import 'package:just_ui_core/src/components/date_picker/just_date_picker_variants.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_range_picker.dart';
 
 void main() {
@@ -154,16 +153,16 @@ void main() {
 
   group('JustDateRangePicker Widget Tests', () {
     testWidgets('Selects date range via two taps', (WidgetTester tester) async {
-      DateTimeRange? selectedRange;
+      JustDateTimeRange? selectedRange;
 
       await tester.pumpWidget(
         buildTestApp(
           JustDateRangePicker(
-            value: DateTimeRange(
+            value: JustDateTimeRange(
               start: DateTime(2026, 8, 1),
               end: DateTime(2026, 8, 1),
             ),
-            onChanged: (DateTimeRange range) => selectedRange = range,
+            onChanged: (JustDateTimeRange range) => selectedRange = range,
           ),
         ),
       );
@@ -184,13 +183,13 @@ void main() {
     testWidgets('Triggers range preset button selection', (
       WidgetTester tester,
     ) async {
-      DateTimeRange? selectedRange;
+      JustDateTimeRange? selectedRange;
 
       await tester.pumpWidget(
         buildTestApp(
           JustDateRangePicker(
             presets: JustDateRangePicker.defaultPresets(),
-            onChanged: (DateTimeRange range) => selectedRange = range,
+            onChanged: (JustDateTimeRange range) => selectedRange = range,
           ),
         ),
       );
@@ -203,6 +202,62 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(selectedRange, isNotNull);
+    });
+  });
+
+  group('JustDateTimeRange Unit Tests', () {
+    test('Calculates duration accurately and formats toString', () {
+      final DateTime start = DateTime(2026, 8, 1, 10, 0);
+      final DateTime end = DateTime(2026, 8, 5, 12, 30);
+      final JustDateTimeRange range = JustDateTimeRange(start: start, end: end);
+
+      expect(range.start, equals(start));
+      expect(range.end, equals(end));
+      expect(
+        range.duration,
+        equals(const Duration(days: 4, hours: 2, minutes: 30)),
+      );
+      expect(range.toString(), equals('$start - $end'));
+    });
+
+    test('Throws AssertionError when start is after end', () {
+      expect(
+        () => JustDateTimeRange(
+          start: DateTime(2026, 8, 10),
+          end: DateTime(2026, 8, 5),
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test('Value equality and hashCode', () {
+      final JustDateTimeRange range1 = JustDateTimeRange(
+        start: DateTime(2026, 8, 1),
+        end: DateTime(2026, 8, 10),
+      );
+      final JustDateTimeRange range2 = JustDateTimeRange(
+        start: DateTime(2026, 8, 1),
+        end: DateTime(2026, 8, 10),
+      );
+      final JustDateTimeRange range3 = JustDateTimeRange(
+        start: DateTime(2026, 8, 2),
+        end: DateTime(2026, 8, 10),
+      );
+
+      expect(range1, equals(range2));
+      expect(range1.hashCode, equals(range2.hashCode));
+      expect(range1, isNot(equals(range3)));
+    });
+
+    test('Calendar leap year and month days calculation', () {
+      // Leap year 2024
+      expect(DateTime(2024, 3, 0).day, equals(29));
+      // Non-leap year 2026
+      expect(DateTime(2026, 3, 0).day, equals(28));
+      // 30-day month
+      expect(DateTime(2026, 5, 0).day, equals(30));
+      // 31-day month
+      expect(DateTime(2026, 9, 0).day, equals(31));
     });
   });
 

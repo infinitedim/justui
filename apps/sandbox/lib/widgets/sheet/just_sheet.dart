@@ -1,7 +1,7 @@
-// justui-meta: registry=ca3d6cc7c80c32e94dc0373396c620d61e26d18fd932e4fdf0e8a0c1cc5e311e local=7c9b415684656d24d836d8ae58f532ee1e7c5774769a713c49335f391502fecd
+// justui-meta: registry=685bb73ef981b2dc2ca5b4533f3af39162af8bf534bbdb5e5957e47b7731f25d local=dd7552f050c450103a5cc6a8047bf2746384727e2d87766d9c20f26cc1f2642f
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Theme, showGeneralDialog;
+import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
@@ -213,7 +213,6 @@ class JustSheetController extends JustOverlayController {
   }
 }
 
-/// The internal widget for rendering the sheet content with drag-to-dismiss and focus trapping.
 /// The internal widget for rendering the sheet content with drag-to-dismiss and focus trapping.
 class _JustSheetWidget extends StatefulWidget {
   final _SheetInstance<dynamic> instance;
@@ -569,7 +568,6 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
   }
 }
 
-/// Scope widget that binds a [JustSheetController] and handles the Flutter context/ticker binding.
 /// Scope widget that binds a [JustSheetController] and handles the Flutter context/ticker binding.
 class JustSheetScope extends StatefulWidget {
   /// The controller that manages the sheet overlay.

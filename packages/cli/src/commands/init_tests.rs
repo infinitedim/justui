@@ -57,6 +57,8 @@ fn test_init_run_execution() {
     let theme_path = temp_dir.path().join("lib/core/theme/just_theme.dart");
     let theme_file = std::fs::read_to_string(&theme_path).unwrap();
     assert!(!theme_file.contains("justThemeExtensions"));
+    assert!(theme_file.contains("import 'package:flutter/widgets.dart' show Color;"));
+    assert!(!theme_file.contains("material.dart"));
 
     // The scaffolded theme file must already be dart-format-clean, so it
     // isn't immediately flagged as "modified" the moment a contributor

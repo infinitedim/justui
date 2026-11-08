@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Color;
+import 'package:flutter/widgets.dart' show Color;
 
 import '../just_ui_core.dart';
 
