@@ -44,7 +44,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
         with:
-          toolchain: stable
+          toolchain: "1.98.1"
 
       - name: Check for pending changesets
         id: check-changesets
@@ -92,8 +92,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "chore: apply changesets and bump versions [skip ci]"
-          git push
+          if git diff --cached --quiet; then
+            echo "No changes to commit after applying changesets."
+          else
+            git commit -m "chore: apply changesets and bump versions [skip ci]"
+            git push
+          fi
 
   # ── Tag validation guard ──────────────────────────────────────────────────
   validate-tag-version:
@@ -116,7 +120,7 @@ jobs:
           fi
           echo "✔ Versions match: $TAG_VERSION"
 
-  # ── Linux cross-compilation via `cross` ──────────────────────────────────────
+  # ── Linux builds ────────────────────────────────────────────────────────────
   build-linux:
     name: Build Linux (${{ matrix.target }})
     runs-on: ubuntu-latest
@@ -134,21 +138,29 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install Rust stable
+      - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
         with:
-          toolchain: stable
+          toolchain: "1.98.1"
           targets: ${{ matrix.target }}
 
-      - name: Install cargo-auditable and cross
+      - name: Install aarch64 cross toolchain
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu libc6-dev-arm64-cross
+
+      - name: Install cargo-auditable
         uses: taiki-e/install-action@1e29709c0ec63babbe8f266397a465f29a825f91 # v2.87.31
         with:
-          tool: cargo-auditable,cross
+          tool: cargo-auditable
 
-      - name: Build with cross
+      - name: Build
         env:
           CARGO_TARGET_DIR: ${{ github.workspace }}/target
-        run: cross auditable build --release --locked --target ${{ matrix.target }} --manifest-path packages/cli/Cargo.toml
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+          CC_aarch64_unknown_linux_gnu: aarch64-linux-gnu-gcc
+        run: cargo auditable build --release --locked --target ${{ matrix.target }} --manifest-path packages/cli/Cargo.toml
 
       - name: Package archive
         run: |
@@ -183,10 +195,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install Rust stable
+      - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
         with:
-          toolchain: stable
+          toolchain: "1.98.1"
           targets: ${{ matrix.target }}
 
       - name: Install cargo-auditable
@@ -225,10 +237,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install Rust stable
+      - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
         with:
-          toolchain: stable
+          toolchain: "1.98.1"
           targets: x86_64-pc-windows-msvc
 
       - name: Install cargo-auditable
