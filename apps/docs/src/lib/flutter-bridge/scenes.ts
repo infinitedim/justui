@@ -12,6 +12,7 @@ export const FLUTTER_SCENES = [
   'button',
   'card',
   'carousel',
+  'checkbox',
   'date-picker',
   'date-range-picker',
   'icon-button',
@@ -23,6 +24,7 @@ export const FLUTTER_SCENES = [
   'skeleton',
   'switch',
   'table',
+  'toggle',
 ] as const;
 
 export type FlutterScene = (typeof FLUTTER_SCENES)[number];

@@ -7,7 +7,9 @@ const Map<String, Size> sceneSizes = <String, Size>{
   // Actions
   'button': Size(320, 160),
   'icon-button': Size(160, 96),
+  'toggle': Size(200, 96),
   // Inputs
+  'checkbox': Size(320, 160),
   'input': Size(320, 160),
   'radio': Size(320, 160),
   'radio-group': Size(320, 160),

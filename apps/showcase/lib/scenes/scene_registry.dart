@@ -31,10 +31,6 @@ const Set<String> reactOnlyScenes = <String>{
   'sheet',
   'toast',
   'tooltip',
-  // Neobrutalism draws an ink shadow under the selected ink fill (Ink and
-  // Paper Rule A: no shadow there), and the styles have no hook to drop it.
-  'checkbox',
-  'toggle',
   // Off-center spinner values are drawn at 40% opacity (2.1:1 contrast) in
   // a shadowed card inside the picker card.
   'time-picker',
