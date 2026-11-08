@@ -72,6 +72,16 @@ jobs:
         run: |
           find .changeset-polyglot -maxdepth 1 -name "*.md" ! -name "README.md" -delete
 
+      - name: Re-sign registry index
+        if: steps.check-changesets.outputs.poly_count != '0'
+        run: cargo run -p justui -- sign-registry
+
+      - name: Regenerate docs component metadata
+        if: steps.check-changesets.outputs.poly_count != '0'
+        run: |
+          cd apps/docs
+          bun run generate:components
+
       - name: Generate changelogs
         if: steps.check-changesets.outputs.npm_count != '0'
         run: bun changeset version

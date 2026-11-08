@@ -103,5 +103,9 @@ awk -v new_ver="$NEW_VERSION" 'BEGIN{done=0} /^version = "[0-9]+\.[0-9]+\.[0-9]+
 
 mv "$TEMP_FILE" "$CARGO_TOML"
 echo "✔ Updated $CARGO_TOML"
+
+# Update Cargo.lock to match the new version
+cargo check --manifest-path "$CARGO_TOML" --quiet
+echo "✔ Updated Cargo.lock"
 echo ""
 echo "Cargo version updated successfully."
