@@ -275,12 +275,11 @@ Do not add components to `packages/core/lib/just_ui_core.dart`. In JustUI, `just
 
 Add widget tests under `packages/core/test/components/just_<name>_test.dart`. Tests must include at minimum: renders without error, responds to theme changes, and handles all variants.
 
-### Step 6 — Add Widgetbook Use-Case
+### Step 6 — Preview in Showcase
 
-To preview and test your component interactively during development, add a Widgetbook use-case under `apps/preview/lib/usecases/` (then run `dart run build_runner build --delete-conflicting-outputs` in `apps/preview`):
-- Create `<name>_usecases.dart`
-- Register both Light and Dark mode states, plus all visual variants (`default_`, `neobrutalism`).
-- Ensure knobs are provided for key interactive props (labels, sizes, state toggles).
+To preview and test your component interactively during development:
+- Add a scene builder under `apps/showcase/lib/scenes/<group>/` and register it in `apps/showcase/lib/scenes/scene_registry.dart`.
+- Alternatively, test component installation directly inside `apps/sandbox` using `cargo run -p justui -- add <name>`.
 
 ---
 
