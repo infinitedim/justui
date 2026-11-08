@@ -15,7 +15,7 @@ void main() {
   Widget buildTestApp(
     Widget child, {
     JustThemeData? theme,
-    ThemeMode themeMode = ThemeMode.light,
+    JustThemeMode themeMode = .light,
   }) {
     return MaterialApp(
       home: JustThemeProvider(
@@ -696,7 +696,7 @@ void main() {
         buildTestApp(
           const JustInput(label: 'Neobrutalism Dark', hint: 'Type here...'),
           theme: JustThemeData.neobrutalismDark,
-          themeMode: ThemeMode.dark,
+          themeMode: .dark,
         ),
       );
 

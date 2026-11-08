@@ -291,13 +291,13 @@ void main() {
     ) async {
       await tester.pumpWidget(
         JustThemeProvider(
-          initialThemeMode: ThemeMode.dark,
+          initialThemeMode: .dark,
           child: Builder(
             builder: (BuildContext context) {
               final JustThemeProviderState state = JustThemeProvider.read(
                 context,
               );
-              expect(state.themeMode, equals(ThemeMode.dark));
+              expect(state.themeMode, equals(JustThemeMode.dark));
               expect(
                 state.theme.colors.background,
                 equals(JustColors.neutral950),
@@ -312,14 +312,14 @@ void main() {
     testWidgets(
       'Theme toggle triggers state updates and persistence callback',
       (WidgetTester tester) async {
-        ThemeMode? persistedMode;
+        JustThemeMode? persistedMode;
 
         await tester.pumpWidget(
           Directionality(
             textDirection: .ltr,
             child: JustThemeProvider(
-              initialThemeMode: ThemeMode.light,
-              onThemeChanged: (ThemeMode mode) {
+              initialThemeMode: .light,
+              onThemeChanged: (JustThemeMode mode) {
                 persistedMode = mode;
               },
               child: Builder(
@@ -344,7 +344,7 @@ void main() {
         await tester.pump();
 
         expect(find.text('dark'), findsOneWidget);
-        expect(persistedMode, equals(ThemeMode.dark));
+        expect(persistedMode, equals(JustThemeMode.dark));
       },
     );
 
@@ -364,7 +364,7 @@ void main() {
         Directionality(
           textDirection: .ltr,
           child: JustThemeProvider(
-            initialThemeMode: ThemeMode.light,
+            initialThemeMode: .light,
             lightTheme: JustThemeData.light.copyWith(
               spacing: const FluidSpacingScheme(),
               radius: const FluidRadiusScheme(),
@@ -414,7 +414,7 @@ void main() {
                     return ElevatedButton(
                       onPressed: () {
                         JustThemeProvider.read(context)
-                            .setThemeMode(ThemeMode.dark);
+                            .setThemeMode(.dark);
                       },
                       child: const Text('Change Theme'),
                     );
@@ -500,7 +500,7 @@ void main() {
           Directionality(
             textDirection: .ltr,
             child: JustThemeProvider(
-              initialThemeMode: ThemeMode.system,
+              initialThemeMode: .system,
               child: Builder(
                 builder: (BuildContext context) {
                   final bool isDark =
@@ -621,7 +621,7 @@ void main() {
           // Test default preset (should use AnimatedScale)
           await tester.pumpWidget(
             JustThemeProvider(
-              initialThemeMode: ThemeMode.light,
+              initialThemeMode: .light,
               child: Builder(
                 builder: (BuildContext context) {
                   final JustThemeData theme = JustThemeProvider.of(context)
@@ -643,7 +643,7 @@ void main() {
           // Test neobrutalism preset (should use AnimatedContainer for translation)
           await tester.pumpWidget(
             JustThemeProvider(
-              initialThemeMode: ThemeMode.light,
+              initialThemeMode: .light,
               lightTheme: JustThemeData.neobrutalismLight,
               child: Builder(
                 builder: (BuildContext context) {
@@ -673,7 +673,7 @@ void main() {
 
         await tester.pumpWidget(
           JustThemeProvider(
-            initialThemeMode: ThemeMode.light,
+            initialThemeMode: .light,
             child: Builder(
               builder: (BuildContext context) {
                 providerState = JustThemeProvider.read(context);

@@ -16,7 +16,7 @@ void main() {
     Widget child, {
     JustThemeData? theme,
     ThemeData? materialTheme,
-    ThemeMode themeMode = ThemeMode.light,
+    JustThemeMode themeMode = .light,
   }) {
     final JustThemeData effectiveJustTheme = theme ?? JustThemeData.light;
     final ThemeData effectiveMaterialTheme =

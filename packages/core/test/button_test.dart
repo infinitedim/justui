@@ -19,7 +19,7 @@ void main() {
     Widget child, {
     JustThemeData? theme,
     ThemeData? materialTheme,
-    ThemeMode themeMode = ThemeMode.light,
+    JustThemeMode themeMode = .light,
   }) {
     final JustThemeData effectiveJustTheme = theme ?? JustThemeData.light;
     final ThemeData effectiveMaterialTheme =
@@ -526,7 +526,7 @@ void main() {
       await tester.pumpWidget(
         buildTestApp(
           theme: JustThemeData.neobrutalismDark,
-          themeMode: ThemeMode.dark,
+          themeMode: .dark,
           JustButton.link(label: 'Neo Dark Link', onPressed: () {}),
         ),
       );
