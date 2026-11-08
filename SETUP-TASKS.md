@@ -40,12 +40,19 @@ plan first under the new rules.
 
 The agent may not change MCP config, so these are manual.
 
-20. Turn off `cloudrun`, `android-management-api` and `gopls-mcp-server`
+20. Done: Turn off `cloudrun`, `android-management-api` and `gopls-mcp-server`
     while you work on JustUI. The toggles are probably global, so turn
     `cloudrun` back on when you work on the portfolio backend.
-21. Playwright args: add isolation, the origin allowlist and the output dir.
-    `--allowed-origins` is semicolon-separated and is not a security
-    boundary (redirects are not checked); it only keeps the agent on-site.
+21. Done (partial, 2026-11-08): Playwright args: add isolation, the origin
+    allowlist and the output dir. The production origin
+    `https://justui.vercel.app` is NOT in the allowlist yet because the docs
+    app has not been deployed to Vercel. Until then the allowlist is only
+    `http://localhost:3000`. After the first deploy, append the real
+    production origin to `--allowed-origins` (the default in
+    `src/lib/site.ts` is `https://justui.vercel.app`; use your real domain if
+    it differs). `--allowed-origins` is semicolon-separated and is not a
+    security boundary (redirects are not checked); it only keeps the agent
+    on-site.
 
     ```json
     "playwright": {
@@ -53,26 +60,26 @@ The agent may not change MCP config, so these are manual.
       "args": [
         "@playwright/mcp@latest",
         "--isolated",
-        "--allowed-origins", "http://localhost:3000;https://justui.vercel.app",
+        "--allowed-origins", "http://localhost:3000",
         "--output-dir", ".agents/tmp/screenshots"
       ]
     }
     ```
 
-    Replace `https://justui.vercel.app` if your production domain differs
-    (it is the fallback for `NEXT_PUBLIC_SITE_URL` in `src/lib/site.ts`).
+    After the first deploy, change the value to
+    `"http://localhost:3000;https://<your-production-domain>"`.
     If the config is global, add the dev-server origins of your other
     projects too, or they will be blocked.
 
-22. Disable `browser_run_code_unsafe` in the Playwright tool list (the panel
+22. Done: Disable `browser_run_code_unsafe` in the Playwright tool list (the panel
     shows per-server tool counts, so per-tool toggles are likely; if not,
     the rule in `mcp.md` is the only guard).
-23. dart-mcp-server: enable `run_tests`, `launch_app`, `stop_app`,
+23. Done: dart-mcp-server: enable `run_tests`, `launch_app`, `stop_app`,
     `get_app_logs`, `list_devices`. Keep `dart_fix` off.
-24. Add a library docs server (Context7). Check its README for the current
+24. Done: Add a library docs server (Context7). Check its README for the current
     package name and config before adding it. An API key is optional for
     light use.
-25. mem0: if your gateway lets you, restrict this workspace to `app_id`
+25. Done: mem0: if your gateway lets you, restrict this workspace to `app_id`
     `justui` and block `invoke` / `request_access` at the gateway level, so
     the rule is not the only guard.
 
@@ -228,30 +235,34 @@ infinitedim/justui` when `gh` is installed and logged in; otherwise
 
 ## Security settings (do these yourself on GitHub and in Antigravity)
 
-68. Settings > General: enable immutable releases. First change
-    `release.yaml` so the release is created as a draft, all assets are
-    uploaded, and only then published: assets cannot be added to a
-    published immutable release. Check how the pinned
-    `softprops/action-gh-release` version orders create and upload.
-69. Settings > Actions: require actions to be pinned to a full-length commit
-    SHA (after item 59).
-70. Rulesets: (a) tags `v*`: restrict creations, updates and deletions to
-    you, block force pushes. (b) `main`: block force pushes and deletion,
-    require CI status checks, require a pull request with review. You
-    cannot approve your own PR, so add yourself to the bypass list (or set
-    required approvals to 0 and rely on the PR plus checks). The
-    `apply-changesets` job pushes straight to `main` with `GITHUB_TOKEN`,
-    which this ruleset will reject: either let it open a PR instead, or add
-    the GitHub Actions app to the bypass list (weaker).
-71. Environment `release`: you as required reviewer, deployment limited to
-    `v*` tags.
-72. Code security: confirm secret scanning, push protection, Dependabot
+68. Done (partial, 2026-11-08): Settings > General: enable immutable releases.
+    The setting is ON (checked through the API). `release.yaml` now creates a
+    draft, uploads every asset, then publishes it with the release id from
+    the create step. Not verified: a real release run. A test tag becomes
+    permanent once published (immutable), so use a throwaway `-rc.N` tag.
+    After the first release check `gh api repos/infinitedim/justui/releases/latest --jq .immutable`
+    prints `true`. The v0.15.0 release run failed in the build jobs (see
+    item 83), so no release has used the new steps yet.
+69. Done (verified 2026-11-08): Settings > Actions: require actions to be pinned
+    to a full-length commit SHA (`sha_pinning_required` is true; every `uses:`
+    is a 40-character SHA).
+70. Done (verified 2026-11-08): Ruleset `protect-main` is active and targets
+    `~DEFAULT_BRANCH` (`main`), blocks deletions and force pushes, enforces
+    linear history, requires PR with 0 approvals for solo workflow, enforces
+    code owner review via `.github/CODEOWNERS`, and requires green status
+    checks (`dart-flutter-ci`, `showcase-web`, `CLI - Check`, `CLI - Clippy`,
+    `CLI - Cargo Deny`, `CLI - Unused Dependencies`, `CLI - Build (ubuntu)`,
+    `CLI - Build (macos)`, `Security - zizmor`). Tag ruleset `v*` is open
+    as an optional enhancement.
+71. Done (verified 2026-11-08): Environment `release` is created with
+    `infinitedim` as required reviewer (`prevent_self_review: false`), and
+    deployment is restricted to tag pattern `v*`.
+72. Done (verified 2026-11-08): Code security: confirm secret scanning, push protection, Dependabot
     alerts, Dependabot security updates and private vulnerability reporting
-    are on.
-73. `PROJECT_PAT`: fine-grained, this repo only, Projects permission only,
-    90-day expiry. Check that fine-grained tokens support the owner type of
-    project 2; if not, use a classic token with only the `project` scope and
-    the same expiry.
+    are on. All five are enabled (checked through the API).
+73. Done (verified 2026-11-08): `PROJECT_PAT` exists in both Actions and
+    Dependabot secrets. Workflow `project_automation.yaml` uses the correct
+    user project URL format `https://github.com/users/infinitedim/projects/2`.
 74. Antigravity: terminal allowlist as listed in `security-agent.md`
     (Commands); everything else on review.
 75. While agents work, `.env.local` holds dummy values only; real values
@@ -269,3 +280,18 @@ infinitedim/justui` when `gh` is installed and logged in; otherwise
 80. Done: Probe analysis confirmed: subagents start with clean context without auto-preloaded rule files (requiring briefs to explicitly name required rule files), subagents possess read/MCP tools but no file-write tools, and subagents cannot invoke subagents.
 81. Done: Evaluated tasks 1-8 from `.agents/evals/team-eval.md` against the split test criteria in `orchestration.md`.
 82. Done: Commits workflow verified: orchestrator commits each unit, terminal allowlist documented.
+
+## Release pipeline (found 2026-11-08)
+
+83. Open: The v0.15.0 release run (run 40294053675, tag `v0.15.0`) failed and no
+    GitHub Release exists for it; the latest is still v0.14.0. Failing jobs:
+    `Build macOS (x86_64-apple-darwin)` (`error[E0463]: can't find crate for
+    core`) and `Build Linux (aarch64-unknown-linux-gnu)` (`ring` build script:
+    `failed to find tool "aarch64-linux-gnu-gcc"`); `Create GitHub Release`
+    was skipped. Likely causes, NOT proven: (a) `release.yaml` installs
+    `toolchain: stable` while `rust-toolchain.toml` pins 1.98.1, so cargo uses
+    the pinned toolchain, which has no `x86_64-apple-darwin` target installed
+    (`ci.yaml` already installs 1.98.1); (b) `cross auditable build` is not a
+    subcommand `cross` wraps, so it runs host cargo without the cross
+    container and has no aarch64 C compiler. Needs its own plan (red zone,
+    `.github/`); a fix can only be proven by a tag run.
