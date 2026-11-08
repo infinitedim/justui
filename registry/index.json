@@ -231,7 +231,7 @@
           {
             "name": "just_checkbox_style.dart",
             "path": "components/checkbox/just_checkbox_style.dart",
-            "checksum": "sha256:e2169e308cf72c1d23f36dce87157684557ae96535ae0c91cd9b860471dfad8e"
+            "checksum": "sha256:8fe56b6b3caa3f2c39f74758665b6fc3a03bb7ec639b83313ed89ba1f22573c8"
           },
           {
             "name": "just_checkbox_theme.dart",
@@ -243,7 +243,7 @@
           {
             "name": "just_checkbox.dart",
             "path": "components/checkbox/default/just_checkbox.dart",
-            "checksum": "sha256:c583f09b961dc6819db5778913d40fa8a2415cfe0c2c59425307c260f1d498a1"
+            "checksum": "sha256:f6bc1edba20b4195d82a0b63bcce2d5777d16f15f3bbac5a17350cca2baf2b53"
           }
         ]
       },
@@ -280,7 +280,7 @@
           {
             "name": "just_radio.dart",
             "path": "components/radio/default/just_radio.dart",
-            "checksum": "sha256:3342c365adf93a202307a44bde6e3f6d449ac353bdab720cd09cfd568c00703c"
+            "checksum": "sha256:ee4bf457c02a0840067d1d67be66725d53c1b19f560f393452777d6d9afda52a"
           },
           {
             "name": "just_radio_group.dart",
@@ -1210,14 +1210,14 @@
           {
             "name": "just_toggle_style.dart",
             "path": "components/toggle/just_toggle_style.dart",
-            "checksum": "sha256:05e1b3f3e243d604e506e000ea7af1117ca8c827229748a77a84319b7850b028"
+            "checksum": "sha256:ff6e1cc0eb0859964686f89d2b50255062d2fd0e132072682b29c8fbeb758a1b"
           }
         ],
         "default": [
           {
             "name": "just_toggle.dart",
             "path": "components/toggle/default/just_toggle.dart",
-            "checksum": "sha256:fc009f8be3d2aabaa5b1272aa65b72eb45f6f2b4fc492600ad29362e35158776"
+            "checksum": "sha256:3d85af9e3d8beabe44e7077b8a6295c642883f19aff2bcb86e3e52cf625be605"
           },
           {
             "name": "just_toggle_group.dart",

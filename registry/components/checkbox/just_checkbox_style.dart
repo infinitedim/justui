@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/widgets.dart';
 
 /// The physical size classification for [JustCheckbox].
@@ -28,6 +29,12 @@ class const JustCheckboxStyle({
 
   /// Text style of the checkbox label.
   final TextStyle? textStyle,
+
+  /// Custom box shadow when unchecked. If null, follows preset tokens.
+  final List<BoxShadow>? shadows,
+
+  /// Custom box shadow when checked/active. If null, follows [shadows] or preset tokens.
+  final List<BoxShadow>? activeShadows,
 }) {
   /// Returns a copy with given fields replaced.
   JustCheckboxStyle copyWith({
@@ -36,6 +43,8 @@ class const JustCheckboxStyle({
     Color? borderColor,
     BorderRadius? borderRadius,
     TextStyle? textStyle,
+    List<BoxShadow>? shadows,
+    List<BoxShadow>? activeShadows,
   }) {
     return JustCheckboxStyle(
       activeColor: activeColor ?? this.activeColor,
@@ -43,6 +52,8 @@ class const JustCheckboxStyle({
       borderColor: borderColor ?? this.borderColor,
       borderRadius: borderRadius ?? this.borderRadius,
       textStyle: textStyle ?? this.textStyle,
+      shadows: shadows ?? this.shadows,
+      activeShadows: activeShadows ?? this.activeShadows,
     );
   }
 
@@ -59,6 +70,8 @@ class const JustCheckboxStyle({
       borderColor: .lerp(a?.borderColor, b?.borderColor, t),
       borderRadius: .lerp(a?.borderRadius, b?.borderRadius, t),
       textStyle: .lerp(a?.textStyle, b?.textStyle, t),
+      shadows: t < 0.5 ? a?.shadows : b?.shadows,
+      activeShadows: t < 0.5 ? a?.activeShadows : b?.activeShadows,
     );
   }
 
@@ -71,7 +84,9 @@ class const JustCheckboxStyle({
           checkColor == other.checkColor &&
           borderColor == other.borderColor &&
           borderRadius == other.borderRadius &&
-          textStyle == other.textStyle;
+          textStyle == other.textStyle &&
+          listEquals(shadows, other.shadows) &&
+          listEquals(activeShadows, other.activeShadows);
 
   @override
   int get hashCode => Object.hash(
@@ -80,5 +95,7 @@ class const JustCheckboxStyle({
     borderColor,
     borderRadius,
     textStyle,
+    shadows == null ? null : Object.hashAll(shadows!),
+    activeShadows == null ? null : Object.hashAll(activeShadows!),
   );
 }

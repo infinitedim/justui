@@ -229,6 +229,8 @@ class _JustRadioState<T> extends State<JustRadio<T>>
                     minHeight: 48.0,
                   ),
                   child: Center(
+                    widthFactor: 1.0,
+                    heightFactor: 1.0,
                     // RepaintBoundary placed directly inside JustRadio visual indicator
                     child: RepaintBoundary(
                       child: FocusIndicator(

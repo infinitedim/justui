@@ -264,30 +264,38 @@ class const JustToggle({
             ),
           );
 
-          if (hasBorder) {
-            if (selected) {
-              buttonContent = customTheme.presetTokens.buildPressEffect(
-                isPressed: isPressed,
-                animations: customTheme.animations,
-                child: Container(
-                  decoration: BoxDecoration(
-                    boxShadow: customTheme.presetTokens.resolveShadow(
+          final List<BoxShadow>? customShadows = selected
+              ? (style?.selectedShadows ?? themeStyle?.selectedShadows)
+              : (style?.unselectedShadows ?? themeStyle?.unselectedShadows);
+
+          final List<BoxShadow> currentShadows =
+              customShadows ??
+              (hasBorder && selected
+                  ? customTheme.presetTokens.resolveShadow(
                       shadows,
                       JustShadowLevel.md,
                       isPressed: isPressed,
-                    ),
-                    borderRadius: .zero,
-                  ),
-                  child: buttonContent,
+                    )
+                  : const <BoxShadow>[]);
+
+          if (currentShadows.isNotEmpty) {
+            buttonContent = customTheme.presetTokens.buildPressEffect(
+              isPressed: isPressed,
+              animations: customTheme.animations,
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: currentShadows,
+                  borderRadius: hasBorder ? .zero : resolvedRadius,
                 ),
-              );
-            } else {
-              buttonContent = customTheme.presetTokens.buildPressEffect(
-                isPressed: isPressed,
-                animations: customTheme.animations,
                 child: buttonContent,
-              );
-            }
+              ),
+            );
+          } else if (hasBorder) {
+            buttonContent = customTheme.presetTokens.buildPressEffect(
+              isPressed: isPressed,
+              animations: customTheme.animations,
+              child: buttonContent,
+            );
           }
 
           return FocusIndicator(

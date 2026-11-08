@@ -228,6 +228,8 @@ class _JustCheckboxState extends State<JustCheckbox>
                     minHeight: 48.0,
                   ),
                   child: Center(
+                    widthFactor: 1.0,
+                    heightFactor: 1.0,
                     child: RepaintBoundary(
                       child: FocusIndicator(
                         isFocused: state.isFocusVisible,
@@ -257,13 +259,24 @@ class _JustCheckboxState extends State<JustCheckbox>
                                           progress,
                                         )!);
 
-                            final List<BoxShadow> currentShadows = hasBorder
-                                ? customTheme.presetTokens.resolveShadow(
-                                    customTheme.shadows,
-                                    JustShadowLevel.sm,
-                                    isPressed: state.isPressed,
-                                  )
-                                : const <BoxShadow>[];
+                            final List<BoxShadow>? customShadows =
+                                progress > 0.5
+                                ? (widget.style?.activeShadows ??
+                                      themeStyle?.activeShadows ??
+                                      widget.style?.shadows ??
+                                      themeStyle?.shadows)
+                                : (widget.style?.shadows ??
+                                      themeStyle?.shadows);
+
+                            final List<BoxShadow> currentShadows =
+                                customShadows ??
+                                (hasBorder
+                                    ? customTheme.presetTokens.resolveShadow(
+                                        customTheme.shadows,
+                                        JustShadowLevel.sm,
+                                        isPressed: state.isPressed,
+                                      )
+                                    : const <BoxShadow>[]);
 
                             final Container checkboxBox = Container(
                               width: boxSize,

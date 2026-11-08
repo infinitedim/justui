@@ -373,6 +373,34 @@ void main() {
       },
     );
 
+    testWidgets(
+      'Custom activeShadows overrides Neobrutalism shadow when checked',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            theme: JustThemeData.neobrutalismLight,
+            JustCheckbox(
+              value: true,
+              style: const JustCheckboxStyle(activeShadows: <BoxShadow>[]),
+              onChanged: (_) {},
+            ),
+          ),
+        );
+
+        final Container boxContainer = tester
+            .widgetList<Container>(
+              find.descendant(
+                of: find.byType(JustCheckbox),
+                matching: find.byType(Container),
+              ),
+            )
+            .firstWhere((Container c) => c.decoration is BoxDecoration);
+        final BoxDecoration decoration =
+            boxContainer.decoration! as BoxDecoration;
+        expect(decoration.boxShadow, isNull);
+      },
+    );
+
     testWidgets('Haptic feedback is triggered on state toggle', (
       WidgetTester tester,
     ) async {
