@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart' show DateTimeRange;
-
 /// Display variant for [JustDatePicker].
 enum JustDatePickerVariant {
   /// Calendar renders directly in the widget tree (no overlay).
@@ -85,11 +83,38 @@ class const JustDatePickerLocale({
       .replaceAll('{year}', '${date.year}');
 }
 
+/// An immutable date range consisting of [start] and [end] timestamps.
+class JustDateTimeRange {
+  /// The start of the range.
+  final DateTime start;
+
+  /// The end of the range.
+  final DateTime end;
+
+  /// Creates a [JustDateTimeRange].
+  JustDateTimeRange({required this.start, required this.end})
+      : assert(!start.isAfter(end), 'start cannot be after end');
+
+  /// The duration between [start] and [end].
+  Duration get duration => end.difference(start);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JustDateTimeRange && other.start == start && other.end == end;
+
+  @override
+  int get hashCode => Object.hash(start, end);
+
+  @override
+  String toString() => '$start - $end';
+}
+
 /// Quick-select date range preset definition for [JustDateRangePicker].
 class const JustDateRangePreset({
   /// Display label shown on the preset button (e.g. 'Last 7 Days').
   required final String label,
 
-  /// Callback returning the corresponding [DateTimeRange].
-  required final DateTimeRange Function() resolve,
+  /// Callback returning the corresponding [JustDateTimeRange].
+  required final JustDateTimeRange Function() resolve,
 });
