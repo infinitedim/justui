@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart' show Color;
+import 'package:flutter/painting.dart' show Color;
 
 /// Represents color coordinates in the OKLCH color space.
 ///

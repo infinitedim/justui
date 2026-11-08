@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Color, HSLColor;
+import 'package:flutter/painting.dart' show Color, HSLColor;
 
 import 'oklch_engine.dart';
 import 'hsluv_engine.dart';

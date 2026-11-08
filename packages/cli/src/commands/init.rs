@@ -300,7 +300,7 @@ pub fn run(args: InitArgs) -> Result<()> {
         "justThemeLight"
     };
     let theme_content = format!(
-        "import 'package:flutter/material.dart' show Color;\n\
+        "import 'package:flutter/widgets.dart' show Color;\n\
          import '../just_ui_core.dart';\n\
          \n\
          /// Dynamically generated light theme from brand seed color.\n\
