@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
+import 'package:just_ui_core/src/components/button/just_button_theme.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -886,6 +887,52 @@ void main() {
           isA<NeobrutalismPresetTokens>(),
         );
       });
+
+      testWidgets(
+        'BuildContext.justThemeExtension resolves registered extension or returns null',
+        (WidgetTester tester) async {
+          const JustButtonTheme customButtonTheme = JustButtonTheme(
+            enableHaptic: true,
+          );
+          JustButtonTheme? resolvedRegistered;
+          JustButtonTheme? resolvedUnregistered;
+
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: JustThemeData.light.toThemeData(
+                additionalExtensions: const <ThemeExtension<dynamic>>[
+                  customButtonTheme,
+                ],
+              ),
+              home: Builder(
+                builder: (BuildContext context) {
+                  resolvedRegistered = context
+                      .justThemeExtension<JustButtonTheme>();
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+          );
+
+          expect(resolvedRegistered, same(customButtonTheme));
+
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: JustThemeData.light.toThemeData(),
+              home: Builder(
+                builder: (BuildContext context) {
+                  resolvedUnregistered = context
+                      .justThemeExtension<JustButtonTheme>();
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          expect(resolvedUnregistered, isNull);
+        },
+      );
     });
   });
 }
