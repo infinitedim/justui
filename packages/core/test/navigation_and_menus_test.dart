@@ -408,6 +408,45 @@ void main() {
       },
     );
 
+    testWidgets(
+      'JustBreadcrumbTheme applies default style and instance style overrides it',
+      (WidgetTester tester) async {
+        const Color themeColor = Color(0xFF112233);
+        const Color instanceColor = Color(0xFFAABBCC);
+
+        await tester.pumpWidget(
+          _buildNavWrapper(
+            breadcrumbTheme: const JustBreadcrumbTheme(
+              style: JustBreadcrumbStyle(color: themeColor),
+            ),
+            child: Column(
+              children: <Widget>[
+                JustBreadcrumb(
+                  items: <JustBreadcrumbItem>[
+                    JustBreadcrumbItem(label: 'Home', onTap: () {}),
+                    const JustBreadcrumbItem(label: 'Current'),
+                  ],
+                ),
+                JustBreadcrumb(
+                  style: const JustBreadcrumbStyle(color: instanceColor),
+                  items: <JustBreadcrumbItem>[
+                    JustBreadcrumbItem(label: 'Docs', onTap: () {}),
+                    const JustBreadcrumbItem(label: 'Override'),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+
+        final Text homeText = tester.widget<Text>(find.text('Home'));
+        expect(homeText.style?.color, equals(themeColor));
+
+        final Text docsText = tester.widget<Text>(find.text('Docs'));
+        expect(docsText.style?.color, equals(instanceColor));
+      },
+    );
+
     test('JustBreadcrumbTheme copyWith and lerp', () {
       const JustBreadcrumbTheme theme1 = JustBreadcrumbTheme(
         style: JustBreadcrumbStyle(activeColor: Colors.blue),

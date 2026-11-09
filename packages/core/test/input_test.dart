@@ -766,6 +766,58 @@ void main() {
       expect(find.text('Custom Helper'), findsOneWidget);
     });
 
+    testWidgets(
+      'JustInputTheme applies default inputStyle and instance style overrides it',
+      (WidgetTester tester) async {
+        const Color themeBg = Color(0xFF123456);
+        const Color themeBorder = Color(0xFF654321);
+        const Color instanceBg = Color(0xFFABCDEF);
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              extensions: const <ThemeExtension<dynamic>>[
+                JustInputTheme(
+                  inputStyle: JustInputStyle(
+                    backgroundColor: themeBg,
+                    borderColor: themeBorder,
+                  ),
+                ),
+              ],
+            ),
+            home: const JustThemeProvider(
+              child: Scaffold(
+                body: Column(
+                  children: <Widget>[
+                    JustInput(hint: 'Themed Input'),
+                    JustInput(
+                      hint: 'Overridden Input',
+                      style: JustInputStyle(backgroundColor: instanceBg),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final List<AnimatedContainer> containers = tester
+            .widgetList<AnimatedContainer>(find.byType(AnimatedContainer))
+            .toList();
+        expect(containers.length, greaterThanOrEqualTo(2));
+
+        final BoxDecoration firstDeco =
+            containers[0].decoration! as BoxDecoration;
+        expect(firstDeco.color, equals(themeBg));
+        expect((firstDeco.border! as Border).top.color, equals(themeBorder));
+
+        final BoxDecoration secondDeco =
+            containers[1].decoration! as BoxDecoration;
+        expect(secondDeco.color, equals(instanceBg));
+        expect((secondDeco.border! as Border).top.color, equals(themeBorder));
+      },
+    );
+
     test('JustInputTheme copyWith and lerp unit tests', () {
       const JustInputStyle style1 = JustInputStyle(
         borderColor: Color(0xFF111111),
