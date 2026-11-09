@@ -1,5 +1,4 @@
-// justui-meta: registry=64d38d1db2175ae8aab21316fc85a152ac4d6e661701f7b076e83b659bd21d5a local=6a59456f097178552ad6adc5e64ef7c991d96023126883f0f25fb4215ebf812f
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=27515d332d3356f6ed7ef954acc397e1f1cb685e28d32118f30e04c5aedf7e37 local=0399bb3d5d74431d721137dcdc588979a5dcaa2388db2c64c9a3b45e276c3448
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
@@ -136,8 +135,8 @@ class _JustSwitchState extends State<JustSwitch>
   }
 
   void _triggerToggle(bool newValue) {
-    final JustSwitchTheme? switchTheme = Theme.of(context)
-        .extension<JustSwitchTheme>();
+    final JustSwitchTheme? switchTheme = context
+        .justThemeExtension<JustSwitchTheme>();
     final bool finalEnableHaptic =
         widget.enableHaptic ??
         switchTheme?.enableHaptic ??
@@ -183,8 +182,8 @@ class _JustSwitchState extends State<JustSwitch>
   @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustSwitchTheme? switchTheme = Theme.of(context)
-        .extension<JustSwitchTheme>();
+    final JustSwitchTheme? switchTheme = context
+        .justThemeExtension<JustSwitchTheme>();
 
     final JustColorScheme colors = JustThemeProvider.of(
       context,

@@ -3,9 +3,11 @@ import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart' show JustColorScheme;
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_breadcrumb_style.dart';
+import 'just_breadcrumb_theme.dart';
 
 /// Represents an individual navigation link within a [JustBreadcrumb].
 class JustBreadcrumbItem {
@@ -23,11 +25,6 @@ class JustBreadcrumbItem {
   const JustBreadcrumbItem({required this.label, this.onTap, this.icon});
 }
 
-/// A breadcrumb trail component that provides clean horizontal hierarchy navigation.
-///
-/// Under zero-Material dependency constraints, it supports custom separators,
-/// auto-collapsing middle items when length exceeds [maxItems], and showing collapsed
-/// items inside a custom floating dropdown menu when the collapse indicator is clicked.
 /// A breadcrumb trail component that provides clean horizontal hierarchy navigation.
 ///
 /// Under zero-Material dependency constraints, it supports custom separators,
@@ -71,6 +68,13 @@ class const JustBreadcrumb({
     final JustPresetTokens presetTokens = JustThemeProvider.of(context)
         .theme
         .presetTokens;
+    final JustBreadcrumbStyle? themeStyle = context
+        .justThemeExtension<JustBreadcrumbTheme>()
+        ?.style;
+    final EdgeInsets resolvedItemPadding =
+        style?.itemPadding ??
+        themeStyle?.itemPadding ??
+        .symmetric(horizontal: spacing.sm);
 
     // Resolve separator widget
     final Widget resolvedSeparator =
@@ -79,6 +83,7 @@ class const JustBreadcrumb({
           '/',
           style:
               style?.separatorStyle ??
+              themeStyle?.separatorStyle ??
               typography.bodyMd.copyWith(
                 color: presetTokens.showsDefaultBorder
                     ? colors.borderDefault
@@ -91,7 +96,9 @@ class const JustBreadcrumb({
         collapsed ?? const Text('...', style: TextStyle(fontWeight: .w600));
 
     final EdgeInsets finalPadding =
-        style?.padding ?? .symmetric(vertical: spacing.sm);
+        style?.padding ??
+        themeStyle?.padding ??
+        .symmetric(vertical: spacing.sm);
 
     // Generate list of items to render
     final List<Widget> children = <Widget>[];
@@ -101,24 +108,18 @@ class const JustBreadcrumb({
     if (!hasCollapse) {
       for (int i = 0; i < items.length; i++) {
         final bool isLast = i == items.length - 1;
-        children.add(_buildItem(context, items[i], isLast));
+        children.add(_buildItem(context, items[i], isLast, themeStyle));
         if (!isLast) {
           children.add(
-            Padding(
-              padding: style?.itemPadding ?? .symmetric(horizontal: spacing.sm),
-              child: resolvedSeparator,
-            ),
+            Padding(padding: resolvedItemPadding, child: resolvedSeparator),
           );
         }
       }
     } else {
       // Always keep the first item
-      children.add(_buildItem(context, items.first, false));
+      children.add(_buildItem(context, items.first, false, themeStyle));
       children.add(
-        Padding(
-          padding: style?.itemPadding ?? .symmetric(horizontal: spacing.sm),
-          child: resolvedSeparator,
-        ),
+        Padding(padding: resolvedItemPadding, child: resolvedSeparator),
       );
 
       // Group middle collapsed items
@@ -131,17 +132,15 @@ class const JustBreadcrumb({
           collapsedItems: collapsedItems,
           collapsedIndicator: resolvedCollapsed,
           style: style,
+          themeStyle: themeStyle,
         ),
       );
       children.add(
-        Padding(
-          padding: style?.itemPadding ?? .symmetric(horizontal: spacing.sm),
-          child: resolvedSeparator,
-        ),
+        Padding(padding: resolvedItemPadding, child: resolvedSeparator),
       );
 
       // Always keep the last item
-      children.add(_buildItem(context, items.last, true));
+      children.add(_buildItem(context, items.last, true, themeStyle));
     }
 
     return Padding(
@@ -157,6 +156,7 @@ class const JustBreadcrumb({
     BuildContext context,
     JustBreadcrumbItem item,
     bool isLast,
+    JustBreadcrumbStyle? themeStyle,
   ) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
     final JustColorScheme colors = customTheme.colors;
@@ -166,18 +166,26 @@ class const JustBreadcrumb({
     final bool isClickable = item.onTap != null;
 
     final Color normalColor =
-        style?.color ?? (isLast ? colors.textPrimary : colors.textSecondary);
-    final Color activeColor = style?.activeColor ?? colors.borderFocus;
+        style?.color ??
+        themeStyle?.color ??
+        (isLast ? colors.textPrimary : colors.textSecondary);
+    final Color activeColor =
+        style?.activeColor ?? themeStyle?.activeColor ?? colors.borderFocus;
     final TextStyle baseTextStyle = isLast
         ? (style?.activeTextStyle ??
+              themeStyle?.activeTextStyle ??
               typography.bodyMd.copyWith(fontWeight: .w600))
-        : (style?.textStyle ?? typography.bodyMd);
+        : (style?.textStyle ?? themeStyle?.textStyle ?? typography.bodyMd);
+    final EdgeInsets resolvedItemPadding =
+        style?.itemPadding ??
+        themeStyle?.itemPadding ??
+        .symmetric(horizontal: spacing.xs);
 
     if (!isClickable) {
       return Semantics(
         label: item.label,
         child: Padding(
-          padding: style?.itemPadding ?? .symmetric(horizontal: spacing.xs),
+          padding: resolvedItemPadding,
           child: Row(
             mainAxisSize: .min,
             children: <Widget>[
@@ -211,7 +219,7 @@ class const JustBreadcrumb({
           label: item.label,
           link: true,
           child: Padding(
-            padding: style?.itemPadding ?? .symmetric(horizontal: spacing.xs),
+            padding: resolvedItemPadding,
             child: Row(
               mainAxisSize: .min,
               children: <Widget>[
@@ -247,6 +255,7 @@ class const _JustBreadcrumbCollapsed({
   required final List<JustBreadcrumbItem> collapsedItems,
   required final Widget collapsedIndicator,
   final JustBreadcrumbStyle? style,
+  final JustBreadcrumbStyle? themeStyle,
 }) extends StatefulWidget {
   @override
   State<_JustBreadcrumbCollapsed> createState() =>
@@ -365,6 +374,9 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
                                           item.label,
                                           style:
                                               (widget.style?.textStyle ??
+                                                      widget
+                                                          .themeStyle
+                                                          ?.textStyle ??
                                                       typography.bodySm)
                                                   .copyWith(
                                                     color: itemFg,
@@ -398,15 +410,21 @@ class _JustBreadcrumbCollapsedState extends State<_JustBreadcrumbCollapsed> {
           final JustPresetTokens presetTokens = customTheme.presetTokens;
           final Widget collapsedIndicatorWidget = Container(
             padding:
-                widget.style?.itemPadding ?? .symmetric(horizontal: spacing.xs),
+                widget.style?.itemPadding ??
+                widget.themeStyle?.itemPadding ??
+                .symmetric(horizontal: spacing.xs),
             child: DefaultTextStyle(
-              style: (widget.style?.textStyle ?? typography.bodyMd).copyWith(
-                color: isHovered || isPressed
-                    ? (presetTokens.showsDefaultBorder
-                          ? colors.textPrimary
-                          : colors.borderFocus)
-                    : colors.textSecondary,
-              ),
+              style:
+                  (widget.style?.textStyle ??
+                          widget.themeStyle?.textStyle ??
+                          typography.bodyMd)
+                      .copyWith(
+                        color: isHovered || isPressed
+                            ? (presetTokens.showsDefaultBorder
+                                  ? colors.textPrimary
+                                  : colors.borderFocus)
+                            : colors.textSecondary,
+                      ),
               child: widget.collapsedIndicator,
             ),
           );

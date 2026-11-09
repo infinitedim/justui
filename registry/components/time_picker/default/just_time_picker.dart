@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Icons, Theme;
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 
@@ -366,8 +366,8 @@ class _JustTimePickerState extends State<JustTimePicker> {
     final JustThemeData theme = context.justTheme;
     final JustPresetTokens presetTokens = theme.presetTokens;
 
-    final JustTimePickerTheme? themeExtension = Theme.of(context)
-        .extension<JustTimePickerTheme>();
+    final JustTimePickerTheme? themeExtension = context
+        .justThemeExtension<JustTimePickerTheme>();
     final JustTimePickerStyle? style = widget.style;
 
     final Color bgColor =

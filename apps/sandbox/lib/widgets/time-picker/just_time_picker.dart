@@ -1,5 +1,5 @@
-// justui-meta: registry=80aaf878a7b8944160e0c5da1923b31c4ab87e8dbdd93fd1ce566ae0f417a67d local=4bd26da889f0ea8f9810d9be6796d5e07f3b9c4c12c24a8ff6f7564de3c3297b
-import 'package:flutter/material.dart' show Icons, Theme;
+// justui-meta: registry=9b76794c1b522a221c8e3e40d54058cdf757c1e775f3512c1f3b36dd0273a0ef local=8f828c032b5ff0f5a587578709a505d89695b52c3aaa76c968b7787adb239b02
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
@@ -367,8 +367,8 @@ class _JustTimePickerState extends State<JustTimePicker> {
     final JustThemeData theme = context.justTheme;
     final JustPresetTokens presetTokens = theme.presetTokens;
 
-    final JustTimePickerTheme? themeExtension = Theme.of(context)
-        .extension<JustTimePickerTheme>();
+    final JustTimePickerTheme? themeExtension = context
+        .justThemeExtension<JustTimePickerTheme>();
     final JustTimePickerStyle? style = widget.style;
 
     final Color bgColor =

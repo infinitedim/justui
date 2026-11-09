@@ -1,5 +1,4 @@
-// justui-meta: registry=f6bc1edba20b4195d82a0b63bcce2d5777d16f15f3bbac5a17350cca2baf2b53 local=c0e2189232e2b13e3280a9bcc7794dc345d01f1fc4a04d3f19b928492935a446
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=a2e42fdbb64d875c429b6626f13c569b7c6ec7c86e7f992b99264a86f5598614 local=581f033e40a5428aff6dad2e3dfc15f999a839a02cdd703048cc9faa1d05d859
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
@@ -122,8 +121,8 @@ class _JustCheckboxState extends State<JustCheckbox>
   void _handleToggle() {
     if (widget.isDisabled || widget.onChanged == null) return;
 
-    final JustCheckboxTheme? checkboxTheme = Theme.of(context)
-        .extension<JustCheckboxTheme>();
+    final JustCheckboxTheme? checkboxTheme = context
+        .justThemeExtension<JustCheckboxTheme>();
     final bool finalEnableHaptic =
         widget.enableHaptic ??
         checkboxTheme?.enableHaptic ??
@@ -147,8 +146,8 @@ class _JustCheckboxState extends State<JustCheckbox>
   @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustCheckboxTheme? checkboxTheme = Theme.of(context)
-        .extension<JustCheckboxTheme>();
+    final JustCheckboxTheme? checkboxTheme = context
+        .justThemeExtension<JustCheckboxTheme>();
 
     final JustColorScheme colors = JustThemeProvider.of(
       context,

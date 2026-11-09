@@ -1,5 +1,4 @@
-// justui-meta: registry=a9b5a92d7832136ce69efc63850fe09f7d7f21cc603b33259b0b729cbe3c0b1c local=0ece614e9bcfee4ebd947d553b746a265b0d88e0d700c84e7a9e532f6c14618f
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=2f159ca3b33806a5dcde550f9a95e86a42d8e5e28f1bac27e12102a9714d5b9d local=29cf86da29ea7cc8d3c39b2379912bc1c7bd05373405a2d398e670b77af352fc
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
@@ -139,8 +138,8 @@ class _JustSkeletonState extends State<JustSkeleton>
       aspect: .animations,
     ).theme.animations;
 
-    final JustSkeletonTheme? globalTheme = Theme.of(context)
-        .extension<JustSkeletonTheme>();
+    final JustSkeletonTheme? globalTheme = context
+        .justThemeExtension<JustSkeletonTheme>();
     final JustSkeletonStyle? themeStyle = globalTheme?.style;
 
     // Resolve base colors

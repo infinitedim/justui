@@ -1,5 +1,4 @@
-// justui-meta: registry=3d85af9e3d8beabe44e7077b8a6295c642883f19aff2bcb86e3e52cf625be605 local=eca7d5e48c932b8b5c97af2e70b12f435b3f466b07cbfd57d079fd0cc5aa5925
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=cd592976c1b9bd5053533ff8bdc4cefcd88c52befaa93f060ce04c2a837eea3f local=a5c8906106d9728ded2bf738bf960f9b8c5993fa711b70565d0e336e22b00b30
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
@@ -76,8 +75,8 @@ class JustToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustToggleTheme? toggleTheme = Theme.of(context)
-        .extension<JustToggleTheme>();
+    final JustToggleTheme? toggleTheme = context
+        .justThemeExtension<JustToggleTheme>();
     final JustToggleStyle? themeStyle = toggleTheme?.style;
 
     final JustColorScheme colors = JustThemeProvider.of(

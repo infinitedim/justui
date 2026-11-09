@@ -1,7 +1,7 @@
-// justui-meta: registry=461bcb41c4f02cbdf75335366f1d7ef1ae063863f427eedacd35cdf7ae54926d local=a5e8bdd72c85f739545806ee14c8e6d3a973a9bdbb180fe1cf87b733e8d18519
+// justui-meta: registry=c794e02e80d16c1b879526a63d169590a03a210e85ff95d491a7988b3dc3b3f7 local=66d98842a249f4eeecae236930c68180584193e81cc4b627b1535dbe74e5dab1
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Icons, Theme;
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
@@ -582,8 +582,8 @@ class _JustToastWidgetState extends State<_JustToastWidget>
     final JustRadiusScheme radius = theme.radius;
     final JustShadowScheme shadows = theme.shadows;
 
-    final JustToastTheme? globalTheme = Theme.of(context)
-        .extension<JustToastTheme>();
+    final JustToastTheme? globalTheme = context
+        .justThemeExtension<JustToastTheme>();
 
     // Resolve variant style from theme extension
     JustToastStyle? variantThemeStyle;

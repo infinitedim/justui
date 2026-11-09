@@ -1,5 +1,5 @@
-// justui-meta: registry=088ce9296f8074754f0f5115a0dbf12b8c6751b39c496d63cf31b2b9adc9c363 local=5188d592a8eb7de471ba20de152596fffb90cc2be63abf6dfd9813da4268b218
-import 'package:flutter/material.dart' show Icons, Theme;
+// justui-meta: registry=eb1c763cf5867a8f0656ae799ebf9eb504dd5b861be5d8df1c06b1658917b784 local=c2f8afb57f97bf4484f2ddd8d7004b1444d65a583bde3d138189c588ecda9356
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
@@ -170,8 +170,8 @@ class _JustTableState<T> extends State<JustTable<T>> {
   @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustTableTheme? tableTheme = Theme.of(context)
-        .extension<JustTableTheme>();
+    final JustTableTheme? tableTheme = context
+        .justThemeExtension<JustTableTheme>();
     final JustTableStyle? themeStyle = tableTheme?.style;
 
     final JustColorScheme colors = JustThemeProvider.of(

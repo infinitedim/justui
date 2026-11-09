@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter/material.dart' show Theme;
 
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
@@ -7,6 +6,7 @@ import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart'
     show JustColorScheme, JustMotionProfile;
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_bottom_nav_style.dart';
@@ -91,8 +91,8 @@ class _JustBottomNavState extends State<JustBottomNav> {
   @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustBottomNavTheme? navTheme = Theme.of(context)
-        .extension<JustBottomNavTheme>();
+    final JustBottomNavTheme? navTheme = context
+        .justThemeExtension<JustBottomNavTheme>();
     final JustColorScheme colors = JustThemeProvider.of(
       context,
       aspect: .colors,

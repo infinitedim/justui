@@ -1,5 +1,5 @@
-// justui-meta: registry=9b37253c3a176078784844464e3eb44ff0ea2e597e4c3209be451ab98b98c1c6 local=77383790d5b4ff97ac5191ae467e8560604fd7cdf1674e57c7fc1d3a38d415cc
-import 'package:flutter/material.dart' show Icons, Theme;
+// justui-meta: registry=64ce099c7d2b0f4b0835b9149f9c0833e700a4e0949438f2255b4a0f1f7580fb local=aeefe1bb990b532c2cccbfba8a1e8539b28603256452f72bdfd31b0e3e5cbbea
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 
 import 'package:sandbox/core/just_ui_core.dart';
@@ -106,8 +106,8 @@ class _JustAccordionState extends State<JustAccordion> {
   @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustAccordionTheme? accordionTheme = Theme.of(context)
-        .extension<JustAccordionTheme>();
+    final JustAccordionTheme? accordionTheme = context
+        .justThemeExtension<JustAccordionTheme>();
     final JustAccordionStyle? themeStyle = accordionTheme?.style;
 
     final JustColorScheme colors = JustThemeProvider.of(

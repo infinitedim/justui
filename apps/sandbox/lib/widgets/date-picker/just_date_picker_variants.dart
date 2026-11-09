@@ -1,4 +1,4 @@
-// justui-meta: registry=2be1df9f805b0d685f58b52ae974efb147d7f3864575093dff4be3355778a3c5 local=f8f27a3205c0685512fa1d235bc1814ede5844e1a5f44363c684fd9ea68ba473
+// justui-meta: registry=864a7d7eaced87dcc11625d1aaf73aecd0c4a55937977fe12f6eb76aef9b0420 local=f8f27a3205c0685512fa1d235bc1814ede5844e1a5f44363c684fd9ea68ba473
 /// Display variant for [JustDatePicker].
 enum JustDatePickerVariant {
   /// Calendar renders directly in the widget tree (no overlay).

@@ -6,8 +6,10 @@ import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import 'just_input_style.dart';
+import 'just_input_theme.dart';
 import 'just_input_variants.dart';
 
 /// A highly customizable, theme-aware text input field supporting multiple variants and states.
@@ -450,29 +452,37 @@ class _JustInputState extends State<JustInput> {
     );
     final double paddingH = spacing.md; // 12px
     final BorderRadius defaultRadius = .all(theme.radius.md);
+    final JustInputStyle? themeStyle = context
+        .justThemeExtension<JustInputTheme>()
+        ?.inputStyle;
 
     // Custom styles
     final Color finalBg =
         widget.style?.backgroundColor ??
+        themeStyle?.backgroundColor ??
         (widget.readOnly
             ? colors.background.withValues(alpha: 0.5)
             : colors.background);
     final BorderRadius finalRadius =
-        widget.style?.borderRadius ?? defaultRadius;
+        widget.style?.borderRadius ?? themeStyle?.borderRadius ?? defaultRadius;
     final TextStyle finalTextStyle =
         widget.style?.textStyle ??
+        themeStyle?.textStyle ??
         typography.bodyMd.copyWith(
           fontSize: fontSize,
           color: colors.textPrimary,
         );
     final TextStyle finalLabelStyle =
         widget.style?.labelStyle ??
+        themeStyle?.labelStyle ??
         typography.bodySm.copyWith(color: colors.textSecondary);
     final TextStyle finalHelperStyle =
         widget.style?.helperStyle ??
+        themeStyle?.helperStyle ??
         typography.caption.copyWith(color: colors.textSecondary);
     final EdgeInsetsGeometry finalPadding =
         widget.style?.contentPadding ??
+        themeStyle?.contentPadding ??
         .symmetric(horizontal: paddingH, vertical: paddingV);
 
     // Resolve state colors
@@ -533,6 +543,7 @@ class _JustInputState extends State<JustInput> {
                   builder: (BuildContext context, bool isFilled, _) {
                     final Color border = _resolveBorderColor(
                       isFocused: isFocused,
+                      themeStyle: themeStyle,
                       defaultBorder: defaultBorder,
                       focusedBorder: focusedBorder,
                       errorBorder: errorBorder,
@@ -559,6 +570,7 @@ class _JustInputState extends State<JustInput> {
                             obscured,
                             finalTextStyle,
                             fontSize,
+                            themeStyle,
                           );
                         },
                       );
@@ -567,6 +579,7 @@ class _JustInputState extends State<JustInput> {
                         widget.obscureText,
                         finalTextStyle,
                         fontSize,
+                        themeStyle,
                       );
                     }
 
@@ -637,17 +650,26 @@ class _JustInputState extends State<JustInput> {
   /// Border color for the current validation and focus state.
   Color _resolveBorderColor({
     required bool isFocused,
+    required JustInputStyle? themeStyle,
     required Color defaultBorder,
     required Color focusedBorder,
     required Color errorBorder,
     required Color successBorder,
   }) {
     if (widget.errorText != null) {
-      return widget.style?.errorBorderColor ?? errorBorder;
+      return widget.style?.errorBorderColor ??
+          themeStyle?.errorBorderColor ??
+          errorBorder;
     }
     if (widget.successText != null) return successBorder;
-    if (isFocused) return widget.style?.focusedBorderColor ?? focusedBorder;
-    return widget.style?.borderColor ?? defaultBorder;
+    if (isFocused) {
+      return widget.style?.focusedBorderColor ??
+          themeStyle?.focusedBorderColor ??
+          focusedBorder;
+    }
+    return widget.style?.borderColor ??
+        themeStyle?.borderColor ??
+        defaultBorder;
   }
 
   /// Prefix icon/widget, or the implicit search icon for [JustInputVariant.search].
@@ -805,6 +827,7 @@ class _JustInputState extends State<JustInput> {
     bool obscure,
     TextStyle textStyle,
     double fontSize,
+    JustInputStyle? themeStyle,
   ) {
     final JustThemeData theme = JustThemeProvider.of(context).theme;
     return EditableText(
@@ -821,6 +844,7 @@ class _JustInputState extends State<JustInput> {
       style: textStyle,
       cursorColor:
           widget.style?.focusedBorderColor ??
+          themeStyle?.focusedBorderColor ??
           (theme.presetTokens.showsDefaultBorder
               ? theme.colors.textPrimary
               : JustColorPalette.primary500),
@@ -899,7 +923,6 @@ class const _InputHelperRow({
   }
 }
 
-/// A segmented OTP input row that automatically shifts focus.
 /// A segmented OTP input row that automatically shifts focus.
 class const _OtpInputRow({
   required final int length,
@@ -1062,7 +1085,12 @@ class _OtpInputRowState extends State<_OtpInputRow> {
   }
 
   TextStyle typographyThemeFallback(BuildContext context) {
-    return JustThemeProvider.of(context).theme.typography.caption;
+    final JustInputStyle? themeStyle = context
+        .justThemeExtension<JustInputTheme>()
+        ?.inputStyle;
+    return widget.style?.helperStyle ??
+        themeStyle?.helperStyle ??
+        JustThemeProvider.of(context).theme.typography.caption;
   }
 }
 

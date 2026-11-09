@@ -1,5 +1,4 @@
-// justui-meta: registry=f7236cfb5edc123e99b406ffa26ebaf4573264b678853f30b5b5beec69c75bd0 local=907d1d1da05c4d7faf94e0ee9a9736b63ab2e9d7252d42d4307f199a5dab2dd2
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=37f81a97c7d9233e2d53372633cd5316b5a7ab95d2f8eb5a6d8f2bbbf09946c3 local=ef4a79a777a699a4b96d08b54a6a980471daee2242cfbefa1cd4e9d8df4bf3cc
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
@@ -193,8 +192,8 @@ class _JustSliderState extends State<JustSlider> {
     final JustThemeProviderState theme = JustThemeProvider.of(context);
     final JustPresetTokens presetTokens = theme.theme.presetTokens;
 
-    final JustSliderTheme? globalTheme = Theme.of(context)
-        .extension<JustSliderTheme>();
+    final JustSliderTheme? globalTheme = context
+        .justThemeExtension<JustSliderTheme>();
     final bool finalEnableHaptic =
         widget.enableHaptic ??
         globalTheme?.enableHaptic ??

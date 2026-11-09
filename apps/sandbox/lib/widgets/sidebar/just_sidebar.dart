@@ -1,6 +1,6 @@
-// justui-meta: registry=38eebb99570893d2638d6e659f05f40f9be67ebb2eb8af6c922c0eb5dd8d3755 local=310de2ad772fe28f81c1b024267c01cb11420ae4a0838ff193d6e646f7420d4b
+// justui-meta: registry=9e55130e259d1754b8c427b6c414e403b1b07cb58ee518288a8641310f021c11 local=d5704b1b769b87f3b43bc0ab73709a8e684847b9250636d5a10132670e56a32a
 import 'package:flutter/widgets.dart';
-import 'package:flutter/material.dart' show Icons, Theme;
+import 'package:flutter/material.dart' show Icons;
 import 'package:sandbox/core/just_ui_core.dart';
 
 import '../shared/just_tooltip_overlay.dart';
@@ -137,8 +137,8 @@ class _JustSidebarState extends State<JustSidebar>
   @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustSidebarTheme? sidebarTheme = Theme.of(context)
-        .extension<JustSidebarTheme>();
+    final JustSidebarTheme? sidebarTheme = context
+        .justThemeExtension<JustSidebarTheme>();
     final JustColorScheme colors = JustThemeProvider.of(
       context,
       aspect: .colors,

@@ -1,7 +1,6 @@
-// justui-meta: registry=d5e2b3160a141f9b426ad933abd3c807b61dc984dba5b76b53664750ff2590c3 local=a2d59c2478473726dc0eb0b2a5389c11d1ed0fb6233ecd06666789d84d057f94
+// justui-meta: registry=1ebb954ddbfc54e40a232b0df9c71058fae3cf2097c62890bbcd200bb11546fb local=a341395689a3d9e50c126945d20b694a7225db91d033f6e26726f2ee9adc1b19
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
@@ -266,8 +265,8 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
     final JustMotionProfile motion = theme.animations.resolve(context);
     final JustTypographyScheme typography = theme.typography;
 
-    final JustDialogTheme? globalTheme = Theme.of(context)
-        .extension<JustDialogTheme>();
+    final JustDialogTheme? globalTheme = context
+        .justThemeExtension<JustDialogTheme>();
 
     JustDialogStyle? positionThemeStyle;
     switch (widget.position) {

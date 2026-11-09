@@ -1,5 +1,4 @@
-// justui-meta: registry=ee4bf457c02a0840067d1d67be66725d53c1b19f560f393452777d6d9afda52a local=0d87c71970ae9e50acb2536543c32ebd88aeb25ad465ac7b39e03e23ca3b4867
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=2fb8eff6e32fa684be81ce86e296db5f49849e1424655ccc5abe80a0642d31e3 local=9d3e4a06b524ba2addfaccac76ab4a13f8f6258cdc9f50dfc783540185653bbe
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
@@ -127,8 +126,8 @@ class _JustRadioState<T> extends State<JustRadio<T>>
   void _handleSelect() {
     if (widget.isDisabled || widget.onChanged == null) return;
     if (!_isSelected) {
-      final JustRadioTheme? radioTheme = Theme.of(context)
-          .extension<JustRadioTheme>();
+      final JustRadioTheme? radioTheme = context
+          .justThemeExtension<JustRadioTheme>();
       final bool finalEnableHaptic =
           widget.enableHaptic ??
           radioTheme?.enableHaptic ??
@@ -147,8 +146,8 @@ class _JustRadioState<T> extends State<JustRadio<T>>
 
   @override
   Widget build(BuildContext context) {
-    final JustRadioTheme? radioTheme = Theme.of(context)
-        .extension<JustRadioTheme>();
+    final JustRadioTheme? radioTheme = context
+        .justThemeExtension<JustRadioTheme>();
 
     final JustColorScheme colors = JustThemeProvider.of(
       context,

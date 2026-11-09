@@ -1,7 +1,6 @@
-// justui-meta: registry=5bf597a723d3b1fcc13e5b87ac6170d572f21558710a1389380b3722f654d1ff local=a1da93fade39c2219c942241f2149f268122c3b1b3ab97e085300e8f764be602
+// justui-meta: registry=d6a076efccdbf1fdc715b5e5500f95b28b9d6c7fb41506ab6b0cd6e75af050fa local=7939af5199266578fa60204318ac0c0a2f0d0b6c040f56a05d1311fbaa7b36a7
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 
 import 'package:sandbox/core/just_ui_core.dart';
@@ -122,8 +121,8 @@ class _JustProgressState extends State<JustProgress>
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
     final JustPresetTokens presetTokens = customTheme.presetTokens;
-    final JustProgressTheme? progressTheme = Theme.of(context)
-        .extension<JustProgressTheme>();
+    final JustProgressTheme? progressTheme = context
+        .justThemeExtension<JustProgressTheme>();
     final JustProgressStyle? themeStyle = progressTheme?.style;
 
     final JustColorScheme colors = JustThemeProvider.of(
@@ -400,8 +399,8 @@ class _JustProgressState extends State<JustProgress>
   }
 
   BorderRadius? themeStyleBorderRadius(BuildContext context) {
-    final JustProgressTheme? progressTheme = Theme.of(context)
-        .extension<JustProgressTheme>();
+    final JustProgressTheme? progressTheme = context
+        .justThemeExtension<JustProgressTheme>();
     return progressTheme?.style?.borderRadius;
   }
 }

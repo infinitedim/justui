@@ -1,5 +1,5 @@
-// justui-meta: registry=74013ea57ecbe928b3fe8d5450a28647295a0e86dbd79310a8c022cf84c65ea1 local=c0940b5f690858ab4b914b51638accadef7b0087bc0a1258c636edc95af85b33
-import 'package:flutter/material.dart' show Icons, Theme;
+// justui-meta: registry=7bcf206763bbad175e61c5849aa721d37da6f4a92cd3906428bbd7e3c3364a7d local=cc08b96f7ecff114f7b8ae42698e73c3e42a99cde5d07d33b4fd6d41332acd17
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/services.dart'
     show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
@@ -282,8 +282,8 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustSelectTheme? selectTheme = Theme.of(context)
-        .extension<JustSelectTheme>();
+    final JustSelectTheme? selectTheme = context
+        .justThemeExtension<JustSelectTheme>();
     final JustSelectStyle? themeStyle = selectTheme?.style;
 
     final JustColorScheme colors = JustThemeProvider.of(

@@ -1,10 +1,9 @@
-// justui-meta: registry=cc097b57e1d2ff742041429b7c6d5431dbab9908637c5d8595bdd780ab9b024d local=f36e69ff6d7d5d4602295dcc3745b2ba9100e39eec2e044c82796dfbd2172b71
+// justui-meta: registry=6eaaeef332f2c28839f0c491b396928d6238cea7e94c1009254d95901bf31e06 local=cc986320f074652ac9db830dd705051ebcb414f111ec459ad75090e0b7711024
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -179,8 +178,8 @@ class _JustScrollAreaState extends State<JustScrollArea>
   bool get _isSmoothEnabled {
     if (widget.smoothScroll != null) return widget.smoothScroll!;
 
-    final JustScrollAreaTheme? globalTheme = Theme.of(context)
-        .extension<JustScrollAreaTheme>();
+    final JustScrollAreaTheme? globalTheme = context
+        .justThemeExtension<JustScrollAreaTheme>();
     final bool? themeSetting =
         widget.style?.smoothScroll ?? globalTheme?.style?.smoothScroll;
     if (themeSetting != null) return themeSetting;
@@ -376,8 +375,8 @@ class _JustScrollAreaState extends State<JustScrollArea>
     final double maxScroll = metrics.maxScrollExtent;
 
     // Resolve theme variables
-    final JustScrollAreaTheme? globalTheme = Theme.of(context)
-        .extension<JustScrollAreaTheme>();
+    final JustScrollAreaTheme? globalTheme = context
+        .justThemeExtension<JustScrollAreaTheme>();
     final JustScrollAreaStyle? themeStyle = globalTheme?.style;
     final double resolvedFadeHeight =
         widget.style?.fadeHeight ?? themeStyle?.fadeHeight ?? 24.0;
@@ -558,8 +557,8 @@ class _JustScrollAreaState extends State<JustScrollArea>
       aspect: .animations,
     ).theme.animations;
 
-    final JustScrollAreaTheme? globalTheme = Theme.of(context)
-        .extension<JustScrollAreaTheme>();
+    final JustScrollAreaTheme? globalTheme = context
+        .justThemeExtension<JustScrollAreaTheme>();
     final JustScrollAreaStyle? themeStyle = globalTheme?.style;
 
     // Resolve spacing/colors configurations

@@ -1,11 +1,11 @@
-// justui-meta: registry=8c1a1bf206c158eb9e71374d36b695266a331035511cfb0fb5afebb367efbb1f local=d3de6fe25d8d23c97463c2354846bb8293917f144b0f71f35c82d2eef59a3622
+// justui-meta: registry=5d5ba08083479f4215f53798b09081056fa8ef1ce5ac37c58351e5dc74487dc1 local=99bb2c127aba672377f30ca2f5fafceb0854911c58b5f1da4c5c4bbffe1235fe
 import 'dart:async' show Timer, unawaited;
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart'
     show PointerScrollEvent, PointerSignalEvent;
-import 'package:flutter/material.dart' show Icons, Theme;
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/services.dart'
     show KeyDownEvent, KeyEvent, KeyRepeatEvent, LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
@@ -226,7 +226,7 @@ class _JustCarouselState extends State<JustCarousel> {
   bool get _isLooping => widget.loop && widget.children.length > 1;
 
   JustCarouselTheme get _theme =>
-      Theme.of(context).extension<JustCarouselTheme>() ?? .defaults;
+      context.justThemeExtension<JustCarouselTheme>() ?? .defaults;
 
   JustCarouselAutoScroll? get _resolvedAutoScroll =>
       widget.autoScroll ??

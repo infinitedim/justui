@@ -1,5 +1,5 @@
-// justui-meta: registry=0a2b77660c9ab92e7fb2da3c905ba5cbca3e2b6de9bc73d21540b5173991f6c6 local=2f92e8bec37101f928fe790beb78ef4e7731e1e2fb050d2c08a6f2bea8283502
-import 'package:flutter/material.dart' show Icons, Theme;
+// justui-meta: registry=a2c4e10e99fae4b7a694e66d49ddf594ebf82994dc24bc03091d8223021a2b27 local=21282159dd5017cc0289471556da183c7b463443c299bd9268a2b51cef37f235
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/services.dart'
     show HapticFeedback, KeyDownEvent, KeyEvent, LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
@@ -325,8 +325,8 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     final JustPresetTokens presetTokens = theme.presetTokens;
 
     // Theme & Style overrides
-    final JustDatePickerTheme? themeExtension = Theme.of(context)
-        .extension<JustDatePickerTheme>();
+    final JustDatePickerTheme? themeExtension = context
+        .justThemeExtension<JustDatePickerTheme>();
     final JustDatePickerStyle? style = widget.style;
 
     final Color bgColor =

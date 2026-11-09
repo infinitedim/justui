@@ -1,8 +1,7 @@
-// justui-meta: registry=bad869e9122f29593e8d4cfcea9e8e540369fbaab75013524b1dcabc7cca4070 local=e2c94c19d3623b71a61cac8e6a89d306a6c5d238b0ea221be7f54d93ccf79d8b
+// justui-meta: registry=c0d2d2ead9030eae0a887297e037296cc5a4660fd6b51041d2c3173ea1fba40a local=0669499e5801a03b1d7e5866826b2cdc9839ffd390604bccdad72ae88f467f59
 import 'dart:collection' show UnmodifiableListView;
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart'
     show
         HardwareKeyboard,
@@ -662,7 +661,7 @@ class _JustResizableState extends State<JustResizable> {
 
   void _onSplitterDoubleTap(int index) {
     final JustResizableTheme theme =
-        Theme.of(context).extension<JustResizableTheme>() ?? .defaults;
+        context.justThemeExtension<JustResizableTheme>() ?? .defaults;
     final JustResizableDoubleTapBehavior behavior =
         widget.doubleTapBehavior ??
         widget.style?.doubleTapBehavior ??
@@ -700,7 +699,7 @@ class _JustResizableState extends State<JustResizable> {
         }
 
         final JustResizableTheme theme =
-            Theme.of(context).extension<JustResizableTheme>() ?? .defaults;
+            context.justThemeExtension<JustResizableTheme>() ?? .defaults;
         final bool isNeobrutalism = context.justPreset == .neobrutalism;
         final double defaultThickness = isNeobrutalism ? 2.5 : 1.0;
         final double thickness =

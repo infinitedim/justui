@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
@@ -6,6 +5,7 @@ import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart'
     show JustColorScheme, JustMotionProfile;
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
@@ -64,8 +64,8 @@ class JustIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final JustPresetTokens presetTokens = context.justPresetTokens;
-    final JustButtonTheme? buttonTheme = Theme.of(context)
-        .extension<JustButtonTheme>();
+    final JustButtonTheme? buttonTheme = context
+        .justThemeExtension<JustButtonTheme>();
     final JustButtonStyle? themeStyle = buttonTheme?.styleFor(variant);
     final bool finalEnableHaptic =
         enableHaptic ??

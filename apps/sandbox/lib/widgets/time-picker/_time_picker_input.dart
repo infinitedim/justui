@@ -1,5 +1,4 @@
-// justui-meta: registry=6dcf5a7c33b6c3c35069937c7efbe955fc509b1d03c2ff30b3c3c5dab1db8ba1 local=baebb836dca545c6c87e9851c0db5aed41523713f67f6ef9553a0708092bb2f2
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=d7cf1ec05ae6fa9f75b9de64bc3994118191e64af83bc475a33343233de72ba8 local=e2c38fbb0929d553a8e80e2097d2c298e7656a6b34c9f6206ab61d726f4f4e90
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
@@ -278,8 +277,8 @@ class _TimePickerInputState extends State<TimePickerInput> {
 
   void _triggerHaptic() {
     final JustThemeData theme = context.justTheme;
-    final JustTimePickerTheme? timePickerTheme = Theme.of(context)
-        .extension<JustTimePickerTheme>();
+    final JustTimePickerTheme? timePickerTheme = context
+        .justThemeExtension<JustTimePickerTheme>();
     final bool isHapticEnabled =
         widget.enableHaptic ??
         timePickerTheme?.enableHaptic ??

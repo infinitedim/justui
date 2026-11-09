@@ -1,5 +1,4 @@
-// justui-meta: registry=57856af3fbf6ef20cdd3c4c470dc793f843d4fa00ea62abb941cb83c15ffcc1d local=ec9c4a45fa4bcaaeaa12ae8380d1a6fff18dd3ca2bc0f39c3f7c996f8724a768
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=7e59257a9a4e94e936e9627ef72462c742fbb10ab4fa9430b5d79e2bc0acacc3 local=45d96e0f25da26def246e9062548d69522178a184fa1cd9fe14ece45d7eeb0b2
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
@@ -61,8 +60,8 @@ class JustIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final JustPresetTokens presetTokens = context.justPresetTokens;
-    final JustButtonTheme? buttonTheme = Theme.of(context)
-        .extension<JustButtonTheme>();
+    final JustButtonTheme? buttonTheme = context
+        .justThemeExtension<JustButtonTheme>();
     final JustButtonStyle? themeStyle = buttonTheme?.styleFor(variant);
     final bool finalEnableHaptic =
         enableHaptic ??

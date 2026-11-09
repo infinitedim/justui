@@ -1,4 +1,4 @@
-// justui-meta: registry=3968612d83696c4bf8de9b5c79411f3b645544c672467d81538818c901aca5b2 local=2d81158d2831ecae039f39b9c74b5bf96e173f32e199a64277c5013b1dceeb6e
+// justui-meta: registry=a2e92ec04718f7bbb37868751cb48aa7029df7a7427cb6327c940035d3e47b29 local=2d81158d2831ecae039f39b9c74b5bf96e173f32e199a64277c5013b1dceeb6e
 /// Display variant for time pickers (mirrors date picker variants).
 enum JustTimePickerVariant {
   /// Renders directly in the widget tree without overlay.

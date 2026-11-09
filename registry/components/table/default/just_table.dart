@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart' show Icons, Theme;
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import '../../theme/preset_tokens.dart';
 import '../shared/_shared_focus_indicator.dart';
@@ -172,8 +173,8 @@ class _JustTableState<T> extends State<JustTable<T>> {
   @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustTableTheme? tableTheme = Theme.of(context)
-        .extension<JustTableTheme>();
+    final JustTableTheme? tableTheme = context
+        .justThemeExtension<JustTableTheme>();
     final JustTableStyle? themeStyle = tableTheme?.style;
 
     final JustColorScheme colors = JustThemeProvider.of(

@@ -1,7 +1,6 @@
-// justui-meta: registry=218adadadeaeeb03605048dd32f8591bfd2c77ea0903af744667b8a831f043f8 local=0f7f12bd1215770512d42c0d8ba47a9094737e4d03f5f69e5166a730d530e7ad
+// justui-meta: registry=95d1ba9a3f7b4c064c6ee5bebf9656e83306a936aa6b9048201b0ccc6b7369a9 local=d824e1e613720dca0b2d9c4d204cb4f65d02ac63fa5df30f8b5144949833d44a
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/rendering.dart' show SemanticsService, TextDirection;
 import 'package:flutter/services.dart'
     show HapticFeedback, KeyDownEvent, KeyEvent, LogicalKeyboardKey;
@@ -356,8 +355,8 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
 
   void _triggerHaptic() {
     final JustThemeData theme = JustThemeProvider.of(context).theme;
-    final JustTimePickerTheme? themeExtension = Theme.of(context)
-        .extension<JustTimePickerTheme>();
+    final JustTimePickerTheme? themeExtension = context
+        .justThemeExtension<JustTimePickerTheme>();
     final bool shouldHaptic =
         widget.enableHaptic ??
         themeExtension?.enableHaptic ??
@@ -595,8 +594,8 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     final JustThemeData theme = JustThemeProvider.of(context).theme;
     final JustPresetTokens presetTokens = theme.presetTokens;
 
-    final JustTimePickerTheme? themeExtension = Theme.of(context)
-        .extension<JustTimePickerTheme>();
+    final JustTimePickerTheme? themeExtension = context
+        .justThemeExtension<JustTimePickerTheme>();
     final JustTimePickerStyle? style = widget.style;
 
     final Color bgColor =

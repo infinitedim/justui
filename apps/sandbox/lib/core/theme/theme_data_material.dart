@@ -163,3 +163,11 @@ extension JustThemeDataMaterialExtension on JustThemeData {
     );
   }
 }
+
+/// [BuildContext] extension for resolving component-level [ThemeExtension]s
+/// without importing `package:flutter/material.dart` in individual widgets.
+extension JustThemeExtensionContext on BuildContext {
+  /// Retrieves the component theme extension of type [T] from the nearest
+  /// [Theme] ancestor, or null if none is registered.
+  T? justThemeExtension<T>() => Theme.of(this).extension<T>();
+}

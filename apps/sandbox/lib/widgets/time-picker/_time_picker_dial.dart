@@ -1,8 +1,7 @@
-// justui-meta: registry=fb0856e7bae57ff9f852865454bac93ca6aed34017e70f42c702687cf420187c local=bab1a0d226678ff39bfc82e88eef5c75d6d21f5345fa3db9fc285627366e824a
+// justui-meta: registry=4bc2128d8baa35b7096584f2160ef42dc6c9f0f625a78f1d5c0de59674059a28 local=85cd95d7b89903ddadffb48f480e178d4f29ed5aefb3f07ae342f05e56730042
 import 'dart:async' show Timer;
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/rendering.dart' show SemanticsService, TextDirection;
 import 'package:flutter/services.dart'
     show
@@ -277,8 +276,8 @@ class _TimePickerDialState extends State<TimePickerDial>
 
   void _triggerHaptic() {
     final JustThemeData theme = context.justTheme;
-    final JustTimePickerTheme? timePickerTheme = Theme.of(context)
-        .extension<JustTimePickerTheme>();
+    final JustTimePickerTheme? timePickerTheme = context
+        .justThemeExtension<JustTimePickerTheme>();
     final bool isHapticEnabled =
         widget.enableHaptic ??
         timePickerTheme?.enableHaptic ??

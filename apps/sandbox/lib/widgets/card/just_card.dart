@@ -1,5 +1,4 @@
-// justui-meta: registry=3b2d7f4d26e33a7dcdfc2b2ae1a2a5af51d0b4df79c6419caac6dc119cd2707d local=71a63a289d28225a0eb38f89697a9d368bdb58538a9696dc9b43e701a71d0c25
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=8ff9ba5f36f8d2c3572c224798c59812dd0b17f377903bc4409297d9a0b82c8e local=f3b2e4d8d906530f3ecca95083f43e402e4c825e529bd052fcf56e4129e26849
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
@@ -148,8 +147,8 @@ class JustCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Resolve theme extension values
-    final JustCardTheme? globalCardTheme = Theme.of(context)
-        .extension<JustCardTheme>();
+    final JustCardTheme? globalCardTheme = context
+        .justThemeExtension<JustCardTheme>();
     final JustCardStyle? themeStyle = globalCardTheme?.style;
 
     // Aspect-based subscriptions for optimal rebuild performance
@@ -394,8 +393,8 @@ class JustCardHeader extends StatelessWidget {
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final JustCardTheme? globalCardTheme = Theme.of(context)
-        .extension<JustCardTheme>();
+    final JustCardTheme? globalCardTheme = context
+        .justThemeExtension<JustCardTheme>();
     final JustCardStyle? themeStyle = globalCardTheme?.style;
 
     final EdgeInsets resolvedPadding =
@@ -479,8 +478,8 @@ class JustCardContent extends StatelessWidget {
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final JustCardTheme? globalCardTheme = Theme.of(context)
-        .extension<JustCardTheme>();
+    final JustCardTheme? globalCardTheme = context
+        .justThemeExtension<JustCardTheme>();
     final JustCardStyle? themeStyle = globalCardTheme?.style;
 
     final EdgeInsets resolvedPadding =
@@ -507,8 +506,8 @@ class JustCardFooter extends StatelessWidget {
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final JustCardTheme? globalCardTheme = Theme.of(context)
-        .extension<JustCardTheme>();
+    final JustCardTheme? globalCardTheme = context
+        .justThemeExtension<JustCardTheme>();
     final JustCardStyle? themeStyle = globalCardTheme?.style;
 
     final EdgeInsets resolvedPadding =

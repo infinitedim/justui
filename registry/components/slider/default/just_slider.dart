@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
 import 'just_slider_style.dart';
@@ -194,8 +194,8 @@ class _JustSliderState extends State<JustSlider> {
     final JustThemeProviderState theme = JustThemeProvider.of(context);
     final JustPresetTokens presetTokens = theme.theme.presetTokens;
 
-    final JustSliderTheme? globalTheme = Theme.of(context)
-        .extension<JustSliderTheme>();
+    final JustSliderTheme? globalTheme = context
+        .justThemeExtension<JustSliderTheme>();
     final bool finalEnableHaptic =
         widget.enableHaptic ??
         globalTheme?.enableHaptic ??

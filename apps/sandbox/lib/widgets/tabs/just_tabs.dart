@@ -1,6 +1,5 @@
-// justui-meta: registry=a1058d760641b65ab5360010aa231a65ab8dcfa3dbd4ceccb31720b017949fa1 local=cca2c92a2c8f46491b24a74175c26f1caa46d19163f14dfc3db8c1be6799f4de
+// justui-meta: registry=2a925fd72c3141748d3581b13efd0093173609594a5553459a5cd1de7b43ba25 local=8809106f6ca01514557c81b5d132d424b1e26e2021b7f3909885e3d195a14372
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
@@ -453,8 +452,8 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
 
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
     _tabController.updateDuration(customTheme.animations.normal);
-    final JustTabsTheme? tabsTheme = Theme.of(context)
-        .extension<JustTabsTheme>();
+    final JustTabsTheme? tabsTheme = context
+        .justThemeExtension<JustTabsTheme>();
     final JustColorScheme colors = JustThemeProvider.of(
       context,
       aspect: .colors,

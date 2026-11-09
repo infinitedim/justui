@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show KeyDownEvent, LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart' show JustColorScheme;
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import 'just_tooltip_style.dart';
 import 'just_tooltip_theme.dart';
@@ -189,8 +189,8 @@ class _JustTooltipState extends State<JustTooltip>
         final JustSpacingScheme spacing = theme.spacing;
         final JustRadiusScheme radius = theme.radius;
 
-        final JustTooltipTheme? globalTheme = Theme.of(context)
-            .extension<JustTooltipTheme>();
+        final JustTooltipTheme? globalTheme = context
+            .justThemeExtension<JustTooltipTheme>();
         final JustTooltipStyle? themeStyle = globalTheme?.style;
         final JustTooltipStyle? entryStyle = widget.style;
 

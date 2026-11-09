@@ -1,7 +1,6 @@
-// justui-meta: registry=685bb73ef981b2dc2ca5b4533f3af39162af8bf534bbdb5e5957e47b7731f25d local=dd7552f050c450103a5cc6a8047bf2746384727e2d87766d9c20f26cc1f2642f
+// justui-meta: registry=aff959add067330ca7dad0b8961726c8f1139ad38d516b6758d1502c28bdaba7 local=5e7cd9307ce4ec5d5094a6ea377115bbbd206732936a83b26a9366ff8037913a
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
@@ -306,8 +305,8 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     final JustMotionProfile motion = theme.animations.resolve(context);
     final JustTypographyScheme typography = theme.typography;
 
-    final JustSheetTheme? globalTheme = Theme.of(context)
-        .extension<JustSheetTheme>();
+    final JustSheetTheme? globalTheme = context
+        .justThemeExtension<JustSheetTheme>();
 
     JustSheetStyle? directionThemeStyle;
     switch (widget.direction) {

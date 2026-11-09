@@ -1,7 +1,6 @@
-// justui-meta: registry=8d0f459efd4b41a2adea3bd9736fdffbebb2c0948f4783945dfcfdd24d4dec1d local=121691f17595248692aa818f3e7e4f0b94f0ea19fc6302832d937c756472a745
+// justui-meta: registry=1b7baca195053f1626ae6eb0b509133506a7450b220ffc175b00f7983f3fa909 local=2ca7df23f45320a380f07bfb25aa3764d165da483bf78faec2dcac27111892e5
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show KeyDownEvent, LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
@@ -203,8 +202,8 @@ class _JustTooltipState extends State<JustTooltip>
         final JustSpacingScheme spacing = theme.spacing;
         final JustRadiusScheme radius = theme.radius;
 
-        final JustTooltipTheme? globalTheme = Theme.of(context)
-            .extension<JustTooltipTheme>();
+        final JustTooltipTheme? globalTheme = context
+            .justThemeExtension<JustTooltipTheme>();
         final JustTooltipStyle? themeStyle = globalTheme?.style;
         final JustTooltipStyle? entryStyle = widget.style;
 

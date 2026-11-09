@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart'
     show PointerScrollEvent, PointerSignalEvent;
-import 'package:flutter/material.dart' show Icons, Theme;
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/services.dart'
     show KeyDownEvent, KeyEvent, KeyRepeatEvent, LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
@@ -225,7 +225,7 @@ class _JustCarouselState extends State<JustCarousel> {
   bool get _isLooping => widget.loop && widget.children.length > 1;
 
   JustCarouselTheme get _theme =>
-      Theme.of(context).extension<JustCarouselTheme>() ?? .defaults;
+      context.justThemeExtension<JustCarouselTheme>() ?? .defaults;
 
   JustCarouselAutoScroll? get _resolvedAutoScroll =>
       widget.autoScroll ??

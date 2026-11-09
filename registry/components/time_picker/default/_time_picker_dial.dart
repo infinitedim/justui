@@ -1,7 +1,6 @@
 import 'dart:async' show Timer;
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/rendering.dart' show SemanticsService, TextDirection;
 import 'package:flutter/services.dart'
     show
@@ -276,8 +275,8 @@ class _TimePickerDialState extends State<TimePickerDial>
 
   void _triggerHaptic() {
     final JustThemeData theme = context.justTheme;
-    final JustTimePickerTheme? timePickerTheme = Theme.of(context)
-        .extension<JustTimePickerTheme>();
+    final JustTimePickerTheme? timePickerTheme = context
+        .justThemeExtension<JustTimePickerTheme>();
     final bool isHapticEnabled =
         widget.enableHaptic ??
         timePickerTheme?.enableHaptic ??

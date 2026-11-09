@@ -1,5 +1,4 @@
-// justui-meta: registry=f41ebe55b7f934ca4f6501fb0b23bd6c1fb5a58e9c16e6a7d829cd990723b252 local=7812323770fd50b1182cbd0d1ce0630ded14ff9c0a96913a66f82624e2703589
-import 'package:flutter/material.dart' show Theme;
+// justui-meta: registry=c0d9536e89303cd1ba8dce65a4bb97abeaa05a3352c6aefe08614cba020341f2 local=056edb5361901ace7bbebecb958335a3ae01d4fd5ba4200f230c3e74c23162b1
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
@@ -78,8 +77,8 @@ class JustSeparator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Resolve theme extension configurations
-    final JustSeparatorTheme? globalSeparatorTheme = Theme.of(context)
-        .extension<JustSeparatorTheme>();
+    final JustSeparatorTheme? globalSeparatorTheme = context
+        .justThemeExtension<JustSeparatorTheme>();
     final JustSeparatorStyle? themeStyle = globalSeparatorTheme?.style;
 
     // Aspect-based subscriptions

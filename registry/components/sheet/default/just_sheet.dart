@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
@@ -9,6 +8,7 @@ import 'package:just_ui_tokens/just_ui_tokens.dart'
     show JustColorScheme, JustMotionProfile;
 
 import '../../overlay/just_overlay_controller.dart';
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import 'just_sheet_style.dart';
 import 'just_sheet_theme.dart';
@@ -297,8 +297,8 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     final JustMotionProfile motion = theme.animations.resolve(context);
     final JustTypographyScheme typography = theme.typography;
 
-    final JustSheetTheme? globalTheme = Theme.of(context)
-        .extension<JustSheetTheme>();
+    final JustSheetTheme? globalTheme = context
+        .justThemeExtension<JustSheetTheme>();
 
     JustSheetStyle? directionThemeStyle;
     switch (widget.direction) {

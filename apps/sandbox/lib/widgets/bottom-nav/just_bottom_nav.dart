@@ -1,6 +1,5 @@
-// justui-meta: registry=4658bd43ba48bd3ddc4613224ddaee94f81d1ff44d9062decd8f7890333bc5ba local=7201ed22a92872610494ca1a7fd0195a67181ecba5b1dbbb435723517999baef
+// justui-meta: registry=ce601493a7f9cab1452538f3c306b7a3e26af5c5edf735c249869bf8f9f7de58 local=271e0b4f5a192ffa6f787289c2000cf7019c311e9682a2ec46febb047055d470
 import 'package:flutter/widgets.dart';
-import 'package:flutter/material.dart' show Theme;
 
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:sandbox/core/just_ui_core.dart';
@@ -88,8 +87,8 @@ class _JustBottomNavState extends State<JustBottomNav> {
   @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustBottomNavTheme? navTheme = Theme.of(context)
-        .extension<JustBottomNavTheme>();
+    final JustBottomNavTheme? navTheme = context
+        .justThemeExtension<JustBottomNavTheme>();
     final JustColorScheme colors = JustThemeProvider.of(
       context,
       aspect: .colors,

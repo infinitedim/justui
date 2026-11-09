@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Icons, Theme;
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
@@ -8,6 +8,7 @@ import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
 import '../../overlay/just_overlay_controller.dart';
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import 'just_toast_style.dart';
 import 'just_toast_theme.dart';
@@ -572,8 +573,8 @@ class _JustToastWidgetState extends State<_JustToastWidget>
     final JustRadiusScheme radius = theme.radius;
     final JustShadowScheme shadows = theme.shadows;
 
-    final JustToastTheme? globalTheme = Theme.of(context)
-        .extension<JustToastTheme>();
+    final JustToastTheme? globalTheme = context
+        .justThemeExtension<JustToastTheme>();
 
     // Resolve variant style from theme extension
     JustToastStyle? variantThemeStyle;
