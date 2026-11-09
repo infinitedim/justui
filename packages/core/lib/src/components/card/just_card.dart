@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import '../shared/_shared_focus_indicator.dart';
@@ -138,8 +138,8 @@ class const JustCard({
   @override
   Widget build(BuildContext context) {
     // Resolve theme extension values
-    final JustCardTheme? globalCardTheme = Theme.of(context)
-        .extension<JustCardTheme>();
+    final JustCardTheme? globalCardTheme = context
+        .justThemeExtension<JustCardTheme>();
     final JustCardStyle? themeStyle = globalCardTheme?.style;
 
     // Aspect-based subscriptions for optimal rebuild performance
@@ -384,8 +384,8 @@ class const JustCardHeader({
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final JustCardTheme? globalCardTheme = Theme.of(context)
-        .extension<JustCardTheme>();
+    final JustCardTheme? globalCardTheme = context
+        .justThemeExtension<JustCardTheme>();
     final JustCardStyle? themeStyle = globalCardTheme?.style;
 
     final EdgeInsets resolvedPadding =
@@ -469,8 +469,8 @@ class const JustCardContent({
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final JustCardTheme? globalCardTheme = Theme.of(context)
-        .extension<JustCardTheme>();
+    final JustCardTheme? globalCardTheme = context
+        .justThemeExtension<JustCardTheme>();
     final JustCardStyle? themeStyle = globalCardTheme?.style;
 
     final EdgeInsets resolvedPadding =
@@ -497,8 +497,8 @@ class const JustCardFooter({
       context,
       aspect: .spacing,
     ).theme.spacing;
-    final JustCardTheme? globalCardTheme = Theme.of(context)
-        .extension<JustCardTheme>();
+    final JustCardTheme? globalCardTheme = context
+        .justThemeExtension<JustCardTheme>();
     final JustCardStyle? themeStyle = globalCardTheme?.style;
 
     final EdgeInsets resolvedPadding =

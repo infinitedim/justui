@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import '../../theme/preset_tokens.dart';
 import '../shared/_shared_focus_indicator.dart';
@@ -129,8 +129,8 @@ class _JustRadioState<T> extends State<JustRadio<T>>
   void _handleSelect() {
     if (widget.isDisabled || widget.onChanged == null) return;
     if (!_isSelected) {
-      final JustRadioTheme? radioTheme = Theme.of(context)
-          .extension<JustRadioTheme>();
+      final JustRadioTheme? radioTheme = context
+          .justThemeExtension<JustRadioTheme>();
       final bool finalEnableHaptic =
           widget.enableHaptic ??
           radioTheme?.enableHaptic ??
@@ -149,8 +149,8 @@ class _JustRadioState<T> extends State<JustRadio<T>>
 
   @override
   Widget build(BuildContext context) {
-    final JustRadioTheme? radioTheme = Theme.of(context)
-        .extension<JustRadioTheme>();
+    final JustRadioTheme? radioTheme = context
+        .justThemeExtension<JustRadioTheme>();
 
     final JustColorScheme colors = JustThemeProvider.of(
       context,

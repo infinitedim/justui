@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Icons, Theme;
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/services.dart'
     show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
@@ -6,6 +6,7 @@ import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart' show JustColorScheme;
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_pressable.dart';
@@ -284,8 +285,8 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustSelectTheme? selectTheme = Theme.of(context)
-        .extension<JustSelectTheme>();
+    final JustSelectTheme? selectTheme = context
+        .justThemeExtension<JustSelectTheme>();
     final JustSelectStyle? themeStyle = selectTheme?.style;
 
     final JustColorScheme colors = JustThemeProvider.of(

@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import '../../theme/preset_tokens.dart';
 import '../shared/_shared_focus_indicator.dart';
@@ -114,8 +114,8 @@ class _JustCheckboxState extends State<JustCheckbox>
   void _handleToggle() {
     if (widget.isDisabled || widget.onChanged == null) return;
 
-    final JustCheckboxTheme? checkboxTheme = Theme.of(context)
-        .extension<JustCheckboxTheme>();
+    final JustCheckboxTheme? checkboxTheme = context
+        .justThemeExtension<JustCheckboxTheme>();
     final bool finalEnableHaptic =
         widget.enableHaptic ??
         checkboxTheme?.enableHaptic ??
@@ -139,8 +139,8 @@ class _JustCheckboxState extends State<JustCheckbox>
   @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustCheckboxTheme? checkboxTheme = Theme.of(context)
-        .extension<JustCheckboxTheme>();
+    final JustCheckboxTheme? checkboxTheme = context
+        .justThemeExtension<JustCheckboxTheme>();
 
     final JustColorScheme colors = JustThemeProvider.of(
       context,

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 
@@ -138,8 +137,8 @@ class _JustSkeletonState extends State<JustSkeleton>
       aspect: .animations,
     ).theme.animations;
 
-    final JustSkeletonTheme? globalTheme = Theme.of(context)
-        .extension<JustSkeletonTheme>();
+    final JustSkeletonTheme? globalTheme = context
+        .justThemeExtension<JustSkeletonTheme>();
     final JustSkeletonStyle? themeStyle = globalTheme?.style;
 
     // Resolve base colors

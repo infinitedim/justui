@@ -1,11 +1,12 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter/material.dart' show Icons, Theme;
+import 'package:flutter/material.dart' show Icons;
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 
 import 'package:just_ui_tokens/just_ui_tokens.dart'
     show JustBreakpoints, JustColorScheme;
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_tooltip_overlay.dart';
 import '../shared/_shared_pressable.dart';
@@ -127,8 +128,8 @@ class _JustSidebarState extends State<JustSidebar>
   @override
   Widget build(BuildContext context) {
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustSidebarTheme? sidebarTheme = Theme.of(context)
-        .extension<JustSidebarTheme>();
+    final JustSidebarTheme? sidebarTheme = context
+        .justThemeExtension<JustSidebarTheme>();
     final JustColorScheme colors = JustThemeProvider.of(
       context,
       aspect: .colors,

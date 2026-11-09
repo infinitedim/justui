@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/schemes/spacing_scheme.dart';
 import 'package:just_ui_core/src/theme/schemes/typography_scheme.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import 'just_separator_style.dart';
 import 'just_separator_theme.dart';
@@ -80,8 +80,8 @@ class JustSeparator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Resolve theme extension configurations
-    final JustSeparatorTheme? globalSeparatorTheme = Theme.of(context)
-        .extension<JustSeparatorTheme>();
+    final JustSeparatorTheme? globalSeparatorTheme = context
+        .justThemeExtension<JustSeparatorTheme>();
     final JustSeparatorStyle? themeStyle = globalSeparatorTheme?.style;
 
     // Aspect-based subscriptions

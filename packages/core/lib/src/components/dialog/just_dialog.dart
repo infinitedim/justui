@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
@@ -255,8 +254,8 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
     final JustMotionProfile motion = theme.animations.resolve(context);
     final JustTypographyScheme typography = theme.typography;
 
-    final JustDialogTheme? globalTheme = Theme.of(context)
-        .extension<JustDialogTheme>();
+    final JustDialogTheme? globalTheme = context
+        .justThemeExtension<JustDialogTheme>();
 
     JustDialogStyle? positionThemeStyle;
     switch (widget.position) {

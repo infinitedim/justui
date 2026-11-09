@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
@@ -277,8 +276,8 @@ class _TimePickerInputState extends State<TimePickerInput> {
 
   void _triggerHaptic() {
     final JustThemeData theme = context.justTheme;
-    final JustTimePickerTheme? timePickerTheme = Theme.of(context)
-        .extension<JustTimePickerTheme>();
+    final JustTimePickerTheme? timePickerTheme = context
+        .justThemeExtension<JustTimePickerTheme>();
     final bool isHapticEnabled =
         widget.enableHaptic ??
         timePickerTheme?.enableHaptic ??

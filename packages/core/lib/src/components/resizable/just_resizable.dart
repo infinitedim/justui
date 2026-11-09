@@ -1,7 +1,6 @@
 import 'dart:collection' show UnmodifiableListView;
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart'
     show
         HardwareKeyboard,
@@ -634,7 +633,7 @@ class _JustResizableState extends State<JustResizable> {
 
   void _onSplitterDoubleTap(int index) {
     final JustResizableTheme theme =
-        Theme.of(context).extension<JustResizableTheme>() ?? .defaults;
+        context.justThemeExtension<JustResizableTheme>() ?? .defaults;
     final JustResizableDoubleTapBehavior behavior =
         widget.doubleTapBehavior ??
         widget.style?.doubleTapBehavior ??
@@ -672,7 +671,7 @@ class _JustResizableState extends State<JustResizable> {
         }
 
         final JustResizableTheme theme =
-            Theme.of(context).extension<JustResizableTheme>() ?? .defaults;
+            context.justThemeExtension<JustResizableTheme>() ?? .defaults;
         final bool isNeobrutalism = context.justPreset == .neobrutalism;
         final double defaultThickness = isNeobrutalism ? 2.5 : 1.0;
         final double thickness =

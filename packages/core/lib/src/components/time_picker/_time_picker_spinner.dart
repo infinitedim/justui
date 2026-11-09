@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/rendering.dart' show SemanticsService, TextDirection;
 import 'package:flutter/services.dart'
     show HapticFeedback, KeyDownEvent, KeyEvent, LogicalKeyboardKey;
@@ -355,8 +354,8 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
 
   void _triggerHaptic() {
     final JustThemeData theme = JustThemeProvider.of(context).theme;
-    final JustTimePickerTheme? themeExtension = Theme.of(context)
-        .extension<JustTimePickerTheme>();
+    final JustTimePickerTheme? themeExtension = context
+        .justThemeExtension<JustTimePickerTheme>();
     final bool shouldHaptic =
         widget.enableHaptic ??
         themeExtension?.enableHaptic ??
@@ -594,8 +593,8 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     final JustThemeData theme = JustThemeProvider.of(context).theme;
     final JustPresetTokens presetTokens = theme.presetTokens;
 
-    final JustTimePickerTheme? themeExtension = Theme.of(context)
-        .extension<JustTimePickerTheme>();
+    final JustTimePickerTheme? themeExtension = context
+        .justThemeExtension<JustTimePickerTheme>();
     final JustTimePickerStyle? style = widget.style;
 
     final Color bgColor =

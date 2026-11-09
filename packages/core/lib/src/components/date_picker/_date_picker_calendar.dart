@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Icons, Theme;
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/services.dart'
     show HapticFeedback, KeyDownEvent, KeyEvent, LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
@@ -324,8 +324,8 @@ class _DatePickerCalendarState extends State<DatePickerCalendar> {
     final JustPresetTokens presetTokens = theme.presetTokens;
 
     // Theme & Style overrides
-    final JustDatePickerTheme? themeExtension = Theme.of(context)
-        .extension<JustDatePickerTheme>();
+    final JustDatePickerTheme? themeExtension = context
+        .justThemeExtension<JustDatePickerTheme>();
     final JustDatePickerStyle? style = widget.style;
 
     final Color bgColor =

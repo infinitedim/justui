@@ -1,10 +1,10 @@
 import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
-import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
 
+import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
 import '../shared/_shared_pressable.dart';
 import 'just_tab_indicator.dart';
@@ -446,8 +446,8 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
 
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
     _tabController.updateDuration(customTheme.animations.normal);
-    final JustTabsTheme? tabsTheme = Theme.of(context)
-        .extension<JustTabsTheme>();
+    final JustTabsTheme? tabsTheme = context
+        .justThemeExtension<JustTabsTheme>();
     final JustColorScheme colors = JustThemeProvider.of(
       context,
       aspect: .colors,
