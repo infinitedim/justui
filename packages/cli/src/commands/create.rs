@@ -284,10 +284,9 @@ fn generate_widget_template(class_name: &str, snake_name: &str) -> String {
              final radius = context.justRadius;\n\
          \n\
              // Resolve theme style\n\
-             // Try to retrieve widget theme extension from Flutter's InheritedTheme if registered\n\
-             // e.g. BuildContext has standard extensions access if passed to ThemeData.extensions.\n\
+             // Retrieve widget theme extension from the nearest Theme ancestor if registered.\n\
              final theme = context.justTheme;\n\
-             final widgetTheme = Theme.of(context).extension<{class_name}Theme>() ?? {class_name}Theme.defaults;\n\
+             final widgetTheme = context.justThemeExtension<{class_name}Theme>() ?? {class_name}Theme.defaults;\n\
          \n\
              // Resolve base styles by variant\n\
              final baseStyle = variant == .outline ? widgetTheme.outlineStyle : widgetTheme.defaultStyle;\n\
