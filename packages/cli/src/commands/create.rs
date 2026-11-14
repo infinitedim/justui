@@ -205,7 +205,7 @@ fn generate_variants_template(class_name: &str) -> String {
 
 fn generate_theme_template(class_name: &str, snake_name: &str) -> String {
     format!(
-        "import 'package:flutter/material.dart';\n\
+        "import 'package:flutter/material.dart' show ThemeExtension;\n\
          import '{snake_name}_style.dart';\n\
          \n\
          /// Global theme configuration for [{class_name}], extending Flutter's [ThemeExtension].\n\
@@ -283,20 +283,24 @@ fn generate_widget_template(class_name: &str, snake_name: &str) -> String {
              final spacing = context.justSpacing;\n\
              final radius = context.justRadius;\n\
          \n\
-             // Resolve theme style\n\
              // Retrieve widget theme extension from the nearest Theme ancestor if registered.\n\
-             final theme = context.justTheme;\n\
              final widgetTheme = context.justThemeExtension<{class_name}Theme>() ?? {class_name}Theme.defaults;\n\
          \n\
              // Resolve base styles by variant\n\
              final baseStyle = variant == .outline ? widgetTheme.outlineStyle : widgetTheme.defaultStyle;\n\
          \n\
-             // Resolve sizes\n\
+         {body}",
+        body = generate_widget_body()
+    )
+}
+
+const fn generate_widget_body() -> &'static str {
+    "// Resolve sizes\n\
              double paddingH;\n\
              double paddingV;\n\
              BorderRadius defaultRadius;\n\
          \n\
-             switch (size) {{\n\
+             switch (size) {\n\
                case .sm:\n\
                  paddingH = spacing.sm;\n\
                  paddingV = spacing.xs;\n\
@@ -312,7 +316,7 @@ fn generate_widget_template(class_name: &str, snake_name: &str) -> String {
                  paddingV = spacing.md;\n\
                  defaultRadius = .all(radius.lg);\n\
                  break;\n\
-             }}\n\
+             }\n\
          \n\
              // Colors mapping\n\
              final Color bg = variant == .outline ? const Color(0x00000000) : colors.background;\n\
@@ -332,9 +336,8 @@ fn generate_widget_template(class_name: &str, snake_name: &str) -> String {
                ),\n\
                child: child,\n\
              );\n\
-           }}\n\
-         }}\n"
-    )
+           }\n\
+         }\n"
 }
 
 #[cfg(test)]
@@ -370,7 +373,25 @@ mod tests {
         .unwrap();
 
         assert!(run(Some("my_widget".to_string()), None, false, true).is_ok());
+        let theme_src = std::fs::read_to_string("lib/ui/my_widget/my_widget_theme.dart").unwrap();
+        assert!(theme_src.contains("import 'package:flutter/material.dart' show ThemeExtension;"));
+        assert!(!theme_src.contains("import 'package:flutter/material.dart';"));
+        let widget_src = std::fs::read_to_string("lib/ui/my_widget/my_widget.dart").unwrap();
+        assert!(!widget_src.contains("final theme = context.justTheme;"));
+        assert!(widget_src.contains("context.justThemeExtension<MyWidgetTheme>()"));
+
         // Non-interactive / empty prompt returns Err (Finding #10)
         assert!(run(None, None, false, false).is_err());
+    }
+
+    #[test]
+    fn test_create_templates_scope_material_and_omit_unused_locals() {
+        let theme_tpl = generate_theme_template("CustomCard", "custom_card");
+        assert!(theme_tpl.contains("import 'package:flutter/material.dart' show ThemeExtension;"));
+        assert!(!theme_tpl.contains("import 'package:flutter/material.dart';"));
+
+        let widget_tpl = generate_widget_template("CustomCard", "custom_card");
+        assert!(!widget_tpl.contains("final theme = context.justTheme;"));
+        assert!(widget_tpl.contains("context.justThemeExtension<CustomCardTheme>()"));
     }
 }
