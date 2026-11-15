@@ -28,10 +28,10 @@ The `JustTimePicker` component offers precise time selection across multiple inp
 Dropdown time picker in 12-hour clock format:
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:your_app/core/just_ui_core.dart';
+import 'package:flutter/widgets.dart';
+import 'package:your_app/widgets/time-picker/just_time_picker.dart';
 
-Widget buildBasicTimePicker(BuildContext context, TimeOfDay? selectedTime, ValueChanged<TimeOfDay> onTimeChanged) {
+Widget buildBasicTimePicker(BuildContext context, JustTimeOfDay? selectedTime, ValueChanged<JustTimeOfDay> onTimeChanged) {
   return JustTimePicker(
     value: selectedTime,
     onChanged: onTimeChanged,
@@ -46,17 +46,17 @@ Widget buildBasicTimePicker(BuildContext context, TimeOfDay? selectedTime, Value
 Modal time picker in 24-hour spinner mode with bounds:
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:your_app/core/just_ui_core.dart';
+import 'package:flutter/widgets.dart';
+import 'package:your_app/widgets/time-picker/just_time_picker.dart';
 
-Widget buildAdvancedTimePicker(BuildContext context, TimeOfDay? activeTime, ValueChanged<TimeOfDay> onTimeChanged) {
+Widget buildAdvancedTimePicker(BuildContext context, JustTimeOfDay? activeTime, ValueChanged<JustTimeOfDay> onTimeChanged) {
   return JustTimePicker(
     value: activeTime,
     onChanged: onTimeChanged,
     variant: .modal,
     mode: .spinner,
-    firstTime: const TimeOfDay(hour: 8, minute: 0),
-    lastTime: const TimeOfDay(hour: 18, minute: 0),
+    firstTime: const JustTimeOfDay(hour: 8, minute: 0),
+    lastTime: const JustTimeOfDay(hour: 18, minute: 0),
   );
 }
 ```
@@ -67,16 +67,16 @@ Widget buildAdvancedTimePicker(BuildContext context, TimeOfDay? activeTime, Valu
 
 ### JustTimePicker
 
-| Property                  | Data Type                   | Default Value | Description                                                             |
-| :------------------------ | :-------------------------- | :------------ | :---------------------------------------------------------------------- |
-| `value`                   | `TimeOfDay?`                | `null`        | Currently selected time value.                                          |
-| `onChanged`               | `ValueChanged<TimeOfDay>?`  | `null`        | Callback executed when a time value is selected.                        |
-| `variant`                 | `JustTimePickerVariant`     | `.dropdown`   | Presentation variant (`.inline`, `.modal`, `.dropdown`, `.responsive`). |
-| `mode`                    | `JustTimePickerMode`        | `.dial`       | Interaction paradigm (`.dial`, `.spinner`, `.input`).                   |
-| `firstTime`               | `TimeOfDay?`                | `null`        | Earliest selectable time boundary.                                      |
-| `lastTime`                | `TimeOfDay?`                | `null`        | Latest selectable time boundary.                                        |
-| `selectableTimePredicate` | `bool Function(TimeOfDay)?` | `null`        | Custom predicate to selectively disable specific times.                 |
-| `style`                   | `JustTimePickerStyle?`      | `null`        | Per-instance visual style overrides for hands, numbers, and wheels.     |
+| Property                  | Data Type                       | Default Value | Description                                                             |
+| :------------------------ | :------------------------------ | :------------ | :---------------------------------------------------------------------- |
+| `value`                   | `JustTimeOfDay?`                | `null`        | Currently selected time value.                                          |
+| `onChanged`               | `ValueChanged<JustTimeOfDay>?`  | `null`        | Callback executed when a time value is selected.                        |
+| `variant`                 | `JustTimePickerVariant`         | `.inline`     | Presentation variant (`.inline`, `.modal`, `.dropdown`, `.responsive`). |
+| `mode`                    | `JustTimePickerMode`            | `.dial`       | Interaction paradigm (`.dial`, `.spinner`, `.input`).                   |
+| `firstTime`               | `JustTimeOfDay?`                | `null`        | Earliest selectable time boundary.                                      |
+| `lastTime`                | `JustTimeOfDay?`                | `null`        | Latest selectable time boundary.                                        |
+| `selectableTimePredicate` | `bool Function(JustTimeOfDay)?` | `null`        | Custom predicate to selectively disable specific times.                 |
+| `style`                   | `JustTimePickerStyle?`          | `null`        | Per-instance visual style overrides for hands, numbers, and wheels.     |
 
 ---
 

@@ -28,10 +28,10 @@ Komponen `JustTimePicker` menyediakan mekanisme pemilihan waktu yang presisi mel
 Pemilih waktu dropdown dengan tampilan jarum jam 12 jam:
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:your_app/core/just_ui_core.dart';
+import 'package:flutter/widgets.dart';
+import 'package:your_app/widgets/time-picker/just_time_picker.dart';
 
-Widget buildBasicTimePicker(BuildContext context, TimeOfDay? selectedTime, ValueChanged<TimeOfDay> onTimeChanged) {
+Widget buildBasicTimePicker(BuildContext context, JustTimeOfDay? selectedTime, ValueChanged<JustTimeOfDay> onTimeChanged) {
   return JustTimePicker(
     value: selectedTime,
     onChanged: onTimeChanged,
@@ -46,17 +46,17 @@ Widget buildBasicTimePicker(BuildContext context, TimeOfDay? selectedTime, Value
 Pemilih waktu modal dengan spinner 24 jam dan batas rentang operasional:
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:your_app/core/just_ui_core.dart';
+import 'package:flutter/widgets.dart';
+import 'package:your_app/widgets/time-picker/just_time_picker.dart';
 
-Widget buildAdvancedTimePicker(BuildContext context, TimeOfDay? activeTime, ValueChanged<TimeOfDay> onTimeChanged) {
+Widget buildAdvancedTimePicker(BuildContext context, JustTimeOfDay? activeTime, ValueChanged<JustTimeOfDay> onTimeChanged) {
   return JustTimePicker(
     value: activeTime,
     onChanged: onTimeChanged,
     variant: .modal,
     mode: .spinner,
-    firstTime: const TimeOfDay(hour: 8, minute: 0),
-    lastTime: const TimeOfDay(hour: 18, minute: 0),
+    firstTime: const JustTimeOfDay(hour: 8, minute: 0),
+    lastTime: const JustTimeOfDay(hour: 18, minute: 0),
   );
 }
 ```
@@ -67,16 +67,16 @@ Widget buildAdvancedTimePicker(BuildContext context, TimeOfDay? activeTime, Valu
 
 ### JustTimePicker
 
-| Properti                  | Tipe Data                   | Nilai Default | Deskripsi                                                             |
-| :------------------------ | :-------------------------- | :------------ | :-------------------------------------------------------------------- |
-| `value`                   | `TimeOfDay?`                | `null`        | Nilai waktu yang sedang aktif.                                        |
-| `onChanged`               | `ValueChanged<TimeOfDay>?`  | `null`        | Callback yang dipanggil saat nilai waktu dipilih.                     |
-| `variant`                 | `JustTimePickerVariant`     | `.dropdown`   | Varian tampilan (`.inline`, `.modal`, `.dropdown`, `.responsive`).    |
-| `mode`                    | `JustTimePickerMode`        | `.dial`       | Paradigma interaksi (`.dial`, `.spinner`, `.input`).                  |
-| `firstTime`               | `TimeOfDay?`                | `null`        | Batas awal waktu yang dapat dipilih.                                  |
-| `lastTime`                | `TimeOfDay?`                | `null`        | Batas akhir waktu yang dapat dipilih.                                 |
-| `selectableTimePredicate` | `bool Function(TimeOfDay)?` | `null`        | Predikat untuk menonaktifkan jam/menit tertentu.                      |
-| `style`                   | `JustTimePickerStyle?`      | `null`        | Kustomisasi visual untuk jarum jam, angka dial, dan kolom roda putar. |
+| Properti                  | Tipe Data                       | Nilai Default | Deskripsi                                                             |
+| :------------------------ | :------------------------------ | :------------ | :-------------------------------------------------------------------- |
+| `value`                   | `JustTimeOfDay?`                | `null`        | Nilai waktu yang sedang aktif.                                        |
+| `onChanged`               | `ValueChanged<JustTimeOfDay>?`  | `null`        | Callback yang dipanggil saat nilai waktu dipilih.                     |
+| `variant`                 | `JustTimePickerVariant`         | `.inline`     | Varian tampilan (`.inline`, `.modal`, `.dropdown`, `.responsive`).    |
+| `mode`                    | `JustTimePickerMode`            | `.dial`       | Paradigma interaksi (`.dial`, `.spinner`, `.input`).                  |
+| `firstTime`               | `JustTimeOfDay?`                | `null`        | Batas awal waktu yang dapat dipilih.                                  |
+| `lastTime`                | `JustTimeOfDay?`                | `null`        | Batas akhir waktu yang dapat dipilih.                                 |
+| `selectableTimePredicate` | `bool Function(JustTimeOfDay)?` | `null`        | Predikat untuk menonaktifkan jam/menit tertentu.                      |
+| `style`                   | `JustTimePickerStyle?`          | `null`        | Kustomisasi visual untuk jarum jam, angka dial, dan kolom roda putar. |
 
 ---
 

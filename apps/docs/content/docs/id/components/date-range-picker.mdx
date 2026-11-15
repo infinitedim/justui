@@ -25,10 +25,10 @@ Komponen `JustDateRangePicker` menyediakan pengalaman pemilihan rentang tanggal 
 Pemilih rentang tanggal sederhana dengan batas rentang:
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:your_app/core/just_ui_core.dart';
+import 'package:flutter/widgets.dart';
+import 'package:your_app/widgets/date-range-picker/just_date_range_picker.dart';
 
-Widget buildBasicDateRangePicker(BuildContext context, DateTimeRange? range, ValueChanged<DateTimeRange> onRangeChanged) {
+Widget buildBasicDateRangePicker(BuildContext context, JustDateTimeRange? range, ValueChanged<JustDateTimeRange> onRangeChanged) {
   return JustDateRangePicker(
     value: range,
     onChanged: onRangeChanged,
@@ -43,10 +43,10 @@ Widget buildBasicDateRangePicker(BuildContext context, DateTimeRange? range, Val
 Pemilih rentang tanggal dengan pintasan cepat dan kolom nomor minggu:
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:your_app/core/just_ui_core.dart';
+import 'package:flutter/widgets.dart';
+import 'package:your_app/widgets/date-range-picker/just_date_range_picker.dart';
 
-Widget buildAdvancedDateRangePicker(BuildContext context, DateTimeRange? range, ValueChanged<DateTimeRange> onRangeChanged) {
+Widget buildAdvancedDateRangePicker(BuildContext context, JustDateTimeRange? range, ValueChanged<JustDateTimeRange> onRangeChanged) {
   final now = DateTime.now();
 
   return JustDateRangePicker(
@@ -58,11 +58,11 @@ Widget buildAdvancedDateRangePicker(BuildContext context, DateTimeRange? range, 
     presets: [
       JustDateRangePreset(
         label: '7 Hari Terakhir',
-        range: DateTimeRange(start: now.subtract(const Duration(days: 7)), end: now),
+        resolve: () => JustDateTimeRange(start: now.subtract(const Duration(days: 7)), end: now),
       ),
       JustDateRangePreset(
         label: 'Bulan Ini',
-        range: DateTimeRange(start: DateTime(now.year, now.month, 1), end: now),
+        resolve: () => JustDateTimeRange(start: DateTime(now.year, now.month, 1), end: now),
       ),
     ],
   );
@@ -75,17 +75,17 @@ Widget buildAdvancedDateRangePicker(BuildContext context, DateTimeRange? range, 
 
 ### JustDateRangePicker
 
-| Properti          | Tipe Data                      | Nilai Default | Deskripsi                                                                    |
-| :---------------- | :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
-| `value`           | `DateTimeRange?`               | `null`        | Rentang tanggal awal dan akhir yang sedang aktif.                            |
-| `onChanged`       | `ValueChanged<DateTimeRange>?` | `null`        | Callback yang dipanggil saat rentang tanggal valid selesai dipilih.          |
-| `firstDate`       | `DateTime?`                    | `null`        | Batas awal tanggal kalender yang dapat dipilih.                              |
-| `lastDate`        | `DateTime?`                    | `null`        | Batas akhir tanggal kalender yang dapat dipilih.                             |
-| `presets`         | `List<JustDateRangePreset>?`   | `null`        | Daftar tombol pintasan cepat yang ditampilkan di atas atau samping kalender. |
-| `showWeekNumbers` | `bool`                         | `false`       | Menampilkan kolom nomor minggu di sisi kiri kalender.                        |
-| `firstDayOfWeek`  | `int`                          | `7`           | Hari pertama dalam seminggu (1 = Senin, 7 = Minggu).                         |
-| `style`           | `JustDatePickerStyle?`         | `null`        | Kustomisasi visual untuk pita penyorot rentang dan titik ujung tanggal.      |
-| `enableHaptic`    | `bool?`                        | `null`        | Mengontrol getaran haptik saat memilih batas tanggal.                        |
+| Properti          | Tipe Data                          | Nilai Default | Deskripsi                                                                    |
+| :---------------- | :--------------------------------- | :------------ | :--------------------------------------------------------------------------- |
+| `value`           | `JustDateTimeRange?`               | `null`        | Rentang tanggal awal dan akhir yang sedang aktif.                            |
+| `onChanged`       | `ValueChanged<JustDateTimeRange>?` | `null`        | Callback yang dipanggil saat rentang tanggal valid selesai dipilih.          |
+| `firstDate`       | `DateTime?`                        | `null`        | Batas awal tanggal kalender yang dapat dipilih.                              |
+| `lastDate`        | `DateTime?`                        | `null`        | Batas akhir tanggal kalender yang dapat dipilih.                             |
+| `presets`         | `List<JustDateRangePreset>?`       | `null`        | Daftar tombol pintasan cepat yang ditampilkan di atas atau samping kalender. |
+| `showWeekNumbers` | `bool`                             | `false`       | Menampilkan kolom nomor minggu di sisi kiri kalender.                        |
+| `firstDayOfWeek`  | `int`                              | `7`           | Hari pertama dalam seminggu (1 = Senin, 7 = Minggu).                         |
+| `style`           | `JustDatePickerStyle?`             | `null`        | Kustomisasi visual untuk pita penyorot rentang dan titik ujung tanggal.      |
+| `enableHaptic`    | `bool?`                            | `null`        | Mengontrol getaran haptik saat memilih batas tanggal.                        |
 
 ---
 
