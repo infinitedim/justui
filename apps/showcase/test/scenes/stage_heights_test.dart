@@ -95,7 +95,27 @@ Future<Size> measure(
   return sceneSize(tester);
 }
 
+const Map<String, double> _shadowBudgetY = <String, double>{
+  'dialog': 8.0,
+  'select': 6.0,
+  'sheet': 8.0,
+  'toast': 6.0,
+  'tooltip': 4.0,
+};
+
 void _growthAndLocaleTests(Map<String, double> heights, double fallback) {
+  for (final MapEntry<String, double> entry in _shadowBudgetY.entries) {
+    final String scene = entry.key;
+    final double shadowY = entry.value;
+    final double stage = heights[scene] ?? fallback;
+    testWidgets('$scene clears bottom shadow by >= ${shadowY.toInt()} px', (
+      WidgetTester tester,
+    ) async {
+      final Size size = await measure(tester, scene, .neobrutalism, 320);
+      expect(size.height + 2 * shadowY + 8, lessThanOrEqualTo(stage));
+    });
+  }
+
   // Growth and localized copy (EN/ID) that a visitor can encounter.
   for (final String lang in <String>['en', 'id']) {
     for (final JustThemePreset preset in JustThemePreset.values) {
@@ -129,7 +149,10 @@ void _growthAndLocaleTests(Map<String, double> heights, double fallback) {
         await tester.pumpAndSettle();
         final double stage = heights['select'] ?? fallback;
         expect(find.text(copy['monthly']! as String), findsOneWidget);
-        expect(sceneSize(tester).height + 8, lessThanOrEqualTo(stage));
+        expect(
+          sceneSize(tester).height + 2 * _shadowBudgetY['select']! + 8,
+          lessThanOrEqualTo(stage),
+        );
       });
 
       testWidgets('toast copy fits ($lang, ${preset.name})', (
@@ -144,7 +167,10 @@ void _growthAndLocaleTests(Map<String, double> heights, double fallback) {
         );
         final double stage = heights['toast'] ?? fallback;
         expect(size.width, lessThanOrEqualTo(240));
-        expect(size.height + 8, lessThanOrEqualTo(stage));
+        expect(
+          size.height + 2 * _shadowBudgetY['toast']! + 8,
+          lessThanOrEqualTo(stage),
+        );
       });
     }
   }
