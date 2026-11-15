@@ -11,6 +11,9 @@ class const JustToastStyle({
   /// Custom border color of the toast.
   final Color? borderColor,
 
+  /// Custom border width of the toast.
+  final double? borderWidth,
+
   /// Custom border radius of the toast.
   final BorderRadius? borderRadius,
 
