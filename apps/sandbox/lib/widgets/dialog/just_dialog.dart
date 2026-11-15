@@ -1,8 +1,9 @@
-// justui-meta: registry=1ebb954ddbfc54e40a232b0df9c71058fae3cf2097c62890bbcd200bb11546fb local=a341395689a3d9e50c126945d20b694a7225db91d033f6e26726f2ee9adc1b19
+// justui-meta: registry=cee5458f261f427c993a9dec1a62c1168a4055411df4027ef44a6bb4faa06be6 local=d4d6b8896258f7e7121aea658d685c2e54d60ab0ca53a1add73795f6e0d5a0f4
 import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+
 import 'package:sandbox/core/just_ui_core.dart';
 
 import 'just_dialog_style.dart';
@@ -206,7 +207,200 @@ class JustDialogController extends JustOverlayController {
   }
 }
 
-/// The internal widget for rendering the dialog content with focus trapping and keyboard shortcuts.
+class _ResolvedDialogStyle {
+  final Color backgroundColor;
+  final EdgeInsets padding;
+  final double maxWidth;
+  final double? maxHeight;
+  final List<BoxShadow> shadows;
+  final BorderRadius borderRadius;
+  final BoxBorder? border;
+
+  const _ResolvedDialogStyle({
+    required this.backgroundColor,
+    required this.padding,
+    required this.maxWidth,
+    required this.maxHeight,
+    required this.shadows,
+    required this.borderRadius,
+    required this.border,
+  });
+}
+
+BoxBorder? _resolveDialogBorder(
+  JustColorScheme colors,
+  JustPresetTokens presetTokens,
+  JustDialogStyle? style,
+  JustDialogStyle? themeStyle,
+) {
+  final Color borderColor =
+      style?.borderColor ??
+      themeStyle?.borderColor ??
+      (presetTokens.showsDefaultBorder
+          ? colors.textPrimary
+          : colors.borderDefault);
+  final double borderWidth =
+      style?.borderWidth ?? themeStyle?.borderWidth ?? presetTokens.borderWidth;
+  return borderWidth > 0.0
+      ? .fromBorderSide(BorderSide(color: borderColor, width: borderWidth))
+      : null;
+}
+
+_ResolvedDialogStyle _resolveDialogStyle(
+  BuildContext context,
+  DialogPosition position,
+  JustDialogStyle? style,
+) {
+  final JustColorScheme colors = context.justColors;
+  final JustSpacingScheme spacing = context.justSpacing;
+  final JustRadiusScheme radius = context.justRadius;
+  final JustShadowScheme shadows = context.justShadows;
+  final JustPresetTokens presetTokens = context.justPresetTokens;
+  final JustDialogTheme? globalTheme = context
+      .justThemeExtension<JustDialogTheme>();
+
+  final JustDialogStyle? positionThemeStyle = switch (position) {
+    .center => globalTheme?.centerStyle,
+    .bottom => globalTheme?.bottomStyle,
+    .top => globalTheme?.topStyle,
+  };
+
+  final BorderRadius defaultRadius = switch (position) {
+    .center => .all(radius.lg),
+    .bottom => .vertical(top: radius.lg),
+    .top => .vertical(bottom: radius.lg),
+  };
+
+  return _ResolvedDialogStyle(
+    backgroundColor:
+        style?.backgroundColor ??
+        positionThemeStyle?.backgroundColor ??
+        colors.card,
+    padding: style?.padding ?? positionThemeStyle?.padding ?? .all(spacing.lg),
+    maxWidth:
+        style?.maxWidth ??
+        positionThemeStyle?.maxWidth ??
+        (position == .center ? 480.0 : .infinity),
+    maxHeight: style?.maxHeight ?? positionThemeStyle?.maxHeight,
+    shadows:
+        style?.shadows ??
+        positionThemeStyle?.shadows ??
+        presetTokens.resolveShadow(shadows, .lg, isPressed: false),
+    borderRadius:
+        style?.borderRadius ??
+        positionThemeStyle?.borderRadius ??
+        defaultRadius,
+    border: _resolveDialogBorder(
+      colors,
+      presetTokens,
+      style,
+      positionThemeStyle,
+    ),
+  );
+}
+
+Alignment _dialogAlignment(DialogPosition position) => switch (position) {
+  .center => .center,
+  .bottom => .bottomCenter,
+  .top => .topCenter,
+};
+
+/// Inline dialog surface container with JustUI card styling and preset tokens.
+///
+/// Renders the dialog card chrome (background, border, corner rounding, shadow,
+/// padding, optional bottom grabber handle, and inherited text/icon themes)
+/// without an overlay barrier, focus trap, or [JustDialogScope] dependency.
+class JustDialogSurface extends StatelessWidget {
+  /// The content rendered inside the dialog surface.
+  final Widget child;
+
+  /// Placement variant controlling corner rounding, default max width, and
+  /// whether a top grabber handle is shown when set to [.bottom].
+  final DialogPosition position;
+
+  /// Per-instance style overrides.
+  final JustDialogStyle? style;
+
+  /// Whether to wrap the inner content in [SafeArea] for top/bottom placements.
+  final bool useSafeArea;
+
+  const JustDialogSurface({
+    super.key,
+    required this.child,
+    this.position = .center,
+    this.style,
+    this.useSafeArea = false,
+  });
+
+  Widget _buildBody(BuildContext context, BoxConstraints constraints) {
+    final JustColorScheme colors = context.justColors;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustTypographyScheme typography = context.justTypo;
+
+    return Column(
+      mainAxisSize: .min,
+      crossAxisAlignment: constraints.hasBoundedWidth ? .stretch : .start,
+      children: <Widget>[
+        if (position == .bottom)
+          Center(
+            child: Container(
+              width: 32.0,
+              height: 4.0,
+              margin: .only(bottom: spacing.md),
+              decoration: BoxDecoration(
+                color: colors.borderDefault,
+                borderRadius: .all(radius.xs),
+              ),
+            ),
+          ),
+        DefaultTextStyle(
+          style: typography.bodyMd.copyWith(color: colors.textPrimary),
+          child: IconTheme.merge(
+            data: IconThemeData(color: colors.textPrimary),
+            child: child,
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final _ResolvedDialogStyle resolved = _resolveDialogStyle(
+      context,
+      position,
+      style,
+    );
+
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: resolved.maxWidth,
+        maxHeight: resolved.maxHeight ?? .infinity,
+      ),
+      decoration: BoxDecoration(
+        color: resolved.backgroundColor,
+        borderRadius: resolved.borderRadius,
+        border: resolved.border,
+        boxShadow: resolved.shadows,
+      ),
+      padding: resolved.padding,
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final Widget body = _buildBody(context, constraints);
+          return useSafeArea
+              ? SafeArea(
+                  top: position == .top,
+                  bottom: position == .bottom,
+                  child: body,
+                )
+              : body;
+        },
+      ),
+    );
+  }
+}
+
 /// The internal widget for rendering the dialog content with focus trapping and keyboard shortcuts.
 class _JustDialogWidget extends StatefulWidget {
   final _DialogInstance<dynamic> instance;
@@ -255,189 +449,59 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final JustThemeData theme = JustThemeProvider.of(context).theme;
-    final JustColorScheme colors = theme.colors;
-    final JustSpacingScheme spacing = theme.spacing;
-    final JustRadiusScheme radius = theme.radius;
-    final JustShadowScheme shadows = theme.shadows;
-    final JustMotionProfile motion = theme.animations.resolve(context);
-    final JustTypographyScheme typography = theme.typography;
-
-    final JustDialogTheme? globalTheme = context
-        .justThemeExtension<JustDialogTheme>();
-
-    JustDialogStyle? positionThemeStyle;
-    switch (widget.position) {
-      case .center:
-        positionThemeStyle = globalTheme?.centerStyle;
-        break;
-      case .bottom:
-        positionThemeStyle = globalTheme?.bottomStyle;
-        break;
-      case .top:
-        positionThemeStyle = globalTheme?.topStyle;
-        break;
-    }
-
-    final JustDialogStyle? entryStyle = widget.style;
-
-    // Resolve visual styles
-    final Color bgColor =
-        entryStyle?.backgroundColor ??
-        positionThemeStyle?.backgroundColor ??
-        colors.card;
-    final EdgeInsets padding =
-        entryStyle?.padding ?? positionThemeStyle?.padding ?? .all(spacing.lg);
-    final double maxWidth =
-        entryStyle?.maxWidth ??
-        positionThemeStyle?.maxWidth ??
-        (widget.position == .center ? 480.0 : .infinity);
-    final double? maxHeight =
-        entryStyle?.maxHeight ?? positionThemeStyle?.maxHeight;
-    final List<BoxShadow> dialogShadows =
-        entryStyle?.shadows ?? positionThemeStyle?.shadows ?? shadows.lg;
-
-    final BorderRadius resolvedRadius;
-    switch (widget.position) {
-      case .center:
-        resolvedRadius =
-            entryStyle?.borderRadius ??
-            positionThemeStyle?.borderRadius ??
-            .all(radius.lg);
-        break;
-      case .bottom:
-        resolvedRadius =
-            entryStyle?.borderRadius ??
-            positionThemeStyle?.borderRadius ??
-            .vertical(top: radius.lg);
-        break;
-      case .top:
-        resolvedRadius =
-            entryStyle?.borderRadius ??
-            positionThemeStyle?.borderRadius ??
-            .vertical(bottom: radius.lg);
-        break;
-    }
-
-    final JustPresetTokens presetTokens = theme.presetTokens;
-    final BorderSide borderSide = BorderSide(
-      color: presetTokens.showsDefaultBorder
-          ? colors.textPrimary
-          : colors.borderDefault,
-      width: presetTokens.borderWidth,
-    );
-
-    // Layout alignment on screen
-    Alignment alignment;
-    switch (widget.position) {
-      case .center:
-        alignment = .center;
-        break;
-      case .bottom:
-        alignment = .bottomCenter;
-        break;
-      case .top:
-        alignment = .topCenter;
-        break;
-    }
-
-    // Build dialog card container
-    final Widget card = Container(
-      constraints: BoxConstraints(
-        maxWidth: maxWidth,
-        maxHeight: maxHeight ?? .infinity,
-      ),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: resolvedRadius,
-        border: .fromBorderSide(borderSide),
-        boxShadow: theme.resolveShadows(dialogShadows, isPressed: false),
-      ),
-      padding: padding,
-      child: SafeArea(
-        top: widget.position == .top,
-        bottom: widget.position == .bottom,
-        child: Column(
-          mainAxisSize: .min,
-          crossAxisAlignment: .stretch,
-          children: <Widget>[
-            if (widget.position == .bottom) ...<Widget>[
-              Center(
-                child: Container(
-                  width: 32.0,
-                  height: 4.0,
-                  margin: .only(bottom: spacing.md),
-                  decoration: BoxDecoration(
-                    color: colors.borderDefault,
-                    borderRadius: .all(radius.xs),
-                  ),
-                ),
-              ),
-            ],
-            DefaultTextStyle(
-              style: typography.bodyMd.copyWith(color: colors.textPrimary),
-              child: IconTheme.merge(
-                data: IconThemeData(color: colors.textPrimary),
-                child: widget.content,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    // Apply animation
-    final CurvedAnimation curvedAnimation = CurvedAnimation(
-      parent: widget.instance.animationController,
-      curve: motion.enter,
-      reverseCurve: motion.exit,
-    );
-
-    Widget animatedChild;
+  Widget _buildAnimatedCard(
+    BuildContext context,
+    JustMotionProfile motion,
+    Widget card,
+  ) {
     if (widget.animationBuilder != null) {
-      animatedChild = widget.animationBuilder!(
+      return widget.animationBuilder!(
         context,
         widget.instance.animationController,
         card,
       );
-    } else {
-      switch (widget.position) {
-        case .center:
-          animatedChild = FadeTransition(
-            opacity: curvedAnimation,
-            child: ScaleTransition(
-              scale: Tween<double>(
-                begin: 0.95,
-                end: 1.0,
-              ).animate(curvedAnimation),
-              child: card,
-            ),
-          );
-          break;
-        case .bottom:
-          animatedChild = SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, 1),
-              end: .zero,
-            ).animate(curvedAnimation),
-            child: card,
-          );
-          break;
-        case .top:
-          animatedChild = SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, -1),
-              end: .zero,
-            ).animate(curvedAnimation),
-            child: card,
-          );
-          break;
-      }
     }
+    final CurvedAnimation curved = CurvedAnimation(
+      parent: widget.instance.animationController,
+      curve: motion.enter,
+      reverseCurve: motion.exit,
+    );
+    return switch (widget.position) {
+      .center => FadeTransition(
+        opacity: curved,
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.95, end: 1.0).animate(curved),
+          child: card,
+        ),
+      ),
+      .bottom => SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 1),
+          end: .zero,
+        ).animate(curved),
+        child: card,
+      ),
+      .top => SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, -1),
+          end: .zero,
+        ).animate(curved),
+        child: card,
+      ),
+    };
+  }
 
-    // Wrap with focus trapping and keyboard navigation
+  @override
+  Widget build(BuildContext context) {
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustMotionProfile motion = context.justMotion;
+    final Widget card = JustDialogSurface(
+      position: widget.position,
+      style: widget.style,
+      useSafeArea: true,
+      child: widget.content,
+    );
+
     return RepaintBoundary(
       child: FocusScope(
         node: _scopeNode,
@@ -454,7 +518,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
         child: Stack(
           children: <Widget>[
             Align(
-              alignment: alignment,
+              alignment: _dialogAlignment(widget.position),
               child: Padding(
                 padding: widget.position == .center ? .all(spacing.lg) : .zero,
                 child: Semantics(
@@ -462,7 +526,7 @@ class _JustDialogWidgetState extends State<_JustDialogWidget> {
                   namesRoute: true,
                   explicitChildNodes: true,
                   label: 'Dialog',
-                  child: animatedChild,
+                  child: _buildAnimatedCard(context, motion, card),
                 ),
               ),
             ),

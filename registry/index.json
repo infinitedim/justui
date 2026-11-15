@@ -923,7 +923,7 @@
           {
             "name": "just_toast_style.dart",
             "path": "components/toast/just_toast_style.dart",
-            "checksum": "sha256:5a61ec6894613c4a2896d596bd42920b9d2bbf6e7489eecd2ea58d9320962492"
+            "checksum": "sha256:54ea4e9a9e0876f6d67fbc793f99082555fce87d3a56a064d75d96ac37a72fca"
           },
           {
             "name": "just_toast_variants.dart",
@@ -935,7 +935,7 @@
           {
             "name": "just_toast.dart",
             "path": "components/toast/default/just_toast.dart",
-            "checksum": "sha256:c794e02e80d16c1b879526a63d169590a03a210e85ff95d491a7988b3dc3b3f7"
+            "checksum": "sha256:cc12e2d9913b4f97d68ca5421b05bc230a3654630d017790f058807531b0c4a7"
           }
         ]
       },
@@ -967,14 +967,14 @@
           {
             "name": "just_dialog_style.dart",
             "path": "components/dialog/just_dialog_style.dart",
-            "checksum": "sha256:7cf69d86827bf7ac2a2141bf68461b71cfd12bff3409ee05ac3a2532dceee9ee"
+            "checksum": "sha256:3b5a31beb11e71c15d2b06ad26403bf938653ca29b15aac1726999fbff28220e"
           }
         ],
         "default": [
           {
             "name": "just_dialog.dart",
             "path": "components/dialog/default/just_dialog.dart",
-            "checksum": "sha256:1ebb954ddbfc54e40a232b0df9c71058fae3cf2097c62890bbcd200bb11546fb"
+            "checksum": "sha256:cee5458f261f427c993a9dec1a62c1168a4055411df4027ef44a6bb4faa06be6"
           }
         ]
       },
@@ -1001,7 +1001,7 @@
           {
             "name": "just_sheet_style.dart",
             "path": "components/sheet/just_sheet_style.dart",
-            "checksum": "sha256:e10fed5e990a9d1375ab78848e72862278e8ebe62b685c3dd85753fba232f6b6"
+            "checksum": "sha256:a0ff6c6ba2ca0a75f9bbe6bc871036a25a19a257b12e84309f26500aad27b1f3"
           },
           {
             "name": "just_sheet_theme.dart",
@@ -1013,7 +1013,7 @@
           {
             "name": "just_sheet.dart",
             "path": "components/sheet/default/just_sheet.dart",
-            "checksum": "sha256:aff959add067330ca7dad0b8961726c8f1139ad38d516b6758d1502c28bdaba7"
+            "checksum": "sha256:f8b2e23d61501bdff2cfa2a6368dc3a423299d707e6e60024f05e38bb15c5b1a"
           }
         ]
       },
@@ -1040,7 +1040,7 @@
           {
             "name": "just_tooltip_style.dart",
             "path": "components/tooltip/just_tooltip_style.dart",
-            "checksum": "sha256:e362dcdd6851d2803972dedff509760a74823d49b0aa5464e4c307d72d4e428c"
+            "checksum": "sha256:556eadaf9c998c2ce508c881841d5be10d971af1e07acd045197a1e9cecb9cb1"
           },
           {
             "name": "just_tooltip_variants.dart",
@@ -1052,7 +1052,7 @@
           {
             "name": "just_tooltip.dart",
             "path": "components/tooltip/default/just_tooltip.dart",
-            "checksum": "sha256:1b7baca195053f1626ae6eb0b509133506a7450b220ffc175b00f7983f3fa909"
+            "checksum": "sha256:84f91016d5b21e4a3dd4edb4bac73d74c8050503179ddabe22711b23a1a60ac5"
           }
         ]
       },
@@ -1094,7 +1094,7 @@
           {
             "name": "just_select.dart",
             "path": "components/select/default/just_select.dart",
-            "checksum": "sha256:7bcf206763bbad175e61c5849aa721d37da6f4a92cd3906428bbd7e3c3364a7d"
+            "checksum": "sha256:9fd270996b64f719deb5fef9e4e1dac86f163e759438adbdbb9d1a1b383b23f9"
           }
         ]
       },

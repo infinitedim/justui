@@ -1,4 +1,4 @@
-// justui-meta: registry=7cf69d86827bf7ac2a2141bf68461b71cfd12bff3409ee05ac3a2532dceee9ee local=de33deb9628249cfa79c5ad28dfaf92ba52616f46c650c3c863ff41ec3046306
+// justui-meta: registry=3b5a31beb11e71c15d2b06ad26403bf938653ca29b15aac1726999fbff28220e local=c5ec9b5cb4185fc8ceae5aad3162f5f7d35daa23fc3cfcd2b2773a67c958246a
 import 'package:flutter/widgets.dart';
 
 /// Customized per-instance visual styles for a dialog.
@@ -8,6 +8,12 @@ class JustDialogStyle {
 
   /// Custom background color of the backdrop/barrier.
   final Color? barrierColor;
+
+  /// Custom border color of the dialog surface.
+  final Color? borderColor;
+
+  /// Custom border width of the dialog surface.
+  final double? borderWidth;
 
   /// Custom border radius of the dialog surface.
   final BorderRadius? borderRadius;
@@ -27,6 +33,8 @@ class JustDialogStyle {
   const JustDialogStyle({
     this.backgroundColor,
     this.barrierColor,
+    this.borderColor,
+    this.borderWidth,
     this.borderRadius,
     this.padding,
     this.maxWidth,

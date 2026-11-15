@@ -1,4 +1,4 @@
-// justui-meta: registry=5a61ec6894613c4a2896d596bd42920b9d2bbf6e7489eecd2ea58d9320962492 local=66c516411365b457db04e8cded33c74e2f5bfc9d669944dfe57cb12c926e32f3
+// justui-meta: registry=54ea4e9a9e0876f6d67fbc793f99082555fce87d3a56a064d75d96ac37a72fca local=449d5d7ce90750fbedb6d49670b8835580981564ff598a3bb62ceff440f597fd
 import 'package:flutter/widgets.dart';
 
 /// Customized per-instance visual styles for a toast.
@@ -11,6 +11,9 @@ class JustToastStyle {
 
   /// Custom border color of the toast.
   final Color? borderColor;
+
+  /// Custom border width of the toast.
+  final double? borderWidth;
 
   /// Custom border radius of the toast.
   final BorderRadius? borderRadius;
@@ -34,6 +37,7 @@ class JustToastStyle {
     this.backgroundColor,
     this.foregroundColor,
     this.borderColor,
+    this.borderWidth,
     this.borderRadius,
     this.padding,
     this.textStyle,

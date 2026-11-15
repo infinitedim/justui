@@ -1,4 +1,4 @@
-// justui-meta: registry=e10fed5e990a9d1375ab78848e72862278e8ebe62b685c3dd85753fba232f6b6 local=e731104490a460c50b1d4492d86679636a753e5aad1738e364601af728899bfc
+// justui-meta: registry=a0ff6c6ba2ca0a75f9bbe6bc871036a25a19a257b12e84309f26500aad27b1f3 local=ad285371832ccca176066c5b9e00f0a11d22cc043ffe7da5bff164ab5025a89d
 import 'package:flutter/widgets.dart';
 
 /// Customized per-instance visual styles for a sheet.
@@ -11,6 +11,12 @@ class JustSheetStyle {
 
   /// Custom color of the drag handle bar (if visible).
   final Color? handleColor;
+
+  /// Custom border color of the sheet surface.
+  final Color? borderColor;
+
+  /// Custom border width of the sheet surface.
+  final double? borderWidth;
 
   /// Custom border radius of the sheet surface.
   final BorderRadius? borderRadius;
@@ -25,6 +31,8 @@ class JustSheetStyle {
     this.backgroundColor,
     this.barrierColor,
     this.handleColor,
+    this.borderColor,
+    this.borderWidth,
     this.borderRadius,
     this.padding,
     this.shadows,

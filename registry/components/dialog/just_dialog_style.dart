@@ -8,6 +8,12 @@ class const JustDialogStyle({
   /// Custom background color of the backdrop/barrier.
   final Color? barrierColor,
 
+  /// Custom border color of the dialog surface.
+  final Color? borderColor,
+
+  /// Custom border width of the dialog surface.
+  final double? borderWidth,
+
   /// Custom border radius of the dialog surface.
   final BorderRadius? borderRadius,
 

@@ -1,8 +1,9 @@
-// justui-meta: registry=c794e02e80d16c1b879526a63d169590a03a210e85ff95d491a7988b3dc3b3f7 local=66d98842a249f4eeecae236930c68180584193e81cc4b627b1535dbe74e5dab1
+// justui-meta: registry=cc12e2d9913b4f97d68ca5421b05bc230a3654630d017790f058807531b0c4a7 local=ec6947d00b2a1daa192e48573d34b83dec8f63d77030f6ae82cc7b4e538d2fc8
 import 'dart:async';
 
 import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
@@ -14,6 +15,7 @@ import 'just_toast_variants.dart';
 class _ToastEntry {
   final String id;
   final String message;
+  final String? description;
   final ToastVariant variant;
   final Duration duration;
   final JustToastStyle? style;
@@ -34,6 +36,7 @@ class _ToastEntry {
   _ToastEntry({
     required this.id,
     required this.message,
+    this.description,
     required this.variant,
     required this.duration,
     this.style,
@@ -48,6 +51,7 @@ class _ToastEntry {
 /// A pending toast waiting in the queue.
 class _ToastPending {
   final String message;
+  final String? description;
   final ToastVariant variant;
   final Duration duration;
   final JustToastStyle? style;
@@ -59,6 +63,7 @@ class _ToastPending {
 
   _ToastPending({
     required this.message,
+    this.description,
     required this.variant,
     required this.duration,
     this.style,
@@ -104,6 +109,7 @@ class JustToastController extends JustOverlayController {
   /// Shows a toast notification.
   void show({
     required String message,
+    String? description,
     ToastVariant variant = .info,
     Duration duration = const Duration(seconds: 3),
     JustToastStyle? style,
@@ -125,6 +131,7 @@ class JustToastController extends JustOverlayController {
 
     final _ToastPending pending = _ToastPending(
       message: message,
+      description: description,
       variant: variant,
       duration: duration,
       style: style,
@@ -225,6 +232,7 @@ class JustToastController extends JustOverlayController {
     entry = _ToastEntry(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       message: pending.message,
+      description: pending.description,
       variant: pending.variant,
       duration: pending.duration,
       style: pending.style,
@@ -576,145 +584,327 @@ class _JustToastWidgetState extends State<_JustToastWidget>
   }
 
   Widget _buildCard(BuildContext context) {
-    final JustThemeData theme = JustThemeProvider.of(context).theme;
-    final JustColorScheme colors = theme.colors;
-    final JustSpacingScheme spacing = theme.spacing;
-    final JustRadiusScheme radius = theme.radius;
-    final JustShadowScheme shadows = theme.shadows;
+    return JustToastSurface(
+      message: widget.entry.message,
+      description: widget.entry.description,
+      variant: widget.entry.variant,
+      style: widget.entry.style,
+      icon: widget.entry.icon,
+      action: widget.entry.action,
+      onDismiss: widget.onDismiss,
+      showCloseButton: true,
+      liveRegion: true,
+    );
+  }
+}
 
-    final JustToastTheme? globalTheme = context
-        .justThemeExtension<JustToastTheme>();
+class _ToastCloseButton extends StatefulWidget {
+  final Color iconColor;
+  final VoidCallback? onDismiss;
 
-    // Resolve variant style from theme extension
-    JustToastStyle? variantThemeStyle;
-    switch (widget.entry.variant) {
-      case .info:
-        variantThemeStyle = globalTheme?.infoStyle;
-        break;
-      case .success:
-        variantThemeStyle = globalTheme?.successStyle;
-        break;
-      case .warning:
-        variantThemeStyle = globalTheme?.warningStyle;
-        break;
-      case .error:
-        variantThemeStyle = globalTheme?.errorStyle;
-        break;
+  const _ToastCloseButton({required this.iconColor, this.onDismiss});
+
+  @override
+  State<_ToastCloseButton> createState() => _ToastCloseButtonState();
+}
+
+class _ToastCloseButtonState extends State<_ToastCloseButton> {
+  static const Map<ShortcutActivator, Intent> _shortcuts =
+      <ShortcutActivator, Intent>{
+        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+      };
+
+  bool _focused = false;
+
+  void _handleFocusHighlight(bool show) {
+    if (_focused != show) {
+      setState(() => _focused = show);
     }
+  }
 
-    final JustToastStyle? entryStyle = widget.entry.style;
+  Decoration _focusDecoration(BuildContext context) {
+    if (!_focused) return const BoxDecoration();
+    final JustColorScheme colors = context.justColors;
+    final JustPresetTokens presetTokens = context.justPresetTokens;
+    final JustRadiusScheme radius = context.justRadius;
+    final Color focusColor = presetTokens.showsDefaultBorder
+        ? colors.textPrimary
+        : colors.borderFocus;
+    final double strokeWidth = presetTokens.showsDefaultBorder
+        ? presetTokens.borderWidth
+        : 2.0;
+    return BoxDecoration(
+      borderRadius: presetTokens.showsDefaultBorder ? .zero : .all(radius.sm),
+      border: .all(color: focusColor, width: strokeWidth),
+    );
+  }
 
-    // Resolve visual styles
-    final Color defaultVariantBg = switch (widget.entry.variant) {
+  @override
+  Widget build(BuildContext context) {
+    final bool enabled = widget.onDismiss != null;
+    return Semantics(
+      container: true,
+      button: true,
+      enabled: enabled,
+      label: 'Dismiss',
+      child: FocusableActionDetector(
+        enabled: enabled,
+        mouseCursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,
+        shortcuts: _shortcuts,
+        actions: <Type, Action<Intent>>{
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (ActivateIntent _) {
+              widget.onDismiss?.call();
+              return null;
+            },
+          ),
+        },
+        onShowFocusHighlight: _handleFocusHighlight,
+        child: GestureDetector(
+          behavior: .opaque,
+          onTap: widget.onDismiss,
+          child: DecoratedBox(
+            decoration: _focusDecoration(context),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: 24.0,
+                minHeight: 24.0,
+              ),
+              child: Icon(Icons.close, color: widget.iconColor, size: 16.0),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ToastVisuals {
+  final Color bgColor;
+  final Color borderColor;
+  final double borderWidth;
+  final BorderRadius borderRadius;
+  final EdgeInsets padding;
+  final TextStyle textStyle;
+  final TextStyle descriptionTextStyle;
+  final double minWidth;
+  final double maxWidth;
+  final List<BoxShadow> shadows;
+
+  const _ToastVisuals({
+    required this.bgColor,
+    required this.borderColor,
+    required this.borderWidth,
+    required this.borderRadius,
+    required this.padding,
+    required this.textStyle,
+    required this.descriptionTextStyle,
+    required this.minWidth,
+    required this.maxWidth,
+    required this.shadows,
+  });
+}
+
+/// Standalone visual card surface for a toast notification.
+class JustToastSurface extends StatelessWidget {
+  /// Primary message text displayed in the toast.
+  final String message;
+
+  /// Optional secondary description text displayed below [message].
+  final String? description;
+
+  /// Semantic variant controlling default icon, tint, and theme lookup.
+  final ToastVariant variant;
+
+  /// Per-instance style overrides.
+  final JustToastStyle? style;
+
+  /// Custom text style applied to [description].
+  final TextStyle? descriptionTextStyle;
+
+  /// Optional leading icon widget. Defaults to a variant-appropriate icon.
+  final Widget? icon;
+
+  /// Optional trailing action widget replacing the default close button.
+  final Widget? action;
+
+  /// Callback invoked when the default close button is tapped.
+  final VoidCallback? onDismiss;
+
+  /// Whether to display the default close button when [action] is null.
+  final bool showCloseButton;
+
+  /// Whether to announce toast updates as a screen-reader live region.
+  final bool liveRegion;
+
+  const JustToastSurface({
+    super.key,
+    required this.message,
+    this.description,
+    this.variant = .info,
+    this.style,
+    this.descriptionTextStyle,
+    this.icon,
+    this.action,
+    this.onDismiss,
+    this.showCloseButton = true,
+    this.liveRegion = false,
+  });
+
+  JustToastStyle? _variantStyle(JustToastTheme? globalTheme) {
+    return switch (variant) {
+      .info => globalTheme?.infoStyle,
+      .success => globalTheme?.successStyle,
+      .warning => globalTheme?.warningStyle,
+      .error => globalTheme?.errorStyle,
+    };
+  }
+
+  Color _defaultBackground(JustColorScheme colors) {
+    final Color tint = switch (variant) {
       .success => colors.success.withValues(alpha: 0.1),
       .error => colors.error.withValues(alpha: 0.1),
       .warning => colors.warning.withValues(alpha: 0.1),
       .info => colors.info.withValues(alpha: 0.08),
     };
-    final Color defaultBg = Color.alphaBlend(defaultVariantBg, colors.card);
-    final Color bgColor =
-        entryStyle?.backgroundColor ??
-        variantThemeStyle?.backgroundColor ??
-        defaultBg;
-    final Color borderColor =
-        entryStyle?.borderColor ??
-        variantThemeStyle?.borderColor ??
-        colors.borderDefault;
-    final BorderRadius borderRadius =
-        entryStyle?.borderRadius ??
-        variantThemeStyle?.borderRadius ??
-        .all(radius.md);
-    final EdgeInsets padding =
-        entryStyle?.padding ??
-        variantThemeStyle?.padding ??
-        .symmetric(horizontal: spacing.md, vertical: spacing.sm);
-    final TextStyle textStyle =
-        entryStyle?.textStyle ??
-        variantThemeStyle?.textStyle ??
-        JustFluidTypo.bodySm(context).copyWith(color: colors.textPrimary);
-    final double maxWidth =
-        entryStyle?.maxWidth ?? variantThemeStyle?.maxWidth ?? 360.0;
-    final double minWidth =
-        entryStyle?.minWidth ?? variantThemeStyle?.minWidth ?? 280.0;
-    final List<BoxShadow> toastShadows =
-        entryStyle?.shadows ?? variantThemeStyle?.shadows ?? shadows.md;
+    return Color.alphaBlend(tint, colors.card);
+  }
 
-    // Default icons
-    Widget defaultIcon;
-    switch (widget.entry.variant) {
-      case .success:
-        defaultIcon = Icon(
-          Icons.check_circle_outline,
-          color: colors.success,
-          size: 20.0,
-        );
-        break;
-      case .warning:
-        defaultIcon = Icon(
-          Icons.warning_amber_outlined,
-          color: colors.warning,
-          size: 20.0,
-        );
-        break;
-      case .error:
-        defaultIcon = Icon(
-          Icons.error_outline,
-          color: colors.error,
-          size: 20.0,
-        );
-        break;
-      case .info:
-        defaultIcon = Icon(Icons.info_outline, color: colors.info, size: 20.0);
-        break;
-    }
-
-    final Widget resolvedIcon = widget.entry.icon ?? defaultIcon;
-
-    final JustPresetTokens presetTokens = theme.presetTokens;
-    final BorderSide borderSide = BorderSide(
-      color: presetTokens.showsDefaultBorder ? colors.textPrimary : borderColor,
-      width: presetTokens.borderWidth,
+  _ToastVisuals _resolveVisuals(BuildContext context) {
+    final JustColorScheme colors = context.justColors;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustTypographyScheme typography = context.justTypo;
+    final JustShadowScheme shadows = context.justShadows;
+    final JustPresetTokens presetTokens = context.justPresetTokens;
+    final JustToastStyle? themeStyle = _variantStyle(
+      context.justThemeExtension<JustToastTheme>(),
     );
+    final double maxWidth = style?.maxWidth ?? themeStyle?.maxWidth ?? 360.0;
+    final double rawMin = style?.minWidth ?? themeStyle?.minWidth ?? 280.0;
+    final Color fg =
+        style?.foregroundColor ??
+        themeStyle?.foregroundColor ??
+        colors.textPrimary;
+    return _ToastVisuals(
+      bgColor:
+          style?.backgroundColor ??
+          themeStyle?.backgroundColor ??
+          _defaultBackground(colors),
+      borderColor:
+          style?.borderColor ??
+          themeStyle?.borderColor ??
+          (presetTokens.showsDefaultBorder
+              ? colors.textPrimary
+              : colors.borderDefault),
+      borderWidth:
+          style?.borderWidth ??
+          themeStyle?.borderWidth ??
+          presetTokens.borderWidth,
+      borderRadius:
+          style?.borderRadius ?? themeStyle?.borderRadius ?? .all(radius.md),
+      padding:
+          style?.padding ??
+          themeStyle?.padding ??
+          .symmetric(horizontal: spacing.md, vertical: spacing.sm),
+      textStyle:
+          style?.textStyle ??
+          themeStyle?.textStyle ??
+          typography.bodySm.copyWith(color: fg),
+      descriptionTextStyle:
+          descriptionTextStyle ??
+          typography.bodySm.copyWith(color: colors.textSecondary),
+      minWidth: rawMin > maxWidth ? maxWidth : rawMin,
+      maxWidth: maxWidth,
+      shadows: style?.shadows ?? themeStyle?.shadows ?? shadows.md,
+    );
+  }
 
-    return Semantics(
-      liveRegion: true,
-      child: Container(
-        constraints: BoxConstraints(
-          minWidth: minWidth,
-          maxWidth: maxWidth,
-          minHeight: 48.0,
-        ),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: borderRadius,
-          border: .fromBorderSide(borderSide),
-          boxShadow: theme.resolveShadows(toastShadows, isPressed: false),
-        ),
-        padding: padding,
-        child: Row(
-          mainAxisSize: .min,
-          children: <Widget>[
-            resolvedIcon,
-            SizedBox(width: spacing.sm),
-            Expanded(child: Text(widget.entry.message, style: textStyle)),
-            if (widget.entry.action != null) ...<Widget>[
-              SizedBox(width: spacing.sm),
-              widget.entry.action!,
-            ] else ...<Widget>[
-              SizedBox(width: spacing.sm),
-              GestureDetector(
-                onTap: widget.onDismiss,
-                child: Icon(
-                  Icons.close,
-                  color: colors.textSecondary,
-                  size: 16.0,
+  Widget _defaultIcon(JustColorScheme colors) {
+    return switch (variant) {
+      .success => Icon(
+        Icons.check_circle_outline,
+        color: colors.success,
+        size: 20.0,
+      ),
+      .warning => Icon(
+        Icons.warning_amber_outlined,
+        color: colors.warning,
+        size: 20.0,
+      ),
+      .error => Icon(Icons.error_outline, color: colors.error, size: 20.0),
+      .info => Icon(Icons.info_outline, color: colors.info, size: 20.0),
+    };
+  }
+
+  Widget _buildBody(TextStyle textStyle, TextStyle descStyle) {
+    if (description == null) {
+      return Text(message, style: textStyle);
+    }
+    return Column(
+      mainAxisSize: .min,
+      crossAxisAlignment: .start,
+      children: <Widget>[
+        Text(message, style: textStyle),
+        const SizedBox(height: 2),
+        Text(description!, style: descStyle),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final JustColorScheme colors = context.justColors;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final _ToastVisuals visuals = _resolveVisuals(context);
+    final Widget resolvedIcon = icon ?? _defaultIcon(colors);
+
+    final Widget card = Container(
+      constraints: BoxConstraints(
+        minWidth: visuals.minWidth,
+        maxWidth: visuals.maxWidth,
+        minHeight: 48.0,
+      ),
+      decoration: BoxDecoration(
+        color: visuals.bgColor,
+        borderRadius: visuals.borderRadius,
+        border: visuals.borderWidth > 0
+            ? .fromBorderSide(
+                BorderSide(
+                  color: visuals.borderColor,
+                  width: visuals.borderWidth,
                 ),
-              ),
-            ],
+              )
+            : null,
+        boxShadow: visuals.shadows,
+      ),
+      padding: visuals.padding,
+      child: Row(
+        mainAxisSize: .min,
+        crossAxisAlignment: description != null ? .start : .center,
+        children: <Widget>[
+          resolvedIcon,
+          SizedBox(width: spacing.sm),
+          Expanded(
+            child: _buildBody(visuals.textStyle, visuals.descriptionTextStyle),
+          ),
+          if (action != null) ...<Widget>[
+            SizedBox(width: spacing.sm),
+            action!,
+          ] else if (showCloseButton) ...<Widget>[
+            SizedBox(width: spacing.sm),
+            _ToastCloseButton(
+              iconColor: colors.textSecondary,
+              onDismiss: onDismiss,
+            ),
           ],
-        ),
+        ],
       ),
     );
+
+    if (!liveRegion) return card;
+    return Semantics(liveRegion: true, child: card);
   }
 }
 
