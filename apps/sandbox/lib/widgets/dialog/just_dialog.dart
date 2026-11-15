@@ -1,4 +1,4 @@
-// justui-meta: registry=cee5458f261f427c993a9dec1a62c1168a4055411df4027ef44a6bb4faa06be6 local=d4d6b8896258f7e7121aea658d685c2e54d60ab0ca53a1add73795f6e0d5a0f4
+// justui-meta: registry=e845136c633760e2726c08e488863c7846a04c2d596d27889de40eca9e5028f7 local=b68d69c382a49e2f034baeb19a817ae0e3dcd54d12dcbe9532a653f01eae226f
 import 'dart:async';
 
 import 'package:flutter/services.dart';
@@ -38,9 +38,25 @@ class _DialogInstance<T> {
 /// Imperative controller for managing dialogs.
 class JustDialogController extends JustOverlayController {
   OverlayState? _overlayState;
+  BuildContext? _scopeContext;
   TickerProvider? _vsync;
   final List<_DialogInstance<dynamic>> _activeDialogs =
       <_DialogInstance<dynamic>>[];
+
+  Duration _resolveDuration() {
+    final BuildContext? ctx = (_scopeContext?.mounted ?? false)
+        ? _scopeContext
+        : _overlayState?.context;
+    if (ctx == null || !ctx.mounted) return JustDuration.normal;
+    final JustMotionProfile? motion = JustThemeProvider.maybeOf(
+      ctx,
+      aspect: .animations,
+    )?.theme.animations.resolve(ctx);
+    final bool disableAnimations =
+        motion?.normal == .zero ||
+        (MediaQuery.maybeDisableAnimationsOf(ctx) ?? false);
+    return disableAnimations ? .zero : (motion?.normal ?? JustDuration.normal);
+  }
 
   @override
   bool get isVisible => _activeDialogs.isNotEmpty;
@@ -71,7 +87,7 @@ class JustDialogController extends JustOverlayController {
     final bool isLocalController = animationController == null;
     final AnimationController animController =
         animationController ??
-        AnimationController(vsync: _vsync!, duration: JustDuration.normal);
+        AnimationController(vsync: _vsync!, duration: _resolveDuration());
 
     late final _DialogInstance<T> instance;
 
@@ -579,8 +595,10 @@ class _JustDialogScopeState extends State<JustDialogScope>
       oldWidget.controller.forceDismissAll();
       oldWidget.controller._vsync = null;
       oldWidget.controller._overlayState = null;
+      oldWidget.controller._scopeContext = null;
       widget.controller._vsync = this;
       widget.controller._overlayState = Overlay.of(context);
+      widget.controller._scopeContext = context;
     }
   }
 
@@ -588,6 +606,7 @@ class _JustDialogScopeState extends State<JustDialogScope>
   void didChangeDependencies() {
     super.didChangeDependencies();
     widget.controller._overlayState = Overlay.of(context);
+    widget.controller._scopeContext = context;
   }
 
   @override
@@ -595,6 +614,7 @@ class _JustDialogScopeState extends State<JustDialogScope>
     widget.controller.forceDismissAll();
     widget.controller._vsync = null;
     widget.controller._overlayState = null;
+    widget.controller._scopeContext = null;
     super.dispose();
   }
 

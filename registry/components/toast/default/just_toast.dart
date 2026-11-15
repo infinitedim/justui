@@ -95,9 +95,25 @@ class JustToastController extends JustOverlayController {
   final bool enableDragDismiss;
 
   OverlayState? _overlayState;
+  BuildContext? _scopeContext;
   TickerProvider? _vsync;
   final List<_ToastEntry> _activeToasts = <_ToastEntry>[];
   final List<_ToastPending> _queue = <_ToastPending>[];
+
+  Duration _resolveDuration() {
+    final BuildContext? ctx = (_scopeContext?.mounted ?? false)
+        ? _scopeContext
+        : _overlayState?.context;
+    if (ctx == null || !ctx.mounted) return JustDuration.normal;
+    final JustMotionProfile? motion = JustThemeProvider.maybeOf(
+      ctx,
+      aspect: .animations,
+    )?.theme.animations.resolve(ctx);
+    final bool disableAnimations =
+        motion?.normal == .zero ||
+        (MediaQuery.maybeDisableAnimationsOf(ctx) ?? false);
+    return disableAnimations ? .zero : (motion?.normal ?? JustDuration.normal);
+  }
 
   /// Creates a [JustToastController].
   JustToastController({
@@ -191,7 +207,7 @@ class JustToastController extends JustOverlayController {
   void _showToast(_ToastPending pending) {
     final AnimationController animController =
         pending.animationController ??
-        AnimationController(vsync: _vsync!, duration: JustDuration.normal);
+        AnimationController(vsync: _vsync!, duration: _resolveDuration());
 
     late final _ToastEntry entry;
     final OverlayEntry overlayEntry = OverlayEntry(
@@ -362,6 +378,7 @@ class JustToastController extends JustOverlayController {
     final List<_ToastEntry> targets = List<_ToastEntry>.from(_activeToasts);
     _activeToasts.clear();
     for (final _ToastEntry entry in targets) {
+      entry.timer.cancel();
       try {
         if (entry.overlayEntry.mounted) {
           entry.overlayEntry.remove();
@@ -519,6 +536,21 @@ class _JustToastWidgetState extends State<_JustToastWidget>
       begin: 0.0,
       end: 0.0,
     ).animate(_swipeBackController);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final JustMotionProfile? motion = JustThemeProvider.maybeOf(
+      context,
+      aspect: .animations,
+    )?.theme.animations.resolve(context);
+    final bool disableAnimations =
+        motion?.fast == .zero ||
+        (MediaQuery.maybeDisableAnimationsOf(context) ?? false);
+    _swipeBackController.duration = disableAnimations
+        ? .zero
+        : (motion?.fast ?? JustDuration.fast);
   }
 
   @override
@@ -956,11 +988,13 @@ class _JustToastScopeState extends State<JustToastScope>
       oldCtrl?.forceDismissAll();
       oldCtrl?._vsync = null;
       oldCtrl?._overlayState = null;
+      oldCtrl?._scopeContext = null;
 
       _initController();
     }
     _effectiveController._vsync = this;
     _effectiveController._overlayState = Overlay.maybeOf(context);
+    _effectiveController._scopeContext = context;
   }
 
   @override
@@ -972,6 +1006,7 @@ class _JustToastScopeState extends State<JustToastScope>
       _effectiveController.forceDismissAll();
     }
     _effectiveController._overlayState = newOverlay;
+    _effectiveController._scopeContext = context;
   }
 
   @override
@@ -979,6 +1014,7 @@ class _JustToastScopeState extends State<JustToastScope>
     _effectiveController.forceDismissAll();
     _effectiveController._vsync = null;
     _effectiveController._overlayState = null;
+    _effectiveController._scopeContext = null;
     _internalController = null;
     super.dispose();
   }

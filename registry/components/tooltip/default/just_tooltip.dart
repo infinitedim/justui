@@ -4,7 +4,8 @@ import 'package:flutter/services.dart' show KeyDownEvent;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart' show JustColorScheme;
+import 'package:just_ui_tokens/just_ui_tokens.dart'
+    show JustColorScheme, JustMotionProfile;
 
 import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
@@ -172,6 +173,21 @@ class _JustTooltipState extends State<JustTooltip>
       duration: const Duration(milliseconds: 150),
     );
     _focusNode.addListener(_onFocusChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final JustMotionProfile? motion = JustThemeProvider.maybeOf(
+      context,
+      aspect: .animations,
+    )?.theme.animations.resolve(context);
+    final bool disableAnimations =
+        motion?.fast == .zero ||
+        (MediaQuery.maybeDisableAnimationsOf(context) ?? false);
+    _localAnimController.duration = disableAnimations
+        ? .zero
+        : (motion?.fast ?? const Duration(milliseconds: 150));
   }
 
   @override

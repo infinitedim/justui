@@ -1,4 +1,4 @@
-// justui-meta: registry=f8b2e23d61501bdff2cfa2a6368dc3a423299d707e6e60024f05e38bb15c5b1a local=f37f0d3bb8f07dbb388d246ac1513eb7d17aa8fd9b62eff06d18c091d3c68d62
+// justui-meta: registry=543959f4f37d867c4b672f9a7936f6d80be2988a5b1c893e8e555e16eafd3637 local=0ca53e0dba24a301205f8c5f453e99a706771a0f0e8c36e0de3d7fba9812c8d5
 import 'dart:async';
 
 import 'package:flutter/services.dart';
@@ -38,9 +38,26 @@ class _SheetInstance<T> {
 /// Imperative controller for managing slide-in sheets.
 class JustSheetController extends JustOverlayController {
   OverlayState? _overlayState;
+  BuildContext? _scopeContext;
   TickerProvider? _vsync;
   final List<_SheetInstance<dynamic>> _activeSheets =
       <_SheetInstance<dynamic>>[];
+
+  Duration _resolveDuration() {
+    const Duration fallback = Duration(milliseconds: 300);
+    final BuildContext? ctx = (_scopeContext?.mounted ?? false)
+        ? _scopeContext
+        : _overlayState?.context;
+    if (ctx == null || !ctx.mounted) return fallback;
+    final JustMotionProfile? motion = JustThemeProvider.maybeOf(
+      ctx,
+      aspect: .animations,
+    )?.theme.animations.resolve(ctx);
+    final bool disableAnimations =
+        motion?.normal == .zero ||
+        (MediaQuery.maybeDisableAnimationsOf(ctx) ?? false);
+    return disableAnimations ? .zero : (motion?.normal ?? fallback);
+  }
 
   @override
   bool get isVisible => _activeSheets.isNotEmpty;
@@ -74,10 +91,7 @@ class JustSheetController extends JustOverlayController {
     final bool isLocalController = animationController == null;
     final AnimationController animController =
         animationController ??
-        AnimationController(
-          vsync: _vsync!,
-          duration: const Duration(milliseconds: 300),
-        );
+        AnimationController(vsync: _vsync!, duration: _resolveDuration());
 
     late final _SheetInstance<T> instance;
 
@@ -729,8 +743,10 @@ class _JustSheetScopeState extends State<JustSheetScope>
       oldWidget.controller.forceDismissAll();
       oldWidget.controller._vsync = null;
       oldWidget.controller._overlayState = null;
+      oldWidget.controller._scopeContext = null;
       widget.controller._vsync = this;
       widget.controller._overlayState = Overlay.of(context);
+      widget.controller._scopeContext = context;
     }
   }
 
@@ -738,6 +754,7 @@ class _JustSheetScopeState extends State<JustSheetScope>
   void didChangeDependencies() {
     super.didChangeDependencies();
     widget.controller._overlayState = Overlay.of(context);
+    widget.controller._scopeContext = context;
   }
 
   @override
@@ -748,6 +765,7 @@ class _JustSheetScopeState extends State<JustSheetScope>
     widget.controller.forceDismissAll();
     widget.controller._vsync = null;
     widget.controller._overlayState = null;
+    widget.controller._scopeContext = null;
     super.dispose();
   }
 
@@ -820,7 +838,7 @@ Future<T?> _showFallbackBottomSheet<T>({
     barrierDismissible: barrierDismissable,
     useRootNavigator: false,
     barrierLabel: 'Dismiss',
-    transitionDuration: const Duration(milliseconds: 300),
+    transitionDuration: motion.normal,
     barrierColor:
         style?.barrierColor ??
         barrierColor ??

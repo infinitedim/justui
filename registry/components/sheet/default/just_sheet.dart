@@ -43,9 +43,26 @@ class _SheetInstance<T> {
 /// Imperative controller for managing slide-in sheets.
 class JustSheetController extends JustOverlayController {
   OverlayState? _overlayState;
+  BuildContext? _scopeContext;
   TickerProvider? _vsync;
   final List<_SheetInstance<dynamic>> _activeSheets =
       <_SheetInstance<dynamic>>[];
+
+  Duration _resolveDuration() {
+    const Duration fallback = Duration(milliseconds: 300);
+    final BuildContext? ctx = (_scopeContext?.mounted ?? false)
+        ? _scopeContext
+        : _overlayState?.context;
+    if (ctx == null || !ctx.mounted) return fallback;
+    final JustMotionProfile? motion = JustThemeProvider.maybeOf(
+      ctx,
+      aspect: .animations,
+    )?.theme.animations.resolve(ctx);
+    final bool disableAnimations =
+        motion?.normal == .zero ||
+        (MediaQuery.maybeDisableAnimationsOf(ctx) ?? false);
+    return disableAnimations ? .zero : (motion?.normal ?? fallback);
+  }
 
   @override
   bool get isVisible => _activeSheets.isNotEmpty;
@@ -79,10 +96,7 @@ class JustSheetController extends JustOverlayController {
     final bool isLocalController = animationController == null;
     final AnimationController animController =
         animationController ??
-        AnimationController(
-          vsync: _vsync!,
-          duration: const Duration(milliseconds: 300),
-        );
+        AnimationController(vsync: _vsync!, duration: _resolveDuration());
 
     late final _SheetInstance<T> instance;
 
@@ -698,8 +712,10 @@ class _JustSheetScopeState extends State<JustSheetScope>
       oldWidget.controller.forceDismissAll();
       oldWidget.controller._vsync = null;
       oldWidget.controller._overlayState = null;
+      oldWidget.controller._scopeContext = null;
       widget.controller._vsync = this;
       widget.controller._overlayState = Overlay.of(context);
+      widget.controller._scopeContext = context;
     }
   }
 
@@ -707,6 +723,7 @@ class _JustSheetScopeState extends State<JustSheetScope>
   void didChangeDependencies() {
     super.didChangeDependencies();
     widget.controller._overlayState = Overlay.of(context);
+    widget.controller._scopeContext = context;
   }
 
   @override
@@ -717,6 +734,7 @@ class _JustSheetScopeState extends State<JustSheetScope>
     widget.controller.forceDismissAll();
     widget.controller._vsync = null;
     widget.controller._overlayState = null;
+    widget.controller._scopeContext = null;
     super.dispose();
   }
 
@@ -785,7 +803,7 @@ Future<T?> _showFallbackBottomSheet<T>({
     barrierDismissible: barrierDismissable,
     useRootNavigator: false,
     barrierLabel: 'Dismiss',
-    transitionDuration: const Duration(milliseconds: 300),
+    transitionDuration: motion.normal,
     barrierColor:
         style?.barrierColor ??
         barrierColor ??

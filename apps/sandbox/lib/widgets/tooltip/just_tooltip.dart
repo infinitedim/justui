@@ -1,4 +1,4 @@
-// justui-meta: registry=84f91016d5b21e4a3dd4edb4bac73d74c8050503179ddabe22711b23a1a60ac5 local=3e59f4bd94875759501d4b6aaaa65317288a8375b368466bb3523ca50c3be956
+// justui-meta: registry=730da75efcff9f322366a3db10d9979d2f96a3ecf0cbfcca7e9e9cdcdd5611e0 local=cb13db3da68cbbd5fc4c7e3cb51629df58fc59146d5d44d2e12d5d9d95124fce
 import 'dart:async';
 
 import 'package:flutter/services.dart' show KeyDownEvent;
@@ -184,6 +184,21 @@ class _JustTooltipState extends State<JustTooltip>
       duration: const Duration(milliseconds: 150),
     );
     _focusNode.addListener(_onFocusChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final JustMotionProfile? motion = JustThemeProvider.maybeOf(
+      context,
+      aspect: .animations,
+    )?.theme.animations.resolve(context);
+    final bool disableAnimations =
+        motion?.fast == .zero ||
+        (MediaQuery.maybeDisableAnimationsOf(context) ?? false);
+    _localAnimController.duration = disableAnimations
+        ? .zero
+        : (motion?.fast ?? const Duration(milliseconds: 150));
   }
 
   @override
