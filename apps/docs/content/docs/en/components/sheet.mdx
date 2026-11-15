@@ -172,16 +172,16 @@ Widget buildInlineSheet(BuildContext context) {
 
 `JustSheetSurface(...)` accepts the following properties for inline rendering:
 
-| Property      | Data Type         | Default Value | Description                                                                                |
-| :------------ | :---------------- | :------------ | :----------------------------------------------------------------------------------------- |
-| `child`       | `Widget`          | _Required_    | The sheet body content widget tree.                                                        |
-| `direction`   | `SheetDirection`  | `.bottom`     | Edge alignment that controls surface rounding and handle orientation.                      |
-| `showHandle`  | `bool`            | `false`       | Renders the visual drag handle bar inside the sheet surface.                               |
-| `size`        | `double?`         | `null`        | Fraction or constraint for the sheet surface dimension when sized inline.                  |
-| `maxSize`     | `double?`         | `null`        | Maximum fraction of available space the inline surface can occupy.                         |
-| `bottomInset` | `double?`         | `null`        | Optional extra bottom inset padding applied inside the surface.                            |
-| `style`       | `JustSheetStyle?` | `null`        | Per-instance style overrides including `borderColor`, `borderWidth`, `padding`, `shadows`. |
-| `useSafeArea` | `bool`            | `false`       | Wraps the sheet surface in a `SafeArea` when set to `true`.                                |
+| Property      | Data Type         | Default Value | Description                                                                                                                                 |
+| :------------ | :---------------- | :------------ | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `child`       | `Widget`          | _Required_    | The sheet body content widget tree.                                                                                                         |
+| `direction`   | `SheetDirection`  | `.bottom`     | Controls edge corner rounding, primary axis sizing, `SafeArea` edge, and whether vertical-only options (`showHandle`, `bottomInset`) apply. |
+| `showHandle`  | `bool`            | `false`       | Renders the visual drag handle bar inside the sheet surface.                                                                                |
+| `size`        | `double?`         | `null`        | Fractional viewport size (`0.0` to `1.0`) along the sheet's primary axis.                                                                   |
+| `maxSize`     | `double?`         | `null`        | Maximum fraction of available space the inline surface can occupy.                                                                          |
+| `bottomInset` | `double?`         | `null`        | Optional extra bottom inset padding applied inside the surface.                                                                             |
+| `style`       | `JustSheetStyle?` | `null`        | Per-instance style overrides including `borderColor`, `borderWidth`, `padding`, `shadows`.                                                  |
+| `useSafeArea` | `bool`            | `false`       | Wraps inner content inside the surface container in a directional `SafeArea` matching `direction` when set to `true`.                       |
 
 ---
 

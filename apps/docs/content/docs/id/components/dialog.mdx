@@ -16,7 +16,7 @@ Dialog dapat ditampilkan secara imperatif melalui pengontrol overlay atau disema
 - **`JustDialogScope`**: Widget pembungkus yang menyediakan animasi ticker provider dan pengikatan status overlay yang diperlukan.
 - **`JustDialogController`**: Pengontrol imperatif overlay yang menampilkan atau menutup instans dialog.
 - **`context.justDialog`**: Ekstensi BuildContext untuk menampilkan dialog secara mudah.
-- **`JustDialogSurface`**: Widget permukaan stateless yang merender tampilan kartu dialog (latar belakang, garis batas, sudut melengkung, bayangan, padding, serta handel seret bawah opsional) secara inline tanpa barrier overlay atau perangkap fokus.
+- **`JustDialogSurface`**: Widget permukaan stateless yang merender tampilan kartu dialog (latar belakang, garis batas, sudut melengkung, bayangan, padding, serta handel seret atas opsional saat `position` bernilai `.bottom`) secara inline tanpa barrier overlay atau perangkap fokus.
 
 ---
 
@@ -195,12 +195,12 @@ Widget buildInlineDialogCard(BuildContext context) {
 
 `JustDialogSurface(...)` menerima properti berikut untuk rendering inline:
 
-| Properti      | Tipe Data          | Nilai Default | Deskripsi                                                                                             |
-| :------------ | :----------------- | :------------ | :---------------------------------------------------------------------------------------------------- |
-| `child`       | `Widget`           | _Wajib_       | Tatanan widget isi konten dialog.                                                                     |
-| `position`    | `DialogPosition`   | `.center`     | Mode penempatan permukaan (`.center`, `.bottom`, `.top`); `.bottom` menampilkan handel seret di atas. |
-| `style`       | `JustDialogStyle?` | `null`        | Penyesuaian gaya per-instans termasuk `borderColor`, `borderWidth`, `padding`, dan `shadows`.         |
-| `useSafeArea` | `bool`             | `false`       | Membungkus permukaan dialog dalam `SafeArea` jika bernilai `true`.                                    |
+| Properti      | Tipe Data          | Nilai Default | Deskripsi                                                                                                                                           |
+| :------------ | :----------------- | :------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `child`       | `Widget`           | _Wajib_       | Tatanan widget isi konten dialog.                                                                                                                   |
+| `position`    | `DialogPosition`   | `.center`     | Mode penempatan permukaan (`.center`, `.bottom`, `.top`); `.bottom` menampilkan handel seret di atas.                                               |
+| `style`       | `JustDialogStyle?` | `null`        | Penyesuaian gaya per-instans termasuk `borderColor`, `borderWidth`, `padding`, dan `shadows`.                                                       |
+| `useSafeArea` | `bool`             | `false`       | Membungkus konten bagian dalam di dalam kontainer permukaan dengan `SafeArea` terarah (`top`/`bottom` untuk `.top`/`.bottom`) jika bernilai `true`. |
 
 ---
 

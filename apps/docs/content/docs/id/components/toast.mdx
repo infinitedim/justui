@@ -150,18 +150,18 @@ Widget buildInlineToast(BuildContext context) {
 
 `JustToastSurface(...)` menerima properti berikut untuk rendering inline:
 
-| Properti               | Tipe Data         | Nilai Default | Deskripsi                                                                               |
-| :--------------------- | :---------------- | :------------ | :-------------------------------------------------------------------------------------- |
-| `message`              | `String`          | _Wajib_       | Teks pesan utama yang ditampilkan di dalam kartu toast.                                 |
-| `description`          | `String?`         | `null`        | Teks deskripsi sekunder opsional yang dirender di bawah `message`.                      |
-| `variant`              | `ToastVariant`    | `.info`       | Varian warna dan ikon semantik: `.info`, `.success`, `.warning`, `.error`.              |
-| `style`                | `JustToastStyle?` | `null`        | Penyesuaian gaya per-instans termasuk `borderColor`, `borderWidth`, dan `shadows`.      |
-| `descriptionTextStyle` | `TextStyle?`      | `null`        | Gaya teks kustom untuk baris `description` sekunder.                                    |
-| `icon`                 | `Widget?`         | `null`        | Ikon awalan kustom opsional yang menimpa ikon bawaan varian.                            |
-| `action`               | `Widget?`         | `null`        | Widget kontrol akhir opsional (seperti tombol ringkas).                                 |
-| `onDismiss`            | `VoidCallback?`   | `null`        | Callback yang dipanggil saat tombol tutup ditekan.                                      |
-| `showCloseButton`      | `bool`            | `true`        | Menentukan apakah tombol tutup ditampilkan saat `onDismiss` atau UI tutup bawaan aktif. |
-| `liveRegion`           | `bool`            | `false`       | Mengaktifkan pembungkus live region semantik untuk pembaruan pembaca layar dinamis.     |
+| Properti               | Tipe Data         | Nilai Default | Deskripsi                                                                           |
+| :--------------------- | :---------------- | :------------ | :---------------------------------------------------------------------------------- |
+| `message`              | `String`          | _Wajib_       | Teks pesan utama yang ditampilkan di dalam kartu toast.                             |
+| `description`          | `String?`         | `null`        | Teks deskripsi sekunder opsional yang dirender di bawah `message`.                  |
+| `variant`              | `ToastVariant`    | `.info`       | Varian warna dan ikon semantik: `.info`, `.success`, `.warning`, `.error`.          |
+| `style`                | `JustToastStyle?` | `null`        | Penyesuaian gaya per-instans termasuk `borderColor`, `borderWidth`, dan `shadows`.  |
+| `descriptionTextStyle` | `TextStyle?`      | `null`        | Gaya teks kustom untuk baris `description` sekunder.                                |
+| `icon`                 | `Widget?`         | `null`        | Ikon awalan kustom opsional yang menimpa ikon bawaan varian.                        |
+| `action`               | `Widget?`         | `null`        | Widget kontrol akhir opsional (seperti tombol ringkas).                             |
+| `onDismiss`            | `VoidCallback?`   | `null`        | Callback yang dipanggil saat tombol tutup ditekan.                                  |
+| `showCloseButton`      | `bool`            | `true`        | Menentukan apakah tombol tutup bawaan ditampilkan saat `action` bernilai `null`.    |
+| `liveRegion`           | `bool`            | `false`       | Mengaktifkan pembungkus live region semantik untuk pembaruan pembaca layar dinamis. |
 
 ---
 

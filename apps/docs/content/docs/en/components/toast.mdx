@@ -150,18 +150,18 @@ Widget buildInlineToast(BuildContext context) {
 
 `JustToastSurface(...)` accepts the following properties for inline rendering:
 
-| Property               | Data Type         | Default Value | Description                                                                          |
-| :--------------------- | :---------------- | :------------ | :----------------------------------------------------------------------------------- |
-| `message`              | `String`          | _Required_    | The primary message text displayed in the toast card.                                |
-| `description`          | `String?`         | `null`        | Optional secondary description text rendered below `message`.                        |
-| `variant`              | `ToastVariant`    | `.info`       | Semantic color and icon variant: `.info`, `.success`, `.warning`, `.error`.          |
-| `style`                | `JustToastStyle?` | `null`        | Per-instance style overrides including `borderColor`, `borderWidth`, and `shadows`.  |
-| `descriptionTextStyle` | `TextStyle?`      | `null`        | Custom text style for the secondary `description` line.                              |
-| `icon`                 | `Widget?`         | `null`        | Optional custom leading icon overriding the variant default icon.                    |
-| `action`               | `Widget?`         | `null`        | Optional trailing control widget (such as a compact button).                         |
-| `onDismiss`            | `VoidCallback?`   | `null`        | Callback invoked when the close button is pressed.                                   |
-| `showCloseButton`      | `bool`            | `true`        | Whether to render the close button when `onDismiss` or default dismiss UI is active. |
-| `liveRegion`           | `bool`            | `false`       | Enables a semantic live region wrapper for dynamic screen-reader updates.            |
+| Property               | Data Type         | Default Value | Description                                                                         |
+| :--------------------- | :---------------- | :------------ | :---------------------------------------------------------------------------------- |
+| `message`              | `String`          | _Required_    | The primary message text displayed in the toast card.                               |
+| `description`          | `String?`         | `null`        | Optional secondary description text rendered below `message`.                       |
+| `variant`              | `ToastVariant`    | `.info`       | Semantic color and icon variant: `.info`, `.success`, `.warning`, `.error`.         |
+| `style`                | `JustToastStyle?` | `null`        | Per-instance style overrides including `borderColor`, `borderWidth`, and `shadows`. |
+| `descriptionTextStyle` | `TextStyle?`      | `null`        | Custom text style for the secondary `description` line.                             |
+| `icon`                 | `Widget?`         | `null`        | Optional custom leading icon overriding the variant default icon.                   |
+| `action`               | `Widget?`         | `null`        | Optional trailing control widget (such as a compact button).                        |
+| `onDismiss`            | `VoidCallback?`   | `null`        | Callback invoked when the close button is pressed.                                  |
+| `showCloseButton`      | `bool`            | `true`        | Whether to render the default close button when `action` is `null`.                 |
+| `liveRegion`           | `bool`            | `false`       | Enables a semantic live region wrapper for dynamic screen-reader updates.           |
 
 ---
 

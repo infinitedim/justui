@@ -16,7 +16,7 @@ Dialogs can be shown imperatively via an overlay controller or embedded directly
 - **`JustDialogScope`**: A wrapper widget that hooks the necessary animation ticker provider and overlay state bindings.
 - **`JustDialogController`**: The imperative overlay controller that pushes or dismisses dialog instances.
 - **`context.justDialog`**: A BuildContext extension to easily show dialogs.
-- **`JustDialogSurface`**: A stateless surface widget that renders dialog card chrome (background, border, rounding, shadow, padding, and optional bottom drag handle) inline without an overlay barrier or focus trap.
+- **`JustDialogSurface`**: A stateless surface widget that renders dialog card chrome (background, border, rounding, shadow, padding, and optional top drag handle when `position` is `.bottom`) inline without an overlay barrier or focus trap.
 
 ---
 
@@ -195,12 +195,12 @@ Widget buildInlineDialogCard(BuildContext context) {
 
 `JustDialogSurface(...)` accepts the following properties for inline rendering:
 
-| Property      | Data Type          | Default Value | Description                                                                                         |
-| :------------ | :----------------- | :------------ | :-------------------------------------------------------------------------------------------------- |
-| `child`       | `Widget`           | _Required_    | The dialog body content widget tree.                                                                |
-| `position`    | `DialogPosition`   | `.center`     | Surface positioning mode (`.center`, `.bottom`, `.top`); `.bottom` renders the top drag handle bar. |
-| `style`       | `JustDialogStyle?` | `null`        | Per-instance style overrides including `borderColor`, `borderWidth`, `padding`, and `shadows`.      |
-| `useSafeArea` | `bool`             | `false`       | Wraps the dialog surface in a `SafeArea` when set to `true`.                                        |
+| Property      | Data Type          | Default Value | Description                                                                                                                            |
+| :------------ | :----------------- | :------------ | :------------------------------------------------------------------------------------------------------------------------------------- |
+| `child`       | `Widget`           | _Required_    | The dialog body content widget tree.                                                                                                   |
+| `position`    | `DialogPosition`   | `.center`     | Surface positioning mode (`.center`, `.bottom`, `.top`); `.bottom` renders the top drag handle bar.                                    |
+| `style`       | `JustDialogStyle?` | `null`        | Per-instance style overrides including `borderColor`, `borderWidth`, `padding`, and `shadows`.                                         |
+| `useSafeArea` | `bool`             | `false`       | Wraps inner content inside the surface container in a directional `SafeArea` (`top`/`bottom` for `.top`/`.bottom`) when set to `true`. |
 
 ---
 

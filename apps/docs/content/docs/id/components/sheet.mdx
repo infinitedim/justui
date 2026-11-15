@@ -172,16 +172,16 @@ Widget buildInlineSheet(BuildContext context) {
 
 `JustSheetSurface(...)` menerima properti berikut untuk rendering inline:
 
-| Properti      | Tipe Data         | Nilai Default | Deskripsi                                                                                 |
-| :------------ | :---------------- | :------------ | :---------------------------------------------------------------------------------------- |
-| `child`       | `Widget`          | _Wajib_       | Tatanan widget isi konten sheet.                                                          |
-| `direction`   | `SheetDirection`  | `.bottom`     | Penyejajaran tepi yang mengatur sudut melengkung dan orientasi handel permukaan.          |
-| `showHandle`  | `bool`            | `false`       | Menampilkan bilah handel seret visual di dalam permukaan sheet.                           |
-| `size`        | `double?`         | `null`        | Fraksi ukuran untuk dimensi permukaan sheet saat dirender inline.                         |
-| `maxSize`     | `double?`         | `null`        | Fraksi maksimum ruang tersedia yang dapat ditempati permukaan inline.                     |
-| `bottomInset` | `double?`         | `null`        | Padding inset bawah tambahan opsional yang diterapkan di dalam permukaan.                 |
-| `style`       | `JustSheetStyle?` | `null`        | Penyesuaian gaya per-instans termasuk `borderColor`, `borderWidth`, `padding`, `shadows`. |
-| `useSafeArea` | `bool`            | `false`       | Membungkus permukaan sheet dalam `SafeArea` jika bernilai `true`.                         |
+| Properti      | Tipe Data         | Nilai Default | Deskripsi                                                                                                                                   |
+| :------------ | :---------------- | :------------ | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `child`       | `Widget`          | _Wajib_       | Tatanan widget isi konten sheet.                                                                                                            |
+| `direction`   | `SheetDirection`  | `.bottom`     | Mengatur sudut melengkung tepi, ukuran sumbu utama, tepi `SafeArea`, dan apakah opsi khusus vertikal (`showHandle`, `bottomInset`) berlaku. |
+| `showHandle`  | `bool`            | `false`       | Menampilkan bilah handel seret visual di dalam permukaan sheet.                                                                             |
+| `size`        | `double?`         | `null`        | Ukuran fraksional viewport (`0.0` hingga `1.0`) sepanjang sumbu utama sheet.                                                                |
+| `maxSize`     | `double?`         | `null`        | Fraksi maksimum ruang tersedia yang dapat ditempati permukaan inline.                                                                       |
+| `bottomInset` | `double?`         | `null`        | Padding inset bawah tambahan opsional yang diterapkan di dalam permukaan.                                                                   |
+| `style`       | `JustSheetStyle?` | `null`        | Penyesuaian gaya per-instans termasuk `borderColor`, `borderWidth`, `padding`, `shadows`.                                                   |
+| `useSafeArea` | `bool`            | `false`       | Membungkus konten bagian dalam di dalam kontainer permukaan dengan `SafeArea` terarah sesuai `direction` jika bernilai `true`.              |
 
 ---
 
