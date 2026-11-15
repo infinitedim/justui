@@ -980,5 +980,87 @@ void main() {
         expect(overlayAnim.duration, equals(Duration.zero));
       },
     );
+
+    testWidgets(
+      'JustSelect option tiles do not expose focusable semantics and Tab closes dropdown to advance focus',
+      (WidgetTester tester) async {
+        final SemanticsHandle handle = tester.ensureSemantics();
+        final FocusNode nextFocus = FocusNode();
+        try {
+          await tester.pumpWidget(
+            buildTestApp(
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  JustSelect<String>(
+                    label: 'Frequency',
+                    value: 'weekly',
+                    inlineDropdown: true,
+                    options: const <JustSelectOption<String>>[
+                      JustSelectOption<String>(
+                        value: 'weekly',
+                        label: 'Weekly',
+                      ),
+                      JustSelectOption<String>(
+                        value: 'monthly',
+                        label: 'Monthly',
+                      ),
+                    ],
+                    onChanged: (_) {},
+                  ),
+                  TextButton(
+                    focusNode: nextFocus,
+                    onPressed: () {},
+                    child: const Text('After Select'),
+                  ),
+                ],
+              ),
+            ),
+          );
+
+          await tester.tap(find.text('Weekly'));
+          await tester.pumpAndSettle();
+
+          final List<SemanticsData> nodes = <SemanticsData>[];
+          bool collect(SemanticsNode node) {
+            nodes.add(node.getSemanticsData());
+            node.visitChildren(collect);
+            return true;
+          }
+
+          collect(tester.getSemantics(find.byType(JustSelect<String>)));
+          final SemanticsData trigger = nodes.firstWhere(
+            (SemanticsData d) =>
+                d.flagsCollection.isButton && d.label == 'Frequency',
+          );
+          final SemanticsData weekly = nodes.firstWhere(
+            (SemanticsData d) =>
+                d.flagsCollection.isButton && d.label == 'Weekly',
+          );
+          final SemanticsData monthly = nodes.firstWhere(
+            (SemanticsData d) =>
+                d.flagsCollection.isButton && d.label == 'Monthly',
+          );
+          expect(
+            trigger.flagsCollection.isFocused,
+            isNot(equals(Tristate.none)),
+          );
+          expect(trigger.hasAction(SemanticsAction.focus), isTrue);
+          expect(weekly.flagsCollection.isFocused, equals(Tristate.none));
+          expect(weekly.hasAction(SemanticsAction.focus), isFalse);
+          expect(monthly.flagsCollection.isFocused, equals(Tristate.none));
+          expect(monthly.hasAction(SemanticsAction.focus), isFalse);
+
+          await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+          await tester.pumpAndSettle();
+
+          expect(find.text('Monthly'), findsNothing);
+          expect(nextFocus.hasFocus, isTrue);
+        } finally {
+          nextFocus.dispose();
+          handle.dispose();
+        }
+      },
+    );
   });
 }
