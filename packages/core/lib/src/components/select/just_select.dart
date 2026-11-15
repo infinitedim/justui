@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/services.dart'
     show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;
@@ -88,6 +90,9 @@ class JustSelect<T> extends StatefulWidget {
   /// Maximum height of the dropdown list. Defaults to 300.
   final int maxDropdownHeight;
 
+  /// Whether to render the open dropdown menu inline below the trigger in layout flow.
+  final bool inlineDropdown;
+
   /// Creates a [JustSelect] component.
   const JustSelect({
     super.key,
@@ -103,6 +108,7 @@ class JustSelect<T> extends StatefulWidget {
     this.style,
     this.prefixIcon,
     this.maxDropdownHeight = 300,
+    this.inlineDropdown = false,
   });
 
   @override
@@ -126,11 +132,26 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   String _searchQuery = '';
   int _focusedOptionIndex =
       -1; // Keyboard navigation index within filtered options
+  bool _isInlineOpen = false;
+
+  bool get _isOpen =>
+      widget.inlineDropdown ? _isInlineOpen : _overlayController.isShowing;
 
   @override
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant JustSelect<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.inlineDropdown != widget.inlineDropdown) {
+      _isInlineOpen = false;
+      if (_overlayController.isShowing) {
+        _overlayController.hide();
+      }
+    }
   }
 
   @override
@@ -163,7 +184,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
 
   void _toggleDropdown() {
     if (!widget.enabled) return;
-    if (_overlayController.isShowing) {
+    if (_isOpen) {
       _closeDropdown();
     } else {
       _openDropdown();
@@ -171,15 +192,28 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   }
 
   void _openDropdown() {
-    setState(() {
-      _focusedOptionIndex = -1;
+    if (_searchController.text.isNotEmpty) {
       _searchController.clear();
+    }
+    final int selectedIdx = widget.value == null
+        ? -1
+        : widget.options.indexWhere(
+            (JustSelectOption<T> opt) =>
+                !opt.isDivider && opt.enabled && opt.value == widget.value,
+          );
+    setState(() {
+      _focusedOptionIndex = selectedIdx;
       _searchQuery = '';
+      if (widget.inlineDropdown) {
+        _isInlineOpen = true;
+      }
     });
-    _overlayController.show();
+    if (!widget.inlineDropdown) {
+      _overlayController.show();
+    }
     if (widget.searchable) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _searchEditableFocusNode.requestFocus();
+        if (mounted) _searchEditableFocusNode.requestFocus();
       });
     } else {
       _triggerFocusNode.requestFocus();
@@ -187,7 +221,12 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   }
 
   void _closeDropdown() {
-    _overlayController.hide();
+    setState(() {
+      _isInlineOpen = false;
+    });
+    if (_overlayController.isShowing) {
+      _overlayController.hide();
+    }
     _triggerFocusNode.requestFocus();
   }
 
@@ -203,7 +242,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     if (event is! KeyDownEvent) return .ignored;
 
     final List<JustSelectOption<T>> filtered = _filteredOptions;
-    if (!_overlayController.isShowing) {
+    if (!_isOpen) {
       if (event.logicalKey == .enter ||
           event.logicalKey == .space ||
           event.logicalKey == .arrowDown ||
@@ -371,14 +410,21 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
             ),
             SizedBox(height: spacing.xs),
           ],
-          OverlayPortal.overlayChildLayoutBuilder(
-            controller: _overlayController,
-            overlayChildBuilder: (
-              BuildContext context,
-              OverlayChildLayoutInfo info,
-            ) => _buildDropdown(context, info, visuals),
-            child: _buildTrigger(visuals, selectedOption, hasError),
-          ),
+          if (widget.inlineDropdown) ...<Widget>[
+            _buildTrigger(visuals, selectedOption, hasError),
+            if (_isOpen) ...<Widget>[
+              SizedBox(height: spacing.xs),
+              _buildInlineDropdown(visuals),
+            ],
+          ] else
+            OverlayPortal.overlayChildLayoutBuilder(
+              controller: _overlayController,
+              overlayChildBuilder: (
+                BuildContext context,
+                OverlayChildLayoutInfo info,
+              ) => _buildDropdown(context, info, visuals),
+              child: _buildTrigger(visuals, selectedOption, hasError),
+            ),
           if (hasError) ...<Widget>[
             SizedBox(height: spacing.xs),
             Text(
@@ -406,9 +452,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       border: .all(
         color: hasError
             ? colors.error
-            : (_overlayController.isShowing
-                  ? colors.borderFocus
-                  : v.borderColor),
+            : (_isOpen ? colors.borderFocus : v.borderColor),
         width: presetTokens.borderWidth,
       ),
       borderRadius: presetTokens.showsDefaultBorder ? .zero : v.borderRadius,
@@ -458,7 +502,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
               SizedBox(width: spacing.sm),
               // Chevron Icon
               AnimatedRotation(
-                turns: _overlayController.isShowing ? 0.5 : 0.0,
+                turns: _isOpen ? 0.5 : 0.0,
                 duration: presetTokens.dropdownOpenDuration,
                 curve: presetTokens.dropdownOpenCurve,
                 child: Icon(
@@ -502,38 +546,50 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     );
   }
 
-  /// The floating option list, positioned below the trigger (or above it
-  /// when there is not enough room below).
-  Widget _buildDropdown(
-    BuildContext context,
-    OverlayChildLayoutInfo info,
+  /// Computes the intrinsic menu height for [filtered] options, capped by
+  /// [JustSelect.maxDropdownHeight].
+  double _computeIntrinsicDropdownHeight(
     _SelectVisuals v,
+    List<JustSelectOption<T>> filtered,
+  ) {
+    double height = 0.0;
+    if (filtered.isEmpty) {
+      height += 52.0;
+    } else {
+      for (final JustSelectOption<T> option in filtered) {
+        height += option.isDivider ? 1.0 + 2 * v.spacing.xs : v.height - 4.0;
+      }
+    }
+    if (widget.searchable) {
+      height += 36.0 + 2 * v.spacing.sm;
+    }
+    height += 2 * v.presetTokens.borderWidth;
+    return math.min(widget.maxDropdownHeight.toDouble(), height);
+  }
+
+  /// Renders the inline dropdown sized to the trigger's width inside layout flow.
+  Widget _buildInlineDropdown(_SelectVisuals v) {
+    final List<JustSelectOption<T>> filtered = _filteredOptions;
+    final double dropdownHeight = _computeIntrinsicDropdownHeight(v, filtered);
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final double width = constraints.hasBoundedWidth
+            ? constraints.maxWidth
+            : .infinity;
+        return _buildDropdownBox(v, width, dropdownHeight);
+      },
+    );
+  }
+
+  /// Builds the decorated dropdown surface shared by overlay and inline modes.
+  Widget _buildDropdownBox(
+    _SelectVisuals v,
+    double triggerWidth,
+    double dropdownHeight,
   ) {
     final JustColorScheme colors = v.colors;
-    final JustSpacingScheme spacing = v.spacing;
     final JustPresetTokens presetTokens = v.presetTokens;
-
-    final Offset targetOffset = MatrixUtils.transformPoint(
-      info.childPaintTransform,
-      .zero,
-    );
-    final double triggerHeight = info.childSize.height;
-    final double triggerWidth = info.childSize.width;
-    final double screenHeight = MediaQuery.sizeOf(context).height;
-
-    // Calculate flip logic
-    final double dropdownHeight = widget.maxDropdownHeight.toDouble();
-    final double totalDropdownHeightNeeded = dropdownHeight + spacing.xs;
-    final bool fitsBelow =
-        targetOffset.dy + triggerHeight + totalDropdownHeightNeeded <=
-        screenHeight;
-    final bool fitsAbove = targetOffset.dy - totalDropdownHeightNeeded >= 0;
-    final double topPosition = (fitsBelow || !fitsAbove)
-        ? targetOffset.dy + triggerHeight + spacing.xs
-        : targetOffset.dy - dropdownHeight - spacing.xs;
-
     final List<JustSelectOption<T>> filtered = _filteredOptions;
-
     final BoxDecoration dropdownDecoration = BoxDecoration(
       color:
           widget.style?.dropdownBackgroundColor ??
@@ -556,8 +612,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
             ]
           : v.theme.shadows.lg,
     );
-
-    final Widget dropdownContent = Container(
+    return Container(
       width: triggerWidth,
       height: dropdownHeight,
       decoration: dropdownDecoration,
@@ -571,46 +626,87 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
               onKeyEvent: _handleKeyEvent,
               visuals: v,
             ),
-          Expanded(
-            child: filtered.isEmpty
-                ? Center(
-                    child: Padding(
-                      padding: .all(spacing.md),
-                      child: Text(
-                        'No options found',
-                        style: v.textStyle.copyWith(
-                          color: colors.textSecondary,
-                        ),
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    controller: _optionScrollController,
-                    padding: .zero,
-                    itemCount: filtered.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final JustSelectOption<T> option = filtered[index];
-                      if (option.isDivider) {
-                        return Container(
-                          height: 1,
-                          margin: .symmetric(vertical: spacing.xs),
-                          color: colors.borderDefault,
-                        );
-                      }
-                      return _SelectOptionTile<T>(
-                        option: option,
-                        isSelected: option.value == widget.value,
-                        isKeyboardFocused: index == _focusedOptionIndex,
-                        instanceStyle: widget.style,
-                        visuals: v,
-                        onTap: () => _selectOption(option),
-                      );
-                    },
-                  ),
-          ),
+          Expanded(child: _buildDropdownList(v, filtered)),
         ],
       ),
     );
+  }
+
+  /// Builds the scrollable options list or empty state inside the dropdown box.
+  Widget _buildDropdownList(
+    _SelectVisuals v,
+    List<JustSelectOption<T>> filtered,
+  ) {
+    final JustColorScheme colors = v.colors;
+    final JustSpacingScheme spacing = v.spacing;
+    if (filtered.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: .all(spacing.md),
+          child: Text(
+            'No options found',
+            style: v.textStyle.copyWith(color: colors.textSecondary),
+          ),
+        ),
+      );
+    }
+    return ExcludeFocus(
+      child: ListView.builder(
+        controller: _optionScrollController,
+        padding: .zero,
+        itemCount: filtered.length,
+        itemBuilder: (BuildContext context, int index) {
+          final JustSelectOption<T> option = filtered[index];
+          if (option.isDivider) {
+            return Container(
+              height: 1,
+              margin: .symmetric(vertical: spacing.xs),
+              color: colors.borderDefault,
+            );
+          }
+          return _SelectOptionTile<T>(
+            option: option,
+            isSelected: option.value == widget.value,
+            isKeyboardFocused: index == _focusedOptionIndex,
+            instanceStyle: widget.style,
+            visuals: v,
+            onTap: () => _selectOption(option),
+          );
+        },
+      ),
+    );
+  }
+
+  /// The floating option list, positioned below the trigger (or above it
+  /// when there is not enough room below).
+  Widget _buildDropdown(
+    BuildContext context,
+    OverlayChildLayoutInfo info,
+    _SelectVisuals v,
+  ) {
+    final JustSpacingScheme spacing = v.spacing;
+    final JustPresetTokens presetTokens = v.presetTokens;
+
+    final Offset targetOffset = MatrixUtils.transformPoint(
+      info.childPaintTransform,
+      .zero,
+    );
+    final double triggerHeight = info.childSize.height;
+    final double triggerWidth = info.childSize.width;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
+
+    final double dropdownHeight = _computeIntrinsicDropdownHeight(
+      v,
+      _filteredOptions,
+    );
+    final double totalDropdownHeightNeeded = dropdownHeight + spacing.xs;
+    final bool fitsBelow =
+        targetOffset.dy + triggerHeight + totalDropdownHeightNeeded <=
+        screenHeight;
+    final bool fitsAbove = targetOffset.dy - totalDropdownHeightNeeded >= 0;
+    final double topPosition = (fitsBelow || !fitsAbove)
+        ? targetOffset.dy + triggerHeight + spacing.xs
+        : targetOffset.dy - dropdownHeight - spacing.xs;
 
     return Stack(
       children: <Widget>[
@@ -635,7 +731,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                 ),
               );
             },
-            child: dropdownContent,
+            child: _buildDropdownBox(v, triggerWidth, dropdownHeight),
           ),
         ),
       ],
@@ -762,52 +858,58 @@ class const _SelectOptionTile<T>({
               ? visuals.textColor
               : visuals.textColor.withValues(alpha: 0.4));
 
-    return JustPressable(
+    return Semantics(
+      container: true,
+      selected: isSelected,
+      button: true,
       enabled: option.enabled,
-      onTap: onTap,
-      builder: (BuildContext context, JustInteractionState state) {
-        final bool showHover = state.isHovered || isKeyboardFocused;
-        final Color itemBg = showHover && !isSelected
-            ? (instanceStyle?.optionHoverColor ??
-                  themeStyle?.optionHoverColor ??
-                  colors.borderDefault.withValues(alpha: 0.1))
-            : optionBg;
+      child: JustPressable(
+        enabled: option.enabled,
+        onTap: onTap,
+        builder: (BuildContext context, JustInteractionState state) {
+          final bool showHover = state.isHovered || isKeyboardFocused;
+          final Color itemBg = showHover && !isSelected
+              ? (instanceStyle?.optionHoverColor ??
+                    themeStyle?.optionHoverColor ??
+                    colors.borderDefault.withValues(alpha: 0.1))
+              : optionBg;
 
-        return Container(
-          height: visuals.height - 4,
-          padding: .symmetric(horizontal: spacing.md),
-          decoration: BoxDecoration(
-            color: itemBg,
-            border: presetTokens.showsDefaultBorder && showHover
-                ? Border(
-                    left: BorderSide(color: colors.textPrimary, width: 3.0),
-                  )
-                : null,
-          ),
-          child: Row(
-            children: <Widget>[
-              if (option.icon != null) ...<Widget>[
-                option.icon!,
-                SizedBox(width: spacing.sm),
-              ],
-              Expanded(
-                child: Text(
-                  option.label,
-                  style: visuals.textStyle.copyWith(
-                    color: optionText,
-                    fontWeight: isSelected ? .w600 : .w400,
+          return Container(
+            height: visuals.height - 4,
+            padding: .symmetric(horizontal: spacing.md),
+            decoration: BoxDecoration(
+              color: itemBg,
+              border: presetTokens.showsDefaultBorder && showHover
+                  ? Border(
+                      left: BorderSide(color: colors.textPrimary, width: 3.0),
+                    )
+                  : null,
+            ),
+            child: Row(
+              children: <Widget>[
+                if (option.icon != null) ...<Widget>[
+                  option.icon!,
+                  SizedBox(width: spacing.sm),
+                ],
+                Expanded(
+                  child: Text(
+                    option.label,
+                    style: visuals.textStyle.copyWith(
+                      color: optionText,
+                      fontWeight: isSelected ? .w600 : .w400,
+                    ),
+                    overflow: .ellipsis,
                   ),
-                  overflow: .ellipsis,
                 ),
-              ),
-              if (isSelected && !presetTokens.showsDefaultBorder) ...<Widget>[
-                SizedBox(width: spacing.sm),
-                Icon(Icons.check, size: 16, color: optionText),
+                if (isSelected && !presetTokens.showsDefaultBorder) ...<Widget>[
+                  SizedBox(width: spacing.sm),
+                  Icon(Icons.check, size: 16, color: optionText),
+                ],
               ],
-            ],
-          ),
-        );
-      },
+            ),
+          );
+        },
+      ),
     );
   }
 }

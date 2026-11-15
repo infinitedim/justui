@@ -1,4 +1,7 @@
+import 'dart:ui' show Tristate;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
@@ -480,6 +483,227 @@ void main() {
 
       expect(find.byType(ListView), findsOneWidget);
     });
+
+    testWidgets(
+      'dropdown height wraps option count when smaller than maxDropdownHeight',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            JustSelect<String>(
+              value: 'weekly',
+              options: const <JustSelectOption<String>>[
+                JustSelectOption<String>(value: 'weekly', label: 'Weekly'),
+                JustSelectOption<String>(value: 'monthly', label: 'Monthly'),
+              ],
+              onChanged: (_) {},
+            ),
+          ),
+        );
+
+        await tester.tap(find.byType(JustSelect<String>));
+        await tester.pumpAndSettle();
+
+        final Finder menuBox = find
+            .ancestor(
+              of: find.byType(ListView),
+              matching: find.byType(Container),
+            )
+            .first;
+        final Size menuSize = tester.getSize(menuBox);
+        expect(menuSize.height, lessThan(120.0));
+        expect(menuSize.height, equals(82.0));
+
+        // Neobrutalism borderWidth (2.5 * 2 = 5.0) + 2 options (80.0) = 85.0
+        await tester.pumpWidget(
+          buildTestApp(
+            JustSelect<String>(
+              key: const ValueKey<String>('neo-select'),
+              value: 'weekly',
+              options: const <JustSelectOption<String>>[
+                JustSelectOption<String>(value: 'weekly', label: 'Weekly'),
+                JustSelectOption<String>(value: 'monthly', label: 'Monthly'),
+              ],
+              onChanged: (_) {},
+            ),
+            theme: JustThemeData.neobrutalismLight,
+          ),
+        );
+
+        await tester.tap(find.byType(JustSelect<String>));
+        await tester.pumpAndSettle();
+
+        final Finder neoMenuBox = find
+            .ancestor(
+              of: find.byType(ListView),
+              matching: find.byType(Container),
+            )
+            .first;
+        expect(tester.getSize(neoMenuBox).height, equals(85.0));
+      },
+    );
+
+    testWidgets('dropdown height caps at maxDropdownHeight for long lists', (
+      WidgetTester tester,
+    ) async {
+      final List<JustSelectOption<int>> manyOptions =
+          List<JustSelectOption<int>>.generate(
+            15,
+            (int index) =>
+                JustSelectOption<int>(value: index, label: 'Option $index'),
+          );
+
+      await tester.pumpWidget(
+        buildTestApp(
+          JustSelect<int>(
+            value: 0,
+            maxDropdownHeight: 150,
+            options: manyOptions,
+            onChanged: (_) {},
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(JustSelect<int>));
+      await tester.pumpAndSettle();
+
+      final Finder menuBox = find
+          .ancestor(of: find.byType(ListView), matching: find.byType(Container))
+          .first;
+      expect(tester.getSize(menuBox).height, equals(150.0));
+    });
+
+    testWidgets(
+      'inlineDropdown expands in-flow and supports keyboard selection + selected semantics',
+      (WidgetTester tester) async {
+        final SemanticsHandle handle = tester.ensureSemantics();
+        try {
+          String selectedValue = 'weekly';
+          const List<JustSelectOption<String>> options =
+              <JustSelectOption<String>>[
+                JustSelectOption<String>(value: 'weekly', label: 'Weekly'),
+                JustSelectOption<String>(value: 'monthly', label: 'Monthly'),
+              ];
+
+          await tester.pumpWidget(
+            buildTestApp(
+              StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return JustSelect<String>(
+                    label: 'Frequency',
+                    value: selectedValue,
+                    inlineDropdown: true,
+                    options: options,
+                    onChanged: (String val) =>
+                        setState(() => selectedValue = val),
+                  );
+                },
+              ),
+            ),
+          );
+
+          final double closedHeight = tester
+              .getSize(find.byType(JustSelect<String>))
+              .height;
+          expect(find.byType(OverlayPortal), findsNothing);
+          expect(find.text('Monthly'), findsNothing);
+
+          // Open with Tab + Enter
+          await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+          await tester.pump();
+          final FocusNode? triggerFocus = FocusManager.instance.primaryFocus;
+          await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+          await tester.pumpAndSettle();
+
+          expect(find.byType(OverlayPortal), findsNothing);
+          expect(find.text('Monthly'), findsOneWidget);
+          final double openHeight = tester
+              .getSize(find.byType(JustSelect<String>))
+              .height;
+          expect(openHeight, greaterThan(closedHeight + 70.0));
+
+          // Tab does not step into inline option tiles (single Tab stop)
+          await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+          await tester.pump();
+          expect(FocusManager.instance.primaryFocus, same(triggerFocus));
+
+          // Verify Semantics(selected: isSelected, button: true) on option tiles
+          final SemanticsData weeklyData = tester
+              .getSemantics(find.text('Weekly').last)
+              .getSemanticsData();
+          expect(weeklyData.flagsCollection.isButton, isTrue);
+          expect(
+            weeklyData.flagsCollection.isSelected,
+            equals(Tristate.isTrue),
+          );
+
+          final SemanticsData monthlyData = tester
+              .getSemantics(find.text('Monthly'))
+              .getSemanticsData();
+          expect(monthlyData.flagsCollection.isButton, isTrue);
+          expect(
+            monthlyData.flagsCollection.isSelected,
+            equals(Tristate.isFalse),
+          );
+
+          // ArrowDown moves focus from selected Weekly to Monthly, Enter selects it
+          await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+          await tester.pump();
+          await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+          await tester.pumpAndSettle();
+
+          expect(selectedValue, equals('monthly'));
+          expect(
+            tester.getSize(find.byType(JustSelect<String>)).height,
+            equals(closedHeight),
+          );
+          expect(find.text('Weekly'), findsNothing);
+
+          // Re-open with Enter and dismiss with Escape
+          await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+          await tester.pumpAndSettle();
+          expect(find.text('Weekly'), findsOneWidget);
+
+          await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+          await tester.pumpAndSettle();
+          expect(find.text('Weekly'), findsNothing);
+          expect(
+            tester.getSize(find.byType(JustSelect<String>)).height,
+            equals(closedHeight),
+          );
+        } finally {
+          handle.dispose();
+        }
+      },
+    );
+
+    testWidgets(
+      'inlineDropdown supports searchable filtering and empty state height',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            JustSelect<String>(
+              value: 'weekly',
+              searchable: true,
+              inlineDropdown: true,
+              options: const <JustSelectOption<String>>[
+                JustSelectOption<String>(value: 'weekly', label: 'Weekly'),
+                JustSelectOption<String>(value: 'monthly', label: 'Monthly'),
+              ],
+              onChanged: (_) {},
+            ),
+          ),
+        );
+
+        await tester.tap(find.byType(JustSelect<String>));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(EditableText), findsOneWidget);
+        await tester.enterText(find.byType(EditableText), 'zzz');
+        await tester.pumpAndSettle();
+
+        expect(find.text('No options found'), findsOneWidget);
+      },
+    );
   });
 
   group('JustSelectTheme & JustSelectStyle Unit Tests', () {
