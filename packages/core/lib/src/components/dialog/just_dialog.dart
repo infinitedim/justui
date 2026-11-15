@@ -42,9 +42,25 @@ class _DialogInstance<T> {
 /// Imperative controller for managing dialogs.
 class JustDialogController extends JustOverlayController {
   OverlayState? _overlayState;
+  BuildContext? _scopeContext;
   TickerProvider? _vsync;
   final List<_DialogInstance<dynamic>> _activeDialogs =
       <_DialogInstance<dynamic>>[];
+
+  Duration _resolveDuration() {
+    final BuildContext? ctx = (_scopeContext?.mounted ?? false)
+        ? _scopeContext
+        : _overlayState?.context;
+    if (ctx == null || !ctx.mounted) return JustDuration.normal;
+    final JustMotionProfile? motion = JustThemeProvider.maybeOf(
+      ctx,
+      aspect: .animations,
+    )?.theme.animations.resolve(ctx);
+    final bool disableAnimations =
+        motion?.normal == .zero ||
+        (MediaQuery.maybeDisableAnimationsOf(ctx) ?? false);
+    return disableAnimations ? .zero : (motion?.normal ?? JustDuration.normal);
+  }
 
   @override
   bool get isVisible => _activeDialogs.isNotEmpty;
@@ -75,7 +91,7 @@ class JustDialogController extends JustOverlayController {
     final bool isLocalController = animationController == null;
     final AnimationController animController =
         animationController ??
-        AnimationController(vsync: _vsync!, duration: JustDuration.normal);
+        AnimationController(vsync: _vsync!, duration: _resolveDuration());
 
     late final _DialogInstance<T> instance;
 
@@ -553,8 +569,10 @@ class _JustDialogScopeState extends State<JustDialogScope>
       oldWidget.controller.forceDismissAll();
       oldWidget.controller._vsync = null;
       oldWidget.controller._overlayState = null;
+      oldWidget.controller._scopeContext = null;
       widget.controller._vsync = this;
       widget.controller._overlayState = Overlay.of(context);
+      widget.controller._scopeContext = context;
     }
   }
 
@@ -562,6 +580,7 @@ class _JustDialogScopeState extends State<JustDialogScope>
   void didChangeDependencies() {
     super.didChangeDependencies();
     widget.controller._overlayState = Overlay.of(context);
+    widget.controller._scopeContext = context;
   }
 
   @override
@@ -569,6 +588,7 @@ class _JustDialogScopeState extends State<JustDialogScope>
     widget.controller.forceDismissAll();
     widget.controller._vsync = null;
     widget.controller._overlayState = null;
+    widget.controller._scopeContext = null;
     super.dispose();
   }
 

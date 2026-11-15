@@ -1,3 +1,5 @@
+import 'dart:ui' show PointerDeviceKind;
+
 import 'package:flutter/material.dart'
     show Colors, Icons, MaterialApp, Scaffold, ThemeExtension;
 import 'package:flutter/semantics.dart';
@@ -390,6 +392,59 @@ void main() {
           (BoxShadow s) => s.color == boxB.color,
         );
         expect(same, isFalse);
+      },
+    );
+
+    testWidgets(
+      'JustTooltip and JustToastController honor disableAnimations with Duration.zero',
+      (WidgetTester tester) async {
+        final JustToastController toastController = JustToastController();
+        await tester.pumpWidget(
+          _buildTestApp(
+            MediaQuery(
+              data: const MediaQueryData(disableAnimations: true),
+              child: JustToastScope(
+                controller: toastController,
+                child: const JustTooltip(
+                  message: 'Quick Tip',
+                  showDelay: Duration.zero,
+                  child: SizedBox(width: 48, height: 48, child: Text('Target')),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final TestGesture mouse = await tester.createGesture(
+          kind: PointerDeviceKind.mouse,
+        );
+        await mouse.addPointer();
+        await mouse.moveTo(tester.getCenter(find.text('Target')));
+        await tester.pump(const Duration(milliseconds: 1));
+        await tester.pump();
+
+        final Opacity tipOpacity = tester.widget<Opacity>(
+          find.ancestor(
+            of: find.byType(JustTooltipBubble),
+            matching: find.byType(Opacity),
+          ),
+        );
+        expect(tipOpacity.opacity, equals(1.0));
+        await mouse.moveTo(Offset.zero);
+        await mouse.removePointer();
+        await tester.pumpAndSettle();
+
+        toastController.show(message: 'Instant Toast');
+        await tester.pump();
+        final FadeTransition toastFade = tester.widget<FadeTransition>(
+          find.ancestor(
+            of: find.byType(JustToastSurface),
+            matching: find.byType(FadeTransition),
+          ),
+        );
+        expect(toastFade.opacity.value, equals(1.0));
+        toastController.forceDismissAll();
+        await tester.pumpAndSettle();
       },
     );
   });

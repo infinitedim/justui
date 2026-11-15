@@ -622,6 +622,39 @@ void main() {
       await tester.pumpAndSettle();
       expect(controller.isVisible, isFalse);
     });
+
+    testWidgets(
+      'JustDialogController resolves Duration.zero under disableAnimations',
+      (WidgetTester tester) async {
+        final JustDialogController controller = JustDialogController();
+        await tester.pumpWidget(
+          JustThemeProvider(
+            lightTheme: JustThemeData.light,
+            child: MaterialApp(
+              home: MediaQuery(
+                data: const MediaQueryData(disableAnimations: true),
+                child: JustDialogScope(
+                  controller: controller,
+                  child: const Scaffold(body: SizedBox.shrink()),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        unawaited(controller.show<void>(content: const Text('Instant Dialog')));
+        await tester.pump();
+
+        final ScaleTransition dialogScale = tester.widget<ScaleTransition>(
+          find.ancestor(
+            of: find.byType(JustDialogSurface),
+            matching: find.byType(ScaleTransition),
+          ),
+        );
+        expect(dialogScale.scale.value, equals(1.0));
+        controller.forceDismissAll();
+      },
+    );
   });
 
   group('JustDialogSurface Inline Tests', () {

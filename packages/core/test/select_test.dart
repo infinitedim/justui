@@ -880,5 +880,105 @@ void main() {
         ]),
       );
     });
+
+    testWidgets(
+      'JustSelect trigger semantics does not duplicate label or value text',
+      (WidgetTester tester) async {
+        final SemanticsHandle handle = tester.ensureSemantics();
+        try {
+          await tester.pumpWidget(
+            buildTestApp(
+              JustSelect<String>(
+                label: 'Frequency',
+                value: 'weekly',
+                inlineDropdown: true,
+                options: const <JustSelectOption<String>>[
+                  JustSelectOption<String>(value: 'weekly', label: 'Weekly'),
+                  JustSelectOption<String>(value: 'monthly', label: 'Monthly'),
+                ],
+                onChanged: (_) {},
+              ),
+            ),
+          );
+
+          final List<SemanticsData> nodes = <SemanticsData>[];
+          bool collect(SemanticsNode node) {
+            nodes.add(node.getSemanticsData());
+            node.visitChildren(collect);
+            return true;
+          }
+
+          collect(tester.getSemantics(find.byType(JustSelect<String>)));
+          final SemanticsData trigger = nodes.firstWhere(
+            (SemanticsData d) => d.flagsCollection.isButton,
+          );
+          expect(trigger.label, equals('Frequency'));
+          expect(trigger.value, equals('Weekly'));
+          expect(trigger.flagsCollection.isExpanded, equals(Tristate.isFalse));
+          expect(
+            nodes.where((SemanticsData d) => d.label.contains('Frequency')),
+            hasLength(1),
+          );
+
+          await tester.tap(find.text('Weekly'));
+          await tester.pumpAndSettle();
+
+          nodes.clear();
+          collect(tester.getSemantics(find.byType(JustSelect<String>)));
+          final List<SemanticsData> buttons = nodes
+              .where((SemanticsData d) => d.flagsCollection.isButton)
+              .toList();
+          expect(buttons, hasLength(3));
+          expect(buttons.first.label, equals('Frequency'));
+          expect(buttons.first.value, equals('Weekly'));
+          expect(
+            buttons.first.flagsCollection.isExpanded,
+            equals(Tristate.isTrue),
+          );
+          expect(buttons[1].label, equals('Weekly'));
+          expect(buttons[2].label, equals('Monthly'));
+        } finally {
+          handle.dispose();
+        }
+      },
+    );
+
+    testWidgets(
+      'JustSelect resolves zero duration for chevron and overlay under disableAnimations',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            MediaQuery(
+              data: const MediaQueryData(disableAnimations: true),
+              child: JustSelect<String>(
+                label: 'Frequency',
+                value: 'weekly',
+                options: const <JustSelectOption<String>>[
+                  JustSelectOption<String>(value: 'weekly', label: 'Weekly'),
+                  JustSelectOption<String>(value: 'monthly', label: 'Monthly'),
+                ],
+                onChanged: (_) {},
+              ),
+            ),
+          ),
+        );
+
+        final AnimatedRotation chevron = tester.widget<AnimatedRotation>(
+          find.byType(AnimatedRotation),
+        );
+        expect(chevron.duration, equals(Duration.zero));
+
+        await tester.tap(find.text('Weekly'));
+        await tester.pump();
+        final TweenAnimationBuilder<double> overlayAnim = tester
+            .widget<TweenAnimationBuilder<double>>(
+              find.ancestor(
+                of: find.text('Monthly'),
+                matching: find.byType(TweenAnimationBuilder<double>),
+              ),
+            );
+        expect(overlayAnim.duration, equals(Duration.zero));
+      },
+    );
   });
 }

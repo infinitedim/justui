@@ -6,7 +6,8 @@ import 'package:flutter/services.dart'
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
-import 'package:just_ui_tokens/just_ui_tokens.dart' show JustColorScheme;
+import 'package:just_ui_tokens/just_ui_tokens.dart'
+    show JustColorScheme, JustMotionProfile;
 
 import '../../theme/theme_data_material.dart';
 import '../../theme/theme_provider.dart';
@@ -395,52 +396,62 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
         );
 
     final bool hasError = widget.errorText != null;
-
-    return Semantics(
+    final Widget trigger = Semantics(
       container: true,
+      button: true,
+      expanded: _isOpen,
+      enabled: widget.enabled,
       label: widget.label ?? 'Select field',
       value: selectedOption?.label ?? 'None selected',
       hint: widget.enabled ? 'Double tap to open list of options' : 'Disabled',
-      enabled: widget.enabled,
-      child: Column(
-        crossAxisAlignment: .start,
-        mainAxisSize: .min,
-        children: <Widget>[
-          if (widget.label != null) ...<Widget>[
-            Text(
+      child: _buildTrigger(visuals, selectedOption, hasError),
+    );
+
+    return Column(
+      crossAxisAlignment: .start,
+      mainAxisSize: .min,
+      children: <Widget>[
+        if (widget.label != null) ...<Widget>[
+          ExcludeSemantics(
+            child: Text(
               widget.label!,
               style: typography.bodySm.copyWith(
                 fontWeight: .w600,
                 color: colors.textPrimary,
               ),
             ),
-            SizedBox(height: spacing.xs),
-          ],
-          if (widget.inlineDropdown) ...<Widget>[
-            _buildTrigger(visuals, selectedOption, hasError),
-            if (_isOpen) ...<Widget>[
-              SizedBox(height: spacing.xs),
-              _buildInlineDropdown(visuals),
-            ],
-          ] else
-            OverlayPortal.overlayChildLayoutBuilder(
-              controller: _overlayController,
-              overlayChildBuilder: (
-                BuildContext context,
-                OverlayChildLayoutInfo info,
-              ) => _buildDropdown(context, info, visuals),
-              child: _buildTrigger(visuals, selectedOption, hasError),
-            ),
-          if (hasError) ...<Widget>[
-            SizedBox(height: spacing.xs),
-            Text(
-              widget.errorText!,
-              style: typography.caption.copyWith(color: colors.error),
-            ),
-          ],
+          ),
+          SizedBox(height: spacing.xs),
         ],
-      ),
+        if (widget.inlineDropdown) ...<Widget>[
+          trigger,
+          if (_isOpen) ...<Widget>[
+            SizedBox(height: spacing.xs),
+            _buildInlineDropdown(visuals),
+          ],
+        ] else
+          OverlayPortal.overlayChildLayoutBuilder(
+            controller: _overlayController,
+            overlayChildBuilder: (
+              BuildContext context,
+              OverlayChildLayoutInfo info,
+            ) => _buildDropdown(context, info, visuals),
+            child: trigger,
+          ),
+        if (hasError) ...<Widget>[
+          SizedBox(height: spacing.xs),
+          Text(
+            widget.errorText!,
+            style: typography.caption.copyWith(color: colors.error),
+          ),
+        ],
+      ],
     );
+  }
+
+  Duration _resolveDropdownDuration(BuildContext context, _SelectVisuals v) {
+    final JustMotionProfile motion = v.theme.animations.resolve(context);
+    return motion.fast == .zero ? .zero : v.presetTokens.dropdownOpenDuration;
   }
 
   /// The always-visible trigger showing the selected option or placeholder.
@@ -472,6 +483,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
       enabled: widget.enabled,
       onTap: _toggleDropdown,
       builder: (BuildContext context, JustInteractionState state) {
+        final Duration dropdownDuration = _resolveDropdownDuration(context, v);
         Widget inner = Container(
           height: v.height,
           padding: .symmetric(horizontal: spacing.md),
@@ -483,33 +495,37 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
                 SizedBox(width: spacing.sm),
               ],
               Expanded(
-                child: selectedOption != null
-                    ? Row(
-                        children: <Widget>[
-                          if (selectedOption.icon != null) ...<Widget>[
-                            selectedOption.icon!,
-                            SizedBox(width: spacing.sm),
-                          ],
-                          Expanded(
-                            child: Text(
-                              selectedOption.label,
-                              style: v.textStyle.copyWith(color: v.textColor),
-                              overflow: .ellipsis,
+                child: ExcludeSemantics(
+                  child: selectedOption != null
+                      ? Row(
+                          children: <Widget>[
+                            if (selectedOption.icon != null) ...<Widget>[
+                              selectedOption.icon!,
+                              SizedBox(width: spacing.sm),
+                            ],
+                            Expanded(
+                              child: Text(
+                                selectedOption.label,
+                                style: v.textStyle.copyWith(color: v.textColor),
+                                overflow: .ellipsis,
+                              ),
                             ),
+                          ],
+                        )
+                      : Text(
+                          widget.placeholder ?? 'Select option...',
+                          style: v.textStyle.copyWith(
+                            color: v.placeholderColor,
                           ),
-                        ],
-                      )
-                    : Text(
-                        widget.placeholder ?? 'Select option...',
-                        style: v.textStyle.copyWith(color: v.placeholderColor),
-                        overflow: .ellipsis,
-                      ),
+                          overflow: .ellipsis,
+                        ),
+                ),
               ),
               SizedBox(width: spacing.sm),
               // Chevron Icon
               AnimatedRotation(
                 turns: _isOpen ? 0.5 : 0.0,
-                duration: presetTokens.dropdownOpenDuration,
+                duration: dropdownDuration,
                 curve: presetTokens.dropdownOpenCurve,
                 child: Icon(
                   Icons.expand_more,
@@ -726,7 +742,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
           top: topPosition,
           child: TweenAnimationBuilder<double>(
             tween: Tween<double>(begin: 0.0, end: 1.0),
-            duration: presetTokens.dropdownOpenDuration,
+            duration: _resolveDropdownDuration(context, v),
             curve: presetTokens.dropdownOpenCurve,
             builder: (BuildContext context, double val, Widget? child) {
               return Opacity(

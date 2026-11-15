@@ -1,3 +1,5 @@
+import 'dart:async' show unawaited;
+
 import 'package:flutter/material.dart'
     show Colors, Icons, MaterialApp, Scaffold, ThemeData;
 import 'package:flutter/src/material/theme_data.dart';
@@ -827,6 +829,70 @@ void main() {
         await tester.tapAt(const Offset(10, 500));
         await tester.pumpAndSettle();
         expect(find.text('Fallback Top Sheet'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'JustSheetController and showJustBottomSheet use Duration.zero when disableAnimations is true',
+      (WidgetTester tester) async {
+        final JustSheetController sheetController = JustSheetController();
+        await tester.pumpWidget(
+          _buildNavWrapper(
+            child: MediaQuery(
+              data: const MediaQueryData(disableAnimations: true),
+              child: JustSheetScope(
+                controller: sheetController,
+                child: const Text('Sheet Host'),
+              ),
+            ),
+          ),
+        );
+
+        unawaited(
+          sheetController.show<void>(
+            content: const Text('Scoped Reduced Sheet'),
+          ),
+        );
+        await tester.pump();
+        final SlideTransition scopedSlide = tester.widget<SlideTransition>(
+          find.ancestor(
+            of: find.byType(JustSheetSurface),
+            matching: find.byType(SlideTransition),
+          ),
+        );
+        expect(scopedSlide.position.value, equals(Offset.zero));
+        sheetController.forceDismissAll();
+        await tester.pumpAndSettle();
+
+        await tester.pumpWidget(
+          _buildNavWrapper(
+            child: MediaQuery(
+              data: const MediaQueryData(disableAnimations: true),
+              child: Builder(
+                builder: (BuildContext context) => GestureDetector(
+                  onTap: () => showJustBottomSheet<void>(
+                    context: context,
+                    content: const Text('Fallback Reduced Sheet'),
+                  ),
+                  child: const Text('Open Fallback'),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('Open Fallback'));
+        await tester.pump();
+        await tester.pump();
+        final SlideTransition fallbackSlide = tester.widget<SlideTransition>(
+          find.ancestor(
+            of: find.byType(JustSheetSurface),
+            matching: find.byType(SlideTransition),
+          ),
+        );
+        expect(fallbackSlide.position.value, equals(Offset.zero));
+        await tester.tapAt(const Offset(10, 10));
+        await tester.pumpAndSettle();
       },
     );
   });
