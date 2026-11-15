@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart' show Icons;
+import 'package:flutter/scheduler.dart' show SchedulerBinding, SchedulerPhase;
 import 'package:flutter/services.dart'
     show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;
 import 'package:flutter/widgets.dart';
@@ -142,6 +143,29 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
+    _triggerFocusNode.addListener(_onTriggerFocusChanged);
+  }
+
+  void _onTriggerFocusChanged() {
+    if (!mounted ||
+        _triggerFocusNode.hasFocus ||
+        widget.searchable ||
+        !_isOpen) {
+      return;
+    }
+    if (SchedulerBinding.instance.schedulerPhase ==
+        SchedulerPhase.persistentCallbacks) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted &&
+            !_triggerFocusNode.hasFocus &&
+            !widget.searchable &&
+            _isOpen) {
+          _closeDropdown(restoreFocus: false);
+        }
+      });
+    } else {
+      _closeDropdown(restoreFocus: false);
+    }
   }
 
   @override
@@ -163,6 +187,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
 
   @override
   void dispose() {
+    _triggerFocusNode.removeListener(_onTriggerFocusChanged);
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     _triggerFocusNode.dispose();
@@ -227,14 +252,16 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     }
   }
 
-  void _closeDropdown() {
+  void _closeDropdown({bool restoreFocus = true}) {
     setState(() {
       _isInlineOpen = false;
     });
     if (_overlayController.isShowing) {
       _overlayController.hide();
     }
-    _triggerFocusNode.requestFocus();
+    if (restoreFocus) {
+      _triggerFocusNode.requestFocus();
+    }
   }
 
   void _selectOption(JustSelectOption<T> option) {
@@ -847,90 +874,147 @@ class const _SelectSearchField({
 }
 
 /// A single selectable row inside the [JustSelect] dropdown.
-class const _SelectOptionTile<T>({
-  required final JustSelectOption<T> option,
-  required final bool isSelected,
-  required final bool isKeyboardFocused,
-  required final JustSelectStyle? instanceStyle,
-  required final _SelectVisuals visuals,
-  required final VoidCallback onTap,
-}) extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final JustColorScheme colors = visuals.colors;
-    final JustSpacingScheme spacing = visuals.spacing;
-    final JustPresetTokens presetTokens = visuals.presetTokens;
-    final JustSelectStyle? themeStyle = visuals.themeStyle;
+///
+/// Intentionally avoids wrapping each option in [Focus] so the select control
+/// keeps one keyboard Tab stop on its trigger and never emits `tabindex="0"`
+/// option buttons inside `ExcludeFocus`.
+class _SelectOptionTile<T> extends StatefulWidget {
+  final JustSelectOption<T> option;
+  final bool isSelected;
+  final bool isKeyboardFocused;
+  final JustSelectStyle? instanceStyle;
+  final _SelectVisuals visuals;
+  final VoidCallback onTap;
 
-    final Color optionBg = isSelected
+  const _SelectOptionTile({
+    required this.option,
+    required this.isSelected,
+    required this.isKeyboardFocused,
+    required this.instanceStyle,
+    required this.visuals,
+    required this.onTap,
+  });
+
+  @override
+  State<_SelectOptionTile<T>> createState() => _SelectOptionTileState<T>();
+}
+
+class _SelectOptionTileState<T> extends State<_SelectOptionTile<T>> {
+  bool _isHovered = false;
+
+  @override
+  void didUpdateWidget(covariant _SelectOptionTile<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.option.enabled && _isHovered) {
+      _isHovered = false;
+    }
+  }
+
+  Widget _buildOptionContent(Color optionText) {
+    final JustSpacingScheme spacing = widget.visuals.spacing;
+    final JustPresetTokens presetTokens = widget.visuals.presetTokens;
+
+    return Row(
+      children: <Widget>[
+        if (widget.option.icon != null) ...<Widget>[
+          widget.option.icon!,
+          SizedBox(width: spacing.sm),
+        ],
+        Expanded(
+          child: Text(
+            widget.option.label,
+            style: widget.visuals.textStyle.copyWith(
+              color: optionText,
+              fontWeight: widget.isSelected ? .w600 : .w400,
+            ),
+            overflow: .ellipsis,
+          ),
+        ),
+        if (widget.isSelected && !presetTokens.showsDefaultBorder) ...<Widget>[
+          SizedBox(width: spacing.sm),
+          Icon(Icons.check, size: 16, color: optionText),
+        ],
+      ],
+    );
+  }
+
+  ({Color bg, Color text, bool showHover}) _resolveTileColors() {
+    final JustColorScheme colors = widget.visuals.colors;
+    final JustPresetTokens presetTokens = widget.visuals.presetTokens;
+    final JustSelectStyle? themeStyle = widget.visuals.themeStyle;
+
+    final Color optionBg = widget.isSelected
         ? (presetTokens.showsDefaultBorder
               ? colors.textPrimary
-              : (instanceStyle?.selectedOptionColor ??
+              : (widget.instanceStyle?.selectedOptionColor ??
                     themeStyle?.selectedOptionColor ??
                     colors.borderFocus.withValues(alpha: 0.15)))
         : const Color(0x00000000);
 
-    final Color optionText = isSelected
+    final Color optionText = widget.isSelected
         ? (presetTokens.showsDefaultBorder
               ? colors.textInverse
-              : (instanceStyle?.textColor ??
+              : (widget.instanceStyle?.textColor ??
                     themeStyle?.textColor ??
                     colors.borderFocus))
-        : (option.enabled
-              ? visuals.textColor
-              : visuals.textColor.withValues(alpha: 0.4));
+        : (widget.option.enabled
+              ? widget.visuals.textColor
+              : widget.visuals.textColor.withValues(alpha: 0.4));
+
+    final bool showHover =
+        (widget.option.enabled && _isHovered) || widget.isKeyboardFocused;
+    final Color itemBg = showHover && !widget.isSelected
+        ? (widget.instanceStyle?.optionHoverColor ??
+              themeStyle?.optionHoverColor ??
+              colors.borderDefault.withValues(alpha: 0.1))
+        : optionBg;
+
+    return (bg: itemBg, text: optionText, showHover: showHover);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final JustColorScheme colors = widget.visuals.colors;
+    final JustSpacingScheme spacing = widget.visuals.spacing;
+    final JustPresetTokens presetTokens = widget.visuals.presetTokens;
+    final ({Color bg, Color text, bool showHover}) tile = _resolveTileColors();
 
     return Semantics(
       container: true,
-      selected: isSelected,
+      selected: widget.isSelected,
       button: true,
-      enabled: option.enabled,
-      child: JustPressable(
-        enabled: option.enabled,
-        onTap: onTap,
-        builder: (BuildContext context, JustInteractionState state) {
-          final bool showHover = state.isHovered || isKeyboardFocused;
-          final Color itemBg = showHover && !isSelected
-              ? (instanceStyle?.optionHoverColor ??
-                    themeStyle?.optionHoverColor ??
-                    colors.borderDefault.withValues(alpha: 0.1))
-              : optionBg;
-
-          return Container(
-            height: visuals.height - 4,
+      enabled: widget.option.enabled,
+      child: MouseRegion(
+        onEnter: (_) {
+          if (widget.option.enabled && !_isHovered) {
+            setState(() => _isHovered = true);
+          }
+        },
+        onExit: (_) {
+          if (_isHovered) {
+            setState(() => _isHovered = false);
+          }
+        },
+        cursor: widget.option.enabled
+            ? SystemMouseCursors.click
+            : SystemMouseCursors.basic,
+        child: GestureDetector(
+          behavior: .opaque,
+          onTap: widget.option.enabled ? widget.onTap : null,
+          child: Container(
+            height: widget.visuals.height - 4,
             padding: .symmetric(horizontal: spacing.md),
             decoration: BoxDecoration(
-              color: itemBg,
-              border: presetTokens.showsDefaultBorder && showHover
+              color: tile.bg,
+              border: presetTokens.showsDefaultBorder && tile.showHover
                   ? Border(
                       left: BorderSide(color: colors.textPrimary, width: 3.0),
                     )
                   : null,
             ),
-            child: Row(
-              children: <Widget>[
-                if (option.icon != null) ...<Widget>[
-                  option.icon!,
-                  SizedBox(width: spacing.sm),
-                ],
-                Expanded(
-                  child: Text(
-                    option.label,
-                    style: visuals.textStyle.copyWith(
-                      color: optionText,
-                      fontWeight: isSelected ? .w600 : .w400,
-                    ),
-                    overflow: .ellipsis,
-                  ),
-                ),
-                if (isSelected && !presetTokens.showsDefaultBorder) ...<Widget>[
-                  SizedBox(width: spacing.sm),
-                  Icon(Icons.check, size: 16, color: optionText),
-                ],
-              ],
-            ),
-          );
-        },
+            child: _buildOptionContent(tile.text),
+          ),
+        ),
       ),
     );
   }
