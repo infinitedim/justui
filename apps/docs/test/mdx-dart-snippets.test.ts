@@ -49,11 +49,37 @@ const FOUNDATION_OR_TOKEN_PREFIXES = [
   'JustRangeValues',
   'JustCalendarView',
   'JustFormInput',
+  'JustTimeOfDay',
+  'JustDayPeriod',
 ];
 
+const BANNED_PATTERNS = [
+  {
+    name: 'DateTimeRange',
+    regex: /\bDateTimeRange\b/,
+  },
+  {
+    name: 'TimeOfDay',
+    regex: /\bTimeOfDay\b/,
+  },
+  {
+    name: 'DayPeriod',
+    regex: /\bDayPeriod\b/,
+  },
+  {
+    name: 'initialThemeMode: ThemeMode',
+    regex: /initialThemeMode:\s*ThemeMode\./,
+  },
+  {
+    name: 'JustDateRangePreset with range param',
+    regex: /JustDateRangePreset\([^)]*\brange:/,
+  },
+];
+
+const mdxDir = path.resolve(import.meta.dirname, '../content/docs');
+const mdxFiles = findMdxFiles(mdxDir);
+
 describe('MDX and Generated Dart Snippets Validation', () => {
-  const mdxDir = path.resolve(import.meta.dirname, '../content/docs');
-  const mdxFiles = findMdxFiles(mdxDir);
   const knownComponentNames = new Set(GENERATED_COMPONENTS.map((c) => c.name));
 
   it('finds MDX files in content/docs', () => {
@@ -113,6 +139,22 @@ describe('MDX and Generated Dart Snippets Validation', () => {
           }
           match = justComponentRegex.exec(snippet);
         }
+      }
+    }
+  });
+});
+
+describe('MDX Material and Preset Cleanliness', () => {
+  it('ensures no Dart snippets or props tables use removed Material types or broken parameters', () => {
+    for (const filePath of mdxFiles) {
+      const content = readFileSync(filePath, 'utf-8');
+      const relative = path.relative(mdxDir, filePath);
+
+      for (const banned of BANNED_PATTERNS) {
+        expect(
+          banned.regex.test(content),
+          `File ${relative} contains forbidden pattern "${banned.name}"`
+        ).toBe(false);
       }
     }
   });

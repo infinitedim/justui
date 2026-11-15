@@ -25,6 +25,8 @@ const Set<String> knownPrefixesOrFoundations = {
   'JustScroll',
   'JustTab',
   'JustDate',
+  'JustTime',
+  'JustDayPeriod',
 };
 
 Set<String> collectDeclaredSymbols(String dirPath) {
@@ -303,6 +305,39 @@ void main(List<String> args) {
           );
           errorCount++;
         }
+      }
+
+      // 4. Check for banned removed Material types and parameters in snippets
+      if (RegExp(r'\bDateTimeRange\b').hasMatch(snippet.code)) {
+        stderr.writeln(
+          'Error in $relPath:${snippet.startLine}: forbidden usage of DateTimeRange (use JustDateTimeRange)',
+        );
+        errorCount++;
+      }
+      if (RegExp(r'\bTimeOfDay\b').hasMatch(snippet.code)) {
+        stderr.writeln(
+          'Error in $relPath:${snippet.startLine}: forbidden usage of TimeOfDay (use JustTimeOfDay)',
+        );
+        errorCount++;
+      }
+      if (RegExp(r'\bDayPeriod\b').hasMatch(snippet.code)) {
+        stderr.writeln(
+          'Error in $relPath:${snippet.startLine}: forbidden usage of DayPeriod (use JustDayPeriod)',
+        );
+        errorCount++;
+      }
+      if (RegExp(r'initialThemeMode:\s*ThemeMode\.').hasMatch(snippet.code)) {
+        stderr.writeln(
+          'Error in $relPath:${snippet.startLine}: forbidden usage of initialThemeMode: ThemeMode (use JustThemeMode)',
+        );
+        errorCount++;
+      }
+      if (RegExp(r'JustDateRangePreset\([\s\S]*?\brange:')
+          .hasMatch(snippet.code)) {
+        stderr.writeln(
+          'Error in $relPath:${snippet.startLine}: JustDateRangePreset uses "resolve:" callback, not "range:"',
+        );
+        errorCount++;
       }
     }
   }
