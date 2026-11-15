@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_picker.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_range_picker.dart';
 import 'package:just_ui_core/src/components/radio/just_radio_group.dart';
+import 'package:just_ui_core/src/components/select/just_select.dart';
 import 'package:just_ui_core/src/components/switch/just_switch.dart';
 
 import '../../support/golden_harness.dart';
@@ -15,6 +16,7 @@ const List<String> _scenes = <String>[
   'radio',
   'radio-group',
   'switch',
+  'select',
   'date-picker',
   'date-range-picker',
 ];
@@ -68,6 +70,26 @@ void _controlTests() {
     await tester.pumpAndSettle();
     expect(find.text(message), findsNothing);
   });
+
+  testWidgets(
+    'select: one stop closed, Enter opens, Down + Enter picks Monthly',
+    (WidgetTester tester) async {
+      await pumpDefault(tester, 'select');
+      final List<FocusNode> stops = await tabStops(tester);
+      expect(stops, hasLength(1));
+      stops.single.requestFocus();
+      await tester.pump();
+      await press(tester, LogicalKeyboardKey.enter);
+      expect(find.text('Monthly'), findsOneWidget);
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      await press(tester, LogicalKeyboardKey.enter);
+      final JustSelect<String> select = tester.widget<JustSelect<String>>(
+        find.byType(JustSelect<String>),
+      );
+      expect(select.value, 'monthly');
+      expect(find.text('Weekly'), findsNothing);
+    },
+  );
 }
 
 void _pickerTests() {

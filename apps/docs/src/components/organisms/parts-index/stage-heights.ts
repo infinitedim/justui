@@ -17,8 +17,13 @@ export const STAGE_HEIGHTS: Readonly<Record<string, string>> = {
   carousel: 'min-h-[128px]',
   'date-picker': 'min-h-[336px]',
   'date-range-picker': 'min-h-[336px]',
+  dialog: 'min-h-[136px]',
   input: 'min-h-[120px]',
   radio: 'min-h-[120px]',
   'radio-group': 'min-h-[120px]',
+  select: 'min-h-[168px]',
+  sheet: 'min-h-[96px]',
   table: 'min-h-[136px]',
+  toast: 'min-h-[104px]',
+  tooltip: 'min-h-[96px]',
 };

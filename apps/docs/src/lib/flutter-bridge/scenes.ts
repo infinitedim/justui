@@ -15,16 +15,21 @@ export const FLUTTER_SCENES = [
   'checkbox',
   'date-picker',
   'date-range-picker',
+  'dialog',
   'icon-button',
   'input',
   'progress',
   'radio',
   'radio-group',
+  'select',
   'separator',
+  'sheet',
   'skeleton',
   'switch',
   'table',
+  'toast',
   'toggle',
+  'tooltip',
 ] as const;
 
 export type FlutterScene = (typeof FLUTTER_SCENES)[number];

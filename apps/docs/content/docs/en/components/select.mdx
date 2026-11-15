@@ -11,7 +11,7 @@ The Select component is a custom dropdown select input element built without rel
 
 ## Description
 
-- **`JustSelect<T>`**: The dropdown select container widget managing selection, labels, validation states, and search input options.
+- **`JustSelect<T>`**: The dropdown select container widget managing selection, labels, validation states, search input options, and optional inline expansion via `inlineDropdown`.
 - **`JustSelectOption<T>`**: A data model representing a single dropdown option item (supporting label text, prefix icon, disabled status, or acting as a divider separator).
 
 ---
@@ -112,6 +112,46 @@ class _SelectAdvancedDemoState extends State<SelectAdvancedDemo> {
 }
 ```
 
+### Inline Dropdown
+
+Set `inlineDropdown: true` to render the dropdown menu in-flow below the trigger inside a `Column` rather than in an overlay portal. This is useful inside constrained layouts, scroll views, or embedded panels where overlay portals cannot be used.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:your_app/core/just_ui_core.dart';
+
+class SelectInlineDemo extends StatefulWidget {
+  const SelectInlineDemo({super.key});
+
+  @override
+  State<SelectInlineDemo> createState() => _SelectInlineDemoState();
+}
+
+class _SelectInlineDemoState extends State<SelectInlineDemo> {
+  String _billingCycle = 'monthly';
+
+  static const List<JustSelectOption<String>> _cycles = [
+    JustSelectOption(value: 'monthly', label: 'Monthly'),
+    JustSelectOption(value: 'yearly', label: 'Yearly'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSelect<String>(
+      label: 'Billing cycle',
+      value: _billingCycle,
+      options: _cycles,
+      inlineDropdown: true,
+      onChanged: (val) {
+        setState(() {
+          _billingCycle = val;
+        });
+      },
+    );
+  }
+}
+```
+
 ---
 
 ## API Reference (Props)
@@ -144,6 +184,7 @@ class _SelectAdvancedDemoState extends State<SelectAdvancedDemo> {
 | `style`             | `JustSelectStyle?`          | `null`        | Direct per-instance style overrides.                                                                           |
 | `prefixIcon`        | `Widget?`                   | `null`        | Optional graphic widget prepended to the select input trigger.                                                 |
 | `maxDropdownHeight` | `int`                       | `300`         | Sizing constraint capping the vertical height of the scrollable dropdown panel.                                |
+| `inlineDropdown`    | `bool`                      | `false`       | Renders the open dropdown menu inline below the trigger in layout flow instead of using an overlay portal.     |
 
 ---
 
@@ -174,5 +215,7 @@ JustSelect implements full keyboard compliance:
 
 1. **A11y Error Announcements**:
    If `errorText` is provided, a screen reader announcement is triggered via `SemanticsService` to alert users of input errors.
-2. **Overlay Trapping**:
-   Dropdown listings are positioned dynamically relative to screen space. If the select trigger is near the bottom of the screen, the dropdown floats above it (`topPosition` calculated dynamically) to avoid rendering outside the screen area.
+2. **Overlay Trapping & Inline Expansion**:
+   By default (`inlineDropdown: false`), dropdown listings are positioned dynamically relative to screen space so the dropdown floats above the trigger (`topPosition` calculated dynamically) when near the bottom of the screen. When `inlineDropdown: true`, the menu renders inside the widget's `Column` with intrinsic height computed from filtered options, search bar, and borders capped at `maxDropdownHeight`.
+3. **Option Semantics**:
+   Each option tile exposes `Semantics(selected: ...)` matching the current `value` so assistive technologies announce the selected item.

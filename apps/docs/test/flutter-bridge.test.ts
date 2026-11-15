@@ -33,7 +33,7 @@ describe('schema', () => {
 
   it('rejects unknown scenes, presets, themes and locales', () => {
     for (const bad of [
-      { scene: 'dialog' },
+      { scene: 'tabs' },
       { scene: 'not-a-part' },
       { preset: 'material' },
       { theme: 'sepia' },

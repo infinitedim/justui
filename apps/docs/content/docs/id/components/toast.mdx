@@ -11,11 +11,12 @@ Komponen Toast menyediakan umpan balik singkat tentang suatu operasi melalui not
 
 ## Deskripsi
 
-Toast dipicu secara imperatif dan bukan dideklarasikan secara langsung di tatanan widget. Sistem ini terdiri dari:
+Toast dapat dipicu secara imperatif atau dirender langsung di dalam tatanan widget dengan widget permukaan inline. Sistem ini terdiri dari:
 
 - **`JustToastScope`**: Widget pembungkus yang diletakkan di dekat akar aplikasi (atau halaman) kamu untuk menangkap konteks ticker provider dan mengelola overlay.
 - **`JustToastController`**: Pengelola imperatif yang menjadwalkan, membatasi, dan memicu notifikasi.
 - **`context.justToast`**: Ekstensi `BuildContext` untuk memanggil peringatan toast secara mudah dari mana saja di dalam tatanan widget di bawah scope.
+- **`JustToastSurface`**: Widget permukaan stateless yang merender banner toast bertema (ikon, pesan, `description` opsional, tombol tutup, dan aksi) secara inline tanpa overlay atau timer penutupan.
 
 ---
 
@@ -96,6 +97,25 @@ void triggerAdvancedToast(BuildContext context) {
 }
 ```
 
+### Permukaan Inline (`JustToastSurface`)
+
+Gunakan `JustToastSurface` untuk merender kartu toast secara inline di dalam tatanan widget dengan baris `description` sekunder opsional dan `borderWidth` kustom:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:your_app/core/just_ui_core.dart';
+
+Widget buildInlineToast(BuildContext context) {
+  return const JustToastSurface(
+    message: 'Perubahan tersimpan',
+    description: 'Pengaturan project diperbarui.',
+    variant: .success,
+    style: JustToastStyle(borderWidth: 2),
+    showCloseButton: false,
+  );
+}
+```
+
 ---
 
 ## Referensi API (Props)
@@ -115,15 +135,33 @@ void triggerAdvancedToast(BuildContext context) {
 
 | Parameter             | Tipe Data                      | Nilai Default          | Deskripsi                                                                                           |
 | :-------------------- | :----------------------------- | :--------------------- | :-------------------------------------------------------------------------------------------------- |
-| `message`             | `String`                       | _Wajib_                | Teks pesan deskriptif yang ditampilkan dalam notifikasi.                                            |
+| `message`             | `String`                       | _Wajib_                | Teks judul/pesan utama yang ditampilkan dalam notifikasi.                                           |
+| `description`         | `String?`                      | `null`                 | Teks deskripsi sekunder opsional yang dirender di bawah `message`.                                  |
 | `variant`             | `ToastVariant`                 | `ToastVariant.info`    | Varian warna dan status: `.info` (biru), `.success` (hijau), `.warning` (oranye), `.error` (merah). |
 | `duration`            | `Duration`                     | `Duration(seconds: 3)` | Durasi waktu sebelum toast menghilang secara otomatis.                                              |
-| `style`               | `JustToastStyle?`              | `null`                 | Penyesuaian gaya langsung per-instans (padding, garis batas, warna, bayangan).                      |
+| `style`               | `JustToastStyle?`              | `null`                 | Penyesuaian gaya langsung per-instans (padding, borderColor, borderWidth, warna, bayangan).         |
 | `icon`                | `Widget?`                      | `null`                 | Widget awalan (biasanya ikon status) di sebelah kiri teks pesan.                                    |
 | `action`              | `Widget?`                      | `null`                 | Widget kontrol kustom (biasanya tombol teks) di bagian paling kanan.                                |
 | `onDismissed`         | `VoidCallback?`                | `null`                 | Callback yang dipanggil sesaat setelah toast menyelesaikan transisi keluar.                         |
 | `animationController` | `AnimationController?`         | `null`                 | Mengubah pengontrol garis waktu transisi masuk dan keluar.                                          |
 | `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                 | Transisi animasi tata letak kustom.                                                                 |
+
+### JustToastSurface
+
+`JustToastSurface(...)` menerima properti berikut untuk rendering inline:
+
+| Properti               | Tipe Data         | Nilai Default | Deskripsi                                                                               |
+| :--------------------- | :---------------- | :------------ | :-------------------------------------------------------------------------------------- |
+| `message`              | `String`          | _Wajib_       | Teks pesan utama yang ditampilkan di dalam kartu toast.                                 |
+| `description`          | `String?`         | `null`        | Teks deskripsi sekunder opsional yang dirender di bawah `message`.                      |
+| `variant`              | `ToastVariant`    | `.info`       | Varian warna dan ikon semantik: `.info`, `.success`, `.warning`, `.error`.              |
+| `style`                | `JustToastStyle?` | `null`        | Penyesuaian gaya per-instans termasuk `borderColor`, `borderWidth`, dan `shadows`.      |
+| `descriptionTextStyle` | `TextStyle?`      | `null`        | Gaya teks kustom untuk baris `description` sekunder.                                    |
+| `icon`                 | `Widget?`         | `null`        | Ikon awalan kustom opsional yang menimpa ikon bawaan varian.                            |
+| `action`               | `Widget?`         | `null`        | Widget kontrol akhir opsional (seperti tombol ringkas).                                 |
+| `onDismiss`            | `VoidCallback?`   | `null`        | Callback yang dipanggil saat tombol tutup ditekan.                                      |
+| `showCloseButton`      | `bool`            | `true`        | Menentukan apakah tombol tutup ditampilkan saat `onDismiss` atau UI tutup bawaan aktif. |
+| `liveRegion`           | `bool`            | `false`       | Mengaktifkan pembungkus live region semantik untuk pembaruan pembaca layar dinamis.     |
 
 ---
 

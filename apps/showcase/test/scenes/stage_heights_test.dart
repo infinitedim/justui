@@ -95,6 +95,61 @@ Future<Size> measure(
   return sceneSize(tester);
 }
 
+void _growthAndLocaleTests(Map<String, double> heights, double fallback) {
+  // Growth and localized copy (EN/ID) that a visitor can encounter.
+  for (final String lang in <String>['en', 'id']) {
+    for (final JustThemePreset preset in JustThemePreset.values) {
+      testWidgets('input with its error fits ($lang, ${preset.name})', (
+        WidgetTester tester,
+      ) async {
+        await measure(tester, 'input', preset, 320, strings: kitCopy(lang));
+        await tester.enterText(find.byType(EditableText), 'Just UI');
+        await tester.pumpAndSettle();
+        final double stage = heights['input'] ?? fallback;
+        expect(sceneSize(tester).height + 8, lessThanOrEqualTo(stage));
+      });
+
+      testWidgets('open accordion fits ($lang, ${preset.name})', (
+        WidgetTester tester,
+      ) async {
+        final Map<String, Object> copy = kitCopy(lang);
+        await measure(tester, 'accordion', preset, 320, strings: copy);
+        await tester.tap(find.text(copy['accordionQuestion']! as String));
+        await tester.pumpAndSettle();
+        final double stage = heights['accordion'] ?? fallback;
+        expect(sceneSize(tester).height + 8, lessThanOrEqualTo(stage));
+      });
+
+      testWidgets('open select fits ($lang, ${preset.name})', (
+        WidgetTester tester,
+      ) async {
+        final Map<String, Object> copy = kitCopy(lang);
+        await measure(tester, 'select', preset, 320, strings: copy);
+        await tester.tap(find.text(copy['weekly']! as String));
+        await tester.pumpAndSettle();
+        final double stage = heights['select'] ?? fallback;
+        expect(find.text(copy['monthly']! as String), findsOneWidget);
+        expect(sceneSize(tester).height + 8, lessThanOrEqualTo(stage));
+      });
+
+      testWidgets('toast copy fits ($lang, ${preset.name})', (
+        WidgetTester tester,
+      ) async {
+        final Size size = await measure(
+          tester,
+          'toast',
+          preset,
+          320,
+          strings: kitCopy(lang),
+        );
+        final double stage = heights['toast'] ?? fallback;
+        expect(size.width, lessThanOrEqualTo(240));
+        expect(size.height + 8, lessThanOrEqualTo(stage));
+      });
+    }
+  }
+}
+
 /// Every live scene fits the stage the components page gives it, in both
 /// presets. Views are 320 x 344 on every page (LivePart: the engine shares
 /// one surface between views), so a scene gets 320 px and must stay inside
@@ -125,29 +180,5 @@ void main() {
     }
   }
 
-  // Growth a visitor can trigger, with the copy each locale sends.
-  for (final String lang in <String>['en', 'id']) {
-    for (final JustThemePreset preset in JustThemePreset.values) {
-      testWidgets('input with its error fits ($lang, ${preset.name})', (
-        WidgetTester tester,
-      ) async {
-        await measure(tester, 'input', preset, 320, strings: kitCopy(lang));
-        await tester.enterText(find.byType(EditableText), 'Just UI');
-        await tester.pumpAndSettle();
-        final double stage = heights['input'] ?? fallback;
-        expect(sceneSize(tester).height + 8, lessThanOrEqualTo(stage));
-      });
-
-      testWidgets('open accordion fits ($lang, ${preset.name})', (
-        WidgetTester tester,
-      ) async {
-        final Map<String, Object> copy = kitCopy(lang);
-        await measure(tester, 'accordion', preset, 320, strings: copy);
-        await tester.tap(find.text(copy['accordionQuestion']! as String));
-        await tester.pumpAndSettle();
-        final double stage = heights['accordion'] ?? fallback;
-        expect(sceneSize(tester).height + 8, lessThanOrEqualTo(stage));
-      });
-    }
-  }
+  _growthAndLocaleTests(heights, fallback);
 }

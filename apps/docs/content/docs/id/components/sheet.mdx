@@ -11,11 +11,12 @@ Komponen Sheet (sering disebut sebagai bottom sheet atau drawer) adalah kontaine
 
 ## Deskripsi
 
-Sheet ditampilkan secara imperatif. Sistem sheet terdiri dari:
+Sheet dapat ditampilkan secara imperatif melalui pengontrol overlay atau disematkan langsung di dalam tatanan widget dengan widget permukaan inline. Sistem sheet terdiri dari:
 
 - **`JustSheetScope`**: Widget pembungkus yang menyediakan animasi ticker provider dan pengikatan status overlay yang diperlukan.
 - **`JustSheetController`**: Pengontrol imperatif overlay yang menampilkan atau menutup instans sheet.
 - **`context.justSheet`**: Ekstensi BuildContext untuk menampilkan sheet secara mudah.
+- **`JustSheetSurface`**: Widget permukaan stateless yang merender tampilan sheet (latar belakang, garis batas, sudut melengkung, bayangan, padding, serta handel seret opsional) secara inline tanpa barrier overlay atau pendeteksi gestur seret.
 
 ---
 
@@ -121,6 +122,31 @@ void showLeftSidebarSheet(BuildContext context) {
 }
 ```
 
+### Permukaan Inline (`JustSheetSurface`)
+
+Gunakan `JustSheetSurface` untuk menyematkan tampilan permukaan sheet langsung di dalam tatanan widget tanpa barrier overlay atau pendeteksi gestur seret:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:your_app/core/just_ui_core.dart';
+
+Widget buildInlineSheet(BuildContext context) {
+  return JustSheetSurface(
+    showHandle: true,
+    style: const JustSheetStyle(borderWidth: 2),
+    child: Column(
+      mainAxisSize: .min,
+      crossAxisAlignment: .start,
+      spacing: context.justSpacing.xs,
+      children: [
+        Text('Ubah tata letak', style: context.justTypo.headingMd),
+        const Text('Atur kepadatan sidebar dan spasi.'),
+      ],
+    ),
+  );
+}
+```
+
 ---
 
 ## Referensi API (Props)
@@ -138,9 +164,24 @@ void showLeftSidebarSheet(BuildContext context) {
 | `size`                | `double?`                      | `null`                  | Fraksi lebar/tinggi layar yang diambil oleh sheet (misalnya `0.5` untuk separuh layar). |
 | `maxSize`             | `double?`                      | `null`                  | Fraksi maksimum ukuran layar yang dapat dicapai oleh sheet.                             |
 | `draggable`           | `bool`                         | `false`                 | Jika `true`, mengaktifkan gestur seret vertikal atau horizontal untuk menutup sheet.    |
-| `style`               | `JustSheetStyle?`              | `null`                  | Penyesuaian gaya langsung (padding, garis batas, warna, bayangan, dll.).                |
+| `style`               | `JustSheetStyle?`              | `null`                  | Penyesuaian gaya langsung (padding, borderColor, borderWidth, warna, bayangan, dll.).   |
 | `animationController` | `AnimationController?`         | `null`                  | Mengubah pengontrol garis waktu transisi masuk dan keluar.                              |
 | `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                  | Transisi animasi tata letak kustom.                                                     |
+
+### JustSheetSurface
+
+`JustSheetSurface(...)` menerima properti berikut untuk rendering inline:
+
+| Properti      | Tipe Data         | Nilai Default | Deskripsi                                                                                 |
+| :------------ | :---------------- | :------------ | :---------------------------------------------------------------------------------------- |
+| `child`       | `Widget`          | _Wajib_       | Tatanan widget isi konten sheet.                                                          |
+| `direction`   | `SheetDirection`  | `.bottom`     | Penyejajaran tepi yang mengatur sudut melengkung dan orientasi handel permukaan.          |
+| `showHandle`  | `bool`            | `false`       | Menampilkan bilah handel seret visual di dalam permukaan sheet.                           |
+| `size`        | `double?`         | `null`        | Fraksi ukuran untuk dimensi permukaan sheet saat dirender inline.                         |
+| `maxSize`     | `double?`         | `null`        | Fraksi maksimum ruang tersedia yang dapat ditempati permukaan inline.                     |
+| `bottomInset` | `double?`         | `null`        | Padding inset bawah tambahan opsional yang diterapkan di dalam permukaan.                 |
+| `style`       | `JustSheetStyle?` | `null`        | Penyesuaian gaya per-instans termasuk `borderColor`, `borderWidth`, `padding`, `shadows`. |
+| `useSafeArea` | `bool`            | `false`       | Membungkus permukaan sheet dalam `SafeArea` jika bernilai `true`.                         |
 
 ---
 

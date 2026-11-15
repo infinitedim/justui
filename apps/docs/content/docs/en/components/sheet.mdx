@@ -11,11 +11,12 @@ The Sheet component (often referred to as a bottom sheet or drawer) is an overla
 
 ## Description
 
-Sheets are shown imperatively. The sheet system consists of:
+Sheets can be shown imperatively via an overlay controller or embedded directly in a widget tree with the inline surface widget. The sheet system consists of:
 
 - **`JustSheetScope`**: A wrapper widget that hooks the necessary animation ticker provider and overlay state bindings.
 - **`JustSheetController`**: The imperative overlay controller that pushes or dismisses sheet instances.
 - **`context.justSheet`**: A BuildContext extension to easily show sheets.
+- **`JustSheetSurface`**: A stateless surface widget that renders sheet chrome (background, border, rounding, shadow, padding, and optional drag handle) inline without an overlay barrier or drag gesture detector.
 
 ---
 
@@ -121,6 +122,31 @@ void showLeftSidebarSheet(BuildContext context) {
 }
 ```
 
+### Inline Surface (`JustSheetSurface`)
+
+Use `JustSheetSurface` to embed the sheet surface chrome directly in a widget tree without an overlay barrier or drag gesture detector:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:your_app/core/just_ui_core.dart';
+
+Widget buildInlineSheet(BuildContext context) {
+  return JustSheetSurface(
+    showHandle: true,
+    style: const JustSheetStyle(borderWidth: 2),
+    child: Column(
+      mainAxisSize: .min,
+      crossAxisAlignment: .start,
+      spacing: context.justSpacing.xs,
+      children: [
+        Text('Edit layout', style: context.justTypo.headingMd),
+        const Text('Adjust sidebar density and spacing.'),
+      ],
+    ),
+  );
+}
+```
+
 ---
 
 ## API Reference (Props)
@@ -138,9 +164,24 @@ void showLeftSidebarSheet(BuildContext context) {
 | `size`                | `double?`                      | `null`                  | Fraction of screen width/height the sheet should occupy (e.g. `0.5` for half of the screen).   |
 | `maxSize`             | `double?`                      | `null`                  | Maximum fraction of screen size the sheet can expand to.                                       |
 | `draggable`           | `bool`                         | `false`                 | If `true`, enables vertical or horizontal drag gestures to dismiss the sheet.                  |
-| `style`               | `JustSheetStyle?`              | `null`                  | Direct per-instance style overrides (padding, border, colors, shadow, etc.).                   |
+| `style`               | `JustSheetStyle?`              | `null`                  | Direct per-instance style overrides (padding, borderColor, borderWidth, colors, shadow, etc.). |
 | `animationController` | `AnimationController?`         | `null`                  | Overrides the default entry and exit transition timeline.                                      |
 | `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                  | Custom layout animation transitions.                                                           |
+
+### JustSheetSurface
+
+`JustSheetSurface(...)` accepts the following properties for inline rendering:
+
+| Property      | Data Type         | Default Value | Description                                                                                |
+| :------------ | :---------------- | :------------ | :----------------------------------------------------------------------------------------- |
+| `child`       | `Widget`          | _Required_    | The sheet body content widget tree.                                                        |
+| `direction`   | `SheetDirection`  | `.bottom`     | Edge alignment that controls surface rounding and handle orientation.                      |
+| `showHandle`  | `bool`            | `false`       | Renders the visual drag handle bar inside the sheet surface.                               |
+| `size`        | `double?`         | `null`        | Fraction or constraint for the sheet surface dimension when sized inline.                  |
+| `maxSize`     | `double?`         | `null`        | Maximum fraction of available space the inline surface can occupy.                         |
+| `bottomInset` | `double?`         | `null`        | Optional extra bottom inset padding applied inside the surface.                            |
+| `style`       | `JustSheetStyle?` | `null`        | Per-instance style overrides including `borderColor`, `borderWidth`, `padding`, `shadows`. |
+| `useSafeArea` | `bool`            | `false`       | Wraps the sheet surface in a `SafeArea` when set to `true`.                                |
 
 ---
 

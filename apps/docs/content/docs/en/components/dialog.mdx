@@ -11,11 +11,12 @@ The Dialog component is a modal screen overlay used to present critical informat
 
 ## Description
 
-Dialogs are shown imperatively rather than declared as static widgets. The dialog system consists of:
+Dialogs can be shown imperatively via an overlay controller or embedded directly in a widget tree with the inline surface widget. The dialog system consists of:
 
 - **`JustDialogScope`**: A wrapper widget that hooks the necessary animation ticker provider and overlay state bindings.
 - **`JustDialogController`**: The imperative overlay controller that pushes or dismisses dialog instances.
 - **`context.justDialog`**: A BuildContext extension to easily show dialogs.
+- **`JustDialogSurface`**: A stateless surface widget that renders dialog card chrome (background, border, rounding, shadow, padding, and optional bottom drag handle) inline without an overlay barrier or focus trap.
 
 ---
 
@@ -130,6 +131,48 @@ void showTopNotificationDialog(BuildContext context) {
 }
 ```
 
+### Inline Surface (`JustDialogSurface`)
+
+Use `JustDialogSurface` to embed the dialog card chrome directly inside a widget tree without an overlay barrier or focus trap:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:your_app/core/just_ui_core.dart';
+
+Widget buildInlineDialogCard(BuildContext context) {
+  return JustDialogSurface(
+    style: const JustDialogStyle(borderWidth: 2),
+    child: Column(
+      mainAxisSize: .min,
+      crossAxisAlignment: .start,
+      spacing: context.justSpacing.md,
+      children: [
+        Text('Discard draft?', style: context.justTypo.headingMd),
+        const Text('Your unsaved changes will be lost.'),
+        Row(
+          mainAxisAlignment: .end,
+          spacing: context.justSpacing.sm,
+          children: [
+            JustButton(
+              label: 'Cancel',
+              variant: .ghost,
+              size: .sm,
+              onPressed: () {},
+            ),
+            JustButton(
+              label: 'Discard',
+              variant: .primary,
+              size: .sm,
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+```
+
 ---
 
 ## API Reference (Props)
@@ -138,15 +181,26 @@ void showTopNotificationDialog(BuildContext context) {
 
 `context.justDialog.show<T>(...)` accepts the following parameters:
 
-| Parameter             | Data Type                      | Default Value           | Description                                                                                     |
-| :-------------------- | :----------------------------- | :---------------------- | :---------------------------------------------------------------------------------------------- |
-| `content`             | `Widget`                       | _Required_              | The dialog body content widget tree.                                                            |
-| `position`            | `DialogPosition`               | `DialogPosition.center` | Placement of the dialog on the screen: `.center`, `.bottom`, `.top`.                            |
-| `barrierDismissable`  | `bool`                         | `true`                  | If `true`, clicking the semi-transparent background barrier automatically dismisses the dialog. |
-| `barrierColor`        | `Color?`                       | `null`                  | Overrides the default semi-transparent background overlay color.                                |
-| `style`               | `JustDialogStyle?`             | `null`                  | Direct per-instance style overrides (max height, width, padding, border, shadow, etc.).         |
-| `animationController` | `AnimationController?`         | `null`                  | Overrides the default entry and exit transition timeline.                                       |
-| `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                  | Custom layout animation transitions.                                                            |
+| Parameter             | Data Type                      | Default Value           | Description                                                                                               |
+| :-------------------- | :----------------------------- | :---------------------- | :-------------------------------------------------------------------------------------------------------- |
+| `content`             | `Widget`                       | _Required_              | The dialog body content widget tree.                                                                      |
+| `position`            | `DialogPosition`               | `DialogPosition.center` | Placement of the dialog on the screen: `.center`, `.bottom`, `.top`.                                      |
+| `barrierDismissable`  | `bool`                         | `true`                  | If `true`, clicking the semi-transparent background barrier automatically dismisses the dialog.           |
+| `barrierColor`        | `Color?`                       | `null`                  | Overrides the default semi-transparent background overlay color.                                          |
+| `style`               | `JustDialogStyle?`             | `null`                  | Direct per-instance style overrides (max height, width, padding, borderColor, borderWidth, shadow, etc.). |
+| `animationController` | `AnimationController?`         | `null`                  | Overrides the default entry and exit transition timeline.                                                 |
+| `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                  | Custom layout animation transitions.                                                                      |
+
+### JustDialogSurface
+
+`JustDialogSurface(...)` accepts the following properties for inline rendering:
+
+| Property      | Data Type          | Default Value | Description                                                                                         |
+| :------------ | :----------------- | :------------ | :-------------------------------------------------------------------------------------------------- |
+| `child`       | `Widget`           | _Required_    | The dialog body content widget tree.                                                                |
+| `position`    | `DialogPosition`   | `.center`     | Surface positioning mode (`.center`, `.bottom`, `.top`); `.bottom` renders the top drag handle bar. |
+| `style`       | `JustDialogStyle?` | `null`        | Per-instance style overrides including `borderColor`, `borderWidth`, `padding`, and `shadows`.      |
+| `useSafeArea` | `bool`             | `false`       | Wraps the dialog surface in a `SafeArea` when set to `true`.                                        |
 
 ---
 

@@ -11,7 +11,7 @@ Komponen Select adalah elemen input pilih dropdown kustom yang dibangun tanpa me
 
 ## Deskripsi
 
-- **`JustSelect<T>`**: Widget kontainer pilih dropdown yang mengelola pilihan, label, status validasi, dan opsi pencarian.
+- **`JustSelect<T>`**: Widget kontainer pilih dropdown yang mengelola pilihan, label, status validasi, opsi pencarian, serta ekspansi inline opsional melalui `inlineDropdown`.
 - **`JustSelectOption<T>`**: Model data yang mewakili satu item opsi dropdown (mendukung teks label, ikon awalan, status terlarang, atau berfungsi sebagai pembatas divider).
 
 ---
@@ -112,6 +112,46 @@ class _SelectAdvancedDemoState extends State<SelectAdvancedDemo> {
 }
 ```
 
+### Dropdown Inline
+
+Atur `inlineDropdown: true` untuk merender menu dropdown secara in-flow di bawah pemicu di dalam `Column` alih-alih di dalam overlay portal. Opsi ini berguna di dalam tata letak terbatas, scroll view, atau panel tertanam di mana overlay portal tidak dapat digunakan.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:your_app/core/just_ui_core.dart';
+
+class SelectInlineDemo extends StatefulWidget {
+  const SelectInlineDemo({super.key});
+
+  @override
+  State<SelectInlineDemo> createState() => _SelectInlineDemoState();
+}
+
+class _SelectInlineDemoState extends State<SelectInlineDemo> {
+  String _billingCycle = 'monthly';
+
+  static const List<JustSelectOption<String>> _cycles = [
+    JustSelectOption(value: 'monthly', label: 'Bulanan'),
+    JustSelectOption(value: 'yearly', label: 'Tahunan'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return JustSelect<String>(
+      label: 'Siklus tagihan',
+      value: _billingCycle,
+      options: _cycles,
+      inlineDropdown: true,
+      onChanged: (val) {
+        setState(() {
+          _billingCycle = val;
+        });
+      },
+    );
+  }
+}
+```
+
 ---
 
 ## Referensi API (Props)
@@ -144,6 +184,7 @@ class _SelectAdvancedDemoState extends State<SelectAdvancedDemo> {
 | `style`             | `JustSelectStyle?`          | `null`        | Penyesuaian gaya langsung per-instans.                                                                 |
 | `prefixIcon`        | `Widget?`                   | `null`        | Widget grafis opsional di sebelah kiri pemicu input select.                                            |
 | `maxDropdownHeight` | `int`                       | `300`         | Batasan tinggi maksimum untuk panel dropdown yang dapat digulir.                                       |
+| `inlineDropdown`    | `bool`                      | `false`       | Merender menu dropdown terbuka secara inline di bawah pemicu alih-alih menggunakan overlay portal.     |
 
 ---
 
@@ -174,5 +215,7 @@ JustSelect mengimplementasikan kepatuhan kibor secara penuh:
 
 1. **Pengumuman Error A11y**:
    Jika `errorText` diisi, pengumuman pembaca layar dipicu via `SemanticsService` untuk memperingatkan pengguna tentang kesalahan input.
-2. **Posisi Overlay Dinamis**:
-   Daftar dropdown diposisikan secara dinamis relatif terhadap ruang layar. Jika pemicu select berada di dekat bagian bawah layar, dropdown akan melayang ke atas (`topPosition` dihitung dinamis) untuk mencegah bagian bawah terpotong.
+2. **Posisi Overlay Dinamis & Ekspansi Inline**:
+   Secara default (`inlineDropdown: false`), daftar dropdown diposisikan secara dinamis relatif terhadap ruang layar sehingga dropdown melayang ke atas (`topPosition` dihitung dinamis) saat dekat bagian bawah layar. Saat `inlineDropdown: true`, menu dirender di dalam `Column` widget dengan tinggi intrinsik yang dihitung dari opsi tersaring, kolom pencarian, dan garis batas hingga batas `maxDropdownHeight`.
+3. **Semantik Opsi**:
+   Setiap item opsi mengekspos `Semantics(selected: ...)` sesuai `value` aktif agar teknologi asistif mengumumkan item yang dipilih.

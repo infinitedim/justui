@@ -11,11 +11,12 @@ The Toast component provides brief feedback about an operation through temporary
 
 ## Description
 
-Toasts are triggered imperatively rather than declared directly in the widget tree. The system consists of:
+Toasts can be triggered imperatively or rendered directly in a widget tree with the inline surface widget. The system consists of:
 
 - **`JustToastScope`**: A wrapper widget placed near the root of your application (or page) to capture the ticker provider context and manage overlay overlays.
 - **`JustToastController`**: An imperative manager that schedules, limits, and triggers notifications.
 - **`context.justToast`**: A `BuildContext` extension to easily invoke toast alerts from anywhere in the widget tree under a scope.
+- **`JustToastSurface`**: A stateless surface widget that renders the themed toast banner (icon, message, optional `description`, close control, and action) inline without an overlay or dismissal timer.
 
 ---
 
@@ -96,6 +97,25 @@ void triggerAdvancedToast(BuildContext context) {
 }
 ```
 
+### Inline Surface (`JustToastSurface`)
+
+Use `JustToastSurface` to render a toast card inline in a widget tree with an optional secondary `description` line and custom `borderWidth`:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:your_app/core/just_ui_core.dart';
+
+Widget buildInlineToast(BuildContext context) {
+  return const JustToastSurface(
+    message: 'Changes saved',
+    description: 'Project settings updated.',
+    variant: .success,
+    style: JustToastStyle(borderWidth: 2),
+    showCloseButton: false,
+  );
+}
+```
+
 ---
 
 ## API Reference (Props)
@@ -115,15 +135,33 @@ void triggerAdvancedToast(BuildContext context) {
 
 | Parameter             | Data Type                      | Default Value          | Description                                                                                        |
 | :-------------------- | :----------------------------- | :--------------------- | :------------------------------------------------------------------------------------------------- |
-| `message`             | `String`                       | _Required_             | The descriptive text message displayed in the notification.                                        |
+| `message`             | `String`                       | _Required_             | The primary title/message text displayed in the notification.                                      |
+| `description`         | `String?`                      | `null`                 | Optional secondary description text rendered below `message`.                                      |
 | `variant`             | `ToastVariant`                 | `ToastVariant.info`    | Color and status variant: `.info` (blue), `.success` (green), `.warning` (orange), `.error` (red). |
 | `duration`            | `Duration`                     | `Duration(seconds: 3)` | Time duration before the toast automatically fades out.                                            |
-| `style`               | `JustToastStyle?`              | `null`                 | Direct per-instance style overrides (padding, border, colors, shadow).                             |
+| `style`               | `JustToastStyle?`              | `null`                 | Direct per-instance style overrides (padding, borderColor, borderWidth, colors, shadow).           |
 | `icon`                | `Widget?`                      | `null`                 | Prepend widget (typically a status icon) placed before the message text.                           |
 | `action`              | `Widget?`                      | `null`                 | Custom control widget (typically a text button) placed at the trailing end.                        |
 | `onDismissed`         | `VoidCallback?`                | `null`                 | Callback fired immediately after the toast has completed its exit transition.                      |
 | `animationController` | `AnimationController?`         | `null`                 | Overrides the default entry and exit transition timeline.                                          |
 | `animationBuilder`    | `JustOverlayAnimationBuilder?` | `null`                 | Custom layout animation transitions.                                                               |
+
+### JustToastSurface
+
+`JustToastSurface(...)` accepts the following properties for inline rendering:
+
+| Property               | Data Type         | Default Value | Description                                                                          |
+| :--------------------- | :---------------- | :------------ | :----------------------------------------------------------------------------------- |
+| `message`              | `String`          | _Required_    | The primary message text displayed in the toast card.                                |
+| `description`          | `String?`         | `null`        | Optional secondary description text rendered below `message`.                        |
+| `variant`              | `ToastVariant`    | `.info`       | Semantic color and icon variant: `.info`, `.success`, `.warning`, `.error`.          |
+| `style`                | `JustToastStyle?` | `null`        | Per-instance style overrides including `borderColor`, `borderWidth`, and `shadows`.  |
+| `descriptionTextStyle` | `TextStyle?`      | `null`        | Custom text style for the secondary `description` line.                              |
+| `icon`                 | `Widget?`         | `null`        | Optional custom leading icon overriding the variant default icon.                    |
+| `action`               | `Widget?`         | `null`        | Optional trailing control widget (such as a compact button).                         |
+| `onDismiss`            | `VoidCallback?`   | `null`        | Callback invoked when the close button is pressed.                                   |
+| `showCloseButton`      | `bool`            | `true`        | Whether to render the close button when `onDismiss` or default dismiss UI is active. |
+| `liveRegion`           | `bool`            | `false`       | Enables a semantic live region wrapper for dynamic screen-reader updates.            |
 
 ---
 

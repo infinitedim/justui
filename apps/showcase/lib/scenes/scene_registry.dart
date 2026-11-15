@@ -22,15 +22,6 @@ final Map<String, SceneBuilder> sceneRegistry = <String, SceneBuilder>{
 /// first. Together with [sceneRegistry] they cover all 33 public parts
 /// (`test/scenes/scene_registry_test.dart`).
 const Set<String> reactOnlyScenes = <String>{
-  // Its menu opens below the field, and a view has a fixed size: the
-  // options would be clipped (the React fallback is a native select).
-  'select',
-  // Core paints these surfaces only in private widgets inside an overlay
-  // entry or portal, so they cannot render inline in a view yet.
-  'dialog',
-  'sheet',
-  'toast',
-  'tooltip',
   // Off-center spinner values are drawn at 40% opacity (2.1:1 contrast) in
   // a shadowed card inside the picker card.
   'time-picker',

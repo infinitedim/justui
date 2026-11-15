@@ -12,6 +12,7 @@ Komponen Tooltip adalah widget overlay deklaratif yang digunakan untuk menyediak
 ## Deskripsi
 
 - **`JustTooltip`**: Widget kontainer yang membungkus elemen target interaktif apa pun (`child`). Komponen ini mengelola peristiwa hover (masuk/keluar kursor) dan pengenal gestur (tekan lama) secara otomatis, membuka balon melayang di lapisan overlay.
+- **`JustTooltipBubble`**: Widget permukaan stateless yang merender tampilan balon tooltip bertema (`message` dan `style` opsional) secara inline tanpa overlay atau pemicu hover/tekan lama.
 - **Tanpa Overhead Pengontrol**: Tidak memerlukan kelas pengontrol imperatif. Komponen mengelola siklus hidupnya sendiri dan menjadwalkan timer secara otomatis.
 
 ---
@@ -68,6 +69,22 @@ Widget buildAdvancedTooltip(BuildContext context) {
 }
 ```
 
+### Balon Inline (`JustTooltipBubble`)
+
+Gunakan `JustTooltipBubble` untuk merender permukaan balon tooltip bertema langsung di dalam tatanan widget tanpa overlay portal atau pemicu pointer:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:your_app/core/just_ui_core.dart';
+
+Widget buildInlineTooltipBubble(BuildContext context) {
+  return const JustTooltipBubble(
+    message: 'Disalin ke papan klip',
+    style: JustTooltipStyle(maxWidth: 200),
+  );
+}
+```
+
 ---
 
 ## Referensi API (Props)
@@ -83,9 +100,18 @@ Widget buildAdvancedTooltip(BuildContext context) {
 | `triggerOnLongPress`  | `bool`                                                      | `true`                        | Jika `true`, gestur tekan lama di layar sentuh akan memicu penampakan tooltip.              |
 | `showDelay`           | `Duration`                                                  | `Duration.zero`               | Durasi penundaan sebelum menampilkan balon tooltip saat peristiwa pemicu terdeteksi.        |
 | `hideDelay`           | `Duration`                                                  | `Duration(milliseconds: 150)` | Durasi penundaan sebelum menutup balon tooltip setelah peristiwa pemicu berakhir.           |
-| `style`               | `JustTooltipStyle?`                                         | `null`                        | Penyesuaian gaya langsung per-instans (padding, garis batas, warna, lebar maks, dll.).      |
+| `style`               | `JustTooltipStyle?`                                         | `null`                        | Penyesuaian gaya langsung per-instans (padding, garis batas, warna, maxWidth, shadows).     |
 | `animationController` | `AnimationController?`                                      | `null`                        | Pengontrol animasi kustom.                                                                  |
 | `animationBuilder`    | `Widget Function(BuildContext, Animation<double>, Widget)?` | `null`                        | Builder widget kustom untuk mendefinisikan animasi transisi masuk dan keluar.               |
+
+### JustTooltipBubble
+
+`JustTooltipBubble(...)` menerima properti berikut untuk rendering inline:
+
+| Properti  | Tipe Data           | Nilai Default | Deskripsi                                                                                             |
+| :-------- | :------------------ | :------------ | :---------------------------------------------------------------------------------------------------- |
+| `message` | `String`            | _Wajib_       | String teks yang dirender di dalam balon tooltip.                                                     |
+| `style`   | `JustTooltipStyle?` | `null`        | Penyesuaian gaya per-instans termasuk `maxWidth`, `borderColor`, `borderWidth`, `padding`, `shadows`. |
 
 ---
 

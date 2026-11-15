@@ -12,6 +12,7 @@ The Tooltip component is a declarative overlay widget used to provide brief cont
 ## Description
 
 - **`JustTooltip`**: A container widget that wraps any interactive target element (`child`). It manages hover events (mouse entry/exit) and gesture recognizers (long-press) automatically, opening a floating balloon on the overlay layer.
+- **`JustTooltipBubble`**: A stateless surface widget that renders the themed tooltip bubble chrome (`message` and optional `style`) inline without an overlay or hover/long-press triggers.
 - **No Controller Overhead**: There is no imperative controller class needed. It handles its own lifecycle and schedules timers automatically.
 
 ---
@@ -68,6 +69,22 @@ Widget buildAdvancedTooltip(BuildContext context) {
 }
 ```
 
+### Inline Bubble (`JustTooltipBubble`)
+
+Use `JustTooltipBubble` to render the themed tooltip bubble surface directly in a widget tree without an overlay portal or pointer triggers:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:your_app/core/just_ui_core.dart';
+
+Widget buildInlineTooltipBubble(BuildContext context) {
+  return const JustTooltipBubble(
+    message: 'Copied to clipboard',
+    style: JustTooltipStyle(maxWidth: 200),
+  );
+}
+```
+
 ---
 
 ## API Reference (Props)
@@ -83,9 +100,18 @@ Widget buildAdvancedTooltip(BuildContext context) {
 | `triggerOnLongPress`  | `bool`                                                      | `true`                        | If `true`, touch screen long press gestures trigger the tooltip display.                |
 | `showDelay`           | `Duration`                                                  | `Duration.zero`               | Duration to wait before revealing the tooltip balloon when a trigger event is detected. |
 | `hideDelay`           | `Duration`                                                  | `Duration(milliseconds: 150)` | Duration to wait before dismissing the tooltip balloon after trigger events end.        |
-| `style`               | `JustTooltipStyle?`                                         | `null`                        | Direct per-instance style overrides (padding, border, colors, max width, etc.).         |
+| `style`               | `JustTooltipStyle?`                                         | `null`                        | Direct per-instance style overrides (padding, border, colors, maxWidth, shadows, etc.). |
 | `animationController` | `AnimationController?`                                      | `null`                        | Custom animation controller override.                                                   |
 | `animationBuilder`    | `Widget Function(BuildContext, Animation<double>, Widget)?` | `null`                        | Custom widget builder to define entrance and exit transition animations.                |
+
+### JustTooltipBubble
+
+`JustTooltipBubble(...)` accepts the following properties for inline rendering:
+
+| Property  | Data Type           | Default Value | Description                                                                                            |
+| :-------- | :------------------ | :------------ | :----------------------------------------------------------------------------------------------------- |
+| `message` | `String`            | _Required_    | The text string rendered inside the tooltip bubble.                                                    |
+| `style`   | `JustTooltipStyle?` | `null`        | Per-instance style overrides including `maxWidth`, `borderColor`, `borderWidth`, `padding`, `shadows`. |
 
 ---
 
