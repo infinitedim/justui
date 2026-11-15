@@ -704,6 +704,105 @@ void main() {
         expect(find.text('No options found'), findsOneWidget);
       },
     );
+
+    testWidgets(
+      'switching inlineDropdown from false to true while overlay is open hides safely',
+      (WidgetTester tester) async {
+        const List<JustSelectOption<String>> options =
+            <JustSelectOption<String>>[
+              JustSelectOption<String>(value: 'weekly', label: 'Weekly'),
+              JustSelectOption<String>(value: 'monthly', label: 'Monthly'),
+            ];
+
+        await tester.pumpWidget(
+          buildTestApp(
+            JustSelect<String>(
+              inlineDropdown: false,
+              value: 'weekly',
+              options: options,
+              onChanged: (_) {},
+            ),
+          ),
+        );
+
+        await tester.tap(find.byType(JustSelect<String>));
+        await tester.pumpAndSettle();
+        expect(find.text('Monthly'), findsOneWidget);
+
+        await tester.pumpWidget(
+          buildTestApp(
+            JustSelect<String>(
+              inlineDropdown: true,
+              value: 'weekly',
+              options: options,
+              onChanged: (_) {},
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+        expect(find.text('Monthly'), findsNothing);
+
+        // Switching back to overlay mode remains closed rather than reopening.
+        await tester.pumpWidget(
+          buildTestApp(
+            JustSelect<String>(
+              inlineDropdown: false,
+              value: 'weekly',
+              options: options,
+              onChanged: (_) {},
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Monthly'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'searchable select navigates and selects single filtered option via ArrowDown and Enter',
+      (WidgetTester tester) async {
+        String? selected;
+        const List<JustSelectOption<String>> options =
+            <JustSelectOption<String>>[
+              JustSelectOption<String>(value: 'apple', label: 'Apple'),
+              JustSelectOption<String>(value: 'banana', label: 'Banana'),
+              JustSelectOption<String>(value: 'cherry', label: 'Cherry'),
+            ];
+
+        await tester.pumpWidget(
+          buildTestApp(
+            StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return JustSelect<String>(
+                  inlineDropdown: true,
+                  searchable: true,
+                  placeholder: 'Pick fruit',
+                  value: selected,
+                  options: options,
+                  onChanged: (String value) => setState(() => selected = value),
+                );
+              },
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('Pick fruit'));
+        await tester.pumpAndSettle();
+
+        await tester.enterText(find.byType(EditableText), 'ban');
+        await tester.pumpAndSettle();
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+
+        expect(selected, equals('banana'));
+        expect(find.byType(EditableText), findsNothing);
+      },
+    );
   });
 
   group('JustSelectTheme & JustSelectStyle Unit Tests', () {

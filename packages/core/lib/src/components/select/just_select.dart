@@ -149,7 +149,13 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     if (oldWidget.inlineDropdown != widget.inlineDropdown) {
       _isInlineOpen = false;
       if (_overlayController.isShowing) {
-        _overlayController.hide();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted &&
+              widget.inlineDropdown &&
+              _overlayController.isShowing) {
+            _overlayController.hide();
+          }
+        });
       }
     }
   }
@@ -296,7 +302,7 @@ class _JustSelectState<T> extends State<JustSelect<T>> {
     } while ((!filtered[newIndex].enabled || filtered[newIndex].isDivider) &&
         attempts < filtered.length);
 
-    if (attempts < filtered.length) {
+    if (filtered[newIndex].enabled && !filtered[newIndex].isDivider) {
       setState(() {
         _focusedOptionIndex = newIndex;
       });
