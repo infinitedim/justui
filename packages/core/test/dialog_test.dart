@@ -773,5 +773,51 @@ void main() {
         expect(handleFinder, findsOneWidget);
       },
     );
+
+    testWidgets(
+      'JustDialogSurface renders bottom, top, and unbounded maxWidth surfaces inside Row without throwing',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildInlineApp(
+            child: const Column(
+              mainAxisSize: .min,
+              children: <Widget>[
+                Row(
+                  mainAxisSize: .min,
+                  children: <Widget>[
+                    JustDialogSurface(
+                      position: .bottom,
+                      child: Text('Unbounded Bottom'),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisSize: .min,
+                  children: <Widget>[
+                    JustDialogSurface(
+                      position: .top,
+                      child: Text('Unbounded Top'),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisSize: .min,
+                  children: <Widget>[
+                    JustDialogSurface(
+                      style: JustDialogStyle(maxWidth: .infinity),
+                      child: Text('Unbounded Custom'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+
+        expect(find.text('Unbounded Bottom'), findsOneWidget);
+        expect(find.text('Unbounded Top'), findsOneWidget);
+        expect(find.text('Unbounded Custom'), findsOneWidget);
+      },
+    );
   });
 }

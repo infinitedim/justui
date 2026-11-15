@@ -320,21 +320,15 @@ class const JustDialogSurface({
   /// Whether to wrap the inner content in [SafeArea] for top/bottom placements.
   final bool useSafeArea = false,
 }) extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final _ResolvedDialogStyle resolved = _resolveDialogStyle(
-      context,
-      position,
-      style,
-    );
+  Widget _buildBody(BuildContext context, BoxConstraints constraints) {
     final JustColorScheme colors = context.justColors;
     final JustSpacingScheme spacing = context.justSpacing;
     final JustRadiusScheme radius = context.justRadius;
     final JustTypographyScheme typography = context.justTypo;
 
-    final Widget body = Column(
+    return Column(
       mainAxisSize: .min,
-      crossAxisAlignment: .stretch,
+      crossAxisAlignment: constraints.hasBoundedWidth ? .stretch : .start,
       children: <Widget>[
         if (position == .bottom)
           Center(
@@ -357,6 +351,15 @@ class const JustDialogSurface({
         ),
       ],
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final _ResolvedDialogStyle resolved = _resolveDialogStyle(
+      context,
+      position,
+      style,
+    );
 
     return Container(
       constraints: BoxConstraints(
@@ -370,13 +373,18 @@ class const JustDialogSurface({
         boxShadow: resolved.shadows,
       ),
       padding: resolved.padding,
-      child: useSafeArea
-          ? SafeArea(
-              top: position == .top,
-              bottom: position == .bottom,
-              child: body,
-            )
-          : body,
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final Widget body = _buildBody(context, constraints);
+          return useSafeArea
+              ? SafeArea(
+                  top: position == .top,
+                  bottom: position == .bottom,
+                  child: body,
+                )
+              : body;
+        },
+      ),
     );
   }
 }

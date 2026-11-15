@@ -346,26 +346,36 @@ class const JustSheetSurface({
   /// Whether to wrap the inner content in [SafeArea] for the sheet's edge.
   final bool useSafeArea = false,
 }) extends StatelessWidget {
-  (double?, double?) _resolveDimensions(
+  (double?, double?, BoxConstraints?) _resolveDimensions(
     BuildContext context,
     BoxConstraints constraints,
     bool isVertical,
   ) {
     double? width;
     double? height;
-    if (size != null) {
+    BoxConstraints? boxConstraints;
+    if (size != null || maxSize != null) {
       final Size screenSize = MediaQuery.sizeOf(context);
       final double axisViewport = isVertical
           ? screenSize.height
           : screenSize.width;
-      double extent = axisViewport * size!;
-      if (maxSize != null) {
-        extent = extent.clamp(0.0, axisViewport * maxSize!);
-      }
-      if (isVertical) {
-        height = extent;
-      } else {
-        width = extent;
+      final double? maxExtent = maxSize != null && maxSize!.isFinite
+          ? (axisViewport * maxSize!).clamp(0.0, .infinity)
+          : null;
+      if (size != null) {
+        double extent = axisViewport * size!;
+        if (maxExtent != null) {
+          extent = extent.clamp(0.0, maxExtent);
+        }
+        if (isVertical) {
+          height = extent;
+        } else {
+          width = extent;
+        }
+      } else if (maxExtent != null) {
+        boxConstraints = isVertical
+            ? BoxConstraints(maxHeight: maxExtent)
+            : BoxConstraints(maxWidth: maxExtent);
       }
     }
     if (isVertical && constraints.hasBoundedWidth) {
@@ -373,7 +383,7 @@ class const JustSheetSurface({
     } else if (!isVertical && constraints.hasBoundedHeight) {
       height = .infinity;
     }
-    return (width, height);
+    return (width, height, boxConstraints);
   }
 
   Widget _buildColumn(
@@ -381,12 +391,16 @@ class const JustSheetSurface({
     BoxConstraints constraints,
     _ResolvedSheetStyle resolved,
     bool isVertical,
-    bool expandChild,
+    bool hasMaxConstraint,
   ) {
     final JustColorScheme colors = context.justColors;
     final JustSpacingScheme spacing = context.justSpacing;
     final JustRadiusScheme radius = context.justRadius;
     final JustTypographyScheme typography = context.justTypo;
+    final bool expandChild =
+        size != null && (isVertical || constraints.hasBoundedHeight);
+    final bool hasBoundedMainAxis =
+        isVertical && (constraints.hasBoundedHeight || hasMaxConstraint);
 
     final Widget styledChild = DefaultTextStyle(
       style: typography.bodyMd.copyWith(color: colors.textPrimary),
@@ -396,9 +410,18 @@ class const JustSheetSurface({
       ),
     );
 
+    final Widget bodyChild = expandChild
+        ? Expanded(child: styledChild)
+        : (hasBoundedMainAxis
+              ? Flexible(fit: .loose, child: styledChild)
+              : styledChild);
+
     return Column(
       mainAxisSize: expandChild ? .max : .min,
-      crossAxisAlignment: constraints.hasBoundedWidth ? .stretch : .start,
+      crossAxisAlignment:
+          (isVertical ? constraints.hasBoundedWidth : size != null)
+          ? .stretch
+          : .start,
       children: <Widget>[
         if (showHandle && isVertical)
           Center(
@@ -412,7 +435,7 @@ class const JustSheetSurface({
               ),
             ),
           ),
-        if (expandChild) Expanded(child: styledChild) else styledChild,
+        bodyChild,
         if (direction == .bottom && (bottomInset ?? 0.0) > 0.0)
           SizedBox(height: bottomInset),
       ],
@@ -425,24 +448,20 @@ class const JustSheetSurface({
     _ResolvedSheetStyle resolved,
   ) {
     final bool isVertical = direction == .bottom || direction == .top;
-    final (double? width, double? height) = _resolveDimensions(
-      context,
-      constraints,
-      isVertical,
-    );
-    final bool expandChild =
-        size != null && (isVertical || constraints.hasBoundedHeight);
+    final (double? width, double? height, BoxConstraints? boxConstraints) =
+        _resolveDimensions(context, constraints, isVertical);
     final Widget column = _buildColumn(
       context,
       constraints,
       resolved,
       isVertical,
-      expandChild,
+      isVertical && boxConstraints != null,
     );
 
     return Container(
       width: width,
       height: height,
+      constraints: boxConstraints,
       decoration: BoxDecoration(
         color: resolved.backgroundColor,
         borderRadius: resolved.borderRadius,

@@ -713,6 +713,69 @@ void main() {
     );
 
     testWidgets(
+      'JustSheetSurface enforces maxSize when size is null for vertical and horizontal directions',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          _buildNavWrapper(
+            child: const MediaQuery(
+              data: MediaQueryData(size: Size(800.0, 600.0)),
+              child: Stack(
+                children: <Widget>[
+                  Align(
+                    alignment: .bottomCenter,
+                    child: JustSheetSurface(
+                      direction: .bottom,
+                      maxSize: 0.25,
+                      child: SizedBox(
+                        height: 400.0,
+                        child: Text('Tall Bottom'),
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: .topCenter,
+                    child: JustSheetSurface(
+                      direction: .top,
+                      maxSize: 0.25,
+                      child: Text('Short Top'),
+                    ),
+                  ),
+                  Align(
+                    alignment: .centerLeft,
+                    child: JustSheetSurface(
+                      direction: .left,
+                      maxSize: 0.25,
+                      child: SizedBox(width: 400.0, child: Text('Wide Left')),
+                    ),
+                  ),
+                  Align(
+                    alignment: .centerRight,
+                    child: JustSheetSurface(
+                      direction: .right,
+                      maxSize: 0.25,
+                      child: Text('Hi'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        final Finder surfaces = find.byType(JustSheetSurface);
+        final Size tallBottom = tester.getSize(surfaces.at(0));
+        final Size shortTop = tester.getSize(surfaces.at(1));
+        final Size wideLeft = tester.getSize(surfaces.at(2));
+        final Size shortRight = tester.getSize(surfaces.at(3));
+
+        expect(tallBottom.height, lessThanOrEqualTo(600.0 * 0.25 + 0.1));
+        expect(shortTop.height, lessThan(100.0));
+        expect(wideLeft.width, lessThanOrEqualTo(800.0 * 0.25 + 0.1));
+        expect(shortRight.width, lessThan(150.0));
+      },
+    );
+
+    testWidgets(
       'showJustBottomSheet fallback delegates to JustSheetSurface and applies JustSheetTheme',
       (WidgetTester tester) async {
         await tester.pumpWidget(
