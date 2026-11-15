@@ -217,6 +217,266 @@ class JustSheetController extends JustOverlayController {
   }
 }
 
+class const _ResolvedSheetStyle({
+  required final Color backgroundColor,
+  required final EdgeInsets padding,
+  required final Color handleColor,
+  required final List<BoxShadow> shadows,
+  required final BorderRadius borderRadius,
+  required final BoxBorder? border,
+});
+
+BoxBorder? _resolveSheetBorder(
+  JustColorScheme colors,
+  JustPresetTokens presetTokens,
+  JustSheetStyle? style,
+  JustSheetStyle? themeStyle,
+) {
+  final Color borderColor =
+      style?.borderColor ??
+      themeStyle?.borderColor ??
+      (presetTokens.showsDefaultBorder
+          ? colors.textPrimary
+          : colors.borderDefault);
+  final double borderWidth =
+      style?.borderWidth ?? themeStyle?.borderWidth ?? presetTokens.borderWidth;
+  return borderWidth > 0.0
+      ? .fromBorderSide(BorderSide(color: borderColor, width: borderWidth))
+      : null;
+}
+
+_ResolvedSheetStyle _resolveSheetStyle(
+  BuildContext context,
+  SheetDirection direction,
+  JustSheetStyle? style,
+) {
+  final JustColorScheme colors = context.justColors;
+  final JustSpacingScheme spacing = context.justSpacing;
+  final JustRadiusScheme radius = context.justRadius;
+  final JustShadowScheme shadows = context.justShadows;
+  final JustPresetTokens presetTokens = context.justPresetTokens;
+  final JustSheetTheme? globalTheme = context
+      .justThemeExtension<JustSheetTheme>();
+
+  final JustSheetStyle? directionThemeStyle = switch (direction) {
+    .bottom => globalTheme?.bottomStyle,
+    .top => globalTheme?.topStyle,
+    .left => globalTheme?.leftStyle,
+    .right => globalTheme?.rightStyle,
+  };
+
+  final BorderRadius defaultRadius = switch (direction) {
+    .bottom => .vertical(top: radius.lg),
+    .top => .vertical(bottom: radius.lg),
+    .left => .horizontal(right: radius.lg),
+    .right => .horizontal(left: radius.lg),
+  };
+
+  return _ResolvedSheetStyle(
+    backgroundColor:
+        style?.backgroundColor ??
+        directionThemeStyle?.backgroundColor ??
+        colors.card,
+    padding: style?.padding ?? directionThemeStyle?.padding ?? .all(spacing.lg),
+    handleColor:
+        style?.handleColor ??
+        directionThemeStyle?.handleColor ??
+        colors.borderDefault,
+    shadows:
+        style?.shadows ??
+        directionThemeStyle?.shadows ??
+        presetTokens.resolveShadow(shadows, .lg, isPressed: false),
+    borderRadius:
+        style?.borderRadius ??
+        directionThemeStyle?.borderRadius ??
+        defaultRadius,
+    border: _resolveSheetBorder(
+      colors,
+      presetTokens,
+      style,
+      directionThemeStyle,
+    ),
+  );
+}
+
+Alignment _sheetAlignment(SheetDirection direction) => switch (direction) {
+  .bottom => .bottomCenter,
+  .top => .topCenter,
+  .left => .centerLeft,
+  .right => .centerRight,
+};
+
+Offset _sheetSlideBeginOffset(SheetDirection direction) => switch (direction) {
+  .bottom => const Offset(0, 1.0),
+  .top => const Offset(0, -1.0),
+  .left => const Offset(-1.0, 0),
+  .right => const Offset(1.0, 0),
+};
+
+/// Inline sheet surface container with JustUI card styling and preset tokens.
+///
+/// Renders the sheet card chrome (background, directional corner rounding,
+/// border, shadow, padding, optional drag grabber handle, and inherited
+/// text/icon themes) without an overlay barrier, drag gesture detector, focus
+/// trap, or [JustSheetScope] dependency.
+class const JustSheetSurface({
+  super.key,
+
+  /// The content rendered inside the sheet surface.
+  required final Widget child,
+
+  /// Edge direction controlling corner rounding and axis sizing.
+  final SheetDirection direction = .bottom,
+
+  /// Whether to show the drag grabber bar on vertical sheets.
+  final bool showHandle = false,
+
+  /// Optional fractional viewport size along the sheet's primary axis (0.0 to 1.0).
+  final double? size,
+
+  /// Optional maximum fractional viewport size along the sheet's primary axis.
+  final double? maxSize,
+
+  /// Extra bottom spacing reserved inside bottom sheets (e.g. keyboard inset).
+  final double? bottomInset,
+
+  /// Per-instance style overrides.
+  final JustSheetStyle? style,
+
+  /// Whether to wrap the inner content in [SafeArea] for the sheet's edge.
+  final bool useSafeArea = false,
+}) extends StatelessWidget {
+  (double?, double?) _resolveDimensions(
+    BuildContext context,
+    BoxConstraints constraints,
+    bool isVertical,
+  ) {
+    double? width;
+    double? height;
+    if (size != null) {
+      final Size screenSize = MediaQuery.sizeOf(context);
+      final double axisViewport = isVertical
+          ? screenSize.height
+          : screenSize.width;
+      double extent = axisViewport * size!;
+      if (maxSize != null) {
+        extent = extent.clamp(0.0, axisViewport * maxSize!);
+      }
+      if (isVertical) {
+        height = extent;
+      } else {
+        width = extent;
+      }
+    }
+    if (isVertical && constraints.hasBoundedWidth) {
+      width = .infinity;
+    } else if (!isVertical && constraints.hasBoundedHeight) {
+      height = .infinity;
+    }
+    return (width, height);
+  }
+
+  Widget _buildColumn(
+    BuildContext context,
+    BoxConstraints constraints,
+    _ResolvedSheetStyle resolved,
+    bool isVertical,
+    bool expandChild,
+  ) {
+    final JustColorScheme colors = context.justColors;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustTypographyScheme typography = context.justTypo;
+
+    final Widget styledChild = DefaultTextStyle(
+      style: typography.bodyMd.copyWith(color: colors.textPrimary),
+      child: IconTheme.merge(
+        data: IconThemeData(color: colors.textPrimary),
+        child: child,
+      ),
+    );
+
+    return Column(
+      mainAxisSize: expandChild ? .max : .min,
+      crossAxisAlignment: constraints.hasBoundedWidth ? .stretch : .start,
+      children: <Widget>[
+        if (showHandle && isVertical)
+          Center(
+            child: Container(
+              width: 36.0,
+              height: 4.0,
+              margin: .only(bottom: spacing.md),
+              decoration: BoxDecoration(
+                color: resolved.handleColor,
+                borderRadius: .all(radius.xs),
+              ),
+            ),
+          ),
+        if (expandChild) Expanded(child: styledChild) else styledChild,
+        if (direction == .bottom && (bottomInset ?? 0.0) > 0.0)
+          SizedBox(height: bottomInset),
+      ],
+    );
+  }
+
+  Widget _buildSurface(
+    BuildContext context,
+    BoxConstraints constraints,
+    _ResolvedSheetStyle resolved,
+  ) {
+    final bool isVertical = direction == .bottom || direction == .top;
+    final (double? width, double? height) = _resolveDimensions(
+      context,
+      constraints,
+      isVertical,
+    );
+    final bool expandChild =
+        size != null && (isVertical || constraints.hasBoundedHeight);
+    final Widget column = _buildColumn(
+      context,
+      constraints,
+      resolved,
+      isVertical,
+      expandChild,
+    );
+
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: resolved.backgroundColor,
+        borderRadius: resolved.borderRadius,
+        border: resolved.border,
+        boxShadow: resolved.shadows,
+      ),
+      padding: resolved.padding,
+      child: useSafeArea
+          ? SafeArea(
+              top: direction == .top,
+              bottom: direction == .bottom,
+              left: direction == .left,
+              right: direction == .right,
+              child: column,
+            )
+          : column,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final _ResolvedSheetStyle resolved = _resolveSheetStyle(
+      context,
+      direction,
+      style,
+    );
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return _buildSurface(context, constraints, resolved);
+      },
+    );
+  }
+}
+
 /// The internal widget for rendering the sheet content with drag-to-dismiss and focus trapping.
 class const _JustSheetWidget({
   required final _SheetInstance<dynamic> instance,
@@ -287,244 +547,58 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
     }
   }
 
+  Widget _buildAnimatedCard(
+    BuildContext context,
+    JustMotionProfile motion,
+    Widget card,
+  ) {
+    if (widget.animationBuilder != null) {
+      return widget.animationBuilder!(
+        context,
+        widget.instance.animationController,
+        card,
+      );
+    }
+    final CurvedAnimation curved = CurvedAnimation(
+      parent: widget.instance.animationController,
+      curve: motion.enter,
+      reverseCurve: motion.exit,
+    );
+    return SlideTransition(
+      position: Tween<Offset>(
+        begin: _sheetSlideBeginOffset(widget.direction),
+        end: .zero,
+      ).animate(curved),
+      child: card,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final JustThemeData theme = JustThemeProvider.of(context).theme;
-    final JustColorScheme colors = theme.colors;
-    final JustSpacingScheme spacing = theme.spacing;
-    final JustRadiusScheme radius = theme.radius;
-    final JustShadowScheme shadows = theme.shadows;
-    final JustMotionProfile motion = theme.animations.resolve(context);
-    final JustTypographyScheme typography = theme.typography;
-
-    final JustSheetTheme? globalTheme = context
-        .justThemeExtension<JustSheetTheme>();
-
-    JustSheetStyle? directionThemeStyle;
-    switch (widget.direction) {
-      case .bottom:
-        directionThemeStyle = globalTheme?.bottomStyle;
-        break;
-      case .top:
-        directionThemeStyle = globalTheme?.topStyle;
-        break;
-      case .left:
-        directionThemeStyle = globalTheme?.leftStyle;
-        break;
-      case .right:
-        directionThemeStyle = globalTheme?.rightStyle;
-        break;
-    }
-
-    final JustSheetStyle? entryStyle = widget.style;
-
-    // Resolve styles
-    final Color bgColor =
-        entryStyle?.backgroundColor ??
-        directionThemeStyle?.backgroundColor ??
-        colors.card;
-    final EdgeInsets padding =
-        entryStyle?.padding ?? directionThemeStyle?.padding ?? .all(spacing.lg);
-    final Color handleColor =
-        entryStyle?.handleColor ??
-        directionThemeStyle?.handleColor ??
-        colors.borderDefault;
-    final List<BoxShadow> sheetShadows =
-        entryStyle?.shadows ?? directionThemeStyle?.shadows ?? shadows.lg;
-
-    final BorderRadius resolvedRadius;
-    switch (widget.direction) {
-      case .bottom:
-        resolvedRadius =
-            entryStyle?.borderRadius ??
-            directionThemeStyle?.borderRadius ??
-            .vertical(top: radius.lg);
-        break;
-      case .top:
-        resolvedRadius =
-            entryStyle?.borderRadius ??
-            directionThemeStyle?.borderRadius ??
-            .vertical(bottom: radius.lg);
-        break;
-      case .left:
-        resolvedRadius =
-            entryStyle?.borderRadius ??
-            directionThemeStyle?.borderRadius ??
-            .horizontal(right: radius.lg);
-        break;
-      case .right:
-        resolvedRadius =
-            entryStyle?.borderRadius ??
-            directionThemeStyle?.borderRadius ??
-            .horizontal(left: radius.lg);
-        break;
-    }
-
-    final JustPresetTokens presetTokens = theme.presetTokens;
-    final BorderSide borderSide = BorderSide(
-      color: presetTokens.showsDefaultBorder
-          ? colors.textPrimary
-          : colors.borderDefault,
-      width: presetTokens.borderWidth,
-    );
-
-    // Calculate layout sizing based on direction and screen dimensions
-    final Size screenSize = MediaQuery.of(context).size;
-
-    double? width;
-    double? height;
-    Alignment alignment;
-
-    switch (widget.direction) {
-      case .bottom:
-        height = widget.size != null ? screenSize.height * widget.size! : null;
-        if (widget.maxSize != null && height != null) {
-          height = height.clamp(0.0, screenSize.height * widget.maxSize!);
-        }
-        width = .infinity;
-        alignment = .bottomCenter;
-        break;
-      case .top:
-        height = widget.size != null ? screenSize.height * widget.size! : null;
-        if (widget.maxSize != null && height != null) {
-          height = height.clamp(0.0, screenSize.height * widget.maxSize!);
-        }
-        width = .infinity;
-        alignment = .topCenter;
-        break;
-      case .left:
-        width = widget.size != null ? screenSize.width * widget.size! : null;
-        if (widget.maxSize != null && width != null) {
-          width = width.clamp(0.0, screenSize.width * widget.maxSize!);
-        }
-        height = .infinity;
-        alignment = .centerLeft;
-        break;
-      case .right:
-        width = widget.size != null ? screenSize.width * widget.size! : null;
-        if (widget.maxSize != null && width != null) {
-          width = width.clamp(0.0, screenSize.width * widget.maxSize!);
-        }
-        height = .infinity;
-        alignment = .centerRight;
-        break;
-    }
-
-    // Drag handle bar
+    final JustMotionProfile motion = context.justMotion;
     final bool isVertical =
         widget.direction == .bottom || widget.direction == .top;
-
-    // Keyboard inset awareness for bottom sheets
     final double bottomInset = widget.direction == .bottom
-        ? MediaQuery.of(context).viewInsets.bottom
+        ? MediaQuery.viewInsetsOf(context).bottom
         : 0.0;
 
-    final MainAxisSize mainAxisSize = widget.size != null ? .max : .min;
-
-    Widget card = Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: resolvedRadius,
-        border: .fromBorderSide(borderSide),
-        boxShadow: theme.resolveShadows(sheetShadows, isPressed: false),
-      ),
-      padding: padding,
-      child: SafeArea(
-        top: widget.direction == .top,
-        bottom: widget.direction == .bottom,
-        left: widget.direction == .left,
-        right: widget.direction == .right,
-        child: Column(
-          mainAxisSize: mainAxisSize,
-          crossAxisAlignment: .stretch,
-          children: <Widget>[
-            if (widget.draggable && isVertical) ...<Widget>[
-              Center(
-                child: Container(
-                  width: 36.0,
-                  height: 4.0,
-                  margin: .only(bottom: spacing.md),
-                  decoration: BoxDecoration(
-                    color: handleColor,
-                    borderRadius: .all(radius.xs),
-                  ),
-                ),
-              ),
-            ],
-            if (widget.size != null)
-              Expanded(
-                child: DefaultTextStyle(
-                  style: typography.bodyMd.copyWith(color: colors.textPrimary),
-                  child: IconTheme.merge(
-                    data: IconThemeData(color: colors.textPrimary),
-                    child: widget.content,
-                  ),
-                ),
-              )
-            else
-              DefaultTextStyle(
-                style: typography.bodyMd.copyWith(color: colors.textPrimary),
-                child: IconTheme.merge(
-                  data: IconThemeData(color: colors.textPrimary),
-                  child: widget.content,
-                ),
-              ),
-            // Reserve space for keyboard when visible on bottom sheets
-            if (bottomInset > 0) SizedBox(height: bottomInset),
-          ],
-        ),
-      ),
+    Widget card = JustSheetSurface(
+      direction: widget.direction,
+      showHandle: widget.draggable,
+      size: widget.size,
+      maxSize: widget.maxSize,
+      bottomInset: bottomInset,
+      style: widget.style,
+      useSafeArea: true,
+      child: widget.content,
     );
 
-    // Apply drag gesture detector
     if (widget.draggable) {
       card = GestureDetector(
         onVerticalDragUpdate: isVertical ? _onVerticalDragUpdate : null,
         onVerticalDragEnd: isVertical ? _onDragEnd : null,
         onHorizontalDragUpdate: !isVertical ? _onHorizontalDragUpdate : null,
         onHorizontalDragEnd: !isVertical ? _onDragEnd : null,
-        child: card,
-      );
-    }
-
-    // Apply animation
-    final CurvedAnimation curvedAnimation = CurvedAnimation(
-      parent: widget.instance.animationController,
-      curve: motion.enter,
-      reverseCurve: motion.exit,
-    );
-
-    Widget animatedChild;
-    if (widget.animationBuilder != null) {
-      animatedChild = widget.animationBuilder!(
-        context,
-        widget.instance.animationController,
-        card,
-      );
-    } else {
-      Offset beginOffset;
-      switch (widget.direction) {
-        case .bottom:
-          beginOffset = const Offset(0, 1);
-          break;
-        case .top:
-          beginOffset = const Offset(0, -1);
-          break;
-        case .left:
-          beginOffset = const Offset(-1, 0);
-          break;
-        case .right:
-          beginOffset = const Offset(1, 0);
-          break;
-      }
-
-      animatedChild = SlideTransition(
-        position: Tween<Offset>(
-          begin: beginOffset,
-          end: .zero,
-        ).animate(curvedAnimation),
         child: card,
       );
     }
@@ -542,13 +616,13 @@ class _JustSheetWidgetState extends State<_JustSheetWidget> {
           child: Stack(
             children: <Widget>[
               Align(
-                alignment: alignment,
+                alignment: _sheetAlignment(widget.direction),
                 child: Semantics(
                   scopesRoute: true,
                   namesRoute: true,
                   explicitChildNodes: true,
                   label: 'Sheet',
-                  child: animatedChild,
+                  child: _buildAnimatedCard(context, motion, card),
                 ),
               ),
             ],
@@ -652,6 +726,82 @@ extension JustSheetContextExtension on BuildContext {
   JustSheetController get justSheet => JustSheetScope.of(this);
 }
 
+Widget _buildSheetRouteTransition(
+  SheetDirection direction,
+  JustMotionProfile motion,
+  Animation<double> animation,
+  Widget child,
+) {
+  final CurvedAnimation curved = CurvedAnimation(
+    parent: animation,
+    curve: motion.enter,
+    reverseCurve: motion.exit,
+  );
+  return SlideTransition(
+    position: Tween<Offset>(
+      begin: _sheetSlideBeginOffset(direction),
+      end: .zero,
+    ).animate(curved),
+    child: child,
+  );
+}
+
+Future<T?> _showFallbackBottomSheet<T>({
+  required BuildContext context,
+  required Widget content,
+  required SheetDirection direction,
+  required bool barrierDismissable,
+  Color? barrierColor,
+  double? size,
+  double? maxSize,
+  required bool draggable,
+  JustSheetStyle? style,
+}) {
+  final JustThemeData theme = context.readTheme();
+  final JustColorScheme colors = theme.colors;
+  final JustMotionProfile motion = theme.animations.resolve(context);
+
+  return showGeneralDialog<T>(
+    context: context,
+    barrierDismissible: barrierDismissable,
+    useRootNavigator: false,
+    barrierLabel: 'Dismiss',
+    transitionDuration: const Duration(milliseconds: 300),
+    barrierColor:
+        style?.barrierColor ??
+        barrierColor ??
+        colors.overlay.withValues(alpha: 0.5),
+    pageBuilder:
+        (
+          BuildContext pageContext,
+          Animation<double> animation,
+          Animation<double> secondaryAnimation,
+        ) {
+          return Align(
+            alignment: _sheetAlignment(direction),
+            child: JustSheetSurface(
+              direction: direction,
+              showHandle: draggable,
+              size: size,
+              maxSize: maxSize,
+              bottomInset: direction == .bottom
+                  ? MediaQuery.viewInsetsOf(pageContext).bottom
+                  : 0.0,
+              style: style,
+              useSafeArea: true,
+              child: content,
+            ),
+          );
+        },
+    transitionBuilder: (
+      BuildContext _,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child,
+    ) => _buildSheetRouteTransition(direction, motion, animation, child),
+  );
+}
+
 /// Shows a modal bottom sheet with JustUI styling and physics-based enter/exit animations.
 ///
 /// If a [JustSheetScope] is present in [context], it delegates to it. Otherwise,
@@ -680,135 +830,15 @@ Future<T?> showJustBottomSheet<T>({
       style: style,
     );
   }
-
-  final JustThemeProviderState? themeState = JustThemeProvider.maybeOf(context);
-  final JustThemeData theme =
-      themeState?.theme ?? JustThemeProvider.of(context).theme;
-  final JustColorScheme colors = theme.colors;
-  final JustRadiusScheme radius = theme.radius;
-  final JustSpacingScheme spacing = theme.spacing;
-  final JustShadowScheme shadows = theme.shadows;
-  final JustPresetTokens presetTokens = theme.presetTokens;
-
-  final BorderSide borderSide = BorderSide(
-    color: presetTokens.showsDefaultBorder
-        ? colors.textPrimary
-        : colors.borderDefault,
-    width: presetTokens.borderWidth,
-  );
-
-  final bool isVertical = direction == .bottom || direction == .top;
-
-  return showGeneralDialog<T>(
+  return _showFallbackBottomSheet<T>(
     context: context,
-    barrierDismissible: barrierDismissable,
-    useRootNavigator: false,
-    barrierLabel: 'Dismiss',
-    transitionDuration: const Duration(milliseconds: 300),
-    barrierColor:
-        style?.barrierColor ??
-        barrierColor ??
-        colors.overlay.withValues(alpha: 0.5),
-    pageBuilder:
-        (
-          BuildContext context,
-          Animation<double> animation,
-          Animation<double> secondaryAnimation,
-        ) {
-          Alignment alignment;
-          switch (direction) {
-            case .bottom:
-              alignment = .bottomCenter;
-              break;
-            case .top:
-              alignment = .topCenter;
-              break;
-            case .left:
-              alignment = .centerLeft;
-              break;
-            case .right:
-              alignment = .centerRight;
-              break;
-          }
-
-          return Align(
-            alignment: alignment,
-            child: Container(
-              width: .infinity,
-              decoration: BoxDecoration(
-                color: style?.backgroundColor ?? colors.card,
-                borderRadius: style?.borderRadius ?? .vertical(top: radius.lg),
-                border: .fromBorderSide(borderSide),
-                boxShadow: theme.resolveShadows(
-                  style?.shadows ?? shadows.lg,
-                  isPressed: false,
-                ),
-              ),
-              padding: style?.padding ?? .all(spacing.lg),
-              child: SafeArea(
-                top: direction == .top,
-                bottom: direction == .bottom,
-                left: direction == .left,
-                right: direction == .right,
-                child: Column(
-                  mainAxisSize: size != null ? .max : .min,
-                  crossAxisAlignment: .stretch,
-                  children: <Widget>[
-                    if (draggable && isVertical)
-                      Center(
-                        child: Container(
-                          width: 36.0,
-                          height: 4.0,
-                          margin: .only(bottom: spacing.md),
-                          decoration: BoxDecoration(
-                            color: style?.handleColor ?? colors.borderDefault,
-                            borderRadius: .all(radius.xs),
-                          ),
-                        ),
-                      ),
-                    if (size != null) Expanded(child: content) else content,
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-    transitionBuilder:
-        (
-          BuildContext context,
-          Animation<double> animation,
-          Animation<double> secondaryAnimation,
-          Widget child,
-        ) {
-          Offset beginOffset;
-          switch (direction) {
-            case .bottom:
-              beginOffset = const Offset(0, 1.0);
-              break;
-            case .top:
-              beginOffset = const Offset(0, -1.0);
-              break;
-            case .left:
-              beginOffset = const Offset(-1.0, 0);
-              break;
-            case .right:
-              beginOffset = const Offset(1.0, 0);
-              break;
-          }
-
-          final CurvedAnimation curvedAnimation = CurvedAnimation(
-            parent: animation,
-            curve: theme.animations.enter,
-            reverseCurve: theme.animations.exit,
-          );
-
-          return SlideTransition(
-            position: Tween<Offset>(
-              begin: beginOffset,
-              end: .zero,
-            ).animate(curvedAnimation),
-            child: child,
-          );
-        },
+    content: content,
+    direction: direction,
+    barrierDismissable: barrierDismissable,
+    barrierColor: barrierColor,
+    size: size,
+    maxSize: maxSize,
+    draggable: draggable,
+    style: style,
   );
 }

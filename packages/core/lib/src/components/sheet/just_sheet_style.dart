@@ -11,6 +11,12 @@ class const JustSheetStyle({
   /// Custom color of the drag handle bar (if visible).
   final Color? handleColor,
 
+  /// Custom border color of the sheet surface.
+  final Color? borderColor,
+
+  /// Custom border width of the sheet surface.
+  final double? borderWidth,
+
   /// Custom border radius of the sheet surface.
   final BorderRadius? borderRadius,
 

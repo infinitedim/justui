@@ -532,6 +532,240 @@ void main() {
       expect(theme1.lerp(null, 0.5), equals(theme1));
       expect(JustSheetTheme.defaults.bottomStyle, isNull);
     });
+
+    test('JustSheetStyle holds optional borderColor and borderWidth', () {
+      const JustSheetStyle style = JustSheetStyle(
+        borderColor: Color(0xFF112233),
+        borderWidth: 2.5,
+      );
+      expect(style.borderColor, equals(const Color(0xFF112233)));
+      expect(style.borderWidth, equals(2.5));
+    });
+
+    testWidgets(
+      'JustSheetSurface renders inline with handle and directional border radius',
+      (WidgetTester tester) async {
+        final JustThemeData defaultTheme = JustThemeData.light;
+        final Finder boxFinder = find
+            .descendant(
+              of: find.byType(JustSheetSurface),
+              matching: find.byType(Container),
+            )
+            .first;
+        final Finder handleFinder = find.byWidgetPredicate(
+          (Widget w) =>
+              w is Container &&
+              w.constraints?.minWidth == 36.0 &&
+              w.constraints?.minHeight == 4.0,
+        );
+
+        await tester.pumpWidget(
+          _buildNavWrapper(
+            theme: defaultTheme,
+            child: const Center(
+              child: JustSheetSurface(
+                direction: .bottom,
+                showHandle: true,
+                child: Text('Inline Sheet'),
+              ),
+            ),
+          ),
+        );
+        expect(find.text('Inline Sheet'), findsOneWidget);
+        expect(find.byType(SafeArea), findsNothing);
+        expect(handleFinder, findsOneWidget);
+
+        final BoxDecoration bottomDeco =
+            tester.widget<Container>(boxFinder).decoration! as BoxDecoration;
+        expect(
+          bottomDeco.borderRadius,
+          equals(BorderRadius.vertical(top: defaultTheme.radius.lg)),
+        );
+
+        await tester.pumpWidget(
+          _buildNavWrapper(
+            theme: defaultTheme,
+            child: const Center(
+              child: JustSheetSurface(
+                direction: .left,
+                showHandle: true,
+                child: Text('Left Sheet'),
+              ),
+            ),
+          ),
+        );
+        expect(handleFinder, findsNothing);
+        final BoxDecoration leftDeco =
+            tester.widget<Container>(boxFinder).decoration! as BoxDecoration;
+        expect(
+          leftDeco.borderRadius,
+          equals(BorderRadius.horizontal(right: defaultTheme.radius.lg)),
+        );
+      },
+    );
+
+    testWidgets(
+      'JustSheetSurface applies theme, style overrides, neobrutalism preset, and SafeArea',
+      (WidgetTester tester) async {
+        final Finder boxFinder = find
+            .descendant(
+              of: find.byType(JustSheetSurface),
+              matching: find.byType(Container),
+            )
+            .first;
+
+        await tester.pumpWidget(
+          _buildNavWrapper(
+            sheetTheme: const JustSheetTheme(
+              bottomStyle: JustSheetStyle(
+                backgroundColor: Color(0xFF223344),
+                borderColor: Color(0xFF556677),
+                borderWidth: 2.0,
+              ),
+            ),
+            child: const Center(
+              child: JustSheetSurface(
+                style: JustSheetStyle(borderWidth: 0.0, borderRadius: .zero),
+                useSafeArea: true,
+                child: Text('Borderless Sheet'),
+              ),
+            ),
+          ),
+        );
+
+        expect(
+          find.descendant(
+            of: find.byType(JustSheetSurface),
+            matching: find.byType(SafeArea),
+          ),
+          findsOneWidget,
+        );
+        final BoxDecoration borderlessDeco =
+            tester.widget<Container>(boxFinder).decoration! as BoxDecoration;
+        expect(borderlessDeco.color, equals(const Color(0xFF223344)));
+        expect(borderlessDeco.border, isNull);
+      },
+    );
+
+    testWidgets('JustSheetSurface applies neobrutalism preset border', (
+      WidgetTester tester,
+    ) async {
+      final Finder boxFinder = find
+          .descendant(
+            of: find.byType(JustSheetSurface),
+            matching: find.byType(Container),
+          )
+          .first;
+      final JustThemeData neoTheme = JustThemeData.neobrutalismLight;
+      await tester.pumpWidget(
+        _buildNavWrapper(
+          theme: neoTheme,
+          child: const Center(
+            child: JustSheetSurface(child: Text('Neo Sheet')),
+          ),
+        ),
+      );
+      final BoxDecoration neoDeco =
+          tester.widget<Container>(boxFinder).decoration! as BoxDecoration;
+      expect(
+        neoDeco.border,
+        equals(
+          Border.all(
+            color: neoTheme.colors.textPrimary,
+            width: neoTheme.presetTokens.borderWidth,
+          ),
+        ),
+      );
+    });
+
+    testWidgets(
+      'JustSheetSurface handles bounded inline sizing and unbounded parent axes',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          _buildNavWrapper(
+            child: Column(
+              mainAxisSize: .min,
+              children: <Widget>[
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 240.0),
+                  child: const JustSheetSurface(
+                    direction: .bottom,
+                    showHandle: true,
+                    child: Text('Bounded Bottom'),
+                  ),
+                ),
+                const JustSheetSurface(
+                  direction: .left,
+                  child: Text('Unbounded Height Left'),
+                ),
+              ],
+            ),
+          ),
+        );
+
+        final Size boundedSize = tester.getSize(
+          find.byType(JustSheetSurface).first,
+        );
+        expect(boundedSize.width, equals(240.0));
+        expect(boundedSize.height, lessThan(120.0));
+        expect(find.text('Unbounded Height Left'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'showJustBottomSheet fallback delegates to JustSheetSurface and applies JustSheetTheme',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          _buildNavWrapper(
+            sheetTheme: const JustSheetTheme(
+              topStyle: JustSheetStyle(backgroundColor: Color(0xFF334455)),
+            ),
+            child: Builder(
+              builder: (BuildContext context) {
+                return GestureDetector(
+                  onTap: () {
+                    showJustBottomSheet<void>(
+                      context: context,
+                      direction: .top,
+                      content: const Text('Fallback Top Sheet'),
+                    );
+                  },
+                  child: const Text('Show Fallback'),
+                );
+              },
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('Show Fallback'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Fallback Top Sheet'), findsOneWidget);
+        expect(find.byType(JustSheetSurface), findsOneWidget);
+
+        final BoxDecoration deco =
+            tester
+                    .widget<Container>(
+                      find
+                          .descendant(
+                            of: find.byType(JustSheetSurface),
+                            matching: find.byType(Container),
+                          )
+                          .first,
+                    )
+                    .decoration!
+                as BoxDecoration;
+        expect(deco.color, equals(const Color(0xFF334455)));
+        expect(
+          deco.borderRadius,
+          equals(BorderRadius.vertical(bottom: JustThemeData.light.radius.lg)),
+        );
+
+        await tester.tapAt(const Offset(10, 500));
+        await tester.pumpAndSettle();
+        expect(find.text('Fallback Top Sheet'), findsNothing);
+      },
+    );
   });
 
   // =========================================================================

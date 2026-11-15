@@ -39,6 +39,8 @@ void main() {
       const JustDialogStyle style = JustDialogStyle(
         backgroundColor: Color(0xFF112233),
         barrierColor: Color(0x88000000),
+        borderColor: Color(0xFF445566),
+        borderWidth: 2.0,
         borderRadius: .all(.circular(12.0)),
         padding: EdgeInsets.all(24.0),
         maxWidth: 500.0,
@@ -50,6 +52,8 @@ void main() {
 
       expect(style.backgroundColor, equals(const Color(0xFF112233)));
       expect(style.barrierColor, equals(const Color(0x88000000)));
+      expect(style.borderColor, equals(const Color(0xFF445566)));
+      expect(style.borderWidth, equals(2.0));
       expect(
         style.borderRadius,
         equals(const BorderRadius.all(Radius.circular(12.0))),
@@ -618,5 +622,156 @@ void main() {
       await tester.pumpAndSettle();
       expect(controller.isVisible, isFalse);
     });
+  });
+
+  group('JustDialogSurface Inline Tests', () {
+    Widget buildInlineApp({
+      required Widget child,
+      JustThemeData? theme,
+      JustDialogTheme? dialogTheme,
+    }) {
+      return JustThemeProvider(
+        lightTheme: theme ?? JustThemeData.light,
+        child: MaterialApp(
+          theme: ThemeData(extensions: <ThemeExtension<dynamic>>[?dialogTheme]),
+          home: Scaffold(body: Center(child: child)),
+        ),
+      );
+    }
+
+    Container surfaceContainer(WidgetTester tester) {
+      return tester.widget<Container>(
+        find
+            .descendant(
+              of: find.byType(JustDialogSurface),
+              matching: find.byType(Container),
+            )
+            .first,
+      );
+    }
+
+    testWidgets(
+      'JustDialogSurface renders inline without JustOverlayScope in default and neobrutalism presets',
+      (WidgetTester tester) async {
+        final JustThemeData defaultTheme = JustThemeData.light;
+        await tester.pumpWidget(
+          buildInlineApp(
+            theme: defaultTheme,
+            child: const JustDialogSurface(
+              child: Row(
+                mainAxisSize: .min,
+                children: <Widget>[Icon(Icons.info), Text('Inline Dialog')],
+              ),
+            ),
+          ),
+        );
+        expect(find.text('Inline Dialog'), findsOneWidget);
+        expect(find.byType(SafeArea), findsNothing);
+
+        final BoxDecoration defaultDeco =
+            surfaceContainer(tester).decoration! as BoxDecoration;
+        expect(defaultDeco.color, equals(defaultTheme.colors.card));
+        expect(
+          defaultDeco.borderRadius,
+          equals(BorderRadius.all(defaultTheme.radius.lg)),
+        );
+        expect(
+          defaultDeco.border,
+          equals(
+            Border.all(
+              color: defaultTheme.colors.borderDefault,
+              width: defaultTheme.presetTokens.borderWidth,
+            ),
+          ),
+        );
+        expect(defaultDeco.boxShadow, equals(defaultTheme.shadows.lg));
+
+        final JustThemeData neoTheme = JustThemeData.neobrutalismLight;
+        await tester.pumpWidget(
+          buildInlineApp(
+            theme: neoTheme,
+            child: const JustDialogSurface(child: Text('Neo Dialog')),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final BoxDecoration neoDeco =
+            surfaceContainer(tester).decoration! as BoxDecoration;
+        expect(
+          neoDeco.border,
+          equals(
+            Border.all(
+              color: neoTheme.colors.textPrimary,
+              width: neoTheme.presetTokens.borderWidth,
+            ),
+          ),
+        );
+        expect(neoDeco.boxShadow?.first.blurRadius, equals(0.0));
+        expect(neoDeco.boxShadow?.first.offset, equals(const Offset(8.0, 8.0)));
+      },
+    );
+
+    testWidgets(
+      'JustDialogSurface applies theme, style overrides, and zero borderWidth',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildInlineApp(
+            dialogTheme: const JustDialogTheme(
+              centerStyle: JustDialogStyle(
+                backgroundColor: Color(0xFF102030),
+                borderColor: Color(0xFF405060),
+                borderWidth: 3.0,
+              ),
+            ),
+            child: const JustDialogSurface(
+              style: JustDialogStyle(
+                borderWidth: 0.0,
+                borderRadius: .all(.circular(12.0)),
+              ),
+              child: Text('Borderless Dialog'),
+            ),
+          ),
+        );
+
+        final BoxDecoration deco =
+            surfaceContainer(tester).decoration! as BoxDecoration;
+        expect(deco.color, equals(const Color(0xFF102030)));
+        expect(deco.border, isNull);
+        expect(
+          deco.borderRadius,
+          equals(const BorderRadius.all(Radius.circular(12.0))),
+        );
+      },
+    );
+
+    testWidgets(
+      'JustDialogSurface renders bottom handle and optional SafeArea',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildInlineApp(
+            child: const JustDialogSurface(
+              position: .bottom,
+              useSafeArea: true,
+              child: Text('Bottom Inline Dialog'),
+            ),
+          ),
+        );
+
+        expect(
+          find.descendant(
+            of: find.byType(JustDialogSurface),
+            matching: find.byType(SafeArea),
+          ),
+          findsOneWidget,
+        );
+        final Finder handleFinder = find.byWidgetPredicate(
+          (Widget w) =>
+              w is Container &&
+              w.constraints?.minWidth == 32.0 &&
+              w.constraints?.minHeight == 4.0,
+        );
+        expect(handleFinder, findsOneWidget);
+      },
+    );
   });
 }
