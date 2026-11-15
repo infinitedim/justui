@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
@@ -588,6 +589,86 @@ class _JustToastWidgetState extends State<_JustToastWidget>
   }
 }
 
+class const _ToastCloseButton({
+  required final Color iconColor,
+  final VoidCallback? onDismiss,
+}) extends StatefulWidget {
+  @override
+  State<_ToastCloseButton> createState() => _ToastCloseButtonState();
+}
+
+class _ToastCloseButtonState extends State<_ToastCloseButton> {
+  static const Map<ShortcutActivator, Intent> _shortcuts =
+      <ShortcutActivator, Intent>{
+        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+      };
+
+  bool _focused = false;
+
+  void _handleFocusHighlight(bool show) {
+    if (_focused != show) {
+      setState(() => _focused = show);
+    }
+  }
+
+  Decoration _focusDecoration(BuildContext context) {
+    if (!_focused) return const BoxDecoration();
+    final JustColorScheme colors = context.justColors;
+    final JustPresetTokens presetTokens = context.justPresetTokens;
+    final JustRadiusScheme radius = context.justRadius;
+    final Color focusColor = presetTokens.showsDefaultBorder
+        ? colors.textPrimary
+        : colors.borderFocus;
+    final double strokeWidth = presetTokens.showsDefaultBorder
+        ? presetTokens.borderWidth
+        : 2.0;
+    return BoxDecoration(
+      borderRadius: presetTokens.showsDefaultBorder ? .zero : .all(radius.sm),
+      border: .all(color: focusColor, width: strokeWidth),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool enabled = widget.onDismiss != null;
+    return Semantics(
+      container: true,
+      button: true,
+      enabled: enabled,
+      label: 'Dismiss',
+      child: FocusableActionDetector(
+        enabled: enabled,
+        mouseCursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,
+        shortcuts: _shortcuts,
+        actions: <Type, Action<Intent>>{
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (ActivateIntent _) {
+              widget.onDismiss?.call();
+              return null;
+            },
+          ),
+        },
+        onShowFocusHighlight: _handleFocusHighlight,
+        child: GestureDetector(
+          behavior: .opaque,
+          onTap: widget.onDismiss,
+          child: DecoratedBox(
+            decoration: _focusDecoration(context),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: 24.0,
+                minHeight: 24.0,
+              ),
+              child: Icon(Icons.close, color: widget.iconColor, size: 16.0),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _ToastVisuals {
   final Color bgColor;
   final Color borderColor;
@@ -671,6 +752,7 @@ class const JustToastSurface({
     final JustColorScheme colors = context.justColors;
     final JustSpacingScheme spacing = context.justSpacing;
     final JustRadiusScheme radius = context.justRadius;
+    final JustTypographyScheme typography = context.justTypo;
     final JustShadowScheme shadows = context.justShadows;
     final JustPresetTokens presetTokens = context.justPresetTokens;
     final JustToastStyle? themeStyle = _variantStyle(
@@ -706,10 +788,10 @@ class const JustToastSurface({
       textStyle:
           style?.textStyle ??
           themeStyle?.textStyle ??
-          JustFluidTypo.bodySm(context).copyWith(color: fg),
+          typography.bodySm.copyWith(color: fg),
       descriptionTextStyle:
           descriptionTextStyle ??
-          JustFluidTypo.bodySm(context).copyWith(color: colors.textSecondary),
+          typography.bodySm.copyWith(color: colors.textSecondary),
       minWidth: rawMin > maxWidth ? maxWidth : rawMin,
       maxWidth: maxWidth,
       shadows: style?.shadows ?? themeStyle?.shadows ?? shadows.md,
@@ -789,9 +871,9 @@ class const JustToastSurface({
             action!,
           ] else if (showCloseButton) ...<Widget>[
             SizedBox(width: spacing.sm),
-            GestureDetector(
-              onTap: onDismiss,
-              child: Icon(Icons.close, color: colors.textSecondary, size: 16.0),
+            _ToastCloseButton(
+              iconColor: colors.textSecondary,
+              onDismiss: onDismiss,
             ),
           ],
         ],

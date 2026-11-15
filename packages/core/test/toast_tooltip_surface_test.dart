@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart'
     show Colors, Icons, MaterialApp, Scaffold, ThemeExtension;
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
@@ -45,6 +46,20 @@ BoxDecoration _findBoxDecoration(WidgetTester tester, {required Finder scope}) {
   return container.decoration! as BoxDecoration;
 }
 
+SemanticsData _semanticsOf(WidgetTester tester, Finder finder) =>
+    tester.getSemantics(finder).getSemanticsData();
+
+BoxDecoration _toastBox(WidgetTester tester) =>
+    _findBoxDecoration(tester, scope: find.byType(JustToastSurface));
+
+BoxDecoration _closeRingDecoration(WidgetTester tester) {
+  final Finder finder = find.ancestor(
+    of: find.byIcon(Icons.close),
+    matching: find.byType(DecoratedBox),
+  );
+  return tester.widget<DecoratedBox>(finder.first).decoration as BoxDecoration;
+}
+
 void main() {
   group('JustToastSurface & JustToastController description', () {
     testWidgets(
@@ -66,10 +81,13 @@ void main() {
         expect(find.text('Project settings updated.'), findsOneWidget);
         expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
         expect(find.byIcon(Icons.close), findsNothing);
-        final SemanticsNode node = tester.getSemantics(
-          find.byType(JustToastSurface),
+        expect(
+          _semanticsOf(
+            tester,
+            find.byType(JustToastSurface),
+          ).flagsCollection.isLiveRegion,
+          isFalse,
         );
-        expect(node.getSemanticsData().flagsCollection.isLiveRegion, isFalse);
 
         final Row row = tester.widget<Row>(
           find.descendant(
@@ -86,41 +104,58 @@ void main() {
       'JustToastSurface respects close button, action, liveRegion, and borderWidth',
       (WidgetTester tester) async {
         final SemanticsHandle semantics = tester.ensureSemantics();
-        int dismissCount = 0;
-
-        await tester.pumpWidget(
-          _buildTestApp(
-            JustToastSurface(
-              message: 'Single line',
-              liveRegion: true,
-              onDismiss: () => dismissCount++,
-              style: const JustToastStyle(
-                minWidth: 0,
-                maxWidth: 240,
-                borderWidth: 0.0,
+        try {
+          int dismissCount = 0;
+          await tester.pumpWidget(
+            _buildTestApp(
+              JustToastSurface(
+                message: 'Single line',
+                liveRegion: true,
+                onDismiss: () => dismissCount++,
+                style: const JustToastStyle(
+                  minWidth: 0,
+                  maxWidth: 240,
+                  borderWidth: 0.0,
+                ),
               ),
             ),
-          ),
-        );
+          );
 
-        expect(find.byIcon(Icons.close), findsOneWidget);
-        expect(tester.getSize(find.byType(JustToastSurface)).width, 240.0);
-        final BoxDecoration borderless = _findBoxDecoration(
-          tester,
-          scope: find.byType(JustToastSurface),
-        );
-        expect(borderless.border, isNull);
-        final SemanticsNode liveNode = tester.getSemantics(
-          find.byType(JustToastSurface),
-        );
-        expect(
-          liveNode.getSemanticsData().flagsCollection.isLiveRegion,
-          isTrue,
-        );
+          final Finder closeIcon = find.byIcon(Icons.close);
+          expect(closeIcon, findsOneWidget);
+          expect(tester.getSize(find.byType(JustToastSurface)).width, 240.0);
+          final Size closeSize = tester.getSize(closeIcon);
+          expect(closeSize.width >= 24.0 && closeSize.height >= 24.0, isTrue);
+          expect(
+            _semanticsOf(tester, closeIcon).flagsCollection.isButton,
+            isTrue,
+          );
+          final BoxDecoration borderless = _toastBox(tester);
+          expect(borderless.border, isNull);
+          expect(
+            _semanticsOf(
+              tester,
+              find.byType(JustToastSurface),
+            ).flagsCollection.isLiveRegion,
+            isTrue,
+          );
 
-        await tester.tap(find.byIcon(Icons.close));
-        expect(dismissCount, equals(1));
-        semantics.dispose();
+          await tester.tap(closeIcon);
+          expect(dismissCount, equals(1));
+          await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+          await tester.pump();
+          expect(FocusManager.instance.primaryFocus, isNotNull);
+          expect(
+            FocusManager.instance.primaryFocus,
+            isNot(isA<FocusScopeNode>()),
+          );
+          expect(_closeRingDecoration(tester).border, isNotNull);
+          await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+          await tester.sendKeyEvent(LogicalKeyboardKey.space);
+          expect(dismissCount, equals(3));
+        } finally {
+          semantics.dispose();
+        }
       },
     );
 
@@ -150,10 +185,7 @@ void main() {
         final Text desc = tester.widget<Text>(find.text('Moved to trash.'));
         expect(desc.style?.color, equals(Colors.red));
 
-        final BoxDecoration bordered = _findBoxDecoration(
-          tester,
-          scope: find.byType(JustToastSurface),
-        );
+        final BoxDecoration bordered = _toastBox(tester);
         expect(bordered.border, isNotNull);
       },
     );
@@ -180,10 +212,7 @@ void main() {
           );
           expect(find.byIcon(pair.value), findsOneWidget);
           if (pair.key == .warning) {
-            final BoxDecoration box = _findBoxDecoration(
-              tester,
-              scope: find.byType(JustToastSurface),
-            );
+            final BoxDecoration box = _toastBox(tester);
             expect(box.color, equals(Colors.amber));
           }
         }
@@ -227,16 +256,35 @@ void main() {
         await tester.pumpAndSettle();
       },
     );
+
+    testWidgets(
+      'JustToastSurface resolves body and description from justTypo',
+      (WidgetTester tester) async {
+        const JustTypographyScheme typo = JustTypographyScheme.fromFontFamily(
+          fontFamily: 'ToastFont',
+        );
+        final JustThemeData theme = JustThemeData.light.copyWith(
+          typography: typo,
+        );
+        const Widget surface = JustToastSurface(message: 'T', description: 'D');
+        await tester.pumpWidget(_buildTestApp(surface, theme: theme));
+        String? fontOf(String s) =>
+            tester.widget<Text>(find.text(s)).style?.fontFamily;
+        expect(fontOf('T'), 'ToastFont');
+        expect(fontOf('D'), 'ToastFont');
+      },
+    );
   });
 
   group('JustTooltipBubble & JustTooltip delegation', () {
     testWidgets(
       'JustTooltipBubble renders inline and applies maxWidth constraint',
       (WidgetTester tester) async {
+        const String msg = 'A long tooltip message that wraps at maxWidth';
         await tester.pumpWidget(
           _buildTestApp(
             const JustTooltipBubble(
-              message: 'A long tooltip message that must wrap cleanly inside maxWidth',
+              message: msg,
               style: JustTooltipStyle(
                 maxWidth: 120,
                 backgroundColor: Colors.black,
@@ -246,20 +294,10 @@ void main() {
           ),
         );
 
-        expect(
-          find.text(
-            'A long tooltip message that must wrap cleanly inside maxWidth',
-          ),
-          findsOneWidget,
-        );
-        expect(
-          tester.getSize(find.byType(JustTooltipBubble)).width,
-          lessThanOrEqualTo(120.0),
-        );
-        final BoxDecoration box = _findBoxDecoration(
-          tester,
-          scope: find.byType(JustTooltipBubble),
-        );
+        final Finder bubble = find.byType(JustTooltipBubble);
+        expect(find.text(msg), findsOneWidget);
+        expect(tester.getSize(bubble).width, lessThanOrEqualTo(120.0));
+        final BoxDecoration box = _findBoxDecoration(tester, scope: bubble);
         expect(box.color, equals(Colors.black));
         expect(box.border, isNull);
       },
@@ -270,25 +308,16 @@ void main() {
       (WidgetTester tester) async {
         await tester.pumpWidget(
           _buildTestApp(
-            const JustTooltipBubble(
-              message: 'Theme constrained tooltip text that wraps at maxWidth',
-            ),
+            const JustTooltipBubble(message: 'Wrapped tooltip text'),
             theme: JustThemeData.neobrutalismLight,
             tooltipTheme: const JustTooltipTheme(
               style: JustTooltipStyle(maxWidth: 100),
             ),
           ),
         );
-
-        expect(
-          tester.getSize(find.byType(JustTooltipBubble)).width,
-          lessThanOrEqualTo(100.0),
-        );
-        final BoxDecoration neoBox = _findBoxDecoration(
-          tester,
-          scope: find.byType(JustTooltipBubble),
-        );
-        expect(neoBox.border, isNotNull);
+        final Finder bubble = find.byType(JustTooltipBubble);
+        expect(tester.getSize(bubble).width, lessThanOrEqualTo(100.0));
+        expect(_findBoxDecoration(tester, scope: bubble).border, isNotNull);
       },
     );
 
@@ -306,15 +335,61 @@ void main() {
             ),
           ),
         );
-
         expect(find.byType(JustTooltipBubble), findsNothing);
         controller.show();
         await tester.pumpAndSettle();
-
         expect(find.byType(JustTooltipBubble), findsOneWidget);
         expect(find.text('Copy'), findsOneWidget);
         controller.hide();
         await tester.pumpAndSettle();
+      },
+    );
+
+    testWidgets(
+      'JustTooltipBubble honors style overrides and neo inverse shadow',
+      (WidgetTester tester) async {
+        final JustThemeData neo = JustThemeData.neobrutalismLight;
+        const Key kA = ValueKey<String>('a');
+        const Key kB = ValueKey<String>('b');
+        final JustTooltipStyle override = JustTooltipStyle(
+          backgroundColor: neo.colors.textPrimary,
+          foregroundColor: neo.colors.textInverse,
+          borderWidth: 0.0,
+          borderRadius: .zero,
+          shadows: const <BoxShadow>[],
+          textStyle: const TextStyle(
+            fontFamily: 'Mono',
+            fontSize: 12,
+            fontWeight: .w600,
+          ),
+        );
+        final Widget pair = Column(
+          mainAxisSize: .min,
+          children: <Widget>[
+            JustTooltipBubble(key: kA, message: 'A', style: override),
+            JustTooltipBubble(
+              key: kB,
+              message: 'B',
+              style: JustTooltipStyle(backgroundColor: neo.colors.textPrimary),
+            ),
+          ],
+        );
+        await tester.pumpWidget(_buildTestApp(pair, theme: neo));
+
+        BoxDecoration deco(Key k) =>
+            _findBoxDecoration(tester, scope: find.byKey(k));
+        final BoxDecoration boxA = deco(kA);
+        expect(boxA.border, isNull);
+        expect(boxA.boxShadow, isEmpty);
+        final Text textA = tester.widget<Text>(find.text('A'));
+        expect(textA.style?.fontFamily, 'Mono');
+        expect(textA.style?.color, neo.colors.textInverse);
+
+        final BoxDecoration boxB = deco(kB);
+        final bool same = boxB.boxShadow!.any(
+          (BoxShadow s) => s.color == boxB.color,
+        );
+        expect(same, isFalse);
       },
     );
   });

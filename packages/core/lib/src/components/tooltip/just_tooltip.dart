@@ -12,6 +12,28 @@ import 'just_tooltip_style.dart';
 import 'just_tooltip_theme.dart';
 import 'just_tooltip_variants.dart';
 
+class _TooltipVisuals {
+  const _TooltipVisuals({
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.borderWidth,
+    required this.borderRadius,
+    required this.padding,
+    required this.textStyle,
+    required this.shadows,
+    required this.maxWidth,
+  });
+
+  final Color backgroundColor;
+  final Color borderColor;
+  final double borderWidth;
+  final BorderRadius borderRadius;
+  final EdgeInsets padding;
+  final TextStyle textStyle;
+  final List<BoxShadow> shadows;
+  final double? maxWidth;
+}
+
 /// Standalone visual bubble surface for a tooltip.
 class const JustTooltipBubble({
   super.key,
@@ -22,8 +44,7 @@ class const JustTooltipBubble({
   /// Per-instance style overrides.
   final JustTooltipStyle? style,
 }) extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
+  _TooltipVisuals _resolveVisuals(BuildContext context) {
     final JustColorScheme colors = context.justColors;
     final JustSpacingScheme spacing = context.justSpacing;
     final JustRadiusScheme radius = context.justRadius;
@@ -38,42 +59,67 @@ class const JustTooltipBubble({
         style?.backgroundColor ??
         themeStyle?.backgroundColor ??
         (presetTokens.showsDefaultBorder ? colors.background : colors.elevated);
-    final Color resolvedBorderColor = presetTokens.showsDefaultBorder
-        ? colors.textPrimary
-        : colors.borderDefault;
+    final Color resolvedBorderColor =
+        style?.borderColor ??
+        themeStyle?.borderColor ??
+        (presetTokens.showsDefaultBorder
+            ? colors.textPrimary
+            : colors.borderDefault);
+    final double resolvedBorderWidth =
+        style?.borderWidth ??
+        themeStyle?.borderWidth ??
+        (presetTokens.showsDefaultBorder ? presetTokens.borderWidth : 0.0);
     final Color resolvedTextColor =
         style?.foregroundColor ??
+        style?.textStyle?.color ??
         themeStyle?.foregroundColor ??
+        themeStyle?.textStyle?.color ??
         colors.textPrimary;
-    final EdgeInsets resolvedPadding =
-        style?.padding ??
-        themeStyle?.padding ??
-        .symmetric(horizontal: spacing.sm, vertical: spacing.xs);
-    final BorderRadius resolvedRadius =
-        style?.borderRadius ?? themeStyle?.borderRadius ?? .all(radius.sm);
-    final bool showBorder = presetTokens.showsDefaultBorder;
-    final double borderWidth = showBorder ? presetTokens.borderWidth : 0.0;
-    final double? maxWidth = style?.maxWidth ?? themeStyle?.maxWidth;
+    final TextStyle baseTextStyle =
+        style?.textStyle ?? themeStyle?.textStyle ?? typography.bodySm;
+    final List<BoxShadow> defaultShadows =
+        presetTokens.showsDefaultBorder &&
+            shadows.md.any((BoxShadow s) => s.color == resolvedBg)
+        ? const <BoxShadow>[]
+        : shadows.md;
+    final List<BoxShadow> resolvedShadows =
+        style?.shadows ?? themeStyle?.shadows ?? defaultShadows;
 
+    return _TooltipVisuals(
+      backgroundColor: resolvedBg,
+      borderColor: resolvedBorderColor,
+      borderWidth: resolvedBorderWidth,
+      borderRadius:
+          style?.borderRadius ?? themeStyle?.borderRadius ?? .all(radius.sm),
+      padding:
+          style?.padding ??
+          themeStyle?.padding ??
+          .symmetric(horizontal: spacing.sm, vertical: spacing.xs),
+      textStyle: baseTextStyle.copyWith(color: resolvedTextColor),
+      shadows: resolvedShadows,
+      maxWidth: style?.maxWidth ?? themeStyle?.maxWidth,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final _TooltipVisuals v = _resolveVisuals(context);
     final Container bubble = Container(
-      padding: resolvedPadding,
+      padding: v.padding,
       decoration: BoxDecoration(
-        color: resolvedBg,
-        borderRadius: resolvedRadius,
-        border: showBorder
-            ? .all(color: resolvedBorderColor, width: borderWidth)
+        color: v.backgroundColor,
+        borderRadius: v.borderRadius,
+        border: v.borderWidth > 0.0
+            ? .all(color: v.borderColor, width: v.borderWidth)
             : null,
-        boxShadow: shadows.md,
+        boxShadow: v.shadows,
       ),
-      child: Text(
-        message,
-        style: typography.bodySm.copyWith(color: resolvedTextColor),
-      ),
+      child: Text(message, style: v.textStyle),
     );
 
-    if (maxWidth != null) {
+    if (v.maxWidth != null) {
       return ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
+        constraints: BoxConstraints(maxWidth: v.maxWidth!),
         child: bubble,
       );
     }
