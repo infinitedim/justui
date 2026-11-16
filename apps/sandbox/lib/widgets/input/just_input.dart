@@ -1,5 +1,5 @@
 // justui-meta: registry=c21a00ee4b95057565ed0e4aabfbd44d0a07181ed2772d11f2b05fb629779191 local=1125e9221df705ad6c0138c3b45b651629256e0b20779c51988b767e28aebf53
-import 'package:flutter/material.dart' show Icons;
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';

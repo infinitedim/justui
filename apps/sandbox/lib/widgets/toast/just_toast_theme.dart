@@ -1,5 +1,5 @@
 // justui-meta: registry=f0d9b6d5f0496f85b7b6d51a3fb5fa90064efd4db232420a472c989a29dbee19 local=81f079dd90994c1560a91bb869cc2f1054bdee33721f6c626923b4385daabe0b
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_toast_style.dart';
 

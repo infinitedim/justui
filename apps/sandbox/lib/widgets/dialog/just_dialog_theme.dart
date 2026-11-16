@@ -1,5 +1,5 @@
 // justui-meta: registry=fcd48ec1e9657846a661521136884c5500c73b85822f8604f6d976738d97ccea local=82074d5f7f5370da2a1c14c67512874c4206ed14d36486a8b0081e2da0bed850
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_dialog_style.dart';
 

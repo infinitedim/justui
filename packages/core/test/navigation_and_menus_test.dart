@@ -1,8 +1,7 @@
 import 'dart:async' show unawaited;
 
-import 'package:flutter/material.dart'
-    show Colors, Icons, MaterialApp, Scaffold, ThemeData;
-import 'package:flutter/src/material/theme_data.dart';
+import 'package:material_ui/material_ui.dart'
+    show Colors, Icons, MaterialApp, Scaffold, ThemeData, ThemeExtension;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';
@@ -62,7 +61,7 @@ Widget _buildNavWrapper({
   JustTableTheme? tableTheme,
   JustToggleTheme? toggleTheme,
 }) {
-  final JustThemeData activeTheme = theme ?? JustThemeData.light;
+  final JustThemeData activeTheme = theme ?? .light;
   return JustThemeProvider(
     lightTheme: activeTheme,
     child: MaterialApp(

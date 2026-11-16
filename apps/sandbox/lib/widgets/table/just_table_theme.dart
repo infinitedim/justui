@@ -1,5 +1,5 @@
 // justui-meta: registry=0bfb5051be3f7f12a2f16148f4ebde71929a19b9376c94a5f5d7a89d81229284 local=91cfe941a17248556f7132e4a393408f8cd16bac6036159165198fc7d9b6d358
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_table_style.dart';
 

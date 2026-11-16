@@ -1,5 +1,5 @@
 // justui-meta: registry=ddea63de6efd336c12972cf2f69d06a11eef3c39a6133293d3e26fdcc0ab1eed local=d4f20cd20a2b0f764323310e60ac5c2284fc557c7992835e81d47c2396c7b3c1
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_sidebar_style.dart';
 

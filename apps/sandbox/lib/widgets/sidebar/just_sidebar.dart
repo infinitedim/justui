@@ -1,6 +1,6 @@
 // justui-meta: registry=9e55130e259d1754b8c427b6c414e403b1b07cb58ee518288a8641310f021c11 local=d5704b1b769b87f3b43bc0ab73709a8e684847b9250636d5a10132670e56a32a
 import 'package:flutter/widgets.dart';
-import 'package:flutter/material.dart' show Icons;
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:sandbox/core/just_ui_core.dart';
 
 import '../shared/just_tooltip_overlay.dart';

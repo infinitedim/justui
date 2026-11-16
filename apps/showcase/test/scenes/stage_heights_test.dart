@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart' show Material;
+import 'package:material_ui/material_ui.dart' show Material;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';

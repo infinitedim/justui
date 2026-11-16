@@ -1,5 +1,5 @@
 // justui-meta: registry=8bce76196570eeff315b98c0ce9c702fc0e4adec7bd471bc6fd4856bb78c52e5 local=8299446bc928737ddd8ec542587346eff50a74e0f029801b73380d1353da54d5
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_time_picker_style.dart';
 import 'just_time_picker_variants.dart';

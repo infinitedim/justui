@@ -9,18 +9,18 @@ import 'dart:io';
 /// - Zero-width spaces & joiners: U+200B..U+200D (ZWSP, ZWNJ, ZWJ)
 /// - Byte Order Mark: U+FEFF outside of file offset 0
 void main(List<String> args) {
-  final gitResult = Process.runSync('git', ['ls-files', '-z']);
+  final ProcessResult gitResult = Process.runSync('git', <String>['ls-files', '-z']);
   if (gitResult.exitCode != 0) {
     stderr.writeln('Failed to get tracked files from git: ${gitResult.stderr}');
     exit(1);
   }
 
-  final files = (gitResult.stdout as String)
+  final List<String> files = (gitResult.stdout as String)
       .split('\x00')
-      .where((f) => f.trim().isNotEmpty)
+      .where((String f) => f.trim().isNotEmpty)
       .toList();
 
-  final binaryExtensions = {
+  final Set<String> binaryExtensions = <String>{
     '.png',
     '.jpg',
     '.jpeg',
@@ -41,13 +41,13 @@ void main(List<String> args) {
 
   int violations = 0;
 
-  for (final filePath in files) {
-    final lower = filePath.toLowerCase();
-    if (binaryExtensions.any((ext) => lower.endsWith(ext))) {
+  for (final String filePath in files) {
+    final String lower = filePath.toLowerCase();
+    if (binaryExtensions.any((String ext) => lower.endsWith(ext))) {
       continue;
     }
 
-    final file = File(filePath);
+    final File file = File(filePath);
     if (!file.existsSync()) {
       continue;
     }
@@ -72,22 +72,22 @@ void main(List<String> args) {
       continue;
     }
 
-    final runes = content.runes.toList();
+    final List<int> runes = content.runes.toList();
     int lineNumber = 1;
 
     for (int i = 0; i < runes.length; i++) {
-      final r = runes[i];
+      final int r = runes[i];
       if (r == 0x0A) {
         lineNumber++;
       }
 
-      final isBidi =
+      final bool isBidi =
           (r >= 0x202A && r <= 0x202E) || (r >= 0x2066 && r <= 0x2069);
-      final isZeroWidth = (r >= 0x200B && r <= 0x200D);
-      final isDisplacedBom = (r == 0xFEFF && i > 0);
+      final bool isZeroWidth = (r >= 0x200B && r <= 0x200D);
+      final bool isDisplacedBom = (r == 0xFEFF && i > 0);
 
       if (isBidi || isZeroWidth || isDisplacedBom) {
-        final reason = isBidi
+        final String reason = isBidi
             ? 'Bidi control character'
             : isZeroWidth
             ? 'Zero-width character'

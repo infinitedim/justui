@@ -1,5 +1,5 @@
 // justui-meta: registry=142ea9bc77e2bd39236a089a439f51aa22ec9ba962ecf7fbcae6e81b9042d301 local=212b9e3042eabc1aeb63ac59cf8a29f81474b9cd6b8da1f003a92f97755ea66a
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_radio_style.dart';
 

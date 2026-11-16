@@ -88,7 +88,7 @@ export function LivePart({
       >
         <div
           ref={host}
-          className="absolute top-[calc(50%-172px)] left-0 h-[344px] w-[320px] [&_flutter-view]:touch-pan-y!"
+          className="absolute top-[calc(50%-172px)] left-0 h-86 w-[320px] [&_flutter-view]:touch-pan-y!"
         />
       </div>
     </div>

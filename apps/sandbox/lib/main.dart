@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'core/just_ui_core.dart';
 import 'core/theme/just_theme.dart';

@@ -14,6 +14,8 @@ dependencies:
   just_ui_tokens:
     path: ../tokens
 
+  material_ui: ^1.11.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

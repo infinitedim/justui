@@ -1,5 +1,5 @@
 // justui-meta: registry=e15e4eec2e0737a8ca4f8cd9df8010c277860eb3b560fec3e073459ba08b1b7c local=9c9bb29db261d539991e1f735a869b20df6955ceb10a7b1f979688aa1cfcd9f4
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_toggle_style.dart';
 

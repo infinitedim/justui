@@ -1,7 +1,7 @@
 // justui-meta: registry=b93c3d76654b7958dc0268fa8283756035193cbf5a43f7d9b2cb76c813469557 local=55808f03f342dbf98b6844ca0efe8c7d527bc3c30b1eb5e4d1d6c2e7834c68de
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Icons;
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';

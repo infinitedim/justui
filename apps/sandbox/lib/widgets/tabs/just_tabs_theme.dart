@@ -1,5 +1,5 @@
 // justui-meta: registry=20b5d947aec7b64037bbc3b43ead5efbf4cd08c66454a445ba36890c7bbae848 local=4c19438e26deffdf07f05fb7c7678c7c362fa4c0994af96dd5c9e70bf6e5b451
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_tabs_style.dart';
 

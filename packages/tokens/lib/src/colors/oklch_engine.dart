@@ -442,7 +442,7 @@ abstract final class OklchEngine {
     final double c2 = 3.0 * L * (wl * kl * kl + wm * km * km + ws * ks * ks);
     final double c3 = wl * kl * kl * kl + wm * km * km * km + ws * ks * ks * ks;
 
-    double minC = double.infinity;
+    double minC = .infinity;
     minC = _findMinPositiveCubicRoot(c3, c2, c1, c0, minC);
     minC = _findMinPositiveCubicRoot(c3, c2, c1, c0 - 1.0, minC);
     return minC;

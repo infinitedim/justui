@@ -1,5 +1,5 @@
 // ignore_for_file: implementation_imports
-import 'package:flutter/material.dart' show Icons;
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/breadcrumb/just_breadcrumb.dart';

@@ -1,5 +1,5 @@
 // justui-meta: registry=d420060a7b3b30cc503e2708efa1c7743464ca1b95ab0b02a2e106eebae74088 local=ed98e8b35723c819e7fbcf41e3e0addabbd50e909c7955b81efc0ef1cadb7a74
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_checkbox_style.dart';
 

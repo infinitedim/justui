@@ -1,8 +1,7 @@
 // ignore_for_file: deprecated_member_use
-import 'package:flutter/material.dart'
-    show Icons, MaterialApp, Scaffold, ThemeData;
+import 'package:material_ui/material_ui.dart'
+    show Icons, MaterialApp, Scaffold, ThemeData, ThemeExtension;
 import 'package:flutter/services.dart' show LogicalKeyboardKey;
-import 'package:flutter/src/material/theme_data.dart';
 import 'package:flutter/src/semantics/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';

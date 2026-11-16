@@ -1,5 +1,5 @@
 // justui-meta: registry=a5867baaa5fde9fb8d9fc58246b3e724fd399fe3938c98b490b309ce9c1702ce local=94669b75bdbd3446fdbf952827247a2ae06af60dca525df50bc7a7d4fdc2137e
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_slider_style.dart';
 

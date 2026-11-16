@@ -1,7 +1,7 @@
 // justui-meta: registry=26f2a9957982bed694102971052585d341a3b31a0242a3d02621ee76a2d71beb local=80c561f36adf740fa4577c5b5b16aa0c1aa85b750aa17902f55d5e538e326bcd
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart' show Icons;
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:flutter/scheduler.dart' show SchedulerBinding, SchedulerPhase;
 import 'package:flutter/services.dart'
     show TextInputAction, TextInputType, KeyDownEvent, KeyEvent;

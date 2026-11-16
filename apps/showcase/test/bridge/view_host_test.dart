@@ -1,5 +1,5 @@
 // ignore_for_file: implementation_imports
-import 'package:flutter/material.dart' show MaterialApp, Theme;
+import 'package:material_ui/material_ui.dart' show MaterialApp, Theme;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_ui_core/just_ui_core.dart';

@@ -1,5 +1,5 @@
 // justui-meta: registry=5a9c5dd087220e465584cbfd251d4836740a37d8738e7ea2afd7ada8326653be local=13f5969401360a0af460d7c5ed370502e1e30216c33705d88bc44f24fd637ee0
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_input_style.dart';
 

@@ -1,5 +1,5 @@
 // justui-meta: registry=a2c4e10e99fae4b7a694e66d49ddf594ebf82994dc24bc03091d8223021a2b27 local=21282159dd5017cc0289471556da183c7b463443c299bd9268a2b51cef37f235
-import 'package:flutter/material.dart' show Icons;
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:flutter/services.dart'
     show HapticFeedback, KeyDownEvent, KeyEvent, LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';

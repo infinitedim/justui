@@ -1,5 +1,5 @@
 // justui-meta: registry=72713e2987f3b9487c7a994bf5c7f5db58e65f084df5034c155f4f20868e968b local=017bbb53d655d3fd99a9d743a5eccf2ef5d59048b45fb748c83e57bc01d0003f
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_card_style.dart';
 

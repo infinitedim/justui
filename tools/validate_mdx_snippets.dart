@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-const Set<String> knownPrefixesOrFoundations = {
+const Set<String> knownPrefixesOrFoundations = <String>{
   'JustUI',
   'JustTheme',
   'JustColor',
@@ -30,7 +30,7 @@ const Set<String> knownPrefixesOrFoundations = {
 };
 
 Set<String> collectDeclaredSymbols(String dirPath) {
-  final Set<String> symbols = {};
+  final Set<String> symbols = <String>{};
   final Directory dir = Directory(dirPath);
   if (!dir.existsSync()) {
     return symbols;
@@ -55,7 +55,7 @@ Set<String> collectDeclaredSymbols(String dirPath) {
 }
 
 List<File> findMdxFiles(Directory dir) {
-  final List<File> files = [];
+  final List<File> files = <File>[];
   if (!dir.existsSync()) {
     return files;
   }
@@ -65,7 +65,7 @@ List<File> findMdxFiles(Directory dir) {
       files.add(entity);
     }
   }
-  files.sort((a, b) => a.path.compareTo(b.path));
+  files.sort((File a, File b) => a.path.compareTo(b.path));
   return files;
 }
 
@@ -82,7 +82,7 @@ class DartSnippet {
 }
 
 List<DartSnippet> extractSnippets(File file) {
-  final List<DartSnippet> snippets = [];
+  final List<DartSnippet> snippets = <DartSnippet>[];
   final List<String> lines = file.readAsLinesSync();
 
   bool inSnippet = false;
@@ -122,7 +122,7 @@ List<DartSnippet> extractSnippets(File file) {
 }
 
 bool checkBalancedBrackets(String code) {
-  final List<String> stack = [];
+  final List<String> stack = <String>[];
   bool inSingleLineComment = false;
   bool inMultiLineComment = false;
   bool inSingleQuote = false;
@@ -248,7 +248,7 @@ void main(List<String> args) {
   final String coreDir = p.join(projectRoot, 'packages', 'core', 'lib');
   final String tokensDir = p.join(projectRoot, 'packages', 'tokens', 'lib');
 
-  final Set<String> knownSymbols = {
+  final Set<String> knownSymbols = <String>{
     ...collectDeclaredSymbols(coreDir),
     ...collectDeclaredSymbols(tokensDir),
   };

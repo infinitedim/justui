@@ -1,5 +1,5 @@
 // justui-meta: registry=6c93bd5cb34f4ca169945dd94d7e186f2ca654ac8b255282fe5ce201601a048c local=1311bb94299e612cec6d41bb9d477175e52634f1792f2a432ca7dd20a7545a09
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_button_style.dart';
 import 'just_button_variants.dart';

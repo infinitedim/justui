@@ -1,5 +1,5 @@
 // ignore_for_file: implementation_imports
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/accordion/just_accordion_theme.dart';
 import 'package:just_ui_core/src/components/bottom_nav/just_bottom_nav_theme.dart';

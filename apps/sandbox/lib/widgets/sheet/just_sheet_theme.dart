@@ -1,5 +1,5 @@
 // justui-meta: registry=a325b9404fa49183d8cbc51dde1da6258cda9973d7f04a67dce2684c4dd49651 local=b551a219d51331a835b8f5278f3a42309ce10ff7573d42893297b3d5118a7480
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_sheet_style.dart';
 

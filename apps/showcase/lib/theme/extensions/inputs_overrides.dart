@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 import 'package:just_ui_core/just_ui_core.dart';
 
 import '../ink_paper_tokens.dart';

@@ -1,6 +1,6 @@
 import 'dart:ui' show PointerDeviceKind;
 
-import 'package:flutter/material.dart'
+import 'package:material_ui/material_ui.dart'
     show Colors, Icons, MaterialApp, Scaffold, ThemeExtension;
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart' show LogicalKeyboardKey;

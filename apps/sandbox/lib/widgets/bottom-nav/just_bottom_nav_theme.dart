@@ -1,5 +1,5 @@
 // justui-meta: registry=e899c9ab266748e128c91bd087029b0f3d59972f5b465f993e2cbb6847bb8cb3 local=55a50a709da415d400423631216ba66f61b72d3f42ac88306d0c05f21defaed2
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_bottom_nav_style.dart';
 
