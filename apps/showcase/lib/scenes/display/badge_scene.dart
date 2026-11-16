@@ -13,7 +13,7 @@ import 'display_look.dart';
 /// neobrutalism, where core adds the ink outline itself. Core has no badge
 /// theme extension, so the look comes in per instance.
 Widget badgeScene(BuildContext context, SceneContext scene) {
-  final DisplayLook look = DisplayLook.of(context);
+  final DisplayLook look = .of(context);
   return Row(
     mainAxisSize: .min,
     children: <Widget>[
@@ -33,8 +33,8 @@ JustBadge _pill(DisplayLook look, String label) {
       backgroundColor: look.bold ? look.roles.surface : look.roles.sunken,
       foregroundColor: look.roles.textPrimary,
       borderColor: look.roles.borderSubtle,
-      borderRadius: const BorderRadius.all(Radius.circular(999)),
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      borderRadius: const .all(.circular(999)),
+      padding: const .symmetric(horizontal: 10),
       textStyle: TextStyle(
         fontSize: 12,
         fontWeight: look.strongWeight,
