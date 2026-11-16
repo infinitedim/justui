@@ -94,6 +94,13 @@ describe('LivePart', () => {
     expect(clip).toHaveClass('overflow-hidden');
     expect(hostElement).toHaveClass('w-[320px]', 'h-[344px]');
   });
+
+  it('stretches the fallback wrapper to full width so max-width children do not shrink', async () => {
+    const { part } = await renderPart();
+    const fallback =
+      part.querySelector('[data-live-host]')?.previousElementSibling;
+    expect(fallback).toHaveClass('w-full');
+  });
 });
 
 describe('LivePart and the theme', () => {

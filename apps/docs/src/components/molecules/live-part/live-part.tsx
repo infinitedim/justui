@@ -76,7 +76,7 @@ export function LivePart({
       <div
         inert={live}
         aria-hidden={live ? true : undefined}
-        className="transition-opacity duration-150 group-data-[state=live]/live:opacity-0 motion-reduce:transition-none"
+        className="w-full transition-opacity duration-150 group-data-[state=live]/live:opacity-0 motion-reduce:transition-none"
       >
         {children}
       </div>
