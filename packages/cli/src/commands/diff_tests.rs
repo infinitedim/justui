@@ -190,3 +190,72 @@ fn test_diff_helpers_and_uninitialized() {
     std::fs::write(&local_comp_file, meta_conflict).unwrap();
     assert!(run(Some("button".to_string()), false, false, true).is_ok());
 }
+
+#[test]
+fn test_diff_adapts_material_import_to_project() {
+    let _lock = crate::utils::lock_test_mutex();
+    let _trust = crate::utils::trust_store::TestTrustGuard::new();
+    let temp_dir = tempfile::tempdir().unwrap();
+    let _guard = crate::utils::set_dir(temp_dir.path());
+
+    let reg_dir = temp_dir.path().join("registry");
+    std::fs::create_dir_all(reg_dir.join("components/button")).unwrap();
+
+    let reg_src = "import 'package:material_ui/material_ui.dart' show ThemeExtension;\nclass JustButtonTheme {}\n";
+    let reg_hash = sha256_hex(reg_src.as_bytes());
+    std::fs::write(
+        reg_dir.join("components/button/just_button_theme.dart"),
+        reg_src,
+    )
+    .unwrap();
+    let index_json = serde_json::json!({
+        "version": "1.0.0",
+        "components": [{
+            "name": "button",
+            "version": "1.0.0",
+            "files": {
+                "default": [{
+                    "name": "just_button_theme.dart",
+                    "path": "components/button/just_button_theme.dart",
+                    "checksum": format!("sha256:{reg_hash}")
+                }]
+            }
+        }]
+    });
+    std::fs::write(
+        reg_dir.join("index.json"),
+        serde_json::to_string(&index_json).unwrap(),
+    )
+    .unwrap();
+
+    let comp_dir = temp_dir.path().join("lib/ui/button");
+    std::fs::create_dir_all(&comp_dir).unwrap();
+    let local_rewritten =
+        "import 'package:flutter/material.dart' show ThemeExtension;\nclass JustButtonTheme {}\n";
+    let local_hash = sha256_hex(local_rewritten.as_bytes());
+    std::fs::write(
+        comp_dir.join("just_button_theme.dart"),
+        import_rewriter::inject_metadata(local_rewritten, "old_reg_hash", &local_hash),
+    )
+    .unwrap();
+
+    // Flutter 3.50 without material_ui dependency: diff applies package:flutter/material.dart
+    std::fs::write(
+        "pubspec.yaml",
+        "name: test_app\nenvironment:\n  flutter: '>=3.50.0'\ndependencies:\n  flutter:\n    sdk: flutter\n",
+    )
+    .unwrap();
+    std::fs::write(
+        JustUIConfig::CONFIG_FILE_NAME,
+        format!(
+            "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\ndart_target: standard\nregistry_url: {}\n",
+            reg_dir.display()
+        ),
+    )
+    .unwrap();
+
+    assert!(run(Some("button".to_string()), false, false, true).is_ok());
+    let updated = std::fs::read_to_string(comp_dir.join("just_button_theme.dart")).unwrap();
+    assert!(updated.contains("import 'package:flutter/material.dart' show ThemeExtension;"));
+    assert!(!updated.contains("import 'package:material_ui/material_ui.dart'"));
+}

@@ -1,9 +1,3 @@
-#![expect(
-    clippy::manual_let_else,
-    clippy::missing_errors_doc,
-    reason = "legacy: fix when touched"
-)]
-
 use anyhow::Result;
 use rust_embed::RustEmbed;
 use std::path::Path;
@@ -20,6 +14,10 @@ pub struct TokensAssets;
 #[folder = "../core/lib/"]
 pub struct CoreAssets;
 
+/// Extracts embedded design token files into `target_tokens_dir`.
+///
+/// # Errors
+/// Returns an error if writing any extracted token file fails.
 pub fn extract_tokens(
     target_tokens_dir: &Path,
     package_name: &str,
@@ -34,9 +32,8 @@ pub fn extract_tokens(
         let path_str = file_path.as_ref();
 
         if let Some(content) = TokensAssets::get(path_str) {
-            let mut file_content = match String::from_utf8(content.data.to_vec()) {
-                Ok(s) => s,
-                Err(_) => continue,
+            let Ok(mut file_content) = String::from_utf8(content.data.to_vec()) else {
+                continue;
             };
 
             file_content = rewrite_tokens_internal_imports(&file_content, package_name);
@@ -56,6 +53,11 @@ pub fn extract_tokens(
     Ok(())
 }
 
+/// Extracts embedded core theming files into `target_core_dir`, adapting
+/// constructors and Material imports for the target project.
+///
+/// # Errors
+/// Returns an error if writing any extracted core file fails.
 pub fn extract_core(
     target_core_dir: &Path,
     package_name: &str,
@@ -70,7 +72,7 @@ pub fn extract_core(
     let project_root = target_core_dir
         .parent()
         .and_then(Path::parent)
-        .filter(|root| root.join("pubspec.yaml").exists())
+        .filter(|root| !root.as_os_str().is_empty() && root.join("pubspec.yaml").exists())
         .unwrap_or_else(|| Path::new("."));
     let material_target = resolve_material_target(project_root);
 
@@ -82,9 +84,8 @@ pub fn extract_core(
         }
 
         if let Some(content) = CoreAssets::get(path_str) {
-            let mut file_content = match String::from_utf8(content.data.to_vec()) {
-                Ok(s) => s,
-                Err(_) => continue,
+            let Ok(mut file_content) = String::from_utf8(content.data.to_vec()) else {
+                continue;
             };
 
             file_content = rewrite_core_internal_imports(&file_content, package_name, tokens_dir);
@@ -200,7 +201,9 @@ mod tests {
         assert!(core_res.contains("import 'package:my_app/tokens/just_ui_tokens.dart';"));
         assert!(core_res.contains("import 'theme/theme.dart';"));
 
+        let _lock = crate::utils::lock_test_mutex();
         let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = crate::utils::set_dir(temp_dir.path());
         let tok_dir = temp_dir.path().join("tokens");
         let core_dir = temp_dir.path().join("core");
 

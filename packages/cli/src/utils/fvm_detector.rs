@@ -65,27 +65,6 @@ fn check_fvmrc(dir: &Path) -> Option<Version> {
     parse_min_version(v_str)
 }
 
-fn check_flutter_binary(fvm_dir: &Path) -> Option<Version> {
-    let flutter_bin = fvm_dir.join("flutter_sdk").join("bin").join("flutter");
-    if !flutter_bin.is_file() {
-        return None;
-    }
-    let output = std::process::Command::new(&flutter_bin)
-        .arg("--version")
-        .output()
-        .ok()?;
-    if !output.status.success() {
-        return None;
-    }
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    for word in stdout.split_whitespace() {
-        if let Some(v) = parse_min_version(word) {
-            return Some(v);
-        }
-    }
-    None
-}
-
 fn check_fvm_in_dir(dir: &Path) -> Option<Version> {
     let fvm_dir = dir.join(".fvm");
 
@@ -119,11 +98,6 @@ fn check_fvm_in_dir(dir: &Path) -> Option<Version> {
         return Some(v);
     }
 
-    // Tier 7: Subprocess execution fallback
-    if let Some(v) = check_flutter_binary(&fvm_dir) {
-        return Some(v);
-    }
-
     None
 }
 
@@ -150,7 +124,7 @@ thread_local! {
 }
 
 #[cfg(test)]
-pub fn set_test_system_flutter_version(version: Option<Version>) {
+pub(crate) fn set_test_system_flutter_version(version: Option<Version>) {
     TEST_SYSTEM_FLUTTER_VERSION.with(|v| *v.borrow_mut() = version);
 }
 
@@ -179,7 +153,7 @@ fn query_system_flutter_version() -> Option<Version> {
 
 /// Detects the Flutter SDK version installed on the user's device via system `PATH`.
 #[must_use]
-pub fn detect_system_flutter_version() -> Option<Version> {
+pub(crate) fn detect_system_flutter_version() -> Option<Version> {
     #[cfg(test)]
     {
         TEST_SYSTEM_FLUTTER_VERSION.with(|v| v.borrow().clone())

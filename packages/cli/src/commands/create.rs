@@ -72,6 +72,8 @@ pub fn run(
         "Scaffolding custom component \"{class_name}\" in {target_dir}..."
     ));
 
+    let material_target =
+        crate::utils::env_resolver::resolve_material_target(std::path::Path::new("."));
     let files_to_write = vec![
         (
             format!("{snake_name}_style.dart"),
@@ -83,7 +85,7 @@ pub fn run(
         ),
         (
             format!("{snake_name}_theme.dart"),
-            generate_theme_template(&class_name, &snake_name),
+            generate_theme_template(&class_name, &snake_name, material_target),
         ),
         (
             format!("{snake_name}.dart"),
@@ -203,9 +205,12 @@ fn generate_variants_template(class_name: &str) -> String {
     )
 }
 
-fn generate_theme_template(class_name: &str, snake_name: &str) -> String {
-    let material_uri =
-        crate::utils::env_resolver::resolve_material_target(std::path::Path::new(".")).import_uri();
+fn generate_theme_template(
+    class_name: &str,
+    snake_name: &str,
+    material_target: crate::utils::env_resolver::MaterialTarget,
+) -> String {
+    let material_uri = material_target.import_uri();
     format!(
         "import '{material_uri}' show ThemeExtension;\n\
          import '{snake_name}_style.dart';\n\
@@ -388,9 +393,23 @@ mod tests {
 
     #[test]
     fn test_create_templates_scope_material_and_omit_unused_locals() {
-        let theme_tpl = generate_theme_template("CustomCard", "custom_card");
+        let theme_tpl = generate_theme_template(
+            "CustomCard",
+            "custom_card",
+            crate::utils::env_resolver::MaterialTarget::FlutterMaterial,
+        );
         assert!(theme_tpl.contains("import 'package:flutter/material.dart' show ThemeExtension;"));
         assert!(!theme_tpl.contains("import 'package:flutter/material.dart';"));
+
+        let theme_mui_tpl = generate_theme_template(
+            "CustomCard",
+            "custom_card",
+            crate::utils::env_resolver::MaterialTarget::MaterialUi,
+        );
+        assert!(
+            theme_mui_tpl
+                .contains("import 'package:material_ui/material_ui.dart' show ThemeExtension;")
+        );
 
         let widget_tpl = generate_widget_template("CustomCard", "custom_card");
         assert!(!widget_tpl.contains("final theme = context.justTheme;"));
