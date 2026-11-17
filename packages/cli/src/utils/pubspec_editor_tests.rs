@@ -174,6 +174,15 @@ fn test_has_dependency_and_supports_material_ui() {
     )
     .unwrap();
     assert!(has_flutter_constraint_below_350(&upper_bound_only));
+    assert!(!supports_material_ui(&upper_bound_only));
+
+    let comma_flutter = dir.path().join("comma_flutter.yaml");
+    std::fs::write(
+        &comma_flutter,
+        "environment:\n  flutter: '>=3.50.0, <4.0.0'\n",
+    )
+    .unwrap();
+    assert!(supports_material_ui(&comma_flutter));
 
     let older_flutter_override = dir.path().join("older_flutter.yaml");
     std::fs::write(

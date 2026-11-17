@@ -141,12 +141,9 @@ fn query_system_flutter_version() -> Option<Version> {
                 return None;
             }
             let stdout = String::from_utf8_lossy(&output.stdout);
-            for word in stdout.split_whitespace() {
-                if let Some(v) = parse_min_version(word) {
-                    return Some(v);
-                }
-            }
-            None
+            stdout
+                .split_whitespace()
+                .find_map(|word| Version::parse(word).ok())
         })
         .clone()
 }

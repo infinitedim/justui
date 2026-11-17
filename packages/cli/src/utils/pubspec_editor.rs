@@ -151,8 +151,12 @@ static OP_SPACE_REGEX: LazyLock<regex::Regex> = LazyLock::new(|| {
 });
 
 fn parse_version_req(constraint_str: &str) -> Option<semver::VersionReq> {
-    let cleaned = constraint_str.trim().trim_matches('\'').trim_matches('"');
-    let collapsed = OP_SPACE_REGEX.replace_all(cleaned, "$1");
+    let cleaned = constraint_str
+        .trim()
+        .trim_matches('\'')
+        .trim_matches('"')
+        .replace(',', " ");
+    let collapsed = OP_SPACE_REGEX.replace_all(&cleaned, "$1");
     let normalized = collapsed.split_whitespace().collect::<Vec<_>>().join(",");
     semver::VersionReq::parse(&normalized).ok()
 }
@@ -284,6 +288,9 @@ pub(crate) fn has_flutter_constraint_below_350(pubspec_path: &Path) -> bool {
 /// or Dart SDK `>= 3.14.0` (without an explicit `flutter < 3.50.0` constraint).
 #[must_use]
 pub(crate) fn supports_material_ui(pubspec_path: &Path) -> bool {
+    if has_flutter_constraint_below_350(pubspec_path) {
+        return false;
+    }
     let Ok(content) = std::fs::read_to_string(pubspec_path) else {
         return false;
     };

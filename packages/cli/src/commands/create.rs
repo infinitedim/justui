@@ -1,17 +1,25 @@
-#![expect(
-    clippy::missing_errors_doc,
-    clippy::missing_panics_doc,
-    clippy::too_many_lines,
-    clippy::unwrap_used,
-    reason = "legacy: fix when touched"
-)]
-
 use anyhow::Result;
 use regex::Regex;
+use std::sync::LazyLock;
 
 use crate::config::JustUIConfig;
+use crate::utils::env_resolver::{MaterialTarget, resolve_material_target};
 use crate::utils::{logger, prompt};
 
+static COMPONENT_NAME_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+        .expect("invariant: component name regex literal is valid")
+});
+
+static CAMEL_BOUNDARY_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"([a-z])([A-Z])").expect("invariant: camel boundary regex literal is valid")
+});
+
+/// Scaffolds a 4-file custom component under the configured components directory.
+///
+/// # Errors
+/// Returns an error if the project is not initialized, config parsing fails,
+/// the component name is invalid, or writing scaffold files fails.
 pub fn run(
     component_name_arg: Option<String>,
     _category_arg: Option<String>,
@@ -25,26 +33,15 @@ pub fn run(
         );
     }
 
-    let config = match std::fs::read_to_string(config_path) {
-        Ok(content) => JustUIConfig::from_yaml(&content),
-        Err(e) => {
-            anyhow::bail!("Failed to parse {}: {}", JustUIConfig::CONFIG_FILE_NAME, e);
-        }
-    };
+    let config = std::fs::read_to_string(config_path)
+        .map(|content| JustUIConfig::from_yaml(&content))
+        .map_err(|e| {
+            anyhow::anyhow!("Failed to parse {}: {}", JustUIConfig::CONFIG_FILE_NAME, e)
+        })?;
 
-    let component_name = if let Some(n) = component_name_arg {
-        n
-    } else {
-        let n = prompt::ask("Enter custom component name", "");
-        if n.trim().is_empty() {
-            anyhow::bail!("Component name cannot be empty.");
-        }
-        n
-    };
-
-    let name_regex = Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*$").unwrap();
+    let component_name = resolve_component_name(component_name_arg)?;
     let snake_name = to_snake_case(&component_name);
-    if !name_regex.is_match(&snake_name) {
+    if !COMPONENT_NAME_REGEX.is_match(&snake_name) {
         anyhow::bail!(
             "Invalid component name \"{component_name}\". \
              It must contain only letters, numbers, or underscores."
@@ -56,44 +53,74 @@ pub fn run(
         .strip_prefix("just_")
         .unwrap_or(&snake_name)
         .to_string();
-    let target_dir = format!("{}/{}", config.components_dir, component_dir_name);
+    let preview_dir = format!("{}/{}", config.components_dir, component_dir_name);
 
     if dry_run {
         logger::stdout(&format!(
-            "[dry-run] Would scaffold component \"{pascal_name}\" in {target_dir}"
+            "[dry-run] Would scaffold component \"{pascal_name}\" in {preview_dir}"
         ));
         return Ok(());
     }
 
     let class_name = to_pascal_case(&component_name);
     let target_dir = format!("{}/{}", config.components_dir, snake_name);
-
     logger::info(&format!(
         "Scaffolding custom component \"{class_name}\" in {target_dir}..."
     ));
 
-    let material_target =
-        crate::utils::env_resolver::resolve_material_target(std::path::Path::new("."));
-    let files_to_write = vec![
+    let material_target = resolve_material_target(std::path::Path::new("."));
+    write_scaffold_files(
+        &target_dir,
+        &class_name,
+        &snake_name,
+        material_target,
+        auto_yes,
+    )?;
+
+    logger::success(&format!(
+        "Scaffolded custom component \"{class_name}\" successfully."
+    ));
+    Ok(())
+}
+
+fn resolve_component_name(arg: Option<String>) -> Result<String> {
+    if let Some(name) = arg {
+        return Ok(name);
+    }
+    let name = prompt::ask("Enter custom component name", "");
+    if name.trim().is_empty() {
+        anyhow::bail!("Component name cannot be empty.");
+    }
+    Ok(name)
+}
+
+fn write_scaffold_files(
+    target_dir: &str,
+    class_name: &str,
+    snake_name: &str,
+    material_target: MaterialTarget,
+    auto_yes: bool,
+) -> Result<()> {
+    let files_to_write = [
         (
             format!("{snake_name}_style.dart"),
-            generate_style_template(&class_name),
+            generate_style_template(class_name),
         ),
         (
             format!("{snake_name}_variants.dart"),
-            generate_variants_template(&class_name),
+            generate_variants_template(class_name),
         ),
         (
             format!("{snake_name}_theme.dart"),
-            generate_theme_template(&class_name, &snake_name, material_target),
+            generate_theme_template(class_name, snake_name, material_target),
         ),
         (
             format!("{snake_name}.dart"),
-            generate_widget_template(&class_name, &snake_name),
+            generate_widget_template(class_name, snake_name),
         ),
     ];
 
-    std::fs::create_dir_all(&target_dir)
+    std::fs::create_dir_all(target_dir)
         .map_err(|e| anyhow::anyhow!("Failed to scaffold custom component: {e}"))?;
 
     for (file_name, content) in &files_to_write {
@@ -123,22 +150,20 @@ pub fn run(
         }
     }
 
-    logger::success(&format!(
-        "Scaffolded custom component \"{class_name}\" successfully."
-    ));
     Ok(())
 }
 
 fn to_snake_case(input: &str) -> String {
-    let re = Regex::new(r"([a-z])([A-Z])").unwrap();
-    re.replace_all(input, "${1}_${2}")
+    CAMEL_BOUNDARY_REGEX
+        .replace_all(input, "${1}_${2}")
         .replace('-', "_")
         .to_lowercase()
 }
 
 fn to_pascal_case(input: &str) -> String {
-    let re = Regex::new(r"([a-z])([A-Z])").unwrap();
-    let snake = re.replace_all(input, "${1}_${2}").replace('-', "_");
+    let snake = CAMEL_BOUNDARY_REGEX
+        .replace_all(input, "${1}_${2}")
+        .replace('-', "_");
     snake
         .split('_')
         .map(|w| {
