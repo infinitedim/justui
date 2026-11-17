@@ -9,7 +9,7 @@ use rust_embed::RustEmbed;
 use std::path::Path;
 
 use crate::utils::constructor_transpiler::apply_dart_target;
-use crate::utils::env_resolver::DartTarget;
+use crate::utils::env_resolver::{DartTarget, apply_material_target, resolve_material_target};
 use crate::utils::logger;
 
 #[derive(RustEmbed)]
@@ -67,6 +67,13 @@ pub fn extract_core(
         target_core_dir.display()
     ));
 
+    let project_root = target_core_dir
+        .parent()
+        .and_then(Path::parent)
+        .filter(|root| root.join("pubspec.yaml").exists())
+        .unwrap_or_else(|| Path::new("."));
+    let material_target = resolve_material_target(project_root);
+
     for file_path in CoreAssets::iter() {
         let path_str = file_path.as_ref();
 
@@ -85,6 +92,7 @@ pub fn extract_core(
             if path_str.ends_with("theme_data_material.dart") {
                 file_content = sanitize_theme_data_material(&file_content);
             }
+            file_content = apply_material_target(&file_content, material_target);
             file_content = apply_dart_target(&file_content, dart_target);
 
             let rel_path_str = path_str
@@ -225,5 +233,45 @@ import 'theme_data.dart';
         assert!(!clean.contains("just_button_theme.dart"));
         assert!(!clean.contains("JustButtonTheme.defaults"));
         assert!(clean.contains("// CLI:REGISTER_EXTENSIONS"));
+    }
+
+    #[test]
+    fn test_extract_core_adapts_material_import() {
+        let _lock = crate::utils::lock_test_mutex();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = crate::utils::set_dir(temp_dir.path());
+
+        // 1. Without material_ui in pubspec -> theme_data_material.dart uses package:flutter/material.dart
+        std::fs::write(
+            "pubspec.yaml",
+            "name: my_app\nenvironment:\n  flutter: '>=3.50.0'\ndependencies:\n  flutter:\n    sdk: flutter\n",
+        )
+        .unwrap();
+        let core_fallback = temp_dir.path().join("core_fallback");
+        extract_core(&core_fallback, "my_app", "lib/tokens", DartTarget::Primary).unwrap();
+        let theme_fallback =
+            std::fs::read_to_string(core_fallback.join("theme/theme_data_material.dart")).unwrap();
+        assert!(theme_fallback.contains("import 'package:flutter/material.dart';"));
+        assert!(!theme_fallback.contains("import 'package:material_ui/material_ui.dart';"));
+
+        // 2. With Flutter 3.50 + material_ui in pubspec -> theme_data_material.dart uses package:material_ui/material_ui.dart
+        std::fs::write(
+            "pubspec.yaml",
+            "name: my_app\nenvironment:\n  flutter: '>=3.50.0'\ndependencies:\n  flutter:\n    sdk: flutter\n  material_ui: ^1.11.0\n",
+        )
+        .unwrap();
+        let core_material_ui = temp_dir.path().join("core_material_ui");
+        extract_core(
+            &core_material_ui,
+            "my_app",
+            "lib/tokens",
+            DartTarget::Primary,
+        )
+        .unwrap();
+        let theme_material_ui =
+            std::fs::read_to_string(core_material_ui.join("theme/theme_data_material.dart"))
+                .unwrap();
+        assert!(theme_material_ui.contains("import 'package:material_ui/material_ui.dart';"));
+        assert!(!theme_material_ui.contains("import 'package:flutter/material.dart';"));
     }
 }

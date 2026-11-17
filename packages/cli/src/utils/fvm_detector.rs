@@ -145,6 +145,52 @@ pub fn detect_local_fvm_version(project_root: &Path) -> Option<Version> {
 }
 
 #[cfg(test)]
+thread_local! {
+    static TEST_SYSTEM_FLUTTER_VERSION: std::cell::RefCell<Option<Version>> = const { std::cell::RefCell::new(None) };
+}
+
+#[cfg(test)]
+pub fn set_test_system_flutter_version(version: Option<Version>) {
+    TEST_SYSTEM_FLUTTER_VERSION.with(|v| *v.borrow_mut() = version);
+}
+
+#[cfg(not(test))]
+fn query_system_flutter_version() -> Option<Version> {
+    static SYSTEM_FLUTTER: std::sync::OnceLock<Option<Version>> = std::sync::OnceLock::new();
+    SYSTEM_FLUTTER
+        .get_or_init(|| {
+            let output = std::process::Command::new("flutter")
+                .arg("--version")
+                .output()
+                .ok()?;
+            if !output.status.success() {
+                return None;
+            }
+            let stdout = String::from_utf8_lossy(&output.stdout);
+            for word in stdout.split_whitespace() {
+                if let Some(v) = parse_min_version(word) {
+                    return Some(v);
+                }
+            }
+            None
+        })
+        .clone()
+}
+
+/// Detects the Flutter SDK version installed on the user's device via system `PATH`.
+#[must_use]
+pub fn detect_system_flutter_version() -> Option<Version> {
+    #[cfg(test)]
+    {
+        TEST_SYSTEM_FLUTTER_VERSION.with(|v| v.borrow().clone())
+    }
+    #[cfg(not(test))]
+    {
+        query_system_flutter_version()
+    }
+}
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use tempfile::tempdir;

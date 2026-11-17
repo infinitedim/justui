@@ -578,6 +578,10 @@ pub fn add_component(
             &rewritten_content,
             dart_target,
         );
+        let material_target =
+            crate::utils::env_resolver::resolve_material_target(std::path::Path::new("."));
+        rewritten_content =
+            crate::utils::env_resolver::apply_material_target(&rewritten_content, material_target);
 
         let local_rewritten_hash = sha256_hex(rewritten_content.as_bytes());
         let final_content = import_rewriter::inject_metadata(

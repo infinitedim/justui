@@ -204,8 +204,10 @@ fn generate_variants_template(class_name: &str) -> String {
 }
 
 fn generate_theme_template(class_name: &str, snake_name: &str) -> String {
+    let material_uri =
+        crate::utils::env_resolver::resolve_material_target(std::path::Path::new(".")).import_uri();
     format!(
-        "import 'package:flutter/material.dart' show ThemeExtension;\n\
+        "import '{material_uri}' show ThemeExtension;\n\
          import '{snake_name}_style.dart';\n\
          \n\
          /// Global theme configuration for [{class_name}], extending Flutter's [ThemeExtension].\n\
@@ -393,5 +395,45 @@ mod tests {
         let widget_tpl = generate_widget_template("CustomCard", "custom_card");
         assert!(!widget_tpl.contains("final theme = context.justTheme;"));
         assert!(widget_tpl.contains("context.justThemeExtension<CustomCardTheme>()"));
+    }
+
+    #[test]
+    fn test_create_adapts_material_import_to_project() {
+        let _lock = crate::utils::lock_test_mutex();
+        let temp_dir = tempfile::tempdir().unwrap();
+        let _guard = crate::utils::set_dir(temp_dir.path());
+
+        std::fs::write(
+            "justui.config.yaml",
+            "components_dir: lib/ui\ntokens_dir: lib/tokens\nshared_dir: lib/ui/shared\npreset: default\n",
+        )
+        .unwrap();
+
+        // 1. Flutter 3.50 + material_ui in dependencies -> uses package:material_ui/material_ui.dart
+        std::fs::write(
+            "pubspec.yaml",
+            "name: test_app\nenvironment:\n  flutter: '>=3.50.0'\ndependencies:\n  flutter:\n    sdk: flutter\n  material_ui: ^1.11.0\n",
+        )
+        .unwrap();
+        assert!(run(Some("modern_widget".to_string()), None, false, true).is_ok());
+        let modern_theme =
+            std::fs::read_to_string("lib/ui/modern_widget/modern_widget_theme.dart").unwrap();
+        assert!(
+            modern_theme
+                .contains("import 'package:material_ui/material_ui.dart' show ThemeExtension;")
+        );
+
+        // 2. Flutter 3.50 WITHOUT material_ui in dependencies -> uses package:flutter/material.dart
+        std::fs::write(
+            "pubspec.yaml",
+            "name: test_app\nenvironment:\n  flutter: '>=3.50.0'\ndependencies:\n  flutter:\n    sdk: flutter\n",
+        )
+        .unwrap();
+        assert!(run(Some("fallback_widget".to_string()), None, false, true).is_ok());
+        let fallback_theme =
+            std::fs::read_to_string("lib/ui/fallback_widget/fallback_widget_theme.dart").unwrap();
+        assert!(
+            fallback_theme.contains("import 'package:flutter/material.dart' show ThemeExtension;")
+        );
     }
 }

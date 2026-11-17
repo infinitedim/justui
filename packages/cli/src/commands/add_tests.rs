@@ -1351,3 +1351,87 @@ fn test_resolve_dependencies_cycle_detection() {
     assert!(err.contains("dependency cycle detected"));
     assert!(err.contains("a -> b -> c -> a"));
 }
+
+#[test]
+fn test_add_adapts_material_import_to_project() {
+    let _lock = crate::utils::TEST_MUTEX
+        .lock()
+        .unwrap_or_else(|e| e.into_inner());
+    let _trust = crate::utils::trust_store::TestTrustGuard::new();
+    let temp_dir = tempfile::tempdir().unwrap();
+    let _guard = set_dir(temp_dir.path());
+
+    let reg_dir = temp_dir.path().join("registry");
+    std::fs::create_dir_all(reg_dir.join("components/button")).unwrap();
+
+    let theme_code = "import 'package:material_ui/material_ui.dart' show ThemeExtension;\nclass JustButtonTheme extends ThemeExtension<JustButtonTheme> {}\n";
+    let theme_hash = sha256_hex(theme_code.as_bytes());
+    std::fs::write(
+        reg_dir.join("components/button/just_button_theme.dart"),
+        theme_code,
+    )
+    .unwrap();
+
+    let index_json = format!(
+        r#"{{
+            "version": "1.0.0",
+            "presets": ["default"],
+            "components": [
+                {{
+                    "name": "button",
+                    "version": "1.0.0",
+                    "description": "Button",
+                    "category": "primitive",
+                    "internal": false,
+                    "supportedPresets": ["default"],
+                    "registryDependencies": [],
+                    "pubDependencies": {{}},
+                    "files": {{
+                        "default": [
+                            {{
+                                "name": "just_button_theme.dart",
+                                "path": "components/button/just_button_theme.dart",
+                                "checksum": "sha256:{theme_hash}"
+                            }}
+                        ]
+                    }}
+                }}
+            ]
+        }}"#
+    );
+    std::fs::write(reg_dir.join("index.json"), index_json).unwrap();
+
+    let config_yaml = format!(
+        "components_dir: lib/widgets\nshared_dir: lib/widgets/shared\ntokens_dir: lib/tokens\ndart_target: standard\nregistry_url: {}\n",
+        reg_dir.to_str().unwrap().replace('\\', "/")
+    );
+    std::fs::write(JustUIConfig::CONFIG_FILE_NAME, config_yaml).unwrap();
+
+    // 1. Project on Flutter 3.50 WITHOUT material_ui in pubspec -> rewrites to package:flutter/material.dart
+    std::fs::write(
+        "pubspec.yaml",
+        "name: test_app\nenvironment:\n  flutter: '>=3.50.0'\ndependencies:\n  flutter:\n    sdk: flutter\n",
+    )
+    .unwrap();
+    assert!(run(vec!["button".to_string()], false, false, false, true, true).is_ok());
+    let installed_fallback =
+        std::fs::read_to_string("lib/widgets/button/just_button_theme.dart").unwrap();
+    assert!(
+        installed_fallback.contains("import 'package:flutter/material.dart' show ThemeExtension;")
+    );
+
+    // 2. Project on Flutter 3.50 WITH material_ui in pubspec -> keeps package:material_ui/material_ui.dart
+    std::fs::remove_dir_all("lib/widgets").unwrap();
+    std::fs::write(
+        "pubspec.yaml",
+        "name: test_app\nenvironment:\n  flutter: '>=3.50.0'\ndependencies:\n  flutter:\n    sdk: flutter\n  material_ui: ^1.11.0\n",
+    )
+    .unwrap();
+    assert!(run(vec!["button".to_string()], false, false, false, true, true).is_ok());
+    let installed_material_ui =
+        std::fs::read_to_string("lib/widgets/button/just_button_theme.dart").unwrap();
+    assert!(
+        installed_material_ui
+            .contains("import 'package:material_ui/material_ui.dart' show ThemeExtension;")
+    );
+}

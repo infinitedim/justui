@@ -190,6 +190,8 @@ pub fn run(
 
         let pkg_name = pubspec_editor::get_package_name(std::path::Path::new("pubspec.yaml"))
             .unwrap_or_else(|_| "flutter_app".to_string());
+        let material_target =
+            crate::utils::env_resolver::resolve_material_target(std::path::Path::new("."));
 
         if verbose {
             for &idx in &changed_files {
@@ -212,6 +214,10 @@ pub fn run(
                 remote_rewritten = crate::utils::constructor_transpiler::apply_dart_target(
                     &remote_rewritten,
                     config.dart_target,
+                );
+                remote_rewritten = crate::utils::env_resolver::apply_material_target(
+                    &remote_rewritten,
+                    material_target,
                 );
                 print_line_diff(&fs.file.name, &fs.local_content, &remote_rewritten);
             }
@@ -238,6 +244,7 @@ pub fn run(
                 &pkg_name,
             );
             rr = crate::utils::constructor_transpiler::apply_dart_target(&rr, config.dart_target);
+            rr = crate::utils::env_resolver::apply_material_target(&rr, material_target);
             remote_rewritten_map.insert(idx, rr);
         }
 

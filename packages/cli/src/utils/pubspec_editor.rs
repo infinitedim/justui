@@ -225,6 +225,69 @@ pub fn supports_primary_constructors(pubspec_path: &Path) -> Result<bool> {
     }
 }
 
+/// Checks whether `pubspec.yaml` declares `dependency_name` under root `dependencies`.
+#[must_use]
+pub fn has_dependency(pubspec_path: &Path, dependency_name: &str) -> bool {
+    let Ok(content) = std::fs::read_to_string(pubspec_path) else {
+        return false;
+    };
+    let Ok(doc) = serde_saphyr::from_str::<serde_json::Value>(&content) else {
+        return false;
+    };
+    doc.get("dependencies")
+        .and_then(|deps| deps.get(dependency_name))
+        .is_some()
+}
+
+/// Checks whether `pubspec.yaml` explicitly constrains `environment.flutter` below `3.50.0`.
+#[must_use]
+pub fn has_flutter_constraint_below_350(pubspec_path: &Path) -> bool {
+    let Ok(content) = std::fs::read_to_string(pubspec_path) else {
+        return false;
+    };
+    let Ok(doc) = serde_saphyr::from_str::<serde_json::Value>(&content) else {
+        return false;
+    };
+    let Some(env) = doc.get("environment").filter(|e| e.is_object()) else {
+        return false;
+    };
+    env.get("flutter")
+        .and_then(|v| v.as_str())
+        .and_then(parse_min_version)
+        .is_some_and(|min_flutter| (min_flutter.major, min_flutter.minor) < (3, 50))
+}
+
+/// Checks whether `pubspec.yaml` `environment` constraints target Flutter `>= 3.50.0`
+/// or Dart SDK `>= 3.14.0` (without an explicit `flutter < 3.50.0` constraint).
+///
+/// # Errors
+/// Returns `Ok(false)` when the file cannot be read or parsed.
+pub fn supports_material_ui(pubspec_path: &Path) -> Result<bool> {
+    let Ok(content) = std::fs::read_to_string(pubspec_path) else {
+        return Ok(false);
+    };
+    let Ok(doc) = serde_saphyr::from_str::<serde_json::Value>(&content) else {
+        return Ok(false);
+    };
+    let Some(env) = doc.get("environment").filter(|e| e.is_object()) else {
+        return Ok(false);
+    };
+
+    if let Some(flutter_str) = env.get("flutter").and_then(|v| v.as_str())
+        && let Some(min_flutter) = parse_min_version(flutter_str)
+    {
+        return Ok((min_flutter.major, min_flutter.minor) >= (3, 50));
+    }
+
+    if let Some(sdk_str) = env.get("sdk").and_then(|v| v.as_str())
+        && let Some(min_sdk) = parse_min_version(sdk_str)
+    {
+        return Ok((min_sdk.major, min_sdk.minor) >= (3, 14));
+    }
+
+    Ok(false)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -371,5 +434,45 @@ mod tests {
         assert!(validate_pub_dependency("http", "git: https://evil.com").is_err());
         assert!(validate_pub_dependency("http", "\"^1.0.0\"").is_err());
         assert!(validate_pub_dependency("http", "").is_err());
+    }
+
+    #[test]
+    fn test_has_dependency_and_supports_material_ui() {
+        let dir = tempdir().unwrap();
+
+        let with_material_ui = dir.path().join("with_material_ui.yaml");
+        std::fs::write(
+            &with_material_ui,
+            "name: app\nenvironment:\n  sdk: '>=3.14.0 <4.0.0'\n  flutter: '>=3.50.0'\ndependencies:\n  flutter:\n    sdk: flutter\n  material_ui: ^1.11.0\ndev_dependencies:\n  flutter_test:\n    sdk: flutter\n",
+        )
+        .unwrap();
+        assert!(has_dependency(&with_material_ui, "material_ui"));
+        assert!(!has_dependency(&with_material_ui, "flutter_test"));
+        assert!(!has_dependency(&with_material_ui, "cupertino_ui"));
+        assert!(supports_material_ui(&with_material_ui).unwrap());
+
+        let sdk_314_only = dir.path().join("sdk_314.yaml");
+        std::fs::write(&sdk_314_only, "environment:\n  sdk: '^3.14.0'\n").unwrap();
+        assert!(supports_material_ui(&sdk_314_only).unwrap());
+
+        let flutter_350_only = dir.path().join("flutter_350.yaml");
+        std::fs::write(&flutter_350_only, "environment:\n  flutter: '>=3.50.0'\n").unwrap();
+        assert!(supports_material_ui(&flutter_350_only).unwrap());
+
+        let older_flutter_override = dir.path().join("older_flutter.yaml");
+        std::fs::write(
+            &older_flutter_override,
+            "environment:\n  sdk: '>=3.14.0 <4.0.0'\n  flutter: '>=3.41.0'\n",
+        )
+        .unwrap();
+        assert!(!supports_material_ui(&older_flutter_override).unwrap());
+
+        let older_sdk = dir.path().join("older_sdk.yaml");
+        std::fs::write(&older_sdk, "environment:\n  sdk: '>=3.13.0 <4.0.0'\n").unwrap();
+        assert!(!supports_material_ui(&older_sdk).unwrap());
+
+        let missing = dir.path().join("missing.yaml");
+        assert!(!has_dependency(&missing, "material_ui"));
+        assert!(!supports_material_ui(&missing).unwrap());
     }
 }
