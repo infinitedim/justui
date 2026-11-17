@@ -1,4 +1,4 @@
-// justui-meta: registry=72713e2987f3b9487c7a994bf5c7f5db58e65f084df5034c155f4f20868e968b local=017bbb53d655d3fd99a9d743a5eccf2ef5d59048b45fb748c83e57bc01d0003f
+// justui-meta: registry=e47ddda445a9a258408944c9a02f5f31f5325cac7f2e2a3e6cb5fbe94b20cb58 local=0a77dbe2705ed4f8821200f9185da1277a115c9e5b0b1b556d7c870412d5c5dd
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_card_style.dart';

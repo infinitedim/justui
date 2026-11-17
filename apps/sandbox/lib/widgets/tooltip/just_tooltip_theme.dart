@@ -1,4 +1,4 @@
-// justui-meta: registry=b605291f0db7999ae15a9fc4a46bce506326b2dc10c36ed8828c25bdd83e75d0 local=4bcb00b9193cb7e696a39ceb6aef5c17f4d6d435863c7d7dcfd7c37a75a85143
+// justui-meta: registry=1628deba06c92b8c7bcf7a73ebc07af56e60ade1f8ebf76e94e4a907d81fa810 local=12ebce38969950548558f2ab5895ff2c6f1997d40436564e7630014c5fdbcf40
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_tooltip_style.dart';

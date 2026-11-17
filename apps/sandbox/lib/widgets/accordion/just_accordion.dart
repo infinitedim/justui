@@ -1,4 +1,4 @@
-// justui-meta: registry=64ce099c7d2b0f4b0835b9149f9c0833e700a4e0949438f2255b4a0f1f7580fb local=aeefe1bb990b532c2cccbfba8a1e8539b28603256452f72bdfd31b0e3e5cbbea
+// justui-meta: registry=df242be8f983d3e321f3c8b3d6628e4b0516a9d51f57366619fa2a439b97a0e5 local=146f0f1319a5f5919b39472c27d51cb31434d74decc723d3befc7dff3002f7c1
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:flutter/widgets.dart';
 

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Icons;
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/theme_data.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';

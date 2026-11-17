@@ -1,4 +1,4 @@
-// justui-meta: registry=0bfb5051be3f7f12a2f16148f4ebde71929a19b9376c94a5f5d7a89d81229284 local=91cfe941a17248556f7132e4a393408f8cd16bac6036159165198fc7d9b6d358
+// justui-meta: registry=838fade20e6baecdb5bb7cd2ac75794b0ee38ed0375171a1a63ea48586fd6fe6 local=9e8b066205054ea1c03d2d8956064fde1cf0e3837e9c16b10087842fcdd61f15
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_table_style.dart';

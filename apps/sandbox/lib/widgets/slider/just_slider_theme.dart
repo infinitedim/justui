@@ -1,4 +1,4 @@
-// justui-meta: registry=a5867baaa5fde9fb8d9fc58246b3e724fd399fe3938c98b490b309ce9c1702ce local=94669b75bdbd3446fdbf952827247a2ae06af60dca525df50bc7a7d4fdc2137e
+// justui-meta: registry=c3438d8950e75ba66cf184c9bd466664d23471a88a3ae95d607262a528bc8374 local=c8bccb066b1f194fc1a0977e5e3288f3f37c42591ad0b3f21d9bfdbaa3fcaadd
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_slider_style.dart';

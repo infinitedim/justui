@@ -1,4 +1,4 @@
-// justui-meta: registry=8bce76196570eeff315b98c0ce9c702fc0e4adec7bd471bc6fd4856bb78c52e5 local=8299446bc928737ddd8ec542587346eff50a74e0f029801b73380d1353da54d5
+// justui-meta: registry=e31c3fa534156b53e005461ffdae374c2927ca20b896158c587b28be52b7a6a0 local=7bcf483ad4dfd1e10c7a32d9a3f215b4e48312839462a62053d47d97df43d8b6
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_time_picker_style.dart';

@@ -1,4 +1,4 @@
-// justui-meta: registry=d420060a7b3b30cc503e2708efa1c7743464ca1b95ab0b02a2e106eebae74088 local=ed98e8b35723c819e7fbcf41e3e0addabbd50e909c7955b81efc0ef1cadb7a74
+// justui-meta: registry=4941cddeaed2cf8c3c7b3d8124d53b8b7fa94f95c9678a7bf3047325022a0ac3 local=05b43c341e32d2413651081a79298d6aabc14aeb15c60c3c9ead627676fda377
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_checkbox_style.dart';

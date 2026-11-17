@@ -1,4 +1,4 @@
-// justui-meta: registry=b93c3d76654b7958dc0268fa8283756035193cbf5a43f7d9b2cb76c813469557 local=55808f03f342dbf98b6844ca0efe8c7d527bc3c30b1eb5e4d1d6c2e7834c68de
+// justui-meta: registry=535252437f1aa7b018ed575f590af595ed02b5b360af60936c6d74da09a78540 local=d76fea98db603638449adf79a6070add720942f477966c0df32ec4e8f0c8fa88
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart' show Icons;

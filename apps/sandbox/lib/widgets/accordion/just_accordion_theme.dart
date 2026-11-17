@@ -1,4 +1,4 @@
-// justui-meta: registry=c0df579127a6c1ceb4245e89db4c09078c58fc5a783c21371b32b8876d39c311 local=b87bb83b2102e920104a7efbf09d061dd7e3f702a3dea6df42b464ad110f1f22
+// justui-meta: registry=0007f3a698699799ab63849d04de1fa4191e99ccbcf7bacc74629aa0a11fe903 local=23b79702a8e8131ea51efea754d6fd6c8cba5e50bd9a7d96219658f82e387431
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_accordion_style.dart';

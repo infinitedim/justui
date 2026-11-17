@@ -1,4 +1,4 @@
-// justui-meta: registry=e899c9ab266748e128c91bd087029b0f3d59972f5b465f993e2cbb6847bb8cb3 local=55a50a709da415d400423631216ba66f61b72d3f42ac88306d0c05f21defaed2
+// justui-meta: registry=1276692f8b5baa7266c1f4d23bec1ea7448859860226d18595a8632b33d76aaf local=2eff35eeb91575b73002b46e66045dcf0b4ad8a9783860451bb727e9f976884b
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_bottom_nav_style.dart';

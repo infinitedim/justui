@@ -1,4 +1,4 @@
-// justui-meta: registry=e0f593c07da11119ae79ab275ae42ba06a786e6886895353cb0f649e61271b3d local=43e0013fcf8b9c9dbc8b20073fb9641e292d25b8084931a269fd7d371959c98f
+// justui-meta: registry=afc3d5339575ada7503f446652184a5bfb9396fa88f177ec1781ed455001afce local=ffe17debd1966004efc93b6ca08a48eb9d6d6665e48c6faf47bd02d929f2a2fd
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_date_picker_style.dart';

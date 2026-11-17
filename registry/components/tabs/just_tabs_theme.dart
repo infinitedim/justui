@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show ThemeExtension;
+import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_tabs_style.dart';
 

@@ -1,4 +1,4 @@
-// justui-meta: registry=ddea63de6efd336c12972cf2f69d06a11eef3c39a6133293d3e26fdcc0ab1eed local=d4f20cd20a2b0f764323310e60ac5c2284fc557c7992835e81d47c2396c7b3c1
+// justui-meta: registry=b9ed9660714671263c10fe6fb6bced5cf2285f06bce537d99de9d5e758779078 local=cef7f0f6e005362341e253fefc07c5cfa41b07403b6eae4959fccf9a2aeb123d
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_sidebar_style.dart';

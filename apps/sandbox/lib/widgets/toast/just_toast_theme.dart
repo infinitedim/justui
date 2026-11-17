@@ -1,4 +1,4 @@
-// justui-meta: registry=f0d9b6d5f0496f85b7b6d51a3fb5fa90064efd4db232420a472c989a29dbee19 local=81f079dd90994c1560a91bb869cc2f1054bdee33721f6c626923b4385daabe0b
+// justui-meta: registry=44149c0775ae6e612591b3cc83524753e5b0ebaa88c7fb794950e903477f4109 local=fff35486196c63432b4cddaa033bfa8b4f7ba2cecc70e26f5c28caf689af2bb4
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_toast_style.dart';

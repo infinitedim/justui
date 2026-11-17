@@ -1,4 +1,4 @@
-// justui-meta: registry=6c20b28590d5a532d92194b95e2965ef6c8ea4f29483c62581901693e4568d30 local=70db4e3ef587ad7ae05c91c43f8810bb983c275e5438bcb9399a5361deca2af9
+// justui-meta: registry=90faa183e4ba7c4aac451d74c60e6a2f2081390701f4c8b6c647ccee5e0f9d37 local=69a31e02fcba9abe71fd0482b52c3caa41160a050daa0aef4b5e2bf67c7b6408
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_progress_style.dart';

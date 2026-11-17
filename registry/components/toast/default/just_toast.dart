@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show Icons;
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';

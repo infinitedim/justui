@@ -1,4 +1,4 @@
-// justui-meta: registry=262e2b9eb3361467268330565dfa7ec4dfc6ee1fc999afe867261a79663710d7 local=1ae53f1c1e531455b931cdd8a06aefb93c9e531a1460b9a6317c63b5ea5a0320
+// justui-meta: registry=c591b12ef63f9b8713748acc1097ef2ab10a75f41e8f3306d74ab885b28c4f4e local=cd6614694988d99253777cee43831d08fe53531e3e2bae5a8fc7d1ea65a7ef72
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_select_style.dart';

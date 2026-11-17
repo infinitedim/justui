@@ -1,4 +1,4 @@
-// justui-meta: registry=20b5d947aec7b64037bbc3b43ead5efbf4cd08c66454a445ba36890c7bbae848 local=4c19438e26deffdf07f05fb7c7678c7c362fa4c0994af96dd5c9e70bf6e5b451
+// justui-meta: registry=b7eefc7796dce173acc0ec14c8b0d3995064f304629a2beac171d2a998641edb local=28d532ac3dbcc1bb9280eeca77a49c832b102b8b329d22bda09b8a613d3c51c0
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_tabs_style.dart';

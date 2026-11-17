@@ -1,4 +1,4 @@
-// justui-meta: registry=d40a11d74e8db83c3f8449732ab203157803409cc31e1c7b3fd6714c31155bc3 local=3a5a73b8fc1bfb7097b687b27a084cc7d45a954903a84d2749137a91ab2013a0
+// justui-meta: registry=6c1b28c96000a53e75930826cf8e5caf27a331d89d67dc799ce53c953dda3ad9 local=2defba05c3c8854e5c20209ba91aaa33f02855defed1f0491fc5df1c27b79d4d
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_resizable_style.dart';

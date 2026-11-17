@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Icons;
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';

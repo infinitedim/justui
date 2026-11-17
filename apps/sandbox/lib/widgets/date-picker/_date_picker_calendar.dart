@@ -1,4 +1,4 @@
-// justui-meta: registry=a2c4e10e99fae4b7a694e66d49ddf594ebf82994dc24bc03091d8223021a2b27 local=21282159dd5017cc0289471556da183c7b463443c299bd9268a2b51cef37f235
+// justui-meta: registry=0aa5b8929c5bf4670c666d5c5cfa6276fbd870ca933d28e017ac36818ca30eba local=cd4774b88333b433f34dcd2f2b7fa7155eca247ed1e1e12df9f31dcd447faf3c
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:flutter/services.dart'
     show HapticFeedback, KeyDownEvent, KeyEvent, LogicalKeyboardKey;

@@ -1,4 +1,4 @@
-// justui-meta: registry=26f2a9957982bed694102971052585d341a3b31a0242a3d02621ee76a2d71beb local=80c561f36adf740fa4577c5b5b16aa0c1aa85b750aa17902f55d5e538e326bcd
+// justui-meta: registry=cf9ce3a976347d3cff9e0b14a7a634f745666a2b079b5663a47b4fe266848efc local=ab0e43fb6061514d2bf69157f9fcc032842b727efb225b7a6870d2421db6e57c
 import 'dart:math' as math;
 
 import 'package:material_ui/material_ui.dart' show Icons;

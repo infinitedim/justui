@@ -1,4 +1,4 @@
-// justui-meta: registry=82e949293ba5753cc01cde989b943856b1e340666c5bb69a12a1271784655563 local=bd0423fc14366524f581b0f6cede472279beba11f135d02f702210224977ca63
+// justui-meta: registry=dea907a8a3fbb176f382d17e6134cf15afc1ab98275d34e2231874df7cb29ca2 local=f76a9ad168748bda2eece2482df32df48878fb97bf9a918a095a163a00e66023
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_breadcrumb_style.dart';

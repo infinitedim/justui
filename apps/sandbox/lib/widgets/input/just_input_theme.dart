@@ -1,4 +1,4 @@
-// justui-meta: registry=5a9c5dd087220e465584cbfd251d4836740a37d8738e7ea2afd7ada8326653be local=13f5969401360a0af460d7c5ed370502e1e30216c33705d88bc44f24fd637ee0
+// justui-meta: registry=5d994cc9c3b426a7cf2f469794dcef6dc26e48d903b0af8c837f2dde85451eb4 local=5933fcb6e8655a4ce7ce785f95341f22b85403a424d04bdc9fa9b26ef958b888
 import 'package:material_ui/material_ui.dart' show ThemeExtension;
 
 import 'just_input_style.dart';
