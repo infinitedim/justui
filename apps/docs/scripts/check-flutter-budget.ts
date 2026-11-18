@@ -5,9 +5,11 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import {
   BUNDLE_KEEP,
+  canonicalBundlePath,
   describeFile,
   listFiles,
   matchesAny,
+  missingRequiredFiles,
   startupBrotli,
   type BundleFile,
 } from './flutter-bundle';
@@ -15,7 +17,7 @@ import {
 const outDir = path.resolve(import.meta.dirname, '../public/flutter');
 const KB = 1024;
 
-interface Budget {
+export interface Budget {
   startupKb: number;
   filesKb: Record<string, number>;
 }
@@ -48,53 +50,111 @@ function isBundleFileList(value: unknown): value is BundleFile[] {
   );
 }
 
-function check(): string[] {
+function checkFileBudgets(
+  actual: readonly BundleFile[],
+  filesKb: Record<string, number>
+): string[] {
   const errors: string[] = [];
-  const manifestPath = path.join(outDir, 'bundle.json');
-  if (!existsSync(manifestPath)) {
-    return [
-      'public/flutter/bundle.json not found; run "bun run flutter:build"',
-    ];
+  for (const [file, kb] of Object.entries(filesKb)) {
+    const matches = actual.filter(
+      (entry) => canonicalBundlePath(entry.path) === file
+    );
+    if (matches.length === 0) {
+      errors.push(`${file}: missing from bundle`);
+    } else if (matches.length > 1) {
+      const names = matches.map((entry) => entry.path).join(', ');
+      errors.push(`${file}: multiple matching files (${names})`);
+    } else if (matches[0] && matches[0].brotli > kb * KB) {
+      errors.push(
+        `${file}: ${(matches[0].brotli / KB).toFixed(1)} KB > ${kb} KB`
+      );
+    }
   }
-  const manifest: unknown = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+  return errors;
+}
+
+/** Validates manifest checksums, allowlist, required files, and budgets. */
+export function validateBudget(
+  manifest: unknown,
+  budgetData: unknown,
+  actual: readonly BundleFile[]
+): { errors: string[]; startup: number; budgetKb?: number } {
   const listed =
     typeof manifest === 'object' && manifest !== null && 'files' in manifest
       ? manifest.files
       : undefined;
-  const budget: unknown = JSON.parse(
-    readFileSync(path.join(import.meta.dirname, 'flutter-budget.json'), 'utf-8')
-  );
-  if (!isBundleFileList(listed)) return ['bundle.json has no valid file list'];
-  if (!isBudget(budget)) return ['flutter-budget.json has an invalid shape'];
-
-  const onDisk = listFiles(outDir).filter((file) => file !== 'bundle.json');
-  for (const file of onDisk.filter((f) => !matchesAny(f, BUNDLE_KEEP))) {
-    errors.push(`unexpected file ${file} (not in BUNDLE_KEEP)`);
+  if (!isBundleFileList(listed)) {
+    return { errors: ['bundle.json has no valid file list'], startup: 0 };
   }
-  const actual = onDisk.map((file) => describeFile(outDir, file));
+  if (!isBudget(budgetData)) {
+    return {
+      errors: ['flutter-budget.json has an invalid shape'],
+      startup: 0,
+    };
+  }
+
+  const errors: string[] = [];
+  for (const file of actual) {
+    if (!matchesAny(file.path, BUNDLE_KEEP)) {
+      errors.push(`unexpected file ${file.path} (not in BUNDLE_KEEP)`);
+    }
+  }
+  const actualPaths = new Set(actual.map((file) => file.path));
+  for (const file of listed) {
+    if (!actualPaths.has(file.path)) {
+      errors.push(`${file.path} listed in bundle.json but missing on disk`);
+    }
+  }
   const expected = new Map(listed.map((file) => [file.path, file.sha256]));
   for (const file of actual) {
     if (expected.get(file.path) !== file.sha256) {
       errors.push(`${file.path} does not match bundle.json`);
     }
   }
-  for (const [file, kb] of Object.entries(budget.filesKb)) {
-    const found = actual.find((entry) => entry.path === file);
-    if (found && found.brotli > kb * KB) {
-      errors.push(`${file}: ${(found.brotli / KB).toFixed(1)} KB > ${kb} KB`);
-    }
+  for (const missing of missingRequiredFiles(actual.map((file) => file.path))) {
+    errors.push(`missing required file ${missing}`);
   }
+  errors.push(...checkFileBudgets(actual, budgetData.filesKb));
+
   const startup = startupBrotli(actual);
-  console.log(
-    `Flutter startup download (brotli): ${(startup / KB).toFixed(1)} KB (budget ${budget.startupKb} KB)`
-  );
-  if (startup > budget.startupKb * KB) errors.push('startup budget exceeded');
-  return errors;
+  if (startup > budgetData.startupKb * KB)
+    errors.push('startup budget exceeded');
+  return { errors, startup, budgetKb: budgetData.startupKb };
 }
 
-const errors = check();
-if (errors.length > 0) {
-  for (const error of errors) console.error(`flutter:budget: ${error}`);
-  process.exit(1);
+function check(): { errors: string[]; startup: number; budgetKb?: number } {
+  const manifestPath = path.join(outDir, 'bundle.json');
+  if (!existsSync(manifestPath)) {
+    return {
+      errors: [
+        'public/flutter/bundle.json not found; run "bun run flutter:build"',
+      ],
+      startup: 0,
+    };
+  }
+  const manifest: unknown = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+  const budget: unknown = JSON.parse(
+    readFileSync(path.join(import.meta.dirname, 'flutter-budget.json'), 'utf-8')
+  );
+  const onDisk = listFiles(outDir).filter((file) => file !== 'bundle.json');
+  const actual = onDisk.map((file) => describeFile(outDir, file));
+  return validateBudget(manifest, budget, actual);
 }
-console.log('Flutter bundle budget check passed.');
+
+function main(): void {
+  const { errors, startup, budgetKb } = check();
+  if (budgetKb !== undefined) {
+    console.log(
+      `Flutter startup download (brotli): ${(startup / KB).toFixed(1)} KB (budget ${budgetKb} KB)`
+    );
+  }
+  if (errors.length > 0) {
+    for (const error of errors) console.error(`flutter:budget: ${error}`);
+    process.exit(1);
+  }
+  console.log('Flutter bundle budget check passed.');
+}
+
+if (import.meta.main) {
+  main();
+}

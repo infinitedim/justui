@@ -10,10 +10,11 @@ import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import {
   BUNDLE_KEEP,
-  BUNDLE_REQUIRED,
+  canonicalBundlePath,
   describeFile,
   listFiles,
   matchesAny,
+  missingRequiredFiles,
   startupBrotli,
 } from './flutter-bundle';
 
@@ -57,6 +58,9 @@ function flutterVersion(): string {
 
 function build(): void {
   flutter(['pub', 'get', '--enforce-lockfile']);
+  // Clear prior build/web outputs so stale unhashed or old-hash artifacts
+  // from previous SDK builds are never carried into copyPruned().
+  rmSync(buildDir, { recursive: true, force: true });
   flutter([
     'build',
     'web',
@@ -64,6 +68,8 @@ function build(): void {
     '--release',
     '--no-web-resources-cdn',
     '--no-source-maps',
+    '--web-content-hash',
+    '--no-deprecated-js-interop',
     '--base-href',
     '/flutter/',
   ]);
@@ -72,8 +78,18 @@ function build(): void {
 function copyPruned(): string[] {
   const files = listFiles(buildDir);
   const kept = files.filter((file) => matchesAny(file, BUNDLE_KEEP));
-  const missing = BUNDLE_REQUIRED.filter((file) => !kept.includes(file));
+  const missing = missingRequiredFiles(kept);
   if (missing.length > 0) fail(`build is missing ${missing.join(', ')}`);
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const file of kept) {
+    const canonical = canonicalBundlePath(file);
+    if (seen.has(canonical)) duplicates.add(canonical);
+    seen.add(canonical);
+  }
+  if (duplicates.size > 0) {
+    fail(`build has duplicate outputs for ${[...duplicates].join(', ')}`);
+  }
   rmSync(outDir, { recursive: true, force: true });
   for (const file of kept) {
     mkdirSync(path.dirname(path.join(outDir, file)), { recursive: true });

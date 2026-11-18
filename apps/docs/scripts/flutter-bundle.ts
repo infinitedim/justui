@@ -6,20 +6,22 @@ import { brotliCompressSync, constants } from 'node:zlib';
 /**
  * Files of `flutter build web --wasm` that the docs serve from `/flutter/`.
  *
- * The docs load Flutter only on Blink with WasmGC, with `renderer: 'skwasm'`
- * (see `src/lib/flutter-bridge`), so the dart2js and CanvasKit outputs, debug
- * symbols, the service worker and the standalone harness are never fetched
- * and are pruned. `skwasm_heavy` stays: the loader picks it when the browser
- * lacks image codecs or Chromium break iterators.
+ * The docs load Flutter only on Blink with supported Wasm (`renderer:
+ * 'skwasm'`, see `src/lib/flutter-bridge`), so the dart2js and CanvasKit
+ * outputs, debug symbols, the precache manifest, the service worker and the
+ * standalone harness are never fetched and are pruned. `skwasm_heavy` stays:
+ * the loader picks it when the browser lacks image codecs or Chromium break
+ * iterators. Hash segments (`--web-content-hash`) are matched optionally so
+ * unhashed and hashed manifests resolve uniformly.
  */
 export const BUNDLE_KEEP: readonly RegExp[] = [
   /^flutter_bootstrap\.js$/,
-  /^main\.dart\.(mjs|wasm)$/,
+  /^main\.dart(?:\.[0-9a-f]{8})?\.(mjs|wasm)$/,
   /^canvaskit\/skwasm(_heavy)?\.(js|wasm)$/,
-  /^assets\/(AssetManifest\.bin|AssetManifest\.bin\.json|FontManifest\.json|NOTICES)$/,
-  /^assets\/fonts\/MaterialIcons-Regular\.otf$/,
-  /^assets\/assets\/fonts\/[A-Za-z]+-[A-Za-z]+\.ttf$/,
-  /^assets\/shaders\/[a-z_]+\.frag$/,
+  /^assets\/(?:AssetManifest(?:\.[0-9a-f]{8})?\.bin|AssetManifest\.bin(?:\.[0-9a-f]{8})?\.json|FontManifest(?:\.[0-9a-f]{8})?\.json|NOTICES(?:\.[0-9a-f]{8})?)$/,
+  /^assets\/fonts\/MaterialIcons-Regular(?:\.[0-9a-f]{8})?\.otf$/,
+  /^assets\/assets\/fonts\/[A-Za-z]+-[A-Za-z]+(?:\.[0-9a-f]{8})?\.ttf$/,
+  /^assets\/shaders\/[a-z_]+(?:\.[0-9a-f]{8})?\.frag$/,
 ];
 
 /**
@@ -28,11 +30,11 @@ export const BUNDLE_KEEP: readonly RegExp[] = [
  */
 export const BUNDLE_STARTUP: readonly RegExp[] = [
   /^flutter_bootstrap\.js$/,
-  /^main\.dart\.(mjs|wasm)$/,
+  /^main\.dart(?:\.[0-9a-f]{8})?\.(mjs|wasm)$/,
   /^canvaskit\/skwasm\.(js|wasm)$/,
-  /^assets\/(AssetManifest\.bin\.json|FontManifest\.json)$/,
-  /^assets\/fonts\/MaterialIcons-Regular\.otf$/,
-  /^assets\/assets\/fonts\/[A-Za-z]+-[A-Za-z]+\.ttf$/,
+  /^assets\/(?:AssetManifest\.bin(?:\.[0-9a-f]{8})?\.json|FontManifest(?:\.[0-9a-f]{8})?\.json)$/,
+  /^assets\/fonts\/MaterialIcons-Regular(?:\.[0-9a-f]{8})?\.otf$/,
+  /^assets\/assets\/fonts\/[A-Za-z]+-[A-Za-z]+(?:\.[0-9a-f]{8})?\.ttf$/,
 ];
 
 /** Files every working bundle must contain. */
@@ -45,6 +47,17 @@ export const BUNDLE_REQUIRED: readonly string[] = [
   'assets/FontManifest.json',
   'assets/NOTICES',
 ];
+
+/** Strips Flutter's 8-hex `--web-content-hash` suffix before the extension. */
+export function canonicalBundlePath(file: string): string {
+  return file.replace(/\.[0-9a-f]{8}(?=(?:\.[^./]+)?$)/, '');
+}
+
+/** Required canonical files that have no matching entry in [files]. */
+export function missingRequiredFiles(files: readonly string[]): string[] {
+  const canonical = new Set(files.map(canonicalBundlePath));
+  return BUNDLE_REQUIRED.filter((file) => !canonical.has(file));
+}
 
 /** One file of the bundle, as written to `bundle.json`. */
 export interface BundleFile {
