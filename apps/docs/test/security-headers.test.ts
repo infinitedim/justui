@@ -28,8 +28,13 @@ function createSearchRequest(
   return req as unknown as NextRequest;
 }
 
-/** The headers next.config.ts sends on every route, by name. */
-async function productionHeaders(): Promise<Map<string, string>> {
+interface HeaderRule {
+  source: string;
+  headers: Array<{ key: string; value: string }>;
+}
+
+/** Loads all header rules configured in next.config.ts for production. */
+async function productionHeaderRules(): Promise<Array<HeaderRule>> {
   const resolvedConfig =
     typeof nextConfig === 'function'
       ? await (
@@ -43,10 +48,41 @@ async function productionHeaders(): Promise<Map<string, string>> {
   expect(resolvedConfig).toBeDefined();
   expect(typeof resolvedConfig.headers).toBe('function');
 
-  const headersList = (await resolvedConfig.headers!()) as Array<{
-    source: string;
-    headers: Array<{ key: string; value: string }>;
-  }>;
+  return (await resolvedConfig.headers!()) as Array<HeaderRule>;
+}
+
+/** Resolves all headers sent for a given pathname in production. */
+async function headersForPath(pathname: string): Promise<Map<string, string>> {
+  const rules = await productionHeaderRules();
+  const headerMap = new Map<string, string>();
+  for (const rule of rules) {
+    if (matchesHeaderSource(rule.source, pathname)) {
+      for (const item of rule.headers) {
+        headerMap.set(item.key, item.value);
+      }
+    }
+  }
+  return headerMap;
+}
+
+function matchesHeaderSource(source: string, pathname: string): boolean {
+  if (source === '/(.*)') return true;
+  if (source === pathname) return true;
+  if (source === '/flutter/assets/:path*') {
+    return pathname.startsWith('/flutter/assets/');
+  }
+  if (source === '/flutter/canvaskit/:path*') {
+    return pathname.startsWith('/flutter/canvaskit/');
+  }
+  if (source === '/flutter/main.dart.:hash([0-9a-f]{8}).:ext(mjs|wasm)') {
+    return /^\/flutter\/main\.dart\.[0-9a-f]{8}\.(mjs|wasm)$/.test(pathname);
+  }
+  return false;
+}
+
+/** The headers next.config.ts sends on every route, by name. */
+async function productionHeaders(): Promise<Map<string, string>> {
+  const headersList = await productionHeaderRules();
 
   const rootRule = headersList.find((entry) => entry.source === '/(.*)');
   expect(rootRule).toBeDefined();
@@ -145,6 +181,42 @@ describe('security headers and CSP baseline', () => {
     expect(connectSrc).toContain('https://vitals.vercel-insights.com');
     expect(connectSrc).toContain('https://api.github.com');
     expect(connectSrc).toContain('https://raw.githubusercontent.com');
+  });
+});
+
+describe('Flutter asset Cache-Control headers', () => {
+  it('splits Cache-Control cleanly between hashed and unhashed /flutter/* paths', async () => {
+    for (const hashed of [
+      '/flutter/main.dart.19a4ccc8.wasm',
+      '/flutter/main.dart.2c5cde3a.mjs',
+      '/flutter/assets/FontManifest.a5521d6c.json',
+      '/flutter/assets/NOTICES.5872c81f',
+    ]) {
+      const headers = await headersForPath(hashed);
+      expect(headers.get('Cache-Control')).toBe(
+        'public, max-age=31536000, immutable'
+      );
+      expect(headers.get('Content-Security-Policy')).toBeDefined();
+      expect(headers.get('Cross-Origin-Embedder-Policy')).toBe(
+        'credentialless'
+      );
+    }
+
+    for (const unhashed of [
+      '/flutter/flutter_bootstrap.js',
+      '/flutter/canvaskit/skwasm.wasm',
+      '/flutter/canvaskit/skwasm.js',
+    ]) {
+      const headers = await headersForPath(unhashed);
+      expect(headers.get('Cache-Control')).toBe(
+        'public, max-age=0, must-revalidate'
+      );
+      expect(headers.get('Content-Security-Policy')).toBeDefined();
+      expect(headers.get('Cross-Origin-Opener-Policy')).toBe('same-origin');
+    }
+
+    const unhashedMain = await headersForPath('/flutter/main.dart.wasm');
+    expect(unhashedMain.get('Cache-Control')).toBeUndefined();
   });
 });
 

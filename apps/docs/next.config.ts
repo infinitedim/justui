@@ -163,12 +163,50 @@ const nextConfig: NextConfig = {
         ];
 
     // Fingerprinted build output under /_next/static already gets
-    // `immutable` caching from Next.js. Files in public/ keep stable names,
-    // so they must not be cached as immutable.
+    // `immutable` caching from Next.js. `--web-content-hash` hashes
+    // `main.dart.<hash>.(mjs|wasm)` and `/flutter/assets/*` so they can safely
+    // use `immutable` caching, while unhashed bootstrap and CanvasKit files
+    // stay `must-revalidate` across deploys.
     const headersList = [
       {
         source: '/(.*)',
         headers: [...baselineHeaders, ...productionHeaders],
+      },
+      {
+        source: '/flutter/main.dart.:hash([0-9a-f]{8}).:ext(mjs|wasm)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/flutter/assets/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/flutter/flutter_bootstrap.js',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/flutter/canvaskit/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
       },
     ];
 

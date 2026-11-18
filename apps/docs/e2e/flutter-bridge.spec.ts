@@ -303,3 +303,63 @@ test.describe('Flutter bridge on the components page', () => {
     expect(box && day && day.y + day.height <= box.y + box.height).toBe(true);
   });
 });
+
+test.describe('Flutter bridge assets and HTTP headers', () => {
+  test.skip(
+    !hasFlutterBundle(),
+    'no Flutter bundle: run bun run flutter:build'
+  );
+
+  test('serves zero /flutter/ 404s and splits Cache-Control with CSP intact', async ({
+    page,
+  }) => {
+    const failed: Array<string> = [];
+    const seen = new Map<string, Record<string, string>>();
+    page.on('response', (response) => {
+      const pathname = new URL(response.url()).pathname;
+      if (!pathname.startsWith('/flutter/')) return;
+      if (response.status() >= 400) {
+        failed.push(`${response.status()} ${pathname}`);
+      }
+      seen.set(pathname, response.headers());
+    });
+    await visitAs(page, 'default', 'light');
+    await page.goto(PATH);
+    await flutterSettled(page);
+
+    expect(failed).toEqual([]);
+    const paths = [...seen.keys()];
+    const mainWasm = paths.find((p) =>
+      /^\/flutter\/main\.dart\.[0-9a-f]{8}\.wasm$/.test(p)
+    );
+    const mainMjs = paths.find((p) =>
+      /^\/flutter\/main\.dart\.[0-9a-f]{8}\.mjs$/.test(p)
+    );
+    const hashedAsset = paths.find((p) => p.startsWith('/flutter/assets/'));
+    expect(mainWasm).toBeDefined();
+    expect(mainMjs).toBeDefined();
+    expect(hashedAsset).toBeDefined();
+
+    for (const immutablePath of [mainWasm!, mainMjs!, hashedAsset!]) {
+      const headers = seen.get(immutablePath);
+      expect(headers?.['cache-control']).toBe(
+        'public, max-age=31536000, immutable'
+      );
+      expect(headers?.['content-security-policy']).toBeDefined();
+    }
+
+    const bootstrapHeaders = seen.get('/flutter/flutter_bootstrap.js');
+    expect(bootstrapHeaders?.['cache-control']).toBe(
+      'public, max-age=0, must-revalidate'
+    );
+    expect(bootstrapHeaders?.['content-security-policy']).toBeDefined();
+
+    const skwasmPath = paths.find((p) => p.startsWith('/flutter/canvaskit/'));
+    expect(skwasmPath).toBeDefined();
+    const skwasmHeaders = seen.get(skwasmPath!);
+    expect(skwasmHeaders?.['cache-control']).toBe(
+      'public, max-age=0, must-revalidate'
+    );
+    expect(skwasmHeaders?.['content-security-policy']).toBeDefined();
+  });
+});
