@@ -26,19 +26,19 @@ function kitStrings(dict: KitDictionary): Record<string, string | string[]> {
 /**
  * A part rendered by the real Flutter component (`apps/showcase`) over its
  * React fallback. The fallback renders on the server, holds the layout and
- * stays for no-JS, a missing bundle and browsers without Blink + WasmGC.
+ * stays for no-JS, a missing bundle and browsers without Blink + supported Wasm.
  * The live view sits in an absolutely placed box over the fallback's box,
  * so the swap cannot shift the layout; it crossfades in 150ms (instant
  * under reduced motion) and drops back to the fallback while the theme
  * switch runs.
  *
- * Every Flutter view has the same fixed size, centered vertically on the
- * box, pinned to its left edge and clipped to it. The engine (3.47)
- * rasterizes all views through one shared surface and can resize it for
- * another view before this one renders
- * (fixed upstream in flutter/flutter#194401, not yet in stable), which cuts
- * off any view larger than another. Equal sizes make that harmless. Scenes
- * stay within 280 x 328 (`apps/showcase/test/scenes/stage_heights_test.dart`).
+ * Every Flutter view has the same fixed size (320 x 344), centered vertically
+ * on the box, pinned to its left edge and clipped to it. While initial shared
+ * backing-surface fixes (flutter/flutter#194401 and #195839) landed in
+ * Flutter 3.50.0, follow-up host/intrinsic multi-view sizing fixes (#196052)
+ * remain outside 3.50.0, so equal host sizes keep view transitions safe.
+ * Scenes stay within 280 x 328
+ * (`apps/showcase/test/scenes/stage_heights_test.dart`).
  *
  * Flutter sets `touch-action: none` on its view, which traps page
  * scrolling on touch screens; `pan-y` gives vertical pans back to the
