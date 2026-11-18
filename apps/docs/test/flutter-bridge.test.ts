@@ -6,7 +6,7 @@ import {
   isSafeText,
   type ViewConfig,
 } from '@/lib/flutter-bridge/schema';
-import { hasWasmGc, isBlink } from '@/lib/flutter-bridge/support';
+import { isBlink, supportsDart2Wasm } from '@/lib/flutter-bridge/support';
 import { installFakeFlutter, removeFakeFlutter } from './support/fake-flutter';
 
 const strings = Object.fromEntries(
@@ -82,11 +82,47 @@ describe('support', () => {
     expect(isBlink('', 'Firefox/140')).toBe(false);
   });
 
-  it('treats a throwing validator as no WasmGC', () => {
-    expect(hasWasmGc(() => true)).toBe(true);
-    expect(hasWasmGc(() => false)).toBe(false);
+  it('requires all 4 Flutter 3.50 Wasm probes (gc, simd, !js-string, try_table)', () => {
+    const valid = (
+      bytes: Uint8Array<ArrayBuffer>,
+      options?: WebAssembly.WebAssemblyCompileOptions
+    ) => {
+      if (options?.builtins?.includes('js-string')) return false;
+      return bytes.length > 0;
+    };
+    expect(supportsDart2Wasm(valid)).toBe(true);
+
+    // 1) Missing WasmGC (15 bytes)
     expect(
-      hasWasmGc(() => {
+      supportsDart2Wasm((bytes, options) =>
+        bytes.length === 15 ? false : valid(bytes, options)
+      )
+    ).toBe(false);
+
+    // 2) Missing Wasm SIMD (31 bytes)
+    expect(
+      supportsDart2Wasm((bytes, options) =>
+        bytes.length === 31 ? false : valid(bytes, options)
+      )
+    ).toBe(false);
+
+    // 3) Missing JS String Builtins support (validator returns true -> legacy)
+    expect(
+      supportsDart2Wasm((bytes, options) =>
+        options?.builtins?.includes('js-string') ? true : valid(bytes, options)
+      )
+    ).toBe(false);
+
+    // 4) Missing try_table (33 bytes)
+    expect(
+      supportsDart2Wasm((bytes, options) =>
+        bytes.length === 33 ? false : valid(bytes, options)
+      )
+    ).toBe(false);
+
+    // 5) Throwing validator
+    expect(
+      supportsDart2Wasm(() => {
         throw new Error('no wasm');
       })
     ).toBe(false);
