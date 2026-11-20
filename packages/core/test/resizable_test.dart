@@ -1099,5 +1099,44 @@ void main() {
         expect(splitterSemantics.properties.onDecrease, isNull);
       },
     );
+
+    testWidgets(
+      'Splitter paints and receives drags above the following panel across full handleHitSize',
+      (WidgetTester tester) async {
+        final JustResizableController controller = JustResizableController(
+          initialFractions: <double>[0.4, 0.6],
+        );
+
+        await tester.pumpWidget(
+          buildTestApp(
+            SizedBox(
+              width: 300.0,
+              height: 100.0,
+              child: JustResizable(
+                controller: controller,
+                handleVariant: JustResizableHandleVariant.grip,
+                handleHitSize: 24.0,
+                children: const <JustResizablePanel>[
+                  JustResizablePanel(child: ColoredBox(color: Colors.white)),
+                  JustResizablePanel(child: ColoredBox(color: Colors.grey)),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        // Start drag 6 px to the right of the divider center (inside the 24 px
+        // hit box, overlapping the second panel) and move right by 30 px.
+        final Offset topLeft = tester.getTopLeft(find.byType(JustResizable));
+        final Offset rightHalfOfHitBox = Offset(
+          topLeft.dx + 120.0 + 6.0,
+          topLeft.dy + 50.0,
+        );
+        await tester.dragFrom(rightHalfOfHitBox, const Offset(60.0, 0.0));
+        await tester.pumpAndSettle();
+
+        expect(controller.fractions[0], greaterThan(0.45));
+      },
+    );
   });
 }
