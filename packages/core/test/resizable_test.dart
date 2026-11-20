@@ -1031,5 +1031,73 @@ void main() {
         expect(find.text('CUSTOM'), findsOneWidget);
       },
     );
+
+    testWidgets(
+      'Grip handle variant renders pill at full 12x22 dimensions without being crushed by 1px divider',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            const SizedBox(
+              width: 300.0,
+              height: 100.0,
+              child: JustResizable(
+                dividerThickness: 1.0,
+                handleVariant: JustResizableHandleVariant.grip,
+                children: <JustResizablePanel>[
+                  JustResizablePanel(initialSize: 0.4, child: Text('Files')),
+                  JustResizablePanel(initialSize: 0.6, child: Text('Editor')),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        final Finder gripPillFinder = find.descendant(
+          of: find.byType(JustResizable),
+          matching: find.byWidgetPredicate(
+            (Widget w) =>
+                w is Container &&
+                w.decoration is BoxDecoration &&
+                (w.decoration! as BoxDecoration).border != null,
+          ),
+        );
+        expect(gripPillFinder, findsOneWidget);
+        expect(tester.getSize(gripPillFinder), equals(const Size(12.0, 22.0)));
+      },
+    );
+
+    testWidgets(
+      'Locked splitter sets Semantics enabled to false and clears increase/decrease actions',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            const SizedBox(
+              width: 300.0,
+              height: 100.0,
+              child: JustResizable(
+                children: <JustResizablePanel>[
+                  JustResizablePanel(resizable: false, child: Text('Locked')),
+                  JustResizablePanel(child: Text('Other')),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        final Semantics splitterSemantics = tester.widget<Semantics>(
+          find.descendant(
+            of: find.byType(JustResizable),
+            matching: find.byWidgetPredicate(
+              (Widget w) => w is Semantics && w.properties.slider == true,
+            ),
+          ),
+        );
+        expect(splitterSemantics.properties.enabled, isFalse);
+        expect(splitterSemantics.properties.increasedValue, isNull);
+        expect(splitterSemantics.properties.decreasedValue, isNull);
+        expect(splitterSemantics.properties.onIncrease, isNull);
+        expect(splitterSemantics.properties.onDecrease, isNull);
+      },
+    );
   });
 }

@@ -9,6 +9,7 @@ import 'package:just_ui_core/src/components/accordion/just_accordion.dart';
 import 'package:just_ui_core/src/components/carousel/just_carousel.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_picker.dart';
 import 'package:just_ui_core/src/components/date_picker/just_date_picker_variants.dart';
+import 'package:just_ui_core/src/components/resizable/just_resizable.dart';
 import 'package:just_ui_core/src/components/switch/just_switch.dart';
 
 /// Screen reader labels that used to be English-only can be translated;
@@ -153,5 +154,45 @@ void main() {
     expect(tappable.single.flagsCollection.isToggled, Tristate.isTrue);
     expect(nodes.map((SemanticsData d) => d.label), isNot(contains('Switch')));
     handle.dispose();
+  });
+
+  testWidgets('resizable splitters read the splitterSemanticsLabel template', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      app(
+        const SizedBox(
+          height: 120,
+          child: JustResizable(
+            splitterSemanticsLabel: 'Pemisah panel {index}',
+            children: <JustResizablePanel>[
+              JustResizablePanel(child: Text('File')),
+              JustResizablePanel(child: Text('Editor')),
+            ],
+          ),
+        ),
+      ),
+    );
+    expect(find.bySemanticsLabel('Pemisah panel 1'), findsOneWidget);
+    expect(find.bySemanticsLabel('Splitter divider 1'), findsNothing);
+  });
+
+  testWidgets('resizable splitters default to Splitter divider N', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      app(
+        const SizedBox(
+          height: 120,
+          child: JustResizable(
+            children: <JustResizablePanel>[
+              JustResizablePanel(child: Text('Files')),
+              JustResizablePanel(child: Text('Editor')),
+            ],
+          ),
+        ),
+      ),
+    );
+    expect(find.bySemanticsLabel('Splitter divider 1'), findsOneWidget);
   });
 }

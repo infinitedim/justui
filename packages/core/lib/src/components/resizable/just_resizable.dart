@@ -544,6 +544,11 @@ class const JustResizable({
   /// Distance in pixels adjusted when Shift is held with arrow keypress.
   final double? keyboardShiftStep,
 
+  /// Template for the screen reader label of each splitter handle. `{index}` is
+  /// replaced with the 1-based splitter position (for example
+  /// `'Pemisah panel {index}'`).
+  final String splitterSemanticsLabel = 'Splitter divider {index}',
+
   /// Builder callback for customized splitter handle rendering (Open/Closed escape hatch).
   final Widget Function(
     BuildContext context,
@@ -755,6 +760,10 @@ class _JustResizableState extends State<JustResizable> {
                 keyboardStep: keyboardStep,
                 keyboardShiftStep: keyboardShiftStep,
                 fraction: fraction,
+                semanticsLabel: widget.splitterSemanticsLabel.replaceAll(
+                  '{index}',
+                  '${i + 1}',
+                ),
                 handleBuilder: widget.handleBuilder,
                 onDragStart: _onSplitterDragStart,
                 onDragUpdate: _onSplitterDragUpdate,
@@ -787,6 +796,7 @@ class _ResizableSplitter extends StatefulWidget {
   final double keyboardStep;
   final double keyboardShiftStep;
   final double fraction;
+  final String semanticsLabel;
   final ValueChanged<int>? onDragStart;
   final void Function(int index, double delta)? onDragUpdate;
   final ValueChanged<int>? onDragEnd;
@@ -811,6 +821,7 @@ class _ResizableSplitter extends StatefulWidget {
     this.keyboardStep = 16.0,
     this.keyboardShiftStep = 4.0,
     this.fraction = 0.5,
+    required this.semanticsLabel,
     this.onDragStart,
     this.onDragUpdate,
     this.onDragEnd,
@@ -970,19 +981,35 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
             children: <Widget>[dot, const SizedBox(width: 3.0), dot],
           );
 
+    final Widget gripPill = FocusIndicator(
+      isFocused: _isFocused,
+      borderRadius: gripRadius,
+      child: Container(
+        width: gripW,
+        height: gripH,
+        decoration: BoxDecoration(
+          color: gripBg,
+          border: Border.all(color: gripBorder, width: gripBorderWidth),
+          borderRadius: gripRadius,
+        ),
+        child: Center(child: dots),
+      ),
+    );
+
     return Stack(
+      clipBehavior: Clip.none,
       alignment: .center,
       children: <Widget>[
         Center(child: line),
-        Container(
-          width: gripW,
-          height: gripH,
-          decoration: BoxDecoration(
-            color: gripBg,
-            border: Border.all(color: gripBorder, width: gripBorderWidth),
-            borderRadius: gripRadius,
-          ),
-          child: Center(child: dots),
+        // The splitter box is only `thickness` (1-2.5 px) wide so panel math
+        // stays exact; OverflowBox lets the centered grip pill render at its
+        // full size without being crushed to the divider width.
+        OverflowBox(
+          minWidth: gripW,
+          maxWidth: gripW,
+          minHeight: gripH,
+          maxHeight: gripH,
+          child: gripPill,
         ),
       ],
     );
@@ -1057,27 +1084,35 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
       }
     }
 
-    final BorderRadius focusRadius = widget.variant == .grip
+    final bool isCustomHandle = widget.handleBuilder != null;
+    final bool usesGripPill = !isCustomHandle && widget.variant == .grip;
+
+    final BorderRadius focusRadius = usesGripPill
         ? (widget.style?.gripRadius ??
               (isNeobrutalism ? .zero : const .all(.circular(3.0))))
         : BorderRadius.zero;
 
-    final FocusIndicator indicatorWrapped = FocusIndicator(
-      isFocused: _isFocused,
-      borderRadius: focusRadius,
-      child: handleContent,
-    );
-
-    final bool isCustomHandle = widget.handleBuilder != null;
+    // `_buildGrip` wraps the centered pill inside `FocusIndicator` so the ring
+    // outlines the pill rather than the 1 px divider strip.
+    final Widget indicatorWrapped = usesGripPill
+        ? handleContent
+        : FocusIndicator(
+            isFocused: _isFocused,
+            borderRadius: focusRadius,
+            child: handleContent,
+          );
 
     return Semantics(
       slider: true,
-      label: 'Splitter divider ${widget.index + 1}',
+      enabled: widget.resizable,
+      label: widget.semanticsLabel,
       value: '${(widget.fraction * 100).round()}%',
-      increasedValue:
-          '${math.min(100, ((widget.fraction + 0.05) * 100).round())}%',
-      decreasedValue:
-          '${math.max(0, ((widget.fraction - 0.05) * 100).round())}%',
+      increasedValue: widget.resizable
+          ? '${math.min(100, ((widget.fraction + 0.05) * 100).round())}%'
+          : null,
+      decreasedValue: widget.resizable
+          ? '${math.max(0, ((widget.fraction - 0.05) * 100).round())}%'
+          : null,
       onIncrease: widget.resizable
           ? () => widget.onDragUpdate?.call(widget.index, widget.keyboardStep)
           : null,
