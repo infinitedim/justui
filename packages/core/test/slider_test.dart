@@ -650,4 +650,213 @@ void main() {
       );
     });
   });
+
+  group('JustSlider - Semantics, Keyboard & Accessibility (Flutter 3.50)', () {
+    testWidgets(
+      'Applies semanticLabel, semanticFormatterCallback, and boundary guards in single mode',
+      (WidgetTester tester) async {
+        double value = 60.0;
+        late StateSetter outerSetState;
+
+        await tester.pumpWidget(
+          buildTestApp(
+            StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                outerSetState = setState;
+                return JustSlider(
+                  value: value,
+                  min: 0.0,
+                  max: 100.0,
+                  divisions: 20,
+                  semanticLabel: 'Volume',
+                  semanticFormatterCallback: (double v) => '${v.round()}%',
+                  onChanged: (double val) => setState(() => value = val),
+                );
+              },
+            ),
+          ),
+        );
+
+        Semantics sliderSemantics() {
+          return tester.widget<Semantics>(
+            find.descendant(
+              of: find.byType(JustSlider),
+              matching: find.byWidgetPredicate(
+                (Widget w) => w is Semantics && w.properties.slider == true,
+              ),
+            ),
+          );
+        }
+
+        final Semantics initial = sliderSemantics();
+        expect(initial.properties.label, equals('Volume'));
+        expect(initial.properties.value, equals('60%'));
+        expect(initial.properties.increasedValue, equals('65%'));
+        expect(initial.properties.decreasedValue, equals('55%'));
+        expect(initial.properties.onIncrease, isNotNull);
+        expect(initial.properties.onDecrease, isNotNull);
+
+        // At max boundary: increasedValue clamps to '100%' while onIncrease
+        // stays non-null (satisfying Flutter's SemanticsNode assertion that
+        // value and increasedValue are both non-empty when onIncrease is set).
+        outerSetState(() => value = 100.0);
+        await tester.pump();
+        final Semantics atMax = sliderSemantics();
+        expect(atMax.properties.value, equals('100%'));
+        expect(atMax.properties.increasedValue, equals('100%'));
+        expect(atMax.properties.decreasedValue, equals('95%'));
+        expect(atMax.properties.onIncrease, isNotNull);
+        expect(atMax.properties.onDecrease, isNotNull);
+
+        // At min boundary: decreasedValue clamps to '0%' while onDecrease
+        // stays non-null.
+        outerSetState(() => value = 0.0);
+        await tester.pump();
+        final Semantics atMin = sliderSemantics();
+        expect(atMin.properties.value, equals('0%'));
+        expect(atMin.properties.decreasedValue, equals('0%'));
+        expect(atMin.properties.increasedValue, equals('5%'));
+        expect(atMin.properties.onIncrease, isNotNull);
+        expect(atMin.properties.onDecrease, isNotNull);
+      },
+    );
+
+    testWidgets(
+      'Applies semanticLabel, semanticFormatterCallback, and boundary clamping in range mode',
+      (WidgetTester tester) async {
+        JustRangeValues range = const JustRangeValues(20.0, 80.0);
+        late StateSetter outerSetState;
+
+        await tester.pumpWidget(
+          buildTestApp(
+            StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                outerSetState = setState;
+                return JustSlider.range(
+                  rangeValues: range,
+                  min: 0.0,
+                  max: 100.0,
+                  divisions: 10,
+                  semanticLabel: 'Price range',
+                  semanticFormatterCallback: (double v) => '\$${v.round()}',
+                  onRangeChanged: (JustRangeValues val) =>
+                      setState(() => range = val),
+                );
+              },
+            ),
+          ),
+        );
+
+        Semantics sliderSemantics() {
+          return tester.widget<Semantics>(
+            find.descendant(
+              of: find.byType(JustSlider),
+              matching: find.byWidgetPredicate(
+                (Widget w) => w is Semantics && w.properties.slider == true,
+              ),
+            ),
+          );
+        }
+
+        final Semantics initial = sliderSemantics();
+        expect(initial.properties.label, equals('Price range'));
+        expect(initial.properties.value, equals('\$20 - \$80'));
+        expect(initial.properties.increasedValue, equals('\$20 - \$90'));
+        expect(initial.properties.decreasedValue, equals('\$10 - \$80'));
+
+        outerSetState(() => range = const JustRangeValues(0.0, 100.0));
+        await tester.pump();
+        final Semantics atBounds = sliderSemantics();
+        expect(atBounds.properties.value, equals('\$0 - \$100'));
+        expect(atBounds.properties.increasedValue, equals('\$0 - \$100'));
+        expect(atBounds.properties.decreasedValue, equals('\$0 - \$100'));
+      },
+    );
+
+    testWidgets('Supports Home, End, and KeyRepeatEvent keyboard navigation', (
+      WidgetTester tester,
+    ) async {
+      double value = 50.0;
+
+      await tester.pumpWidget(
+        buildTestApp(
+          StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return JustSlider(
+                value: value,
+                min: 0.0,
+                max: 100.0,
+                divisions: 10,
+                onChanged: (double val) => setState(() => value = val),
+              );
+            },
+          ),
+        ),
+      );
+
+      final Finder sliderFocusFinder = find.descendant(
+        of: find.byType(JustSlider),
+        matching: find.byType(Focus),
+      );
+      tester.widget<Focus>(sliderFocusFinder).focusNode?.requestFocus();
+      await tester.pump();
+
+      // KeyRepeatEvent on ArrowRight
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(value, equals(60.0));
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(value, equals(70.0));
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+
+      // Home jumps to min
+      await tester.sendKeyEvent(LogicalKeyboardKey.home);
+      await tester.pumpAndSettle();
+      expect(value, equals(0.0));
+
+      // End jumps to max
+      await tester.sendKeyEvent(LogicalKeyboardKey.end);
+      await tester.pumpAndSettle();
+      expect(value, equals(100.0));
+    });
+
+    testWidgets(
+      'Respects reduced motion and style trackHeight/thumbSize overrides',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: buildTestApp(
+              JustSlider(
+                value: 50.0,
+                min: 0.0,
+                max: 100.0,
+                style: const JustSliderStyle(
+                  trackHeight: 14.0,
+                  thumbSize: 28.0,
+                ),
+                onChanged: (_) {},
+              ),
+            ),
+          ),
+        );
+
+        final AnimatedScale scale = tester.widget<AnimatedScale>(
+          find.descendant(
+            of: find.byType(JustSlider),
+            matching: find.byType(AnimatedScale),
+          ),
+        );
+        expect(scale.duration, equals(Duration.zero));
+
+        final Finder thumbContainer = find.descendant(
+          of: find.byType(AnimatedScale),
+          matching: find.byType(Container),
+        );
+        expect(tester.getSize(thumbContainer), equals(const Size(28.0, 28.0)));
+      },
+    );
+  });
 }
