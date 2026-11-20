@@ -13,6 +13,10 @@ const Map<String, Object> _id = <String, Object>{
   'slide': 'Slide {index} dari {total}',
   'slideAria': 'Ke slide {index}',
   'slidesLabel': 'Slide',
+  'volume': 'Volume',
+  'files': 'File',
+  'editor': 'Editor',
+  'splitterLabel': 'Pemisah panel {index}',
 };
 
 /// Calendars and carousel dots speak the page's language: no core English
@@ -48,6 +52,24 @@ void main() {
     expect(find.text('Slide 1 dari 3'), findsOneWidget);
     expect(find.bySemanticsLabel('Ke slide 2'), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp(r'^Slide \d$')), findsNothing);
+    handle.dispose();
+  });
+
+  testWidgets('slider in ID', (WidgetTester tester) async {
+    final SemanticsHandle handle = await pumpId(tester, 'slider');
+    expect(find.text('Volume'), findsOneWidget);
+    expect(find.text('60%'), findsOneWidget);
+    expect(find.bySemanticsLabel('Volume'), findsOneWidget);
+    handle.dispose();
+  });
+
+  testWidgets('resizable in ID', (WidgetTester tester) async {
+    final SemanticsHandle handle = await pumpId(tester, 'resizable');
+    expect(find.text('File'), findsOneWidget);
+    expect(find.text('Editor'), findsOneWidget);
+    expect(find.text('Files'), findsNothing);
+    expect(find.bySemanticsLabel('Pemisah panel 1'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('^Splitter divider')), findsNothing);
     handle.dispose();
   });
 }

@@ -62,6 +62,7 @@ class const KitStrings({
     'slidesLabel': 'Slides',
     'weekdays': <String>['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     'dayLabel': '{month} {day}, {year}',
+    'splitterLabel': 'Panel divider {index}',
   };
 
   /// The text for [key]: the page value, else the EN default, else [key].

@@ -55,6 +55,8 @@ export interface KitDictionary {
   weekdays: readonly [string, string, string, string, string, string, string];
   /** Screen reader name of a day cell: `{day}`, `{month}`, `{year}`. */
   dayLabel: string;
+  /** Screen reader name of a resizable splitter: `{index}`. */
+  splitterLabel: string;
 }
 
 export const kitTranslations = {
@@ -110,6 +112,7 @@ export const kitTranslations = {
     slidesLabel: 'Slides',
     weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     dayLabel: '{month} {day}, {year}',
+    splitterLabel: 'Panel divider {index}',
   },
   id: {
     saveChanges: 'Simpan perubahan',
@@ -163,6 +166,7 @@ export const kitTranslations = {
     slidesLabel: 'Slide',
     weekdays: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
     dayLabel: '{day} {month} {year}',
+    splitterLabel: 'Pemisah panel {index}',
   },
 } satisfies Record<Locale, KitDictionary>;
 

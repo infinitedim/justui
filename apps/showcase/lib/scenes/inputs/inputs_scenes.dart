@@ -5,6 +5,7 @@ import 'date_range_picker_scene.dart';
 import 'input_scene.dart';
 import 'radio_group_scene.dart';
 import 'select_scene.dart';
+import 'slider_scene.dart';
 import 'switch_scene.dart';
 
 /// Scenes of the v3 "Inputs" group.
@@ -17,6 +18,7 @@ const Map<String, SceneBuilder> inputsScenes = <String, SceneBuilder>{
   'radio': radioGroupScene,
   'radio-group': radioGroupScene,
   'switch': switchScene,
+  'slider': sliderScene,
   'select': selectScene,
   'date-picker': datePickerScene,
   'date-range-picker': dateRangePickerScene,

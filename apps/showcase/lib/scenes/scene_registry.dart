@@ -30,12 +30,6 @@ const Set<String> reactOnlyScenes = <String>{
   'bottom-nav',
   'sidebar',
   'tabs',
-  // Audited against Flutter web (3.47): Flutter names a slider on its
-  // wrapper rather than the focusable range input (`label` violation), and
-  // the resizable splitter is a slider too. Re-auditing 3.50+ web semantics
-  // for these scenes is tracked separately.
-  'slider',
-  'resizable',
   // Core shows its bar only while content overflows, and then the area is
   // a Tab stop with no visible focus.
   'scroll-area',
