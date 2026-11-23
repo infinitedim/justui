@@ -1138,5 +1138,55 @@ void main() {
         expect(controller.fractions[0], greaterThan(0.45));
       },
     );
+
+    testWidgets(
+      'JustResizable applies JustResizableTheme.style gripColor and gripRadius',
+      (WidgetTester tester) async {
+        const Color expectedColor = Color(0xFF151412);
+        const BorderRadius expectedRadius = BorderRadius.all(
+          Radius.circular(4.0),
+        );
+        await tester.pumpWidget(
+          buildTestApp(
+            const SizedBox(
+              width: 300.0,
+              height: 100.0,
+              child: JustResizable(
+                handleVariant: JustResizableHandleVariant.grip,
+                children: <JustResizablePanel>[
+                  JustResizablePanel(child: ColoredBox(color: Colors.white)),
+                  JustResizablePanel(child: ColoredBox(color: Colors.grey)),
+                ],
+              ),
+            ),
+            materialTheme: ThemeData().copyWith(
+              extensions: <ThemeExtension<dynamic>>[
+                const JustResizableTheme(
+                  style: JustResizableStyle(
+                    gripColor: expectedColor,
+                    gripRadius: expectedRadius,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+
+        final Container pill = tester.widget<Container>(
+          find.descendant(
+            of: find.byType(JustResizable),
+            matching: find.byWidgetPredicate(
+              (Widget w) =>
+                  w is Container &&
+                  w.decoration is BoxDecoration &&
+                  (w.decoration! as BoxDecoration).border != null,
+            ),
+          ),
+        );
+        final BoxDecoration box = pill.decoration! as BoxDecoration;
+        expect(box.color, equals(expectedColor));
+        expect(box.borderRadius, equals(expectedRadius));
+      },
+    );
   });
 }

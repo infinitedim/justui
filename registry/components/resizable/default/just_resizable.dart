@@ -799,7 +799,7 @@ class _JustResizableState extends State<JustResizable> {
         }
 
         return Stack(
-          clipBehavior: Clip.none,
+          clipBehavior: .none,
           children: <Widget>[
             Flex(
               direction: widget.direction,
@@ -979,27 +979,14 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
     widget.onDragEnd?.call(widget.index);
   }
 
-  Widget _buildGrip({
-    required bool isHorizontal,
-    required Color gripBg,
-    required Color gripBorder,
-    required Color dotColor,
-    required double gripBorderWidth,
-    required BorderRadius gripRadius,
-    required Widget line,
-  }) {
-    final double gripW =
-        widget.style?.gripSize?.width ?? (isHorizontal ? 12.0 : 22.0);
-    final double gripH =
-        widget.style?.gripSize?.height ?? (isHorizontal ? 22.0 : 12.0);
-
+  Widget _buildGripDots(bool isHorizontal, Color dotColor) {
     final Container dot = Container(
       width: 2.5,
       height: 2.5,
       decoration: BoxDecoration(color: dotColor, shape: .circle),
     );
 
-    final Flex dots = isHorizontal
+    return isHorizontal
         ? Column(
             mainAxisSize: .min,
             mainAxisAlignment: .center,
@@ -1010,7 +997,19 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
             mainAxisAlignment: .center,
             children: <Widget>[dot, const SizedBox(width: 3.0), dot],
           );
+  }
 
+  Widget _buildGrip({
+    required bool isHorizontal,
+    required double gripW,
+    required double gripH,
+    required Color gripBg,
+    required Color gripBorder,
+    required Color dotColor,
+    required double gripBorderWidth,
+    required BorderRadius gripRadius,
+    required Widget line,
+  }) {
     final Widget gripPill = FocusIndicator(
       isFocused: _isFocused,
       borderRadius: gripRadius,
@@ -1019,15 +1018,15 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
         height: gripH,
         decoration: BoxDecoration(
           color: gripBg,
-          border: Border.all(color: gripBorder, width: gripBorderWidth),
+          border: .all(color: gripBorder, width: gripBorderWidth),
           borderRadius: gripRadius,
         ),
-        child: Center(child: dots),
+        child: Center(child: _buildGripDots(isHorizontal, dotColor)),
       ),
     );
 
     return Stack(
-      clipBehavior: Clip.none,
+      clipBehavior: .none,
       alignment: .center,
       children: <Widget>[
         Center(child: line),
@@ -1049,12 +1048,17 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
   Widget build(BuildContext context) {
     final JustColorScheme colors = context.justColors;
     final bool isNeobrutalism = context.justPreset == .neobrutalism;
+    final JustResizableTheme theme =
+        context.justThemeExtension<JustResizableTheme>() ?? .defaults;
+    final JustResizableStyle? themeStyle = theme.style;
 
     final Color baseDividerColor =
         widget.style?.dividerColor ??
+        themeStyle?.dividerColor ??
         (isNeobrutalism ? colors.textPrimary : colors.borderDefault);
     final Color activeDividerColor =
         widget.style?.activeDividerColor ??
+        themeStyle?.activeDividerColor ??
         (isNeobrutalism ? colors.textPrimary : colors.borderFocus);
     final Color effectiveLineColor = (_isHovered || _isDragging || _isFocused)
         ? activeDividerColor
@@ -1082,24 +1086,50 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
       if (widget.variant == .line) {
         handleContent = Center(child: line);
       } else {
-        final Color gripBg =
+        final Color baseGripBg =
             widget.style?.gripColor ??
+            themeStyle?.gripColor ??
             (isNeobrutalism ? colors.card : colors.elevated);
+        final Color activeGripBg =
+            widget.style?.activeGripColor ??
+            themeStyle?.activeGripColor ??
+            baseGripBg;
+        final Color gripBg = (_isHovered || _isDragging || _isFocused)
+            ? activeGripBg
+            : baseGripBg;
+
         final Color gripBorder = (_isHovered || _isDragging || _isFocused)
-            ? (widget.style?.activeGripBorderColor ?? activeDividerColor)
-            : (widget.style?.gripBorderColor ?? baseDividerColor);
+            ? (widget.style?.activeGripBorderColor ??
+                  themeStyle?.activeGripBorderColor ??
+                  activeDividerColor)
+            : (widget.style?.gripBorderColor ??
+                  themeStyle?.gripBorderColor ??
+                  baseDividerColor);
         final Color dotColor =
             widget.style?.gripDotColor ??
+            themeStyle?.gripDotColor ??
             ((_isHovered || _isDragging || _isFocused)
                 ? (isNeobrutalism ? colors.textPrimary : colors.borderFocus)
                 : (isNeobrutalism ? colors.textPrimary : colors.textSecondary));
         final double gripBorderWidth = isNeobrutalism ? 2.5 : 1.0;
         final BorderRadius gripRadius =
             widget.style?.gripRadius ??
+            themeStyle?.gripRadius ??
             (isNeobrutalism ? .zero : const .all(.circular(3.0)));
+
+        final double gripW =
+            widget.style?.gripSize?.width ??
+            themeStyle?.gripSize?.width ??
+            (isHorizontal ? 12.0 : 22.0);
+        final double gripH =
+            widget.style?.gripSize?.height ??
+            themeStyle?.gripSize?.height ??
+            (isHorizontal ? 22.0 : 12.0);
 
         handleContent = _buildGrip(
           isHorizontal: isHorizontal,
+          gripW: gripW,
+          gripH: gripH,
           gripBg: gripBg,
           gripBorder: gripBorder,
           dotColor: dotColor,
@@ -1115,8 +1145,9 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
 
     final BorderRadius focusRadius = usesGripPill
         ? (widget.style?.gripRadius ??
+              themeStyle?.gripRadius ??
               (isNeobrutalism ? .zero : const .all(.circular(3.0))))
-        : BorderRadius.zero;
+        : .zero;
 
     // `_buildGrip` wraps the centered pill inside `FocusIndicator` so the ring
     // outlines the pill rather than the 1 px divider strip.
@@ -1151,7 +1182,7 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
         onFocusChange: _handleFocusChange,
         onKeyEvent: _handleKeyEvent,
         child: Stack(
-          clipBehavior: Clip.none,
+          clipBehavior: .none,
           alignment: .center,
           children: <Widget>[
             if (isCustomHandle)
