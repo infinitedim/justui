@@ -495,7 +495,7 @@
           {
             "name": "just_resizable.dart",
             "path": "components/resizable/default/just_resizable.dart",
-            "checksum": "sha256:c0d2d2ead9030eae0a887297e037296cc5a4660fd6b51041d2c3173ea1fba40a"
+            "checksum": "sha256:56dfb3758029bec0084e13681167f5a81865beb79a0829490114e6a1884fb191"
           }
         ]
       },
@@ -658,7 +658,7 @@
           {
             "name": "just_slider.dart",
             "path": "components/slider/default/just_slider.dart",
-            "checksum": "sha256:37f81a97c7d9233e2d53372633cd5316b5a7ab95d2f8eb5a6d8f2bbbf09946c3"
+            "checksum": "sha256:a6170ed170ed7b93ab1c9fd015349324ab6573a8f2dff2ac43a6e5840aaecb41"
           }
         ]
       },

@@ -1,4 +1,5 @@
-import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
+import 'package:flutter/services.dart'
+    show HapticFeedback, KeyDownEvent, KeyRepeatEvent;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/src/theme/preset_tokens.dart';
 import 'package:just_ui_tokens/just_ui_tokens.dart';
@@ -69,6 +70,14 @@ class JustSlider extends StatefulWidget {
   /// Customized style overrides.
   final JustSliderStyle? style;
 
+  /// Accessible label announced by screen readers and propagated to the inner
+  /// `<input type="range" role="slider">` element on Flutter Web.
+  final String? semanticLabel;
+
+  /// Optional callback to format numeric slider values into human-readable
+  /// screen reader strings (for example `'60%'`). Defaults to one decimal place.
+  final String Function(double value)? semanticFormatterCallback;
+
   /// Creates a single-value [JustSlider].
   const JustSlider({
     super.key,
@@ -81,6 +90,8 @@ class JustSlider extends StatefulWidget {
     this.enableHaptic,
     this.size = .md,
     this.style,
+    this.semanticLabel,
+    this.semanticFormatterCallback,
   }) : rangeValues = null,
        onRangeChanged = null,
        assert(min <= max);
@@ -97,6 +108,8 @@ class JustSlider extends StatefulWidget {
     this.enableHaptic,
     this.size = .md,
     this.style,
+    this.semanticLabel,
+    this.semanticFormatterCallback,
   }) : value = null,
        onChanged = null,
        assert(min <= max);
@@ -189,6 +202,29 @@ class _JustSliderState extends State<JustSlider> {
     }
   }
 
+  void _jumpToMin() {
+    if (widget.max <= widget.min) return;
+    if (_isRange) {
+      widget.onRangeChanged?.call(JustRangeValues(widget.min, _currentEnd));
+    } else {
+      widget.onChanged?.call(widget.min);
+    }
+  }
+
+  void _jumpToMax() {
+    if (widget.max <= widget.min) return;
+    if (_isRange) {
+      widget.onRangeChanged?.call(JustRangeValues(_currentStart, widget.max));
+    } else {
+      widget.onChanged?.call(widget.max);
+    }
+  }
+
+  String _formatSemanticValue(double value) {
+    final String Function(double)? formatter = widget.semanticFormatterCallback;
+    return formatter != null ? formatter(value) : value.toStringAsFixed(1);
+  }
+
   @override
   Widget build(BuildContext context) {
     final JustThemeProviderState theme = JustThemeProvider.of(context);
@@ -202,10 +238,14 @@ class _JustSliderState extends State<JustSlider> {
         presetTokens.sliderDefaultHaptic;
 
     // Resolve size metrics
-    final double trackHeight = presetTokens.resolveSliderTrackHeight(
-      widget.size,
-    );
-    final double thumbSize = presetTokens.resolveSliderThumbSize(widget.size);
+    final double trackHeight =
+        widget.style?.trackHeight ??
+        globalTheme?.style?.trackHeight ??
+        presetTokens.resolveSliderTrackHeight(widget.size);
+    final double thumbSize =
+        widget.style?.thumbSize ??
+        globalTheme?.style?.thumbSize ??
+        presetTokens.resolveSliderThumbSize(widget.size);
 
     // Resolve colors
     final JustColorScheme colors = theme.theme.colors;
@@ -256,23 +296,24 @@ class _JustSliderState extends State<JustSlider> {
         : (rangeForSemantics > 0 ? rangeForSemantics / 20.0 : 1.0);
 
     final String semanticsIncreasedValue = _isRange
-        ? '${_currentStart.toStringAsFixed(1)} - ${(_currentEnd + stepForSemantics).clamp(_currentStart, widget.max).toStringAsFixed(1)}'
-        : (_currentStart + stepForSemantics)
-              .clamp(widget.min, widget.max)
-              .toStringAsFixed(1);
+        ? '${_formatSemanticValue(_currentStart)} - ${_formatSemanticValue((_currentEnd + stepForSemantics).clamp(_currentStart, widget.max))}'
+        : _formatSemanticValue(
+            (_currentStart + stepForSemantics).clamp(widget.min, widget.max),
+          );
 
     final String semanticsDecreasedValue = _isRange
-        ? '${(_currentStart - stepForSemantics).clamp(widget.min, _currentEnd).toStringAsFixed(1)} - ${_currentEnd.toStringAsFixed(1)}'
-        : (_currentStart - stepForSemantics)
-              .clamp(widget.min, widget.max)
-              .toStringAsFixed(1);
+        ? '${_formatSemanticValue((_currentStart - stepForSemantics).clamp(widget.min, _currentEnd))} - ${_formatSemanticValue(_currentEnd)}'
+        : _formatSemanticValue(
+            (_currentStart - stepForSemantics).clamp(widget.min, widget.max),
+          );
 
     return Semantics(
       slider: true,
+      label: widget.semanticLabel,
       enabled: isInteractive,
       value: _isRange
-          ? '${_currentStart.toStringAsFixed(1)} - ${_currentEnd.toStringAsFixed(1)}'
-          : _currentStart.toStringAsFixed(1),
+          ? '${_formatSemanticValue(_currentStart)} - ${_formatSemanticValue(_currentEnd)}'
+          : _formatSemanticValue(_currentStart),
       increasedValue: isInteractive ? semanticsIncreasedValue : null,
       decreasedValue: isInteractive ? semanticsDecreasedValue : null,
       onIncrease: isInteractive ? _increaseValue : null,
@@ -298,7 +339,10 @@ class _JustSliderState extends State<JustSlider> {
             focusNode: _focusNode,
             canRequestFocus: isInteractive,
             onKeyEvent: (FocusNode node, KeyEvent event) {
-              if (!isInteractive || event is! KeyDownEvent) return .ignored;
+              if (!isInteractive ||
+                  (event is! KeyDownEvent && event is! KeyRepeatEvent)) {
+                return .ignored;
+              }
               if (event.logicalKey == .arrowLeft ||
                   event.logicalKey == .arrowDown) {
                 _decreaseValue();
@@ -307,6 +351,14 @@ class _JustSliderState extends State<JustSlider> {
               if (event.logicalKey == .arrowRight ||
                   event.logicalKey == .arrowUp) {
                 _increaseValue();
+                return .handled;
+              }
+              if (event.logicalKey == .home) {
+                _jumpToMin();
+                return .handled;
+              }
+              if (event.logicalKey == .end) {
+                _jumpToMax();
                 return .handled;
               }
               return .ignored;
@@ -487,6 +539,7 @@ class _JustSliderState extends State<JustSlider> {
   }) {
     final bool isPressed = _activeThumbIndex == index;
     final JustPresetTokens presetTokens = theme.theme.presetTokens;
+    final JustMotionProfile motion = theme.theme.animations.resolve(context);
 
     Widget thumbWidget;
 
@@ -495,8 +548,8 @@ class _JustSliderState extends State<JustSlider> {
       final Offset translation = isPressed ? const Offset(2.5, 2.5) : .zero;
 
       thumbWidget = AnimatedContainer(
-        duration: theme.theme.animations.instant,
-        curve: theme.theme.animations.defaultCurve,
+        duration: motion.instant,
+        curve: motion.defaultCurve,
         transform: Matrix4.translationValues(
           translation.dx,
           translation.dy,
@@ -522,8 +575,8 @@ class _JustSliderState extends State<JustSlider> {
     } else {
       thumbWidget = AnimatedScale(
         scale: isPressed ? 1.15 : 1.0,
-        duration: theme.theme.animations.instant,
-        curve: theme.theme.animations.defaultCurve,
+        duration: motion.instant,
+        curve: motion.defaultCurve,
         child: Container(
           width: thumbSize,
           height: thumbSize,

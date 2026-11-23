@@ -1,4 +1,4 @@
-// justui-meta: registry=c0d2d2ead9030eae0a887297e037296cc5a4660fd6b51041d2c3173ea1fba40a local=0669499e5801a03b1d7e5866826b2cdc9839ffd390604bccdad72ae88f467f59
+// justui-meta: registry=56dfb3758029bec0084e13681167f5a81865beb79a0829490114e6a1884fb191 local=4a7eb199a6ea59a1a3e6e08aba4a40d0d00ce8958d2d62dd3155b99bc25560e7
 import 'dart:collection' show UnmodifiableListView;
 import 'dart:math' as math;
 
@@ -554,6 +554,11 @@ class JustResizable extends StatefulWidget {
   /// Distance in pixels adjusted when Shift is held with arrow keypress.
   final double? keyboardShiftStep;
 
+  /// Template for the screen reader label of each splitter handle. `{index}` is
+  /// replaced with the 1-based splitter position (for example
+  /// `'Pemisah panel {index}'`).
+  final String splitterSemanticsLabel;
+
   /// Builder callback for customized splitter handle rendering (Open/Closed escape hatch).
   final Widget Function(
     BuildContext context,
@@ -578,6 +583,7 @@ class JustResizable extends StatefulWidget {
     this.doubleTapBehavior,
     this.keyboardStep,
     this.keyboardShiftStep,
+    this.splitterSemanticsLabel = 'Splitter divider {index}',
     this.handleBuilder,
   });
 
@@ -744,60 +750,94 @@ class _JustResizableState extends State<JustResizable> {
         );
 
         _flexChildren.clear();
+        final bool isHorizontal = widget.direction == .horizontal;
+        final double overlayExtent = math.max(thickness, hitSize);
+        final double halfOverlay = (overlayExtent - thickness) / 2.0;
+        final List<Widget> splitterOverlays = <Widget>[];
+        double splitterOffset = 0.0;
+
         for (int i = 0; i < widget.children.length; i++) {
           final JustResizablePanel panel = widget.children[i];
           final double size = _pixelSizes[i];
           final bool isCollapsed = _effectiveController.isCollapsed(i);
+          final double effectiveSize = isCollapsed ? 0.0 : size;
 
           _flexChildren.add(
             SizedBox(
-              width: widget.direction == .horizontal
-                  ? (isCollapsed ? 0.0 : size)
-                  : null,
-              height: widget.direction == .vertical
-                  ? (isCollapsed ? 0.0 : size)
-                  : null,
+              width: isHorizontal ? effectiveSize : null,
+              height: !isHorizontal ? effectiveSize : null,
               child: Offstage(
                 offstage: isCollapsed,
                 child: TickerMode(enabled: !isCollapsed, child: panel),
               ),
             ),
           );
+          splitterOffset += effectiveSize;
 
           if (i < widget.children.length - 1) {
+            // Reserve exact divider thickness inside the Flex so panel math
+            // stays invariant, while painting splitters above all panels in
+            // the outer Stack so grip pills, focus rings and hit boxes are
+            // never occluded by the following panel.
+            _flexChildren.add(
+              SizedBox(
+                width: isHorizontal ? thickness : null,
+                height: !isHorizontal ? thickness : null,
+              ),
+            );
             final bool isLocked =
                 !panel.resizable || !widget.children[i + 1].resizable;
             final double fraction = _effectiveController.fractions.length > i
                 ? _effectiveController.fractions[i]
                 : 0.0;
-            _flexChildren.add(
-              _ResizableSplitter(
-                key: ValueKey<int>(i),
-                index: i,
-                direction: widget.direction,
-                thickness: thickness,
-                hitSize: hitSize,
-                variant: variant,
-                style: widget.style,
-                resizable: !isLocked,
-                keyboardStep: keyboardStep,
-                keyboardShiftStep: keyboardShiftStep,
-                fraction: fraction,
-                handleBuilder: widget.handleBuilder,
-                onDragStart: _onSplitterDragStart,
-                onDragUpdate: _onSplitterDragUpdate,
-                onDragEnd: _onSplitterDragEnd,
-                onDoubleTap: _onSplitterDoubleTap,
+            final double overlayStart = splitterOffset - halfOverlay;
+            splitterOverlays.add(
+              Positioned(
+                left: isHorizontal ? overlayStart : 0.0,
+                right: isHorizontal ? null : 0.0,
+                top: isHorizontal ? 0.0 : overlayStart,
+                bottom: isHorizontal ? 0.0 : null,
+                width: isHorizontal ? overlayExtent : null,
+                height: isHorizontal ? null : overlayExtent,
+                child: _ResizableSplitter(
+                  key: ValueKey<int>(i),
+                  index: i,
+                  direction: widget.direction,
+                  thickness: thickness,
+                  hitSize: hitSize,
+                  variant: variant,
+                  style: widget.style,
+                  resizable: !isLocked,
+                  keyboardStep: keyboardStep,
+                  keyboardShiftStep: keyboardShiftStep,
+                  fraction: fraction,
+                  semanticsLabel: widget.splitterSemanticsLabel.replaceAll(
+                    '{index}',
+                    '${i + 1}',
+                  ),
+                  handleBuilder: widget.handleBuilder,
+                  onDragStart: _onSplitterDragStart,
+                  onDragUpdate: _onSplitterDragUpdate,
+                  onDragEnd: _onSplitterDragEnd,
+                  onDoubleTap: _onSplitterDoubleTap,
+                ),
               ),
             );
+            splitterOffset += thickness;
           }
         }
 
-        return Flex(
-          direction: widget.direction,
-          crossAxisAlignment: .stretch,
-          mainAxisSize: .max,
-          children: _flexChildren,
+        return Stack(
+          clipBehavior: Clip.none,
+          children: <Widget>[
+            Flex(
+              direction: widget.direction,
+              crossAxisAlignment: .stretch,
+              mainAxisSize: .max,
+              children: _flexChildren,
+            ),
+            ...splitterOverlays,
+          ],
         );
       },
     );
@@ -815,6 +855,7 @@ class _ResizableSplitter extends StatefulWidget {
   final double keyboardStep;
   final double keyboardShiftStep;
   final double fraction;
+  final String semanticsLabel;
   final ValueChanged<int>? onDragStart;
   final void Function(int index, double delta)? onDragUpdate;
   final ValueChanged<int>? onDragEnd;
@@ -839,6 +880,7 @@ class _ResizableSplitter extends StatefulWidget {
     this.keyboardStep = 16.0,
     this.keyboardShiftStep = 4.0,
     this.fraction = 0.5,
+    required this.semanticsLabel,
     this.onDragStart,
     this.onDragUpdate,
     this.onDragEnd,
@@ -998,19 +1040,35 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
             children: <Widget>[dot, const SizedBox(width: 3.0), dot],
           );
 
+    final Widget gripPill = FocusIndicator(
+      isFocused: _isFocused,
+      borderRadius: gripRadius,
+      child: Container(
+        width: gripW,
+        height: gripH,
+        decoration: BoxDecoration(
+          color: gripBg,
+          border: Border.all(color: gripBorder, width: gripBorderWidth),
+          borderRadius: gripRadius,
+        ),
+        child: Center(child: dots),
+      ),
+    );
+
     return Stack(
+      clipBehavior: Clip.none,
       alignment: .center,
       children: <Widget>[
         Center(child: line),
-        Container(
-          width: gripW,
-          height: gripH,
-          decoration: BoxDecoration(
-            color: gripBg,
-            border: Border.all(color: gripBorder, width: gripBorderWidth),
-            borderRadius: gripRadius,
-          ),
-          child: Center(child: dots),
+        // The splitter box is only `thickness` (1-2.5 px) wide so panel math
+        // stays exact; OverflowBox lets the centered grip pill render at its
+        // full size without being crushed to the divider width.
+        OverflowBox(
+          minWidth: gripW,
+          maxWidth: gripW,
+          minHeight: gripH,
+          maxHeight: gripH,
+          child: gripPill,
         ),
       ],
     );
@@ -1032,10 +1090,6 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
         : baseDividerColor;
 
     final bool isHorizontal = widget.direction == .horizontal;
-    final double halfDiff = math.max(
-      0.0,
-      (widget.hitSize - widget.thickness) / 2.0,
-    );
 
     Widget handleContent;
     if (widget.handleBuilder != null) {
@@ -1085,27 +1139,35 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
       }
     }
 
-    final BorderRadius focusRadius = widget.variant == .grip
+    final bool isCustomHandle = widget.handleBuilder != null;
+    final bool usesGripPill = !isCustomHandle && widget.variant == .grip;
+
+    final BorderRadius focusRadius = usesGripPill
         ? (widget.style?.gripRadius ??
               (isNeobrutalism ? .zero : const .all(.circular(3.0))))
         : BorderRadius.zero;
 
-    final FocusIndicator indicatorWrapped = FocusIndicator(
-      isFocused: _isFocused,
-      borderRadius: focusRadius,
-      child: handleContent,
-    );
-
-    final bool isCustomHandle = widget.handleBuilder != null;
+    // `_buildGrip` wraps the centered pill inside `FocusIndicator` so the ring
+    // outlines the pill rather than the 1 px divider strip.
+    final Widget indicatorWrapped = usesGripPill
+        ? handleContent
+        : FocusIndicator(
+            isFocused: _isFocused,
+            borderRadius: focusRadius,
+            child: handleContent,
+          );
 
     return Semantics(
       slider: true,
-      label: 'Splitter divider ${widget.index + 1}',
+      enabled: widget.resizable,
+      label: widget.semanticsLabel,
       value: '${(widget.fraction * 100).round()}%',
-      increasedValue:
-          '${math.min(100, ((widget.fraction + 0.05) * 100).round())}%',
-      decreasedValue:
-          '${math.max(0, ((widget.fraction - 0.05) * 100).round())}%',
+      increasedValue: widget.resizable
+          ? '${math.min(100, ((widget.fraction + 0.05) * 100).round())}%'
+          : null,
+      decreasedValue: widget.resizable
+          ? '${math.max(0, ((widget.fraction - 0.05) * 100).round())}%'
+          : null,
       onIncrease: widget.resizable
           ? () => widget.onDragUpdate?.call(widget.index, widget.keyboardStep)
           : null,
@@ -1117,64 +1179,56 @@ class _ResizableSplitterState extends State<_ResizableSplitter> {
         canRequestFocus: widget.resizable,
         onFocusChange: _handleFocusChange,
         onKeyEvent: _handleKeyEvent,
-        child: SizedBox(
-          width: isHorizontal ? widget.thickness : null,
-          height: !isHorizontal ? widget.thickness : null,
-          child: Stack(
-            clipBehavior: Clip.none,
-            alignment: .center,
-            children: <Widget>[
-              if (isCustomHandle)
-                indicatorWrapped
-              else
-                IgnorePointer(child: indicatorWrapped),
-              Positioned(
-                left: isHorizontal ? -halfDiff : 0.0,
-                right: isHorizontal ? -halfDiff : 0.0,
-                top: !isHorizontal ? -halfDiff : 0.0,
-                bottom: !isHorizontal ? -halfDiff : 0.0,
-                child: MouseRegion(
-                  cursor: _cursor,
-                  onEnter: _handleMouseEnter,
-                  onExit: _handleMouseExit,
-                  child: GestureDetector(
-                    behavior: .translucent,
-                    onTap: () {
-                      if (widget.resizable && !_focusNode.hasFocus) {
-                        _focusNode.requestFocus();
-                      }
-                    },
-                    onDoubleTap: _handleDoubleTap,
-                    onHorizontalDragStart: isHorizontal && widget.resizable
-                        ? _handleDragStart
-                        : null,
-                    onHorizontalDragUpdate: isHorizontal && widget.resizable
-                        ? _handleHorizontalDragUpdate
-                        : null,
-                    onHorizontalDragEnd: isHorizontal && widget.resizable
-                        ? _handleDragEnd
-                        : null,
-                    onHorizontalDragCancel: isHorizontal && widget.resizable
-                        ? _handleDragCancel
-                        : null,
-                    onVerticalDragStart: !isHorizontal && widget.resizable
-                        ? _handleDragStart
-                        : null,
-                    onVerticalDragUpdate: !isHorizontal && widget.resizable
-                        ? _handleVerticalDragUpdate
-                        : null,
-                    onVerticalDragEnd: !isHorizontal && widget.resizable
-                        ? _handleDragEnd
-                        : null,
-                    onVerticalDragCancel: !isHorizontal && widget.resizable
-                        ? _handleDragCancel
-                        : null,
-                    child: const SizedBox.expand(),
-                  ),
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: .center,
+          children: <Widget>[
+            if (isCustomHandle)
+              indicatorWrapped
+            else
+              IgnorePointer(child: indicatorWrapped),
+            Positioned.fill(
+              child: MouseRegion(
+                cursor: _cursor,
+                onEnter: _handleMouseEnter,
+                onExit: _handleMouseExit,
+                child: GestureDetector(
+                  behavior: .translucent,
+                  onTap: () {
+                    if (widget.resizable && !_focusNode.hasFocus) {
+                      _focusNode.requestFocus();
+                    }
+                  },
+                  onDoubleTap: _handleDoubleTap,
+                  onHorizontalDragStart: isHorizontal && widget.resizable
+                      ? _handleDragStart
+                      : null,
+                  onHorizontalDragUpdate: isHorizontal && widget.resizable
+                      ? _handleHorizontalDragUpdate
+                      : null,
+                  onHorizontalDragEnd: isHorizontal && widget.resizable
+                      ? _handleDragEnd
+                      : null,
+                  onHorizontalDragCancel: isHorizontal && widget.resizable
+                      ? _handleDragCancel
+                      : null,
+                  onVerticalDragStart: !isHorizontal && widget.resizable
+                      ? _handleDragStart
+                      : null,
+                  onVerticalDragUpdate: !isHorizontal && widget.resizable
+                      ? _handleVerticalDragUpdate
+                      : null,
+                  onVerticalDragEnd: !isHorizontal && widget.resizable
+                      ? _handleDragEnd
+                      : null,
+                  onVerticalDragCancel: !isHorizontal && widget.resizable
+                      ? _handleDragCancel
+                      : null,
+                  child: const SizedBox.expand(),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
