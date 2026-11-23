@@ -304,6 +304,69 @@ test.describe('Flutter bridge on the components page', () => {
   });
 });
 
+test.describe('Flutter bridge live slider and resizable semantics', () => {
+  test.skip(
+    !hasFlutterBundle(),
+    'no Flutter bundle: run bun run flutter:build'
+  );
+
+  test('live slider and resizable expose localized aria-label and respond to keyboard', async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await visitAs(page, 'default', 'light');
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/en/docs/components');
+
+    const sliderPart = page.locator('[data-live-part="slider"]');
+    await sliderPart.evaluate((node) =>
+      node.scrollIntoView({ block: 'center' })
+    );
+    await expect(sliderPart).toHaveAttribute('data-state', 'live', {
+      timeout: 30_000,
+    });
+    const sliderInput = sliderPart.locator(
+      '[data-live-host] input[type="range"][role="slider"]'
+    );
+    await expect(sliderInput).toHaveAttribute('aria-label', 'Volume');
+    await expect(sliderInput).toHaveAttribute('aria-valuetext', '60%');
+    await sliderInput.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(sliderInput).toHaveAttribute('aria-valuetext', '65%');
+
+    const resizablePart = page.locator('[data-live-part="resizable"]');
+    await resizablePart.evaluate((node) =>
+      node.scrollIntoView({ block: 'center' })
+    );
+    await expect(resizablePart).toHaveAttribute('data-state', 'live', {
+      timeout: 30_000,
+    });
+    const splitterInput = resizablePart.locator(
+      '[data-live-host] input[type="range"][role="slider"]'
+    );
+    await expect(splitterInput).toHaveAttribute(
+      'aria-label',
+      'Panel divider 1'
+    );
+    await expect(splitterInput).toHaveAttribute('aria-valuetext', '40%');
+
+    await page.goto('/id/docs/components');
+    const idResizable = page.locator('[data-live-part="resizable"]');
+    await idResizable.evaluate((node) =>
+      node.scrollIntoView({ block: 'center' })
+    );
+    await expect(idResizable).toHaveAttribute('data-state', 'live', {
+      timeout: 30_000,
+    });
+    const idSplitter = idResizable.locator(
+      '[data-live-host] input[type="range"][role="slider"]'
+    );
+    await expect(idSplitter).toHaveAttribute('aria-label', 'Pemisah panel 1');
+    await expect(idSplitter).toHaveAttribute('aria-valuetext', '40%');
+    expect(errors).toEqual([]);
+  });
+});
+
 test.describe('Flutter bridge assets and HTTP headers', () => {
   test.skip(
     !hasFlutterBundle(),

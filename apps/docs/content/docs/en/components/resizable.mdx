@@ -109,14 +109,18 @@ Widget buildAdvancedResizable(BuildContext context) {
 
 ### JustResizable
 
-| Property            | Data Type                  | Default Value     | Description                                                          |
-| :------------------ | :------------------------- | :---------------- | :------------------------------------------------------------------- |
-| `children`          | `List<JustResizablePanel>` | _required_        | Ordered list of panels to arrange and resize.                        |
-| `direction`         | `Axis`                     | `Axis.horizontal` | Layout direction (`Axis.horizontal` or `Axis.vertical`).             |
-| `dividerThickness`  | `double`                   | `3.0`             | Thickness of the draggable divider handle in pixels.                 |
-| `controller`        | `JustResizableController?` | `null`            | Programmatic controller for resizing or toggling panels.             |
-| `keyboardStepRatio` | `double`                   | `0.02`            | Proportional step delta per arrow key press when divider is focused. |
-| `style`             | `JustResizableStyle?`      | `null`            | Visual styling overrides for dividers and active focus borders.      |
+| Property                 | Data Type                     | Default Value                | Description                                                                                                     |
+| :----------------------- | :---------------------------- | :--------------------------- | :-------------------------------------------------------------------------------------------------------------- |
+| `children`               | `List<JustResizablePanel>`    | _required_                   | Ordered list of panels to arrange and resize.                                                                   |
+| `direction`              | `Axis`                        | `Axis.horizontal`            | Layout direction (`Axis.horizontal` or `Axis.vertical`).                                                        |
+| `dividerThickness`       | `double?`                     | `null` (`1.0` via theme)     | Thickness of the visible splitter divider line in pixels.                                                       |
+| `handleHitSize`          | `double`                      | `8.0`                        | Interactive pointer and touch hit box size for splitter handles in pixels.                                      |
+| `handleVariant`          | `JustResizableHandleVariant?` | `null` (`.line` via theme)   | Visual variant of the splitter handle (`.line`, `.grip`, or `.none`).                                           |
+| `controller`             | `JustResizableController?`    | `null`                       | Programmatic controller for resizing or toggling panels.                                                        |
+| `keyboardStep`           | `double?`                     | `null` (`16.0` via theme)    | Distance in pixels adjusted per standard arrow keypress when a splitter is focused.                             |
+| `keyboardShiftStep`      | `double?`                     | `null` (`4.0` via theme)     | Distance in pixels adjusted when Shift is held with an arrow keypress.                                          |
+| `splitterSemanticsLabel` | `String`                      | `'Splitter divider {index}'` | Template for each splitter's screen reader label (`{index}` is the 1-based splitter position for localization). |
+| `style`                  | `JustResizableStyle?`         | `null`                       | Visual styling overrides for dividers, grips, and active focus borders.                                         |
 
 ### JustResizablePanel
 

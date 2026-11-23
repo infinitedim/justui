@@ -109,14 +109,18 @@ Widget buildAdvancedResizable(BuildContext context) {
 
 ### JustResizable
 
-| Properti            | Tipe Data                  | Nilai Default     | Deskripsi                                                                |
-| :------------------ | :------------------------- | :---------------- | :----------------------------------------------------------------------- |
-| `children`          | `List<JustResizablePanel>` | _wajib_           | Daftar panel yang akan disusun dan diubah ukurannya.                     |
-| `direction`         | `Axis`                     | `Axis.horizontal` | Arah pembagian (`Axis.horizontal` atau `Axis.vertical`).                 |
-| `dividerThickness`  | `double`                   | `3.0`             | Ketebalan tuas pemisah dalam piksel.                                     |
-| `controller`        | `JustResizableController?` | `null`            | Pengontrol programatik untuk mengatur ukuran atau membuka/menutup panel. |
-| `keyboardStepRatio` | `double`                   | `0.02`            | Nilai perubahan fraksi per penekanan tombol panah keyboard.              |
-| `style`             | `JustResizableStyle?`      | `null`            | Kustomisasi visual untuk garis pemisah dan indikator fokus.              |
+| Properti                 | Tipe Data                     | Nilai Default                | Deskripsi                                                                                           |
+| :----------------------- | :---------------------------- | :--------------------------- | :-------------------------------------------------------------------------------------------------- |
+| `children`               | `List<JustResizablePanel>`    | _wajib_                      | Daftar panel yang akan disusun dan diubah ukurannya.                                                |
+| `direction`              | `Axis`                        | `Axis.horizontal`            | Arah pembagian (`Axis.horizontal` atau `Axis.vertical`).                                            |
+| `dividerThickness`       | `double?`                     | `null` (`1.0` dari tema)     | Ketebalan garis pemisah yang terlihat dalam piksel.                                                 |
+| `handleHitSize`          | `double`                      | `8.0`                        | Ukuran area sentuh dan klik interaktif untuk tuas pemisah dalam piksel.                             |
+| `handleVariant`          | `JustResizableHandleVariant?` | `null` (`.line` dari tema)   | Varian visual tuas pemisah (`.line`, `.grip`, atau `.none`).                                        |
+| `controller`             | `JustResizableController?`    | `null`                       | Pengontrol programatik untuk mengatur ukuran atau membuka/menutup panel.                            |
+| `keyboardStep`           | `double?`                     | `null` (`16.0` dari tema)    | Jarak dalam piksel yang digeser setiap penekanan tombol panah standar saat pemisah difokuskan.      |
+| `keyboardShiftStep`      | `double?`                     | `null` (`4.0` dari tema)     | Jarak dalam piksel saat kamu menahan tombol Shift sambil menekan tombol panah.                      |
+| `splitterSemanticsLabel` | `String`                      | `'Splitter divider {index}'` | Template label screen reader untuk setiap tuas pemisah (`{index}` diisi posisi pemisah berbasis 1). |
+| `style`                  | `JustResizableStyle?`         | `null`                       | Kustomisasi visual untuk garis pemisah, grip pill, dan indikator fokus.                             |
 
 ### JustResizablePanel
 

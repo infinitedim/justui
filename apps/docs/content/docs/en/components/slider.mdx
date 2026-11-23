@@ -144,31 +144,35 @@ class _SliderAdvancedExampleState extends State<SliderAdvancedExample> {
 
 ### JustSlider
 
-| Property       | Data Type               | Default Value       | Description                                                                                              |
-| :------------- | :---------------------- | :------------------ | :------------------------------------------------------------------------------------------------------- |
-| `value`        | `double?`               | _Required_          | The current value of the slider.                                                                         |
-| `onChanged`    | `ValueChanged<double>?` | _Required_          | Callback invoked when the slider value changes.                                                          |
-| `min`          | `double`                | `0.0`               | The minimum value of the slider.                                                                         |
-| `max`          | `double`                | `1.0`               | The maximum value of the slider.                                                                         |
-| `divisions`    | `int?`                  | `null`              | The number of discrete divisions. If specified, the slider snaps to these steps.                         |
-| `showTooltip`  | `bool`                  | `false`             | Whether to display a floating value tooltip above the active thumb while dragging.                       |
-| `enableHaptic` | `bool?`                 | `null`              | Explicitly enables or disables haptic feedback. If `null`, falls back to `JustSliderTheme.enableHaptic`. |
-| `size`         | `JustSliderSize`        | `JustSliderSize.md` | The physical size classification of the slider: `.sm`, `.md`, or `.lg`.                                  |
-| `style`        | `JustSliderStyle?`      | `null`              | Custom style overrides for this specific instance.                                                       |
+| Property                    | Data Type                        | Default Value       | Description                                                                                                                           |
+| :-------------------------- | :------------------------------- | :------------------ | :------------------------------------------------------------------------------------------------------------------------------------ |
+| `value`                     | `double?`                        | _Required_          | The current value of the slider.                                                                                                      |
+| `onChanged`                 | `ValueChanged<double>?`          | _Required_          | Callback invoked when the slider value changes.                                                                                       |
+| `min`                       | `double`                         | `0.0`               | The minimum value of the slider.                                                                                                      |
+| `max`                       | `double`                         | `1.0`               | The maximum value of the slider.                                                                                                      |
+| `divisions`                 | `int?`                           | `null`              | The number of discrete divisions. If specified, the slider snaps to these steps.                                                      |
+| `showTooltip`               | `bool`                           | `false`             | Whether to display a floating value tooltip above the active thumb while dragging.                                                    |
+| `enableHaptic`              | `bool?`                          | `null`              | Explicitly enables or disables haptic feedback. If `null`, falls back to `JustSliderTheme.enableHaptic`.                              |
+| `size`                      | `JustSliderSize`                 | `JustSliderSize.md` | The physical size classification of the slider: `.sm`, `.md`, or `.lg`.                                                               |
+| `style`                     | `JustSliderStyle?`               | `null`              | Custom style overrides for this specific instance.                                                                                    |
+| `semanticLabel`             | `String?`                        | `null`              | Accessible label announced by screen readers and propagated to the slider `<input type="range">` element on Flutter Web.              |
+| `semanticFormatterCallback` | `String Function(double value)?` | `null`              | Optional formatter for screen reader value announcements (for example `'60%'`). Defaults to one decimal place (`toStringAsFixed(1)`). |
 
 ### JustSlider.range
 
-| Property         | Data Type                        | Default Value       | Description                                                                        |
-| :--------------- | :------------------------------- | :------------------ | :--------------------------------------------------------------------------------- |
-| `rangeValues`    | `JustRangeValues?`               | _Required_          | The current start and end range values of the slider.                              |
-| `onRangeChanged` | `ValueChanged<JustRangeValues>?` | _Required_          | Callback invoked when the range values change.                                     |
-| `min`            | `double`                         | `0.0`               | The minimum value of the slider.                                                   |
-| `max`            | `double`                         | `1.0`               | The maximum value of the slider.                                                   |
-| `divisions`      | `int?`                           | `null`              | The number of discrete divisions to split the track.                               |
-| `showTooltip`    | `bool`                           | `false`             | Whether to display a floating value tooltip above the active thumb while dragging. |
-| `enableHaptic`   | `bool?`                          | `null`              | Explicitly enables or disables haptic feedback.                                    |
-| `size`           | `JustSliderSize`                 | `JustSliderSize.md` | The physical size classification of the slider (`.sm`, `.md`, or `.lg`).           |
-| `style`          | `JustSliderStyle?`               | `null`              | Custom style overrides for this specific instance.                                 |
+| Property                    | Data Type                        | Default Value       | Description                                                                                                              |
+| :-------------------------- | :------------------------------- | :------------------ | :----------------------------------------------------------------------------------------------------------------------- |
+| `rangeValues`               | `JustRangeValues?`               | _Required_          | The current start and end range values of the slider.                                                                    |
+| `onRangeChanged`            | `ValueChanged<JustRangeValues>?` | _Required_          | Callback invoked when the range values change.                                                                           |
+| `min`                       | `double`                         | `0.0`               | The minimum value of the slider.                                                                                         |
+| `max`                       | `double`                         | `1.0`               | The maximum value of the slider.                                                                                         |
+| `divisions`                 | `int?`                           | `null`              | The number of discrete divisions to split the track.                                                                     |
+| `showTooltip`               | `bool`                           | `false`             | Whether to display a floating value tooltip above the active thumb while dragging.                                       |
+| `enableHaptic`              | `bool?`                          | `null`              | Explicitly enables or disables haptic feedback.                                                                          |
+| `size`                      | `JustSliderSize`                 | `JustSliderSize.md` | The physical size classification of the slider (`.sm`, `.md`, or `.lg`).                                                 |
+| `style`                     | `JustSliderStyle?`               | `null`              | Custom style overrides for this specific instance.                                                                       |
+| `semanticLabel`             | `String?`                        | `null`              | Accessible label announced by screen readers and propagated to the slider `<input type="range">` element on Flutter Web. |
+| `semanticFormatterCallback` | `String Function(double value)?` | `null`              | Optional formatter applied to both `start` and `end` values in screen reader announcements.                              |
 
 ### JustSliderStyle
 
@@ -214,5 +218,7 @@ Haptics are triggered on the following events:
 ### Accessibility (WCAG AA Compliance)
 
 1. **Touch Target Size**: The slider widget has a fixed height of `48.0px` to guarantee a comfortable touch target size (meeting WCAG AA requirements) on mobile and touch-screen devices.
-2. **Visual Value Assistance**: An optional floating tooltip provides immediate visual feedback of the exact numeric value while dragging.
-3. **Proximity-Based Selection**: In range mode, if the user taps near overlapping thumbs, the system automatically selects the thumb closest to the touch coordinate to prevent interaction lock.
+2. **Screen Reader Labels & Formatting**: Pass `semanticLabel` to give the slider an accessible name (propagated to `<input type="range" role="slider">` on Flutter Web 3.50+) and `semanticFormatterCallback` to format announced values (for example percentages or currencies).
+3. **Keyboard & Reduced Motion**: Supports Arrow keys (including key repeat), `Home` (`min`), and `End` (`max`) when focused, and resolves thumb motion through `animations.resolve(context)` to honor reduced motion preferences.
+4. **Visual Value Assistance**: An optional floating tooltip provides immediate visual feedback of the exact numeric value while dragging.
+5. **Proximity-Based Selection**: In range mode, if the user taps near overlapping thumbs, the system automatically selects the thumb closest to the touch coordinate to prevent interaction lock.
