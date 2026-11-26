@@ -21,7 +21,6 @@ JustTimePickerTheme timePickerInkPaper(
       dialFaceColor: r.sunken,
       handColor: r.inverse,
       dialTextColor: r.textPrimary,
-      selectedTextColor: r.onInverse,
       periodActiveColor: r.inverse,
       borderColor: neo ? r.textPrimary : r.borderSubtle,
       borderRadius: neo ? .zero : const .all(.circular(10.0)),

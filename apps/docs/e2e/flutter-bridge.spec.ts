@@ -367,6 +367,99 @@ test.describe('Flutter bridge live slider and resizable semantics', () => {
   });
 });
 
+/** Scrolls a live part into view and waits until Flutter mounts it. */
+async function mountLivePart(page: Page, slug: string) {
+  const part = page.locator(`[data-live-part="${slug}"]`);
+  await part.evaluate((node) => node.scrollIntoView({ block: 'center' }));
+  await expect(part).toHaveAttribute('data-state', 'live', {
+    timeout: 30_000,
+  });
+  return part;
+}
+
+test.describe('Flutter bridge live navigation, scroll-area, and time-picker', () => {
+  test.skip(
+    !hasFlutterBundle(),
+    'no Flutter bundle: run bun run flutter:build'
+  );
+
+  test('mounts live EN tabs, bottom-nav, sidebar, scroll-area, and time-picker', async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await visitAs(page, 'default', 'light');
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/en/docs/components');
+
+    const timePicker = await mountLivePart(page, 'time-picker');
+    await expect(
+      timePicker.locator(
+        '[data-live-host] input[type="range"][role="slider"][aria-label="Hour"]'
+      )
+    ).toBeVisible();
+
+    const tabs = await mountLivePart(page, 'tabs');
+    const accountTab = tabs
+      .locator('[data-live-host]')
+      .getByRole('tab', { name: 'Account', exact: true });
+    const billingTab = tabs
+      .locator('[data-live-host]')
+      .getByRole('tab', { name: 'Billing', exact: true });
+    await expect(accountTab).toHaveAttribute('aria-selected', 'true');
+    await accountTab.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(billingTab).toHaveAttribute('aria-selected', 'true');
+
+    const bottomNav = await mountLivePart(page, 'bottom-nav');
+    await expect(
+      bottomNav
+        .locator('[data-live-host]')
+        .getByRole('button', { name: 'Home', exact: true })
+    ).toBeVisible();
+
+    const sidebar = await mountLivePart(page, 'sidebar');
+    await expect(
+      sidebar
+        .locator('[data-live-host]')
+        .getByRole('button', { name: 'Components', exact: true })
+    ).toBeVisible();
+
+    const scrollArea = await mountLivePart(page, 'scroll-area');
+    await expect(
+      scrollArea.locator(
+        '[data-live-host] [aria-label="Scrollable component paths"]'
+      )
+    ).toBeVisible();
+
+    expect(errors).toEqual([]);
+  });
+
+  test('exposes localized ID semantics on live time-picker and tabs', async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await visitAs(page, 'default', 'light');
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/id/docs/components');
+
+    const idTimePicker = await mountLivePart(page, 'time-picker');
+    await expect(
+      idTimePicker.locator(
+        '[data-live-host] input[type="range"][role="slider"][aria-label="Jam"]'
+      )
+    ).toBeVisible();
+
+    const idTabs = await mountLivePart(page, 'tabs');
+    await expect(
+      idTabs
+        .locator('[data-live-host]')
+        .getByRole('tab', { name: 'Akun', exact: true })
+    ).toBeVisible();
+
+    expect(errors).toEqual([]);
+  });
+});
+
 test.describe('Flutter bridge assets and HTTP headers', () => {
   test.skip(
     !hasFlutterBundle(),

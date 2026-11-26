@@ -175,20 +175,20 @@ class _AdvancedSidebarExampleState extends State<AdvancedSidebarExample> {
 
 ### JustSidebar
 
-| Property         | Type                    | Default                       | Description                                                                                                                     |
-| ---------------- | ----------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `items`          | `List<JustSidebarItem>` | _Required_                    | Navigation menu item array that can branch recursively (nested).                                                                |
-| `selectedIndex`  | `int`                   | `0`                           | Index of the currently active sidebar item.                                                                                     |
-| `onItemSelected` | `ValueChanged<int>?`    | `null`                        | Callback triggered when a navigation item is tapped.                                                                            |
-| `header`         | `Widget?`               | `null`                        | Top area widget (e.g., company logo or user profile summary).                                                                   |
-| `footer`         | `Widget?`               | `null`                        | Bottom area widget (e.g., logout button or collapse toggle).                                                                    |
-| `width`          | `double`                | `260.0`                       | Panel width when in fully open state.                                                                                           |
-| `collapsedWidth` | `double`                | `68.0`                        | Minimum panel width when in collapsed state.                                                                                    |
-| `isCollapsed`    | `bool`                  | `false`                       | Active collapse status of the panel.                                                                                            |
-| `autoCollapse`   | `bool`                  | `true`                        | Whether the sidebar automatically collapses on viewports <= `JustBreakpoints.md`. Set to `false` for embedded or narrow panels. |
-| `variant`        | `JustSidebarVariant`    | `JustSidebarVariant.default_` | Layout style: `.default_` (edge-attached), `.floating` (free-floating with shadow), or `.inset` (isolated within page frame).   |
-| `style`          | `JustSidebarStyle?`     | `null`                        | Per-instance visual overrides for panel borders, radius, selected item colors, spacing, padding, and typography.                |
-| `semanticsLabel` | `String?`               | `null`                        | Optional accessible label announced for the sidebar navigation container.                                                       |
+| Property         | Type                    | Default                       | Description                                                                                                                              |
+| ---------------- | ----------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `items`          | `List<JustSidebarItem>` | _Required_                    | Navigation menu item array that can branch recursively (nested).                                                                         |
+| `selectedIndex`  | `int`                   | `0`                           | Index of the currently active sidebar item.                                                                                              |
+| `onItemSelected` | `ValueChanged<int>?`    | `null`                        | Callback triggered when a navigation item is tapped.                                                                                     |
+| `header`         | `Widget?`               | `null`                        | Top area widget (e.g., company logo or user profile summary).                                                                            |
+| `footer`         | `Widget?`               | `null`                        | Bottom area widget (e.g., logout button or collapse toggle).                                                                             |
+| `width`          | `double`                | `260.0`                       | Panel width when in fully open state.                                                                                                    |
+| `collapsedWidth` | `double`                | `68.0`                        | Minimum panel width when in collapsed state.                                                                                             |
+| `isCollapsed`    | `bool`                  | `false`                       | Active collapse status of the panel.                                                                                                     |
+| `autoCollapse`   | `bool`                  | `true`                        | Whether the sidebar automatically collapses on viewports at or below `JustBreakpoints.md`. Set to `false` for embedded or narrow panels. |
+| `variant`        | `JustSidebarVariant`    | `JustSidebarVariant.default_` | Layout style: `.default_` (edge-attached), `.floating` (free-floating with shadow), or `.inset` (isolated within page frame).            |
+| `style`          | `JustSidebarStyle?`     | `null`                        | Per-instance visual overrides for panel borders, radius, selected item colors, spacing, padding, and typography.                         |
+| `semanticsLabel` | `String?`               | `null`                        | Optional accessible label announced for the sidebar navigation container.                                                                |
 
 ### JustSidebarItem
 
@@ -220,7 +220,7 @@ class _AdvancedSidebarExampleState extends State<AdvancedSidebarExample> {
 
 ### Auto-Collapse Responsive, Unbounded Height & Folder Animation
 
-- **Auto-Collapse**: By default (`autoCollapse: true`), when the viewport width is <= `JustBreakpoints.md` (768px), the sidebar automatically collapses to `collapsedWidth` (`68.0` px) so page content stays readable on narrow screens. Set `autoCollapse: false` when embedding `JustSidebar` inside compact previews, split panels, or narrow containers where it should remain expanded.
+- **Auto-Collapse**: By default (`autoCollapse: true`), when the viewport width is at or below `JustBreakpoints.md` (768px), the sidebar automatically collapses to `collapsedWidth` (`68.0` px) so page content stays readable on narrow screens. Set `autoCollapse: false` when embedding `JustSidebar` inside compact previews, split panels, or narrow containers where it should remain expanded.
 - **Unbounded Height Safety**: `JustSidebar` inspects `constraints.hasBoundedHeight` via `LayoutBuilder`. When placed inside a bounded vertical container it fills available height and scrolls items in `Expanded(child: SingleChildScrollView(...))`; when placed inside an unbounded layout it sizes cleanly to its content (`MainAxisSize.min`) without throwing layout errors.
 - **Recursive Folder**: Nested child branches are indented by `depth * 16.0` px at each level with vertical folding via `SizeTransition`.
 - **Tooltip Balloon**: When the sidebar is collapsed, hovering an item displays its label in a floating `JustTooltipOverlay` so icon-only navigation remains clear.

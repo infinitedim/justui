@@ -19,7 +19,7 @@ JustTabsTheme tabsInkPaper(JustThemePreset preset, InkPaperRoles r) {
       inactiveColor: r.textTertiary,
       borderBottomColor: neo ? r.textPrimary : r.borderSubtle,
       borderBottomWidth: neo ? 2.5 : 1.0,
-      tabPadding: const .symmetric(horizontal: 10.0, vertical: 10.0),
+      tabPadding: const .symmetric(horizontal: 4.0, vertical: 10.0),
     ),
   );
 }

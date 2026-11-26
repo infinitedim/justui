@@ -1,9 +1,9 @@
 {
-  "note": "Brotli KB. main.dart.wasm: 512.2 measured with the 17 live scenes on 2026-10-25, plus about 10%. Startup: the 2026-10-24 spike budget, still met (2029.6). Raising a value needs owner approval (docs-web.md).",
+  "note": "Brotli KB. main.dart.wasm: 583.8 measured with all 33 live scenes on 2026-11-26 (owner-approved bump from 565 to 600, ~2.8% margin). Startup: 2106.2 measured, still under 2125 KB budget. Raising a value needs owner approval (docs-web.md).",
   "startupKb": 2125,
   "filesKb": {
     "canvaskit/skwasm.wasm": 1300,
-    "main.dart.wasm": 565,
+    "main.dart.wasm": 600,
     "canvaskit/skwasm_heavy.wasm": 2000
   }
 }
