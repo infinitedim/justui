@@ -77,6 +77,12 @@ class const JustTimePickerLocale({
 
   /// Tooltip text for switching to spinner mode.
   final String spinnerModeTooltip = 'Switch to spinner mode',
+
+  /// Semantic label for the increased (next) value on the dial.
+  final String nextValueLabel = 'Next value',
+
+  /// Semantic label for the decreased (previous) value on the dial.
+  final String previousValueLabel = 'Previous value',
 });
 
 /// Represents whether a 12-hour time is before noon (AM) or after noon (PM).

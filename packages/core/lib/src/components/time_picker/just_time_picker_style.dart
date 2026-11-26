@@ -35,6 +35,9 @@ class const JustTimePickerStyle({
   /// Spinner row height override (default resolved from presetTokens).
   final double? spinnerRowHeight,
 
+  /// Opacity applied to spinner wheel items above and below the center row.
+  final double? overAndUnderCenterOpacity,
+
   /// Shadow elevation override.
   final double? elevation,
 });

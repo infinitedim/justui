@@ -4,6 +4,7 @@ import 'package:just_ui_core/just_ui_core.dart';
 
 import '../button/just_button.dart';
 import '../dialog/just_dialog.dart';
+import '../shared/_shared_focus_indicator.dart';
 import '../shared/_shared_overlay_transition.dart';
 import '../shared/_shared_pressable.dart';
 import '../sheet/just_sheet.dart';
@@ -88,6 +89,9 @@ class JustTimePicker extends StatefulWidget {
   /// Whether to render the outer card container in inline mode.
   final bool showContainer;
 
+  /// Optional semantic label for the time picker container.
+  final String? semanticsLabel;
+
   /// Creates a [JustTimePicker] widget.
   const JustTimePicker({
     super.key,
@@ -108,6 +112,7 @@ class JustTimePicker extends StatefulWidget {
     this.locale = const JustTimePickerLocale(),
     this.placeholder,
     this.label,
+    this.semanticsLabel,
   });
 
   /// Named constructor for inline time picker mode.
@@ -127,6 +132,7 @@ class JustTimePicker extends StatefulWidget {
     JustTimePickerStyle? style,
     bool? enableHaptic,
     JustTimePickerLocale locale = const JustTimePickerLocale(),
+    String? semanticsLabel,
   }) : this(
          key: key,
          value: value,
@@ -144,6 +150,7 @@ class JustTimePicker extends StatefulWidget {
          style: style,
          enableHaptic: enableHaptic,
          locale: locale,
+         semanticsLabel: semanticsLabel,
        );
 
   /// Named constructor for dropdown popup mode anchored to a trigger field.
@@ -164,6 +171,7 @@ class JustTimePicker extends StatefulWidget {
     JustTimePickerLocale locale = const JustTimePickerLocale(),
     String? placeholder,
     String? label,
+    String? semanticsLabel,
   }) : this(
          key: key,
          value: value,
@@ -182,6 +190,7 @@ class JustTimePicker extends StatefulWidget {
          locale: locale,
          placeholder: placeholder,
          label: label,
+         semanticsLabel: semanticsLabel,
        );
 
   /// Named constructor for modal trigger button mode.
@@ -202,6 +211,7 @@ class JustTimePicker extends StatefulWidget {
     JustTimePickerLocale locale = const JustTimePickerLocale(),
     String? placeholder,
     String? label,
+    String? semanticsLabel,
   }) : this(
          key: key,
          value: value,
@@ -220,6 +230,7 @@ class JustTimePicker extends StatefulWidget {
          locale: locale,
          placeholder: placeholder,
          label: label,
+         semanticsLabel: semanticsLabel,
        );
 
   /// Named constructor for responsive adaptive mode.
@@ -243,6 +254,7 @@ class JustTimePicker extends StatefulWidget {
     JustTimePickerLocale locale = const JustTimePickerLocale(),
     String? placeholder,
     String? label,
+    String? semanticsLabel,
   }) : this(
          key: key,
          value: value,
@@ -261,6 +273,7 @@ class JustTimePicker extends StatefulWidget {
          locale: locale,
          placeholder: placeholder,
          label: label,
+         semanticsLabel: semanticsLabel,
        );
 
   @override
@@ -393,7 +406,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
     final void Function(JustTimeOfDay value) effectiveOnChanged =
         onTimeSelected ?? _onTimeSelected;
 
-    return Container(
+    final Widget body = Container(
       padding: widget.showContainer ? padding : .zero,
       decoration: widget.showContainer
           ? BoxDecoration(
@@ -402,7 +415,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
               border: presetTokens.showsDefaultBorder
                   ? .all(color: borderColor, width: borderWidth)
                   : (borderWidth > 0
-                        ? .all(color: colors.borderDefault, width: borderWidth)
+                        ? .all(color: borderColor, width: borderWidth)
                         : null),
               boxShadow: presetTokens.resolveShadow(
                 theme.shadows,
@@ -449,6 +462,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
               locale: widget.locale,
               style: widget.style,
               enableHaptic: widget.enableHaptic,
+              showContainer: false,
             ),
             .input => TimePickerInput(
               selectedTime: _currentTime,
@@ -466,6 +480,16 @@ class _JustTimePickerState extends State<JustTimePicker> {
         ],
       ),
     );
+
+    if (widget.semanticsLabel != null) {
+      return Semantics(
+        container: true,
+        explicitChildNodes: true,
+        label: widget.semanticsLabel,
+        child: body,
+      );
+    }
+    return body;
   }
 
   Widget _buildPickerHeader(BuildContext context, JustThemeData theme) {
@@ -474,6 +498,8 @@ class _JustTimePickerState extends State<JustTimePicker> {
     final JustSpacingScheme spacing = context.justSpacing;
     final JustRadiusScheme radius = theme.radius;
     final JustPresetTokens presetTokens = theme.presetTokens;
+    final JustTimePickerTheme? themeExtension = context
+        .justThemeExtension<JustTimePickerTheme>();
     final JustTimePickerStyle? style = widget.style;
 
     final int hourVal = widget.timeFormat == .twentyFourHour
@@ -489,10 +515,19 @@ class _JustTimePickerState extends State<JustTimePicker> {
     final BorderRadius resolvedRadius = presetTokens.resolveBorderRadius(
       radius,
     );
-    final Color activeBg = style?.periodActiveColor ?? colors.borderFocus;
-    final Color activeFg = style?.selectedTextColor ?? colors.textInverse;
+    final Color activeBg =
+        style?.periodActiveColor ??
+        themeExtension?.inlineStyle?.periodActiveColor ??
+        colors.borderFocus;
+    final Color activeFg =
+        style?.selectedTextColor ??
+        themeExtension?.inlineStyle?.selectedTextColor ??
+        colors.textInverse;
     final Color inactiveBg = colors.muted;
-    final Color inactiveFg = style?.dialTextColor ?? colors.textPrimary;
+    final Color inactiveFg =
+        style?.dialTextColor ??
+        themeExtension?.inlineStyle?.dialTextColor ??
+        colors.textPrimary;
     final double borderWidth = presetTokens.borderWidth;
 
     final String modeTooltip = switch (_currentMode) {
@@ -520,6 +555,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
               button: true,
               label: '${widget.locale.hourLabel}: $hourStr',
               selected: isHourActive,
+              excludeSemantics: true,
               child: JustPressable(
                 onTap: () {
                   setState(() {
@@ -527,30 +563,32 @@ class _JustTimePickerState extends State<JustTimePicker> {
                   });
                 },
                 builder: (BuildContext context, JustInteractionState state) {
-                  return Container(
-                    padding: .symmetric(
-                      horizontal: spacing.sm,
-                      vertical: spacing.xs,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isHourActive ? activeBg : inactiveBg,
-                      borderRadius: resolvedRadius,
-                      border: Border.all(
-                        color: isHourActive
-                            ? (presetTokens.showsDefaultBorder
-                                  ? colors.textPrimary
-                                  : colors.borderFocus)
-                            : (presetTokens.showsDefaultBorder
-                                  ? colors.borderDefault
-                                  : colors.borderDefault),
-                        width: borderWidth,
+                  return FocusIndicator(
+                    isFocused: state.isFocusVisible,
+                    borderRadius: resolvedRadius,
+                    child: Container(
+                      padding: .symmetric(
+                        horizontal: spacing.sm,
+                        vertical: spacing.xs,
                       ),
-                    ),
-                    child: Text(
-                      hourStr,
-                      style: typo.headingLg.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: isHourActive ? activeFg : inactiveFg,
+                      decoration: BoxDecoration(
+                        color: isHourActive ? activeBg : inactiveBg,
+                        borderRadius: resolvedRadius,
+                        border: .all(
+                          color: presetTokens.showsDefaultBorder
+                              ? colors.textPrimary
+                              : (isHourActive
+                                    ? colors.borderFocus
+                                    : colors.borderDefault),
+                          width: borderWidth,
+                        ),
+                      ),
+                      child: Text(
+                        hourStr,
+                        style: typo.headingLg.copyWith(
+                          fontWeight: .w700,
+                          color: isHourActive ? activeFg : inactiveFg,
+                        ),
                       ),
                     ),
                   );
@@ -562,7 +600,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
               child: Text(
                 ':',
                 style: typo.headingLg.copyWith(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: .w700,
                   color: colors.textPrimary,
                 ),
               ),
@@ -572,6 +610,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
               button: true,
               label: '${widget.locale.minuteLabel}: $minuteStr',
               selected: isMinuteActive,
+              excludeSemantics: true,
               child: JustPressable(
                 onTap: () {
                   setState(() {
@@ -579,30 +618,32 @@ class _JustTimePickerState extends State<JustTimePicker> {
                   });
                 },
                 builder: (BuildContext context, JustInteractionState state) {
-                  return Container(
-                    padding: .symmetric(
-                      horizontal: spacing.sm,
-                      vertical: spacing.xs,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isMinuteActive ? activeBg : inactiveBg,
-                      borderRadius: resolvedRadius,
-                      border: Border.all(
-                        color: isMinuteActive
-                            ? (presetTokens.showsDefaultBorder
-                                  ? colors.textPrimary
-                                  : colors.borderFocus)
-                            : (presetTokens.showsDefaultBorder
-                                  ? colors.borderDefault
-                                  : colors.borderDefault),
-                        width: borderWidth,
+                  return FocusIndicator(
+                    isFocused: state.isFocusVisible,
+                    borderRadius: resolvedRadius,
+                    child: Container(
+                      padding: .symmetric(
+                        horizontal: spacing.sm,
+                        vertical: spacing.xs,
                       ),
-                    ),
-                    child: Text(
-                      minuteStr,
-                      style: typo.headingLg.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: isMinuteActive ? activeFg : inactiveFg,
+                      decoration: BoxDecoration(
+                        color: isMinuteActive ? activeBg : inactiveBg,
+                        borderRadius: resolvedRadius,
+                        border: .all(
+                          color: presetTokens.showsDefaultBorder
+                              ? colors.textPrimary
+                              : (isMinuteActive
+                                    ? colors.borderFocus
+                                    : colors.borderDefault),
+                          width: borderWidth,
+                        ),
+                      ),
+                      child: Text(
+                        minuteStr,
+                        style: typo.headingLg.copyWith(
+                          fontWeight: .w700,
+                          color: isMinuteActive ? activeFg : inactiveFg,
+                        ),
                       ),
                     ),
                   );
@@ -616,9 +657,9 @@ class _JustTimePickerState extends State<JustTimePicker> {
                 decoration: BoxDecoration(
                   color: inactiveBg,
                   borderRadius: resolvedRadius,
-                  border: Border.all(
+                  border: .all(
                     color: presetTokens.showsDefaultBorder
-                        ? colors.borderDefault
+                        ? colors.textPrimary
                         : colors.borderDefault,
                     width: borderWidth,
                   ),
@@ -630,6 +671,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
                       button: true,
                       label: widget.locale.amLabel,
                       selected: isAm,
+                      excludeSemantics: true,
                       child: JustPressable(
                         onTap: () {
                           if (!isAm) {
@@ -640,24 +682,26 @@ class _JustTimePickerState extends State<JustTimePicker> {
                         },
                         builder:
                             (BuildContext context, JustInteractionState state) {
-                              return Container(
-                                padding: .symmetric(
-                                  horizontal: spacing.xs,
-                                  vertical: spacing.xs,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: isAm
-                                      ? activeBg
-                                      : const Color(0x00000000),
-                                  borderRadius: resolvedRadius,
-                                ),
-                                child: Text(
-                                  widget.locale.amLabel,
-                                  style: typo.bodySm.copyWith(
-                                    fontWeight: isAm
-                                        ? FontWeight.w700
-                                        : FontWeight.w500,
-                                    color: isAm ? activeFg : inactiveFg,
+                              return FocusIndicator(
+                                isFocused: state.isFocusVisible,
+                                borderRadius: resolvedRadius,
+                                child: Container(
+                                  padding: .symmetric(
+                                    horizontal: spacing.xs,
+                                    vertical: spacing.xs,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isAm
+                                        ? activeBg
+                                        : const Color(0x00000000),
+                                    borderRadius: resolvedRadius,
+                                  ),
+                                  child: Text(
+                                    widget.locale.amLabel,
+                                    style: typo.bodySm.copyWith(
+                                      fontWeight: isAm ? .w700 : .w500,
+                                      color: isAm ? activeFg : inactiveFg,
+                                    ),
                                   ),
                                 ),
                               );
@@ -668,6 +712,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
                       button: true,
                       label: widget.locale.pmLabel,
                       selected: !isAm,
+                      excludeSemantics: true,
                       child: JustPressable(
                         onTap: () {
                           if (isAm) {
@@ -678,24 +723,26 @@ class _JustTimePickerState extends State<JustTimePicker> {
                         },
                         builder:
                             (BuildContext context, JustInteractionState state) {
-                              return Container(
-                                padding: .symmetric(
-                                  horizontal: spacing.xs,
-                                  vertical: spacing.xs,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: !isAm
-                                      ? activeBg
-                                      : const Color(0x00000000),
-                                  borderRadius: resolvedRadius,
-                                ),
-                                child: Text(
-                                  widget.locale.pmLabel,
-                                  style: typo.bodySm.copyWith(
-                                    fontWeight: !isAm
-                                        ? FontWeight.w700
-                                        : FontWeight.w500,
-                                    color: !isAm ? activeFg : inactiveFg,
+                              return FocusIndicator(
+                                isFocused: state.isFocusVisible,
+                                borderRadius: resolvedRadius,
+                                child: Container(
+                                  padding: .symmetric(
+                                    horizontal: spacing.xs,
+                                    vertical: spacing.xs,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: !isAm
+                                        ? activeBg
+                                        : const Color(0x00000000),
+                                    borderRadius: resolvedRadius,
+                                  ),
+                                  child: Text(
+                                    widget.locale.pmLabel,
+                                    style: typo.bodySm.copyWith(
+                                      fontWeight: !isAm ? .w700 : .w500,
+                                      color: !isAm ? activeFg : inactiveFg,
+                                    ),
                                   ),
                                 ),
                               );
@@ -714,28 +761,30 @@ class _JustTimePickerState extends State<JustTimePicker> {
           Semantics(
             button: true,
             label: modeTooltip,
+            excludeSemantics: true,
             child: JustPressable(
               onTap: _cycleNextMode,
               builder: (BuildContext context, JustInteractionState state) {
-                return Container(
-                  padding: .all(spacing.xs),
-                  decoration: BoxDecoration(
-                    color: colors.muted,
-                    borderRadius: resolvedRadius,
-                    border: presetTokens.showsDefaultBorder
-                        ? .all(
-                            color: colors.textPrimary,
-                            width: presetTokens.borderWidth,
-                          )
-                        : .all(
-                            color: colors.borderDefault,
-                            width: presetTokens.borderWidth,
-                          ),
-                  ),
-                  child: Icon(
-                    modeIcon,
-                    size: 18.0,
-                    color: colors.textSecondary,
+                return FocusIndicator(
+                  isFocused: state.isFocusVisible,
+                  borderRadius: resolvedRadius,
+                  child: Container(
+                    padding: .all(spacing.xs),
+                    decoration: BoxDecoration(
+                      color: colors.muted,
+                      borderRadius: resolvedRadius,
+                      border: .all(
+                        color: presetTokens.showsDefaultBorder
+                            ? colors.textPrimary
+                            : colors.borderDefault,
+                        width: presetTokens.borderWidth,
+                      ),
+                    ),
+                    child: Icon(
+                      modeIcon,
+                      size: 18.0,
+                      color: colors.textSecondary,
+                    ),
                   ),
                 );
               },
@@ -959,6 +1008,13 @@ class _JustTimePickerState extends State<JustTimePicker> {
     required bool showChevron,
     VoidCallback? onTap,
   }) {
+    final BorderRadius resolvedRadius = presetTokens.resolveBorderRadius(
+      radius,
+    );
+    final String triggerLabel = widget.label != null
+        ? '${widget.label}: $displayText'
+        : displayText;
+
     return Column(
       crossAxisAlignment: .start,
       mainAxisSize: .min,
@@ -968,28 +1024,130 @@ class _JustTimePickerState extends State<JustTimePicker> {
             widget.label!,
             style: typo.bodySm.copyWith(
               color: colors.textPrimary,
-              fontWeight: FontWeight.w600,
+              fontWeight: .w600,
             ),
           ),
           SizedBox(height: spacing.xs),
         ],
-        JustPressable(
-          onTap: onTap ?? _toggleDropdown,
-          builder: (BuildContext context, JustInteractionState state) {
-            return Container(
+        Semantics(
+          button: true,
+          label: triggerLabel,
+          excludeSemantics: true,
+          child: JustPressable(
+            onTap: onTap ?? _toggleDropdown,
+            builder: (BuildContext context, JustInteractionState state) {
+              return FocusIndicator(
+                isFocused: state.isFocusVisible,
+                borderRadius: resolvedRadius,
+                child: Container(
+                  padding: .symmetric(
+                    horizontal: spacing.md,
+                    vertical: spacing.sm,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.card,
+                    borderRadius: resolvedRadius,
+                    border: .all(
+                      color: presetTokens.showsDefaultBorder
+                          ? colors.textPrimary
+                          : colors.borderDefault,
+                      width: presetTokens.borderWidth,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: .min,
+                    children: <Widget>[
+                      Icon(
+                        Icons.access_time_rounded,
+                        size: 16.0,
+                        color: colors.textSecondary,
+                      ),
+                      SizedBox(width: spacing.xs),
+                      Text(
+                        displayText,
+                        style: typo.bodyMd.copyWith(
+                          color: widget.value != null
+                              ? colors.textPrimary
+                              : colors.textSecondary,
+                        ),
+                      ),
+                      if (showChevron) ...<Widget>[
+                        SizedBox(width: spacing.md),
+                        Icon(
+                          _overlayController.isShowing
+                              ? Icons.keyboard_arrow_up_rounded
+                              : Icons.keyboard_arrow_down_rounded,
+                          size: 18.0,
+                          color: colors.textSecondary,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Modal Variant Trigger Button
+  // ---------------------------------------------------------------------------
+
+  Widget _buildModalTriggerButton(BuildContext context) {
+    final JustColorScheme colors = context.justColors;
+    final JustTypographyScheme typo = context.justTypo;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustPresetTokens presetTokens = context.justPresetTokens;
+    final BorderRadius resolvedRadius = presetTokens.resolveBorderRadius(
+      radius,
+    );
+
+    final String displayText = widget.value != null
+        ? _formatTime(widget.value!)
+        : (widget.placeholder ?? 'Select time');
+
+    return Semantics(
+      button: true,
+      label: widget.semanticsLabel ?? displayText,
+      excludeSemantics: true,
+      child: JustPressable(
+        onTap: () async {
+          final JustTimeOfDay? selected = await showJustTimePicker(
+            context: context,
+            initialTime: widget.value,
+            firstTime: widget.firstTime,
+            lastTime: widget.lastTime,
+            selectableTimePredicate: widget.selectableTimePredicate,
+            mode: widget.mode,
+            timeFormat: widget.timeFormat,
+            minuteInterval: widget.minuteInterval,
+            locale: widget.locale,
+            style: widget.style,
+            enableHaptic: widget.enableHaptic,
+          );
+          if (selected != null) {
+            _onTimeSelected(selected);
+          }
+        },
+        builder: (BuildContext context, JustInteractionState state) {
+          return FocusIndicator(
+            isFocused: state.isFocusVisible,
+            borderRadius: resolvedRadius,
+            child: Container(
               padding: .symmetric(horizontal: spacing.md, vertical: spacing.sm),
               decoration: BoxDecoration(
                 color: colors.card,
-                borderRadius: presetTokens.resolveBorderRadius(radius),
-                border: presetTokens.showsDefaultBorder
-                    ? .all(
-                        color: colors.textPrimary,
-                        width: presetTokens.borderWidth,
-                      )
-                    : .all(
-                        color: colors.borderDefault,
-                        width: presetTokens.borderWidth,
-                      ),
+                borderRadius: resolvedRadius,
+                border: .all(
+                  color: presetTokens.showsDefaultBorder
+                      ? colors.textPrimary
+                      : colors.borderDefault,
+                  width: presetTokens.borderWidth,
+                ),
               ),
               child: Row(
                 mainAxisSize: .min,
@@ -1008,97 +1166,12 @@ class _JustTimePickerState extends State<JustTimePicker> {
                           : colors.textSecondary,
                     ),
                   ),
-                  if (showChevron) ...<Widget>[
-                    SizedBox(width: spacing.md),
-                    Icon(
-                      _overlayController.isShowing
-                          ? Icons.keyboard_arrow_up_rounded
-                          : Icons.keyboard_arrow_down_rounded,
-                      size: 18.0,
-                      color: colors.textSecondary,
-                    ),
-                  ],
                 ],
               ),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Modal Variant Trigger Button
-  // ---------------------------------------------------------------------------
-
-  Widget _buildModalTriggerButton(BuildContext context) {
-    final JustColorScheme colors = context.justColors;
-    final JustTypographyScheme typo = context.justTypo;
-    final JustSpacingScheme spacing = context.justSpacing;
-    final JustRadiusScheme radius = context.justRadius;
-    final JustThemeData theme = JustThemeProvider.of(context).theme;
-    final JustPresetTokens presetTokens = theme.presetTokens;
-
-    final String displayText = widget.value != null
-        ? _formatTime(widget.value!)
-        : (widget.placeholder ?? 'Select time');
-
-    return JustPressable(
-      onTap: () async {
-        final JustTimeOfDay? selected = await showJustTimePicker(
-          context: context,
-          initialTime: widget.value,
-          firstTime: widget.firstTime,
-          lastTime: widget.lastTime,
-          selectableTimePredicate: widget.selectableTimePredicate,
-          mode: widget.mode,
-          timeFormat: widget.timeFormat,
-          minuteInterval: widget.minuteInterval,
-          locale: widget.locale,
-          style: widget.style,
-          enableHaptic: widget.enableHaptic,
-        );
-        if (selected != null) {
-          _onTimeSelected(selected);
-        }
-      },
-      builder: (BuildContext context, JustInteractionState state) {
-        return Container(
-          padding: .symmetric(horizontal: spacing.md, vertical: spacing.sm),
-          decoration: BoxDecoration(
-            color: colors.card,
-            borderRadius: presetTokens.resolveBorderRadius(radius),
-            border: presetTokens.showsDefaultBorder
-                ? .all(
-                    color: colors.textPrimary,
-                    width: presetTokens.borderWidth,
-                  )
-                : .all(
-                    color: colors.borderDefault,
-                    width: presetTokens.borderWidth,
-                  ),
-          ),
-          child: Row(
-            mainAxisSize: .min,
-            children: <Widget>[
-              Icon(
-                Icons.access_time_rounded,
-                size: 16.0,
-                color: colors.textSecondary,
-              ),
-              SizedBox(width: spacing.xs),
-              Text(
-                displayText,
-                style: typo.bodyMd.copyWith(
-                  color: widget.value != null
-                      ? colors.textPrimary
-                      : colors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+            ),
+          );
+        },
+      ),
     );
   }
 }

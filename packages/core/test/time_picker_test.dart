@@ -9,6 +9,7 @@ import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/button/just_button.dart';
 import 'package:just_ui_core/src/components/dialog/just_dialog.dart';
 import 'package:just_ui_core/src/components/input/just_input.dart';
+import 'package:just_ui_core/src/components/shared/_shared_focus_indicator.dart';
 import 'package:just_ui_core/src/components/time_picker/just_time_picker.dart';
 
 void main() {
@@ -809,6 +810,7 @@ void main() {
             value: '08',
             increasedValue: '09',
             decreasedValue: '07',
+            isSlider: true,
             hasIncreaseAction: true,
             hasDecreaseAction: true,
           ),
@@ -970,5 +972,741 @@ void main() {
       expect(() => JustTimeOfDay(hour: 12, minute: -1), throwsAssertionError);
       expect(() => JustTimeOfDay(hour: 12, minute: 60), throwsAssertionError);
     });
+  });
+
+  // ===========================================================================
+  // 8. Double-Card, Contrast, Semantics, Focus Visibility, Neobrutalism & Motion
+  // ===========================================================================
+  group('8. A11y, Contrast, Focus Visibility, Neobrutalism & Motion', () {
+    testWidgets(
+      'JustTimePicker.inline(mode: .spinner) avoids double-card nesting',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            const JustTimePicker.inline(
+              value: JustTimeOfDay(hour: 9, minute: 41),
+              mode: .spinner,
+              timeFormat: .twelveHour,
+            ),
+          ),
+        );
+
+        final Iterable<Container> spinnerShadowedCards = tester
+            .widgetList<Container>(
+              find.descendant(
+                of: find.byType(TimePickerSpinner),
+                matching: find.byType(Container),
+              ),
+            )
+            .where((Container container) {
+              final Decoration? dec = container.decoration;
+              return dec is BoxDecoration &&
+                  dec.boxShadow != null &&
+                  dec.boxShadow!.isNotEmpty;
+            });
+
+        expect(spinnerShadowedCards, isEmpty);
+      },
+    );
+
+    testWidgets(
+      'TimePickerSpinner off-center opacity meets WCAG 1.4.3 (>= 4.5:1)',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            const TimePickerSpinner(
+              value: JustTimeOfDay(hour: 9, minute: 41),
+              timeFormat: .twelveHour,
+            ),
+          ),
+        );
+
+        final List<ListWheelScrollView> wheels = tester
+            .widgetList<ListWheelScrollView>(find.byType(ListWheelScrollView))
+            .toList();
+        expect(wheels, hasLength(3));
+
+        for (final ListWheelScrollView wheel in wheels) {
+          expect(wheel.overAndUnderCenterOpacity, greaterThanOrEqualTo(0.78));
+
+          // Verify Ink & Paper contrast ratio for off-center items (light & dark)
+          const Color ipLightSurface = Color(0xFFFFFFFF);
+          const Color ipLightTextSecondary = Color(0xFF42413F);
+          final Color blendedLight = Color.alphaBlend(
+            ipLightTextSecondary.withValues(
+              alpha: wheel.overAndUnderCenterOpacity,
+            ),
+            ipLightSurface,
+          );
+          expect(
+            blendedLight.contrastRatioWith(ipLightSurface),
+            greaterThanOrEqualTo(4.5),
+          );
+
+          const Color ipDarkSurface = Color(0xFF141413);
+          const Color ipDarkTextSecondary = Color(0xFFC4C2C0);
+          final Color blendedDark = Color.alphaBlend(
+            ipDarkTextSecondary.withValues(
+              alpha: wheel.overAndUnderCenterOpacity,
+            ),
+            ipDarkSurface,
+          );
+          expect(
+            blendedDark.contrastRatioWith(ipDarkSurface),
+            greaterThanOrEqualTo(4.5),
+          );
+        }
+      },
+    );
+
+    testWidgets('TimePickerSpinner resolves rowHeight from presetTokens', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          const TimePickerSpinner(
+            value: JustTimeOfDay(hour: 9, minute: 41),
+            timeFormat: .twelveHour,
+          ),
+          theme: JustThemeData.neobrutalismLight,
+        ),
+      );
+
+      final ListWheelScrollView hourWheel = tester.widget<ListWheelScrollView>(
+        find.byType(ListWheelScrollView).first,
+      );
+      expect(
+        hourWheel.itemExtent,
+        equals(
+          JustThemeData.neobrutalismLight.presetTokens
+              .resolveTimePickerSpinnerRowHeight(),
+        ),
+      );
+    });
+
+    testWidgets(
+      'TimePickerSpinner wheels exclude nested child semantics inside slider node',
+      (WidgetTester tester) async {
+        final SemanticsHandle handle = tester.ensureSemantics();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            const TimePickerSpinner(
+              value: JustTimeOfDay(hour: 8, minute: 30),
+              timeFormat: .twelveHour,
+            ),
+          ),
+        );
+
+        final Finder hourSemanticsFinder = find.byWidgetPredicate(
+          (Widget w) => w is Semantics && w.properties.label == 'Hour',
+        );
+        expect(hourSemanticsFinder, findsOneWidget);
+
+        final SemanticsNode hourNode = tester.getSemantics(hourSemanticsFinder);
+        expect(hourNode.childrenCount, equals(0));
+
+        handle.dispose();
+      },
+    );
+
+    testWidgets(
+      'TimePickerSpinner and TimePickerDial track isFocusVisible for FocusIndicator',
+      (WidgetTester tester) async {
+        final FocusHighlightStrategy originalStrategy =
+            FocusManager.instance.highlightStrategy;
+        addTearDown(() {
+          FocusManager.instance.highlightStrategy = originalStrategy;
+        });
+
+        FocusManager.instance.highlightStrategy = .alwaysTouch;
+        await tester.pumpWidget(
+          buildTestApp(
+            const Column(
+              mainAxisSize: .min,
+              children: <Widget>[
+                TimePickerSpinner(value: JustTimeOfDay(hour: 9, minute: 30)),
+                TimePickerDial(
+                  selectedTime: JustTimeOfDay(hour: 9, minute: 30),
+                ),
+              ],
+            ),
+          ),
+        );
+
+        final FocusNode spinnerFocus = tester
+            .widget<Focus>(
+              find.descendant(
+                of: find.byType(TimePickerSpinner),
+                matching: find.byType(Focus),
+              ),
+            )
+            .focusNode!;
+        spinnerFocus.requestFocus();
+        await tester.pumpAndSettle();
+
+        FocusIndicator spinnerIndicator = tester.widget<FocusIndicator>(
+          find.descendant(
+            of: find.byType(TimePickerSpinner),
+            matching: find.byType(FocusIndicator),
+          ),
+        );
+        expect(spinnerIndicator.isFocused, isFalse);
+
+        FocusManager.instance.highlightStrategy = .alwaysTraditional;
+        await tester.pumpAndSettle();
+
+        spinnerIndicator = tester.widget<FocusIndicator>(
+          find.descendant(
+            of: find.byType(TimePickerSpinner),
+            matching: find.byType(FocusIndicator),
+          ),
+        );
+        expect(spinnerIndicator.isFocused, isTrue);
+
+        // Now verify TimePickerDial focus visibility
+        FocusManager.instance.highlightStrategy = .alwaysTouch;
+        final FocusNode dialFocus = tester
+            .widget<Focus>(
+              find.descendant(
+                of: find.byType(TimePickerDial),
+                matching: find.byType(Focus),
+              ),
+            )
+            .focusNode!;
+        dialFocus.requestFocus();
+        await tester.pumpAndSettle();
+
+        FocusIndicator dialIndicator = tester.widget<FocusIndicator>(
+          find.descendant(
+            of: find.byType(TimePickerDial),
+            matching: find.byType(FocusIndicator),
+          ),
+        );
+        expect(dialIndicator.isFocused, isFalse);
+
+        FocusManager.instance.highlightStrategy = .alwaysTraditional;
+        await tester.pumpAndSettle();
+
+        dialIndicator = tester.widget<FocusIndicator>(
+          find.descendant(
+            of: find.byType(TimePickerDial),
+            matching: find.byType(FocusIndicator),
+          ),
+        );
+        expect(dialIndicator.isFocused, isTrue);
+      },
+    );
+
+    testWidgets(
+      'JustTimePicker header buttons include FocusIndicator and exclude duplicate semantics',
+      (WidgetTester tester) async {
+        final SemanticsHandle handle = tester.ensureSemantics();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            const JustTimePicker.inline(
+              value: JustTimeOfDay(hour: 9, minute: 41),
+              mode: .spinner,
+              timeFormat: .twelveHour,
+            ),
+          ),
+        );
+
+        // 5 header buttons (hour, minute, AM, PM, mode switch) + 1 spinner FocusIndicator
+        expect(
+          find.descendant(
+            of: find.byType(JustTimePicker),
+            matching: find.byType(FocusIndicator),
+          ),
+          findsNWidgets(6),
+        );
+
+        final SemanticsNode amNode = tester.getSemantics(
+          find.byWidgetPredicate(
+            (Widget w) => w is Semantics && w.properties.label == 'AM',
+          ),
+        );
+        expect(amNode.label, equals('AM'));
+
+        handle.dispose();
+      },
+    );
+
+    testWidgets(
+      'Neobrutalism uses textPrimary border on header segments and TimePickerInput toggle',
+      (WidgetTester tester) async {
+        // Use light colors (distinct textPrimary vs borderDefault) with neobrutalism preset
+        final JustThemeData neoTheme = JustThemeData.light.copyWith(
+          preset: .neobrutalism,
+        );
+        final Color neoBorder = neoTheme.colors.textPrimary;
+        final Color neoBorderDefault = neoTheme.colors.borderDefault;
+        expect(neoBorder, isNot(equals(neoBorderDefault)));
+
+        await tester.pumpWidget(
+          buildTestApp(
+            const JustTimePicker.inline(
+              value: JustTimeOfDay(hour: 9, minute: 41),
+              mode: .input,
+              timeFormat: .twelveHour,
+            ),
+            theme: neoTheme,
+          ),
+        );
+
+        // Verify header hour/minute/AM-PM/mode buttons and TimePickerInput AM/PM toggle
+        // do not use colors.borderDefault when presetTokens.showsDefaultBorder is true.
+        final Container minuteButtonContainer = tester.widget<Container>(
+          find
+              .ancestor(of: find.text('41'), matching: find.byType(Container))
+              .first,
+        );
+        final BoxDecoration minuteDec =
+            minuteButtonContainer.decoration! as BoxDecoration;
+        expect((minuteDec.border! as Border).top.color, equals(neoBorder));
+
+        final Container inputPeriodContainer = tester.widget<Container>(
+          find
+              .ancestor(
+                of: find.descendant(
+                  of: find.byType(TimePickerInput),
+                  matching: find.text('AM'),
+                ),
+                matching: find.byWidgetPredicate(
+                  (Widget w) =>
+                      w is Container &&
+                      w.decoration is BoxDecoration &&
+                      (w.decoration! as BoxDecoration).border != null,
+                ),
+              )
+              .first,
+        );
+        final BoxDecoration inputPeriodDec =
+            inputPeriodContainer.decoration! as BoxDecoration;
+        expect((inputPeriodDec.border! as Border).top.color, equals(neoBorder));
+
+        // Also check header AM/PM container uses textPrimary border
+        final Container headerPeriodContainer = tester.widget<Container>(
+          find
+              .ancestor(
+                of: find.text('AM').first,
+                matching: find.byWidgetPredicate(
+                  (Widget w) =>
+                      w is Container &&
+                      w.decoration is BoxDecoration &&
+                      (w.decoration! as BoxDecoration).border != null,
+                ),
+              )
+              .first,
+        );
+        final BoxDecoration headerPeriodDec =
+            headerPeriodContainer.decoration! as BoxDecoration;
+        expect(
+          (headerPeriodDec.border! as Border).top.color,
+          equals(neoBorder),
+        );
+      },
+    );
+
+    testWidgets('TimePickerDial and TimePickerSpinner handle KeyRepeatEvent', (
+      WidgetTester tester,
+    ) async {
+      JustTimeOfDay dialTime = const JustTimeOfDay(hour: 9, minute: 0);
+      JustTimeOfDay spinnerTime = const JustTimeOfDay(hour: 9, minute: 0);
+
+      await tester.pumpWidget(
+        buildTestApp(
+          StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: .min,
+                children: <Widget>[
+                  TimePickerDial(
+                    selectedTime: dialTime,
+                    activeSegment: .hour,
+                    onChanged: (JustTimeOfDay t) =>
+                        setState(() => dialTime = t),
+                  ),
+                  TimePickerSpinner(
+                    value: spinnerTime,
+                    onChanged: (JustTimeOfDay t) =>
+                        setState(() => spinnerTime = t),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      );
+
+      // Dial repeat key (even without pump between down and repeat)
+      final FocusNode dialFocus = tester
+          .widget<Focus>(
+            find.descendant(
+              of: find.byType(TimePickerDial),
+              matching: find.byType(Focus),
+            ),
+          )
+          .focusNode!;
+      dialFocus.requestFocus();
+      await tester.pumpAndSettle();
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowUp);
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowUp);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pumpAndSettle();
+      expect(dialTime.hour, equals(11));
+
+      // Spinner repeat key
+      final FocusNode spinnerFocus = tester
+          .widget<Focus>(
+            find.descendant(
+              of: find.byType(TimePickerSpinner),
+              matching: find.byType(Focus),
+            ),
+          )
+          .focusNode!;
+      spinnerFocus.requestFocus();
+      await tester.pumpAndSettle();
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      expect(spinnerTime.hour, equals(10));
+
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowDown);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      expect(spinnerTime.hour, equals(11));
+    });
+
+    testWidgets(
+      'Reduced motion disables animations in spinner, dial, and input',
+      (WidgetTester tester) async {
+        JustTimeOfDay spinnerTime = const JustTimeOfDay(hour: 10, minute: 0);
+        JustTimeOfDay dialTime = const JustTimeOfDay(hour: 10, minute: 0);
+
+        await tester.pumpWidget(
+          MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: buildTestApp(
+              StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return MediaQuery(
+                    data: const MediaQueryData(disableAnimations: true),
+                    child: Column(
+                      mainAxisSize: .min,
+                      children: <Widget>[
+                        const TimePickerInput(
+                          selectedTime: JustTimeOfDay(hour: 9, minute: 0),
+                          timeFormat: .twelveHour,
+                        ),
+                        TimePickerSpinner(
+                          value: spinnerTime,
+                          onChanged: (JustTimeOfDay t) =>
+                              setState(() => spinnerTime = t),
+                        ),
+                        TimePickerDial(
+                          selectedTime: dialTime,
+                          activeSegment: .hour,
+                          onChanged: (JustTimeOfDay t) =>
+                              setState(() => dialTime = t),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+
+        final AnimatedContainer amToggle = tester.widget<AnimatedContainer>(
+          find
+              .ancestor(
+                of: find.descendant(
+                  of: find.byType(TimePickerInput),
+                  matching: find.text('AM'),
+                ),
+                matching: find.byType(AnimatedContainer),
+              )
+              .first,
+        );
+        final AnimatedContainer pmToggle = tester.widget<AnimatedContainer>(
+          find
+              .ancestor(
+                of: find.descendant(
+                  of: find.byType(TimePickerInput),
+                  matching: find.text('PM'),
+                ),
+                matching: find.byType(AnimatedContainer),
+              )
+              .first,
+        );
+        expect(amToggle.duration, equals(Duration.zero));
+        expect(pmToggle.duration, equals(Duration.zero));
+
+        final AnimatedDefaultTextStyle wheelText = tester
+            .widget<AnimatedDefaultTextStyle>(
+              find
+                  .descendant(
+                    of: find.byType(TimePickerSpinner),
+                    matching: find.byType(AnimatedDefaultTextStyle),
+                  )
+                  .first,
+            );
+        expect(wheelText.duration, equals(Duration.zero));
+
+        // Keyboard step in reduced motion jumps immediately without throwing
+        final FocusNode spinnerFocus = tester
+            .widget<Focus>(
+              find.descendant(
+                of: find.byType(TimePickerSpinner),
+                matching: find.byType(Focus),
+              ),
+            )
+            .focusNode!;
+        spinnerFocus.requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await tester.pump();
+        expect(spinnerTime.hour, equals(11));
+
+        // Dial keyboard step in reduced motion settles immediately
+        final FocusNode dialFocus = tester
+            .widget<Focus>(
+              find.descendant(
+                of: find.byType(TimePickerDial),
+                matching: find.byType(Focus),
+              ),
+            )
+            .focusNode!;
+        dialFocus.requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+        await tester.pump();
+        expect(dialTime.hour, equals(11));
+      },
+    );
+
+    testWidgets(
+      'TimePickerSpinner showContainer defaults true and omits card when false',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            const Column(
+              mainAxisSize: .min,
+              children: <Widget>[
+                TimePickerSpinner(
+                  key: Key('with-container'),
+                  value: JustTimeOfDay(hour: 9, minute: 30),
+                ),
+                TimePickerSpinner(
+                  key: Key('without-container'),
+                  value: JustTimeOfDay(hour: 9, minute: 30),
+                  showContainer: false,
+                ),
+              ],
+            ),
+          ),
+        );
+
+        bool hasShadowedCard(Key key) {
+          return tester
+              .widgetList<Container>(
+                find.descendant(
+                  of: find.byKey(key),
+                  matching: find.byType(Container),
+                ),
+              )
+              .any((Container c) {
+                final Decoration? dec = c.decoration;
+                return dec is BoxDecoration &&
+                    dec.boxShadow != null &&
+                    dec.boxShadow!.isNotEmpty;
+              });
+        }
+
+        expect(hasShadowedCard(const Key('with-container')), isTrue);
+        expect(hasShadowedCard(const Key('without-container')), isFalse);
+      },
+    );
+
+    testWidgets(
+      'JustTimePickerStyle and JustTimePickerTheme override overAndUnderCenterOpacity and spinnerRowHeight',
+      (WidgetTester tester) async {
+        const Color customSelected = Color(0xFF123456);
+        const Color customDialText = Color(0xFF654321);
+        const Color customPeriodActive = Color(0xFF224466);
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              extensions: const <ThemeExtension<dynamic>>[
+                JustTimePickerTheme(
+                  inlineStyle: JustTimePickerStyle(
+                    overAndUnderCenterOpacity: 0.85,
+                    spinnerRowHeight: 50.0,
+                    selectedTextColor: customSelected,
+                    dialTextColor: customDialText,
+                    periodActiveColor: customPeriodActive,
+                  ),
+                ),
+              ],
+            ),
+            home: JustThemeProvider(
+              lightTheme: JustThemeData.light,
+              child: const Scaffold(
+                body: Center(
+                  child: JustTimePicker.inline(
+                    value: JustTimeOfDay(hour: 9, minute: 41),
+                    mode: .spinner,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final ListWheelScrollView hourWheel = tester
+            .widget<ListWheelScrollView>(
+              find.byType(ListWheelScrollView).first,
+            );
+        expect(hourWheel.overAndUnderCenterOpacity, equals(0.85));
+        expect(hourWheel.itemExtent, equals(50.0));
+
+        // Verify header uses inlineStyle periodActiveColor fallback
+        final Container hourHeaderContainer = tester.widget<Container>(
+          find
+              .ancestor(
+                of: find.text('09').first,
+                matching: find.byType(Container),
+              )
+              .first,
+        );
+        final BoxDecoration hourHeaderDec =
+            hourHeaderContainer.decoration! as BoxDecoration;
+        expect(hourHeaderDec.color, equals(customPeriodActive));
+
+        // Instance style overrides theme extension
+        await tester.pumpWidget(
+          buildTestApp(
+            const TimePickerSpinner(
+              value: JustTimeOfDay(hour: 9, minute: 41),
+              style: JustTimePickerStyle(
+                overAndUnderCenterOpacity: 0.92,
+                spinnerRowHeight: 52.0,
+              ),
+            ),
+          ),
+        );
+
+        final ListWheelScrollView styledWheel = tester
+            .widget<ListWheelScrollView>(
+              find.byType(ListWheelScrollView).first,
+            );
+        expect(styledWheel.overAndUnderCenterOpacity, equals(0.92));
+        expect(styledWheel.itemExtent, equals(52.0));
+      },
+    );
+
+    testWidgets(
+      'TimePickerDial uses localized nextValueLabel and previousValueLabel',
+      (WidgetTester tester) async {
+        final SemanticsHandle handle = tester.ensureSemantics();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            const TimePickerDial(
+              selectedTime: JustTimeOfDay(hour: 10, minute: 0),
+              activeSegment: .hour,
+              locale: JustTimePickerLocale(
+                hourLabel: 'Jam',
+                nextValueLabel: 'Nilai berikutnya',
+                previousValueLabel: 'Nilai sebelumnya',
+              ),
+            ),
+          ),
+        );
+
+        final Finder semanticsFinder = find.byWidgetPredicate(
+          (Widget w) => w is Semantics && w.properties.label == 'Jam',
+        );
+        expect(semanticsFinder, findsOneWidget);
+
+        final SemanticsNode dialSemantics = tester.getSemantics(
+          semanticsFinder,
+        );
+        expect(dialSemantics.increasedValue, equals('Nilai berikutnya'));
+        expect(dialSemantics.decreasedValue, equals('Nilai sebelumnya'));
+
+        handle.dispose();
+      },
+    );
+
+    testWidgets(
+      'JustTimePicker exposes semanticsLabel and FocusIndicator on dropdown and modal triggers',
+      (WidgetTester tester) async {
+        final SemanticsHandle handle = tester.ensureSemantics();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            const Column(
+              mainAxisSize: .min,
+              children: <Widget>[
+                JustTimePicker.inline(
+                  value: JustTimeOfDay(hour: 9, minute: 41),
+                  mode: .spinner,
+                  semanticsLabel: 'Pilih waktu',
+                ),
+                JustTimePicker.dropdown(
+                  value: JustTimeOfDay(hour: 9, minute: 41),
+                  semanticsLabel: 'Dropdown waktu',
+                ),
+                JustTimePicker.modal(
+                  value: JustTimeOfDay(hour: 9, minute: 41),
+                  semanticsLabel: 'Modal waktu',
+                ),
+                JustTimePicker.responsive(
+                  value: JustTimeOfDay(hour: 9, minute: 41),
+                  semanticsLabel: 'Responsif waktu',
+                ),
+              ],
+            ),
+          ),
+        );
+
+        final Finder inlineSemantics = find.byWidgetPredicate(
+          (Widget w) =>
+              w is Semantics &&
+              w.properties.label == 'Pilih waktu' &&
+              w.container &&
+              w.explicitChildNodes,
+        );
+        expect(inlineSemantics, findsOneWidget);
+
+        expect(
+          find.descendant(
+            of: find.byWidgetPredicate(
+              (Widget w) => w is JustTimePicker && w.variant == .dropdown,
+            ),
+            matching: find.byType(FocusIndicator),
+          ),
+          findsOneWidget,
+        );
+
+        expect(
+          find.descendant(
+            of: find.byWidgetPredicate(
+              (Widget w) => w is JustTimePicker && w.variant == .modal,
+            ),
+            matching: find.byType(FocusIndicator),
+          ),
+          findsOneWidget,
+        );
+
+        handle.dispose();
+      },
+    );
   });
 }
