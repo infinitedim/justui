@@ -7,6 +7,7 @@ import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/scroll/just_scroll_area.dart';
 import 'package:just_ui_core/src/components/scroll/just_scroll_area_style.dart';
 import 'package:just_ui_core/src/components/scroll/just_scroll_area_theme.dart';
+import 'package:just_ui_core/src/components/shared/_shared_focus_indicator.dart';
 import 'package:just_ui_core/src/components/shared/_shared_pressable.dart';
 
 void main() {
@@ -19,6 +20,9 @@ void main() {
     double lerpFactor = 0.10,
     double wheelMultiplier = 1.0,
     bool showScrollbar = true,
+    bool? thumbVisibility,
+    bool? trackVisibility,
+    String? semanticsLabel,
     bool fadeEdges = false,
     JustScrollFadeMode fadeMode = JustScrollFadeMode.overlay,
     bool scrollToTopButton = false,
@@ -36,6 +40,7 @@ void main() {
     JustScrollAreaStyle? style,
     JustThemeData? theme,
     JustScrollAreaTheme? scrollTheme,
+    bool disableAnimations = false,
   }) {
     return MaterialApp(
       theme: ThemeData(
@@ -46,28 +51,43 @@ void main() {
       home: JustThemeProvider(
         lightTheme: theme ?? JustThemeData.light,
         child: Scaffold(
-          body: JustScrollArea(
-            controller: controller,
-            smoothScroll: smoothScroll,
-            lerpFactor: lerpFactor,
-            wheelMultiplier: wheelMultiplier,
-            showScrollbar: showScrollbar,
-            fadeEdges: fadeEdges,
-            fadeMode: fadeMode,
-            scrollToTopButton: scrollToTopButton,
-            scrollToTopThreshold: scrollToTopThreshold,
-            scrollToTopAlignment: scrollToTopAlignment,
-            scrollToTopOffset: scrollToTopOffset,
-            reachBottomThreshold: reachBottomThreshold,
-            onReachBottom: onReachBottom,
-            onScrollStart: onScrollStart,
-            onScrollEnd: onScrollEnd,
-            direction: direction,
-            padding: padding,
-            maxHeight: maxHeight,
-            keyboardScrollStep: keyboardScrollStep,
-            style: style,
-            child: child,
+          body: Builder(
+            builder: (BuildContext context) {
+              Widget content = JustScrollArea(
+                controller: controller,
+                smoothScroll: smoothScroll,
+                lerpFactor: lerpFactor,
+                wheelMultiplier: wheelMultiplier,
+                showScrollbar: showScrollbar,
+                thumbVisibility: thumbVisibility,
+                trackVisibility: trackVisibility,
+                semanticsLabel: semanticsLabel,
+                fadeEdges: fadeEdges,
+                fadeMode: fadeMode,
+                scrollToTopButton: scrollToTopButton,
+                scrollToTopThreshold: scrollToTopThreshold,
+                scrollToTopAlignment: scrollToTopAlignment,
+                scrollToTopOffset: scrollToTopOffset,
+                reachBottomThreshold: reachBottomThreshold,
+                onReachBottom: onReachBottom,
+                onScrollStart: onScrollStart,
+                onScrollEnd: onScrollEnd,
+                direction: direction,
+                padding: padding,
+                maxHeight: maxHeight,
+                keyboardScrollStep: keyboardScrollStep,
+                style: style,
+                child: child,
+              );
+              if (disableAnimations) {
+                content = MediaQuery(
+                  data: MediaQuery.of(context)
+                      .copyWith(disableAnimations: true),
+                  child: content,
+                );
+              }
+              return content;
+            },
           ),
         ),
       ),
@@ -85,6 +105,11 @@ void main() {
         scrollbarRadius: Radius.circular(4.0),
         scrollbarPadding: EdgeInsets.all(2.0),
         scrollbarMargin: 4.0,
+        thumbVisibility: true,
+        trackVisibility: true,
+        scrollbarTrackRadius: Radius.circular(6.0),
+        scrollbarCrossAxisMargin: 3.0,
+        focusBorderRadius: BorderRadius.all(Radius.circular(10.0)),
         smoothScroll: true,
         lerpFactor: 0.15,
         wheelMultiplier: 1.2,
@@ -99,6 +124,14 @@ void main() {
       expect(style.scrollbarRadius, equals(const Radius.circular(4.0)));
       expect(style.scrollbarPadding, equals(const EdgeInsets.all(2.0)));
       expect(style.scrollbarMargin, equals(4.0));
+      expect(style.thumbVisibility, isTrue);
+      expect(style.trackVisibility, isTrue);
+      expect(style.scrollbarTrackRadius, equals(const Radius.circular(6.0)));
+      expect(style.scrollbarCrossAxisMargin, equals(3.0));
+      expect(
+        style.focusBorderRadius,
+        equals(const BorderRadius.all(Radius.circular(10.0))),
+      );
       expect(style.smoothScroll, isTrue);
       expect(style.lerpFactor, equals(0.15));
       expect(style.wheelMultiplier, equals(1.2));
@@ -789,5 +822,379 @@ void main() {
       await tester.pumpAndSettle();
       expect(controller.offset, closeTo(50.0, 1.0));
     });
+
+    testWidgets(
+      'KeyRepeatEvent continues scrolling and Home/End jump to bounds',
+      (WidgetTester tester) async {
+        final ScrollController controller = ScrollController();
+        addTearDown(controller.dispose);
+
+        await tester.pumpWidget(
+          buildTestScrollArea(
+            controller: controller,
+            smoothScroll: false,
+            keyboardScrollStep: 50.0,
+            child: Column(
+              children: .generate(
+                30,
+                (int index) =>
+                    SizedBox(height: 100, child: Text('RepeatItem $index')),
+              ),
+            ),
+          ),
+        );
+
+        final Finder focusFinder = find.descendant(
+          of: find.byType(JustScrollArea),
+          matching: find.byType(Focus),
+        );
+        final Focus focusWidget = tester.widget<Focus>(focusFinder.first);
+        focusWidget.focusNode?.requestFocus();
+        await tester.pumpAndSettle();
+
+        // KeyDown + KeyRepeat should advance twice
+        await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowDown);
+        await tester.pumpAndSettle();
+        expect(controller.offset, equals(50.0));
+
+        await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowDown);
+        await tester.pumpAndSettle();
+        expect(controller.offset, equals(100.0));
+
+        await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowDown);
+        await tester.pumpAndSettle();
+
+        // End jumps to maxScrollExtent
+        await tester.sendKeyEvent(LogicalKeyboardKey.end);
+        await tester.pumpAndSettle();
+        expect(controller.offset, equals(controller.position.maxScrollExtent));
+
+        // Home jumps back to 0.0
+        await tester.sendKeyEvent(LogicalKeyboardKey.home);
+        await tester.pumpAndSettle();
+        expect(controller.offset, equals(0.0));
+      },
+    );
+
+    testWidgets('Home and End work in horizontal direction', (
+      WidgetTester tester,
+    ) async {
+      final ScrollController controller = ScrollController();
+      addTearDown(controller.dispose);
+
+      await tester.pumpWidget(
+        buildTestScrollArea(
+          direction: Axis.horizontal,
+          controller: controller,
+          smoothScroll: false,
+          child: Row(
+            children: .generate(
+              30,
+              (int index) => SizedBox(width: 120, child: Text('HBound $index')),
+            ),
+          ),
+        ),
+      );
+
+      final Finder focusFinder = find.descendant(
+        of: find.byType(JustScrollArea),
+        matching: find.byType(Focus),
+      );
+      final Focus focusWidget = tester.widget<Focus>(focusFinder.first);
+      focusWidget.focusNode?.requestFocus();
+      await tester.pumpAndSettle();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.end);
+      await tester.pumpAndSettle();
+      expect(controller.offset, equals(controller.position.maxScrollExtent));
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.home);
+      await tester.pumpAndSettle();
+      expect(controller.offset, equals(0.0));
+    });
+
+    testWidgets(
+      'Reduced motion jumps immediately on keyboard and scroll-to-top tap',
+      (WidgetTester tester) async {
+        final ScrollController controller = ScrollController();
+        addTearDown(controller.dispose);
+
+        await tester.pumpWidget(
+          buildTestScrollArea(
+            controller: controller,
+            smoothScroll: true,
+            scrollToTopButton: true,
+            scrollToTopThreshold: 100.0,
+            keyboardScrollStep: 60.0,
+            disableAnimations: true,
+            child: Column(
+              children: .generate(
+                30,
+                (int index) =>
+                    SizedBox(height: 100, child: Text('Reduced $index')),
+              ),
+            ),
+          ),
+        );
+
+        final Finder focusFinder = find.descendant(
+          of: find.byType(JustScrollArea),
+          matching: find.byType(Focus),
+        );
+        final Focus focusWidget = tester.widget<Focus>(focusFinder.first);
+        focusWidget.focusNode?.requestFocus();
+        await tester.pump();
+
+        // Keyboard arrow down must jump immediately without smooth lerp frames
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await tester.pump();
+        expect(controller.offset, equals(60.0));
+
+        // End key must jump immediately to maxScrollExtent
+        await tester.sendKeyEvent(LogicalKeyboardKey.end);
+        await tester.pump();
+        expect(controller.offset, equals(controller.position.maxScrollExtent));
+
+        // Scroll-to-top button tap must jump immediately to 0.0
+        expect(find.byType(JustPressable), findsOneWidget);
+        await tester.tap(find.byType(JustPressable));
+        await tester.pump();
+        expect(controller.offset, equals(0.0));
+      },
+    );
+  });
+
+  group('Focus Indicator, Semantics & Scrollbar Visibility Tests', () {
+    testWidgets(
+      'Shows FocusIndicator on keyboard focus and hides in touch mode',
+      (WidgetTester tester) async {
+        FocusManager.instance.highlightStrategy =
+            FocusHighlightStrategy.alwaysTraditional;
+        addTearDown(() {
+          FocusManager.instance.highlightStrategy =
+              FocusHighlightStrategy.automatic;
+        });
+
+        await tester.pumpWidget(
+          buildTestScrollArea(
+            smoothScroll: false,
+            child: Column(
+              children: .generate(
+                10,
+                (int index) =>
+                    SizedBox(height: 100, child: Text('FocusItem $index')),
+              ),
+            ),
+          ),
+        );
+
+        final Finder indicatorFinder = find.descendant(
+          of: find.byType(JustScrollArea),
+          matching: find.byType(FocusIndicator),
+        );
+        expect(indicatorFinder, findsOneWidget);
+        expect(
+          tester.widget<FocusIndicator>(indicatorFinder).isFocused,
+          isFalse,
+        );
+
+        final Finder focusFinder = find.descendant(
+          of: find.byType(JustScrollArea),
+          matching: find.byType(Focus),
+        );
+        tester.widget<Focus>(focusFinder.first).focusNode?.requestFocus();
+        await tester.pumpAndSettle();
+
+        final FocusIndicator activeIndicator = tester.widget<FocusIndicator>(
+          indicatorFinder,
+        );
+        expect(activeIndicator.isFocused, isTrue);
+        expect(
+          activeIndicator.borderRadius,
+          equals(
+            const DefaultPresetTokens().resolveBorderRadius(
+              JustThemeData.light.radius,
+            ),
+          ),
+        );
+
+        // Switch to touch highlight mode -> focus ring must hide
+        FocusManager.instance.highlightStrategy =
+            FocusHighlightStrategy.alwaysTouch;
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget<FocusIndicator>(indicatorFinder).isFocused,
+          isFalse,
+        );
+      },
+    );
+
+    testWidgets(
+      'FocusIndicator borderRadius respects Neobrutalism and style override',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestScrollArea(
+            theme: JustThemeData.neobrutalismLight,
+            smoothScroll: false,
+            child: const SizedBox(height: 1000, child: Text('NeoScroll')),
+          ),
+        );
+
+        final Finder indicatorFinder = find.descendant(
+          of: find.byType(JustScrollArea),
+          matching: find.byType(FocusIndicator),
+        );
+        expect(
+          tester.widget<FocusIndicator>(indicatorFinder).borderRadius,
+          equals(BorderRadius.zero),
+        );
+
+        await tester.pumpWidget(
+          buildTestScrollArea(
+            style: const JustScrollAreaStyle(
+              focusBorderRadius: .all(.circular(12.0)),
+            ),
+            smoothScroll: false,
+            child: const SizedBox(height: 1000, child: Text('CustomRadius')),
+          ),
+        );
+
+        expect(
+          tester.widget<FocusIndicator>(indicatorFinder).borderRadius,
+          equals(const BorderRadius.all(Radius.circular(12.0))),
+        );
+      },
+    );
+
+    testWidgets(
+      'Exposes Semantics container with semanticsLabel on focusable region',
+      (WidgetTester tester) async {
+        final SemanticsHandle handle = tester.ensureSemantics();
+        try {
+          await tester.pumpWidget(
+            buildTestScrollArea(
+              semanticsLabel: 'Release notes scroll region',
+              smoothScroll: false,
+              child: Column(
+                children: .generate(
+                  10,
+                  (int index) =>
+                      SizedBox(height: 100, child: Text('Note $index')),
+                ),
+              ),
+            ),
+          );
+
+          final Semantics semanticsWidget = tester.widget<Semantics>(
+            find
+                .descendant(
+                  of: find.byType(JustScrollArea),
+                  matching: find.byWidgetPredicate(
+                    (Widget w) =>
+                        w is Semantics &&
+                        w.container &&
+                        w.properties.label == 'Release notes scroll region',
+                  ),
+                )
+                .first,
+          );
+          expect(semanticsWidget.container, isTrue);
+          expect(
+            semanticsWidget.properties.label,
+            equals('Release notes scroll region'),
+          );
+
+          expect(
+            tester.getSemantics(find.byType(JustScrollArea)),
+            matchesSemantics(
+              label: 'Release notes scroll region',
+              isFocusable: true,
+              hasFocusAction: true,
+            ),
+          );
+        } finally {
+          handle.dispose();
+        }
+      },
+    );
+
+    testWidgets(
+      'Passes thumbVisibility, trackVisibility, trackRadius, and crossAxisMargin to RawScrollbar',
+      (WidgetTester tester) async {
+        // Defaults: thumbVisibility false, trackVisibility false
+        await tester.pumpWidget(
+          buildTestScrollArea(
+            smoothScroll: false,
+            child: const SizedBox(height: 1200, child: Text('DefaultBar')),
+          ),
+        );
+
+        RawScrollbar scrollbar = tester.widget<RawScrollbar>(
+          find.byType(RawScrollbar),
+        );
+        expect(scrollbar.thumbVisibility, isFalse);
+        expect(scrollbar.trackVisibility, isFalse);
+        expect(scrollbar.trackBorderColor, equals(const Color(0x00000000)));
+        expect(scrollbar.crossAxisMargin, equals(0.0));
+
+        // Style and widget overrides
+        await tester.pumpWidget(
+          buildTestScrollArea(
+            smoothScroll: false,
+            thumbVisibility: true,
+            trackVisibility: true,
+            style: const JustScrollAreaStyle(
+              scrollbarTrackRadius: .circular(6.0),
+              scrollbarCrossAxisMargin: 3.0,
+            ),
+            child: const SizedBox(height: 1200, child: Text('VisibleBar')),
+          ),
+        );
+
+        scrollbar = tester.widget<RawScrollbar>(find.byType(RawScrollbar));
+        expect(scrollbar.thumbVisibility, isTrue);
+        expect(scrollbar.trackVisibility, isTrue);
+        expect(scrollbar.trackRadius, equals(const Radius.circular(6.0)));
+        expect(scrollbar.crossAxisMargin, equals(3.0));
+        expect(scrollbar.trackBorderColor, equals(const Color(0x00000000)));
+
+        // Theme fallback + Neobrutalism trackRadius zero
+        await tester.pumpWidget(
+          buildTestScrollArea(
+            theme: JustThemeData.neobrutalismLight,
+            scrollTheme: const JustScrollAreaTheme(
+              style: JustScrollAreaStyle(
+                thumbVisibility: true,
+                trackVisibility: true,
+                scrollbarTrackRadius: .circular(8.0),
+              ),
+            ),
+            smoothScroll: false,
+            child: const SizedBox(height: 1200, child: Text('ThemeBar')),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        scrollbar = tester.widget<RawScrollbar>(find.byType(RawScrollbar));
+        expect(scrollbar.thumbVisibility, isTrue);
+        expect(scrollbar.trackVisibility, isTrue);
+        expect(scrollbar.trackRadius, equals(Radius.zero));
+
+        // Track visibility without thumb visibility safely resolves to false
+        await tester.pumpWidget(
+          buildTestScrollArea(
+            smoothScroll: false,
+            thumbVisibility: false,
+            trackVisibility: true,
+            child: const SizedBox(height: 1200, child: Text('TrackOnlySafe')),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        scrollbar = tester.widget<RawScrollbar>(find.byType(RawScrollbar));
+        expect(scrollbar.thumbVisibility, isFalse);
+        expect(scrollbar.trackVisibility, isFalse);
+      },
+    );
   });
 }
