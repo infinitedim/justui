@@ -1,4 +1,4 @@
-// justui-meta: registry=c3772b4ffc7b718e004234f5ada6e4317a3a5bdcd9517c7bf4995a2119514cb8 local=047767397bbed7079af7770f171f77668ce1da272298bf72df703d9d2de561cd
+// justui-meta: registry=93c2ad3f2133cf88c143af6a337519227fd66494f878e2447634597377b8da12 local=322fa898df9ae8d69a7cdf9fc25d35f6f2ed8f02b6ba098dd68edb1c9d3724d6
 import 'package:flutter/widgets.dart';
 
 /// Customized per-instance visual styles for time picker components.
@@ -36,6 +36,9 @@ class JustTimePickerStyle {
   /// Spinner row height override (default resolved from presetTokens).
   final double? spinnerRowHeight;
 
+  /// Opacity applied to spinner wheel items above and below the center row.
+  final double? overAndUnderCenterOpacity;
+
   /// Shadow elevation override.
   final double? elevation;
 
@@ -51,6 +54,7 @@ class JustTimePickerStyle {
     this.padding,
     this.dialSize,
     this.spinnerRowHeight,
+    this.overAndUnderCenterOpacity,
     this.elevation,
   });
 }

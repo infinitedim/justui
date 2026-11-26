@@ -7,6 +7,7 @@ import 'package:flutter/services.dart'
         HapticFeedback,
         KeyDownEvent,
         KeyEvent,
+        KeyRepeatEvent,
         LogicalKeyboardKey,
         PhysicalKeyboardKey,
         SystemMouseCursors;
@@ -106,7 +107,7 @@ class _TimePickerDialState extends State<TimePickerDial>
   Timer? _autoAdvanceTimer;
   Timer? _announceTimer;
   final FocusNode _focusNode = FocusNode();
-  bool _isFocused = false;
+  bool _isFocusVisible = false;
 
   @override
   void initState() {
@@ -120,6 +121,7 @@ class _TimePickerDialState extends State<TimePickerDial>
     )..addListener(_onAnimationTick);
 
     _focusNode.addListener(_onFocusChange);
+    FocusManager.instance.addHighlightModeListener(_onHighlightModeChanged);
 
     _currentAngle = _angleForTime(
       _currentTime,
@@ -184,6 +186,7 @@ class _TimePickerDialState extends State<TimePickerDial>
   void dispose() {
     _autoAdvanceTimer?.cancel();
     _announceTimer?.cancel();
+    FocusManager.instance.removeHighlightModeListener(_onHighlightModeChanged);
     _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
     _handController.removeListener(_onAnimationTick);
@@ -192,9 +195,20 @@ class _TimePickerDialState extends State<TimePickerDial>
   }
 
   void _onFocusChange() {
-    if (mounted) {
+    _updateFocusVisible();
+  }
+
+  void _onHighlightModeChanged(FocusHighlightMode mode) {
+    _updateFocusVisible();
+  }
+
+  void _updateFocusVisible() {
+    final bool visible =
+        _focusNode.hasFocus &&
+        FocusManager.instance.highlightMode == .traditional;
+    if (mounted && visible != _isFocusVisible) {
       setState(() {
-        _isFocused = _focusNode.hasFocus;
+        _isFocusVisible = visible;
       });
     }
   }
@@ -258,7 +272,10 @@ class _TimePickerDialState extends State<TimePickerDial>
     _startRadius = _currentRadius;
     _targetRadius = targetRadius;
 
-    _handController.duration = duration;
+    final JustMotionProfile motion = context.readTheme().animations.resolve(
+      context,
+    );
+    _handController.duration = motion.normal == .zero ? .zero : duration;
     _handController.forward(from: 0.0);
   }
 
@@ -274,7 +291,7 @@ class _TimePickerDialState extends State<TimePickerDial>
   }
 
   void _triggerHaptic() {
-    final JustThemeData theme = context.justTheme;
+    final JustThemeData theme = context.readTheme();
     final JustTimePickerTheme? timePickerTheme = context
         .justThemeExtension<JustTimePickerTheme>();
     final bool isHapticEnabled =
@@ -449,10 +466,9 @@ class _TimePickerDialState extends State<TimePickerDial>
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent) return .ignored;
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) return .ignored;
 
-    final JustTimeOfDay currentTime =
-        widget.selectedTime ?? const JustTimeOfDay(hour: 12, minute: 0);
+    final JustTimeOfDay currentTime = _currentTime;
     final double size = widget.style?.dialSize ?? 240.0;
     final double outerR = _resolveOuterRadius(size);
     final double innerR = _resolveInnerRadius(size);
@@ -518,6 +534,9 @@ class _TimePickerDialState extends State<TimePickerDial>
 
     if (nextTime != null && _isTimeAllowed(nextTime)) {
       _triggerHaptic();
+      setState(() {
+        _currentTime = nextTime!;
+      });
       widget.onChanged?.call(nextTime);
       final double targetAngle = _angleForTime(
         nextTime,
@@ -541,25 +560,39 @@ class _TimePickerDialState extends State<TimePickerDial>
 
   @override
   Widget build(BuildContext context) {
-    final JustThemeData theme = context.justTheme;
     final JustColorScheme colors = context.justColors;
     final JustTypographyScheme typo = context.justTypo;
-    final JustPresetTokens presetTokens = theme.presetTokens;
+    final JustPresetTokens presetTokens = context.justPresetTokens;
+    final JustTimePickerTheme? themeExtension = context
+        .justThemeExtension<JustTimePickerTheme>();
 
     final double dialSize =
-        widget.style?.dialSize ?? presetTokens.resolveTimePickerDialSize();
+        widget.style?.dialSize ??
+        themeExtension?.inlineStyle?.dialSize ??
+        presetTokens.resolveTimePickerDialSize();
     final JustTimeOfDay time =
         widget.selectedTime ?? const JustTimeOfDay(hour: 12, minute: 0);
-    final Color dialFaceColor = widget.style?.dialFaceColor ?? colors.muted;
-    final Color handColor = widget.style?.handColor ?? colors.borderFocus;
+    final Color dialFaceColor =
+        widget.style?.dialFaceColor ??
+        themeExtension?.inlineStyle?.dialFaceColor ??
+        colors.muted;
+    final Color handColor =
+        widget.style?.handColor ??
+        themeExtension?.inlineStyle?.handColor ??
+        colors.borderFocus;
     final Color dialTextColor =
-        widget.style?.dialTextColor ?? colors.textPrimary;
+        widget.style?.dialTextColor ??
+        themeExtension?.inlineStyle?.dialTextColor ??
+        colors.textPrimary;
     final Color selectedTextColor =
-        widget.style?.selectedTextColor ?? colors.textInverse;
+        widget.style?.selectedTextColor ??
+        themeExtension?.inlineStyle?.selectedTextColor ??
+        colors.textInverse;
     final Color borderColor =
         widget.style?.borderColor ??
+        themeExtension?.inlineStyle?.borderColor ??
         (presetTokens.showsDefaultBorder
-            ? colors.borderDefault
+            ? colors.textPrimary
             : colors.borderDefault);
 
     final String selectedValueLabel = _activeSegment == .hour
@@ -572,7 +605,7 @@ class _TimePickerDialState extends State<TimePickerDial>
     final double innerR = _resolveInnerRadius(dialSize);
 
     return FocusIndicator(
-      isFocused: _isFocused,
+      isFocused: _isFocusVisible,
       borderRadius: .circular(dialSize / 2),
       child: Focus(
         focusNode: _focusNode,
@@ -583,8 +616,8 @@ class _TimePickerDialState extends State<TimePickerDial>
               ? widget.locale.hourLabel
               : widget.locale.minuteLabel,
           value: selectedValueLabel,
-          increasedValue: 'Next value',
-          decreasedValue: 'Previous value',
+          increasedValue: widget.locale.nextValueLabel,
+          decreasedValue: widget.locale.previousValueLabel,
           onIncrease: () => _handleKeyEvent(
             _focusNode,
             const KeyDownEvent(

@@ -275,7 +275,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
   }
 
   void _triggerHaptic() {
-    final JustThemeData theme = context.justTheme;
+    final JustThemeData theme = context.readTheme();
     final JustTimePickerTheme? timePickerTheme = context
         .justThemeExtension<JustTimePickerTheme>();
     final bool isHapticEnabled =
@@ -394,20 +394,33 @@ class _TimePickerInputState extends State<TimePickerInput> {
     final JustRadiusScheme radius = theme.radius;
     final JustTypographyScheme typo = context.justTypo;
     final JustPresetTokens presetTokens = theme.presetTokens;
+    final JustMotionProfile motion = context.justAnimations.resolve(context);
+    final JustTimePickerTheme? themeExtension = context
+        .justThemeExtension<JustTimePickerTheme>();
 
     final bool isAm = _currentTime.period == .am;
     final Color activeBg =
-        widget.style?.periodActiveColor ?? colors.borderFocus;
+        widget.style?.periodActiveColor ??
+        themeExtension?.inlineStyle?.periodActiveColor ??
+        colors.borderFocus;
     final Color activeFg =
-        widget.style?.selectedTextColor ?? colors.textInverse;
+        widget.style?.selectedTextColor ??
+        themeExtension?.inlineStyle?.selectedTextColor ??
+        colors.textInverse;
     final Color inactiveBg = colors.muted;
     final Color inactiveFg =
-        widget.style?.dialTextColor ?? colors.textSecondary;
+        widget.style?.dialTextColor ??
+        themeExtension?.inlineStyle?.dialTextColor ??
+        colors.textSecondary;
     final Color borderColor =
         widget.style?.borderColor ??
+        themeExtension?.inlineStyle?.borderColor ??
         (presetTokens.showsDefaultBorder
-            ? colors.borderDefault
+            ? colors.textPrimary
             : colors.borderDefault);
+    final Duration toggleDuration = motion.fast == .zero
+        ? .zero
+        : const Duration(milliseconds: 150);
 
     final BorderRadius resolvedRadius = presetTokens.resolveBorderRadius(
       radius,
@@ -417,7 +430,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
       decoration: BoxDecoration(
         color: inactiveBg,
         borderRadius: resolvedRadius,
-        border: Border.all(
+        border: .all(
           color: borderColor,
           width: presetTokens.showsDefaultBorder
               ? presetTokens.borderWidth
@@ -432,11 +445,12 @@ class _TimePickerInputState extends State<TimePickerInput> {
             button: true,
             label: widget.locale.amLabel,
             selected: isAm,
+            excludeSemantics: true,
             child: GestureDetector(
               behavior: .opaque,
               onTap: () => _setPeriod(.am),
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
+                duration: toggleDuration,
                 curve: Curves.easeInOut,
                 padding: const .symmetric(horizontal: 10.0, vertical: 6.0),
                 decoration: BoxDecoration(
@@ -447,7 +461,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
                   widget.locale.amLabel,
                   style: typo.bodySm.copyWith(
                     color: isAm ? activeFg : inactiveFg,
-                    fontWeight: isAm ? FontWeight.w700 : FontWeight.w500,
+                    fontWeight: isAm ? .w700 : .w500,
                   ),
                 ),
               ),
@@ -458,11 +472,12 @@ class _TimePickerInputState extends State<TimePickerInput> {
             button: true,
             label: widget.locale.pmLabel,
             selected: !isAm,
+            excludeSemantics: true,
             child: GestureDetector(
               behavior: .opaque,
               onTap: () => _setPeriod(.pm),
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
+                duration: toggleDuration,
                 curve: Curves.easeInOut,
                 padding: const .symmetric(horizontal: 10.0, vertical: 6.0),
                 decoration: BoxDecoration(
@@ -473,7 +488,7 @@ class _TimePickerInputState extends State<TimePickerInput> {
                   widget.locale.pmLabel,
                   style: typo.bodySm.copyWith(
                     color: !isAm ? activeFg : inactiveFg,
-                    fontWeight: !isAm ? FontWeight.w700 : FontWeight.w500,
+                    fontWeight: !isAm ? .w700 : .w500,
                   ),
                 ),
               ),

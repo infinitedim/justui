@@ -1,4 +1,4 @@
-// justui-meta: registry=a2e92ec04718f7bbb37868751cb48aa7029df7a7427cb6327c940035d3e47b29 local=2d81158d2831ecae039f39b9c74b5bf96e173f32e199a64277c5013b1dceeb6e
+// justui-meta: registry=64e44d561063cee7cb5445cc168c5bcd867fd4168a65bd7b94895a4ad86c746c local=def316ccce4ef1eda5bc46ba38a39070eba7f955a7a25f598d82f0a42e41474e
 /// Display variant for time pickers (mirrors date picker variants).
 enum JustTimePickerVariant {
   /// Renders directly in the widget tree without overlay.
@@ -79,6 +79,12 @@ class JustTimePickerLocale {
   /// Tooltip text for switching to spinner mode.
   final String spinnerModeTooltip;
 
+  /// Semantic label for the increased (next) value on the dial.
+  final String nextValueLabel;
+
+  /// Semantic label for the decreased (previous) value on the dial.
+  final String previousValueLabel;
+
   const JustTimePickerLocale({
     this.hourLabel = 'Hour',
     this.minuteLabel = 'Minute',
@@ -90,6 +96,8 @@ class JustTimePickerLocale {
     this.dialModeTooltip = 'Switch to dial mode',
     this.inputModeTooltip = 'Switch to text input',
     this.spinnerModeTooltip = 'Switch to spinner mode',
+    this.nextValueLabel = 'Next value',
+    this.previousValueLabel = 'Previous value',
   });
 }
 

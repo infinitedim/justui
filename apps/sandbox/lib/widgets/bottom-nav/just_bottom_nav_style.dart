@@ -1,4 +1,4 @@
-// justui-meta: registry=31bc6f0bcf514a99e44c64dd24a91fc8879481846c1c5b2631c99d23b10091c9 local=072de7f41217ad6d52fb1f0e8c5a57d11c318b494e824a08efc840750ae77792
+// justui-meta: registry=ab8e0e1323f0bc9a32a69689dfcfc033a77c998ac585799ccc3a494f9dddc6de local=063879799de9021cb71fe91dbc143bd0ddab3a208feb15207005cb9e18854d60
 import 'package:flutter/widgets.dart';
 
 /// Customized per-instance visual styles for [JustBottomNav].
@@ -12,11 +12,20 @@ class JustBottomNavStyle {
   /// Custom background color of the bar.
   final Color? backgroundColor;
 
+  /// Custom border color of the navigation bar container.
+  final Color? borderColor;
+
   /// Custom border radius of the bar (especially useful for the floating variant).
   final BorderRadius? borderRadius;
 
   /// Custom color of the active item (icon and text).
   final Color? activeColor;
+
+  /// Custom color of the active item indicator bar.
+  final Color? activeIndicatorColor;
+
+  /// Whether to render a compact active indicator bar beneath the selected item.
+  final bool? showActiveIndicator;
 
   /// Custom color of inactive items.
   final Color? inactiveColor;
@@ -37,8 +46,11 @@ class JustBottomNavStyle {
     this.height,
     this.padding,
     this.backgroundColor,
+    this.borderColor,
     this.borderRadius,
     this.activeColor,
+    this.activeIndicatorColor,
+    this.showActiveIndicator,
     this.inactiveColor,
     this.textStyle,
     this.iconSize,

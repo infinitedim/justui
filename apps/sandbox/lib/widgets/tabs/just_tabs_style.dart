@@ -1,4 +1,4 @@
-// justui-meta: registry=a073f6ea0cd1aa1abbc4067a868638a7cd4150c6020df6d07ae5adf5fb7a7351 local=4dfe012cbafb8e918b1f3591ea3d6041c5e3cb4d1e10c35ebd8e7d1262c937df
+// justui-meta: registry=c46adbf1a8e044e411e1cf4cc69cd127250f7eda149972a070a974ad98c6eef2 local=632cd4868bd48de795ad068aef2316068234c5977c011c5519c8c3b8d45141d2
 import 'package:flutter/widgets.dart';
 
 /// Customized per-instance visual styles for [JustTabs].
@@ -36,6 +36,12 @@ class JustTabsStyle {
   /// Custom border radius of the tab bar container.
   final BorderRadius? containerRadius;
 
+  /// Custom bottom hairline color for the tab bar container (e.g. [JustTabVariant.line]).
+  final Color? borderBottomColor;
+
+  /// Custom bottom hairline width for the tab bar container.
+  final double? borderBottomWidth;
+
   const JustTabsStyle({
     this.padding,
     this.tabPadding,
@@ -48,5 +54,7 @@ class JustTabsStyle {
     this.indicatorThickness,
     this.containerBackgroundColor,
     this.containerRadius,
+    this.borderBottomColor,
+    this.borderBottomWidth,
   });
 }

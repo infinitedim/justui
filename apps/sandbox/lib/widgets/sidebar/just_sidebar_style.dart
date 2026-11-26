@@ -1,4 +1,4 @@
-// justui-meta: registry=7cbfc66312bf9a57a8827b7be209177862cf2babb933ab1930263adcc923f09b local=8a8885f7f7c7ea2d33a44d6e6c21f929d572a6919cec03d192d045f850b86424
+// justui-meta: registry=290204745641c182d34ade28446832318c1663291c7b0950490f0c44ce069396 local=40f112ae00144cb4f2c7175a975c7bd4596db65add426dfd4b58d86fce0f5e80
 import 'package:flutter/widgets.dart';
 
 /// Customized per-instance visual styles for [JustSidebar].
@@ -6,8 +6,20 @@ class JustSidebarStyle {
   /// Custom background color of the sidebar panel.
   final Color? backgroundColor;
 
+  /// Custom border color of the sidebar panel.
+  final Color? borderColor;
+
+  /// Custom border radius of the sidebar panel.
+  final BorderRadius? borderRadius;
+
   /// Custom color of the active item (text, icon, and highlights).
   final Color? activeColor;
+
+  /// Custom background color of the selected sidebar item.
+  final Color? selectedBackgroundColor;
+
+  /// Custom foreground color (icon and text) of the selected sidebar item.
+  final Color? selectedForegroundColor;
 
   /// Custom color of inactive items.
   final Color? inactiveColor;
@@ -21,6 +33,9 @@ class JustSidebarStyle {
   /// Custom padding inside each menu item.
   final EdgeInsets? itemPadding;
 
+  /// Custom vertical spacing between sidebar items.
+  final double? itemSpacing;
+
   /// Custom text style for menu labels.
   final TextStyle? textStyle;
 
@@ -29,11 +44,16 @@ class JustSidebarStyle {
 
   const JustSidebarStyle({
     this.backgroundColor,
+    this.borderColor,
+    this.borderRadius,
     this.activeColor,
+    this.selectedBackgroundColor,
+    this.selectedForegroundColor,
     this.inactiveColor,
     this.itemBorderRadius,
     this.padding,
     this.itemPadding,
+    this.itemSpacing,
     this.textStyle,
     this.activeTextStyle,
   });

@@ -1,9 +1,14 @@
-// justui-meta: registry=95d1ba9a3f7b4c064c6ee5bebf9656e83306a936aa6b9048201b0ccc6b7369a9 local=d824e1e613720dca0b2d9c4d204cb4f65d02ac63fa5df30f8b5144949833d44a
+// justui-meta: registry=8cd3dcf7b26f0a5a54e5e3795498afb7c8cf7db70f38512ec9e59743b02b5f32 local=78a55a26fdb2537323c769a9fbd71108b2c38055a454354d071e7cd5207b054c
 import 'dart:async';
 
 import 'package:flutter/rendering.dart' show SemanticsService, TextDirection;
 import 'package:flutter/services.dart'
-    show HapticFeedback, KeyDownEvent, KeyEvent, LogicalKeyboardKey;
+    show
+        HapticFeedback,
+        KeyDownEvent,
+        KeyEvent,
+        KeyRepeatEvent,
+        LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
@@ -53,6 +58,9 @@ class TimePickerSpinner extends StatefulWidget {
   /// When null, defaults to theme extension or preset token configuration.
   final bool? enableHaptic;
 
+  /// Whether to render the outer card container around the spinner.
+  final bool showContainer;
+
   /// Creates a [TimePickerSpinner] widget.
   const TimePickerSpinner({
     super.key,
@@ -67,6 +75,7 @@ class TimePickerSpinner extends StatefulWidget {
     this.locale = const JustTimePickerLocale(),
     this.style,
     this.enableHaptic,
+    this.showContainer = true,
   }) : assert(60 % minuteInterval == 0, 'minuteInterval must evenly divide 60');
 
   /// Whether the picker is operating in 24-hour format.
@@ -84,6 +93,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   late JustTimeOfDay _currentTime;
   late JustTimePickerSegment _focusedSegment;
   final FocusNode _focusNode = FocusNode();
+  bool _isFocusVisible = false;
 
   bool _isProgrammaticUpdate = false;
   int _lastHapticHour = -1;
@@ -118,11 +128,25 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     _lastHapticPeriod = initialPeriodIndex;
 
     _focusNode.addListener(_onFocusChanged);
+    FocusManager.instance.addHighlightModeListener(_onHighlightModeChanged);
   }
 
   void _onFocusChanged() {
-    if (mounted) {
-      setState(() {});
+    _updateFocusVisible();
+  }
+
+  void _onHighlightModeChanged(FocusHighlightMode mode) {
+    _updateFocusVisible();
+  }
+
+  void _updateFocusVisible() {
+    final bool visible =
+        _focusNode.hasFocus &&
+        FocusManager.instance.highlightMode == .traditional;
+    if (mounted && visible != _isFocusVisible) {
+      setState(() {
+        _isFocusVisible = visible;
+      });
     }
   }
 
@@ -141,6 +165,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   @override
   void dispose() {
     _announceTimer?.cancel();
+    FocusManager.instance.removeHighlightModeListener(_onHighlightModeChanged);
     _focusNode.removeListener(_onFocusChanged);
     _focusNode.dispose();
     _hourController.dispose();
@@ -354,7 +379,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   }
 
   void _triggerHaptic() {
-    final JustThemeData theme = JustThemeProvider.of(context).theme;
+    final JustThemeData theme = context.readTheme();
     final JustTimePickerTheme? themeExtension = context
         .justThemeExtension<JustTimePickerTheme>();
     final bool shouldHaptic =
@@ -367,7 +392,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent) return .ignored;
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) return .ignored;
 
     final LogicalKeyboardKey key = event.logicalKey;
     if (key == .arrowLeft) {
@@ -451,6 +476,29 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     return .ignored;
   }
 
+  Duration _resolveWheelDuration() {
+    final JustMotionProfile motion = context.readTheme().animations.resolve(
+      context,
+    );
+    return motion.normal == .zero ? .zero : const Duration(milliseconds: 250);
+  }
+
+  void _scrollControllerToItem(
+    FixedExtentScrollController controller,
+    int targetIndex,
+  ) {
+    final Duration duration = _resolveWheelDuration();
+    if (duration == .zero) {
+      controller.jumpToItem(targetIndex);
+    } else {
+      controller.animateToItem(
+        targetIndex,
+        duration: duration,
+        curve: Curves.easeOutCubic,
+      );
+    }
+  }
+
   void _animateWheelToItem(
     FixedExtentScrollController controller,
     int targetIndex,
@@ -459,11 +507,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   }) {
     if (!controller.hasClients) return;
     if (!isLooping) {
-      controller.animateToItem(
-        targetIndex.clamp(0, itemCount - 1),
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-      );
+      _scrollControllerToItem(controller, targetIndex.clamp(0, itemCount - 1));
       return;
     }
 
@@ -477,60 +521,48 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
       diff += itemCount;
     }
 
-    controller.animateToItem(
-      current + diff,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOutCubic,
-    );
+    _scrollControllerToItem(controller, current + diff);
   }
 
   void _scrollHourUp() {
     if (_hourController.hasClients) {
-      _hourController.animateToItem(
+      _scrollControllerToItem(
+        _hourController,
         _hourController.selectedItem - 1,
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
       );
     }
   }
 
   void _scrollHourDown() {
     if (_hourController.hasClients) {
-      _hourController.animateToItem(
+      _scrollControllerToItem(
+        _hourController,
         _hourController.selectedItem + 1,
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
       );
     }
   }
 
   void _scrollMinuteUp() {
     if (_minuteController.hasClients) {
-      _minuteController.animateToItem(
+      _scrollControllerToItem(
+        _minuteController,
         _minuteController.selectedItem - 1,
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
       );
     }
   }
 
   void _scrollMinuteDown() {
     if (_minuteController.hasClients) {
-      _minuteController.animateToItem(
+      _scrollControllerToItem(
+        _minuteController,
         _minuteController.selectedItem + 1,
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
       );
     }
   }
 
   void _animatePeriodTo(int index) {
     if (!widget.is24Hour && _periodController.hasClients) {
-      _periodController.animateToItem(
-        index.clamp(0, 1),
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-      );
+      _scrollControllerToItem(_periodController, index.clamp(0, 1));
     }
   }
 
@@ -591,8 +623,9 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     final JustTypographyScheme typo = context.justTypo;
     final JustSpacingScheme spacing = context.justSpacing;
     final JustRadiusScheme radius = context.justRadius;
-    final JustThemeData theme = JustThemeProvider.of(context).theme;
-    final JustPresetTokens presetTokens = theme.presetTokens;
+    final JustShadowScheme shadows = context.justShadows;
+    final JustPresetTokens presetTokens = context.justPresetTokens;
+    final JustMotionProfile motion = context.justAnimations.resolve(context);
 
     final JustTimePickerTheme? themeExtension = context
         .justThemeExtension<JustTimePickerTheme>();
@@ -617,104 +650,141 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
         themeExtension?.inlineStyle?.padding ??
         .symmetric(horizontal: spacing.md, vertical: spacing.sm);
     final double borderWidth = presetTokens.borderWidth;
-    final double rowHeight = style?.spinnerRowHeight ?? 44.0;
+    final double rowHeight =
+        style?.spinnerRowHeight ??
+        themeExtension?.inlineStyle?.spinnerRowHeight ??
+        presetTokens.resolveTimePickerSpinnerRowHeight();
+    final double offCenterOpacity =
+        style?.overAndUnderCenterOpacity ??
+        themeExtension?.inlineStyle?.overAndUnderCenterOpacity ??
+        0.78;
+    final Duration textAnimDuration = motion.normal == .zero
+        ? .zero
+        : const Duration(milliseconds: 200);
     final double spinnerHeight = rowHeight * 5;
+
+    final Widget wheelStack = SizedBox(
+      height: spinnerHeight,
+      child: Stack(
+        children: <Widget>[
+          // Selection Highlight Lens Overlay (IgnorePointer)
+          Positioned(
+            left: 0,
+            right: 0,
+            top: (spinnerHeight - rowHeight) / 2,
+            height: rowHeight,
+            child: IgnorePointer(
+              child: Container(
+                margin: .symmetric(horizontal: spacing.xs),
+                decoration: BoxDecoration(
+                  color:
+                      (style?.periodActiveColor ??
+                              themeExtension?.inlineStyle?.periodActiveColor ??
+                              colors.borderFocus)
+                          .withValues(alpha: 0.08),
+                  borderRadius: presetTokens.resolveBorderRadius(radius),
+                  border: .all(
+                    color: presetTokens.showsDefaultBorder
+                        ? colors.textPrimary
+                        : colors.borderFocus,
+                    width: presetTokens.showsDefaultBorder
+                        ? presetTokens.borderWidth
+                        : 1.5,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // 3 Columns: Hour, Colon, Minute, (optional) Period
+          Positioned.fill(
+            child: Row(
+              mainAxisAlignment: .center,
+              children: <Widget>[
+                Expanded(
+                  child: _buildHourWheel(
+                    itemExtent: rowHeight,
+                    offCenterOpacity: offCenterOpacity,
+                    textAnimDuration: textAnimDuration,
+                    themeExtension: themeExtension,
+                    colors: colors,
+                    typo: typo,
+                    locale: widget.locale,
+                  ),
+                ),
+                _buildColonSeparator(
+                  colors: colors,
+                  typo: typo,
+                  themeExtension: themeExtension,
+                ),
+                Expanded(
+                  child: _buildMinuteWheel(
+                    itemExtent: rowHeight,
+                    offCenterOpacity: offCenterOpacity,
+                    textAnimDuration: textAnimDuration,
+                    themeExtension: themeExtension,
+                    colors: colors,
+                    typo: typo,
+                    locale: widget.locale,
+                  ),
+                ),
+                if (!widget.is24Hour) ...<Widget>[
+                  SizedBox(width: spacing.xs),
+                  Expanded(
+                    child: _buildPeriodWheel(
+                      itemExtent: rowHeight,
+                      offCenterOpacity: offCenterOpacity,
+                      textAnimDuration: textAnimDuration,
+                      themeExtension: themeExtension,
+                      colors: colors,
+                      typo: typo,
+                      locale: widget.locale,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
+    final Widget content = widget.showContainer
+        ? Container(
+            padding: padding,
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: borderRadius,
+              border: presetTokens.showsDefaultBorder
+                  ? .all(color: borderColor, width: borderWidth)
+                  : (borderWidth > 0
+                        ? .all(color: borderColor, width: borderWidth)
+                        : null),
+              boxShadow: presetTokens.resolveShadow(
+                shadows,
+                .md,
+                isPressed: false,
+              ),
+            ),
+            child: wheelStack,
+          )
+        : wheelStack;
 
     return Focus(
       focusNode: _focusNode,
       onKeyEvent: _handleKeyEvent,
       child: FocusIndicator(
-        isFocused: _focusNode.hasFocus,
+        isFocused: _isFocusVisible,
         borderRadius: borderRadius,
-        child: Container(
-          padding: padding,
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: borderRadius,
-            border: presetTokens.showsDefaultBorder
-                ? .all(color: borderColor, width: borderWidth)
-                : (borderWidth > 0
-                      ? .all(color: colors.borderDefault, width: borderWidth)
-                      : null),
-            boxShadow: presetTokens.resolveShadow(
-              theme.shadows,
-              .md,
-              isPressed: false,
-            ),
-          ),
-          child: SizedBox(
-            height: spinnerHeight,
-            child: Stack(
-              children: <Widget>[
-                // Selection Highlight Lens Overlay (IgnorePointer)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  top: (spinnerHeight - rowHeight) / 2,
-                  height: rowHeight,
-                  child: IgnorePointer(
-                    child: Container(
-                      margin: .symmetric(horizontal: spacing.xs),
-                      decoration: BoxDecoration(
-                        color: (style?.periodActiveColor ?? colors.borderFocus)
-                            .withValues(alpha: 0.08),
-                        borderRadius: presetTokens.resolveBorderRadius(radius),
-                        border: .all(
-                          color: colors.borderFocus,
-                          width: presetTokens.showsDefaultBorder
-                              ? presetTokens.borderWidth
-                              : 1.5,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // 3 Columns: Hour, Colon, Minute, (optional) Period
-                Positioned.fill(
-                  child: Row(
-                    mainAxisAlignment: .center,
-                    children: <Widget>[
-                      Expanded(
-                        child: _buildHourWheel(
-                          itemExtent: rowHeight,
-                          colors: colors,
-                          typo: typo,
-                          locale: widget.locale,
-                        ),
-                      ),
-                      _buildColonSeparator(colors: colors, typo: typo),
-                      Expanded(
-                        child: _buildMinuteWheel(
-                          itemExtent: rowHeight,
-                          colors: colors,
-                          typo: typo,
-                          locale: widget.locale,
-                        ),
-                      ),
-                      if (!widget.is24Hour) ...<Widget>[
-                        SizedBox(width: spacing.xs),
-                        Expanded(
-                          child: _buildPeriodWheel(
-                            itemExtent: rowHeight,
-                            colors: colors,
-                            typo: typo,
-                            locale: widget.locale,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        child: content,
       ),
     );
   }
 
   Widget _buildHourWheel({
     required double itemExtent,
+    required double offCenterOpacity,
+    required Duration textAnimDuration,
+    required JustTimePickerTheme? themeExtension,
     required JustColorScheme colors,
     required JustTypographyScheme typo,
     required JustTimePickerLocale locale,
@@ -722,49 +792,54 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     final int hourCount = widget.is24Hour ? 24 : 12;
     return Semantics(
       container: true,
+      slider: true,
       label: locale.hourLabel,
       value: _formatCurrentHour(),
       increasedValue: _nextHourLabel(),
       decreasedValue: _prevHourLabel(),
       onIncrease: _scrollHourDown,
       onDecrease: _scrollHourUp,
-      child: ListWheelScrollView.useDelegate(
-        controller: _hourController,
-        physics: const FixedExtentScrollPhysics(),
-        itemExtent: itemExtent,
-        diameterRatio: 2.0,
-        perspective: 0.003,
-        offAxisFraction: -0.15,
-        magnification: 1.12,
-        overAndUnderCenterOpacity: 0.4,
-        squeeze: 1.0,
-        onSelectedItemChanged: _onHourChanged,
-        childDelegate: ListWheelChildLoopingListDelegate(
-          children: .generate(hourCount, (int i) {
-            final int displayHour = widget.is24Hour ? i : i + 1;
-            final int hour24 = widget.is24Hour
-                ? i
-                : (_currentTime.period == .am
-                      ? (displayHour == 12 ? 0 : displayHour)
-                      : (displayHour == 12 ? 12 : displayHour + 12));
-            final bool isSelected = widget.is24Hour
-                ? displayHour == _currentTime.hour
-                : displayHour ==
-                      (_currentTime.hourOfPeriod == 0
-                          ? 12
-                          : _currentTime.hourOfPeriod);
-            final bool isAllowed = _isHourAllowed(hour24);
+      child: ExcludeSemantics(
+        child: ListWheelScrollView.useDelegate(
+          controller: _hourController,
+          physics: const FixedExtentScrollPhysics(),
+          itemExtent: itemExtent,
+          diameterRatio: 2.0,
+          perspective: 0.003,
+          offAxisFraction: -0.15,
+          magnification: 1.12,
+          overAndUnderCenterOpacity: offCenterOpacity,
+          squeeze: 1.0,
+          onSelectedItemChanged: _onHourChanged,
+          childDelegate: ListWheelChildLoopingListDelegate(
+            children: .generate(hourCount, (int i) {
+              final int displayHour = widget.is24Hour ? i : i + 1;
+              final int hour24 = widget.is24Hour
+                  ? i
+                  : (_currentTime.period == .am
+                        ? (displayHour == 12 ? 0 : displayHour)
+                        : (displayHour == 12 ? 12 : displayHour + 12));
+              final bool isSelected = widget.is24Hour
+                  ? displayHour == _currentTime.hour
+                  : displayHour ==
+                        (_currentTime.hourOfPeriod == 0
+                            ? 12
+                            : _currentTime.hourOfPeriod);
+              final bool isAllowed = _isHourAllowed(hour24);
 
-            return _buildWheelItem(
-              text: displayHour.toString().padLeft(2, '0'),
-              isSelected: isSelected,
-              isDisabled: !isAllowed,
-              colors: colors,
-              typo: typo,
-              itemExtent: itemExtent,
-              onTap: () => _animateWheelToItem(_hourController, i, hourCount),
-            );
-          }),
+              return _buildWheelItem(
+                text: displayHour.toString().padLeft(2, '0'),
+                isSelected: isSelected,
+                isDisabled: !isAllowed,
+                colors: colors,
+                typo: typo,
+                itemExtent: itemExtent,
+                textAnimDuration: textAnimDuration,
+                themeExtension: themeExtension,
+                onTap: () => _animateWheelToItem(_hourController, i, hourCount),
+              );
+            }),
+          ),
         ),
       ),
     );
@@ -772,6 +847,9 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
 
   Widget _buildMinuteWheel({
     required double itemExtent,
+    required double offCenterOpacity,
+    required Duration textAnimDuration,
+    required JustTimePickerTheme? themeExtension,
     required JustColorScheme colors,
     required JustTypographyScheme typo,
     required JustTimePickerLocale locale,
@@ -779,40 +857,45 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     final int minuteCount = 60 ~/ widget.minuteInterval;
     return Semantics(
       container: true,
+      slider: true,
       label: locale.minuteLabel,
       value: _currentTime.minute.toString().padLeft(2, '0'),
       increasedValue: _nextMinuteLabel(),
       decreasedValue: _prevMinuteLabel(),
       onIncrease: _scrollMinuteDown,
       onDecrease: _scrollMinuteUp,
-      child: ListWheelScrollView.useDelegate(
-        controller: _minuteController,
-        physics: const FixedExtentScrollPhysics(),
-        itemExtent: itemExtent,
-        diameterRatio: 2.0,
-        perspective: 0.003,
-        offAxisFraction: 0.0,
-        magnification: 1.12,
-        overAndUnderCenterOpacity: 0.4,
-        squeeze: 1.0,
-        onSelectedItemChanged: _onMinuteChanged,
-        childDelegate: ListWheelChildLoopingListDelegate(
-          children: .generate(minuteCount, (int i) {
-            final int minute = i * widget.minuteInterval;
-            final bool isSelected = _currentTime.minute == minute;
-            final bool isAllowed = _isMinuteAllowed(minute);
+      child: ExcludeSemantics(
+        child: ListWheelScrollView.useDelegate(
+          controller: _minuteController,
+          physics: const FixedExtentScrollPhysics(),
+          itemExtent: itemExtent,
+          diameterRatio: 2.0,
+          perspective: 0.003,
+          offAxisFraction: 0.0,
+          magnification: 1.12,
+          overAndUnderCenterOpacity: offCenterOpacity,
+          squeeze: 1.0,
+          onSelectedItemChanged: _onMinuteChanged,
+          childDelegate: ListWheelChildLoopingListDelegate(
+            children: .generate(minuteCount, (int i) {
+              final int minute = i * widget.minuteInterval;
+              final bool isSelected = _currentTime.minute == minute;
+              final bool isAllowed = _isMinuteAllowed(minute);
 
-            return _buildWheelItem(
-              text: minute.toString().padLeft(2, '0'),
-              isSelected: isSelected,
-              isDisabled: !isAllowed,
-              colors: colors,
-              typo: typo,
-              itemExtent: itemExtent,
-              onTap: () =>
-                  _animateWheelToItem(_minuteController, i, minuteCount),
-            );
-          }),
+              return _buildWheelItem(
+                text: minute.toString().padLeft(2, '0'),
+                isSelected: isSelected,
+                isDisabled: !isAllowed,
+                colors: colors,
+                typo: typo,
+                itemExtent: itemExtent,
+                textAnimDuration: textAnimDuration,
+                themeExtension: themeExtension,
+                onTap: () =>
+                    _animateWheelToItem(_minuteController, i, minuteCount),
+              );
+            }),
+          ),
         ),
       ),
     );
@@ -820,6 +903,9 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
 
   Widget _buildPeriodWheel({
     required double itemExtent,
+    required double offCenterOpacity,
+    required Duration textAnimDuration,
+    required JustTimePickerTheme? themeExtension,
     required JustColorScheme colors,
     required JustTypographyScheme typo,
     required JustTimePickerLocale locale,
@@ -827,44 +913,51 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     final bool isAm = _currentTime.period == .am;
     return Semantics(
       container: true,
+      slider: true,
       label: locale.periodLabel,
       value: isAm ? locale.amLabel : locale.pmLabel,
       increasedValue: isAm ? locale.pmLabel : locale.amLabel,
       decreasedValue: isAm ? locale.pmLabel : locale.amLabel,
       onIncrease: () => _animatePeriodTo(1),
       onDecrease: () => _animatePeriodTo(0),
-      child: ListWheelScrollView.useDelegate(
-        controller: _periodController,
-        physics: const FixedExtentScrollPhysics(),
-        itemExtent: itemExtent,
-        diameterRatio: 2.0,
-        perspective: 0.003,
-        offAxisFraction: 0.15,
-        magnification: 1.12,
-        overAndUnderCenterOpacity: 0.4,
-        squeeze: 1.0,
-        onSelectedItemChanged: _onPeriodChanged,
-        childDelegate: ListWheelChildListDelegate(
-          children: <Widget>[
-            _buildWheelItem(
-              text: locale.amLabel,
-              isSelected: isAm,
-              isDisabled: !_isPeriodAllowed(.am),
-              colors: colors,
-              typo: typo,
-              itemExtent: itemExtent,
-              onTap: () => _animatePeriodTo(0),
-            ),
-            _buildWheelItem(
-              text: locale.pmLabel,
-              isSelected: !isAm,
-              isDisabled: !_isPeriodAllowed(.pm),
-              colors: colors,
-              typo: typo,
-              itemExtent: itemExtent,
-              onTap: () => _animatePeriodTo(1),
-            ),
-          ],
+      child: ExcludeSemantics(
+        child: ListWheelScrollView.useDelegate(
+          controller: _periodController,
+          physics: const FixedExtentScrollPhysics(),
+          itemExtent: itemExtent,
+          diameterRatio: 2.0,
+          perspective: 0.003,
+          offAxisFraction: 0.15,
+          magnification: 1.12,
+          overAndUnderCenterOpacity: offCenterOpacity,
+          squeeze: 1.0,
+          onSelectedItemChanged: _onPeriodChanged,
+          childDelegate: ListWheelChildListDelegate(
+            children: <Widget>[
+              _buildWheelItem(
+                text: locale.amLabel,
+                isSelected: isAm,
+                isDisabled: !_isPeriodAllowed(.am),
+                colors: colors,
+                typo: typo,
+                itemExtent: itemExtent,
+                textAnimDuration: textAnimDuration,
+                themeExtension: themeExtension,
+                onTap: () => _animatePeriodTo(0),
+              ),
+              _buildWheelItem(
+                text: locale.pmLabel,
+                isSelected: !isAm,
+                isDisabled: !_isPeriodAllowed(.pm),
+                colors: colors,
+                typo: typo,
+                itemExtent: itemExtent,
+                textAnimDuration: textAnimDuration,
+                themeExtension: themeExtension,
+                onTap: () => _animatePeriodTo(1),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -877,12 +970,18 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     required JustColorScheme colors,
     required JustTypographyScheme typo,
     required double itemExtent,
+    required Duration textAnimDuration,
+    required JustTimePickerTheme? themeExtension,
     VoidCallback? onTap,
   }) {
     final Color selectedColor =
-        widget.style?.selectedTextColor ?? colors.textPrimary;
+        widget.style?.selectedTextColor ??
+        themeExtension?.inlineStyle?.selectedTextColor ??
+        colors.textPrimary;
     final Color unselectedColor =
-        widget.style?.dialTextColor ?? colors.textSecondary;
+        widget.style?.dialTextColor ??
+        themeExtension?.inlineStyle?.dialTextColor ??
+        colors.textSecondary;
 
     final Color color = isDisabled
         ? colors.textDisabled.withValues(alpha: 0.38)
@@ -890,16 +989,16 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
 
     return GestureDetector(
       onTap: isDisabled ? null : onTap,
-      behavior: HitTestBehavior.opaque,
+      behavior: .opaque,
       child: Container(
         height: itemExtent,
         alignment: .center,
         child: AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 200),
+          duration: textAnimDuration,
           curve: Curves.easeOutCubic,
           style: typo.headingSm.copyWith(
             color: color,
-            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+            fontWeight: isSelected ? .w700 : .w400,
           ),
           textAlign: .center,
           child: Text(text),
@@ -911,6 +1010,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   Widget _buildColonSeparator({
     required JustColorScheme colors,
     required JustTypographyScheme typo,
+    required JustTimePickerTheme? themeExtension,
   }) {
     return ExcludeSemantics(
       child: Padding(
@@ -919,8 +1019,11 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
           child: Text(
             ':',
             style: typo.headingLg.copyWith(
-              color: widget.style?.dialTextColor ?? colors.textSecondary,
-              fontWeight: FontWeight.w700,
+              color:
+                  widget.style?.dialTextColor ??
+                  themeExtension?.inlineStyle?.dialTextColor ??
+                  colors.textSecondary,
+              fontWeight: .w700,
             ),
           ),
         ),

@@ -447,14 +447,14 @@
           {
             "name": "just_scroll_area_style.dart",
             "path": "components/scroll/just_scroll_area_style.dart",
-            "checksum": "sha256:daf08550ea0997cd155358af6f5d193087e373898b69a4d580d0dd90d17032f7"
+            "checksum": "sha256:966cc88155cc9431db201f5967685ec8077bce757faa13e1e87e7aa10003028b"
           }
         ],
         "default": [
           {
             "name": "just_scroll_area.dart",
             "path": "components/scroll/default/just_scroll_area.dart",
-            "checksum": "sha256:6eaaeef332f2c28839f0c491b396928d6238cea7e94c1009254d95901bf31e06"
+            "checksum": "sha256:0de334bf4ea9788546f8dc6c6f11abda164a2015861357fbba0d28fb41886b35"
           }
         ]
       },
@@ -737,7 +737,8 @@
       "category": "navigation",
       "hidden": false,
       "registryDependencies": [
-        "_shared_pressable"
+        "_shared_pressable",
+        "_shared_focus_indicator"
       ],
       "pubDependencies": {},
       "files": {
@@ -750,7 +751,7 @@
           {
             "name": "just_tabs_style.dart",
             "path": "components/tabs/just_tabs_style.dart",
-            "checksum": "sha256:a073f6ea0cd1aa1abbc4067a868638a7cd4150c6020df6d07ae5adf5fb7a7351"
+            "checksum": "sha256:c46adbf1a8e044e411e1cf4cc69cd127250f7eda149972a070a974ad98c6eef2"
           },
           {
             "name": "just_tabs_theme.dart",
@@ -762,12 +763,12 @@
           {
             "name": "just_tabs.dart",
             "path": "components/tabs/default/just_tabs.dart",
-            "checksum": "sha256:2a925fd72c3141748d3581b13efd0093173609594a5553459a5cd1de7b43ba25"
+            "checksum": "sha256:2321b2831b5b40a0f97eb8b946bfa0d0a925c4d5d0258fa4b9603638ae9241f5"
           },
           {
             "name": "just_tab_indicator.dart",
             "path": "components/tabs/default/just_tab_indicator.dart",
-            "checksum": "sha256:3dbbecf80a3fbb69e0f0277ec404d1ea0c456a6f90d617a0a483d5509b0553bd"
+            "checksum": "sha256:cd8d8995a8fdf5a799e995566ee6ed6fbf91640c4350e989c9f6e684cbd9dbab"
           }
         ]
       },
@@ -783,7 +784,8 @@
       "category": "navigation",
       "hidden": false,
       "registryDependencies": [
-        "_shared_pressable"
+        "_shared_pressable",
+        "_shared_focus_indicator"
       ],
       "pubDependencies": {},
       "files": {
@@ -801,14 +803,14 @@
           {
             "name": "just_bottom_nav_style.dart",
             "path": "components/bottom_nav/just_bottom_nav_style.dart",
-            "checksum": "sha256:31bc6f0bcf514a99e44c64dd24a91fc8879481846c1c5b2631c99d23b10091c9"
+            "checksum": "sha256:ab8e0e1323f0bc9a32a69689dfcfc033a77c998ac585799ccc3a494f9dddc6de"
           }
         ],
         "default": [
           {
             "name": "just_bottom_nav.dart",
             "path": "components/bottom_nav/default/just_bottom_nav.dart",
-            "checksum": "sha256:ce601493a7f9cab1452538f3c306b7a3e26af5c5edf735c249869bf8f9f7de58"
+            "checksum": "sha256:f4c83be643603582cc37c67a07e12779144fef094ba3023ff68a77fc2815ab8c"
           }
         ]
       },
@@ -871,6 +873,7 @@
       "hidden": false,
       "registryDependencies": [
         "_shared_pressable",
+        "_shared_focus_indicator",
         "_shared_tooltip_overlay"
       ],
       "pubDependencies": {},
@@ -884,7 +887,7 @@
           {
             "name": "just_sidebar_style.dart",
             "path": "components/sidebar/just_sidebar_style.dart",
-            "checksum": "sha256:7cbfc66312bf9a57a8827b7be209177862cf2babb933ab1930263adcc923f09b"
+            "checksum": "sha256:290204745641c182d34ade28446832318c1663291c7b0950490f0c44ce069396"
           },
           {
             "name": "just_sidebar_theme.dart",
@@ -896,7 +899,7 @@
           {
             "name": "just_sidebar.dart",
             "path": "components/sidebar/default/just_sidebar.dart",
-            "checksum": "sha256:1cc294d061ea226a8cfb112e23442b72b14159dddef6de8af50c9af503448d47"
+            "checksum": "sha256:115be380df2a52e64b9f250b6dede7cb86414cfe597d52b8a0a02a0a2f437026"
           }
         ]
       },
@@ -1373,12 +1376,12 @@
           {
             "name": "just_time_picker_variants.dart",
             "path": "components/time_picker/just_time_picker_variants.dart",
-            "checksum": "sha256:a2e92ec04718f7bbb37868751cb48aa7029df7a7427cb6327c940035d3e47b29"
+            "checksum": "sha256:64e44d561063cee7cb5445cc168c5bcd867fd4168a65bd7b94895a4ad86c746c"
           },
           {
             "name": "just_time_picker_style.dart",
             "path": "components/time_picker/just_time_picker_style.dart",
-            "checksum": "sha256:c3772b4ffc7b718e004234f5ada6e4317a3a5bdcd9517c7bf4995a2119514cb8"
+            "checksum": "sha256:93c2ad3f2133cf88c143af6a337519227fd66494f878e2447634597377b8da12"
           },
           {
             "name": "just_time_picker_theme.dart",
@@ -1390,22 +1393,22 @@
           {
             "name": "just_time_picker.dart",
             "path": "components/time_picker/default/just_time_picker.dart",
-            "checksum": "sha256:147b2aa4230c474384b4fb1df85d3473ee8a6ce32bfe0b0a2e98e7eea7c86154"
+            "checksum": "sha256:d813cb63789ee3ada15939ecd5b030c1f47e9b4135353b24c0d0dea97a6cebc4"
           },
           {
             "name": "_time_picker_dial.dart",
             "path": "components/time_picker/default/_time_picker_dial.dart",
-            "checksum": "sha256:4bc2128d8baa35b7096584f2160ef42dc6c9f0f625a78f1d5c0de59674059a28"
+            "checksum": "sha256:499d1f7bc221036fba1164e9bfe02305238fcc0a4d0e17a5c2b3ec5a28ea9d52"
           },
           {
             "name": "_time_picker_spinner.dart",
             "path": "components/time_picker/default/_time_picker_spinner.dart",
-            "checksum": "sha256:95d1ba9a3f7b4c064c6ee5bebf9656e83306a936aa6b9048201b0ccc6b7369a9"
+            "checksum": "sha256:8cd3dcf7b26f0a5a54e5e3795498afb7c8cf7db70f38512ec9e59743b02b5f32"
           },
           {
             "name": "_time_picker_input.dart",
             "path": "components/time_picker/default/_time_picker_input.dart",
-            "checksum": "sha256:d7cf1ec05ae6fa9f75b9de64bc3994118191e64af83bc475a33343233de72ba8"
+            "checksum": "sha256:e51182beb2314fd6fdb1f67cde83fe00da29a0bfa61cf9cd5c2f6041fb7e2e62"
           }
         ]
       },

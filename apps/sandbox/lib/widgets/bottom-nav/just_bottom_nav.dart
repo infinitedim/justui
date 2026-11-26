@@ -1,9 +1,10 @@
-// justui-meta: registry=ce601493a7f9cab1452538f3c306b7a3e26af5c5edf735c249869bf8f9f7de58 local=271e0b4f5a192ffa6f787289c2000cf7019c311e9682a2ec46febb047055d470
+// justui-meta: registry=f4c83be643603582cc37c67a07e12779144fef094ba3023ff68a77fc2815ab8c local=b2ae3870208f5f21f68d08af7edee8f5d6984fa46e13b418f615d6a6a943ea13
 import 'package:flutter/widgets.dart';
 
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:sandbox/core/just_ui_core.dart';
 
+import '../shared/just_focus_indicator.dart';
 import '../shared/just_pressable.dart';
 import 'just_bottom_nav_style.dart';
 import 'just_bottom_nav_theme.dart';
@@ -56,6 +57,9 @@ class JustBottomNav extends StatefulWidget {
   /// Custom style overrides.
   final JustBottomNavStyle? style;
 
+  /// Optional accessible label for the bottom navigation container.
+  final String? semanticsLabel;
+
   /// Creates a [JustBottomNav] component.
   const JustBottomNav({
     super.key,
@@ -66,6 +70,7 @@ class JustBottomNav extends StatefulWidget {
     this.showLabels = true,
     this.hapticFeedback = true,
     this.style,
+    this.semanticsLabel,
   }) : assert(
          items.length >= 3 && items.length <= 5,
          'JustBottomNav must have between 3 and 5 items.',
@@ -102,7 +107,10 @@ class _JustBottomNavState extends State<JustBottomNav> {
       aspect: .spacing,
     ).theme.spacing;
     final JustRadiusScheme radius = customTheme.radius;
-    final JustMotionProfile animations = customTheme.animations;
+    final JustMotionProfile animations = customTheme.animations.resolve(
+      context,
+    );
+    final bool disableAnimations = MediaQuery.disableAnimationsOf(context);
 
     final JustPresetTokens presetTokens = customTheme.presetTokens;
 
@@ -130,6 +138,14 @@ class _JustBottomNavState extends State<JustBottomNav> {
         widget.style?.inactiveColor ??
         themeStyle?.inactiveColor ??
         colors.textSecondary;
+    final bool showActiveIndicator =
+        widget.style?.showActiveIndicator ??
+        themeStyle?.showActiveIndicator ??
+        false;
+    final Color activeIndicatorColor =
+        widget.style?.activeIndicatorColor ??
+        themeStyle?.activeIndicatorColor ??
+        activeColor;
     final double iconSize =
         widget.style?.iconSize ?? themeStyle?.iconSize ?? 24.0;
     final double defaultHeight = widget.variant == .floating ? 64.0 : 56.0;
@@ -140,20 +156,32 @@ class _JustBottomNavState extends State<JustBottomNav> {
         widget.style?.backgroundColor ??
         themeStyle?.backgroundColor ??
         colors.elevated;
+    final Color resolvedBorderColor =
+        widget.style?.borderColor ??
+        themeStyle?.borderColor ??
+        (presetTokens.showsDefaultBorder
+            ? colors.textPrimary
+            : colors.borderDefault);
     final BorderRadius containerBorderRadius =
         widget.style?.borderRadius ??
         themeStyle?.borderRadius ??
-        (widget.variant == .floating ? .all(radius.full) : .zero);
+        (widget.variant == .floating
+            ? (presetTokens.showsDefaultBorder ? .zero : .all(radius.full))
+            : .zero);
+    final BorderRadius itemFocusRadius = presetTokens.showsDefaultBorder
+        ? .zero
+        : .all(radius.sm);
 
     final TextStyle finalTextStyle =
         widget.style?.textStyle ??
         themeStyle?.textStyle ??
         typography.caption.copyWith(fontWeight: .w500);
 
-    final Duration resolvedDuration =
-        widget.style?.animationDuration ??
-        themeStyle?.animationDuration ??
-        animations.fast;
+    final Duration resolvedDuration = disableAnimations
+        ? Duration.zero
+        : (widget.style?.animationDuration ??
+              themeStyle?.animationDuration ??
+              animations.fast);
     final Curve resolvedCurve =
         widget.style?.animationCurve ??
         themeStyle?.animationCurve ??
@@ -217,53 +245,36 @@ class _JustBottomNavState extends State<JustBottomNav> {
       final Widget itemWidget = JustPressable(
         onTap: () => _handleItemTap(i),
         builder: (BuildContext context, JustInteractionState state) {
-          Widget content;
-          if (widget.variant == .shifting) {
-            content = Column(
-              mainAxisAlignment: .center,
-              children: <Widget>[
-                iconContent,
-                ClipRect(
-                  child: AnimatedAlign(
-                    alignment: .center,
-                    heightFactor: isSelected ? 1.0 : 0.0,
-                    duration: resolvedDuration,
-                    curve: resolvedCurve,
-                    child: Padding(
-                      padding: .only(top: spacing.xs),
-                      child: labelContent,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          } else {
-            content = Column(
-              mainAxisAlignment: .center,
-              children: <Widget>[
-                iconContent,
-                if (widget.showLabels) ...<Widget>[
-                  SizedBox(width: spacing.xs),
-                  Padding(
-                    padding: .only(top: spacing.xs),
-                    child: labelContent,
-                  ),
-                ],
-              ],
-            );
-          }
+          final Widget content = _buildItemContent(
+            isSelected: isSelected,
+            iconContent: iconContent,
+            labelContent: labelContent,
+            spacing: spacing,
+            radius: radius,
+            presetTokens: presetTokens,
+            resolvedDuration: resolvedDuration,
+            resolvedCurve: resolvedCurve,
+            showActiveIndicator: showActiveIndicator,
+            activeIndicatorColor: activeIndicatorColor,
+          );
 
           return Semantics(
             label: item.label,
             selected: isSelected,
             button: true,
-            child: customTheme.buildPressEffect(
-              isPressed: state.isPressed,
-              child: Container(
-                color: const Color(
-                  0x00000000,
-                ), // Transparent to allow full tap detection
-                child: content,
+            excludeSemantics: true,
+            child: FocusIndicator(
+              isFocused: state.isFocusVisible,
+              borderRadius: itemFocusRadius,
+              child: presetTokens.buildPressEffect(
+                isPressed: state.isPressed,
+                animations: animations,
+                child: Container(
+                  color: const Color(
+                    0x00000000,
+                  ), // Transparent to allow full tap detection
+                  child: content,
+                ),
               ),
             ),
           );
@@ -289,10 +300,10 @@ class _JustBottomNavState extends State<JustBottomNav> {
     }
 
     final Border borderStyle = widget.variant == .floating
-        ? .all(color: colors.borderDefault, width: presetTokens.borderWidth)
+        ? .all(color: resolvedBorderColor, width: presetTokens.borderWidth)
         : Border(
             top: BorderSide(
-              color: colors.borderDefault,
+              color: resolvedBorderColor,
               width: presetTokens.borderWidth,
             ),
           );
@@ -318,20 +329,108 @@ class _JustBottomNavState extends State<JustBottomNav> {
       ),
     );
 
-    // Apply safe area depending on layout format
-    if (widget.variant == .floating) {
-      return SafeArea(
-        top: false,
-        child: Padding(
-          padding: .symmetric(horizontal: spacing.lg, vertical: spacing.sm),
-          child: contentBar,
-        ),
-      );
-    } else {
-      return Container(
-        color: containerBg,
-        child: SafeArea(top: false, child: contentBar),
+    final Widget wrappedBar = widget.variant == .floating
+        ? SafeArea(
+            top: false,
+            child: Padding(
+              padding: .symmetric(horizontal: spacing.lg, vertical: spacing.sm),
+              child: contentBar,
+            ),
+          )
+        : Container(
+            color: containerBg,
+            child: SafeArea(top: false, child: contentBar),
+          );
+
+    return Semantics(
+      container: true,
+      explicitChildNodes: true,
+      label: widget.semanticsLabel,
+      child: wrappedBar,
+    );
+  }
+
+  Widget _buildItemContent({
+    required bool isSelected,
+    required Widget iconContent,
+    required Widget labelContent,
+    required JustSpacingScheme spacing,
+    required JustRadiusScheme radius,
+    required JustPresetTokens presetTokens,
+    required Duration resolvedDuration,
+    required Curve resolvedCurve,
+    required bool showActiveIndicator,
+    required Color activeIndicatorColor,
+  }) {
+    final Widget? indicator = showActiveIndicator
+        ? _buildActiveIndicator(
+            isSelected: isSelected,
+            color: activeIndicatorColor,
+            presetTokens: presetTokens,
+            radius: radius,
+            duration: resolvedDuration,
+            curve: resolvedCurve,
+          )
+        : null;
+
+    if (widget.variant == .shifting) {
+      return Column(
+        mainAxisAlignment: .center,
+        children: <Widget>[
+          iconContent,
+          ClipRect(
+            child: AnimatedAlign(
+              alignment: .center,
+              heightFactor: isSelected ? 1.0 : 0.0,
+              duration: resolvedDuration,
+              curve: resolvedCurve,
+              child: Padding(
+                padding: .only(top: spacing.xs),
+                child: labelContent,
+              ),
+            ),
+          ),
+          ?indicator,
+        ],
       );
     }
+
+    return Column(
+      mainAxisAlignment: .center,
+      children: <Widget>[
+        iconContent,
+        if (widget.showLabels)
+          Padding(
+            padding: .only(top: spacing.xs),
+            child: labelContent,
+          ),
+        ?indicator,
+      ],
+    );
+  }
+
+  Widget _buildActiveIndicator({
+    required bool isSelected,
+    required Color color,
+    required JustPresetTokens presetTokens,
+    required JustRadiusScheme radius,
+    required Duration duration,
+    required Curve curve,
+  }) {
+    final double indicatorHeight = presetTokens.showsDefaultBorder ? 4.0 : 3.0;
+    final BorderRadius indicatorRadius = presetTokens.showsDefaultBorder
+        ? .zero
+        : .all(radius.full);
+
+    return Padding(
+      padding: const .only(top: 2.0),
+      child: AnimatedContainer(
+        duration: duration,
+        curve: curve,
+        width: isSelected ? 20.0 : 0.0,
+        height: indicatorHeight,
+        decoration: BoxDecoration(color: color, borderRadius: indicatorRadius),
+      ),
+    );
   }
 }

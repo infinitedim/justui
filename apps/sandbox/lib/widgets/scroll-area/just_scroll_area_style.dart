@@ -1,4 +1,4 @@
-// justui-meta: registry=daf08550ea0997cd155358af6f5d193087e373898b69a4d580d0dd90d17032f7 local=891fbc016e0cedf6c3ec19d75507404966cf9749a3d6b1f90c6c70a243e7cf21
+// justui-meta: registry=966cc88155cc9431db201f5967685ec8077bce757faa13e1e87e7aa10003028b local=fe70013fb814d3f06877733956e238627683dfdf09a5aeea31e01fd5d8d4844a
 import 'package:flutter/widgets.dart';
 
 /// Visual fade edge modes for [JustScrollArea].
@@ -38,6 +38,21 @@ class JustScrollAreaStyle {
   /// Optional main axis margin for the scrollbar track. Defaults to 0.0.
   final double? scrollbarMargin;
 
+  /// Whether the scrollbar thumb should always remain visible.
+  final bool? thumbVisibility;
+
+  /// Whether the scrollbar track should always remain visible.
+  final bool? trackVisibility;
+
+  /// Corner radius of the scrollbar track.
+  final Radius? scrollbarTrackRadius;
+
+  /// Optional cross axis margin for the scrollbar track. Defaults to 0.0.
+  final double? scrollbarCrossAxisMargin;
+
+  /// Corner radius for the keyboard focus indicator around the scroll area.
+  final BorderRadius? focusBorderRadius;
+
   /// When `null`, defaults to `true` on desktop/web and `false` on mobile.
   final bool? smoothScroll;
 
@@ -59,6 +74,11 @@ class JustScrollAreaStyle {
     this.scrollbarRadius,
     this.scrollbarPadding,
     this.scrollbarMargin,
+    this.thumbVisibility,
+    this.trackVisibility,
+    this.scrollbarTrackRadius,
+    this.scrollbarCrossAxisMargin,
+    this.focusBorderRadius,
     this.smoothScroll,
     this.lerpFactor,
     this.wheelMultiplier,

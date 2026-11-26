@@ -1,12 +1,10 @@
-// justui-meta: registry=3dbbecf80a3fbb69e0f0277ec404d1ea0c456a6f90d617a0a483d5509b0553bd local=555ce501f1c621540510d635a92e81ddb4fd2cfd30c53063000c67e832be3dda
+// justui-meta: registry=cd8d8995a8fdf5a799e995566ee6ed6fbf91640c4350e989c9f6e684cbd9dbab local=cadd25a2ed2cc732b914447a9a4b3eb639f30d76eeff0a9325e45db508ffd420
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
 import 'just_tabs_style.dart';
 import 'just_tabs_variants.dart';
 
-/// An internal, package-private widget that renders the active tab indicator shape
-/// based on the selected [JustTabVariant].
 /// An internal, package-private widget that renders the active tab indicator shape
 /// based on the selected [JustTabVariant].
 class JustTabIndicator extends StatelessWidget {
@@ -44,11 +42,9 @@ class JustTabIndicator extends StatelessWidget {
     // Resolve styling colors and shapes
     final Color activeColor =
         style?.indicatorColor ?? style?.activeColor ?? colors.borderFocus;
-    final BorderRadius defaultIndicatorRadius = variant == .pill
-        ? .all(radius.full)
-        : .all(radius.md);
     final BorderRadius indicatorRadius =
-        style?.indicatorRadius ?? defaultIndicatorRadius;
+        style?.indicatorRadius ??
+        presetTokens.resolveBorderRadius(radius, isPill: variant == .pill);
 
     switch (variant) {
       case .line:
@@ -56,6 +52,13 @@ class JustTabIndicator extends StatelessWidget {
           style?.indicatorThickness,
         );
         if (orientation == .horizontal) {
+          final BorderRadius horizontalLineRadius =
+              presetTokens.showsDefaultBorder
+              ? .zero
+              : .only(
+                  topLeft: .circular(radius.sm.x),
+                  topRight: .circular(radius.sm.x),
+                );
           return Align(
             alignment: .bottomCenter,
             child: Container(
@@ -63,16 +66,22 @@ class JustTabIndicator extends StatelessWidget {
               width: .infinity,
               decoration: BoxDecoration(
                 color: activeColor,
-                borderRadius: .only(
-                  topLeft: .circular(radius.sm.x),
-                  topRight: .circular(radius.sm.x),
-                ),
+                borderRadius: horizontalLineRadius,
               ),
             ),
           );
         } else {
           // Vertical layout: line on the starting edge (respecting Directionality)
           final bool isRtl = Directionality.of(context) == .rtl;
+          final BorderRadius verticalLineRadius =
+              presetTokens.showsDefaultBorder
+              ? .zero
+              : .only(
+                  topRight: isRtl ? .circular(radius.sm.x) : .zero,
+                  bottomRight: isRtl ? .circular(radius.sm.x) : .zero,
+                  topLeft: !isRtl ? .circular(radius.sm.x) : .zero,
+                  bottomLeft: !isRtl ? .circular(radius.sm.x) : .zero,
+                );
           return Align(
             alignment: isRtl ? .centerRight : .centerLeft,
             child: Container(
@@ -80,12 +89,7 @@ class JustTabIndicator extends StatelessWidget {
               height: .infinity,
               decoration: BoxDecoration(
                 color: activeColor,
-                borderRadius: .only(
-                  topRight: isRtl ? .circular(radius.sm.x) : .zero,
-                  bottomRight: isRtl ? .circular(radius.sm.x) : .zero,
-                  topLeft: !isRtl ? .circular(radius.sm.x) : .zero,
-                  bottomLeft: !isRtl ? .circular(radius.sm.x) : .zero,
-                ),
+                borderRadius: verticalLineRadius,
               ),
             ),
           );
@@ -126,6 +130,14 @@ class JustTabIndicator extends StatelessWidget {
           style?.indicatorThickness,
         );
         final bool isRtl = Directionality.of(context) == .rtl;
+        final BorderRadius verticalLineRadius = presetTokens.showsDefaultBorder
+            ? .zero
+            : .only(
+                topRight: isRtl ? .circular(radius.sm.x) : .zero,
+                bottomRight: isRtl ? .circular(radius.sm.x) : .zero,
+                topLeft: !isRtl ? .circular(radius.sm.x) : .zero,
+                bottomLeft: !isRtl ? .circular(radius.sm.x) : .zero,
+              );
         return Align(
           alignment: isRtl ? .centerRight : .centerLeft,
           child: Container(
@@ -133,12 +145,7 @@ class JustTabIndicator extends StatelessWidget {
             height: .infinity,
             decoration: BoxDecoration(
               color: activeColor,
-              borderRadius: .only(
-                topRight: isRtl ? .circular(radius.sm.x) : .zero,
-                bottomRight: isRtl ? .circular(radius.sm.x) : .zero,
-                topLeft: !isRtl ? .circular(radius.sm.x) : .zero,
-                bottomLeft: !isRtl ? .circular(radius.sm.x) : .zero,
-              ),
+              borderRadius: verticalLineRadius,
             ),
           ),
         );

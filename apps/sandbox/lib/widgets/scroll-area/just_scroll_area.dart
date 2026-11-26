@@ -1,4 +1,4 @@
-// justui-meta: registry=6eaaeef332f2c28839f0c491b396928d6238cea7e94c1009254d95901bf31e06 local=cc986320f074652ac9db830dd705051ebcb414f111ec459ad75090e0b7711024
+// justui-meta: registry=0de334bf4ea9788546f8dc6c6f11abda164a2015861357fbba0d28fb41886b35 local=d7af342e99300644b4b6a0497db3c86c67905802d13f71758178e22811b8e4ff
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart'
@@ -113,6 +113,15 @@ class JustScrollArea extends StatefulWidget {
   /// Defaults to `1.0`.
   final double touchMultiplier;
 
+  /// Optional accessibility label announced for the scrollable region.
+  final String? semanticsLabel;
+
+  /// Whether the scrollbar thumb should always remain visible.
+  final bool? thumbVisibility;
+
+  /// Whether the scrollbar track should always remain visible.
+  final bool? trackVisibility;
+
   /// Creates a [JustScrollArea].
   const JustScrollArea({
     super.key,
@@ -139,6 +148,9 @@ class JustScrollArea extends StatefulWidget {
     this.lerpFactor = 0.10,
     this.wheelMultiplier = 1.0,
     this.touchMultiplier = 1.0,
+    this.semanticsLabel,
+    this.thumbVisibility,
+    this.trackVisibility,
   });
 
   @override
@@ -149,6 +161,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
     with SingleTickerProviderStateMixin {
   late final ScrollController _internalController;
   late final FocusNode _focusNode;
+  final ValueNotifier<bool> _isFocusVisible = ValueNotifier<bool>(false);
   final ValueNotifier<double> _topFadeOpacity = ValueNotifier<double>(0.0);
   final ValueNotifier<double> _bottomFadeOpacity = ValueNotifier<double>(0.0);
   final ValueNotifier<bool> _showScrollToTop = ValueNotifier<bool>(false);
@@ -211,6 +224,9 @@ class _JustScrollAreaState extends State<JustScrollArea>
     super.initState();
     _internalController = ScrollController();
     _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChanged);
+    FocusManager.instance.addHighlightModeListener(_onHighlightModeChanged);
+    _updateFocusVisible();
     _smoothTicker = createTicker(_onSmoothTick);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -221,14 +237,31 @@ class _JustScrollAreaState extends State<JustScrollArea>
 
   @override
   void dispose() {
+    FocusManager.instance.removeHighlightModeListener(_onHighlightModeChanged);
+    _focusNode.removeListener(_onFocusChanged);
     _stopSmoothing();
     _smoothTicker.dispose();
     _internalController.dispose();
     _focusNode.dispose();
+    _isFocusVisible.dispose();
     _topFadeOpacity.dispose();
     _bottomFadeOpacity.dispose();
     _showScrollToTop.dispose();
     super.dispose();
+  }
+
+  void _onFocusChanged() {
+    _updateFocusVisible();
+  }
+
+  void _onHighlightModeChanged(FocusHighlightMode mode) {
+    _updateFocusVisible();
+  }
+
+  void _updateFocusVisible() {
+    _isFocusVisible.value =
+        _focusNode.hasFocus &&
+        FocusManager.instance.highlightMode == .traditional;
   }
 
   /// Synchronizes the internal lerp offsets with the actual scroll controller position.
@@ -459,60 +492,51 @@ class _JustScrollAreaState extends State<JustScrollArea>
   // --- Keyboard Handling ---
   // ==========================================
 
-  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent) return .ignored;
-    if (!_resolvedController.hasClients) return .ignored;
+  double? _resolveKeyTargetOffset(
+    LogicalKeyboardKey key,
+    double baseOffset,
+    double maxScroll,
+    double viewportDimension,
+  ) {
+    if (key == .home) return 0.0;
+    if (key == .end) return maxScroll;
+    if (key == .pageDown) {
+      return (baseOffset + viewportDimension).clamp(0.0, maxScroll);
+    }
+    if (key == .pageUp) {
+      return (baseOffset - viewportDimension).clamp(0.0, maxScroll);
+    }
 
-    final double maxScroll = _resolvedController.position.maxScrollExtent;
-    final double viewportDimension =
-        _resolvedController.position.viewportDimension;
-
-    // Use target offset as baseline when smooth is active (to stack keyboard
-    // inputs on top of an in-flight smooth scroll), otherwise use actual offset.
-    final double baseOffset = _isSmoothEnabled
-        ? _targetOffset
-        : _resolvedController.offset;
-
-    double targetOffset = baseOffset;
-    final bool isVertical = widget.direction == .vertical;
-
-    if (isVertical) {
-      if (event.logicalKey == .arrowDown) {
-        targetOffset = (baseOffset + widget.keyboardScrollStep).clamp(
-          0.0,
-          maxScroll,
-        );
-      } else if (event.logicalKey == .arrowUp) {
-        targetOffset = (baseOffset - widget.keyboardScrollStep).clamp(
-          0.0,
-          maxScroll,
-        );
-      } else if (event.logicalKey == .pageDown) {
-        targetOffset = (baseOffset + viewportDimension).clamp(0.0, maxScroll);
-      } else if (event.logicalKey == .pageUp) {
-        targetOffset = (baseOffset - viewportDimension).clamp(0.0, maxScroll);
-      } else {
-        return .ignored;
+    if (widget.direction == .vertical) {
+      if (key == .arrowDown) {
+        return (baseOffset + widget.keyboardScrollStep).clamp(0.0, maxScroll);
+      }
+      if (key == .arrowUp) {
+        return (baseOffset - widget.keyboardScrollStep).clamp(0.0, maxScroll);
       }
     } else {
-      // Horizontal scrolling keys
-      if (event.logicalKey == .arrowRight) {
-        targetOffset = (baseOffset + widget.keyboardScrollStep).clamp(
-          0.0,
-          maxScroll,
-        );
-      } else if (event.logicalKey == .arrowLeft) {
-        targetOffset = (baseOffset - widget.keyboardScrollStep).clamp(
-          0.0,
-          maxScroll,
-        );
-      } else if (event.logicalKey == .pageDown) {
-        targetOffset = (baseOffset + viewportDimension).clamp(0.0, maxScroll);
-      } else if (event.logicalKey == .pageUp) {
-        targetOffset = (baseOffset - viewportDimension).clamp(0.0, maxScroll);
-      } else {
-        return .ignored;
+      if (key == .arrowRight) {
+        return (baseOffset + widget.keyboardScrollStep).clamp(0.0, maxScroll);
       }
+      if (key == .arrowLeft) {
+        return (baseOffset - widget.keyboardScrollStep).clamp(0.0, maxScroll);
+      }
+    }
+    return null;
+  }
+
+  void _scrollToOffset(
+    double targetOffset, {
+    required JustMotionProfile animations,
+    required Duration duration,
+  }) {
+    if (!_resolvedController.hasClients) return;
+    if (animations.fast == Duration.zero) {
+      _stopSmoothing();
+      _currentOffset = targetOffset;
+      _targetOffset = targetOffset;
+      _resolvedController.jumpTo(targetOffset);
+      return;
     }
 
     if (_isSmoothEnabled) {
@@ -520,16 +544,45 @@ class _JustScrollAreaState extends State<JustScrollArea>
       _targetOffset = targetOffset;
       _startSmoothing();
     } else {
-      final JustMotionProfile animations = JustThemeProvider.of(
-        context,
-        aspect: .animations,
-      ).theme.animations;
       _resolvedController.animateTo(
         targetOffset,
-        duration: animations.fast,
+        duration: duration,
         curve: animations.defaultCurve,
       );
     }
+  }
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) return .ignored;
+    if (!_resolvedController.hasClients) return .ignored;
+
+    final JustMotionProfile animations = context.readTheme().animations.resolve(
+      context,
+    );
+    final bool isReducedMotion = animations.fast == Duration.zero;
+    final double maxScroll = _resolvedController.position.maxScrollExtent;
+    final double viewportDimension =
+        _resolvedController.position.viewportDimension;
+
+    // Use target offset as baseline when smooth is active (to stack keyboard
+    // inputs on top of an in-flight smooth scroll), otherwise use actual offset.
+    final double baseOffset = _isSmoothEnabled && !isReducedMotion
+        ? _targetOffset
+        : _resolvedController.offset;
+
+    final double? targetOffset = _resolveKeyTargetOffset(
+      event.logicalKey,
+      baseOffset,
+      maxScroll,
+      viewportDimension,
+    );
+    if (targetOffset == null) return .ignored;
+
+    _scrollToOffset(
+      targetOffset,
+      animations: animations,
+      duration: animations.fast,
+    );
 
     return .handled;
   }
@@ -540,22 +593,14 @@ class _JustScrollAreaState extends State<JustScrollArea>
 
   @override
   Widget build(BuildContext context) {
-    final JustColorScheme colors = JustThemeProvider.of(
+    final JustColorScheme colors = context.justColors;
+    final JustSpacingScheme spacing = context.justSpacing;
+    final JustShadowScheme shadows = context.justShadows;
+    final JustRadiusScheme radius = context.justRadius;
+    final JustMotionProfile animations = context.justAnimations.resolve(
       context,
-      aspect: .colors,
-    ).theme.colors;
-    final JustSpacingScheme spacing = JustThemeProvider.of(
-      context,
-      aspect: .spacing,
-    ).theme.spacing;
-    final JustShadowScheme shadows = JustThemeProvider.of(
-      context,
-      aspect: .shadows,
-    ).theme.shadows;
-    final JustMotionProfile animations = JustThemeProvider.of(
-      context,
-      aspect: .animations,
-    ).theme.animations;
+    );
+    final JustPresetTokens presetTokens = context.justPreset.tokens;
 
     final JustScrollAreaTheme? globalTheme = context
         .justThemeExtension<JustScrollAreaTheme>();
@@ -579,21 +624,39 @@ class _JustScrollAreaState extends State<JustScrollArea>
         widget.style?.scrollbarThickness ??
         themeStyle?.scrollbarThickness ??
         6.0;
-    final JustPresetTokens presetTokens = JustThemeProvider.of(context)
-        .theme
-        .presetTokens;
     final Radius scrollbarRadius = presetTokens.showsDefaultBorder
-        ? Radius.zero
+        ? .zero
         : (widget.style?.scrollbarRadius ??
               themeStyle?.scrollbarRadius ??
               const .circular(3.0));
+    final Radius? resolvedTrackRadius = presetTokens.showsDefaultBorder
+        ? .zero
+        : (widget.style?.scrollbarTrackRadius ??
+              themeStyle?.scrollbarTrackRadius);
 
     final EdgeInsets resolvedScrollbarPadding =
-        widget.style?.scrollbarPadding ??
-        themeStyle?.scrollbarPadding ??
-        EdgeInsets.zero;
+        widget.style?.scrollbarPadding ?? themeStyle?.scrollbarPadding ?? .zero;
     final double resolvedScrollbarMargin =
         widget.style?.scrollbarMargin ?? themeStyle?.scrollbarMargin ?? 0.0;
+    final double resolvedCrossAxisMargin =
+        widget.style?.scrollbarCrossAxisMargin ??
+        themeStyle?.scrollbarCrossAxisMargin ??
+        0.0;
+    final bool resolvedThumbVisibility =
+        widget.thumbVisibility ??
+        widget.style?.thumbVisibility ??
+        themeStyle?.thumbVisibility ??
+        false;
+    final bool resolvedTrackVisibility =
+        resolvedThumbVisibility &&
+        (widget.trackVisibility ??
+            widget.style?.trackVisibility ??
+            themeStyle?.trackVisibility ??
+            false);
+    final BorderRadius resolvedFocusRadius =
+        widget.style?.focusBorderRadius ??
+        themeStyle?.focusBorderRadius ??
+        presetTokens.resolveBorderRadius(radius);
 
     final bool smoothEnabled = _isSmoothEnabled;
 
@@ -613,7 +676,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
     // Wrap with Listener to intercept pointer signal events (mouse wheel/trackpad)
     if (smoothEnabled) {
       scrollView = Listener(
-        behavior: HitTestBehavior.opaque,
+        behavior: .opaque,
         onPointerSignal: _handlePointerSignal,
         child: scrollView,
       );
@@ -623,12 +686,17 @@ class _JustScrollAreaState extends State<JustScrollArea>
     if (widget.showScrollbar) {
       scrollView = RawScrollbar(
         controller: _resolvedController,
+        thumbVisibility: resolvedThumbVisibility,
+        trackVisibility: resolvedTrackVisibility,
         thumbColor: scrollbarThumbColor,
         trackColor: scrollbarTrackColor,
+        trackBorderColor: const Color(0x00000000),
         thickness: scrollbarThickness,
         radius: scrollbarRadius,
+        trackRadius: resolvedTrackRadius,
         padding: resolvedScrollbarPadding,
         mainAxisMargin: resolvedScrollbarMargin,
+        crossAxisMargin: resolvedCrossAxisMargin,
         child: scrollView,
       );
     }
@@ -834,17 +902,15 @@ class _JustScrollAreaState extends State<JustScrollArea>
                             child: JustPressable(
                               enabled: visible,
                               onTap: () {
-                                if (_isSmoothEnabled) {
-                                  // Route through smooth engine for consistent feel
-                                  _targetOffset = 0.0;
-                                  _startSmoothing();
-                                } else {
-                                  _resolvedController.animateTo(
-                                    0.0,
-                                    duration: animations.normal,
-                                    curve: animations.defaultCurve,
-                                  );
-                                }
+                                final JustMotionProfile resolvedAnimations =
+                                    context.readTheme().animations.resolve(
+                                      context,
+                                    );
+                                _scrollToOffset(
+                                  0.0,
+                                  animations: resolvedAnimations,
+                                  duration: resolvedAnimations.normal,
+                                );
                               },
                               builder:
                                   (
@@ -901,12 +967,26 @@ class _JustScrollAreaState extends State<JustScrollArea>
       );
     }
 
-    return Focus(
-      focusNode: _focusNode,
-      onKeyEvent: _handleKeyEvent,
-      child: NotificationListener<ScrollNotification>(
-        onNotification: _handleScrollNotification,
-        child: RepaintBoundary(child: result),
+    return Semantics(
+      container: true,
+      label: widget.semanticsLabel,
+      child: Focus(
+        focusNode: _focusNode,
+        onKeyEvent: _handleKeyEvent,
+        child: ValueListenableBuilder<bool>(
+          valueListenable: _isFocusVisible,
+          builder: (BuildContext context, bool isFocusVisible, Widget? child) {
+            return FocusIndicator(
+              isFocused: isFocusVisible,
+              borderRadius: resolvedFocusRadius,
+              child: child!,
+            );
+          },
+          child: NotificationListener<ScrollNotification>(
+            onNotification: _handleScrollNotification,
+            child: RepaintBoundary(child: result),
+          ),
+        ),
       ),
     );
   }

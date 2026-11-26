@@ -1,8 +1,10 @@
-// justui-meta: registry=2a925fd72c3141748d3581b13efd0093173609594a5553459a5cd1de7b43ba25 local=8809106f6ca01514557c81b5d132d424b1e26e2021b7f3909885e3d195a14372
-import 'package:flutter/services.dart' show HapticFeedback, KeyDownEvent;
+// justui-meta: registry=2321b2831b5b40a0f97eb8b946bfa0d0a925c4d5d0258fa4b9603638ae9241f5 local=fc8f67eb6e065991ee401047a42142a7a1a0de3ed5dc39dcb5a8871d44ad1b75
+import 'package:flutter/services.dart'
+    show HapticFeedback, KeyDownEvent, KeyRepeatEvent;
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
+import '../shared/just_focus_indicator.dart';
 import '../shared/just_pressable.dart';
 import 'just_tab_indicator.dart';
 import 'just_tabs_style.dart';
@@ -120,6 +122,12 @@ class JustTabs extends StatefulWidget {
   /// Custom style overrides.
   final JustTabsStyle? style;
 
+  /// Accessible label announced for the tablist container.
+  final String? semanticsLabel;
+
+  /// Whether to render the tab content pages alongside or below the tab bar.
+  final bool showContent;
+
   const JustTabs({
     super.key,
     required this.tabs,
@@ -129,6 +137,8 @@ class JustTabs extends StatefulWidget {
     this.isScrollable = false,
     this.controller,
     this.style,
+    this.semanticsLabel,
+    this.showContent = true,
   });
 
   /// Named constructor for underline style tabs.
@@ -140,6 +150,8 @@ class JustTabs extends StatefulWidget {
     bool isScrollable = false,
     JustTabController? controller,
     JustTabsStyle? style,
+    String? semanticsLabel,
+    bool showContent = true,
   }) : this(
          key: key,
          tabs: tabs,
@@ -149,6 +161,8 @@ class JustTabs extends StatefulWidget {
          isScrollable: isScrollable,
          controller: controller,
          style: style,
+         semanticsLabel: semanticsLabel,
+         showContent: showContent,
        );
 
   /// Named constructor for card enclosed style tabs.
@@ -160,6 +174,8 @@ class JustTabs extends StatefulWidget {
     bool isScrollable = false,
     JustTabController? controller,
     JustTabsStyle? style,
+    String? semanticsLabel,
+    bool showContent = true,
   }) : this(
          key: key,
          tabs: tabs,
@@ -169,6 +185,8 @@ class JustTabs extends StatefulWidget {
          isScrollable: isScrollable,
          controller: controller,
          style: style,
+         semanticsLabel: semanticsLabel,
+         showContent: showContent,
        );
 
   /// Named constructor for pill style tabs.
@@ -180,6 +198,8 @@ class JustTabs extends StatefulWidget {
     bool isScrollable = false,
     JustTabController? controller,
     JustTabsStyle? style,
+    String? semanticsLabel,
+    bool showContent = true,
   }) : this(
          key: key,
          tabs: tabs,
@@ -189,6 +209,8 @@ class JustTabs extends StatefulWidget {
          isScrollable: isScrollable,
          controller: controller,
          style: style,
+         semanticsLabel: semanticsLabel,
+         showContent: showContent,
        );
 
   /// Named constructor for vertical layout tabs.
@@ -199,6 +221,8 @@ class JustTabs extends StatefulWidget {
     ValueChanged<int>? onChanged,
     JustTabController? controller,
     JustTabsStyle? style,
+    String? semanticsLabel,
+    bool showContent = true,
   }) : this(
          key: key,
          tabs: tabs,
@@ -208,6 +232,8 @@ class JustTabs extends StatefulWidget {
          isScrollable: false,
          controller: controller,
          style: style,
+         semanticsLabel: semanticsLabel,
+         showContent: showContent,
        );
 
   @override
@@ -218,7 +244,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
   late JustTabController _tabController;
   late final PageController _pageController;
   final List<GlobalKey> _tabKeys = <GlobalKey<State<StatefulWidget>>>[];
-  final FocusNode _focusNode = FocusNode();
+  final List<FocusNode> _tabFocusNodes = <FocusNode>[];
 
   // Visited set for lazy loading tab page content
   final Set<int> _visitedIndices = <int>{};
@@ -254,6 +280,8 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     for (int i = 0; i < widget.tabs.length; i++) {
       _tabKeys.add(GlobalKey(debugLabel: 'tab_header_$i'));
     }
+    _syncTabFocusNodes();
+    _updateFocusTraversal();
   }
 
   @override
@@ -264,6 +292,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       for (int i = 0; i < widget.tabs.length; i++) {
         _tabKeys.add(GlobalKey(debugLabel: 'tab_header_$i'));
       }
+      _syncTabFocusNodes();
     }
     if (widget.controller != oldWidget.controller) {
       if (_isLocalController) {
@@ -288,11 +317,15 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       _tabController._bindVsync(this, defaultDuration: animations.normal);
       _tabController.addListener(_onControllerChanged);
     }
+    _updateFocusTraversal();
   }
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    for (final FocusNode node in _tabFocusNodes) {
+      node.dispose();
+    }
+    _tabFocusNodes.clear();
     _pageController.removeListener(_onPageScroll);
     _pageController.dispose();
     _tabController.removeListener(_onControllerChanged);
@@ -302,25 +335,59 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  void _syncTabFocusNodes() {
+    final int targetLength = widget.tabs.length;
+    while (_tabFocusNodes.length < targetLength) {
+      final int index = _tabFocusNodes.length;
+      _tabFocusNodes.add(FocusNode(debugLabel: 'tab_focus_$index'));
+    }
+    while (_tabFocusNodes.length > targetLength) {
+      _tabFocusNodes.removeLast().dispose();
+    }
+  }
+
+  void _updateFocusTraversal() {
+    int rovingIndex = _tabController.index;
+    if (rovingIndex < 0 ||
+        rovingIndex >= widget.tabs.length ||
+        !widget.tabs[rovingIndex].enabled) {
+      rovingIndex = _findBoundaryEnabledIndex(fromStart: true) ?? -1;
+    }
+    for (int i = 0; i < _tabFocusNodes.length; i++) {
+      final bool shouldSkip = i != rovingIndex;
+      if (_tabFocusNodes[i].skipTraversal != shouldSkip) {
+        _tabFocusNodes[i].skipTraversal = shouldSkip;
+      }
+    }
+  }
+
   void _onControllerChanged() {
     if (!mounted) return;
     final int index = _tabController.index;
     _visitedIndices.add(index);
+    _updateFocusTraversal();
     if (_pageController.hasClients && _pageController.page?.round() != index) {
       final JustMotionProfile animations = JustThemeProvider.read(context)
           .theme
-          .animations;
+          .animations
+          .resolve(context);
+      final int fromIndex = _pageController.page?.round() ?? index;
       final Duration duration = _durationForTransition(
-        _tabController.index,
+        fromIndex,
         index,
         animations,
       );
-      _pageController.animateToPage(
-        index,
-        duration: duration,
-        curve: animations.defaultCurve,
-      );
+      if (duration == .zero) {
+        _pageController.jumpToPage(index);
+      } else {
+        _pageController.animateToPage(
+          index,
+          duration: duration,
+          curve: animations.defaultCurve,
+        );
+      }
     }
+    setState(() {});
   }
 
   void _onPageScroll() {
@@ -404,7 +471,8 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     _visitedIndices.add(index);
     final JustMotionProfile animations = JustThemeProvider.read(context)
         .theme
-        .animations;
+        .animations
+        .resolve(context);
     final Duration duration = _durationForTransition(
       _tabController.index,
       index,
@@ -415,31 +483,116 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       duration: duration,
       curve: animations.defaultCurve,
     );
+    _updateFocusTraversal();
     widget.onChanged?.call(index);
     setState(() {});
   }
 
-  void _handleKeyEvent(KeyEvent event) {
-    if (event is! KeyDownEvent) return;
+  int? _findNextEnabledIndex(int fromIndex, int step) {
+    final int count = widget.tabs.length;
+    if (count == 0) return null;
+    for (int offset = 1; offset <= count; offset++) {
+      final int candidate = (fromIndex + step * offset) % count;
+      if (widget.tabs[candidate].enabled) {
+        return candidate;
+      }
+    }
+    return null;
+  }
 
-    int newIndex = _tabController.index;
-    if (widget.variant == .vertical) {
+  int? _findBoundaryEnabledIndex({required bool fromStart}) {
+    final int count = widget.tabs.length;
+    if (fromStart) {
+      for (int i = 0; i < count; i++) {
+        if (widget.tabs[i].enabled) return i;
+      }
+    } else {
+      for (int i = count - 1; i >= 0; i--) {
+        if (widget.tabs[i].enabled) return i;
+      }
+    }
+    return null;
+  }
+
+  KeyEventResult _handleTabKeyEvent(
+    int tabIndex,
+    FocusNode node,
+    KeyEvent event,
+  ) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return .ignored;
+    }
+
+    if (event.logicalKey == .space || event.logicalKey == .enter) {
+      if (event is KeyDownEvent && widget.tabs[tabIndex].enabled) {
+        _handleTabTap(tabIndex);
+        return .handled;
+      }
+      return .ignored;
+    }
+
+    int? targetIndex;
+    if (event.logicalKey == .home) {
+      targetIndex = _findBoundaryEnabledIndex(fromStart: true);
+    } else if (event.logicalKey == .end) {
+      targetIndex = _findBoundaryEnabledIndex(fromStart: false);
+    } else if (widget.variant == .vertical) {
       if (event.logicalKey == .arrowDown) {
-        newIndex = (newIndex + 1).clamp(0, widget.tabs.length - 1);
+        targetIndex = _findNextEnabledIndex(_tabController.index, 1);
       } else if (event.logicalKey == .arrowUp) {
-        newIndex = (newIndex - 1).clamp(0, widget.tabs.length - 1);
+        targetIndex = _findNextEnabledIndex(_tabController.index, -1);
       }
     } else {
       if (event.logicalKey == .arrowRight) {
-        newIndex = (newIndex + 1).clamp(0, widget.tabs.length - 1);
+        targetIndex = _findNextEnabledIndex(_tabController.index, 1);
       } else if (event.logicalKey == .arrowLeft) {
-        newIndex = (newIndex - 1).clamp(0, widget.tabs.length - 1);
+        targetIndex = _findNextEnabledIndex(_tabController.index, -1);
       }
     }
 
-    if (newIndex != _tabController.index && widget.tabs[newIndex].enabled) {
-      _handleTabTap(newIndex);
+    if (targetIndex == null) {
+      return .ignored;
     }
+
+    if (targetIndex != _tabController.index) {
+      _handleTabTap(targetIndex);
+    }
+    _tabFocusNodes[targetIndex].requestFocus();
+    return .handled;
+  }
+
+  Border? _resolveContainerBorder({
+    required JustPresetTokens presetTokens,
+    required JustColorScheme colors,
+    required JustTabsStyle? themeStyle,
+  }) {
+    final Color? borderBottomColor =
+        widget.style?.borderBottomColor ?? themeStyle?.borderBottomColor;
+    final double? borderBottomWidth =
+        widget.style?.borderBottomWidth ?? themeStyle?.borderBottomWidth;
+
+    if (widget.variant == .line &&
+        borderBottomColor != null &&
+        (borderBottomWidth == null || borderBottomWidth > 0.0)) {
+      return Border(
+        bottom: BorderSide(
+          color: borderBottomColor,
+          width: borderBottomWidth ?? presetTokens.borderWidth,
+        ),
+      );
+    }
+
+    if (presetTokens.showsDefaultBorder) {
+      if (widget.variant == .enclosed || widget.variant == .pill) {
+        return .all(color: colors.textPrimary, width: presetTokens.borderWidth);
+      }
+      return null;
+    }
+
+    if (widget.variant == .enclosed) {
+      return .all(color: colors.borderDefault, width: 1.0);
+    }
+    return null;
   }
 
   @override
@@ -451,7 +604,10 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     WidgetsBinding.instance.addPostFrameCallback((_) => _measureTabs());
 
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    _tabController.updateDuration(customTheme.animations.normal);
+    final JustMotionProfile resolvedAnimations = customTheme.animations.resolve(
+      context,
+    );
+    _tabController.updateDuration(resolvedAnimations.normal);
     final JustTabsTheme? tabsTheme = context
         .justThemeExtension<JustTabsTheme>();
     final JustColorScheme colors = JustThemeProvider.of(
@@ -467,6 +623,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       aspect: .spacing,
     ).theme.spacing;
     final JustRadiusScheme radius = customTheme.radius;
+    final JustPresetTokens presetTokens = customTheme.presetTokens;
 
     // Resolve active styles
     JustTabsStyle? themeStyle;
@@ -506,7 +663,14 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
     final BorderRadius containerBorderRadius =
         widget.style?.containerRadius ??
         themeStyle?.containerRadius ??
-        .all(radius.md);
+        presetTokens.resolveBorderRadius(radius);
+    final BorderRadius tabFocusRadius =
+        widget.style?.indicatorRadius ??
+        themeStyle?.indicatorRadius ??
+        presetTokens.resolveBorderRadius(
+          radius,
+          isPill: widget.variant == .pill,
+        );
 
     final double activeVal = _tabController.animationValue.clamp(
       0.0,
@@ -523,8 +687,11 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       tabWidgets.add(
         JustPressable(
           key: _tabKeys[i],
+          focusNode: _tabFocusNodes[i],
           enabled: isEnabled,
           onTap: () => _handleTabTap(i),
+          onKeyEvent: (FocusNode node, KeyEvent event) =>
+              _handleTabKeyEvent(i, node, event),
           builder: (BuildContext context, JustInteractionState state) {
             final double distance = (activeVal - i).abs();
             final double textInterpolation = (1.0 - distance).clamp(0.0, 1.0);
@@ -588,15 +755,21 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
             );
 
             return Semantics(
+              role: .tab,
               label: tab.label,
               selected: isSelected,
               enabled: isEnabled,
-              child: Container(
-                padding:
-                    widget.style?.tabPadding ??
-                    themeStyle?.tabPadding ??
-                    .symmetric(horizontal: spacing.lg, vertical: spacing.md),
-                child: headerContent,
+              excludeSemantics: true,
+              child: FocusIndicator(
+                isFocused: state.isFocusVisible,
+                borderRadius: tabFocusRadius,
+                child: Container(
+                  padding:
+                      widget.style?.tabPadding ??
+                      themeStyle?.tabPadding ??
+                      .symmetric(horizontal: spacing.lg, vertical: spacing.md),
+                  child: headerContent,
+                ),
               ),
             );
           },
@@ -677,29 +850,32 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       ],
     );
 
-    final JustPresetTokens presetTokens = customTheme.presetTokens;
-    final Widget headerContainer = KeyboardListener(
-      focusNode: _focusNode,
-      onKeyEvent: _handleKeyEvent,
+    final Border? containerBorder = _resolveContainerBorder(
+      presetTokens: presetTokens,
+      colors: colors,
+      themeStyle: themeStyle,
+    );
+    final Widget headerContainer = Semantics(
+      container: true,
+      explicitChildNodes: true,
+      role: .tabBar,
+      label: widget.semanticsLabel,
       child: Container(
         decoration: BoxDecoration(
           color: containerBg,
-          borderRadius: containerBorderRadius,
-          border: presetTokens.showsDefaultBorder
-              ? (widget.variant == .enclosed || widget.variant == .pill
-                    ? .all(
-                        color: colors.textPrimary,
-                        width: presetTokens.borderWidth,
-                      )
-                    : null)
-              : (widget.variant == .enclosed
-                    ? .all(color: colors.borderDefault, width: 1.0)
-                    : null),
+          borderRadius: (containerBorder == null || containerBorder.isUniform)
+              ? containerBorderRadius
+              : null,
+          border: containerBorder,
         ),
         padding: widget.style?.padding ?? themeStyle?.padding,
         child: headerBar,
       ),
     );
+
+    if (!widget.showContent) {
+      return headerContainer;
+    }
 
     // Build the Tab Pages
     final PageView pageView = PageView.builder(

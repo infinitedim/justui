@@ -1,10 +1,11 @@
-// justui-meta: registry=1cc294d061ea226a8cfb112e23442b72b14159dddef6de8af50c9af503448d47 local=d9b4c7874ef1369f58f7f6b7662f8c1c69084831204d243b2565f7926ebf9112
+// justui-meta: registry=115be380df2a52e64b9f250b6dede7cb86414cfe597d52b8a0a02a0a2f437026 local=6e8fb4b0d0f68a424e5a494257d2c8774f851f7ded6730e32e68a71b65549461
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:sandbox/core/just_ui_core.dart';
 
-import '../shared/just_tooltip_overlay.dart';
+import '../shared/just_focus_indicator.dart';
 import '../shared/just_pressable.dart';
+import '../shared/just_tooltip_overlay.dart';
 import 'just_sidebar_style.dart';
 import 'just_sidebar_theme.dart';
 import 'just_sidebar_variants.dart';
@@ -40,8 +41,6 @@ class JustSidebarItem {
   });
 }
 
-/// A premium, collapsible sidebar navigation panel supporting recursive sub-menus,
-/// collapsed hover tooltips, and responsive layout scaling.
 /// A premium, collapsible sidebar navigation panel supporting recursive sub-menus,
 /// collapsed hover tooltips, and responsive layout scaling.
 class JustSidebar extends StatefulWidget {
@@ -81,6 +80,13 @@ class JustSidebar extends StatefulWidget {
   /// Custom style overrides.
   final JustSidebarStyle? style;
 
+  /// Optional accessible label for the sidebar navigation container.
+  final String? semanticsLabel;
+
+  /// Whether the sidebar automatically collapses on viewports at or below
+  /// [JustBreakpoints.md].
+  final bool autoCollapse;
+
   const JustSidebar({
     super.key,
     required this.items,
@@ -95,6 +101,8 @@ class JustSidebar extends StatefulWidget {
     this.onItemSelected,
     this.variant = .default_,
     this.style,
+    this.semanticsLabel,
+    this.autoCollapse = true,
   });
 
   @override
@@ -121,10 +129,25 @@ class _JustSidebarState extends State<JustSidebar>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final JustMotionProfile animations = JustThemeProvider.of(
+      context,
+      aspect: .animations,
+    ).theme.animations.resolve(context);
+    _collapseController.duration = animations.normal;
+  }
+
+  @override
   void didUpdateWidget(covariant JustSidebar oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isCollapsed != oldWidget.isCollapsed) {
-      _collapseController.animateTo(widget.isCollapsed ? 0.0 : 1.0);
+      final double target = widget.isCollapsed ? 0.0 : 1.0;
+      if (_collapseController.duration == Duration.zero) {
+        _collapseController.value = target;
+      } else {
+        _collapseController.animateTo(target);
+      }
     }
   }
 
@@ -132,6 +155,95 @@ class _JustSidebarState extends State<JustSidebar>
   void dispose() {
     _collapseController.dispose();
     super.dispose();
+  }
+
+  JustSidebarStyle? _resolveThemeStyle(JustSidebarTheme? sidebarTheme) {
+    if (sidebarTheme == null) return null;
+    switch (widget.variant) {
+      case .default_:
+        return sidebarTheme.defaultStyle;
+      case .floating:
+        return sidebarTheme.floatingStyle;
+      case .inset:
+        return sidebarTheme.insetStyle;
+    }
+  }
+
+  List<Widget> _buildItemWidgets({
+    required bool isCollapsed,
+    required Color activeColor,
+    required Color inactiveColor,
+    required JustSidebarStyle? themeStyle,
+    required double itemSpacing,
+  }) {
+    final List<Widget> children = <Widget>[];
+    for (int i = 0; i < widget.items.length; i++) {
+      if (itemSpacing > 0.0 && i > 0) {
+        children.add(SizedBox(height: itemSpacing));
+      }
+      final JustSidebarItem item = widget.items[i];
+      children.add(
+        _JustSidebarItemWidget(
+          item: item,
+          depth: 0,
+          isCollapsed: isCollapsed,
+          isSelected: widget.selectedIndex == i,
+          activeColor: activeColor,
+          inactiveColor: inactiveColor,
+          variant: widget.variant,
+          style: widget.style,
+          themeStyle: themeStyle,
+          itemSpacing: itemSpacing,
+          onTap: () {
+            item.onTap?.call();
+            widget.onItemSelected?.call(i);
+          },
+        ),
+      );
+    }
+    return children;
+  }
+
+  Widget _buildPanel({
+    required double currentWidth,
+    required bool hasBoundedHeight,
+    required Widget itemsColumn,
+    required BoxDecoration decoration,
+    required EdgeInsetsGeometry finalPadding,
+    required JustSpacingScheme spacing,
+  }) {
+    return Container(
+      width: currentWidth,
+      height: hasBoundedHeight ? .infinity : null,
+      decoration: decoration,
+      padding: finalPadding,
+      child: Column(
+        mainAxisSize: hasBoundedHeight ? .max : .min,
+        crossAxisAlignment: .stretch,
+        children: <Widget>[
+          if (widget.header != null) ...<Widget>[
+            ClipRect(
+              child: Align(
+                alignment: .centerLeft,
+                heightFactor: 1.0,
+                child: SizedBox(height: 48.0, child: widget.header!),
+              ),
+            ),
+            SizedBox(height: spacing.lg),
+          ],
+          if (hasBoundedHeight)
+            Expanded(child: SingleChildScrollView(child: itemsColumn))
+          else
+            itemsColumn,
+          if (widget.footer != null) ...<Widget>[
+            SizedBox(height: spacing.lg),
+            ClipRect(
+              child: Align(alignment: .centerLeft, child: widget.footer!),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 
   @override
@@ -149,37 +261,13 @@ class _JustSidebarState extends State<JustSidebar>
     ).theme.spacing;
     final JustRadiusScheme radius = customTheme.radius;
     final JustShadowScheme shadows = customTheme.shadows;
-
-    // Resolve active styles
-    JustSidebarStyle? themeStyle;
-    if (sidebarTheme != null) {
-      switch (widget.variant) {
-        case .default_:
-          themeStyle = sidebarTheme.defaultStyle;
-          break;
-        case .floating:
-          themeStyle = sidebarTheme.floatingStyle;
-          break;
-        case .inset:
-          themeStyle = sidebarTheme.insetStyle;
-          break;
-      }
-    }
+    final JustPresetTokens presetTokens = customTheme.presetTokens;
+    final JustSidebarStyle? themeStyle = _resolveThemeStyle(sidebarTheme);
 
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    // Auto-collapse sidebar on smaller screens (below md breakpoint)
-    final bool isAutoCollapsed = screenWidth <= JustBreakpoints.md;
+    final bool isAutoCollapsed =
+        widget.autoCollapse && screenWidth <= JustBreakpoints.md;
     final bool activeCollapsed = widget.isCollapsed || isAutoCollapsed;
-
-    if (activeCollapsed &&
-        _collapseController.value > 0.0 &&
-        !isAutoCollapsed) {
-      _collapseController.value = 0.0;
-    } else if (!activeCollapsed &&
-        _collapseController.value < 1.0 &&
-        !isAutoCollapsed) {
-      _collapseController.value = 1.0;
-    }
 
     final Color containerBg =
         widget.style?.backgroundColor ??
@@ -193,280 +281,91 @@ class _JustSidebarState extends State<JustSidebar>
         widget.style?.inactiveColor ??
         themeStyle?.inactiveColor ??
         colors.textSecondary;
+    final Color resolvedBorderColor =
+        widget.style?.borderColor ??
+        themeStyle?.borderColor ??
+        (presetTokens.showsDefaultBorder
+            ? colors.textPrimary
+            : colors.borderDefault);
+    final double itemSpacing =
+        widget.style?.itemSpacing ?? themeStyle?.itemSpacing ?? 0.0;
 
     final EdgeInsetsGeometry defaultPadding = widget.variant == .floating
         ? .all(spacing.md)
         : (widget.variant == .inset
               ? .symmetric(horizontal: spacing.md, vertical: spacing.lg)
               : .symmetric(vertical: spacing.lg));
-
     final EdgeInsetsGeometry finalPadding =
         widget.style?.padding ?? themeStyle?.padding ?? defaultPadding;
 
-    final BorderRadius borderRadius = widget.variant == .floating
-        ? .all(radius.xl)
-        : (widget.variant == .inset ? .all(radius.lg) : .zero);
+    final BorderRadius borderRadius =
+        widget.style?.borderRadius ??
+        themeStyle?.borderRadius ??
+        (presetTokens.showsDefaultBorder
+            ? .zero
+            : (widget.variant == .floating
+                  ? .all(radius.xl)
+                  : (widget.variant == .inset ? .all(radius.lg) : .zero)));
 
-    return AnimatedBuilder(
-      animation: _collapseAnimation,
-      builder: (BuildContext context, Widget? child) {
-        final double currentWidth =
-            widget.collapsedWidth +
-            (widget.width - widget.collapsedWidth) * _collapseAnimation.value;
-
-        final JustPresetTokens presetTokens = customTheme.presetTokens;
-        final Border borderStyle = widget.variant == .default_
-            ? Border(
-                right: BorderSide(
-                  color: colors.borderDefault,
-                  width: presetTokens.borderWidth,
-                ),
-              )
-            : .all(
-                color: colors.borderDefault,
-                width: presetTokens.borderWidth,
-              );
-
-        return Container(
-          width: currentWidth,
-          height: .infinity,
-          decoration: BoxDecoration(
-            color: containerBg,
-            borderRadius: borderRadius,
-            border: borderStyle,
-            boxShadow: widget.variant != .default_
-                ? (presetTokens.showsDefaultBorder
-                      ? customTheme.resolveShadows(shadows.lg, isPressed: false)
-                      : shadows.md)
-                : null,
-          ),
-          padding: finalPadding,
-          child: Column(
-            crossAxisAlignment: .stretch,
-            children: <Widget>[
-              // Header logo area
-              if (widget.header != null) ...<Widget>[
-                ClipRect(
-                  child: Align(
-                    alignment: .centerLeft,
-                    heightFactor: 1.0,
-                    child: SizedBox(height: 48.0, child: widget.header!),
-                  ),
-                ),
-                SizedBox(height: spacing.lg),
-              ],
-
-              // Navigation menu items
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: .min,
-                    crossAxisAlignment: .stretch,
-                    children: <Widget>[
-                      for (int i = 0; i < widget.items.length; i++)
-                        _buildSidebarItem(
-                          context: context,
-                          item: widget.items[i],
-                          index: i,
-                          depth: 0,
-                          isCollapsed: activeCollapsed,
-                          activeColor: activeColor,
-                          inactiveColor: inactiveColor,
-                          themeStyle: themeStyle,
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Footer area
-              if (widget.footer != null) ...<Widget>[
-                SizedBox(height: spacing.lg),
-                ClipRect(
-                  child: Align(alignment: .centerLeft, child: widget.footer!),
-                ),
-              ],
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSidebarItem({
-    required BuildContext context,
-    required JustSidebarItem item,
-    required int index,
-    required int depth,
-    required bool isCollapsed,
-    required Color activeColor,
-    required Color inactiveColor,
-    JustSidebarStyle? themeStyle,
-  }) {
-    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
-    final JustColorScheme colors = customTheme.colors;
-    final JustSpacingScheme spacing = customTheme.spacing;
-    final JustTypographyScheme typography = JustThemeProvider.of(
-      context,
-      aspect: .typography,
-    ).theme.typography;
-    final JustRadiusScheme radius = JustThemeProvider.of(context).theme.radius;
-
-    final bool isSelected = widget.selectedIndex == index && depth == 0;
-    final bool hasChildren = item.children != null && item.children!.isNotEmpty;
-
-    // Proportional indentation in LTR/RTL
-    final bool isRtl = Directionality.of(context) == .rtl;
-    final double indent = depth * 16.0;
-
-    final EdgeInsetsGeometry defaultItemPadding = widget.variant == .inset
-        ? .symmetric(horizontal: spacing.md, vertical: spacing.sm)
-        : .symmetric(horizontal: spacing.lg, vertical: spacing.sm);
-
-    final EdgeInsetsGeometry itemPadding =
-        widget.style?.itemPadding ??
-        themeStyle?.itemPadding ??
-        defaultItemPadding;
-    final EdgeInsets resolvedItemPadding = itemPadding.resolve(
-      Directionality.of(context),
-    );
-    final BorderRadius itemRadius =
-        widget.style?.itemBorderRadius ??
-        themeStyle?.itemBorderRadius ??
-        .all(radius.md);
-
-    final TextStyle textStyle =
-        widget.style?.textStyle ?? themeStyle?.textStyle ?? typography.bodyMd;
-    final TextStyle activeTextStyle =
-        widget.style?.activeTextStyle ??
-        themeStyle?.activeTextStyle ??
-        typography.bodyMd.copyWith(fontWeight: .w600);
-
-    // Sidebar item inner layout content
-    Widget content = JustPressable(
-      enabled: item.enabled,
-      onTap: () {
-        if (hasChildren) {
-          // Folder handles expanding locally (handled by stateful folder widget below)
-        } else {
-          item.onTap?.call();
-          widget.onItemSelected?.call(index);
-        }
-      },
-      builder: (BuildContext context, JustInteractionState state) {
-        final bool isHovered = state.isHovered;
-        final bool isPressed = state.isPressed;
-        final double itemOpacity = item.enabled ? 1.0 : 0.5;
-
-        final JustPresetTokens presetTokens = customTheme.presetTokens;
-
-        final Color itemBg = isSelected
-            ? (presetTokens.showsDefaultBorder
-                  ? activeColor.withValues(alpha: 0.35)
-                  : (widget.variant == .default_
-                        ? colors.card
-                        : activeColor.withValues(alpha: 0.08)))
-            : (isPressed
-                  ? activeColor.withValues(alpha: 0.12)
-                  : (isHovered
-                        ? activeColor.withValues(alpha: 0.05)
-                        : const Color(0x00000000)));
-
-        final Color foregroundColor = presetTokens.showsDefaultBorder
-            ? colors.textPrimary
-            : (isSelected
-                  ? activeColor
-                  : (isHovered || isPressed ? activeColor : inactiveColor));
-
-        final TextStyle resolvedTextStyle = isSelected
-            ? activeTextStyle
-            : textStyle;
-
-        final Border? itemBorder = presetTokens.showsDefaultBorder
-            ? .all(
-                color: (isSelected || isHovered)
-                    ? colors.textPrimary
-                    : const Color(0x00000000),
-                width: 1.5,
-              )
-            : (isSelected && widget.variant == .default_
-                  ? Border(
-                      left: !isRtl
-                          ? BorderSide(color: activeColor, width: 3.0)
-                          : .none,
-                      right: isRtl
-                          ? BorderSide(color: activeColor, width: 3.0)
-                          : .none,
-                    )
-                  : null);
-
-        final Widget itemRow = Opacity(
-          opacity: itemOpacity,
-          child: Container(
-            decoration: BoxDecoration(
-              color: itemBg,
-              borderRadius: itemRadius,
-              border: itemBorder,
+    final Border borderStyle = widget.variant == .default_
+        ? Border(
+            right: BorderSide(
+              color: resolvedBorderColor,
+              width: presetTokens.borderWidth,
             ),
-            padding: resolvedItemPadding.copyWith(
-              left: !isRtl
-                  ? resolvedItemPadding.left + indent
-                  : resolvedItemPadding.left,
-              right: isRtl
-                  ? resolvedItemPadding.right + indent
-                  : resolvedItemPadding.right,
-            ),
-            child: Row(
-              children: <Widget>[
-                IconTheme.merge(
-                  data: IconThemeData(size: 20.0, color: foregroundColor),
-                  child: item.icon,
-                ),
-                if (!isCollapsed) ...<Widget>[
-                  SizedBox(width: spacing.md),
-                  Expanded(
-                    child: Text(
-                      item.label,
-                      style: resolvedTextStyle.copyWith(color: foregroundColor),
-                      maxLines: 1,
-                      overflow: .ellipsis,
-                    ),
-                  ),
-                  if (item.badge != null) ...<Widget>[
-                    SizedBox(width: spacing.sm),
-                    item.badge!,
-                  ],
-                ],
-              ],
-            ),
-          ),
-        );
+          )
+        : .all(color: resolvedBorderColor, width: presetTokens.borderWidth);
 
-        return customTheme.buildPressEffect(
-          isPressed: isPressed,
-          child: itemRow,
-        );
-      },
+    final BoxDecoration panelDecoration = BoxDecoration(
+      color: containerBg,
+      borderRadius: borderRadius,
+      border: borderStyle,
+      boxShadow: widget.variant != .default_
+          ? (presetTokens.showsDefaultBorder
+                ? customTheme.resolveShadows(shadows.lg, isPressed: false)
+                : shadows.md)
+          : null,
     );
-
-    // Apply collapsed hover tooltip wrapper
-    if (isCollapsed && !hasChildren) {
-      content = JustTooltipOverlay(message: item.label, child: content);
-    }
-
-    if (hasChildren) {
-      return _JustSidebarFolder(
-        item: item,
-        depth: depth,
-        isCollapsed: isCollapsed,
+    final Widget itemsColumn = Column(
+      mainAxisSize: .min,
+      crossAxisAlignment: .stretch,
+      children: _buildItemWidgets(
+        isCollapsed: activeCollapsed,
         activeColor: activeColor,
         inactiveColor: inactiveColor,
         themeStyle: themeStyle,
-        itemWidget: content,
-      );
-    }
+        itemSpacing: itemSpacing,
+      ),
+    );
 
-    return content;
+    return Semantics(
+      container: true,
+      explicitChildNodes: true,
+      label: widget.semanticsLabel,
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return AnimatedBuilder(
+            animation: _collapseAnimation,
+            builder: (BuildContext context, Widget? child) {
+              final double currentWidth = isAutoCollapsed
+                  ? widget.collapsedWidth
+                  : widget.collapsedWidth +
+                        (widget.width - widget.collapsedWidth) *
+                            _collapseAnimation.value;
+
+              return _buildPanel(
+                currentWidth: currentWidth,
+                hasBoundedHeight: constraints.hasBoundedHeight,
+                itemsColumn: itemsColumn,
+                decoration: panelDecoration,
+                finalPadding: finalPadding,
+                spacing: spacing,
+              );
+            },
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -476,8 +375,10 @@ class _JustSidebarFolder extends StatefulWidget {
   final bool isCollapsed;
   final Color activeColor;
   final Color inactiveColor;
+  final JustSidebarVariant variant;
+  final JustSidebarStyle? style;
   final JustSidebarStyle? themeStyle;
-  final Widget itemWidget;
+  final double itemSpacing;
 
   const _JustSidebarFolder({
     required this.item,
@@ -485,8 +386,10 @@ class _JustSidebarFolder extends StatefulWidget {
     required this.isCollapsed,
     required this.activeColor,
     required this.inactiveColor,
+    required this.variant,
+    this.style,
     this.themeStyle,
-    required this.itemWidget,
+    this.itemSpacing = 0.0,
   });
 
   @override
@@ -513,18 +416,158 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final JustMotionProfile animations = JustThemeProvider.of(
+      context,
+      aspect: .animations,
+    ).theme.animations.resolve(context);
+    _expandController.duration = animations.normal;
+  }
+
+  @override
   void dispose() {
     _expandController.dispose();
     super.dispose();
   }
 
   void _toggleExpand() {
-    _isExpanded = !_isExpanded;
-    if (_isExpanded) {
+    setState(() {
+      _isExpanded = !_isExpanded;
+    });
+    if (_expandController.duration == Duration.zero) {
+      _expandController.value = _isExpanded ? 1.0 : 0.0;
+    } else if (_isExpanded) {
       _expandController.forward();
     } else {
       _expandController.reverse();
     }
+  }
+
+  Widget _buildFolderBox({
+    required JustColorScheme colors,
+    required JustSpacingScheme spacing,
+    required JustPresetTokens presetTokens,
+    required EdgeInsets itemPadding,
+    required BorderRadius itemRadius,
+    required TextStyle labelStyle,
+    required bool isRtl,
+    required Widget chevronIcon,
+    required JustInteractionState state,
+  }) {
+    final Color itemBg = state.isPressed
+        ? widget.activeColor.withValues(alpha: 0.12)
+        : (state.isHovered
+              ? widget.activeColor.withValues(alpha: 0.05)
+              : const Color(0x00000000));
+    final Color foregroundColor = presetTokens.showsDefaultBorder
+        ? colors.textPrimary
+        : (state.isHovered || state.isPressed
+              ? widget.activeColor
+              : widget.inactiveColor);
+    final Border? itemBorder = presetTokens.showsDefaultBorder
+        ? .all(
+            color: state.isHovered
+                ? colors.textPrimary
+                : const Color(0x00000000),
+            width: 1.5,
+          )
+        : null;
+    final EdgeInsets effectivePadding = widget.isCollapsed
+        ? .only(top: itemPadding.top, bottom: itemPadding.bottom)
+        : itemPadding.copyWith(
+            left: !isRtl
+                ? itemPadding.left + (widget.depth * 16.0)
+                : itemPadding.left,
+            right: isRtl
+                ? itemPadding.right + (widget.depth * 16.0)
+                : itemPadding.right,
+          );
+
+    return Opacity(
+      opacity: widget.item.enabled ? 1.0 : 0.5,
+      child: Container(
+        decoration: BoxDecoration(
+          color: itemBg,
+          borderRadius: itemRadius,
+          border: itemBorder,
+        ),
+        padding: effectivePadding,
+        child: Row(
+          mainAxisAlignment: widget.isCollapsed ? .center : .start,
+          children: <Widget>[
+            IconTheme.merge(
+              data: IconThemeData(size: 20.0, color: foregroundColor),
+              child: widget.item.icon,
+            ),
+            if (!widget.isCollapsed) ...<Widget>[
+              SizedBox(width: spacing.md),
+              Expanded(
+                child: Text(
+                  widget.item.label,
+                  style: labelStyle.copyWith(color: foregroundColor),
+                  maxLines: 1,
+                  overflow: .ellipsis,
+                ),
+              ),
+              chevronIcon,
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFolderHeader({
+    required JustColorScheme colors,
+    required JustSpacingScheme spacing,
+    required JustTypographyScheme typography,
+    required JustPresetTokens presetTokens,
+    required JustMotionProfile animations,
+    required EdgeInsets itemPadding,
+    required BorderRadius itemRadius,
+    required bool isRtl,
+    required Widget chevronIcon,
+  }) {
+    final TextStyle labelStyle =
+        widget.style?.textStyle ??
+        widget.themeStyle?.textStyle ??
+        typography.bodyMd;
+
+    return JustPressable(
+      enabled: widget.item.enabled,
+      onTap: _toggleExpand,
+      builder: (BuildContext context, JustInteractionState state) {
+        final Widget folderBox = _buildFolderBox(
+          colors: colors,
+          spacing: spacing,
+          presetTokens: presetTokens,
+          itemPadding: itemPadding,
+          itemRadius: itemRadius,
+          labelStyle: labelStyle,
+          isRtl: isRtl,
+          chevronIcon: chevronIcon,
+          state: state,
+        );
+
+        return Semantics(
+          button: true,
+          expanded: _isExpanded,
+          enabled: widget.item.enabled,
+          label: widget.item.label,
+          excludeSemantics: true,
+          child: FocusIndicator(
+            isFocused: state.isFocusVisible,
+            borderRadius: itemRadius,
+            child: presetTokens.buildPressEffect(
+              isPressed: state.isPressed,
+              animations: animations,
+              child: folderBox,
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -532,14 +575,25 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
     final JustThemeData customTheme = JustThemeProvider.of(context).theme;
     final JustColorScheme colors = customTheme.colors;
     final JustSpacingScheme spacing = customTheme.spacing;
+    final JustTypographyScheme typography = customTheme.typography;
     final JustRadiusScheme radius = customTheme.radius;
+    final JustPresetTokens presetTokens = customTheme.presetTokens;
+    final JustMotionProfile animations = customTheme.animations.resolve(
+      context,
+    );
     final bool isRtl = Directionality.of(context) == .rtl;
 
+    final EdgeInsets defaultItemPadding = widget.variant == .inset
+        ? .symmetric(horizontal: spacing.md, vertical: spacing.sm)
+        : .symmetric(horizontal: spacing.lg, vertical: spacing.sm);
     final EdgeInsets itemPadding =
+        widget.style?.itemPadding ??
         widget.themeStyle?.itemPadding ??
-        .symmetric(horizontal: spacing.lg, vertical: spacing.sm);
+        defaultItemPadding;
     final BorderRadius itemRadius =
-        widget.themeStyle?.itemBorderRadius ?? .all(radius.md);
+        widget.style?.itemBorderRadius ??
+        widget.themeStyle?.itemBorderRadius ??
+        presetTokens.resolveBorderRadius(radius);
 
     // Chevron pointing to the reading side when collapsed, down when
     // expanded. Flutter mirrors chevron_right in RTL itself, so RTL turns
@@ -551,90 +605,41 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
       child: Icon(Icons.chevron_right, size: 16.0, color: widget.inactiveColor),
     );
 
-    // Wrap the base item row layout to support folder toggling on folder header click
-    final Widget folderHeader = AnimatedBuilder(
-      animation: _expandAnimation,
-      builder: (BuildContext context, Widget? child) {
-        final bool isFolderExpanded = _expandController.value > 0.5;
-
-        return Semantics(
-          expanded: isFolderExpanded,
-          child: JustPressable(
-            onTap: _toggleExpand,
-            builder: (BuildContext context, JustInteractionState state) {
-              final bool isHovered = state.isHovered;
-              final bool isPressed = state.isPressed;
-              final Color itemBg = isPressed
-                  ? widget.activeColor.withValues(alpha: 0.12)
-                  : (isHovered
-                        ? widget.activeColor.withValues(alpha: 0.05)
-                        : const Color(0x00000000));
-
-              final JustPresetTokens presetTokens = customTheme.presetTokens;
-              final Color foregroundColor = presetTokens.showsDefaultBorder
-                  ? colors.textPrimary
-                  : (isHovered || isPressed
-                        ? widget.activeColor
-                        : widget.inactiveColor);
-
-              final Border? itemBorder = presetTokens.showsDefaultBorder
-                  ? .all(
-                      color: isHovered
-                          ? colors.textPrimary
-                          : const Color(0x00000000),
-                      width: 1.5,
-                    )
-                  : null;
-
-              final Widget folderBox = Container(
-                decoration: BoxDecoration(
-                  color: itemBg,
-                  borderRadius: itemRadius,
-                  border: itemBorder,
-                ),
-                padding: itemPadding.copyWith(
-                  left: !isRtl
-                      ? itemPadding.left + (widget.depth * 16.0)
-                      : itemPadding.left,
-                  right: isRtl
-                      ? itemPadding.right + (widget.depth * 16.0)
-                      : itemPadding.right,
-                ),
-                child: Row(
-                  children: <Widget>[
-                    IconTheme.merge(
-                      data: IconThemeData(size: 20.0, color: foregroundColor),
-                      child: widget.item.icon,
-                    ),
-                    if (!widget.isCollapsed) ...<Widget>[
-                      SizedBox(width: spacing.md),
-                      Expanded(
-                        child: Text(
-                          widget.item.label,
-                          style: TextStyle(
-                            color: foregroundColor,
-                            fontSize: 14.0,
-                            fontWeight: .w400,
-                          ),
-                          maxLines: 1,
-                          overflow: .ellipsis,
-                        ),
-                      ),
-                      chevronIcon,
-                    ],
-                  ],
-                ),
-              );
-
-              return customTheme.buildPressEffect(
-                isPressed: isPressed,
-                child: folderBox,
-              );
-            },
-          ),
-        );
-      },
+    final Widget folderHeader = _buildFolderHeader(
+      colors: colors,
+      spacing: spacing,
+      typography: typography,
+      presetTokens: presetTokens,
+      animations: animations,
+      itemPadding: itemPadding,
+      itemRadius: itemRadius,
+      isRtl: isRtl,
+      chevronIcon: chevronIcon,
     );
+
+    final List<JustSidebarItem> subItems = widget.item.children!;
+    final List<Widget> subChildren = <Widget>[];
+    for (int i = 0; i < subItems.length; i++) {
+      if (widget.itemSpacing > 0.0) {
+        subChildren.add(SizedBox(height: widget.itemSpacing));
+      }
+      final JustSidebarItem childItem = subItems[i];
+      subChildren.add(
+        _JustSidebarItemWidget(
+          item: childItem,
+          depth: widget.depth + 1,
+          isCollapsed: widget.isCollapsed,
+          isSelected: false,
+          activeColor: widget.activeColor,
+          inactiveColor: widget.inactiveColor,
+          variant: widget.variant,
+          style: widget.style,
+          themeStyle: widget.themeStyle,
+          itemSpacing: widget.itemSpacing,
+          onTap: childItem.onTap,
+        ),
+      );
+    }
 
     return Column(
       mainAxisSize: .min,
@@ -643,21 +648,17 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
         folderHeader,
         SizeTransition(
           sizeFactor: _expandAnimation,
-          alignment: Alignment.topCenter,
-          child: Column(
-            mainAxisSize: .min,
-            crossAxisAlignment: .stretch,
-            children: widget.item.children!.map((JustSidebarItem childItem) {
-              // Recursive build with incremented depth
-              return _JustSidebarItemWidget(
-                item: childItem,
-                depth: widget.depth + 1,
-                isCollapsed: widget.isCollapsed,
-                activeColor: widget.activeColor,
-                inactiveColor: widget.inactiveColor,
-                themeStyle: widget.themeStyle,
-              );
-            }).toList(),
+          alignment: .topCenter,
+          child: ExcludeFocus(
+            excluding: !_isExpanded,
+            child: ExcludeSemantics(
+              excluding: !_isExpanded,
+              child: Column(
+                mainAxisSize: .min,
+                crossAxisAlignment: .stretch,
+                children: subChildren,
+              ),
+            ),
           ),
         ),
       ],
@@ -665,129 +666,162 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
   }
 }
 
-// Stateful/Stateless Indentation Helper widget
 class _JustSidebarItemWidget extends StatelessWidget {
   final JustSidebarItem item;
   final int depth;
   final bool isCollapsed;
+  final bool isSelected;
   final Color activeColor;
   final Color inactiveColor;
+  final JustSidebarVariant variant;
+  final VoidCallback? onTap;
+  final JustSidebarStyle? style;
   final JustSidebarStyle? themeStyle;
+  final double itemSpacing;
 
   const _JustSidebarItemWidget({
     required this.item,
     required this.depth,
     required this.isCollapsed,
+    required this.isSelected,
     required this.activeColor,
     required this.inactiveColor,
+    required this.variant,
+    this.onTap,
+    this.style,
     this.themeStyle,
+    this.itemSpacing = 0.0,
   });
 
-  @override
+  BoxDecoration _buildLeafDecoration({
+    required JustColorScheme colors,
+    required JustPresetTokens presetTokens,
+    required BorderRadius itemRadius,
+    required Color? customSelectedBg,
+    required bool isRtl,
+    required JustInteractionState state,
+  }) {
+    final Color itemBg = isSelected
+        ? (customSelectedBg ??
+              (presetTokens.showsDefaultBorder
+                  ? activeColor.withValues(alpha: 0.35)
+                  : (variant == .default_
+                        ? colors.card
+                        : activeColor.withValues(alpha: 0.08))))
+        : (state.isPressed
+              ? activeColor.withValues(alpha: 0.12)
+              : (state.isHovered
+                    ? activeColor.withValues(alpha: 0.05)
+                    : const Color(0x00000000)));
+
+    final Border? itemBorder = presetTokens.showsDefaultBorder
+        ? .all(
+            color: (isSelected || state.isHovered)
+                ? colors.textPrimary
+                : const Color(0x00000000),
+            width: 1.5,
+          )
+        : (isSelected && variant == .default_
+              ? Border(
+                  left: !isRtl
+                      ? BorderSide(color: activeColor, width: 3.0)
+                      : .none,
+                  right: isRtl
+                      ? BorderSide(color: activeColor, width: 3.0)
+                      : .none,
+                )
+              : null);
+
+    return BoxDecoration(
+      color: itemBg,
+      borderRadius: itemRadius,
+      border: itemBorder,
+    );
+  }
+
+  Widget _buildLeafRow({
+    required JustColorScheme colors,
+    required JustSpacingScheme spacing,
+    required JustPresetTokens presetTokens,
+    required EdgeInsets resolvedItemPadding,
+    required BorderRadius itemRadius,
+    required TextStyle textStyle,
+    required TextStyle activeTextStyle,
+    required Color? customSelectedBg,
+    required Color? customSelectedFg,
+    required bool isRtl,
+    required double indent,
+    required JustInteractionState state,
+  }) {
+    final Color foregroundColor = isSelected && customSelectedFg != null
+        ? customSelectedFg
+        : (presetTokens.showsDefaultBorder
+              ? colors.textPrimary
+              : (isSelected
+                    ? activeColor
+                    : (state.isHovered || state.isPressed
+                          ? activeColor
+                          : inactiveColor)));
+    final TextStyle resolvedTextStyle = isSelected
+        ? activeTextStyle
+        : textStyle;
+    final EdgeInsets effectivePadding = isCollapsed
+        ? .only(
+            top: resolvedItemPadding.top,
+            bottom: resolvedItemPadding.bottom,
+          )
+        : resolvedItemPadding.copyWith(
+            left: !isRtl
+                ? resolvedItemPadding.left + indent
+                : resolvedItemPadding.left,
+            right: isRtl
+                ? resolvedItemPadding.right + indent
+                : resolvedItemPadding.right,
+          );
+
+    return Opacity(
+      opacity: item.enabled ? 1.0 : 0.5,
+      child: Container(
+        decoration: _buildLeafDecoration(
+          colors: colors,
+          presetTokens: presetTokens,
+          itemRadius: itemRadius,
+          customSelectedBg: customSelectedBg,
+          isRtl: isRtl,
+          state: state,
+        ),
+        padding: effectivePadding,
+        child: Row(
+          mainAxisAlignment: isCollapsed ? .center : .start,
+          children: <Widget>[
+            IconTheme.merge(
+              data: IconThemeData(size: 20.0, color: foregroundColor),
+              child: item.icon,
+            ),
+            if (!isCollapsed) ...<Widget>[
+              SizedBox(width: spacing.md),
+              Expanded(
+                child: Text(
+                  item.label,
+                  style: resolvedTextStyle.copyWith(color: foregroundColor),
+                  maxLines: 1,
+                  overflow: .ellipsis,
+                ),
+              ),
+              if (item.badge != null) ...<Widget>[
+                SizedBox(width: spacing.sm),
+                item.badge!,
+              ],
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final JustThemeData customTheme = JustThemeProvider.of(
-      context,
-      aspect: .colors,
-    ).theme;
-    final JustColorScheme colors = customTheme.colors;
-    final JustSpacingScheme spacing = JustThemeProvider.of(
-      context,
-      aspect: .spacing,
-    ).theme.spacing;
-    final JustTypographyScheme typography = JustThemeProvider.of(
-      context,
-      aspect: .typography,
-    ).theme.typography;
-    final JustRadiusScheme radius = JustThemeProvider.of(context).theme.radius;
-
     final bool hasChildren = item.children != null && item.children!.isNotEmpty;
-    final bool isRtl = Directionality.of(context) == .rtl;
-    final double indent = depth * 16.0;
-
-    final EdgeInsets itemPadding =
-        themeStyle?.itemPadding ??
-        .symmetric(horizontal: spacing.lg, vertical: spacing.sm);
-    final EdgeInsets resolvedItemPadding = itemPadding.resolve(
-      Directionality.of(context),
-    );
-    final BorderRadius itemRadius =
-        themeStyle?.itemBorderRadius ?? .all(radius.md);
-
-    Widget content = JustPressable(
-      enabled: item.enabled,
-      onTap: item.onTap,
-      builder: (BuildContext context, JustInteractionState state) {
-        final bool isHovered = state.isHovered;
-        final bool isPressed = state.isPressed;
-        final double itemOpacity = item.enabled ? 1.0 : 0.5;
-
-        final Color itemBg = isPressed
-            ? activeColor.withValues(alpha: 0.12)
-            : (isHovered
-                  ? activeColor.withValues(alpha: 0.05)
-                  : const Color(0x00000000));
-
-        final JustPresetTokens presetTokens = customTheme.presetTokens;
-        final Color foregroundColor = presetTokens.showsDefaultBorder
-            ? colors.textPrimary
-            : (isHovered || isPressed ? activeColor : inactiveColor);
-
-        final Border? itemBorder = presetTokens.showsDefaultBorder
-            ? .all(
-                color: isHovered ? colors.textPrimary : const Color(0x00000000),
-                width: 1.5,
-              )
-            : null;
-
-        return Opacity(
-          opacity: itemOpacity,
-          child: Container(
-            decoration: BoxDecoration(
-              color: itemBg,
-              borderRadius: itemRadius,
-              border: itemBorder,
-            ),
-            padding: resolvedItemPadding.copyWith(
-              left: !isRtl
-                  ? resolvedItemPadding.left + indent
-                  : resolvedItemPadding.left,
-              right: isRtl
-                  ? resolvedItemPadding.right + indent
-                  : resolvedItemPadding.right,
-            ),
-            child: Row(
-              children: <Widget>[
-                IconTheme.merge(
-                  data: IconThemeData(size: 20.0, color: foregroundColor),
-                  child: item.icon,
-                ),
-                if (!isCollapsed) ...<Widget>[
-                  SizedBox(width: spacing.md),
-                  Expanded(
-                    child: Text(
-                      item.label,
-                      style: typography.bodyMd.copyWith(color: foregroundColor),
-                      maxLines: 1,
-                      overflow: .ellipsis,
-                    ),
-                  ),
-                  if (item.badge != null) ...<Widget>[
-                    SizedBox(width: spacing.sm),
-                    item.badge!,
-                  ],
-                ],
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    if (isCollapsed && !hasChildren) {
-      content = JustTooltipOverlay(message: item.label, child: content);
-    }
-
     if (hasChildren) {
       return _JustSidebarFolder(
         item: item,
@@ -795,9 +829,88 @@ class _JustSidebarItemWidget extends StatelessWidget {
         isCollapsed: isCollapsed,
         activeColor: activeColor,
         inactiveColor: inactiveColor,
+        variant: variant,
+        style: style,
         themeStyle: themeStyle,
-        itemWidget: content,
+        itemSpacing: itemSpacing,
       );
+    }
+
+    final JustThemeData customTheme = JustThemeProvider.of(context).theme;
+    final JustColorScheme colors = customTheme.colors;
+    final JustSpacingScheme spacing = customTheme.spacing;
+    final JustTypographyScheme typography = customTheme.typography;
+    final JustRadiusScheme radius = customTheme.radius;
+    final JustPresetTokens presetTokens = customTheme.presetTokens;
+    final JustMotionProfile animations = customTheme.animations.resolve(
+      context,
+    );
+
+    final bool isRtl = Directionality.of(context) == .rtl;
+    final double indent = depth * 16.0;
+
+    final EdgeInsetsGeometry defaultItemPadding = variant == .inset
+        ? .symmetric(horizontal: spacing.md, vertical: spacing.sm)
+        : .symmetric(horizontal: spacing.lg, vertical: spacing.sm);
+    final EdgeInsets resolvedItemPadding =
+        (style?.itemPadding ?? themeStyle?.itemPadding ?? defaultItemPadding)
+            .resolve(Directionality.of(context));
+    final BorderRadius itemRadius =
+        style?.itemBorderRadius ??
+        themeStyle?.itemBorderRadius ??
+        presetTokens.resolveBorderRadius(radius);
+
+    final TextStyle textStyle =
+        style?.textStyle ?? themeStyle?.textStyle ?? typography.bodyMd;
+    final TextStyle activeTextStyle =
+        style?.activeTextStyle ??
+        themeStyle?.activeTextStyle ??
+        typography.bodyMd.copyWith(fontWeight: .w600);
+    final Color? customSelectedBg =
+        style?.selectedBackgroundColor ?? themeStyle?.selectedBackgroundColor;
+    final Color? customSelectedFg =
+        style?.selectedForegroundColor ?? themeStyle?.selectedForegroundColor;
+
+    Widget content = JustPressable(
+      enabled: item.enabled,
+      onTap: onTap,
+      builder: (BuildContext context, JustInteractionState state) {
+        final Widget itemRow = _buildLeafRow(
+          colors: colors,
+          spacing: spacing,
+          presetTokens: presetTokens,
+          resolvedItemPadding: resolvedItemPadding,
+          itemRadius: itemRadius,
+          textStyle: textStyle,
+          activeTextStyle: activeTextStyle,
+          customSelectedBg: customSelectedBg,
+          customSelectedFg: customSelectedFg,
+          isRtl: isRtl,
+          indent: indent,
+          state: state,
+        );
+
+        return Semantics(
+          button: true,
+          selected: isSelected,
+          enabled: item.enabled,
+          label: item.label,
+          excludeSemantics: true,
+          child: FocusIndicator(
+            isFocused: state.isFocusVisible,
+            borderRadius: itemRadius,
+            child: presetTokens.buildPressEffect(
+              isPressed: state.isPressed,
+              animations: animations,
+              child: itemRow,
+            ),
+          ),
+        );
+      },
+    );
+
+    if (isCollapsed) {
+      content = JustTooltipOverlay(message: item.label, child: content);
     }
 
     return content;
