@@ -34,4 +34,10 @@ class const JustTabsStyle({
 
   /// Custom border radius of the tab bar container.
   final BorderRadius? containerRadius,
+
+  /// Custom bottom hairline color for the tab bar container (e.g. [JustTabVariant.line]).
+  final Color? borderBottomColor,
+
+  /// Custom bottom hairline width for the tab bar container.
+  final double? borderBottomWidth,
 });

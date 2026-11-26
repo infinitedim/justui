@@ -8,8 +8,6 @@ import 'just_tabs_variants.dart';
 
 /// An internal, package-private widget that renders the active tab indicator shape
 /// based on the selected [JustTabVariant].
-/// An internal, package-private widget that renders the active tab indicator shape
-/// based on the selected [JustTabVariant].
 class const JustTabIndicator({
   super.key,
 
@@ -37,11 +35,9 @@ class const JustTabIndicator({
     // Resolve styling colors and shapes
     final Color activeColor =
         style?.indicatorColor ?? style?.activeColor ?? colors.borderFocus;
-    final BorderRadius defaultIndicatorRadius = variant == .pill
-        ? .all(radius.full)
-        : .all(radius.md);
     final BorderRadius indicatorRadius =
-        style?.indicatorRadius ?? defaultIndicatorRadius;
+        style?.indicatorRadius ??
+        presetTokens.resolveBorderRadius(radius, isPill: variant == .pill);
 
     switch (variant) {
       case .line:
@@ -49,6 +45,13 @@ class const JustTabIndicator({
           style?.indicatorThickness,
         );
         if (orientation == .horizontal) {
+          final BorderRadius horizontalLineRadius =
+              presetTokens.showsDefaultBorder
+              ? .zero
+              : .only(
+                  topLeft: .circular(radius.sm.x),
+                  topRight: .circular(radius.sm.x),
+                );
           return Align(
             alignment: .bottomCenter,
             child: Container(
@@ -56,16 +59,22 @@ class const JustTabIndicator({
               width: .infinity,
               decoration: BoxDecoration(
                 color: activeColor,
-                borderRadius: .only(
-                  topLeft: .circular(radius.sm.x),
-                  topRight: .circular(radius.sm.x),
-                ),
+                borderRadius: horizontalLineRadius,
               ),
             ),
           );
         } else {
           // Vertical layout: line on the starting edge (respecting Directionality)
           final bool isRtl = Directionality.of(context) == .rtl;
+          final BorderRadius verticalLineRadius =
+              presetTokens.showsDefaultBorder
+              ? .zero
+              : .only(
+                  topRight: isRtl ? .circular(radius.sm.x) : .zero,
+                  bottomRight: isRtl ? .circular(radius.sm.x) : .zero,
+                  topLeft: !isRtl ? .circular(radius.sm.x) : .zero,
+                  bottomLeft: !isRtl ? .circular(radius.sm.x) : .zero,
+                );
           return Align(
             alignment: isRtl ? .centerRight : .centerLeft,
             child: Container(
@@ -73,12 +82,7 @@ class const JustTabIndicator({
               height: .infinity,
               decoration: BoxDecoration(
                 color: activeColor,
-                borderRadius: .only(
-                  topRight: isRtl ? .circular(radius.sm.x) : .zero,
-                  bottomRight: isRtl ? .circular(radius.sm.x) : .zero,
-                  topLeft: !isRtl ? .circular(radius.sm.x) : .zero,
-                  bottomLeft: !isRtl ? .circular(radius.sm.x) : .zero,
-                ),
+                borderRadius: verticalLineRadius,
               ),
             ),
           );
@@ -119,6 +123,14 @@ class const JustTabIndicator({
           style?.indicatorThickness,
         );
         final bool isRtl = Directionality.of(context) == .rtl;
+        final BorderRadius verticalLineRadius = presetTokens.showsDefaultBorder
+            ? .zero
+            : .only(
+                topRight: isRtl ? .circular(radius.sm.x) : .zero,
+                bottomRight: isRtl ? .circular(radius.sm.x) : .zero,
+                topLeft: !isRtl ? .circular(radius.sm.x) : .zero,
+                bottomLeft: !isRtl ? .circular(radius.sm.x) : .zero,
+              );
         return Align(
           alignment: isRtl ? .centerRight : .centerLeft,
           child: Container(
@@ -126,12 +138,7 @@ class const JustTabIndicator({
             height: .infinity,
             decoration: BoxDecoration(
               color: activeColor,
-              borderRadius: .only(
-                topRight: isRtl ? .circular(radius.sm.x) : .zero,
-                bottomRight: isRtl ? .circular(radius.sm.x) : .zero,
-                topLeft: !isRtl ? .circular(radius.sm.x) : .zero,
-                bottomLeft: !isRtl ? .circular(radius.sm.x) : .zero,
-              ),
+              borderRadius: verticalLineRadius,
             ),
           ),
         );
