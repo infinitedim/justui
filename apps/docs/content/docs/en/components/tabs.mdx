@@ -61,7 +61,7 @@ class _AdvancedTabsExampleState extends State<AdvancedTabsExample> {
   @override
   void initState() {
     super.initState();
-    _tabController = JustTabController(initialIndex: 0);
+    _tabController = JustTabController(length: 4, initialIndex: 0);
   }
 
   @override
@@ -109,12 +109,15 @@ class _AdvancedTabsExampleState extends State<AdvancedTabsExample> {
 
 ### JustTabs
 
-| Property       | Type                 | Default               | Description                                                                                       |
-| -------------- | -------------------- | --------------------- | ------------------------------------------------------------------------------------------------- |
-| `tabs`         | `List<JustTab>`      | _Required_            | Array of tab objects containing label, icon, content, and status for each panel.                  |
-| `variant`      | `JustTabVariant`     | `JustTabVariant.line` | Visual tab style: `.line`, `.enclosed`, `.pill`, or `.vertical`.                                  |
-| `controller`   | `JustTabController?` | `null`                | External controller to manage active index synchronization programmatically.                      |
-| `isScrollable` | `bool`               | `false`               | Determines whether the tab title bar can be scrolled horizontally if the title text is very long. |
+| Property         | Type                 | Default               | Description                                                                                       |
+| ---------------- | -------------------- | --------------------- | ------------------------------------------------------------------------------------------------- |
+| `tabs`           | `List<JustTab>`      | _Required_            | Array of tab objects containing label, icon, content, and status for each panel.                  |
+| `variant`        | `JustTabVariant`     | `JustTabVariant.line` | Visual tab style: `.line`, `.enclosed`, `.pill`, or `.vertical`.                                  |
+| `controller`     | `JustTabController?` | `null`                | External controller to manage active index synchronization programmatically.                      |
+| `isScrollable`   | `bool`               | `false`               | Determines whether the tab title bar can be scrolled horizontally if the title text is very long. |
+| `style`          | `JustTabsStyle?`     | `null`                | Per-instance visual overrides for colors, typography, padding, indicator, and bottom hairline.    |
+| `semanticsLabel` | `String?`            | `null`                | Accessible label announced for the tablist container (`SemanticsRole.tabBar`).                    |
+| `showContent`    | `bool`               | `true`                | Whether to render the tab content pages alongside or below the tab bar.                           |
 
 ### JustTab
 
@@ -126,15 +129,25 @@ class _AdvancedTabsExampleState extends State<AdvancedTabsExample> {
 | `badge`   | `Widget?` | `null`     | Optional badge widget (such as `JustBadge.dot`) for tab notification status. |
 | `enabled` | `bool`    | `true`     | Determines whether the tab can be clicked and activated.                     |
 
+### JustTabsStyle
+
+`JustTabsStyle` lets you override per-instance padding, colors, typography, indicator dimensions, container radius, and bottom hairline borders:
+
+| Property            | Type      | Default | Description                                                                                                                      |
+| ------------------- | --------- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `borderBottomColor` | `Color?`  | `null`  | Custom bottom hairline color for the tab bar container (for example on `JustTabVariant.line`).                                   |
+| `borderBottomWidth` | `double?` | `null`  | Custom bottom hairline width for the tab bar container (defaults to `presetTokens.borderWidth` when `borderBottomColor` is set). |
+
 ## Theming & Accessibility
 
 ### Preset & Style Customization
 
-- **Default Preset**: Uses a smooth underline sliding effect (`JustTabVariant.line`). On `.enclosed` and `.pill` variants, active switching uses a background color fade gradient transition controlled by `JustDuration.normal` (250ms) and `JustCurves.default_`.
-- **Neobrutalism Preset**: Under the neobrutalism preset, tab border edges are forced to use thick solid black/white (`colors.textPrimary`) with border thickness `2.5`. Animation duration is instantly accelerated (`JustDuration.instant`) to avoid visual jitter, and border color does not transition to primary/tinted (remains thick black/white).
+- **Default Preset**: Uses a smooth underline sliding effect (`JustTabVariant.line`). On `.enclosed` and `.pill` variants, active switching uses a background color fade transition controlled by `JustDuration.normal` and `JustCurves.default_`. You can add a custom bottom hairline on `.line` tabs with `JustTabsStyle.borderBottomColor` and `JustTabsStyle.borderBottomWidth`.
+- **Neobrutalism Preset**: Under the neobrutalism preset, tab border edges on `.enclosed` and `.pill` variants use solid `colors.textPrimary` with `presetTokens.borderWidth`. Motion profiles resolve faster for crisp transitions without visual jitter.
 
 ### WCAG AA Compliance
 
-- **Lazy Loading & Caching**: To maintain rendering performance on low-specification devices, `JustTabs` implements `Set<int> _visitedIndices`. Content pages that have never been visited by the user are not initialized in the widget tree (returning `SizedBox.shrink()`). After a tab is opened for the first time, it is stored in memory using `AutomaticKeepAliveClientMixin` so that subsequent tab transitions run instantly without triggering page state recreation.
-- **Indicator Geometry Calculation**: The active line indicator position is calculated dynamically using `GlobalKey`. The indicator slide range is linearly interpolated based on target coordinate data to create an accurate sliding transition effect.
-- **Contrast & Navigation Accessibility**: Active text-to-background contrast ratio is guaranteed $\ge$ 4.5:1. Disabled tabs (`enabled: false`) have a semi-transparent visual and are ignored from the keyboard navigation list. Each tab button is wrapped with selected semantics (`Semantics(selected: true/false)`) for screen reader identification.
+- **Lazy Loading & Caching**: To maintain rendering performance on low-specification devices, `JustTabs` tracks visited indices in `Set<int> _visitedIndices`. Unvisited content pages return `SizedBox.shrink()`, and once opened, pages are preserved via `AutomaticKeepAliveClientMixin` so subsequent switches avoid state recreation.
+- **Indicator Geometry Calculation**: The active indicator position is measured dynamically using `GlobalKey` and linearly interpolated across tab offsets for accurate sliding transitions.
+- **WAI-ARIA Roving Tabindex & Keyboard Navigation**: The tablist exposes a single `Tab` stop by marking inactive tabs with `skipTraversal: true`. Pressing `ArrowLeft`/`ArrowRight` (or `ArrowUp`/`ArrowDown` in `JustTabVariant.vertical`) as well as `Home`/`End` moves both keyboard focus and selection while skipping disabled tabs (`enabled: false`). Key repeat (`KeyRepeatEvent`) is supported while holding navigation keys, and `Enter`/`Space` activates the focused tab.
+- **Focus Indicator, Semantics & Reduced Motion**: Focused tabs display a visible keyboard `FocusIndicator`. The header bar exposes `SemanticsRole.tabBar` (with optional `semanticsLabel`), and each item exposes `SemanticsRole.tab` with `selected`, `enabled`, and `excludeSemantics: true`. Active text-to-background contrast meets >= 4.5:1, and reduced motion resolves `animations.resolve(context)` to `Duration.zero` so page switches jump immediately via `jumpToPage`.

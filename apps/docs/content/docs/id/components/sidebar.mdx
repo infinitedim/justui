@@ -185,30 +185,48 @@ class _AdvancedSidebarExampleState extends State<AdvancedSidebarExample> {
 | `width`          | `double`                | `260.0`                       | Lebar panel sidebar saat dalam kondisi terbuka penuh.                                                                                                                  |
 | `collapsedWidth` | `double`                | `68.0`                        | Lebar minimal panel sidebar saat dalam kondisi menciut (_collapsed_).                                                                                                  |
 | `isCollapsed`    | `bool`                  | `false`                       | Status penciutan aktif panel sidebar.                                                                                                                                  |
+| `autoCollapse`   | `bool`                  | `true`                        | Menentukan apakah sidebar menciut otomatis pada viewport <= `JustBreakpoints.md`. Set ke `false` untuk panel tertanam atau kontainer sempit.                           |
 | `variant`        | `JustSidebarVariant`    | `JustSidebarVariant.default_` | Gaya tata letak sidebar: `.default_` (menempel tepi layar), `.floating` (mengambang bebas berbayangan), atau `.inset` (terisolasi di dalam bingkai kontainer halaman). |
+| `style`          | `JustSidebarStyle?`     | `null`                        | Kustomisasi visual per instance untuk border panel, radius, warna item terpilih, jarak antar item, padding, dan tipografi.                                             |
+| `semanticsLabel` | `String?`               | `null`                        | Label aksesibilitas opsional yang dibacakan untuk kontainer navigasi sidebar.                                                                                          |
 
 ### JustSidebarItem
 
 | Properti   | Tipe Data                | Nilai Bawaan | Deskripsi                                                                                  |
 | ---------- | ------------------------ | ------------ | ------------------------------------------------------------------------------------------ |
 | `label`    | `String`                 | _Wajib_      | Label teks menu navigasi samping.                                                          |
-| `icon`     | `Widget?`                | `null`       | Ikon visual pendamping teks menu.                                                          |
+| `icon`     | `Widget`                 | _Wajib_      | Ikon visual pendamping teks menu.                                                          |
 | `onTap`    | `VoidCallback?`          | `null`       | Callback aksi opsional saat item diketuk (jika tidak menggunakan `onItemSelected` global). |
 | `children` | `List<JustSidebarItem>?` | `null`       | Daftar submenu anak untuk menu bertingkat yang dapat ditutup-buka secara rekursif.         |
+
+### JustSidebarStyle
+
+Kamu bisa mengatur tampilan panel dan item sidebar per instance lewat `JustSidebarStyle`, termasuk properti berikut:
+
+| Properti                  | Tipe Data       | Nilai Bawaan | Deskripsi                                                                                                                      |
+| ------------------------- | --------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `borderColor`             | `Color?`        | `null`       | Warna border kustom panel sidebar (bawaannya `colors.textPrimary` pada Neobrutalism atau `colors.borderDefault` pada Default). |
+| `borderRadius`            | `BorderRadius?` | `null`       | Radius sudut kustom untuk panel sidebar.                                                                                       |
+| `selectedBackgroundColor` | `Color?`        | `null`       | Warna latar belakang kustom untuk item sidebar yang sedang aktif terpilih.                                                     |
+| `selectedForegroundColor` | `Color?`        | `null`       | Warna teks dan ikon kustom untuk item sidebar yang sedang aktif terpilih.                                                      |
+| `itemSpacing`             | `double?`       | `null`       | Jarak vertikal kustom antar item sidebar (bawaannya `0.0`).                                                                    |
 
 ## Theming & Accessibility
 
 ### Penjelasan Kustomisasi Preset & Style
 
-- **Default Style**: Animasi perubahan lebar menggunakan `AnimatedContainer` berdurasi `JustDuration.normal` (250ms) dengan kurva `JustCurves.default_`. Sudut lengkung mengikuti `radius.lg` pada varian `.inset`.
-- **Neobrutalism Style**: Border vertikal dipaksa berwarna hitam pekat (`colors.textPrimary`) dengan ketebalan border `2.5`. Bayangan kontainer bertipe bayangan solid dinamis tanpa blur, dan sudut kelengkungan disetel kaku (`radius.none` atau `radius.xs`).
+- **Default Style**: Transisi lebar panel menggunakan `AnimationController` yang mengikuti `animations.normal` (`animations.resolve(context)`). Sudut lengkung mengikuti `radius.xl` pada varian `.floating` dan `radius.lg` pada `.inset`. Kamu bisa menyesuaikan border panel, radius, warna latar/teks item terpilih, dan jarak antar item lewat `JustSidebarStyle`.
+- **Neobrutalism Style**: Menggunakan border tegas `colors.textPrimary` (`presetTokens.borderWidth`), sudut tajam `BorderRadius.zero` pada panel, serta bayangan offset solid pada varian `.floating` dan `.inset`.
 
-### Auto-Collapse Responsif & Animasi Folder
+### Auto-Collapse Responsif, Keamanan Tinggi Tak Terbatas & Animasi Folder
 
-- **Auto-Collapse**: Jika lebar layar perangkat terdeteksi $\le$ `JustBreakpoints.md` (768px), sidebar secara otomatis menciutkan diri menjadi lebar minimal `68.0` px tanpa memedulikan nilai parameter `isCollapsed` yang disuplai oleh pengembang. Hal ini memastikan ruang baca di layar tablet/mobile tetap lapang.
-- **Folder Rekursif**: Folder anak bercabang ditata secara rekursif dengan penambahan margin spasi `depth * 16.0` px di setiap tingkatan folder dengan animasi pelipatan vertikal menggunakan `SizeTransition`.
-- **Balon Petunjuk (Tooltip)**: Jika laci navigasi ciut (`isCollapsed` bernilai true), teks nama item yang tersembunyi secara visual akan dimunculkan kembali sebagai balon petunjuk layang (`JustTooltipOverlay`) saat kursor mouse menyentuh ikon (hover) untuk menjaga kejelasan makna navigasi.
+- **Auto-Collapse**: Secara bawaan (`autoCollapse: true`), saat lebar viewport <= `JustBreakpoints.md` (768px), sidebar menciut otomatis ke `collapsedWidth` (`68.0` px) agar ruang konten tetap lega di layar sempit. Kamu bisa mengatur `autoCollapse: false` saat menanamkan `JustSidebar` di panel tertanam, pratinjau ringkas, atau kontainer sempit yang harus tetap terbuka.
+- **Aman untuk Tinggi Tak Terbatas (Unbounded Height)**: `JustSidebar` memeriksa `constraints.hasBoundedHeight` lewat `LayoutBuilder`. Di dalam kontainer bertinggi terbatas, item akan memenuhi ruang dan menggulir melalui `Expanded(child: SingleChildScrollView(...))`; sedangkan di tata letak tanpa batas tinggi, ukurannya menyesuaikan isi (`MainAxisSize.min`) tanpa memicu error layout.
+- **Folder Rekursif**: Submenu anak ditata secara rekursif dengan indentasi `depth * 16.0` px di tiap tingkatan dan animasi lipat vertikal menggunakan `SizeTransition`.
+- **Balon Petunjuk (Tooltip)**: Saat sidebar menciut, mengarahkan kursor ke item menampilkan labelnya pada `JustTooltipOverlay` agar navigasi berbasis ikon tetap jelas.
 
 ### Pemenuhan Standar WCAG AA
 
-- **Aksesibilitas Kontras & Semantik**: Status pelipatan sidebar (`isCollapsed`) diumumkan secara jelas oleh pembaca layar. Fokus keyboard didukung menggunakan `FocusNode` internal untuk mempermudah navigasi beruntun ke setiap item menu menggunakan tombol panah atas/bawah dan tombol spasi/enter. Warna teks dan latar belakang diatur memenuhi rasio kontras $\ge$ 4.5:1 untuk menjamin keterbacaan yang tinggi.
+- **FocusIndicator & Semantik Tanpa Duplikasi**: Baik item daun maupun header folder menampilkan `FocusIndicator` saat menerima fokus keyboard dan membungkus kontennya dalam `Semantics(..., excludeSemantics: true)` (dengan `button: true`, status `selected` atau `expanded`, `enabled`, dan `label`) agar pembaca layar tidak membacakan teks anak dua kali. Panel luar membungkus kontainer dengan `Semantics(container: true, explicitChildNodes: true, label: semanticsLabel)`.
+- **Pengecualian Fokus & Semantik Folder Tertutup**: Item anak di dalam folder yang tertutup dibungkus dengan `ExcludeFocus` dan `ExcludeSemantics` (`excluding: !_isExpanded`), sehingga item tersembunyi dilewati oleh navigasi fokus keyboard maupun pembaca layar sampai folder dibuka.
+- **Reduced Motion & Kontras**: Controller penciutan sidebar dan buka-tutup folder menghormati `animations.resolve(context)` dan langsung berpindah ke kondisi target ketika durasi bernilai `Duration.zero`. Kontras warna teks dan latar belakang memenuhi >= 4.5:1.

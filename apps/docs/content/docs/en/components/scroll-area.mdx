@@ -87,7 +87,7 @@ class _AdvancedScrollAreaExampleState extends State<AdvancedScrollAreaExample> {
         direction: Axis.vertical,
         showScrollbar: true,
         fadeEdges: true,
-        fadeMode: JustScrollFadeMode.shaderMask,
+        fadeMode: JustScrollFadeMode.mask,
         scrollToTopButton: true,
         scrollToTopThreshold: 300.0,
         keyboardScrollStep: 60.0,
@@ -116,30 +116,47 @@ class _AdvancedScrollAreaExampleState extends State<AdvancedScrollAreaExample> {
 
 ### JustScrollArea
 
-| Property               | Type                 | Default                      | Description                                                                                                     |
-| ---------------------- | -------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `child`                | `Widget`             | _Required_                   | Child widget containing the scrollable content list.                                                            |
-| `direction`            | `Axis`               | `Axis.vertical`              | Main scroll direction of the container (vertical or horizontal).                                                |
-| `showScrollbar`        | `bool`               | `true`                       | Determines whether the custom JustUI scrollbar is visually displayed.                                           |
-| `fadeEdges`            | `bool`               | `false`                      | If true, applies a transparent gradient effect at the scroll boundary edges (indicating additional content).    |
-| `fadeMode`             | `JustScrollFadeMode` | `JustScrollFadeMode.overlay` | Edge fade technique: `.overlay` or `.shaderMask`.                                                               |
-| `scrollToTopButton`    | `bool`               | `false`                      | Displays a back-to-top button automatically when scrolled far.                                                  |
-| `scrollToTopThreshold` | `double`             | `400.0`                      | Minimum scroll distance threshold (in pixels) to trigger the back-to-top button.                                |
-| `onReachBottom`        | `VoidCallback?`      | `null`                       | Callback triggered when scrolling approaches the bottom boundary of the container (useful for infinite scroll). |
-| `keyboardScrollStep`   | `double`             | `50.0`                       | Scroll jump distance (in pixels) per arrow key press on the keyboard.                                           |
+| Property               | Type                   | Default                      | Description                                                                                                     |
+| ---------------------- | ---------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `child`                | `Widget`               | _Required_                   | Child widget containing the scrollable content list.                                                            |
+| `direction`            | `Axis`                 | `Axis.vertical`              | Main scroll direction of the container (vertical or horizontal).                                                |
+| `showScrollbar`        | `bool`                 | `true`                       | Determines whether the custom JustUI scrollbar is visually displayed.                                           |
+| `fadeEdges`            | `bool`                 | `false`                      | If true, applies a transparent gradient effect at the scroll boundary edges (indicating additional content).    |
+| `fadeMode`             | `JustScrollFadeMode`   | `JustScrollFadeMode.overlay` | Edge fade technique: `.overlay` or `.mask`.                                                                     |
+| `scrollToTopButton`    | `bool`                 | `false`                      | Displays a back-to-top button automatically when scrolled far.                                                  |
+| `scrollToTopThreshold` | `double`               | `400.0`                      | Minimum scroll distance threshold (in pixels) to trigger the back-to-top button.                                |
+| `onReachBottom`        | `VoidCallback?`        | `null`                       | Callback triggered when scrolling approaches the bottom boundary of the container (useful for infinite scroll). |
+| `keyboardScrollStep`   | `double`               | `50.0`                       | Scroll jump distance (in pixels) per arrow key press on the keyboard.                                           |
+| `semanticsLabel`       | `String?`              | `null`                       | Optional accessibility label announced for the scrollable container region.                                     |
+| `thumbVisibility`      | `bool?`                | `null`                       | Overrides whether the scrollbar thumb always remains visible (defaults to `false`).                             |
+| `trackVisibility`      | `bool?`                | `null`                       | Overrides whether the scrollbar track always remains visible (takes effect when `thumbVisibility` is `true`).   |
+| `style`                | `JustScrollAreaStyle?` | `null`                       | Per-instance visual overrides for fade edges, scrollbar appearance, focus ring radius, and smooth scroll.       |
+
+### JustScrollAreaStyle
+
+`JustScrollAreaStyle` lets you customize fade edges, scrollbar geometry, visibility, focus indicator radius, and smooth scrolling per instance, including:
+
+| Property                   | Type            | Default | Description                                                                                       |
+| -------------------------- | --------------- | ------- | ------------------------------------------------------------------------------------------------- |
+| `thumbVisibility`          | `bool?`         | `null`  | Keeps the scrollbar thumb permanently visible when `true`.                                        |
+| `trackVisibility`          | `bool?`         | `null`  | Keeps the scrollbar track visible when `true` (active when `thumbVisibility` resolves to `true`). |
+| `scrollbarTrackRadius`     | `Radius?`       | `null`  | Corner radius for the scrollbar track (forced to `Radius.zero` under Neobrutalism).               |
+| `scrollbarCrossAxisMargin` | `double?`       | `null`  | Cross-axis margin for the scrollbar track (defaults to `0.0`).                                    |
+| `focusBorderRadius`        | `BorderRadius?` | `null`  | Corner radius for the keyboard `FocusIndicator` rendered around the scroll area.                  |
 
 ## Theming & Accessibility
 
 ### Preset & Style Customization
 
-- **Default Style**: The custom scrollbar is designed to be slim with smooth transparency transitions and colors following the `colors.border` theme.
-- **Neobrutalism Style**: The custom scrollbar is forced to display thick black border edges (`2.5`) with sharp right angles, high-contrast bright colors, and does not fade automatically (always clearly visible on screen).
+- **Default Style**: The custom scrollbar uses rounded corners (`Radius.circular(3.0)` by default) and soft thumb tinting derived from `colors.textSecondary`, with optional persistent thumb/track visibility via `thumbVisibility`, `trackVisibility`, and `JustScrollAreaStyle`.
+- **Neobrutalism Style**: Forces sharp `Radius.zero` corners on both the scrollbar thumb and track (`scrollbarTrackRadius`), matching the crisp geometric preset tokens.
 
 ### Keyboard Integration & ShaderMask
 
-- **Desktop Keyboard Navigation**: Binds the widget with an internal `FocusNode` to capture keyboard interactions. The `PageDown` and `PageUp` keys are mapped to scroll a full viewport height, while the up/down arrow keys scroll smoothly.
-- **Edge ShaderMasking**: The `ShaderMask` gradient fade is dynamically computed using a multi-stop linear gradient to prevent text or images from being harshly clipped at the screen boundary edges.
+- **Desktop Keyboard Navigation**: Binds the container with an internal `FocusNode` handling both `KeyDownEvent` and `KeyRepeatEvent` (holding a key scrolls continuously). `Home` and `End` jump to the start (`0.0`) or end (`maxScrollExtent`), `PageUp` and `PageDown` scroll by one viewport dimension, and directional arrow keys (`ArrowUp`/`ArrowDown` for vertical, `ArrowLeft`/`ArrowRight` for horizontal) step by `keyboardScrollStep`.
+- **Edge ShaderMasking**: When `fadeMode` is `JustScrollFadeMode.mask`, a dynamic multi-stop `ShaderMask` alpha gradient prevents text or images from being harshly clipped at the viewport edges.
 
 ### WCAG AA Compliance
 
-- **Click Target Accessibility**: Maintains a custom scrollbar click target width of at least 8px horizontally on desktop/tablet for easy dragging. Adds vocal label semantics to the scroll-to-top button ("Back to top") and conveys semantic notifications when the system detects reaching the bottom scroll boundary.
+- **Visible Focus Indicator & Semantics Container**: Renders a visible keyboard `FocusIndicator` around the scrollable area when focused via keyboard (customizable with `JustScrollAreaStyle.focusBorderRadius`), and wraps the region in `Semantics(container: true, label: semanticsLabel)`.
+- **Scroll-to-Top Target & Reduced Motion**: The floating scroll-to-top button enforces a minimum `48x48` touch target with its own `FocusIndicator` and semantic label `'Scroll to top'`. When reduced motion is enabled (`animations.resolve(context)` resolves `fast` to `Duration.zero`), keyboard scrolling and scroll-to-top bypass smooth/animated scrolling and jump immediately via `jumpTo`.

@@ -61,7 +61,7 @@ class _AdvancedTabsExampleState extends State<AdvancedTabsExample> {
   @override
   void initState() {
     super.initState();
-    _tabController = JustTabController(initialIndex: 0);
+    _tabController = JustTabController(length: 4, initialIndex: 0);
   }
 
   @override
@@ -109,12 +109,15 @@ class _AdvancedTabsExampleState extends State<AdvancedTabsExample> {
 
 ### JustTabs
 
-| Properti       | Tipe Data            | Nilai Bawaan          | Deskripsi                                                                                                                                                           |
-| -------------- | -------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tabs`         | `List<JustTab>`      | _Wajib_               | Rangkaian objek tab yang berisi label, ikon, konten, dan status masing-masing panel.                                                                                |
-| `variant`      | `JustTabVariant`     | `JustTabVariant.line` | Gaya visual tab: `.line` (garis bawah aktif), `.enclosed` (kontainer kartu bersudut), `.pill` (pil solid transparan), atau `.vertical` (panel tab di kiri halaman). |
-| `controller`   | `JustTabController?` | `null`                | Pengontrol eksternal untuk mengelola sinkronisasi indeks aktif secara terprogram.                                                                                   |
-| `isScrollable` | `bool`               | `false`               | Menentukan apakah bilah judul tab dapat digeser secara horizontal jika teks judul sangat panjang.                                                                   |
+| Properti         | Tipe Data            | Nilai Bawaan          | Deskripsi                                                                                                                                                           |
+| ---------------- | -------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tabs`           | `List<JustTab>`      | _Wajib_               | Rangkaian objek tab yang berisi label, ikon, konten, dan status masing-masing panel.                                                                                |
+| `variant`        | `JustTabVariant`     | `JustTabVariant.line` | Gaya visual tab: `.line` (garis bawah aktif), `.enclosed` (kontainer kartu bersudut), `.pill` (pil solid transparan), atau `.vertical` (panel tab di kiri halaman). |
+| `controller`     | `JustTabController?` | `null`                | Pengontrol eksternal untuk mengelola sinkronisasi indeks aktif secara terprogram.                                                                                   |
+| `isScrollable`   | `bool`               | `false`               | Menentukan apakah bilah judul tab dapat digeser secara horizontal jika teks judul sangat panjang.                                                                   |
+| `style`          | `JustTabsStyle?`     | `null`                | Kustomisasi visual per instance untuk warna, tipografi, padding, indikator, dan garis bawah tab bar.                                                                |
+| `semanticsLabel` | `String?`            | `null`                | Label aksesibilitas yang dibacakan untuk kontainer tablist (`SemanticsRole.tabBar`).                                                                                |
+| `showContent`    | `bool`               | `true`                | Menentukan apakah halaman konten tab ikut dirender di bawah atau di samping tab bar.                                                                                |
 
 ### JustTab
 
@@ -126,15 +129,25 @@ class _AdvancedTabsExampleState extends State<AdvancedTabsExample> {
 | `badge`   | `Widget?` | `null`       | Widget lencana opsional (seperti `JustBadge.dot`) untuk notifikasi status tab. |
 | `enabled` | `bool`    | `true`       | Menentukan apakah tab dapat diklik dan diaktifkan.                             |
 
+### JustTabsStyle
+
+Kamu bisa menggunakan `JustTabsStyle` untuk mengatur ulang padding, warna, tipografi, dimensi indikator, radius kontainer, dan garis pembatas bawah per instance:
+
+| Properti            | Tipe Data | Nilai Bawaan | Deskripsi                                                                                                                |
+| ------------------- | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `borderBottomColor` | `Color?`  | `null`       | Warna garis bawah tipis (hairline) pada kontainer tab bar (misalnya pada `JustTabVariant.line`).                         |
+| `borderBottomWidth` | `double?` | `null`       | Ketebalan garis bawah kontainer tab bar (bawaannya mengikuti `presetTokens.borderWidth` saat `borderBottomColor` diisi). |
+
 ## Theming & Accessibility
 
 ### Penjelasan Kustomisasi Preset & Style
 
-- **Default Preset**: Menggunakan efek transisi garis bawah meluncur (`JustTabVariant.line`) yang halus. Pada varian `.enclosed` dan `.pill`, perpindahan aktif menggunakan transisi memudar gradasi warna latar belakang yang diatur oleh `JustDuration.normal` (250ms) dan `JustCurves.default_`.
-- **Neobrutalism Preset**: Di bawah preset neobrutalism, garis tepi tab dipaksa menggunakan warna solid hitam pekat/putih pekat (`colors.textPrimary`) dengan ketebalan border `2.5`. Durasi animasi dipercepat secara instan (`JustDuration.instant`) untuk menghindari jitter visual, dan warna border tidak bertransisi ke warna primer/tinted (tetap hitam pekat/putih pekat).
+- **Default Preset**: Menggunakan efek transisi garis bawah meluncur (`JustTabVariant.line`) yang halus. Pada varian `.enclosed` dan `.pill`, perpindahan aktif menggunakan transisi warna latar belakang yang diatur oleh `JustDuration.normal` dan `JustCurves.default_`. Kamu bisa menambahkan garis bawah kustom pada tab `.line` lewat `JustTabsStyle.borderBottomColor` dan `JustTabsStyle.borderBottomWidth`.
+- **Neobrutalism Preset**: Di bawah preset neobrutalism, garis tepi tab pada varian `.enclosed` dan `.pill` menggunakan warna solid `colors.textPrimary` dengan ketebalan `presetTokens.borderWidth`. Profil gerak berjalan lebih cepat untuk transisi yang tegas tanpa jitter visual.
 
 ### Pemenuhan Standar WCAG AA
 
-- **Pemuatan Malas (Lazy Loading) & Caching**: Untuk menjaga performa rendering di perangkat dengan spesifikasi rendah, `JustTabs` mengimplementasikan `Set<int> _visitedIndices`. Halaman konten tab yang belum pernah dikunjungi oleh pengguna sama sekali tidak akan diinisialisasi dalam widget tree (mengembalikan `SizedBox.shrink()`). Setelah tab dibuka pertama kali, ia disimpan dalam memori menggunakan `AutomaticKeepAliveClientMixin` agar transisi antar tab berikutnya berjalan instan tanpa memicu pembuatan ulang status halaman (_no loss of state_).
-- **Perhitungan Geometri Indikator**: Posisi garis indikator aktif dihitung secara dinamis menggunakan kunci global (`GlobalKey`). Rentang pergeseran indikator diinterpolasi secara linear berdasarkan data koordinat target untuk menciptakan efek transisi meluncur yang akurat.
-- **Aksesibilitas Kontras & Navigasi**: Rasio kontras teks aktif terhadap background dijamin $\ge$ 4.5:1. Tab yang dinonaktifkan (`enabled: false`) memiliki visual semi-transparan dan diabaikan dari daftar navigasi keyboard. Setiap tombol tab dibungkus dengan semantik terpilih (`Semantics(selected: true/false)`) agar dapat diidentifikasi oleh pembaca layar (_screen reader_).
+- **Pemuatan Malas (Lazy Loading) & Caching**: Untuk menjaga performa rendering di perangkat berspesifikasi rendah, `JustTabs` melacak indeks yang pernah dibuka melalui `Set<int> _visitedIndices`. Halaman konten yang belum dibuka mengembalikan `SizedBox.shrink()`, lalu setelah dibuka akan dipertahankan di memori menggunakan `AutomaticKeepAliveClientMixin` agar perpindahan berikutnya tetap menjaga state.
+- **Perhitungan Geometri Indikator**: Posisi indikator aktif diukur secara dinamis menggunakan `GlobalKey` dan diinterpolasi secara linear antar posisi tab untuk transisi geser yang akurat.
+- **WAI-ARIA Roving Tabindex & Navigasi Keyboard**: Tablist menyediakan 1 perhentian `Tab` dengan mengatur `skipTraversal: true` pada tab yang tidak aktif. Tombol `ArrowLeft`/`ArrowRight` (atau `ArrowUp`/`ArrowDown` pada `JustTabVariant.vertical`) serta `Home`/`End` memindahkan fokus keyboard sekaligus pilihan aktif sambil melewati tab nonaktif (`enabled: false`). Penahanan tombol (_key repeat_ lewat `KeyRepeatEvent`) didukung, dan `Enter`/`Space` mengaktifkan tab yang sedang fokus.
+- **FocusIndicator, Semantik & Reduced Motion**: Tab yang menerima fokus keyboard menampilkan `FocusIndicator` yang jelas. Kontainer tab bar menggunakan `SemanticsRole.tabBar` (dengan `semanticsLabel` opsional), sedangkan tiap item menggunakan `SemanticsRole.tab` dengan status `selected`, `enabled`, dan `excludeSemantics: true`. Rasio kontras teks aktif memenuhi >= 4.5:1, dan saat _reduced motion_ aktif, `animations.resolve(context)` menjadi `Duration.zero` sehingga pergantian halaman langsung melompat lewat `jumpToPage`.

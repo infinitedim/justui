@@ -67,20 +67,33 @@ Widget buildAdvancedTimePicker(BuildContext context, JustTimeOfDay? activeTime, 
 
 ### JustTimePicker
 
-| Property                  | Data Type                       | Default Value | Description                                                             |
-| :------------------------ | :------------------------------ | :------------ | :---------------------------------------------------------------------- |
-| `value`                   | `JustTimeOfDay?`                | `null`        | Currently selected time value.                                          |
-| `onChanged`               | `ValueChanged<JustTimeOfDay>?`  | `null`        | Callback executed when a time value is selected.                        |
-| `variant`                 | `JustTimePickerVariant`         | `.inline`     | Presentation variant (`.inline`, `.modal`, `.dropdown`, `.responsive`). |
-| `mode`                    | `JustTimePickerMode`            | `.dial`       | Interaction paradigm (`.dial`, `.spinner`, `.input`).                   |
-| `firstTime`               | `JustTimeOfDay?`                | `null`        | Earliest selectable time boundary.                                      |
-| `lastTime`                | `JustTimeOfDay?`                | `null`        | Latest selectable time boundary.                                        |
-| `selectableTimePredicate` | `bool Function(JustTimeOfDay)?` | `null`        | Custom predicate to selectively disable specific times.                 |
-| `style`                   | `JustTimePickerStyle?`          | `null`        | Per-instance visual style overrides for hands, numbers, and wheels.     |
+| Property                  | Data Type                       | Default Value                  | Description                                                                 |
+| :------------------------ | :------------------------------ | :----------------------------- | :-------------------------------------------------------------------------- |
+| `value`                   | `JustTimeOfDay?`                | `null`                         | Currently selected time value.                                              |
+| `onChanged`               | `ValueChanged<JustTimeOfDay>?`  | `null`                         | Callback executed when a time value is selected.                            |
+| `variant`                 | `JustTimePickerVariant`         | `.inline`                      | Presentation variant (`.inline`, `.modal`, `.dropdown`, `.responsive`).     |
+| `mode`                    | `JustTimePickerMode`            | `.dial`                        | Interaction paradigm (`.dial`, `.spinner`, `.input`).                       |
+| `timeFormat`              | `JustTimeFormat`                | `JustTimeFormat.twelveHour`    | Clock format: `.twelveHour` (12-hour AM/PM) or `.twentyFourHour` (24-hour). |
+| `firstTime`               | `JustTimeOfDay?`                | `null`                         | Earliest selectable time boundary.                                          |
+| `lastTime`                | `JustTimeOfDay?`                | `null`                         | Latest selectable time boundary.                                            |
+| `selectableTimePredicate` | `bool Function(JustTimeOfDay)?` | `null`                         | Custom predicate to selectively disable specific times.                     |
+| `showContainer`           | `bool`                          | `true`                         | Whether to render the outer card container in `.inline` mode.               |
+| `locale`                  | `JustTimePickerLocale`          | `const JustTimePickerLocale()` | Zero-dependency locale strings for segment labels, actions, and tooltips.   |
+| `semanticsLabel`          | `String?`                       | `null`                         | Optional accessible label for the time picker container or modal trigger.   |
+| `style`                   | `JustTimePickerStyle?`          | `null`                         | Per-instance visual style overrides for hands, numbers, and wheels.         |
+
+### JustTimePickerStyle, TimePickerSpinner & JustTimePickerLocale
+
+- **`JustTimePickerStyle.overAndUnderCenterOpacity`** (`double?`, default `null`, resolves to `0.78`): Controls the opacity of spinner wheel rows above and below the active center row so off-center labels maintain WCAG 1.4.3 contrast.
+- **`TimePickerSpinner.showContainer`** (`bool`, default `true`): Controls whether a standalone `TimePickerSpinner` renders its outer card border and background (automatically set to `false` when composed inside `JustTimePicker` to avoid nested cards).
+- **`JustTimePickerLocale`**: Supports custom `hourLabel`, `minuteLabel`, `periodLabel`, `amLabel`, `pmLabel`, `cancelLabel`, `confirmLabel`, mode tooltips, plus `nextValueLabel` (default `'Next value'`) and `previousValueLabel` (default `'Previous value'`) for semantic increase/decrease descriptions on `TimePickerDial`.
 
 ---
 
 ## Accessibility
 
-- **Direct Keyboard Entry**: In dial and input modes, typing numbers jumps directly to matching hour or minute values.
-- **Screen Reader Announcements**: Time changes are announced promptly as "HH:MM AM/PM" or military notation based on configuration.
+- **Slider Semantics on Spinner Wheels**: Each column in `TimePickerSpinner` (hour, minute, and period in 12-hour format) exposes `Semantics(container: true, slider: true)` with current, increased, and decreased values plus `onIncrease`/`onDecrease` actions, while wrapping wheel children in `ExcludeSemantics` to avoid duplicate announcements.
+- **WCAG 1.4.3 Off-Center Contrast**: Spinner wheel rows above and below the selected row default to `overAndUnderCenterOpacity: 0.78` (configurable through `JustTimePickerStyle`) so adjacent values stay readable.
+- **Visible Focus Indicators**: Keyboard focus displays a visible `FocusIndicator` on spinner wheels, the circular dial, header segment/period/mode buttons, and dropdown/responsive/modal trigger buttons.
+- **Keyboard Navigation & Key-Repeat**: Both `TimePickerDial` and `TimePickerSpinner` handle `KeyDownEvent` and `KeyRepeatEvent` for `ArrowUp`/`ArrowDown`/`ArrowLeft`/`ArrowRight`, `PageUp`/`PageDown`, `Home`/`End`, and `Enter`/`Space`. In `.input` mode, direct numeric fields let users type hour and minute values directly.
+- **Screen Reader Announcements & Reduced Motion**: Time changes are announced in 12-hour or 24-hour format. When reduced motion is enabled, `animations.resolve(context)` collapses dial hand, spinner wheel, and period toggle durations to `Duration.zero` (using `jumpToItem` on wheels).

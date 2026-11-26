@@ -133,6 +133,8 @@ class _AdvancedBottomNavExampleState extends State<AdvancedBottomNavExample> {
 | `onItemSelected` | `ValueChanged<int>?`      | `null`                       | Callback triggered when the user taps one of the menu items.                                                                                                                                                |
 | `variant`        | `JustBottomNavVariant`    | `JustBottomNavVariant.fixed` | Bottom navigation visual style: `.fixed` (fixed width), `.shifting` (expanding transition effect when selected, hides inactive text), or `.floating` (freely floating with a soft shadow above the screen). |
 | `showLabels`     | `bool`                    | `true`                       | Determines whether the label text below icons is visually displayed.                                                                                                                                        |
+| `style`          | `JustBottomNavStyle?`     | `null`                       | Per-instance style overrides for height, padding, colors, borders, indicator bar, typography, and motion.                                                                                                   |
+| `semanticsLabel` | `String?`                 | `null`                       | Optional accessible label announced for the bottom navigation container.                                                                                                                                    |
 
 ### JustBottomNavItem
 
@@ -142,14 +144,25 @@ class _AdvancedBottomNavExampleState extends State<AdvancedBottomNavExample> {
 | `icon`       | `Widget`  | _Required_    | Icon displayed when the menu is inactive.                      |
 | `activeIcon` | `Widget?` | `null`        | Alternative icon displayed when the menu is actively selected. |
 
+### JustBottomNavStyle
+
+`JustBottomNavStyle` supports per-instance overrides for bar dimensions, colors, typography, and active state styling, including:
+
+| Property               | Data Type | Default Value | Description                                                                                                                                   |
+| ---------------------- | --------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `borderColor`          | `Color?`  | `null`        | Custom border color for the navigation bar container (defaults to `colors.textPrimary` in Neobrutalism or `colors.borderDefault` in Default). |
+| `activeIndicatorColor` | `Color?`  | `null`        | Custom color for the compact active indicator bar beneath the selected item (defaults to `activeColor`).                                      |
+| `showActiveIndicator`  | `bool?`   | `null`        | Whether to render a compact active indicator bar beneath the selected item (defaults to `false`).                                             |
+
 ## Theming & Accessibility
 
 ### Preset & Style Customization
 
-- **Default Style**: Displays a thin top divider and a soft outer shadow (`JustShadows.sm`) with a background color that blends with the theme `colors.background`. Text and icon color transitions follow a linear interpolation of `JustDuration.normal` (250ms).
-- **Neobrutalism Style**: Features a thick dark black/white outer border (`2.5`), a high-contrast background, and a rigid solid shadow (`JustShadows.generate` with thick offset and no blur). On the `.floating` variant, contrast is forced to full value without dynamic HSL compensation, providing a bold pop-art aesthetic.
+- **Default Style**: Uses `colors.elevated` as the bar background, a `colors.borderDefault` top divider (or full pill outline on `.floating` with `BorderRadius.all(radius.full)`), and optional compact rounded active indicator bar via `JustBottomNavStyle.showActiveIndicator` and `activeIndicatorColor`.
+- **Neobrutalism Style**: Applies a crisp `colors.textPrimary` border (`presetTokens.borderWidth`), sharp `BorderRadius.zero` corners across the bar (including `.floating`), focus ring, and active indicator bar, plus a solid offset shadow on `.floating`. You can override the border color with `JustBottomNavStyle.borderColor`.
 
 ### WCAG AA Compliance
 
-- **Item Count Limit (Touch Area)**: This component enforces a strict assertion on the `items` parameter to ensure the menu count is between `3` and `5`. This guarantees balanced navigation width distribution on mobile device screens, so each item has a touch area width of at least 48x48 pixels (WCAG AA standard for mobile interactive elements).
-- **Semantics & Voice Description**: Each item is wrapped with a `Semantics` widget that declares the selected status (`selected: true/false`), a descriptive label, and the current navigation index to the operating system's voice system. The active text/icon contrast ratio against the background is guaranteed to be $\ge$ 4.5:1 for optimal readability for users with visual impairments.
+- **Item Count Limit (Touch Area)**: This component enforces an assertion on `items` to keep the destination count between `3` and `5`, preserving balanced widths and >= 48x48 touch targets on mobile screens.
+- **Visible Focus Indicator & Single-Label Semantics**: Each item renders a visible keyboard `FocusIndicator` when focused via keyboard navigation and wraps its content in `Semantics(label: item.label, selected: isSelected, button: true, excludeSemantics: true)` so screen readers announce a single clean label without duplicating child text nodes. The bar container exposes `Semantics(container: true, explicitChildNodes: true, label: semanticsLabel)`. Active text and icon contrast meets >= 4.5:1.
+- **Reduced Motion**: Respects `MediaQuery.disableAnimationsOf(context)` and `animations.resolve(context)`, collapsing icon, label, shifting flex, and active indicator transition durations to `Duration.zero` when reduced motion is enabled.
