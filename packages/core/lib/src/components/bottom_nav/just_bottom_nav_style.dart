@@ -11,11 +11,20 @@ class const JustBottomNavStyle({
   /// Custom background color of the bar.
   final Color? backgroundColor,
 
+  /// Custom border color of the navigation bar container.
+  final Color? borderColor,
+
   /// Custom border radius of the bar (especially useful for the floating variant).
   final BorderRadius? borderRadius,
 
   /// Custom color of the active item (icon and text).
   final Color? activeColor,
+
+  /// Custom color of the active item indicator bar.
+  final Color? activeIndicatorColor,
+
+  /// Whether to render a compact active indicator bar beneath the selected item.
+  final bool? showActiveIndicator,
 
   /// Custom color of inactive items.
   final Color? inactiveColor,
