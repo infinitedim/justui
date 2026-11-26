@@ -6,6 +6,7 @@ import 'checkbox_ink_paper.dart';
 import 'select_ink_paper.dart';
 import 'slider_ink_paper.dart';
 import 'switch_ink_paper.dart';
+import 'time_picker_ink_paper.dart';
 
 /// Ink and Paper theme overrides for the v3 "Inputs" group. Each entry replaces
 /// the core default of the same type in `inkPaperExtensions`.
@@ -17,4 +18,5 @@ List<ThemeExtension<dynamic>> inputsOverrides(
   selectInkPaper(preset, roles),
   sliderInkPaper(preset, roles),
   switchInkPaper(preset, roles),
+  timePickerInkPaper(preset, roles),
 ];

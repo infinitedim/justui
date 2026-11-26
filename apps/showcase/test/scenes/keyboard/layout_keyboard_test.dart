@@ -5,11 +5,32 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../support/golden_harness.dart';
 import '../../support/keyboard.dart';
 
-/// AC12 for the Layout scenes: only the resizable splitter takes focus.
+/// AC12 for the Layout scenes: resizable splitter and scroll-area take focus.
 void main() {
   testWidgets('separator has no tab stops', (WidgetTester tester) async {
     await pumpDefault(tester, 'separator');
     await expectNoStops(tester);
+  });
+
+  testWidgets('scroll-area: one stop, ArrowDown scrolls and Home resets', (
+    WidgetTester tester,
+  ) async {
+    await pumpDefault(tester, 'scroll-area');
+    final List<FocusNode> stops = await tabStops(tester);
+    expect(stops, hasLength(1));
+
+    final ScrollableState scrollable = tester.state<ScrollableState>(
+      find.byType(Scrollable),
+    );
+    expect(scrollable.position.pixels, 0.0);
+
+    stops.single.requestFocus();
+    await tester.pump();
+    await press(tester, LogicalKeyboardKey.arrowDown);
+    expect(scrollable.position.pixels, greaterThan(0.0));
+
+    await press(tester, LogicalKeyboardKey.home);
+    expect(scrollable.position.pixels, 0.0);
   });
 
   testWidgets('resizable: one stop, the arrow keys move the split', (

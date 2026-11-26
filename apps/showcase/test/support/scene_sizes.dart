@@ -18,8 +18,12 @@ const Map<String, Size> sceneSizes = <String, Size>{
   'select': Size(260, 200),
   'date-picker': Size(372, 400),
   'date-range-picker': Size(372, 400),
+  'time-picker': Size(312, 304),
   // Navigation
+  'tabs': Size(272, 88),
   'breadcrumb': Size(320, 96),
+  'bottom-nav': Size(288, 96),
+  'sidebar': Size(220, 200),
   // Overlays
   'dialog': Size(300, 172),
   'sheet': Size(288, 128),
@@ -37,5 +41,6 @@ const Map<String, Size> sceneSizes = <String, Size>{
   'table': Size(320, 160),
   // Layout
   'separator': Size(240, 80),
+  'scroll-area': Size(248, 120),
   'resizable': Size(260, 112),
 };

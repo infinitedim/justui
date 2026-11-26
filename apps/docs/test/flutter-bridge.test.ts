@@ -29,11 +29,21 @@ describe('schema', () => {
     expect(ViewConfigSchema.safeParse(config).success).toBe(true);
     const id = { ...config, locale: 'id' };
     expect(ViewConfigSchema.safeParse(id).success).toBe(true);
+    for (const scene of [
+      'tabs',
+      'bottom-nav',
+      'sidebar',
+      'scroll-area',
+      'time-picker',
+    ]) {
+      expect(ViewConfigSchema.safeParse({ ...config, scene }).success).toBe(
+        true
+      );
+    }
   });
 
   it('rejects unknown scenes, presets, themes and locales', () => {
     for (const bad of [
-      { scene: 'tabs' },
       { scene: 'not-a-part' },
       { preset: 'material' },
       { theme: 'sepia' },

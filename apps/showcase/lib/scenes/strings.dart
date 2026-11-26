@@ -63,6 +63,18 @@ class const KitStrings({
     'weekdays': <String>['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     'dayLabel': '{month} {day}, {year}',
     'splitterLabel': 'Panel divider {index}',
+    'scrollAreaLabel': 'Scrollable component paths',
+    'timePickerLabel': 'Select time',
+    'hourLabel': 'Hour',
+    'minuteLabel': 'Minute',
+    'periodLabel': 'Period',
+    'amLabel': 'AM',
+    'pmLabel': 'PM',
+    'dialModeTooltip': 'Switch to dial mode',
+    'inputModeTooltip': 'Switch to input mode',
+    'spinnerModeTooltip': 'Switch to spinner mode',
+    'nextValueLabel': 'Next value',
+    'previousValueLabel': 'Previous value',
   };
 
   /// The text for [key]: the page value, else the EN default, else [key].

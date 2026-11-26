@@ -13,6 +13,7 @@ export const DEFAULT_STAGE = 'min-h-[64px]';
 /** Stages taller than [DEFAULT_STAGE], by part slug. */
 export const STAGE_HEIGHTS: Readonly<Record<string, string>> = {
   accordion: 'min-h-[128px]',
+  'bottom-nav': 'min-h-[72px]',
   card: 'min-h-[112px]',
   carousel: 'min-h-[128px]',
   'date-picker': 'min-h-[336px]',
@@ -22,10 +23,13 @@ export const STAGE_HEIGHTS: Readonly<Record<string, string>> = {
   radio: 'min-h-[120px]',
   'radio-group': 'min-h-[120px]',
   resizable: 'min-h-[80px]',
+  'scroll-area': 'min-h-[96px]',
   select: 'min-h-[184px]',
   sheet: 'min-h-[120px]',
+  sidebar: 'min-h-[176px]',
   slider: 'min-h-[80px]',
   table: 'min-h-[136px]',
+  'time-picker': 'min-h-[272px]',
   toast: 'min-h-[128px]',
   tooltip: 'min-h-[104px]',
 };

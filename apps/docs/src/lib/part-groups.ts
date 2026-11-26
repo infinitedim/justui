@@ -67,6 +67,7 @@ const WIDE_PARTS: ReadonlySet<string> = new Set([
   'breadcrumb',
   'date-picker',
   'date-range-picker',
+  'time-picker',
   'bottom-nav',
   'sidebar',
   'dialog',

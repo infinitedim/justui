@@ -57,6 +57,30 @@ export interface KitDictionary {
   dayLabel: string;
   /** Screen reader name of a resizable splitter: `{index}`. */
   splitterLabel: string;
+  /** Screen reader name of the scroll area demo. */
+  scrollAreaLabel: string;
+  /** Screen reader name of the time picker demo. */
+  timePickerLabel: string;
+  /** Label for the hour segment in the time picker. */
+  hourLabel: string;
+  /** Label for the minute segment in the time picker. */
+  minuteLabel: string;
+  /** Label for the period segment in the time picker. */
+  periodLabel: string;
+  /** AM period label in the time picker. */
+  amLabel: string;
+  /** PM period label in the time picker. */
+  pmLabel: string;
+  /** Tooltip for switching the time picker to dial mode. */
+  dialModeTooltip: string;
+  /** Tooltip for switching the time picker to input mode. */
+  inputModeTooltip: string;
+  /** Tooltip for switching the time picker to spinner mode. */
+  spinnerModeTooltip: string;
+  /** Semantic label for increasing a time picker value. */
+  nextValueLabel: string;
+  /** Semantic label for decreasing a time picker value. */
+  previousValueLabel: string;
 }
 
 export const kitTranslations = {
@@ -113,6 +137,18 @@ export const kitTranslations = {
     weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     dayLabel: '{month} {day}, {year}',
     splitterLabel: 'Panel divider {index}',
+    scrollAreaLabel: 'Scrollable component paths',
+    timePickerLabel: 'Select time',
+    hourLabel: 'Hour',
+    minuteLabel: 'Minute',
+    periodLabel: 'Period',
+    amLabel: 'AM',
+    pmLabel: 'PM',
+    dialModeTooltip: 'Switch to dial mode',
+    inputModeTooltip: 'Switch to input mode',
+    spinnerModeTooltip: 'Switch to spinner mode',
+    nextValueLabel: 'Next value',
+    previousValueLabel: 'Previous value',
   },
   id: {
     saveChanges: 'Simpan perubahan',
@@ -167,6 +203,18 @@ export const kitTranslations = {
     weekdays: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
     dayLabel: '{day} {month} {year}',
     splitterLabel: 'Pemisah panel {index}',
+    scrollAreaLabel: 'Daftar path komponen yang bisa digulir',
+    timePickerLabel: 'Pilih waktu',
+    hourLabel: 'Jam',
+    minuteLabel: 'Menit',
+    periodLabel: 'Periode',
+    amLabel: 'AM',
+    pmLabel: 'PM',
+    dialModeTooltip: 'Ganti ke mode dial',
+    inputModeTooltip: 'Ganti ke mode input',
+    spinnerModeTooltip: 'Ganti ke mode spinner',
+    nextValueLabel: 'Nilai berikutnya',
+    previousValueLabel: 'Nilai sebelumnya',
   },
 } satisfies Record<Locale, KitDictionary>;
 

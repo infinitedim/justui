@@ -17,6 +17,26 @@ const Map<String, Object> _id = <String, Object>{
   'files': 'File',
   'editor': 'Editor',
   'splitterLabel': 'Pemisah panel {index}',
+  'tabs': <String>['Akun', 'Tagihan', 'Tim'],
+  'tabsLabel': 'Bagian pengaturan',
+  'bottomNav': <String>['Beranda', 'Cari', 'Profil'],
+  'bottomNavLabel': 'Navigasi aplikasi',
+  'sidebar': <String>['Ringkasan', 'Komponen', 'Pengaturan'],
+  'sidebarLabel': 'Bagian',
+  'scrollAreaLabel': 'Daftar path komponen yang bisa digulir',
+  'timePickerLabel': 'Pilih waktu',
+  'hourLabel': 'Jam',
+  'minuteLabel': 'Menit',
+  'periodLabel': 'Periode',
+  'amLabel': 'AM',
+  'pmLabel': 'PM',
+  'cancel': 'Batal',
+  'save': 'Simpan',
+  'dialModeTooltip': 'Ganti ke mode dial',
+  'inputModeTooltip': 'Ganti ke mode input',
+  'spinnerModeTooltip': 'Ganti ke mode spinner',
+  'nextValueLabel': 'Nilai berikutnya',
+  'previousValueLabel': 'Nilai sebelumnya',
 };
 
 /// Calendars and carousel dots speak the page's language: no core English
@@ -70,6 +90,61 @@ void main() {
     expect(find.text('Files'), findsNothing);
     expect(find.bySemanticsLabel('Pemisah panel 1'), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('^Splitter divider')), findsNothing);
+    handle.dispose();
+  });
+
+  testWidgets('tabs in ID', (WidgetTester tester) async {
+    final SemanticsHandle handle = await pumpId(tester, 'tabs');
+    expect(find.text('Akun'), findsWidgets);
+    expect(find.text('Tagihan'), findsWidgets);
+    expect(find.text('Tim'), findsWidgets);
+    expect(find.text('Account'), findsNothing);
+    expect(find.bySemanticsLabel('Bagian pengaturan'), findsOneWidget);
+    handle.dispose();
+  });
+
+  testWidgets('bottom-nav in ID', (WidgetTester tester) async {
+    final SemanticsHandle handle = await pumpId(tester, 'bottom-nav');
+    expect(find.text('Beranda'), findsOneWidget);
+    expect(find.text('Cari'), findsOneWidget);
+    expect(find.text('Profil'), findsOneWidget);
+    expect(find.text('Home'), findsNothing);
+    expect(find.bySemanticsLabel('Navigasi aplikasi'), findsOneWidget);
+    handle.dispose();
+  });
+
+  testWidgets('sidebar in ID', (WidgetTester tester) async {
+    final SemanticsHandle handle = await pumpId(tester, 'sidebar');
+    expect(find.text('Ringkasan'), findsOneWidget);
+    expect(find.text('Komponen'), findsOneWidget);
+    expect(find.text('Pengaturan'), findsOneWidget);
+    expect(find.text('Overview'), findsNothing);
+    expect(find.bySemanticsLabel('Bagian'), findsOneWidget);
+    handle.dispose();
+  });
+
+  testWidgets('scroll-area in ID', (WidgetTester tester) async {
+    final SemanticsHandle handle = await pumpId(tester, 'scroll-area');
+    expect(
+      find.bySemanticsLabel('Daftar path komponen yang bisa digulir'),
+      findsOneWidget,
+    );
+    expect(find.bySemanticsLabel('Scrollable component paths'), findsNothing);
+    handle.dispose();
+  });
+
+  testWidgets('time-picker in ID', (WidgetTester tester) async {
+    final SemanticsHandle handle = await pumpId(tester, 'time-picker');
+    expect(find.bySemanticsLabel('Pilih waktu'), findsOneWidget);
+    expect(find.bySemanticsLabel('Jam: 09'), findsOneWidget);
+    expect(find.bySemanticsLabel('Menit: 41'), findsOneWidget);
+    expect(find.bySemanticsLabel('Ganti ke mode input'), findsOneWidget);
+    expect(find.bySemanticsLabel('Jam'), findsOneWidget);
+    expect(find.bySemanticsLabel('Menit'), findsOneWidget);
+    expect(find.bySemanticsLabel('Periode'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('^Hour')), findsNothing);
+    expect(find.bySemanticsLabel(RegExp('^Minute')), findsNothing);
+    expect(find.bySemanticsLabel('Period'), findsNothing);
     handle.dispose();
   });
 }

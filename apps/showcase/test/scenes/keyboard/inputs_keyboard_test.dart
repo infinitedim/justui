@@ -7,6 +7,7 @@ import 'package:just_ui_core/src/components/date_picker/just_date_range_picker.d
 import 'package:just_ui_core/src/components/radio/just_radio_group.dart';
 import 'package:just_ui_core/src/components/select/just_select.dart';
 import 'package:just_ui_core/src/components/switch/just_switch.dart';
+import 'package:just_ui_core/src/components/time_picker/just_time_picker.dart';
 
 import '../../support/golden_harness.dart';
 import '../../support/keyboard.dart';
@@ -20,6 +21,7 @@ const List<String> _scenes = <String>[
   'select',
   'date-picker',
   'date-range-picker',
+  'time-picker',
 ];
 
 void _traversalTests() {
@@ -125,6 +127,24 @@ void _pickerTests() {
         .widget<JustDateRangePicker>(find.byType(JustDateRangePicker))
         .value;
     expect(<int?>[range?.start.day, range?.end.day], <int>[20, 22]);
+  });
+
+  testWidgets('time picker spinner changes time with arrow keys', (
+    WidgetTester tester,
+  ) async {
+    await pumpDefault(tester, 'time-picker');
+    final JustTimeOfDay? before = tester
+        .widget<JustTimePicker>(find.byType(JustTimePicker))
+        .value;
+    expect(before, const JustTimeOfDay(hour: 9, minute: 41));
+
+    await tabTo(tester, nodeOf(tester, find.byType(ListWheelScrollView).first));
+    await press(tester, LogicalKeyboardKey.arrowDown);
+
+    final JustTimeOfDay? after = tester
+        .widget<JustTimePicker>(find.byType(JustTimePicker))
+        .value;
+    expect(after, isNot(equals(before)));
   });
 }
 
