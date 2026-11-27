@@ -1,4 +1,4 @@
-// justui-meta: registry=2321b2831b5b40a0f97eb8b946bfa0d0a925c4d5d0258fa4b9603638ae9241f5 local=fc8f67eb6e065991ee401047a42142a7a1a0de3ed5dc39dcb5a8871d44ad1b75
+// justui-meta: registry=ce59a6d6f065c6ef7149164f87612b9aa6a999f803b094566be11b15a07a9e0e local=f82f7d61353b9412c9746b26934213eb8af1c69bc5ff8b4b0d091dedfd12b37b
 import 'package:flutter/services.dart'
     show HapticFeedback, KeyDownEvent, KeyRepeatEvent;
 import 'package:flutter/widgets.dart';
@@ -777,6 +777,16 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       );
     }
 
+    final Border? containerBorder = _resolveContainerBorder(
+      presetTokens: presetTokens,
+      colors: colors,
+      themeStyle: themeStyle,
+    );
+    final bool hasBottomBorder =
+        widget.variant == .line &&
+        containerBorder != null &&
+        containerBorder.bottom.width > 0.0;
+
     // Indicator positioning widget
     Widget? indicatorWidget;
     if (_tabWidths.length == widget.tabs.length &&
@@ -815,7 +825,9 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
           left: pos,
           width: size,
           top: 0.0,
-          bottom: 0.0,
+          // Overlap 1px into the bottom hairline to eliminate fractional-border
+          // anti-aliasing seams (e.g. 2.5px Neobrutalism rule at dpr 1).
+          bottom: hasBottomBorder ? -1.0 : 0.0,
           child: indicatorInner,
         );
       }
@@ -850,11 +862,6 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       ],
     );
 
-    final Border? containerBorder = _resolveContainerBorder(
-      presetTokens: presetTokens,
-      colors: colors,
-      themeStyle: themeStyle,
-    );
     final Widget headerContainer = Semantics(
       container: true,
       explicitChildNodes: true,

@@ -656,7 +656,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     final double offCenterOpacity =
         style?.overAndUnderCenterOpacity ??
         themeExtension?.inlineStyle?.overAndUnderCenterOpacity ??
-        0.78;
+        0.82;
     final Duration textAnimDuration = motion.normal == .zero
         ? .zero
         : const Duration(milliseconds: 200);

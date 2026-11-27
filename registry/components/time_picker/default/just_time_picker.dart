@@ -551,19 +551,19 @@ class _JustTimePickerState extends State<JustTimePicker> {
           mainAxisSize: .min,
           children: <Widget>[
             // Hour Segment Button
-            Semantics(
-              button: true,
-              label: '${widget.locale.hourLabel}: $hourStr',
-              selected: isHourActive,
-              excludeSemantics: true,
-              child: JustPressable(
-                onTap: () {
-                  setState(() {
-                    _activeSegment = .hour;
-                  });
-                },
-                builder: (BuildContext context, JustInteractionState state) {
-                  return FocusIndicator(
+            JustPressable(
+              onTap: () {
+                setState(() {
+                  _activeSegment = .hour;
+                });
+              },
+              builder: (BuildContext context, JustInteractionState state) {
+                return Semantics(
+                  button: true,
+                  label: '${widget.locale.hourLabel}: $hourStr',
+                  selected: isHourActive,
+                  excludeSemantics: true,
+                  child: FocusIndicator(
                     isFocused: state.isFocusVisible,
                     borderRadius: resolvedRadius,
                     child: Container(
@@ -591,9 +591,9 @@ class _JustTimePickerState extends State<JustTimePicker> {
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
             Padding(
               padding: .symmetric(horizontal: spacing.xxs),
@@ -606,19 +606,19 @@ class _JustTimePickerState extends State<JustTimePicker> {
               ),
             ),
             // Minute Segment Button
-            Semantics(
-              button: true,
-              label: '${widget.locale.minuteLabel}: $minuteStr',
-              selected: isMinuteActive,
-              excludeSemantics: true,
-              child: JustPressable(
-                onTap: () {
-                  setState(() {
-                    _activeSegment = .minute;
-                  });
-                },
-                builder: (BuildContext context, JustInteractionState state) {
-                  return FocusIndicator(
+            JustPressable(
+              onTap: () {
+                setState(() {
+                  _activeSegment = .minute;
+                });
+              },
+              builder: (BuildContext context, JustInteractionState state) {
+                return Semantics(
+                  button: true,
+                  label: '${widget.locale.minuteLabel}: $minuteStr',
+                  selected: isMinuteActive,
+                  excludeSemantics: true,
+                  child: FocusIndicator(
                     isFocused: state.isFocusVisible,
                     borderRadius: resolvedRadius,
                     child: Container(
@@ -646,9 +646,9 @@ class _JustTimePickerState extends State<JustTimePicker> {
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
             // AM / PM Segment Buttons (12-hour format only)
             if (widget.timeFormat == .twelveHour) ...<Widget>[
@@ -667,22 +667,22 @@ class _JustTimePickerState extends State<JustTimePicker> {
                 child: Row(
                   mainAxisSize: .min,
                   children: <Widget>[
-                    Semantics(
-                      button: true,
-                      label: widget.locale.amLabel,
-                      selected: isAm,
-                      excludeSemantics: true,
-                      child: JustPressable(
-                        onTap: () {
-                          if (!isAm) {
-                            final JustTimeOfDay toggled = _currentTime
-                                .togglePeriod();
-                            _onTimeSelected(toggled);
-                          }
-                        },
-                        builder:
-                            (BuildContext context, JustInteractionState state) {
-                              return FocusIndicator(
+                    JustPressable(
+                      onTap: () {
+                        if (!isAm) {
+                          final JustTimeOfDay toggled = _currentTime
+                              .togglePeriod();
+                          _onTimeSelected(toggled);
+                        }
+                      },
+                      builder:
+                          (BuildContext context, JustInteractionState state) {
+                            return Semantics(
+                              button: true,
+                              label: widget.locale.amLabel,
+                              selected: isAm,
+                              excludeSemantics: true,
+                              child: FocusIndicator(
                                 isFocused: state.isFocusVisible,
                                 borderRadius: resolvedRadius,
                                 child: Container(
@@ -704,26 +704,26 @@ class _JustTimePickerState extends State<JustTimePicker> {
                                     ),
                                   ),
                                 ),
-                              );
-                            },
-                      ),
+                              ),
+                            );
+                          },
                     ),
-                    Semantics(
-                      button: true,
-                      label: widget.locale.pmLabel,
-                      selected: !isAm,
-                      excludeSemantics: true,
-                      child: JustPressable(
-                        onTap: () {
-                          if (isAm) {
-                            final JustTimeOfDay toggled = _currentTime
-                                .togglePeriod();
-                            _onTimeSelected(toggled);
-                          }
-                        },
-                        builder:
-                            (BuildContext context, JustInteractionState state) {
-                              return FocusIndicator(
+                    JustPressable(
+                      onTap: () {
+                        if (isAm) {
+                          final JustTimeOfDay toggled = _currentTime
+                              .togglePeriod();
+                          _onTimeSelected(toggled);
+                        }
+                      },
+                      builder:
+                          (BuildContext context, JustInteractionState state) {
+                            return Semantics(
+                              button: true,
+                              label: widget.locale.pmLabel,
+                              selected: !isAm,
+                              excludeSemantics: true,
+                              child: FocusIndicator(
                                 isFocused: state.isFocusVisible,
                                 borderRadius: resolvedRadius,
                                 child: Container(
@@ -745,9 +745,9 @@ class _JustTimePickerState extends State<JustTimePicker> {
                                     ),
                                   ),
                                 ),
-                              );
-                            },
-                      ),
+                              ),
+                            );
+                          },
                     ),
                   ],
                 ),
@@ -758,14 +758,14 @@ class _JustTimePickerState extends State<JustTimePicker> {
 
         // Mode Switcher Button
         if (widget.allowModeSwitch)
-          Semantics(
-            button: true,
-            label: modeTooltip,
-            excludeSemantics: true,
-            child: JustPressable(
-              onTap: _cycleNextMode,
-              builder: (BuildContext context, JustInteractionState state) {
-                return FocusIndicator(
+          JustPressable(
+            onTap: _cycleNextMode,
+            builder: (BuildContext context, JustInteractionState state) {
+              return Semantics(
+                button: true,
+                label: modeTooltip,
+                excludeSemantics: true,
+                child: FocusIndicator(
                   isFocused: state.isFocusVisible,
                   borderRadius: resolvedRadius,
                   child: Container(
@@ -786,9 +786,9 @@ class _JustTimePickerState extends State<JustTimePicker> {
                       color: colors.textSecondary,
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
       ],
     );
@@ -1029,14 +1029,14 @@ class _JustTimePickerState extends State<JustTimePicker> {
           ),
           SizedBox(height: spacing.xs),
         ],
-        Semantics(
-          button: true,
-          label: triggerLabel,
-          excludeSemantics: true,
-          child: JustPressable(
-            onTap: onTap ?? _toggleDropdown,
-            builder: (BuildContext context, JustInteractionState state) {
-              return FocusIndicator(
+        JustPressable(
+          onTap: onTap ?? _toggleDropdown,
+          builder: (BuildContext context, JustInteractionState state) {
+            return Semantics(
+              button: true,
+              label: widget.semanticsLabel ?? triggerLabel,
+              excludeSemantics: true,
+              child: FocusIndicator(
                 isFocused: state.isFocusVisible,
                 borderRadius: resolvedRadius,
                 child: Container(
@@ -1084,9 +1084,9 @@ class _JustTimePickerState extends State<JustTimePicker> {
                     ],
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ],
     );
@@ -1110,31 +1110,31 @@ class _JustTimePickerState extends State<JustTimePicker> {
         ? _formatTime(widget.value!)
         : (widget.placeholder ?? 'Select time');
 
-    return Semantics(
-      button: true,
-      label: widget.semanticsLabel ?? displayText,
-      excludeSemantics: true,
-      child: JustPressable(
-        onTap: () async {
-          final JustTimeOfDay? selected = await showJustTimePicker(
-            context: context,
-            initialTime: widget.value,
-            firstTime: widget.firstTime,
-            lastTime: widget.lastTime,
-            selectableTimePredicate: widget.selectableTimePredicate,
-            mode: widget.mode,
-            timeFormat: widget.timeFormat,
-            minuteInterval: widget.minuteInterval,
-            locale: widget.locale,
-            style: widget.style,
-            enableHaptic: widget.enableHaptic,
-          );
-          if (selected != null) {
-            _onTimeSelected(selected);
-          }
-        },
-        builder: (BuildContext context, JustInteractionState state) {
-          return FocusIndicator(
+    return JustPressable(
+      onTap: () async {
+        final JustTimeOfDay? selected = await showJustTimePicker(
+          context: context,
+          initialTime: widget.value,
+          firstTime: widget.firstTime,
+          lastTime: widget.lastTime,
+          selectableTimePredicate: widget.selectableTimePredicate,
+          mode: widget.mode,
+          timeFormat: widget.timeFormat,
+          minuteInterval: widget.minuteInterval,
+          locale: widget.locale,
+          style: widget.style,
+          enableHaptic: widget.enableHaptic,
+        );
+        if (selected != null) {
+          _onTimeSelected(selected);
+        }
+      },
+      builder: (BuildContext context, JustInteractionState state) {
+        return Semantics(
+          button: true,
+          label: widget.semanticsLabel ?? displayText,
+          excludeSemantics: true,
+          child: FocusIndicator(
             isFocused: state.isFocusVisible,
             borderRadius: resolvedRadius,
             child: Container(
@@ -1169,9 +1169,9 @@ class _JustTimePickerState extends State<JustTimePicker> {
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

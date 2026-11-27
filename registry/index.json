@@ -454,7 +454,7 @@
           {
             "name": "just_scroll_area.dart",
             "path": "components/scroll/default/just_scroll_area.dart",
-            "checksum": "sha256:0de334bf4ea9788546f8dc6c6f11abda164a2015861357fbba0d28fb41886b35"
+            "checksum": "sha256:67ee2eae00866f0f5a923837ab398bdb414176802737d3d2e1ea483a872424aa"
           }
         ]
       },
@@ -763,12 +763,12 @@
           {
             "name": "just_tabs.dart",
             "path": "components/tabs/default/just_tabs.dart",
-            "checksum": "sha256:2321b2831b5b40a0f97eb8b946bfa0d0a925c4d5d0258fa4b9603638ae9241f5"
+            "checksum": "sha256:ce59a6d6f065c6ef7149164f87612b9aa6a999f803b094566be11b15a07a9e0e"
           },
           {
             "name": "just_tab_indicator.dart",
             "path": "components/tabs/default/just_tab_indicator.dart",
-            "checksum": "sha256:cd8d8995a8fdf5a799e995566ee6ed6fbf91640c4350e989c9f6e684cbd9dbab"
+            "checksum": "sha256:ee33b2e3c2f3cc1525ba494b595e060be53f73af87d76674ec17b2e09a1bca1f"
           }
         ]
       },
@@ -899,7 +899,7 @@
           {
             "name": "just_sidebar.dart",
             "path": "components/sidebar/default/just_sidebar.dart",
-            "checksum": "sha256:115be380df2a52e64b9f250b6dede7cb86414cfe597d52b8a0a02a0a2f437026"
+            "checksum": "sha256:6fad99c7be78a465467a2db9f3bc8c46918d50dcad28aa0ff746fce75b4e5436"
           }
         ]
       },
@@ -1393,7 +1393,7 @@
           {
             "name": "just_time_picker.dart",
             "path": "components/time_picker/default/just_time_picker.dart",
-            "checksum": "sha256:d813cb63789ee3ada15939ecd5b030c1f47e9b4135353b24c0d0dea97a6cebc4"
+            "checksum": "sha256:90edb8d932b45687d3878aa78acb3ef780dc87304849f36cb7aac1b8fff63ab1"
           },
           {
             "name": "_time_picker_dial.dart",
@@ -1403,7 +1403,7 @@
           {
             "name": "_time_picker_spinner.dart",
             "path": "components/time_picker/default/_time_picker_spinner.dart",
-            "checksum": "sha256:8cd3dcf7b26f0a5a54e5e3795498afb7c8cf7db70f38512ec9e59743b02b5f32"
+            "checksum": "sha256:5cfba252ae41ac75bcc6e397b189c8c107a3886894feec760194e9453319a180"
           },
           {
             "name": "_time_picker_input.dart",

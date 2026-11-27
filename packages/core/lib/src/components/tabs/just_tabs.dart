@@ -769,6 +769,16 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       );
     }
 
+    final Border? containerBorder = _resolveContainerBorder(
+      presetTokens: presetTokens,
+      colors: colors,
+      themeStyle: themeStyle,
+    );
+    final bool hasBottomBorder =
+        widget.variant == .line &&
+        containerBorder != null &&
+        containerBorder.bottom.width > 0.0;
+
     // Indicator positioning widget
     Widget? indicatorWidget;
     if (_tabWidths.length == widget.tabs.length &&
@@ -807,7 +817,9 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
           left: pos,
           width: size,
           top: 0.0,
-          bottom: 0.0,
+          // Overlap 1px into the bottom hairline to eliminate fractional-border
+          // anti-aliasing seams (e.g. 2.5px Neobrutalism rule at dpr 1).
+          bottom: hasBottomBorder ? -1.0 : 0.0,
           child: indicatorInner,
         );
       }
@@ -842,11 +854,6 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
       ],
     );
 
-    final Border? containerBorder = _resolveContainerBorder(
-      presetTokens: presetTokens,
-      colors: colors,
-      themeStyle: themeStyle,
-    );
     final Widget headerContainer = Semantics(
       container: true,
       explicitChildNodes: true,

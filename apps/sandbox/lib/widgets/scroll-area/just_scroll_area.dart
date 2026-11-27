@@ -1,4 +1,4 @@
-// justui-meta: registry=0de334bf4ea9788546f8dc6c6f11abda164a2015861357fbba0d28fb41886b35 local=d7af342e99300644b4b6a0497db3c86c67905802d13f71758178e22811b8e4ff
+// justui-meta: registry=67ee2eae00866f0f5a923837ab398bdb414176802737d3d2e1ea483a872424aa local=969fc21dff8790b5aa4c9f5a925ea63147e7cee02654c225c0dfbf71e6b7682a
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart'
@@ -384,6 +384,22 @@ class _JustScrollAreaState extends State<JustScrollArea>
     // Apply wheel multiplier and impulse acceleration
     final double delta =
         rawDelta * _resolvedWheelMultiplier * impulseMultiplier;
+
+    // Respect reduced motion: jump directly to the clamped offset instead of
+    // running the multi-frame smooth lerp ticker.
+    final bool isReducedMotion =
+        context.readTheme().animations.resolve(context).fast == Duration.zero;
+    if (isReducedMotion) {
+      final double clamped = (_resolvedController.offset + delta).clamp(
+        0.0,
+        maxScroll,
+      );
+      _stopSmoothing();
+      _currentOffset = clamped;
+      _targetOffset = clamped;
+      _resolvedController.jumpTo(clamped);
+      return;
+    }
 
     // Accumulate target offset with elastic overscroll allowance (+/- 60px)
     const double overscrollLimit = 60.0;

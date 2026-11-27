@@ -1196,5 +1196,38 @@ void main() {
         expect(scrollbar.trackVisibility, isFalse);
       },
     );
+
+    testWidgets(
+      'Pointer wheel jumps immediately under reduced motion without smooth ticker',
+      (WidgetTester tester) async {
+        final ScrollController controller = ScrollController();
+        addTearDown(controller.dispose);
+
+        await tester.pumpWidget(
+          MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: buildTestScrollArea(
+              controller: controller,
+              smoothScroll: true,
+              child: const SizedBox(height: 1200, child: Text('ReducedWheel')),
+            ),
+          ),
+        );
+
+        final Offset center = tester.getCenter(find.byType(JustScrollArea));
+        final TestPointer pointer = TestPointer(1, .mouse);
+        await tester.sendEventToBinding(pointer.hover(center));
+        await tester.sendEventToBinding(
+          pointer.scroll(const Offset(0.0, 120.0)),
+        );
+        // Single pump only: reduced motion must jump immediately without multi-frame lerp.
+        await tester.pump();
+
+        expect(controller.offset, greaterThanOrEqualTo(100.0));
+        final double afterFirstPump = controller.offset;
+        await tester.pump(const Duration(milliseconds: 200));
+        expect(controller.offset, equals(afterFirstPump));
+      },
+    );
   });
 }

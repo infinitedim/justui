@@ -112,7 +112,10 @@ class const JustTabIndicator({
                 : activeColor.withValues(alpha: 0.1),
             borderRadius: indicatorRadius,
             border: presetTokens.showsDefaultBorder
-                ? .all(color: colors.textPrimary, width: 1.5)
+                ? .all(
+                    color: colors.textPrimary,
+                    width: presetTokens.borderWidth,
+                  )
                 : null,
           ),
         );

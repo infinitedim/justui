@@ -1,4 +1,4 @@
-// justui-meta: registry=8cd3dcf7b26f0a5a54e5e3795498afb7c8cf7db70f38512ec9e59743b02b5f32 local=78a55a26fdb2537323c769a9fbd71108b2c38055a454354d071e7cd5207b054c
+// justui-meta: registry=5cfba252ae41ac75bcc6e397b189c8c107a3886894feec760194e9453319a180 local=aaa01d96c029214a9bb350520a0fc54fb71259ece816d04eaa7009436a2528c1
 import 'dart:async';
 
 import 'package:flutter/rendering.dart' show SemanticsService, TextDirection;
@@ -657,7 +657,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     final double offCenterOpacity =
         style?.overAndUnderCenterOpacity ??
         themeExtension?.inlineStyle?.overAndUnderCenterOpacity ??
-        0.78;
+        0.82;
     final Duration textAnimDuration = motion.normal == .zero
         ? .zero
         : const Duration(milliseconds: 200);

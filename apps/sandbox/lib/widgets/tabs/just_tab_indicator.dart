@@ -1,4 +1,4 @@
-// justui-meta: registry=cd8d8995a8fdf5a799e995566ee6ed6fbf91640c4350e989c9f6e684cbd9dbab local=cadd25a2ed2cc732b914447a9a4b3eb639f30d76eeff0a9325e45db508ffd420
+// justui-meta: registry=ee33b2e3c2f3cc1525ba494b595e060be53f73af87d76674ec17b2e09a1bca1f local=800cb16e64ef91ec2274971779c61c489b0a1d66bca2a7c11734561a6614d094
 import 'package:flutter/widgets.dart';
 import 'package:sandbox/core/just_ui_core.dart';
 
@@ -119,7 +119,10 @@ class JustTabIndicator extends StatelessWidget {
                 : activeColor.withValues(alpha: 0.1),
             borderRadius: indicatorRadius,
             border: presetTokens.showsDefaultBorder
-                ? .all(color: colors.textPrimary, width: 1.5)
+                ? .all(
+                    color: colors.textPrimary,
+                    width: presetTokens.borderWidth,
+                  )
                 : null,
           ),
         );

@@ -447,7 +447,7 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
             color: state.isHovered
                 ? colors.textPrimary
                 : const Color(0x00000000),
-            width: 1.5,
+            width: presetTokens.borderWidth,
           )
         : null;
     final EdgeInsets effectivePadding = widget.isCollapsed
@@ -682,7 +682,7 @@ class const _JustSidebarItemWidget({
             color: (isSelected || state.isHovered)
                 ? colors.textPrimary
                 : const Color(0x00000000),
-            width: 1.5,
+            width: presetTokens.borderWidth,
           )
         : (isSelected && variant == .default_
               ? Border(

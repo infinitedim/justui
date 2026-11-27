@@ -1027,7 +1027,20 @@ void main() {
         expect(wheels, hasLength(3));
 
         for (final ListWheelScrollView wheel in wheels) {
-          expect(wheel.overAndUnderCenterOpacity, greaterThanOrEqualTo(0.78));
+          expect(wheel.overAndUnderCenterOpacity, greaterThanOrEqualTo(0.82));
+
+          // Verify core default JustThemeData.light contrast ratio (>= 4.5:1)
+          final JustColorScheme coreLight = JustThemeData.light.colors;
+          final Color blendedCoreLight = Color.alphaBlend(
+            coreLight.textSecondary.withValues(
+              alpha: wheel.overAndUnderCenterOpacity,
+            ),
+            coreLight.card,
+          );
+          expect(
+            blendedCoreLight.contrastRatioWith(coreLight.card),
+            greaterThanOrEqualTo(4.5),
+          );
 
           // Verify Ink & Paper contrast ratio for off-center items (light & dark)
           const Color ipLightSurface = Color(0xFFFFFFFF);
@@ -1222,12 +1235,21 @@ void main() {
           findsNWidgets(6),
         );
 
-        final SemanticsNode amNode = tester.getSemantics(
-          find.byWidgetPredicate(
-            (Widget w) => w is Semantics && w.properties.label == 'AM',
+        final Finder amFinder = find.byWidgetPredicate(
+          (Widget w) => w is Semantics && w.properties.label == 'AM',
+        );
+        expect(
+          tester.getSemantics(amFinder),
+          matchesSemantics(
+            label: 'AM',
+            isButton: true,
+            isSelected: true,
+            hasSelectedState: true,
+            isFocusable: true,
+            hasFocusAction: true,
+            hasTapAction: true,
           ),
         );
-        expect(amNode.label, equals('AM'));
 
         handle.dispose();
       },
@@ -1704,6 +1726,25 @@ void main() {
           ),
           findsOneWidget,
         );
+
+        for (final String label in <String>[
+          'Dropdown waktu',
+          'Modal waktu',
+          'Responsif waktu',
+        ]) {
+          final Finder triggerFinder = find.bySemanticsLabel(label);
+          expect(triggerFinder, findsOneWidget);
+          expect(
+            tester.getSemantics(triggerFinder),
+            matchesSemantics(
+              label: label,
+              isButton: true,
+              isFocusable: true,
+              hasFocusAction: true,
+              hasTapAction: true,
+            ),
+          );
+        }
 
         handle.dispose();
       },

@@ -1,4 +1,4 @@
-// justui-meta: registry=115be380df2a52e64b9f250b6dede7cb86414cfe597d52b8a0a02a0a2f437026 local=6e8fb4b0d0f68a424e5a494257d2c8774f851f7ded6730e32e68a71b65549461
+// justui-meta: registry=6fad99c7be78a465467a2db9f3bc8c46918d50dcad28aa0ff746fce75b4e5436 local=fc12602612ca73fa5ced633a814b9f136752294f34332f7b1c381f2cf3c02304
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:sandbox/core/just_ui_core.dart';
@@ -470,7 +470,7 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
             color: state.isHovered
                 ? colors.textPrimary
                 : const Color(0x00000000),
-            width: 1.5,
+            width: presetTokens.borderWidth,
           )
         : null;
     final EdgeInsets effectivePadding = widget.isCollapsed
@@ -719,7 +719,7 @@ class _JustSidebarItemWidget extends StatelessWidget {
             color: (isSelected || state.isHovered)
                 ? colors.textPrimary
                 : const Color(0x00000000),
-            width: 1.5,
+            width: presetTokens.borderWidth,
           )
         : (isSelected && variant == .default_
               ? Border(

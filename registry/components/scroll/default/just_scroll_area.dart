@@ -391,6 +391,22 @@ class _JustScrollAreaState extends State<JustScrollArea>
     final double delta =
         rawDelta * _resolvedWheelMultiplier * impulseMultiplier;
 
+    // Respect reduced motion: jump directly to the clamped offset instead of
+    // running the multi-frame smooth lerp ticker.
+    final bool isReducedMotion =
+        context.readTheme().animations.resolve(context).fast == Duration.zero;
+    if (isReducedMotion) {
+      final double clamped = (_resolvedController.offset + delta).clamp(
+        0.0,
+        maxScroll,
+      );
+      _stopSmoothing();
+      _currentOffset = clamped;
+      _targetOffset = clamped;
+      _resolvedController.jumpTo(clamped);
+      return;
+    }
+
     // Accumulate target offset with elastic overscroll allowance (+/- 60px)
     const double overscrollLimit = 60.0;
     _targetOffset = (_targetOffset + delta).clamp(
