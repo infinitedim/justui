@@ -1,7 +1,8 @@
 import 'dart:async' show scheduleMicrotask;
 import 'dart:ui' show ViewFocusDirection, ViewFocusEvent, ViewFocusState;
 
-import 'package:material_ui/material_ui.dart' show Material, MaterialApp, MaterialType;
+import 'package:material_ui/material_ui.dart'
+    show Material, MaterialApp, MaterialType;
 import 'package:flutter/scheduler.dart' show SchedulerBinding;
 import 'package:flutter/widgets.dart';
 import 'package:just_ui_core/just_ui_core.dart';

@@ -9,7 +9,10 @@ import 'dart:io';
 /// - Zero-width spaces & joiners: U+200B..U+200D (ZWSP, ZWNJ, ZWJ)
 /// - Byte Order Mark: U+FEFF outside of file offset 0
 void main(List<String> args) {
-  final ProcessResult gitResult = Process.runSync('git', <String>['ls-files', '-z']);
+  final ProcessResult gitResult = Process.runSync('git', <String>[
+    'ls-files',
+    '-z',
+  ]);
   if (gitResult.exitCode != 0) {
     stderr.writeln('Failed to get tracked files from git: ${gitResult.stderr}');
     exit(1);
