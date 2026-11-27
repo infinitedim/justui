@@ -44,6 +44,7 @@ class _TimePickerDemoState extends State<_TimePickerDemo> {
         value: _selected,
         onChanged: (JustTimeOfDay time) => setState(() => _selected = time),
         timeFormat: .twelveHour,
+        allowModeSwitch: false,
         semanticsLabel: widget.scene.strings.text('timePickerLabel'),
         locale: _timeLocale(widget.scene),
       ),

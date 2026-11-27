@@ -99,6 +99,8 @@ const Map<String, double> _shadowBudgetY = <String, double>{
   'dialog': 8.0,
   'select': 6.0,
   'sheet': 8.0,
+  'sidebar': 8.0,
+  'time-picker': 6.0,
   'toast': 6.0,
   'tooltip': 4.0,
 };

@@ -16,7 +16,7 @@ const List<String> _componentPaths = <String>[
   'lib/widgets/toast/',
 ];
 
-/// Part scroll-area: 210 x 86 bordered viewport of six monospace component
+/// Part scroll-area: 210 x 80 bordered viewport of six monospace component
 /// paths with an always-visible scrollbar, like `KitPart` `scroll-area`.
 Widget scrollAreaScene(BuildContext context, SceneContext scene) {
   final JustColorScheme colors = context.justColors;
@@ -32,7 +32,7 @@ Widget scrollAreaScene(BuildContext context, SceneContext scene) {
   // JustScrollArea's outer focus indicator is never clipped by ControlBox.
   return SizedBox(
     width: 210,
-    height: 86,
+    height: 80,
     child: Stack(
       clipBehavior: .none,
       children: <Widget>[

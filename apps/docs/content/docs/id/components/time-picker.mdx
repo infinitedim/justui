@@ -67,24 +67,24 @@ Widget buildAdvancedTimePicker(BuildContext context, JustTimeOfDay? activeTime, 
 
 ### JustTimePicker
 
-| Properti                  | Tipe Data                       | Nilai Default                  | Deskripsi                                                                     |
-| :------------------------ | :------------------------------ | :----------------------------- | :---------------------------------------------------------------------------- |
-| `value`                   | `JustTimeOfDay?`                | `null`                         | Nilai waktu yang sedang aktif.                                                |
-| `onChanged`               | `ValueChanged<JustTimeOfDay>?`  | `null`                         | Callback yang dipanggil saat nilai waktu dipilih.                             |
-| `variant`                 | `JustTimePickerVariant`         | `.inline`                      | Varian tampilan (`.inline`, `.modal`, `.dropdown`, `.responsive`).            |
-| `mode`                    | `JustTimePickerMode`            | `.dial`                        | Paradigma interaksi (`.dial`, `.spinner`, `.input`).                          |
-| `timeFormat`              | `JustTimeFormat`                | `JustTimeFormat.twelveHour`    | Format jam: `.twelveHour` (12 jam AM/PM) atau `.twentyFourHour` (24 jam).     |
-| `firstTime`               | `JustTimeOfDay?`                | `null`                         | Batas awal waktu yang dapat dipilih.                                          |
-| `lastTime`                | `JustTimeOfDay?`                | `null`                         | Batas akhir waktu yang dapat dipilih.                                         |
-| `selectableTimePredicate` | `bool Function(JustTimeOfDay)?` | `null`                         | Predikat untuk menonaktifkan jam/menit tertentu.                              |
-| `showContainer`           | `bool`                          | `true`                         | Menentukan apakah kontainer kartu luar dirender pada mode `.inline`.          |
-| `locale`                  | `JustTimePickerLocale`          | `const JustTimePickerLocale()` | String lokal tanpa dependensi untuk label segmen, tombol aksi, dan tooltip.   |
-| `semanticsLabel`          | `String?`                       | `null`                         | Label aksesibilitas opsional untuk kontainer pemilih waktu atau pemicu modal. |
-| `style`                   | `JustTimePickerStyle?`          | `null`                         | Kustomisasi visual untuk jarum jam, angka dial, dan kolom roda putar.         |
+| Properti                  | Tipe Data                       | Nilai Default                  | Deskripsi                                                                                               |
+| :------------------------ | :------------------------------ | :----------------------------- | :------------------------------------------------------------------------------------------------------ |
+| `value`                   | `JustTimeOfDay?`                | `null`                         | Nilai waktu yang sedang aktif.                                                                          |
+| `onChanged`               | `ValueChanged<JustTimeOfDay>?`  | `null`                         | Callback yang dipanggil saat nilai waktu dipilih.                                                       |
+| `variant`                 | `JustTimePickerVariant`         | `.inline`                      | Varian tampilan (`.inline`, `.modal`, `.dropdown`, `.responsive`).                                      |
+| `mode`                    | `JustTimePickerMode`            | `.dial`                        | Paradigma interaksi (`.dial`, `.spinner`, `.input`).                                                    |
+| `timeFormat`              | `JustTimeFormat`                | `JustTimeFormat.twelveHour`    | Format jam: `.twelveHour` (12 jam AM/PM) atau `.twentyFourHour` (24 jam).                               |
+| `firstTime`               | `JustTimeOfDay?`                | `null`                         | Batas awal waktu yang dapat dipilih.                                                                    |
+| `lastTime`                | `JustTimeOfDay?`                | `null`                         | Batas akhir waktu yang dapat dipilih.                                                                   |
+| `selectableTimePredicate` | `bool Function(JustTimeOfDay)?` | `null`                         | Predikat untuk menonaktifkan jam/menit tertentu.                                                        |
+| `showContainer`           | `bool`                          | `true`                         | Menentukan apakah kontainer kartu luar dirender pada mode `.inline`.                                    |
+| `locale`                  | `JustTimePickerLocale`          | `const JustTimePickerLocale()` | String lokal tanpa dependensi untuk label segmen, tombol aksi, dan tooltip.                             |
+| `semanticsLabel`          | `String?`                       | `null`                         | Label aksesibilitas opsional untuk kontainer inline atau tombol pemicu dropdown, responsive, dan modal. |
+| `style`                   | `JustTimePickerStyle?`          | `null`                         | Kustomisasi visual untuk jarum jam, angka dial, dan kolom roda putar.                                   |
 
 ### JustTimePickerStyle, TimePickerSpinner & JustTimePickerLocale
 
-- **`JustTimePickerStyle.overAndUnderCenterOpacity`** (`double?`, bawaan `null`, nilai efektif `0.78`): Mengatur opasitas baris di atas dan bawah baris aktif pada roda spinner agar kontras teks di luar pusat tetap memenuhi WCAG 1.4.3.
+- **`JustTimePickerStyle.overAndUnderCenterOpacity`** (`double?`, bawaan `null`, nilai efektif `0.82`): Mengatur opasitas baris di atas dan bawah baris aktif pada roda spinner agar kontras teks di luar pusat tetap memenuhi WCAG 1.4.3.
 - **`TimePickerSpinner.showContainer`** (`bool`, bawaan `true`): Mengatur apakah `TimePickerSpinner` mandiri menampilkan border dan latar kartu luar (otomatis disetel `false` saat dipakai di dalam `JustTimePicker` agar tidak ada kartu bertumpuk).
 - **`JustTimePickerLocale`**: Kamu bisa menyesuaikan `hourLabel`, `minuteLabel`, `periodLabel`, `amLabel`, `pmLabel`, `cancelLabel`, `confirmLabel`, tooltip pergantian mode, serta `nextValueLabel` (bawaan `'Next value'`) dan `previousValueLabel` (bawaan `'Previous value'`) untuk deskripsi semantik naik/turun pada `TimePickerDial`.
 
@@ -93,7 +93,7 @@ Widget buildAdvancedTimePicker(BuildContext context, JustTimeOfDay? activeTime, 
 ## Aksesibilitas
 
 - **Semantik Slider pada Roda Spinner**: Setiap kolom di `TimePickerSpinner` (jam, menit, dan periode pada format 12 jam) memakai `Semantics(container: true, slider: true)` lengkap dengan nilai aktif, nilai berikutnya/sebelumnya, serta aksi `onIncrease`/`onDecrease`, sementara item mentah di dalamnya dibungkus `ExcludeSemantics` agar tidak dibacakan ganda.
-- **Kontras Luar Pusat WCAG 1.4.3**: Baris di atas dan di bawah nilai aktif pada roda spinner memakai bawaan `overAndUnderCenterOpacity: 0.78` (bisa kamu ubah lewat `JustTimePickerStyle`) supaya angka di sekitarnya tetap terbaca jelas.
+- **Kontras Luar Pusat WCAG 1.4.3**: Baris di atas dan di bawah nilai aktif pada roda spinner memakai bawaan `overAndUnderCenterOpacity: 0.82` (bisa kamu ubah lewat `JustTimePickerStyle`) supaya angka di sekitarnya tetap terbaca jelas.
 - **FocusIndicator yang Jelas**: Fokus keyboard menampilkan `FocusIndicator` pada roda spinner, dial melingkar, tombol segmen/periode/mode di header, serta tombol pemicu dropdown, responsive, dan modal.
 - **Navigasi Keyboard & Key-Repeat**: `TimePickerDial` maupun `TimePickerSpinner` menangani `KeyDownEvent` dan `KeyRepeatEvent` untuk tombol `ArrowUp`/`ArrowDown`/`ArrowLeft`/`ArrowRight`, `PageUp`/`PageDown`, `Home`/`End`, serta `Enter`/`Space`. Pada mode `.input`, kamu bisa mengetik angka jam dan menit secara langsung.
 - **Pengumuman Pembaca Layar & Reduced Motion**: Perubahan waktu diumumkan dalam format 12 jam atau 24 jam. Saat _reduced motion_ aktif, `animations.resolve(context)` memangkas durasi animasi jarum dial, roda spinner, dan tombol periode ke `Duration.zero` (roda langsung berpindah lewat `jumpToItem`).

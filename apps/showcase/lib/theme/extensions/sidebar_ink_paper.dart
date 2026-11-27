@@ -7,16 +7,16 @@ import '../ink_paper_tokens.dart';
 
 /// Sidebar overrides for Ink and Paper.
 ///
-/// Mirrors `KitSidebar`: surface card panel, 10 px default vs sharp
-/// neobrutalism radius, selection vs inverse fill for the current item, and
-/// compact item padding and spacing.
+/// Mirrors `KitSidebar`: surface card panel, 12 px default (`--ip-radius-card`)
+/// vs sharp neobrutalism radius, selection vs inverse fill for the current item,
+/// and compact item padding and spacing.
 JustSidebarTheme sidebarInkPaper(JustThemePreset preset, InkPaperRoles r) {
   final bool neo = preset == .neobrutalism;
   return JustSidebarTheme(
     insetStyle: JustSidebarStyle(
       backgroundColor: r.surface,
       borderColor: neo ? r.textPrimary : r.borderSubtle,
-      borderRadius: neo ? .zero : const .all(.circular(10.0)),
+      borderRadius: neo ? .zero : const .all(.circular(12.0)),
       selectedBackgroundColor: neo ? r.inverse : r.selection,
       selectedForegroundColor: neo ? r.onInverse : r.textPrimary,
       activeColor: r.textPrimary,

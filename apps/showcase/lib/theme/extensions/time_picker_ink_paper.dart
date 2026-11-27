@@ -8,7 +8,7 @@ import '../ink_paper_tokens.dart';
 /// Time picker overrides for Ink and Paper.
 ///
 /// Uses Ink and Paper surface, sunken and inverse roles, keeps off-center
-/// spinner numbers at 0.78 opacity for >= 4.5:1 contrast, and sets a 34 px
+/// spinner numbers at 0.82 opacity for >= 4.5:1 contrast, and sets a 34 px
 /// row height so the inline spinner fits inside the components-page stage.
 JustTimePickerTheme timePickerInkPaper(
   JustThemePreset preset,
@@ -23,9 +23,9 @@ JustTimePickerTheme timePickerInkPaper(
       dialTextColor: r.textPrimary,
       periodActiveColor: r.inverse,
       borderColor: neo ? r.textPrimary : r.borderSubtle,
-      borderRadius: neo ? .zero : const .all(.circular(10.0)),
+      borderRadius: neo ? .zero : const .all(.circular(12.0)),
       spinnerRowHeight: 34.0,
-      overAndUnderCenterOpacity: 0.78,
+      overAndUnderCenterOpacity: 0.82,
     ),
   );
 }

@@ -138,7 +138,7 @@ void main() {
     expect(find.bySemanticsLabel('Pilih waktu'), findsOneWidget);
     expect(find.bySemanticsLabel('Jam: 09'), findsOneWidget);
     expect(find.bySemanticsLabel('Menit: 41'), findsOneWidget);
-    expect(find.bySemanticsLabel('Ganti ke mode input'), findsOneWidget);
+    expect(find.bySemanticsLabel('Ganti ke mode input'), findsNothing);
     expect(find.bySemanticsLabel('Jam'), findsOneWidget);
     expect(find.bySemanticsLabel('Menit'), findsOneWidget);
     expect(find.bySemanticsLabel('Periode'), findsOneWidget);
