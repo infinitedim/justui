@@ -92,7 +92,7 @@ describe('LivePart', () => {
     ).toBe(true);
     expect(hostElement).not.toBe(clip);
     expect(clip).toHaveClass('overflow-hidden');
-    expect(hostElement).toHaveClass('w-[320px]', 'h-[344px]');
+    expect(hostElement).toHaveClass('w-[320px]', 'h-86');
   });
 
   it('stretches the fallback wrapper to full width so max-width children do not shrink', async () => {
