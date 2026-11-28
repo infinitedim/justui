@@ -34,6 +34,8 @@
     "budget:check": "bun run scripts/check-bundle-budget.ts",
     "flutter:build": "bun run scripts/build-flutter.ts",
     "flutter:budget": "bun run scripts/check-flutter-budget.ts",
+    "flutter:telemetry:bundle": "bun run scripts/mobile-web-telemetry.ts --bundle-only",
+    "flutter:telemetry": "bun run scripts/mobile-web-telemetry.ts",
     "perf:lighthouse": "bun run scripts/lighthouse.ts"
   },
   "dependencies": {
