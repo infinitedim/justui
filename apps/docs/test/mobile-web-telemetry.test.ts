@@ -143,10 +143,22 @@ describe('mobile-web-telemetry verdicts and formatting', () => {
     expect(failVerdict.errors.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('keeps CPU frame timing non-blocking while failing on boot, renderer, or console errors', () => {
+  it('keeps CPU frame timing and expected /favicon.ico 404 non-blocking while failing on real errors', () => {
     const slowPass = evaluateMobileProfileReport(makeMobileReport());
     expect(slowPass.ok).toBe(true);
     expect(slowPass.warnings).toHaveLength(1);
+
+    const faviconOnly = evaluateMobileProfileReport(
+      makeMobileReport({
+        failedRequests: [
+          { url: 'http://127.0.0.1:3000/favicon.ico', reason: 'HTTP 404' },
+        ],
+        consoleErrors: [
+          'Failed to load resource: the server responded with a status of 404 (Not Found)',
+        ],
+      })
+    );
+    expect(faviconOnly.ok).toBe(true);
 
     const badBoot = evaluateMobileProfileReport(
       makeMobileReport({

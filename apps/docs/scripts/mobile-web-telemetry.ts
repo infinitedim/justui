@@ -173,6 +173,14 @@ export function evaluateBundleReport(report: BundleReport): Verdict {
   return { ok: errors.length === 0, errors, warnings };
 }
 
+function isExpectedFavicon404(req: { url?: string; reason?: string }): boolean {
+  return Boolean(
+    req.url &&
+    /\/favicon\.ico(?:$|\?)/.test(req.url) &&
+    req.reason === 'HTTP 404'
+  );
+}
+
 /**
  * Evaluates Mobile Blink telemetry; fails only on boot, renderer, console, or
  * failed-request errors while keeping CPU-throttled timing non-blocking.
@@ -190,11 +198,26 @@ export function evaluateMobileProfileReport(
   if (snapshot.renderer !== 'skwasm-wasm') {
     errors.push(`Expected skwasm-wasm renderer, got "${snapshot.renderer}".`);
   }
-  if (consoleErrors.length > 0) {
-    errors.push(`${consoleErrors.length} runtime/console error(s) detected.`);
+
+  const favicon404Count = failedRequests.filter(isExpectedFavicon404).length;
+  const unexpectedFailed = failedRequests.filter(
+    (req) => !isExpectedFavicon404(req)
+  );
+  const resource404Errors = consoleErrors.filter((msg) =>
+    msg.includes('status of 404 (Not Found)')
+  );
+  const otherConsoleErrors = consoleErrors.filter(
+    (msg) => !msg.includes('status of 404 (Not Found)')
+  );
+  const unexpectedConsoleCount =
+    otherConsoleErrors.length +
+    Math.max(0, resource404Errors.length - favicon404Count);
+
+  if (unexpectedConsoleCount > 0) {
+    errors.push(`${unexpectedConsoleCount} runtime/console error(s) detected.`);
   }
-  if (failedRequests.length > 0) {
-    errors.push(`${failedRequests.length} failed network request(s).`);
+  if (unexpectedFailed.length > 0) {
+    errors.push(`${unexpectedFailed.length} failed network request(s).`);
   }
   if (snapshot.horizontalOverflowPx > 0) {
     warnings.push(
@@ -305,8 +328,23 @@ async function waitForServer(
   throw new Error(`Timed out waiting for docs server at ${url}`);
 }
 
+function hasSystemChrome(): boolean {
+  const candidates = [
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+  ];
+  if (candidates.some((p) => existsSync(p))) return true;
+  const check = spawnSync('which', ['google-chrome', 'chromium'], {
+    stdio: 'ignore',
+  });
+  return check.status === 0;
+}
+
 async function resolveChromePath(): Promise<string | null> {
   if (process.env.CHROME_PATH) return process.env.CHROME_PATH;
+  if (hasSystemChrome()) return null;
   try {
     const pw = await import('@playwright/test');
     const candidate = pw.chromium.executablePath();
