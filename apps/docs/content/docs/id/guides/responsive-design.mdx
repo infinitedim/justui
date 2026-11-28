@@ -21,11 +21,11 @@ JustUI menyediakan konstanta batas ukuran lebar layar (`JustBreakpoints` pada be
 
 ### Cara Penggunaan di Flutter
 
-Kamu dapat menggunakan breakpoints ini di dalam metode `build` widget kamu bersama dengan lebar layar saat ini (`MediaQuery.of(context).size.width` atau melalui ekstensi core):
+Kamu dapat menggunakan breakpoints ini di dalam metode `build` widget kamu bersama dengan lebar layar saat ini (`MediaQuery.sizeOf(context).width` atau melalui ekstensi core):
 
 ```dart
 Widget build(BuildContext context) {
-  final double screenWidth = MediaQuery.of(context).size.width;
+  final double screenWidth = MediaQuery.sizeOf(context).width;
 
   if (screenWidth >= JustBreakpoints.lg) {
     return const DesktopLayout();
@@ -58,7 +58,7 @@ Konsistensi jarak sangat memengaruhi kerapian antarmuka. JustUI menggunakan **si
 Hindari menulis angka padding manual secara acak. Gunakan fungsi utilitas insets JustUI:
 
 ```dart
-padding: JustSpacing.insets(horizontal: JustSpacing.lg, vertical: JustSpacing.md)
+padding: JustSpacing.insets(h: JustSpacing.lg, v: JustSpacing.md)
 // Menghasilkan EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0)
 ```
 

@@ -49,7 +49,7 @@ Widget build(BuildContext context) {
 Then, trigger a confirmation dialog from a button:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildTrigger(BuildContext context) {
@@ -60,23 +60,23 @@ Widget buildTrigger(BuildContext context) {
         content: Padding(
           padding: .all(context.justSpacing.lg),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             spacing: context.justSpacing.md,
             children: [
               Text('Confirm Sign Out', style: context.justTypo.headingMd),
               Text('Are you sure you want to sign out of your account?'),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: .end,
                 spacing: context.justSpacing.sm,
                 children: [
                   JustButton(
                     label: 'Cancel',
-                    variant: JustButtonVariant.ghost,
+                    variant: .ghost,
                     onPressed: () => Navigator.of(context).pop(false),
                   ),
                   JustButton(
                     label: 'Sign Out',
-                    variant: JustButtonVariant.destructive,
+                    variant: .destructive,
                     onPressed: () => Navigator.of(context).pop(true),
                   ),
                 ],
@@ -102,12 +102,13 @@ Widget buildTrigger(BuildContext context) {
 You can customize dialog positioning (e.g. anchoring at the bottom like a sheet) and adjust styling:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Colors, Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 void showTopNotificationDialog(BuildContext context) {
   context.justDialog.show(
-    position: DialogPosition.top,
+    position: .top,
     barrierDismissable: true,
     barrierColor: Colors.black26,
     content: Container(
@@ -121,7 +122,7 @@ void showTopNotificationDialog(BuildContext context) {
           ),
           JustButton(
             label: 'Refresh',
-            size: JustButtonSize.sm,
+            size: .sm,
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],
@@ -136,12 +137,12 @@ void showTopNotificationDialog(BuildContext context) {
 Use `JustDialogSurface` to embed the dialog card chrome directly inside a widget tree without an overlay barrier or focus trap:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildInlineDialogCard(BuildContext context) {
   return JustDialogSurface(
-    style: const JustDialogStyle(borderWidth: 2),
+    style: const JustDialogStyle(borderWidth: 2.0),
     child: Column(
       mainAxisSize: .min,
       crossAxisAlignment: .start,

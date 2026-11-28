@@ -26,30 +26,30 @@ Komponen `JustResizable` membagi viewport menjadi beberapa panel fleksibel denga
 Tata letak dua panel horizontal dengan pembagian proporsi:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicResizable(BuildContext context) {
   return SizedBox(
-    height: 320,
+    height: 320.0,
     child: JustResizable(
-      direction: Axis.horizontal,
+      direction: .horizontal,
       children: [
         JustResizablePanel(
           initialSize: 0.3,
-          minSize: 150,
+          minSize: 150.0,
           child: Container(
             color: context.justColors.background,
-            alignment: Alignment.center,
+            alignment: .center,
             child: const Text('Sidebar (30%)'),
           ),
         ),
         JustResizablePanel(
           initialSize: 0.7,
-          minSize: 200,
+          minSize: 200.0,
           child: Container(
             color: context.justColors.card,
-            alignment: Alignment.center,
+            alignment: .center,
             child: const Text('Konten Utama (70%)'),
           ),
         ),
@@ -64,29 +64,29 @@ Widget buildBasicResizable(BuildContext context) {
 Tata letak tiga panel dengan sidebar kiri yang dapat dilipat dan snap points:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildAdvancedResizable(BuildContext context) {
   return SizedBox(
-    height: 480,
+    height: 480.0,
     child: JustResizable(
-      direction: Axis.horizontal,
+      direction: .horizontal,
       dividerThickness: 4.0,
       children: [
         // Navigasi kiri yang dapat dilipat
         JustResizablePanel(
           initialSize: 0.25,
-          minSize: 180,
+          minSize: 180.0,
           collapsible: true,
-          collapseThreshold: 80,
+          collapseThreshold: 80.0,
           child: const Center(child: Text('Navigasi')),
         ),
 
         // Area Editor dengan magnet snap
         JustResizablePanel(
           initialSize: 0.50,
-          minSize: 250,
+          minSize: 250.0,
           snapPoints: const [0.50],
           child: const Center(child: Text('Area Editor')),
         ),
@@ -94,7 +94,7 @@ Widget buildAdvancedResizable(BuildContext context) {
         // Inspektur Properti
         JustResizablePanel(
           initialSize: 0.25,
-          minSize: 160,
+          minSize: 160.0,
           child: const Center(child: Text('Inspektur')),
         ),
       ],

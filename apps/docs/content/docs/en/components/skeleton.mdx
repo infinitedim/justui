@@ -14,7 +14,8 @@ description: Automatic structure-aware skeleton loader to represent application 
 The following is a basic usage example of `JustSkeleton` to automatically wrap a profile card component while loading data.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Colors;
 import 'package:your_app/core/just_ui_core.dart';
 
 class BasicSkeletonExample extends StatelessWidget {
@@ -39,14 +40,14 @@ class UserCardWidget extends StatelessWidget {
     return JustCard(
       child: Row(
         children: [
-          const JustAvatar(name: 'Budi Santoso', size: JustAvatarSize.lg),
-          const SizedBox(width: 16),
+          const JustAvatar(name: 'Budi Santoso', size: .lg),
+          const SizedBox(width: 16.0),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: const [
-                Text('Budi Santoso', style: TextStyle(fontWeight: FontWeight.bold)),
-                SizedBox(height: 4),
+                Text('Budi Santoso', style: TextStyle(fontWeight: .bold)),
+                SizedBox(height: 4.0),
                 Text('Software Engineer', style: TextStyle(color: Colors.grey)),
               ],
             ),
@@ -63,7 +64,8 @@ class UserCardWidget extends StatelessWidget {
 Advanced usage example using manual circle (`JustSkeleton.circle`) or line (`JustSkeleton.line`) builders and _escape hatches_ (`JustSkeletonIgnore` and `JustSkeletonAtomic`) to design complex loading skeletons.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Colors, Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 class AdvancedSkeletonExample extends StatelessWidget {
@@ -76,7 +78,7 @@ class AdvancedSkeletonExample extends StatelessWidget {
     return JustSkeleton(
       loading: isLoading,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
             children: [
@@ -88,32 +90,32 @@ class AdvancedSkeletonExample extends StatelessWidget {
                   tooltip: 'Back',
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 12.0),
               // Using manual circle skeleton builder
               const JustSkeleton.circle(size: 48.0),
-              const SizedBox(width: 12),
+              const SizedBox(width: 12.0),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: const [
                     JustSkeleton.line(width: 120.0, height: 16.0),
-                    SizedBox(height: 8),
+                    SizedBox(height: 8.0),
                     JustSkeleton.line(width: 80.0, height: 12.0),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 24.0),
           // Forces complex subtree to merge into a single solid gray block
           JustSkeletonAtomic(
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: const .all(16),
               color: Colors.grey[200],
               child: Row(
                 children: const [
                   Icon(Icons.star, color: Colors.amber),
-                  SizedBox(width: 8),
+                  SizedBox(width: 8.0),
                   Text('5 Star Review'),
                 ],
               ),

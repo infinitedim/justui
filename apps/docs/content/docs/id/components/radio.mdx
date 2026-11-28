@@ -23,7 +23,7 @@ Komponen `JustRadio` dan `JustRadioGroup` digunakan untuk menyajikan sekumpulan 
 Contoh penggunaan dasar `JustRadioGroup` untuk memilih satu jenis kelamin:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class RadioBasicDemo extends StatefulWidget {
@@ -40,7 +40,7 @@ class _RadioBasicDemoState extends State<RadioBasicDemo> {
   Widget build(BuildContext context) {
     return JustRadioGroup<String>(
       value: _selectedGender,
-      direction: Axis.horizontal,
+      direction: .horizontal,
       spacing: context.justSpacing.md,
       options: const [
         JustRadioOption(value: 'L', label: Text('Laki-laki')),
@@ -61,7 +61,7 @@ class _RadioBasicDemoState extends State<RadioBasicDemo> {
 Contoh penggunaan tingkat lanjut menggunakan tipe data model objek kustom untuk memilih paket berlangganan dengan deskripsi tambahan di bawah label:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class SubscriptionPlan {
@@ -91,19 +91,19 @@ class _RadioAdvancedDemoState extends State<RadioAdvancedDemo> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       spacing: context.justSpacing.sm,
       children: [
         Text('Pilih Paket kamu:', style: context.justTypo.headingSm),
         JustRadioGroup<SubscriptionPlan>(
           value: _selectedPlan,
-          direction: Axis.vertical,
+          direction: .vertical,
           spacing: context.justSpacing.sm,
           options: _plans.map((plan) {
             return JustRadioOption<SubscriptionPlan>(
               value: plan,
               label: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Text(plan.title, style: context.justTypo.bodyMd),
                   Text(

@@ -14,7 +14,7 @@ description: Bottom navigation bar with fixed, dynamically shifting, and custom 
 Basic usage example of `JustBottomNav` with the default fixed width style for 3 main menus.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class BasicBottomNavExample extends StatefulWidget {
@@ -64,7 +64,7 @@ class _BasicBottomNavExampleState extends State<BasicBottomNavExample> {
 Advanced usage example using the floating variant, haptic feedback, and icon alignment.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
@@ -82,10 +82,10 @@ class _AdvancedBottomNavExampleState extends State<AdvancedBottomNavExample> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const .all(16.0),
         child: JustBottomNav(
           selectedIndex: _currentIndex,
-          variant: JustBottomNavVariant.floating,
+          variant: .floating,
           showLabels: true,
           onItemSelected: (index) {
             HapticFeedback.lightImpact(); // Provides light haptic vibration

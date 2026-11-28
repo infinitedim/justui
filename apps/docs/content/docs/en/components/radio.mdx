@@ -23,7 +23,7 @@ The `JustRadio` and `JustRadioGroup` components are used to present a set of mut
 Basic usage example of `JustRadioGroup` for selecting a gender:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class RadioBasicDemo extends StatefulWidget {
@@ -40,7 +40,7 @@ class _RadioBasicDemoState extends State<RadioBasicDemo> {
   Widget build(BuildContext context) {
     return JustRadioGroup<String>(
       value: _selectedGender,
-      direction: Axis.horizontal,
+      direction: .horizontal,
       spacing: context.justSpacing.md,
       options: const [
         JustRadioOption(value: 'L', label: Text('Male')),
@@ -61,7 +61,7 @@ class _RadioBasicDemoState extends State<RadioBasicDemo> {
 Advanced usage example using a custom object model type for selecting a subscription plan with additional description below the label:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class SubscriptionPlan {
@@ -91,19 +91,19 @@ class _RadioAdvancedDemoState extends State<RadioAdvancedDemo> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       spacing: context.justSpacing.sm,
       children: [
         Text('Select Your Plan:', style: context.justTypo.headingSm),
         JustRadioGroup<SubscriptionPlan>(
           value: _selectedPlan,
-          direction: Axis.vertical,
+          direction: .vertical,
           spacing: context.justSpacing.sm,
           options: _plans.map((plan) {
             return JustRadioOption<SubscriptionPlan>(
               value: plan,
               label: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Text(plan.title, style: context.justTypo.bodyMd),
                   Text(

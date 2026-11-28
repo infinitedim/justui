@@ -23,14 +23,14 @@ Komponen `JustCard` adalah kontainer struktural yang digunakan untuk mengelompok
 Contoh penggunaan kartu sederhana dengan variant outline untuk menampilkan judul dan deskripsi singkat:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicCard(BuildContext context) {
   return JustCard(
-    variant: JustCardVariant.outlined,
+    variant: .outlined,
     child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       spacing: context.justSpacing.xs,
       children: [
         Text(
@@ -52,16 +52,16 @@ Widget buildBasicCard(BuildContext context) {
 Contoh penggunaan tingkat lanjut menggunakan sub-widget semantik, pemisahan pembatas header/footer, dan callback interaktif ketuk (_onTap_):
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildAdvancedCard(BuildContext context) {
   return JustCard(
-    variant: JustCardVariant.elevated,
+    variant: .elevated,
     onTap: () => print('Kartu diklik'),
     header: JustCardHeader(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         spacing: context.justSpacing.xxs,
         children: [
           const JustCardTitle(child: Text('Statistik Penjualan')),
@@ -71,7 +71,7 @@ Widget buildAdvancedCard(BuildContext context) {
     ),
     footer: JustCardFooter(
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: .end,
         spacing: context.justSpacing.sm,
         children: [
           JustButton(
@@ -90,7 +90,7 @@ Widget buildAdvancedCard(BuildContext context) {
     ),
     child: JustCardContent(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         spacing: context.justSpacing.sm,
         children: [
           Text(

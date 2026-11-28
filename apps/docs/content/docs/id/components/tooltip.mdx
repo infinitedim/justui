@@ -32,7 +32,8 @@ justui add tooltip
 Bungkus widget apa pun (seperti tombol standar atau label teks) dengan `JustTooltip` dan sediakan string pesan:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildTooltipExample(BuildContext context) {
@@ -53,7 +54,7 @@ Widget buildTooltipExample(BuildContext context) {
 Kamu dapat menyesuaikan penundaan pemicu tooltip, posisi, dan gayanya:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildAdvancedTooltip(BuildContext context) {
@@ -74,13 +75,13 @@ Widget buildAdvancedTooltip(BuildContext context) {
 Gunakan `JustTooltipBubble` untuk merender permukaan balon tooltip bertema langsung di dalam tatanan widget tanpa overlay portal atau pemicu pointer:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildInlineTooltipBubble(BuildContext context) {
   return const JustTooltipBubble(
     message: 'Disalin ke papan klip',
-    style: JustTooltipStyle(maxWidth: 200),
+    style: JustTooltipStyle(maxWidth: 200.0),
   );
 }
 ```

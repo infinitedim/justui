@@ -31,7 +31,7 @@ justui add select
 Use `JustSelect` to select a simple option from a list. Wrap parameter values using _Dart Dot Shorthand_ (e.g. `.md` for sizing) to stay consistent with the codebase:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class SelectBasicDemo extends StatefulWidget {
@@ -72,7 +72,8 @@ class _SelectBasicDemoState extends State<SelectBasicDemo> {
 You can enable inline text searching (useful for long lists) and add custom prefix icons to the select input trigger:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 class SelectAdvancedDemo extends StatefulWidget {
@@ -117,7 +118,7 @@ class _SelectAdvancedDemoState extends State<SelectAdvancedDemo> {
 Set `inlineDropdown: true` to render the dropdown menu in-flow below the trigger inside a `Column` rather than in an overlay portal. This is useful inside constrained layouts, scroll views, or embedded panels where overlay portals cannot be used.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class SelectInlineDemo extends StatefulWidget {

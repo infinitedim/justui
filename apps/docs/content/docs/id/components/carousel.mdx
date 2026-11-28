@@ -26,18 +26,19 @@ Komponen `JustCarousel` menyediakan peragaan slide yang dioptimalkan untuk inter
 Carousel banner sederhana dengan indikator titik:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Colors;
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicCarousel(BuildContext context) {
   final items = [
-    Container(color: Colors.blueAccent, alignment: Alignment.center, child: const Text('Slide 1')),
-    Container(color: Colors.purpleAccent, alignment: Alignment.center, child: const Text('Slide 2')),
-    Container(color: Colors.orangeAccent, alignment: Alignment.center, child: const Text('Slide 3')),
+    Container(color: Colors.blueAccent, alignment: .center, child: const Text('Slide 1')),
+    Container(color: Colors.purpleAccent, alignment: .center, child: const Text('Slide 2')),
+    Container(color: Colors.orangeAccent, alignment: .center, child: const Text('Slide 3')),
   ];
 
   return SizedBox(
-    height: 200,
+    height: 200.0,
     child: JustCarousel(
       children: items,
       loop: true,
@@ -51,12 +52,12 @@ Widget buildBasicCarousel(BuildContext context) {
 Carousel dengan auto-scroll, tombol panah navigasi, dan intipan slide samping:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildAdvancedCarousel(BuildContext context) {
   return SizedBox(
-    height: 260,
+    height: 260.0,
     child: JustCarousel(
       viewportFraction: 0.88,
       loop: true,
@@ -65,9 +66,9 @@ Widget buildAdvancedCarousel(BuildContext context) {
       children: List.generate(
         5,
         (index) => Card(
-          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+          margin: const .symmetric(horizontal: 8.0),
           child: Center(
-            child: Text('Kartu #${index + 1}', style: const TextStyle(fontSize: 18)),
+            child: Text('Kartu #${index + 1}', style: const TextStyle(fontSize: 18.0)),
           ),
         ),
       ),

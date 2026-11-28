@@ -24,14 +24,14 @@ Komponen `JustInput` adalah elemen pengisian teks berkinerja tinggi yang diranca
 Contoh dasar penggunaan `JustInput` untuk masukan teks standar:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicInput(BuildContext context) {
   return JustInput(
     label: 'Alamat Email',
     hint: 'nama@domain.com',
-    keyboardType: TextInputType.emailAddress,
+    keyboardType: .emailAddress,
     onChanged: (value) => print('Email: $value'),
   );
 }
@@ -42,7 +42,8 @@ Widget buildBasicInput(BuildContext context) {
 Contoh penggunaan tingkat lanjut untuk input kata sandi dengan validasi form, dan kolom OTP terpisah:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Divider;
 import 'package:your_app/core/just_ui_core.dart';
 
 class InputAdvancedScreen extends StatefulWidget {

@@ -31,7 +31,8 @@ justui add toggle
 Tombol mandiri sederhana dengan ikon yang mewakili status aktif/nonaktif:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 class ToggleBasicDemo extends StatefulWidget {
@@ -64,7 +65,8 @@ class _ToggleBasicDemoState extends State<ToggleBasicDemo> {
 Kelola sekelompok opsi toggle. Bungkus nilai parameter menggunakan _Dart Dot Shorthand_ (seperti `.md` untuk ukuran):
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Divider, Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 class ToggleGroupDemo extends StatefulWidget {
@@ -84,7 +86,7 @@ class _ToggleGroupDemoState extends State<ToggleGroupDemo> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       spacing: context.justSpacing.md,
       children: [
         // Seleksi Tunggal (allowMultiple = false, nullable = false)
@@ -112,7 +114,7 @@ class _ToggleGroupDemoState extends State<ToggleGroupDemo> {
         JustToggleGroup(
           allowMultiple: true,
           selectedIndices: _activeStyles,
-          size: JustToggleSize.sm,
+          size: .sm,
           items: const [
             JustToggleGroupItem(child: Icon(Icons.format_bold)),
             JustToggleGroupItem(child: Icon(Icons.format_italic)),

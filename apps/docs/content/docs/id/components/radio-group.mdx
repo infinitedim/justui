@@ -25,7 +25,7 @@ Komponen `JustRadioGroup` menyediakan kontainer terkoordinasi untuk serangkaian 
 Pilihan paket langganan secara vertikal:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicRadioGroup(BuildContext context, String? selectedPlan, ValueChanged<String> onChanged) {
@@ -46,13 +46,13 @@ Widget buildBasicRadioGroup(BuildContext context, String? selectedPlan, ValueCha
 Grup radio horizontal dengan salah satu opsi berstatus dinonaktifkan:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildAdvancedRadioGroup(BuildContext context, String? selectedMethod, ValueChanged<String> onChanged) {
   return JustRadioGroup<String>(
     value: selectedMethod,
-    direction: Axis.horizontal,
+    direction: .horizontal,
     spacing: context.justSpacing.lg,
     onChanged: onChanged,
     options: const [

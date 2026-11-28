@@ -41,7 +41,7 @@ import 'package:your_app/core/just_ui_core.dart';
 Widget build(BuildContext context) {
   return JustToastScope(
     controller: JustToastController(
-      position: ToastPosition.bottomCenter,
+      position: .bottomCenter,
       limit: 3,
     ),
     child: const MyAppHome(),
@@ -52,7 +52,7 @@ Widget build(BuildContext context) {
 Then, trigger a simple informational toast alert:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildButton(BuildContext context) {
@@ -61,7 +61,7 @@ Widget buildButton(BuildContext context) {
     onPressed: () {
       context.justToast.show(
         message: 'Changes saved successfully!',
-        variant: ToastVariant.success,
+        variant: .success,
       );
     },
   );
@@ -73,19 +73,20 @@ Widget buildButton(BuildContext context) {
 You can customize the toast with a custom duration, prefix icons, and call-to-action buttons, or manually change stack limit behaviors:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 void triggerAdvancedToast(BuildContext context) {
   context.justToast.show(
     message: 'Unable to connect to the server.',
-    variant: ToastVariant.error,
+    variant: .error,
     duration: const Duration(seconds: 5),
     icon: const Icon(Icons.cloud_off),
     action: JustButton(
       label: 'Retry',
-      size: JustButtonSize.sm,
-      variant: JustButtonVariant.ghost,
+      size: .sm,
+      variant: .ghost,
       onPressed: () {
         print('Retrying connection...');
         // Dismiss the active toasts programmatically if needed
@@ -102,7 +103,7 @@ void triggerAdvancedToast(BuildContext context) {
 Use `JustToastSurface` to render a toast card inline in a widget tree with an optional secondary `description` line and custom `borderWidth`:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildInlineToast(BuildContext context) {
@@ -110,7 +111,7 @@ Widget buildInlineToast(BuildContext context) {
     message: 'Changes saved',
     description: 'Project settings updated.',
     variant: .success,
-    style: JustToastStyle(borderWidth: 2),
+    style: JustToastStyle(borderWidth: 2.0),
     showCloseButton: false,
   );
 }

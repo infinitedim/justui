@@ -23,7 +23,8 @@ Komponen `JustAvatar` dan `JustAvatarGroup` digunakan untuk merepresentasikan pe
 Contoh penggunaan dasar `JustAvatar` dengan URL gambar, inisial nama, maupun ikon:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicAvatars(BuildContext context) {
@@ -56,7 +57,7 @@ Widget buildBasicAvatars(BuildContext context) {
 Contoh penggunaan tingkat lanjut yang menunjukkan status aktivitas, bentuk persegi bersudut (_square shape_), dan pengelompokan avatar bertumpuk (_Avatar Group_):
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildAdvancedAvatars(BuildContext context) {
@@ -67,8 +68,8 @@ Widget buildAdvancedAvatars(BuildContext context) {
       JustAvatar(
         name: 'Rian Hidayat',
         shape: JustAvatarShape.square,
-        size: JustAvatarSize.lg,
-        statusDot: JustAvatarStatus.online,
+        size: .lg,
+        statusDot: .online,
       ),
 
       // Pengelompokan Avatar (Avatar Group) dengan Maksimal Tampilan
@@ -80,7 +81,7 @@ Widget buildAdvancedAvatars(BuildContext context) {
           JustAvatar(name: 'Dedi Setiadi'),
         ],
         maxDisplay: 3, // Menampilkan 3 avatar, sisanya (+1) sebagai lencana angka
-        size: JustAvatarSize.md,
+        size: .md,
         overlap: 10.0, // Jarak tumpang-tindih horizontal antar avatar
       ),
     ],

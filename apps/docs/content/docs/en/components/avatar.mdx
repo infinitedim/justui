@@ -23,7 +23,8 @@ The `JustAvatar` and `JustAvatarGroup` components are used to visually represent
 Basic usage example of `JustAvatar` with an image URL, name initials, or an icon:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicAvatars(BuildContext context) {
@@ -56,7 +57,7 @@ Widget buildBasicAvatars(BuildContext context) {
 Advanced usage example showing activity status, a square shape, and stacked avatar grouping:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildAdvancedAvatars(BuildContext context) {
@@ -67,8 +68,8 @@ Widget buildAdvancedAvatars(BuildContext context) {
       JustAvatar(
         name: 'Rian Hidayat',
         shape: JustAvatarShape.square,
-        size: JustAvatarSize.lg,
-        statusDot: JustAvatarStatus.online,
+        size: .lg,
+        statusDot: .online,
       ),
 
       // Avatar Grouping with Maximum Display
@@ -80,7 +81,7 @@ Widget buildAdvancedAvatars(BuildContext context) {
           JustAvatar(name: 'Dedi Setiadi'),
         ],
         maxDisplay: 3, // Displays 3 avatars, the rest (+1) as a count badge
-        size: JustAvatarSize.md,
+        size: .md,
         overlap: 10.0, // Horizontal overlap distance between avatars
       ),
     ],

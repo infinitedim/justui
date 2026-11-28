@@ -49,7 +49,7 @@ Widget build(BuildContext context) {
 Kemudian, pemicu dialog konfirmasi dari tombol:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildTrigger(BuildContext context) {
@@ -60,23 +60,23 @@ Widget buildTrigger(BuildContext context) {
         content: Padding(
           padding: .all(context.justSpacing.lg),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             spacing: context.justSpacing.md,
             children: [
               Text('Konfirmasi Keluar', style: context.justTypo.headingMd),
               Text('Apakah kamu yakin ingin keluar dari akun kamu?'),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: .end,
                 spacing: context.justSpacing.sm,
                 children: [
                   JustButton(
                     label: 'Batal',
-                    variant: JustButtonVariant.ghost,
+                    variant: .ghost,
                     onPressed: () => Navigator.of(context).pop(false),
                   ),
                   JustButton(
                     label: 'Keluar',
-                    variant: JustButtonVariant.destructive,
+                    variant: .destructive,
                     onPressed: () => Navigator.of(context).pop(true),
                   ),
                 ],
@@ -102,12 +102,13 @@ Widget buildTrigger(BuildContext context) {
 Kamu dapat memodifikasi posisi dialog (misalnya menempel di bagian atas seperti pemberitahuan) dan menyesuaikan gayanya:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Colors, Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 void showTopNotificationDialog(BuildContext context) {
   context.justDialog.show(
-    position: DialogPosition.top,
+    position: .top,
     barrierDismissable: true,
     barrierColor: Colors.black26,
     content: Container(
@@ -121,7 +122,7 @@ void showTopNotificationDialog(BuildContext context) {
           ),
           JustButton(
             label: 'Segarkan',
-            size: JustButtonSize.sm,
+            size: .sm,
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],
@@ -136,12 +137,12 @@ void showTopNotificationDialog(BuildContext context) {
 Gunakan `JustDialogSurface` untuk menyematkan tampilan kartu dialog langsung di dalam tatanan widget tanpa barrier overlay atau perangkap fokus:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildInlineDialogCard(BuildContext context) {
   return JustDialogSurface(
-    style: const JustDialogStyle(borderWidth: 2),
+    style: const JustDialogStyle(borderWidth: 2.0),
     child: Column(
       mainAxisSize: .min,
       crossAxisAlignment: .start,

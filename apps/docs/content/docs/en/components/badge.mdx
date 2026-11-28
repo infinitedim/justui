@@ -24,7 +24,8 @@ The `JustBadge` component is a small visual badge used to highlight status, prov
 Basic usage example of `JustBadge` with various status colors and style variants:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicBadges(BuildContext context) {
@@ -34,23 +35,23 @@ Widget buildBasicBadges(BuildContext context) {
       // Solid Variant (Full Color)
       JustBadge(
         label: 'New',
-        color: JustBadgeColor.primary,
-        variant: JustBadgeVariant.solid,
+        color: .primary,
+        variant: .solid,
       ),
 
       // Soft Variant (Soft Transparent Color)
       JustBadge(
         label: 'Success',
-        color: JustBadgeColor.success,
-        variant: JustBadgeVariant.soft,
-        leading: const Icon(Icons.check, size: 12),
+        color: .success,
+        variant: .soft,
+        leading: const Icon(Icons.check, size: 12.0),
       ),
 
       // Outline Variant
       JustBadge(
         label: 'Draft',
-        color: JustBadgeColor.neutral,
-        variant: JustBadgeVariant.outline,
+        color: .neutral,
+        variant: .outline,
       ),
     ],
   );
@@ -62,7 +63,8 @@ Widget buildBasicBadges(BuildContext context) {
 Advanced usage example showing the dismissible feature, pulsing notification dot, and overlay stacking on an icon:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 class BadgeAdvancedDemo extends StatefulWidget {
@@ -84,8 +86,8 @@ class _BadgeAdvancedDemoState extends State<BadgeAdvancedDemo> {
         if (_showTag)
           JustBadge(
             label: 'Active Filter',
-            color: JustBadgeColor.info,
-            variant: JustBadgeVariant.soft,
+            color: .info,
+            variant: .soft,
             onDismiss: () {
               setState(() {
                 _showTag = false;
@@ -96,10 +98,10 @@ class _BadgeAdvancedDemoState extends State<BadgeAdvancedDemo> {
         // Notification Indicator Stacked on Icon (Overlay)
         JustBadge.overlay(
           badge: const JustBadge.dot(
-            color: JustBadgeColor.error,
+            color: .error,
             pulse: true, // Pulsing halo animation active
           ),
-          child: const Icon(Icons.notifications, size: 32),
+          child: const Icon(Icons.notifications, size: 32.0),
         ),
       ],
     );

@@ -41,7 +41,7 @@ import 'package:your_app/core/just_ui_core.dart';
 Widget build(BuildContext context) {
   return JustToastScope(
     controller: JustToastController(
-      position: ToastPosition.bottomCenter,
+      position: .bottomCenter,
       limit: 3,
     ),
     child: const MyAppHome(),
@@ -52,7 +52,7 @@ Widget build(BuildContext context) {
 Kemudian, pemicu peringatan toast informasi sederhana:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildButton(BuildContext context) {
@@ -61,7 +61,7 @@ Widget buildButton(BuildContext context) {
     onPressed: () {
       context.justToast.show(
         message: 'Perubahan berhasil disimpan!',
-        variant: ToastVariant.success,
+        variant: .success,
       );
     },
   );
@@ -73,19 +73,20 @@ Widget buildButton(BuildContext context) {
 Kamu dapat menyesuaikan toast dengan durasi kustom, ikon awalan, dan tombol tindakan, atau mengubah perilaku batas tumpukan secara manual:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 void triggerAdvancedToast(BuildContext context) {
   context.justToast.show(
     message: 'Gagal terhubung ke server.',
-    variant: ToastVariant.error,
+    variant: .error,
     duration: const Duration(seconds: 5),
     icon: const Icon(Icons.cloud_off),
     action: JustButton(
       label: 'Coba Lagi',
-      size: JustButtonSize.sm,
-      variant: JustButtonVariant.ghost,
+      size: .sm,
+      variant: .ghost,
       onPressed: () {
         print('Mencoba lagi koneksi...');
         // Tutup toast aktif secara terprogram jika diperlukan
@@ -102,7 +103,7 @@ void triggerAdvancedToast(BuildContext context) {
 Gunakan `JustToastSurface` untuk merender kartu toast secara inline di dalam tatanan widget dengan baris `description` sekunder opsional dan `borderWidth` kustom:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildInlineToast(BuildContext context) {
@@ -110,7 +111,7 @@ Widget buildInlineToast(BuildContext context) {
     message: 'Perubahan tersimpan',
     description: 'Pengaturan project diperbarui.',
     variant: .success,
-    style: JustToastStyle(borderWidth: 2),
+    style: JustToastStyle(borderWidth: 2.0),
     showCloseButton: false,
   );
 }

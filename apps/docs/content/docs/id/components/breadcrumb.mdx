@@ -14,7 +14,7 @@ description: Navigasi jejak hierarki halaman yang mendukung penciutan otomatis d
 Contoh penggunaan dasar `JustBreadcrumb` untuk navigasi halaman terurut dengan separator bawaan.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class BasicBreadcrumbExample extends StatelessWidget {
@@ -46,7 +46,8 @@ class BasicBreadcrumbExample extends StatelessWidget {
 Contoh penggunaan lanjutan dengan membatasi jumlah item maksimal (`maxItems`), ikon tambahan, dan separator kustom.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 class AdvancedBreadcrumbExample extends StatelessWidget {
@@ -56,11 +57,11 @@ class AdvancedBreadcrumbExample extends StatelessWidget {
   Widget build(BuildContext context) {
     return JustBreadcrumb(
       maxItems: 3,
-      separator: const Icon(Icons.chevron_right, size: 16),
+      separator: const Icon(Icons.chevron_right, size: 16.0),
       items: [
         JustBreadcrumbItem(
           label: 'Beranda',
-          icon: const Icon(Icons.home, size: 14),
+          icon: const Icon(Icons.home, size: 14.0),
           onTap: () => _navigateTo(context, '/'),
         ),
         JustBreadcrumbItem(

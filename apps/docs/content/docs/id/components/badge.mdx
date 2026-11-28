@@ -24,7 +24,8 @@ Komponen `JustBadge` adalah lencana visual kecil yang digunakan untuk menyoroti 
 Contoh penggunaan dasar `JustBadge` dengan berbagai warna status dan varian gaya:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicBadges(BuildContext context) {
@@ -34,23 +35,23 @@ Widget buildBasicBadges(BuildContext context) {
       // Varian Solid (Warna Penuh)
       JustBadge(
         label: 'Terbaru',
-        color: JustBadgeColor.primary,
-        variant: JustBadgeVariant.solid,
+        color: .primary,
+        variant: .solid,
       ),
 
       // Varian Soft (Warna Transparan Lembut)
       JustBadge(
         label: 'Berhasil',
-        color: JustBadgeColor.success,
-        variant: JustBadgeVariant.soft,
-        leading: const Icon(Icons.check, size: 12),
+        color: .success,
+        variant: .soft,
+        leading: const Icon(Icons.check, size: 12.0),
       ),
 
       // Varian Outline
       JustBadge(
         label: 'Draft',
-        color: JustBadgeColor.neutral,
-        variant: JustBadgeVariant.outline,
+        color: .neutral,
+        variant: .outline,
       ),
     ],
   );
@@ -62,7 +63,8 @@ Widget buildBasicBadges(BuildContext context) {
 Contoh penggunaan lanjutan yang menunjukkan fitur dismissible, titik pemberitahuan berdenyut (_pulse_), dan penumpukan overlay pada ikon:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 class BadgeAdvancedDemo extends StatefulWidget {
@@ -84,8 +86,8 @@ class _BadgeAdvancedDemoState extends State<BadgeAdvancedDemo> {
         if (_showTag)
           JustBadge(
             label: 'Filter Aktif',
-            color: JustBadgeColor.info,
-            variant: JustBadgeVariant.soft,
+            color: .info,
+            variant: .soft,
             onDismiss: () {
               setState(() {
                 _showTag = false;
@@ -96,10 +98,10 @@ class _BadgeAdvancedDemoState extends State<BadgeAdvancedDemo> {
         // Penumpukan Indikator Pemberitahuan pada Ikon (Overlay)
         JustBadge.overlay(
           badge: const JustBadge.dot(
-            color: JustBadgeColor.error,
+            color: .error,
             pulse: true, // Animasi pendaran halo aktif
           ),
-          child: const Icon(Icons.notifications, size: 32),
+          child: const Icon(Icons.notifications, size: 32.0),
         ),
       ],
     );

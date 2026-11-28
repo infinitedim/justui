@@ -14,7 +14,7 @@ description: Kontainer gulir mandiri dengan bilah geser kustom, tepi transparan,
 Berikut adalah contoh penggunaan dasar `JustScrollArea` untuk membungkus daftar konten gulir sederhana.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class BasicScrollAreaExample extends StatelessWidget {
@@ -23,7 +23,7 @@ class BasicScrollAreaExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 300,
+      height: 300.0,
       decoration: BoxDecoration(
         border: Border.all(color: context.justColors.borderDefault),
         borderRadius: .all(context.justRadius.md),
@@ -48,7 +48,7 @@ class BasicScrollAreaExample extends StatelessWidget {
 Contoh penggunaan lanjutan dengan pemudaran tepi menggunakan `ShaderMask`, tombol kembali ke atas otomatis, pemutaran keyboard, dan pagination tak terbatas (_infinite scroll_).
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class AdvancedScrollAreaExample extends StatefulWidget {
@@ -78,16 +78,16 @@ class _AdvancedScrollAreaExampleState extends State<AdvancedScrollAreaExample> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 400,
+      height: 400.0,
       decoration: BoxDecoration(
         border: Border.all(color: context.justColors.borderDefault),
         borderRadius: .all(context.justRadius.lg),
       ),
       child: JustScrollArea(
-        direction: Axis.vertical,
+        direction: .vertical,
         showScrollbar: true,
         fadeEdges: true,
-        fadeMode: JustScrollFadeMode.mask,
+        fadeMode: .mask,
         scrollToTopButton: true,
         scrollToTopThreshold: 300.0,
         keyboardScrollStep: 60.0,
@@ -99,7 +99,7 @@ class _AdvancedScrollAreaExampleState extends State<AdvancedScrollAreaExample> {
           itemBuilder: (context, index) {
             if (index == _items.length) {
               return const Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: .all(16.0),
                 child: Center(child: CircularProgressIndicator()),
               );
             }

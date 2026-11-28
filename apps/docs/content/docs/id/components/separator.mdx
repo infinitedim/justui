@@ -14,7 +14,7 @@ description: Garis pembatas tata letak responsif yang mendukung penyisipan label
 Berikut adalah contoh penggunaan dasar `JustSeparator` untuk pembatas horizontal sederhana.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class BasicSeparatorExample extends StatelessWidget {
@@ -38,7 +38,7 @@ class BasicSeparatorExample extends StatelessWidget {
 Contoh penggunaan lanjutan dengan label teks tengah, ketebalan kustom, indentasi pangkal dan ujung, serta responsivitas orientasi.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class AdvancedSeparatorExample extends StatelessWidget {
@@ -49,7 +49,7 @@ class AdvancedSeparatorExample extends StatelessWidget {
     return Column(
       children: [
         const Text('Daftar dengan Akun Sosial'),
-        const SizedBox(height: 16),
+        const SizedBox(height: 16.0),
         JustSeparator(
           direction: null, // Responsif (horizontal pada mobile, vertikal pada desktop)
           breakpoint: 640.0,
@@ -59,18 +59,18 @@ class AdvancedSeparatorExample extends StatelessWidget {
           label: 'ATAU',
           labelStyle: context.justTypo.caption.copyWith(
             color: context.justColors.textMuted,
-            fontWeight: FontWeight.bold,
+            fontWeight: .bold,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 16.0),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             JustButton(
               label: 'Google',
               onPressed: () {},
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 12.0),
             JustButton(
               label: 'GitHub',
               onPressed: () {},

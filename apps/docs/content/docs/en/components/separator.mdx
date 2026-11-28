@@ -14,7 +14,7 @@ description: Responsive layout divider line that supports inserting text labels 
 The following is a basic usage example of `JustSeparator` for a simple horizontal divider.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class BasicSeparatorExample extends StatelessWidget {
@@ -38,7 +38,7 @@ class BasicSeparatorExample extends StatelessWidget {
 Advanced usage example with center text label, custom thickness, start and end indentation, and responsive orientation.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class AdvancedSeparatorExample extends StatelessWidget {
@@ -49,7 +49,7 @@ class AdvancedSeparatorExample extends StatelessWidget {
     return Column(
       children: [
         const Text('Login with Social Accounts'),
-        const SizedBox(height: 16),
+        const SizedBox(height: 16.0),
         JustSeparator(
           direction: null, // Responsive (horizontal on mobile, vertical on desktop)
           breakpoint: 640.0,
@@ -59,18 +59,18 @@ class AdvancedSeparatorExample extends StatelessWidget {
           label: 'OR',
           labelStyle: context.justTypo.caption.copyWith(
             color: context.justColors.textMuted,
-            fontWeight: FontWeight.bold,
+            fontWeight: .bold,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 16.0),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             JustButton(
               label: 'Google',
               onPressed: () {},
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 12.0),
             JustButton(
               label: 'GitHub',
               onPressed: () {},

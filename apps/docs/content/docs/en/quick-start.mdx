@@ -106,8 +106,8 @@ Now, you can directly import and use the button in your page widget.
 Use _Dart Dot Shorthand_ for Flutter built-in parameters (such as `.symmetric` or `.all`) to align with JustUI's coding style:
 
 ```dart
-import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 import 'components/ui/button.dart'; // Adjust to your import path
 
@@ -134,7 +134,7 @@ class HomeScreen extends StatelessWidget {
                 print('Button pressed!');
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 16.0),
 
             // 2. Loading Button with Leading Icon
             JustButton.secondary(

@@ -63,3 +63,14 @@ Komponen beserta dependensinya akan disalin secara otomatis ke direktori kompone
   Flutter kamu dari `pubspec.yaml` (contoh: `import
   'package:proyek_kamu/core/just_ui_core.dart';`).
 </Callout>
+
+<Callout title="Flutter 3.50+ & Impor material_ui" type="info">
+  Contoh kode di dokumentasi menargetkan Flutter 3.50+
+  (`package:flutter/widgets.dart` untuk kode bebas Material dan
+  `package:material_ui/material_ui.dart` saat ikon atau widget Material
+  dipakai). CLI `justui` otomatis menulis ulang impor komponen ke
+  `package:flutter/material.dart` jika proyek kamu memakai Flutter &lt; 3.50
+  atau tidak memakai `material_ui`. Saat menyalin contoh dokumentasi ke
+  proyek Flutter &lt; 3.50, ganti `package:material_ui/material_ui.dart`
+  menjadi `package:flutter/material.dart`.
+</Callout>

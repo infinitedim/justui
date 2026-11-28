@@ -14,7 +14,8 @@ description: Pengatur tab konten navigasi dengan indikator geser presisi dan pem
 Berikut adalah contoh penggunaan dasar `JustTabs` untuk membuat tab navigasi sederhana.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 class BasicTabsExample extends StatelessWidget {
@@ -45,7 +46,8 @@ class BasicTabsExample extends StatelessWidget {
 Berikut adalah contoh penggunaan lanjutan menggunakan varian `pill`, judul tab yang dapat digeser secara horizontal (_scrollable_), penambahan _badge_, dan tab yang dinonaktifkan.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 class AdvancedTabsExample extends StatefulWidget {
@@ -74,7 +76,7 @@ class _AdvancedTabsExampleState extends State<AdvancedTabsExample> {
   Widget build(BuildContext context) {
     return JustTabs(
       controller: _tabController,
-      variant: JustTabVariant.pill,
+      variant: .pill,
       isScrollable: true,
       tabs: [
         JustTab(
@@ -86,7 +88,7 @@ class _AdvancedTabsExampleState extends State<AdvancedTabsExample> {
           label: 'Keamanan',
           icon: const Icon(Icons.security),
           content: const SecuritySettingsView(),
-          badge: const JustBadge.dot(color: JustBadgeColor.error),
+          badge: const JustBadge.dot(color: .error),
         ),
         JustTab(
           label: 'Notifikasi',

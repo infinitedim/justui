@@ -49,7 +49,7 @@ Widget build(BuildContext context) {
 Then, trigger a standard bottom sheet drawer:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildTrigger(BuildContext context) {
@@ -57,11 +57,11 @@ Widget buildTrigger(BuildContext context) {
     label: 'Open Bottom Drawer',
     onPressed: () {
       context.justSheet.show(
-        direction: SheetDirection.bottom,
+        direction: .bottom,
         content: Padding(
           padding: .all(context.justSpacing.lg),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             spacing: context.justSpacing.md,
             children: [
               Text('Drawer Options', style: context.justTypo.headingMd),
@@ -89,19 +89,19 @@ Widget buildTrigger(BuildContext context) {
 You can customize sheets to enter from the left or right (often used for sidebar navigations on mobile) and enable drag-to-dismiss features:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 void showLeftSidebarSheet(BuildContext context) {
   context.justSheet.show(
-    direction: SheetDirection.left,
+    direction: .left,
     draggable: true,
     size: 0.75, // Occupies 75% of the viewport width
     content: SafeArea(
       child: Padding(
         padding: .all(context.justSpacing.md),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           spacing: context.justSpacing.md,
           children: [
             Text('Navigation Menu', style: context.justTypo.headingMd),
@@ -127,13 +127,13 @@ void showLeftSidebarSheet(BuildContext context) {
 Use `JustSheetSurface` to embed the sheet surface chrome directly in a widget tree without an overlay barrier or drag gesture detector:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildInlineSheet(BuildContext context) {
   return JustSheetSurface(
     showHandle: true,
-    style: const JustSheetStyle(borderWidth: 2),
+    style: const JustSheetStyle(borderWidth: 2.0),
     child: Column(
       mainAxisSize: .min,
       crossAxisAlignment: .start,

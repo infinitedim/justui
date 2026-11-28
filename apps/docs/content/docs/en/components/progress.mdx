@@ -32,7 +32,7 @@ justui add progress
 Create a standard linear progress bar with a determinate progress value (between `0.0` and `1.0` by default):
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicProgress(BuildContext context) {
@@ -59,7 +59,7 @@ Widget buildBasicProgress(BuildContext context) {
 Use `JustProgress.circular` to create a circular progress spinner:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildCircularProgress(BuildContext context) {
@@ -69,13 +69,13 @@ Widget buildCircularProgress(BuildContext context) {
       // Determinate Circular Progress
       JustProgress.circular(
         value: 0.75,
-        size: JustProgressSize.lg,
+        size: .lg,
       ),
 
       // Indeterminate Circular Spinner
       JustProgress.circular(
         value: null,
-        size: JustProgressSize.md,
+        size: .md,
       ),
     ],
   );

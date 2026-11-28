@@ -31,7 +31,7 @@ justui add select
 Gunakan `JustSelect` untuk memilih opsi dari daftar. Bungkus nilai parameter menggunakan sintaksis _Dart Dot Shorthand_ (seperti `.md` untuk ukuran):
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class SelectBasicDemo extends StatefulWidget {
@@ -72,7 +72,8 @@ class _SelectBasicDemoState extends State<SelectBasicDemo> {
 Kamu dapat mengaktifkan pencarian teks (sangat berguna untuk daftar panjang) dan menambahkan ikon awalan ke pemicu input select:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 class SelectAdvancedDemo extends StatefulWidget {
@@ -117,7 +118,7 @@ class _SelectAdvancedDemoState extends State<SelectAdvancedDemo> {
 Atur `inlineDropdown: true` untuk merender menu dropdown secara in-flow di bawah pemicu di dalam `Column` alih-alih di dalam overlay portal. Opsi ini berguna di dalam tata letak terbatas, scroll view, atau panel tertanam di mana overlay portal tidak dapat digunakan.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class SelectInlineDemo extends StatefulWidget {

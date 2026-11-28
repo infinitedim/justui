@@ -22,7 +22,7 @@ The `JustCheckbox` component is a form control element that allows users to sele
 Basic usage example of `JustCheckbox` for terms of service agreement:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class CheckboxBasicDemo extends StatefulWidget {
@@ -55,7 +55,7 @@ class _CheckboxBasicDemoState extends State<CheckboxBasicDemo> {
 Advanced usage example for a hierarchical selection scenario with an indeterminate state:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class CheckboxGroupDemo extends StatefulWidget {
@@ -87,7 +87,7 @@ class _CheckboxGroupDemoState extends State<CheckboxGroupDemo> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       spacing: context.justSpacing.sm,
       children: [
         // Parent Checkbox with indeterminate status

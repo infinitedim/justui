@@ -24,14 +24,14 @@ The `JustInput` component is a high-performance text input element designed with
 Basic usage example of `JustInput` for standard text entry:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicInput(BuildContext context) {
   return JustInput(
     label: 'Email Address',
     hint: 'name@domain.com',
-    keyboardType: TextInputType.emailAddress,
+    keyboardType: .emailAddress,
     onChanged: (value) => print('Email: $value'),
   );
 }
@@ -42,7 +42,8 @@ Widget buildBasicInput(BuildContext context) {
 Advanced usage example for a password input with form validation, and a separate OTP field:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Divider;
 import 'package:your_app/core/just_ui_core.dart';
 
 class InputAdvancedScreen extends StatefulWidget {

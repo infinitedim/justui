@@ -25,7 +25,7 @@ You can use these breakpoints inside your widget's `build` method along with the
 
 ```dart
 Widget build(BuildContext context) {
-  final double screenWidth = MediaQuery.of(context).size.width;
+  final double screenWidth = MediaQuery.sizeOf(context).width;
 
   if (screenWidth >= JustBreakpoints.lg) {
     return const DesktopLayout();
@@ -58,7 +58,7 @@ Consistency in spacing greatly influences interface neatness. JustUI uses a **4p
 Avoid writing padding numbers manually at random. Use JustUI's inset utility functions:
 
 ```dart
-padding: JustSpacing.insets(horizontal: JustSpacing.lg, vertical: JustSpacing.md)
+padding: JustSpacing.insets(h: JustSpacing.lg, v: JustSpacing.md)
 // Produces EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0)
 ```
 

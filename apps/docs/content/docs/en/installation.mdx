@@ -63,3 +63,13 @@ The component and its dependencies will be automatically copied to your configur
   Flutter package name from `pubspec.yaml` (for example: `import
   'package:my_project/core/just_ui_core.dart';`).
 </Callout>
+
+<Callout title="Flutter 3.50+ & material_ui Imports" type="info">
+  Documentation snippets target Flutter 3.50+ (`package:flutter/widgets.dart`
+  for Material-free code and `package:material_ui/material_ui.dart` when
+  Material icons or widgets are used). The `justui` CLI automatically rewrites
+  component imports to `package:flutter/material.dart` if your project is on
+  Flutter &lt; 3.50 or does not depend on `material_ui`. When pasting doc
+  examples into a Flutter &lt; 3.50 app, replace
+  `package:material_ui/material_ui.dart` with `package:flutter/material.dart`.
+</Callout>

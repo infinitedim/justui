@@ -14,7 +14,7 @@ description: Responsive side drawer navigation panel for large-scale application
 The following is a basic usage example of `JustSidebar` for a single-level navigation menu.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class BasicSidebarExample extends StatefulWidget {
@@ -54,7 +54,7 @@ class _BasicSidebarExampleState extends State<BasicSidebarExample> {
               ),
             ],
           ),
-          const VerticalDivider(width: 1),
+          const VerticalDivider(width: 1.0),
           Expanded(
             child: Center(
               child: Text('Page Content #$_selectedIdx'),
@@ -72,7 +72,7 @@ class _BasicSidebarExampleState extends State<BasicSidebarExample> {
 Advanced usage example with nested (recursive) menus, user profile header, logout footer, and collapsed status option.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 class AdvancedSidebarExample extends StatefulWidget {
@@ -93,19 +93,19 @@ class _AdvancedSidebarExampleState extends State<AdvancedSidebarExample> {
         children: [
           JustSidebar(
             isCollapsed: _isSidebarCollapsed,
-            variant: JustSidebarVariant.inset,
+            variant: .inset,
             header: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const .all(16.0),
               child: Row(
                 children: [
-                  const JustAvatar(name: 'Admin JustUI', size: JustAvatarSize.md),
+                  const JustAvatar(name: 'Admin JustUI', size: .md),
                   if (!_isSidebarCollapsed) ...[
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 12.0),
                     const Expanded(
                       child: Text(
                         'Administrator',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontWeight: .bold),
+                        overflow: .ellipsis,
                       ),
                     ),
                   ],
@@ -154,7 +154,7 @@ class _AdvancedSidebarExampleState extends State<AdvancedSidebarExample> {
               ),
             ],
           ),
-          const VerticalDivider(width: 1),
+          const VerticalDivider(width: 1.0),
           Expanded(
             child: Center(
               child: Text('Active page #$_selectedIdx'),

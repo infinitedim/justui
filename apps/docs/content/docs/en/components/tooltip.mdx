@@ -32,7 +32,8 @@ justui add tooltip
 Wrap any widget (such as a standard button or text label) with `JustTooltip` and provide a message string:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildTooltipExample(BuildContext context) {
@@ -53,7 +54,7 @@ Widget buildTooltipExample(BuildContext context) {
 You can customize the tooltip trigger delays, positions, and styling:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildAdvancedTooltip(BuildContext context) {
@@ -74,13 +75,13 @@ Widget buildAdvancedTooltip(BuildContext context) {
 Use `JustTooltipBubble` to render the themed tooltip bubble surface directly in a widget tree without an overlay portal or pointer triggers:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildInlineTooltipBubble(BuildContext context) {
   return const JustTooltipBubble(
     message: 'Copied to clipboard',
-    style: JustTooltipStyle(maxWidth: 200),
+    style: JustTooltipStyle(maxWidth: 200.0),
   );
 }
 ```

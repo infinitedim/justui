@@ -31,7 +31,7 @@ justui add accordion
 Buat accordion sederhana dengan batasan ekspansi tunggal (membuka satu bagian akan menciutkan bagian lainnya):
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicAccordion(BuildContext context) {
@@ -55,7 +55,8 @@ Widget buildBasicAccordion(BuildContext context) {
 Konfigurasikan varian tata letak (misalnya `flush` atau `contained`), izinkan ekspansi ganda bersamaan, dan atur status awal ekspansi:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:your_app/core/just_ui_core.dart';
 
 class AccordionAdvancedDemo extends StatelessWidget {
@@ -64,7 +65,7 @@ class AccordionAdvancedDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return JustAccordion(
-      variant: JustAccordionVariant.contained, // Dikelompokkan dalam satu kontainer
+      variant: .contained, // Dikelompokkan dalam satu kontainer
       allowMultiple: true, // Membuka beberapa panel secara bersamaan
       initialExpanded: const {0}, // Item pertama terbuka secara default
       items: const [
@@ -73,7 +74,7 @@ class AccordionAdvancedDemo extends StatelessWidget {
           subtitle: Text('Kelola profil dan kredensial kamu'),
           leading: Icon(Icons.person_outline),
           content: Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
+            padding: .symmetric(vertical: 8.0),
             child: Text('Ubah nama, alamat email, atau perbarui kata sandi kamu di sini.'),
           ),
         ),
@@ -82,7 +83,7 @@ class AccordionAdvancedDemo extends StatelessWidget {
           subtitle: Text('Atur peringatan email dan notifikasi push'),
           leading: Icon(Icons.notifications_outlined),
           content: Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
+            padding: .symmetric(vertical: 8.0),
             child: Text('Aktifkan atau nonaktifkan peringatan untuk peristiwa keamanan, pesan, dan laporan.'),
           ),
         ),

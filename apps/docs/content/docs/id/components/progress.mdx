@@ -32,7 +32,7 @@ justui add progress
 Buat batang kemajuan linier standar dengan nilai kemajuan pasti (antara `0.0` dan `1.0` secara default):
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildBasicProgress(BuildContext context) {
@@ -59,7 +59,7 @@ Widget buildBasicProgress(BuildContext context) {
 Gunakan `JustProgress.circular` untuk membuat spinner kemajuan melingkar:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:your_app/core/just_ui_core.dart';
 
 Widget buildCircularProgress(BuildContext context) {
@@ -69,13 +69,13 @@ Widget buildCircularProgress(BuildContext context) {
       // Progress Melingkar Determinate
       JustProgress.circular(
         value: 0.75,
-        size: JustProgressSize.lg,
+        size: .lg,
       ),
 
       // Spinner Melingkar Indeterminate
       JustProgress.circular(
         value: null,
-        size: JustProgressSize.md,
+        size: .md,
       ),
     ],
   );
