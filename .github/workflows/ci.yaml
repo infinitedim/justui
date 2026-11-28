@@ -115,6 +115,10 @@ jobs:
           cd apps/docs
           bun scripts/check-flutter-budget.ts
 
+      - name: Audit Mobile Web bundle
+        run: |
+          bun .agents/skills/flutter-expert/scripts/analyze_web_bundle.mjs apps/docs/public/flutter --fail-on fail
+
       - name: Upload the bridge bundle
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -198,6 +202,20 @@ jobs:
         run: |
           cd apps/docs
           bun run test:e2e
+
+      - name: Mobile Web Wasm telemetry (Blink)
+        run: |
+          cd apps/docs
+          bun run flutter:telemetry
+
+      - name: Upload Mobile Web telemetry
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: mobile-web-telemetry
+          path: .agents/tmp/mobile-web-telemetry
+          if-no-files-found: ignore
+          retention-days: 3
 
   cli-check:
     name: "CLI — Check"
