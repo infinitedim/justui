@@ -903,7 +903,7 @@ class _JustTimePickerState extends State<JustTimePicker> {
                       isVisible: true,
                       scaleAlignment: showAbove
                           ? Alignment.bottomCenter
-                          : Alignment.topCenter,
+                          : .topCenter,
                       child: themedPicker,
                     ),
                   ),

@@ -24,8 +24,8 @@ void main() {
     return MaterialApp(
       theme: materialTheme,
       home: JustThemeProvider(
-        lightTheme: theme ?? JustThemeData.light,
-        darkTheme: theme ?? JustThemeData.dark,
+        lightTheme: theme ?? .light,
+        darkTheme: theme ?? .dark,
         child: Scaffold(
           body: Align(
             alignment: alignment,

@@ -18,7 +18,7 @@ void main() {
     });
 
     test('ThemeData is lazy-cached and returns identical instance on multiple calls', () {
-      final JustThemeData theme = JustThemeData.light;
+      final JustThemeData theme = .light;
       final ThemeData first = theme.toThemeData();
       final ThemeData second = theme.toThemeData();
 
@@ -32,12 +32,12 @@ void main() {
         late JustThemeProviderState state;
         await tester.pumpWidget(
           JustThemeProvider(
-            lightTheme: JustThemeData.light,
-            darkTheme: JustThemeData.dark,
+            lightTheme: .light,
+            darkTheme: .dark,
             child: Builder(
               builder: (BuildContext context) {
                 state = JustThemeProvider.of(context);
-                return const SizedBox();
+                return const SizedBox.shrink();
               },
             ),
           ),
@@ -53,7 +53,7 @@ void main() {
     test(
       'ThemeData cache is cleared/rebuilt when copied with modifications',
       () {
-        final JustThemeData base = JustThemeData.light;
+        final JustThemeData base = .light;
         final ThemeData originalMaterial = base.toThemeData();
 
         // Copy with custom colors
@@ -69,14 +69,8 @@ void main() {
       'fromSeed factory generates dynamic color scheme and respects contrast',
       () {
         const Color seedColor = Color(0xFF00FF00); // Super bright green
-        final JustThemeData seededLight = JustThemeData.fromSeed(
-          seedColor,
-          isDark: false,
-        );
-        final JustThemeData seededDark = JustThemeData.fromSeed(
-          seedColor,
-          isDark: true,
-        );
+        final JustThemeData seededLight = .fromSeed(seedColor, isDark: false);
+        final JustThemeData seededDark = .fromSeed(seedColor, isDark: true);
 
         expect(seededLight.colors.background, equals(JustColors.neutral50));
         expect(
@@ -85,7 +79,7 @@ void main() {
             JustDynamicSurfaces.generateDarkSurface(
               seedColor,
               lightness: 0.03,
-              engine: JustColorSpaceEngine.hsl,
+              engine: .hsl,
             ),
           ),
         );
@@ -102,7 +96,7 @@ void main() {
     );
 
     test('ThemeData maps visual tokens to component themes correctly', () {
-      final JustThemeData theme = JustThemeData.light;
+      final JustThemeData theme = .light;
       final ThemeData materialTheme = theme.toThemeData();
 
       // CardTheme check
@@ -150,10 +144,7 @@ void main() {
       const Color seed = Color(0xFF3B82F6);
 
       // Light Mode seed checks
-      final JustThemeData lightTheme = JustThemeData.fromSeed(
-        seed,
-        isDark: false,
-      );
+      final JustThemeData lightTheme = .fromSeed(seed, isDark: false);
       expect(
         lightTheme.colors.success.contrastRatioWith(
           lightTheme.colors.background,
@@ -176,10 +167,7 @@ void main() {
       );
 
       // Dark Mode seed checks
-      final JustThemeData darkTheme = JustThemeData.fromSeed(
-        seed,
-        isDark: true,
-      );
+      final JustThemeData darkTheme = .fromSeed(seed, isDark: true);
       expect(
         darkTheme.colors.success.contrastRatioWith(darkTheme.colors.background),
         greaterThanOrEqualTo(4.5),
@@ -200,12 +188,12 @@ void main() {
         JustColorSpaceEngine.oklch,
         JustColorSpaceEngine.hsluv,
       ]) {
-        final JustThemeData light = JustThemeData.fromSeed(
+        final JustThemeData light = .fromSeed(
           seed,
           isDark: false,
           colorSpace: engine,
         );
-        final JustThemeData dark = JustThemeData.fromSeed(
+        final JustThemeData dark = .fromSeed(
           seed,
           isDark: true,
           colorSpace: engine,
@@ -370,7 +358,7 @@ void main() {
               spacing: const FluidSpacingScheme(),
               radius: const FluidRadiusScheme(),
             ),
-            darkTheme: JustThemeData.dark.copyWith(
+            darkTheme: .dark.copyWith(
               spacing: const FluidSpacingScheme(),
               radius: const FluidRadiusScheme(),
             ),
@@ -515,7 +503,7 @@ void main() {
 
         expect(find.text('light'), findsOneWidget);
 
-        tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+        tester.platformDispatcher.platformBrightnessTestValue = .dark;
         await tester.pumpAndSettle();
 
         expect(find.text('dark'), findsOneWidget);
@@ -604,9 +592,9 @@ void main() {
 
     group('JustThemePreset Tests', () {
       test('Value equality works correctly for presets', () {
-        final JustThemeData defaultTheme1 = JustThemeData.light;
+        final JustThemeData defaultTheme1 = .light;
         final JustThemeData defaultTheme2 = JustThemeData.light.copyWith();
-        final JustThemeData neobrutalismTheme = JustThemeData.neobrutalismLight;
+        final JustThemeData neobrutalismTheme = .neobrutalismLight;
 
         expect(defaultTheme1 == defaultTheme2, isTrue);
         expect(defaultTheme1 == neobrutalismTheme, isFalse);
@@ -644,7 +632,7 @@ void main() {
           await tester.pumpWidget(
             JustThemeProvider(
               initialThemeMode: .light,
-              lightTheme: JustThemeData.neobrutalismLight,
+              lightTheme: .neobrutalismLight,
               child: Builder(
                 builder: (BuildContext context) {
                   final JustThemeData theme = JustThemeProvider.of(context)
@@ -689,7 +677,7 @@ void main() {
         expect(rebuildCount, equals(1));
 
         // Switch preset to neobrutalism (via applying a new light theme)
-        providerState.applyTheme(light: JustThemeData.neobrutalismLight);
+        providerState.applyTheme(light: .neobrutalismLight);
         await tester.pump();
 
         expect(rebuildCount, equals(2));

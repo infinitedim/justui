@@ -25,11 +25,11 @@ Widget skeletonScene(BuildContext context, SceneContext scene) {
               mainAxisSize: .min,
               crossAxisAlignment: .start,
               children: <Widget>[
-                JustSkeleton.rect(width: double.infinity, height: 12),
+                JustSkeleton.rect(width: .infinity, height: 12),
                 SizedBox(height: 8),
                 FractionallySizedBox(
                   widthFactor: 2 / 3,
-                  child: JustSkeleton.rect(width: double.infinity, height: 12),
+                  child: JustSkeleton.rect(width: .infinity, height: 12),
                 ),
               ],
             ),

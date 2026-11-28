@@ -35,7 +35,7 @@
           {
             "name": "just_button.dart",
             "path": "components/button/default/just_button.dart",
-            "checksum": "sha256:dc614d47e3d3f13278d1e61542270c794d53114fa69088f8e370cb4618dbe5cb"
+            "checksum": "sha256:4ea3a6a4f9c4222d7e679938be608ecf15452ba04cc0c7656ca1f98b46317921"
           },
           {
             "name": "just_icon_button.dart",
@@ -454,7 +454,7 @@
           {
             "name": "just_scroll_area.dart",
             "path": "components/scroll/default/just_scroll_area.dart",
-            "checksum": "sha256:67ee2eae00866f0f5a923837ab398bdb414176802737d3d2e1ea483a872424aa"
+            "checksum": "sha256:4b5f7940703873ac59cab451470e679a661ceca3f17c9c139b2e159533d28100"
           }
         ]
       },
@@ -537,7 +537,7 @@
           {
             "name": "just_carousel.dart",
             "path": "components/carousel/default/just_carousel.dart",
-            "checksum": "sha256:c20eb0a01462ffe1bb9f8b4e151d516e52fe14b0169b0052c308e7b4d53f5976"
+            "checksum": "sha256:79e5d63e5b9a7a3b8d2b37d7a0bf1d322a1bc37ed16d2c068ad7c8f46975ee21"
           }
         ]
       },
@@ -763,7 +763,7 @@
           {
             "name": "just_tabs.dart",
             "path": "components/tabs/default/just_tabs.dart",
-            "checksum": "sha256:ce59a6d6f065c6ef7149164f87612b9aa6a999f803b094566be11b15a07a9e0e"
+            "checksum": "sha256:b17cc040d1f5d625ddfe3fbb72f7cdbe872485e74c4c62dd6b75000b93189b91"
           },
           {
             "name": "just_tab_indicator.dart",
@@ -899,7 +899,7 @@
           {
             "name": "just_sidebar.dart",
             "path": "components/sidebar/default/just_sidebar.dart",
-            "checksum": "sha256:6fad99c7be78a465467a2db9f3bc8c46918d50dcad28aa0ff746fce75b4e5436"
+            "checksum": "sha256:34841e8fe8b3b95afefadd1b074aa56deec2f1b06b4b1be0772719382d363743"
           }
         ]
       },
@@ -1136,7 +1136,7 @@
           {
             "name": "just_progress.dart",
             "path": "components/progress/default/just_progress.dart",
-            "checksum": "sha256:d6a076efccdbf1fdc715b5e5500f95b28b9d6c7fb41506ab6b0cd6e75af050fa"
+            "checksum": "sha256:9853128b3e16166986d833d4ae8c9c4c4a5eb7fc7400151e0ca23c420e06575f"
           }
         ]
       },
@@ -1220,7 +1220,7 @@
           {
             "name": "just_toggle.dart",
             "path": "components/toggle/default/just_toggle.dart",
-            "checksum": "sha256:cd592976c1b9bd5053533ff8bdc4cefcd88c52befaa93f060ce04c2a837eea3f"
+            "checksum": "sha256:19b038488dfefd7fc0e4627a4f92e09b88e9c0dfb075a0fe1c856e7560fd74e2"
           },
           {
             "name": "just_toggle_group.dart",
@@ -1393,7 +1393,7 @@
           {
             "name": "just_time_picker.dart",
             "path": "components/time_picker/default/just_time_picker.dart",
-            "checksum": "sha256:90edb8d932b45687d3878aa78acb3ef780dc87304849f36cb7aac1b8fff63ab1"
+            "checksum": "sha256:4b2c15da0db1377ee0565257e046d3ca1a36af172b9a01991937d8280c28f7b3"
           },
           {
             "name": "_time_picker_dial.dart",

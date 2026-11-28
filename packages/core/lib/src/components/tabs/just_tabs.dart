@@ -712,7 +712,7 @@ class _JustTabsState extends State<JustTabs> with TickerProviderStateMixin {
                 ],
                 Flexible(
                   child: Stack(
-                    alignment: Alignment.center,
+                    alignment: .center,
                     children: <Widget>[
                       // Invisible bold placeholder reserves max width so switching tabs has 0 layout jitter
                       Opacity(

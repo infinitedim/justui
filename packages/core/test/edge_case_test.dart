@@ -13,7 +13,7 @@ void main() {
     testWidgets(
       'Concurrent Theme Seed Mutation & High Contrast Eviction mid-frame during Overlay Disposal and In-Flight Ticker',
       (WidgetTester tester) async {
-        JustThemeData currentTheme = JustThemeData.light;
+        JustThemeData currentTheme = .light;
         bool isMounted = true;
         String selectedVal = 'Item A';
         double sliderVal = 40.0;
@@ -89,7 +89,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 1));
 
         // 4. Mid-frame: Mutate theme seed + apply high contrast + unmount widget tree
-        currentTheme = JustThemeData.fromSeed(
+        currentTheme = .fromSeed(
           const Color(0xFFFF0055),
           isDark: false,
         ).applyHighContrastOverrides();

@@ -21,7 +21,7 @@ void main() {
       home: MediaQuery(
         data: MediaQueryData(disableAnimations: disableAnimations),
         child: JustThemeProvider(
-          lightTheme: theme ?? JustThemeData.light,
+          lightTheme: theme ?? .light,
           child: Scaffold(body: Center(child: child)),
         ),
       ),

@@ -630,7 +630,7 @@ void main() {
             ],
           ),
           home: JustThemeProvider(
-            lightTheme: JustThemeData.light,
+            lightTheme: .light,
             child: const Scaffold(
               body: Center(child: JustTimePicker(value: initialTime)),
             ),
@@ -1577,7 +1577,7 @@ void main() {
               ],
             ),
             home: JustThemeProvider(
-              lightTheme: JustThemeData.light,
+              lightTheme: .light,
               child: const Scaffold(
                 body: Center(
                   child: JustTimePicker.inline(

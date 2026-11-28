@@ -1028,7 +1028,7 @@ class _JustCarouselState extends State<JustCarousel> {
     );
 
     final Widget viewportStack = Stack(
-      alignment: Alignment.center,
+      alignment: .center,
       children: <Widget>[
         Positioned.fill(child: pageView),
         if (effectiveIndicatorPosition == .inside)

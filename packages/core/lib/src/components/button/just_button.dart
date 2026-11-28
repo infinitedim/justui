@@ -319,12 +319,10 @@ class const JustButton({
                 child: Text(
                   label,
                   style: isLinkWithHover
-                      ? finalTextStyle.copyWith(
-                          decoration: TextDecoration.underline,
-                        )
+                      ? finalTextStyle.copyWith(decoration: .underline)
                       : finalTextStyle,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: .ellipsis,
                 ),
               );
 

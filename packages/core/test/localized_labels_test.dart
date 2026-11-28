@@ -17,8 +17,8 @@ import 'package:just_ui_core/src/components/switch/just_switch.dart';
 void main() {
   Widget app(Widget child) => MaterialApp(
     home: JustThemeProvider(
-      lightTheme: JustThemeData.light,
-      darkTheme: JustThemeData.dark,
+      lightTheme: .light,
+      darkTheme: .dark,
       child: Scaffold(body: SizedBox(width: 360, child: child)),
     ),
   );

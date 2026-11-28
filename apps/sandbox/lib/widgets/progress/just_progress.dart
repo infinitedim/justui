@@ -378,7 +378,7 @@ class _JustProgressState extends State<JustProgress>
         width: diameter,
         height: diameter,
         child: Stack(
-          alignment: Alignment.center,
+          alignment: .center,
           children: <Widget>[
             indicator,
             Text(

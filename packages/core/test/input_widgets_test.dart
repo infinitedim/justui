@@ -14,7 +14,7 @@ void main() {
 
   Widget buildTestApp(Widget child, {JustThemeData? theme}) {
     return JustThemeProvider(
-      lightTheme: theme ?? JustThemeData.light,
+      lightTheme: theme ?? .light,
       child: MaterialApp(
         home: Scaffold(body: Center(child: child)),
       ),
@@ -213,7 +213,7 @@ void main() {
 
       await tester.pumpWidget(
         JustThemeProvider(
-          lightTheme: JustThemeData.light,
+          lightTheme: .light,
           child: MaterialApp(
             home: JustDialogScope(
               controller: dialogController,

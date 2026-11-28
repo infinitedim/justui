@@ -649,17 +649,17 @@ void main() {
       final JustOverlayScope<_TestOverlayController> scope =
           JustOverlayScope<_TestOverlayController>(
             controller: controller1,
-            child: const SizedBox(),
+            child: const SizedBox.shrink(),
           );
       final JustOverlayScope<_TestOverlayController> sameScope =
           JustOverlayScope<_TestOverlayController>(
             controller: controller1,
-            child: const SizedBox(),
+            child: const SizedBox.shrink(),
           );
       final JustOverlayScope<_TestOverlayController> differentScope =
           JustOverlayScope<_TestOverlayController>(
             controller: controller2,
-            child: const SizedBox(),
+            child: const SizedBox.shrink(),
           );
 
       expect(scope.updateShouldNotify(sameScope), isFalse);
@@ -676,7 +676,7 @@ void main() {
               () => JustOverlayScope.of<_TestOverlayController>(context),
               throwsAssertionError,
             );
-            return const SizedBox();
+            return const SizedBox.shrink();
           },
         ),
       );
@@ -685,10 +685,10 @@ void main() {
 
   group('JustThemeData & Context Extension Tests', () {
     test('Pre-built themes initialization and equality', () {
-      final JustThemeData light = JustThemeData.light;
-      final JustThemeData dark = JustThemeData.dark;
-      final JustThemeData neoLight = JustThemeData.neobrutalismLight;
-      final JustThemeData neoDark = JustThemeData.neobrutalismDark;
+      final JustThemeData light = .light;
+      final JustThemeData dark = .dark;
+      final JustThemeData neoLight = .neobrutalismLight;
+      final JustThemeData neoDark = .neobrutalismDark;
 
       expect(light.preset, equals(JustThemePreset.default_));
       expect(dark.preset, equals(JustThemePreset.default_));
@@ -717,14 +717,14 @@ void main() {
     });
 
     test('JustThemeData.copyWith updates all fields properly', () {
-      final JustThemeData base = JustThemeData.light;
+      final JustThemeData base = .light;
       final JustColorScheme customColors = JustColors.dark();
       const _CustomTypographyScheme customTypo = _CustomTypographyScheme();
       const DefaultSpacingScheme customSpacing = DefaultSpacingScheme();
       const DefaultRadiusScheme customRadius = DefaultRadiusScheme();
       const DefaultShadowSchemeDark customShadows = DefaultShadowSchemeDark();
-      const JustMotionProfile customAnimations = JustMotionProfile.reduced;
-      const JustThemePreset customPreset = JustThemePreset.neobrutalism;
+      const JustMotionProfile customAnimations = .reduced;
+      const JustThemePreset customPreset = .neobrutalism;
 
       final JustThemeData updated = base.copyWith(
         colors: customColors,
@@ -761,20 +761,17 @@ void main() {
 
     test('JustThemeData.fromSeed works with different presets and modes', () {
       const Color seed = Color(0xFF6366F1); // Indigo
-      final JustThemeData seedLight = JustThemeData.fromSeed(
+      final JustThemeData seedLight = .fromSeed(seed, isDark: false);
+      final JustThemeData seedDark = .fromSeed(seed, isDark: true);
+      final JustThemeData seedNeoLight = .fromSeed(
         seed,
         isDark: false,
+        preset: .neobrutalism,
       );
-      final JustThemeData seedDark = JustThemeData.fromSeed(seed, isDark: true);
-      final JustThemeData seedNeoLight = JustThemeData.fromSeed(
-        seed,
-        isDark: false,
-        preset: JustThemePreset.neobrutalism,
-      );
-      final JustThemeData seedNeoDark = JustThemeData.fromSeed(
+      final JustThemeData seedNeoDark = .fromSeed(
         seed,
         isDark: true,
-        preset: JustThemePreset.neobrutalism,
+        preset: .neobrutalism,
       );
 
       expect(seedLight.shadows, isA<TintedShadowScheme>());
@@ -786,10 +783,9 @@ void main() {
     });
 
     test('applyHighContrastOverrides enforces high contrast colors', () {
-      final JustThemeData lightHighContrast = JustThemeData.light
+      final JustThemeData lightHighContrast = .light
           .applyHighContrastOverrides();
-      final JustThemeData darkHighContrast = JustThemeData.dark
-          .applyHighContrastOverrides();
+      final JustThemeData darkHighContrast = .dark.applyHighContrastOverrides();
 
       expect(
         lightHighContrast.colors.textPrimary,
@@ -804,12 +800,12 @@ void main() {
     testWidgets(
       'buildPressEffect helper returns interactive animation widgets',
       (WidgetTester tester) async {
-        final JustThemeData light = JustThemeData.light;
-        final JustThemeData neo = JustThemeData.neobrutalismLight;
+        final JustThemeData light = .light;
+        final JustThemeData neo = .neobrutalismLight;
 
         await tester.pumpWidget(
           Directionality(
-            textDirection: TextDirection.ltr,
+            textDirection: .ltr,
             child: Column(
               children: <Widget>[
                 light.buildPressEffect(
@@ -834,8 +830,8 @@ void main() {
       'JustThemeData.buildPressEffect matches the preset token implementation',
       () {
         for (final JustThemeData theme in <JustThemeData>[
-          JustThemeData.light,
-          JustThemeData.neobrutalismLight,
+          .light,
+          .neobrutalismLight,
         ]) {
           const Text child = Text('child');
           final Widget fromTheme = theme.buildPressEffect(
@@ -886,7 +882,7 @@ void main() {
 
         await tester.pumpWidget(
           JustThemeProvider(
-            lightTheme: JustThemeData.light,
+            lightTheme: .light,
             child: Builder(
               builder: (BuildContext context) {
                 theme = context.justTheme;
@@ -901,7 +897,7 @@ void main() {
                 preset = context.justPreset;
                 isDark = context.isDarkMode;
                 readDirect = context.readTheme();
-                return const SizedBox();
+                return const SizedBox.shrink();
               },
             ),
           ),

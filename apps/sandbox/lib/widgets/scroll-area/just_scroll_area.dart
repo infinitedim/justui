@@ -172,7 +172,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
   double _targetOffset = 0.0;
   double _currentOffset = 0.0;
   bool _isSmoothing = false;
-  Duration _lastTickTime = Duration.zero;
+  Duration _lastTickTime = .zero;
   bool _isDragging = false;
 
   // --- Multi-Device Physics State ---
@@ -278,7 +278,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
   void _startSmoothing() {
     if (_isSmoothing) return;
     _isSmoothing = true;
-    _lastTickTime = Duration.zero;
+    _lastTickTime = .zero;
     _smoothTicker.start();
   }
 
@@ -286,7 +286,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
     if (!_isSmoothing) return;
     _isSmoothing = false;
     _smoothTicker.stop();
-    _lastTickTime = Duration.zero;
+    _lastTickTime = .zero;
   }
 
   /// Per-frame tick callback for the smooth scroll engine.
@@ -301,7 +301,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
     }
 
     // Calculate frame-rate independent delta time (seconds)
-    final double dt = _lastTickTime == Duration.zero
+    final double dt = _lastTickTime == .zero
         ? 1.0 /
               60.0 // Assume 60fps for the very first frame
         : (elapsed - _lastTickTime).inMicroseconds / 1000000.0;
@@ -388,7 +388,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
     // Respect reduced motion: jump directly to the clamped offset instead of
     // running the multi-frame smooth lerp ticker.
     final bool isReducedMotion =
-        context.readTheme().animations.resolve(context).fast == Duration.zero;
+        context.readTheme().animations.resolve(context).fast == .zero;
     if (isReducedMotion) {
       final double clamped = (_resolvedController.offset + delta).clamp(
         0.0,
@@ -547,7 +547,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
     required Duration duration,
   }) {
     if (!_resolvedController.hasClients) return;
-    if (animations.fast == Duration.zero) {
+    if (animations.fast == .zero) {
       _stopSmoothing();
       _currentOffset = targetOffset;
       _targetOffset = targetOffset;
@@ -575,7 +575,7 @@ class _JustScrollAreaState extends State<JustScrollArea>
     final JustMotionProfile animations = context.readTheme().animations.resolve(
       context,
     );
-    final bool isReducedMotion = animations.fast == Duration.zero;
+    final bool isReducedMotion = animations.fast == .zero;
     final double maxScroll = _resolvedController.position.maxScrollExtent;
     final double viewportDimension =
         _resolvedController.position.viewportDimension;

@@ -1,5 +1,4 @@
 // ignore_for_file: implementation_imports
-import 'package:flutter/widgets.dart' show BorderRadius, Radius;
 import 'package:just_ui_core/just_ui_core.dart';
 import 'package:just_ui_core/src/components/skeleton/just_skeleton_style.dart';
 import 'package:just_ui_core/src/components/skeleton/just_skeleton_theme.dart';
@@ -20,10 +19,8 @@ JustSkeletonTheme skeletonInkPaper(JustThemePreset preset, InkPaperRoles r) {
     style: JustSkeletonStyle(
       backgroundColor: neo ? r.borderControl : r.selection,
       shimmerColor: r.hover,
-      duration: Duration.zero,
-      fallbackRadius: neo
-          ? BorderRadius.zero
-          : const BorderRadius.all(Radius.circular(6)),
+      duration: .zero,
+      fallbackRadius: neo ? .zero : const .all(.circular(6)),
     ),
   );
 }

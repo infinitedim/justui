@@ -11,7 +11,7 @@ void main() {
   Widget buildTestApp(Widget child, {JustThemeData? theme}) {
     return MaterialApp(
       home: JustThemeProvider(
-        lightTheme: theme ?? JustThemeData.light,
+        lightTheme: theme ?? .light,
         child: Scaffold(body: Center(child: child)),
       ),
     );

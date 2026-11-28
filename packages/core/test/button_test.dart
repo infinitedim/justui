@@ -619,31 +619,31 @@ void main() {
         index: 0,
         totalCount: 3,
         direction: Axis.horizontal,
-        child: SizedBox(),
+        child: SizedBox.shrink(),
       );
       const JustButtonGroupInfo info2 = JustButtonGroupInfo(
         index: 1,
         totalCount: 3,
         direction: Axis.horizontal,
-        child: SizedBox(),
+        child: SizedBox.shrink(),
       );
       const JustButtonGroupInfo info3 = JustButtonGroupInfo(
         index: 0,
         totalCount: 4,
         direction: Axis.horizontal,
-        child: SizedBox(),
+        child: SizedBox.shrink(),
       );
       const JustButtonGroupInfo info4 = JustButtonGroupInfo(
         index: 0,
         totalCount: 3,
         direction: Axis.vertical,
-        child: SizedBox(),
+        child: SizedBox.shrink(),
       );
       const JustButtonGroupInfo infoSame = JustButtonGroupInfo(
         index: 0,
         totalCount: 3,
         direction: Axis.horizontal,
-        child: SizedBox(),
+        child: SizedBox.shrink(),
       );
 
       expect(info1.updateShouldNotify(info2), isTrue);

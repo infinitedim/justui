@@ -9,8 +9,8 @@ import 'package:just_ui_core/src/components/select/just_select.dart';
 void main() {
   Widget app(Widget child) => MaterialApp(
     home: JustThemeProvider(
-      lightTheme: JustThemeData.light,
-      darkTheme: JustThemeData.dark,
+      lightTheme: .light,
+      darkTheme: .dark,
       child: Scaffold(body: SizedBox(width: 320, child: child)),
     ),
   );

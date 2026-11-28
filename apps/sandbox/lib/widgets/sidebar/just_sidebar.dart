@@ -143,7 +143,7 @@ class _JustSidebarState extends State<JustSidebar>
     super.didUpdateWidget(oldWidget);
     if (widget.isCollapsed != oldWidget.isCollapsed) {
       final double target = widget.isCollapsed ? 0.0 : 1.0;
-      if (_collapseController.duration == Duration.zero) {
+      if (_collapseController.duration == .zero) {
         _collapseController.value = target;
       } else {
         _collapseController.animateTo(target);
@@ -435,7 +435,7 @@ class _JustSidebarFolderState extends State<_JustSidebarFolder>
     setState(() {
       _isExpanded = !_isExpanded;
     });
-    if (_expandController.duration == Duration.zero) {
+    if (_expandController.duration == .zero) {
       _expandController.value = _isExpanded ? 1.0 : 0.0;
     } else if (_isExpanded) {
       _expandController.forward();

@@ -19,7 +19,7 @@ void main() {
     JustDialogTheme? dialogTheme,
   }) {
     return JustThemeProvider(
-      lightTheme: theme ?? JustThemeData.light,
+      lightTheme: theme ?? .light,
       child: MaterialApp(
         theme: ThemeData(
           extensions: <ThemeExtension<dynamic>>[
@@ -629,7 +629,7 @@ void main() {
         final JustDialogController controller = JustDialogController();
         await tester.pumpWidget(
           JustThemeProvider(
-            lightTheme: JustThemeData.light,
+            lightTheme: .light,
             child: MaterialApp(
               home: MediaQuery(
                 data: const MediaQueryData(disableAnimations: true),
@@ -664,7 +664,7 @@ void main() {
       JustDialogTheme? dialogTheme,
     }) {
       return JustThemeProvider(
-        lightTheme: theme ?? JustThemeData.light,
+        lightTheme: theme ?? .light,
         child: MaterialApp(
           theme: ThemeData(extensions: <ThemeExtension<dynamic>>[?dialogTheme]),
           home: Scaffold(body: Center(child: child)),
@@ -686,7 +686,7 @@ void main() {
     testWidgets(
       'JustDialogSurface renders inline without JustOverlayScope in default and neobrutalism presets',
       (WidgetTester tester) async {
-        final JustThemeData defaultTheme = JustThemeData.light;
+        final JustThemeData defaultTheme = .light;
         await tester.pumpWidget(
           buildInlineApp(
             theme: defaultTheme,

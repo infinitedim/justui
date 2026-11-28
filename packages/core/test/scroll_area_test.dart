@@ -49,7 +49,7 @@ void main() {
         ],
       ),
       home: JustThemeProvider(
-        lightTheme: theme ?? JustThemeData.light,
+        lightTheme: theme ?? .light,
         child: Scaffold(
           body: Builder(
             builder: (BuildContext context) {

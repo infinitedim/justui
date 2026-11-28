@@ -546,7 +546,7 @@ void main() {
     testWidgets(
       'JustSheetSurface renders inline with handle and directional border radius',
       (WidgetTester tester) async {
-        final JustThemeData defaultTheme = JustThemeData.light;
+        final JustThemeData defaultTheme = .light;
         final Finder boxFinder = find
             .descendant(
               of: find.byType(JustSheetSurface),

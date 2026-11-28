@@ -115,13 +115,13 @@ class _ViewHostState extends State<ViewHost> with WidgetsBindingObserver {
       lightTheme: theme,
       darkTheme: theme,
       initialThemeMode: .light,
-      transitionDuration: Duration.zero,
+      transitionDuration: .zero,
       child: MaterialApp(
         title: null,
         debugShowCheckedModeBanner: false,
         // The page awaits update() until the frame shows the new theme, so
         // the switch must not animate (the docs crossfade covers it).
-        themeAnimationDuration: Duration.zero,
+        themeAnimationDuration: .zero,
         theme: theme.toThemeData(
           additionalExtensions: inkPaperExtensions(
             config.preset,

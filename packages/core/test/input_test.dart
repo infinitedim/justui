@@ -20,8 +20,8 @@ void main() {
     return MaterialApp(
       home: JustThemeProvider(
         initialThemeMode: themeMode,
-        lightTheme: theme ?? JustThemeData.light,
-        darkTheme: theme ?? JustThemeData.dark,
+        lightTheme: theme ?? .light,
+        darkTheme: theme ?? .dark,
         child: Scaffold(
           body: Center(child: SingleChildScrollView(child: child)),
         ),

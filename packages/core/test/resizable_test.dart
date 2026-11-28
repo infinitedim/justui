@@ -12,7 +12,7 @@ Widget buildTestApp(
   return MaterialApp(
     theme: materialTheme,
     home: JustThemeProvider(
-      lightTheme: theme ?? JustThemeData.light,
+      lightTheme: theme ?? .light,
       child: Scaffold(body: child),
     ),
   );
@@ -124,9 +124,9 @@ void main() {
       const double availableSpace = 1000.0;
       final List<double> fractions = <double>[1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0];
       final List<JustResizablePanel> panels = <JustResizablePanel>[
-        const JustResizablePanel(child: SizedBox()),
-        const JustResizablePanel(child: SizedBox()),
-        const JustResizablePanel(child: SizedBox()),
+        const JustResizablePanel(child: SizedBox.shrink()),
+        const JustResizablePanel(child: SizedBox.shrink()),
+        const JustResizablePanel(child: SizedBox.shrink()),
       ];
       final List<double> output = List<double>.filled(3, 0.0);
 
@@ -147,8 +147,8 @@ void main() {
       const double availableSpace = 500.0;
       final List<double> fractions = <double>[0.1, 0.9];
       final List<JustResizablePanel> panels = <JustResizablePanel>[
-        const JustResizablePanel(minSize: 150.0, child: SizedBox()),
-        const JustResizablePanel(child: SizedBox()),
+        const JustResizablePanel(minSize: 150.0, child: SizedBox.shrink()),
+        const JustResizablePanel(child: SizedBox.shrink()),
       ];
       final List<double> output = List<double>.filled(2, 0.0);
 
@@ -171,8 +171,8 @@ void main() {
       const double availableSpace = 500.0;
       final List<double> fractions = <double>[0.8, 0.2];
       final List<JustResizablePanel> panels = <JustResizablePanel>[
-        const JustResizablePanel(maxSize: 200.0, child: SizedBox()),
-        const JustResizablePanel(child: SizedBox()),
+        const JustResizablePanel(maxSize: 200.0, child: SizedBox.shrink()),
+        const JustResizablePanel(child: SizedBox.shrink()),
       ];
       final List<double> output = List<double>.filled(2, 0.0);
 
@@ -191,8 +191,8 @@ void main() {
       const double availableSpace = 600.0;
       final List<double> fractions = <double>[0.0, 1.0];
       final List<JustResizablePanel> panels = <JustResizablePanel>[
-        const JustResizablePanel(collapsible: true, child: SizedBox()),
-        const JustResizablePanel(child: SizedBox()),
+        const JustResizablePanel(collapsible: true, child: SizedBox.shrink()),
+        const JustResizablePanel(child: SizedBox.shrink()),
       ];
       final List<double> output = List<double>.filled(2, 0.0);
 
@@ -213,9 +213,9 @@ void main() {
       const double availableSpace = 1000.0;
       final List<double> currentFractions = <double>[0.2, 0.5, 0.3];
       final List<JustResizablePanel> panels = <JustResizablePanel>[
-        const JustResizablePanel(child: SizedBox()),
-        const JustResizablePanel(child: SizedBox()),
-        const JustResizablePanel(child: SizedBox()),
+        const JustResizablePanel(child: SizedBox.shrink()),
+        const JustResizablePanel(child: SizedBox.shrink()),
+        const JustResizablePanel(child: SizedBox.shrink()),
       ];
       final List<double> output = List<double>.filled(3, 0.0);
 
@@ -244,8 +244,8 @@ void main() {
         const double availableSpace = 1000.0;
         final List<double> currentFractions = <double>[0.5, 0.5];
         final List<JustResizablePanel> panels = <JustResizablePanel>[
-          const JustResizablePanel(resizable: false, child: SizedBox()),
-          const JustResizablePanel(child: SizedBox()),
+          const JustResizablePanel(resizable: false, child: SizedBox.shrink()),
+          const JustResizablePanel(child: SizedBox.shrink()),
         ];
         final List<double> output = List<double>.filled(2, 0.0);
 
@@ -271,11 +271,11 @@ void main() {
         const JustResizablePanel(
           snapPoints: <double>[0.90],
           snapThreshold: 0.05,
-          child: SizedBox(),
+          child: SizedBox.shrink(),
         ),
         const JustResizablePanel(
           minSize: 200.0, // minFraction = 0.20!
-          child: SizedBox(),
+          child: SizedBox.shrink(),
         ),
       ];
       final List<double> output = List<double>.filled(2, 0.0);
@@ -304,9 +304,9 @@ void main() {
           minSize: 100.0, // 0.10
           collapsible: true,
           collapseThreshold: 50.0, // 0.05
-          child: SizedBox(),
+          child: SizedBox.shrink(),
         ),
-        const JustResizablePanel(child: SizedBox()),
+        const JustResizablePanel(child: SizedBox.shrink()),
       ];
       final List<double> output = List<double>.filled(2, 0.0);
 
@@ -332,9 +332,9 @@ void main() {
           minSize: 100.0, // 0.10
           collapsible: true,
           collapseThreshold: 50.0, // 0.05
-          child: SizedBox(),
+          child: SizedBox.shrink(),
         ),
-        const JustResizablePanel(child: SizedBox()),
+        const JustResizablePanel(child: SizedBox.shrink()),
       ];
       final List<double> output = List<double>.filled(2, 0.0);
 
@@ -359,9 +359,9 @@ void main() {
         const JustResizablePanel(
           snapPoints: <double>[0.25, 0.50],
           snapThreshold: 0.03,
-          child: SizedBox(),
+          child: SizedBox.shrink(),
         ),
-        const JustResizablePanel(child: SizedBox()),
+        const JustResizablePanel(child: SizedBox.shrink()),
       ];
       final List<double> output = List<double>.filled(2, 0.0);
 

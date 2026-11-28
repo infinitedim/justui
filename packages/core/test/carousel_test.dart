@@ -13,7 +13,7 @@ Widget buildTestApp(
   return MaterialApp(
     theme: materialTheme,
     home: JustThemeProvider(
-      lightTheme: theme ?? JustThemeData.light,
+      lightTheme: theme ?? .light,
       child: Scaffold(body: child),
     ),
   );
@@ -459,9 +459,7 @@ void main() {
 
   group('JustCarousel Theme & Style Specifications', () {
     test('JustCarouselTheme.fromTheme resolves tokens correctly', () {
-      final JustCarouselTheme theme = JustCarouselTheme.fromTheme(
-        JustThemeData.light,
-      );
+      final JustCarouselTheme theme = JustCarouselTheme.fromTheme(.light);
       expect(theme.indicatorColor, JustThemeData.light.colors.borderDefault);
       expect(
         theme.activeIndicatorColor,
@@ -475,9 +473,7 @@ void main() {
     test(
       'JustCarouselTheme.neobrutalism matches high-contrast specifications',
       () {
-        final JustCarouselTheme theme = JustCarouselTheme.neobrutalism(
-          JustThemeData.light,
-        );
+        final JustCarouselTheme theme = JustCarouselTheme.neobrutalism(.light);
         expect(
           theme.activeIndicatorColor,
           JustThemeData.light.colors.textPrimary,

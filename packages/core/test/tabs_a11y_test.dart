@@ -24,8 +24,8 @@ Widget _wrapTabs(
 }) {
   return MaterialApp(
     home: JustThemeProvider(
-      lightTheme: theme ?? JustThemeData.light,
-      darkTheme: theme ?? JustThemeData.dark,
+      lightTheme: theme ?? .light,
+      darkTheme: theme ?? .dark,
       child: MediaQuery(
         data: MediaQueryData(disableAnimations: disableAnimations),
         child: Scaffold(
@@ -294,7 +294,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: JustThemeProvider(
-              lightTheme: JustThemeData.light,
+              lightTheme: .light,
               child: const Scaffold(
                 body: SingleChildScrollView(
                   child: Column(

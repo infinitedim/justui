@@ -249,7 +249,7 @@ class const JustToggle({
           Widget buttonContent = Container(
             height: height,
             padding: .symmetric(horizontal: paddingH),
-            alignment: Alignment.center,
+            alignment: .center,
             decoration: BoxDecoration(
               color: bg,
               border: resolvedBorder,

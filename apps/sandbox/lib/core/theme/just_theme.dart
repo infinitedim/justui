@@ -1,21 +1,21 @@
 import 'package:flutter/widgets.dart' show Color;
 
-import '../just_ui_core.dart';
+import '../just_ui_core.dart' show JustThemeData;
 
 /// Dynamically generated light theme from brand seed color.
-final JustThemeData justThemeLight = JustThemeData.fromSeed(
+final JustThemeData justThemeLight = .fromSeed(
   const Color(0xFF3B82F6),
   isDark: false,
-  preset: JustThemePreset.neobrutalism,
-  colorSpace: JustColorSpaceEngine.oklch,
+  preset: .neobrutalism,
+  colorSpace: .oklch,
 );
 
 /// Dynamically generated dark theme from brand seed color.
-final JustThemeData justThemeDark = JustThemeData.fromSeed(
+final JustThemeData justThemeDark = .fromSeed(
   const Color(0xFF3B82F6),
   isDark: true,
-  preset: JustThemePreset.neobrutalism,
-  colorSpace: JustColorSpaceEngine.oklch,
+  preset: .neobrutalism,
+  colorSpace: .oklch,
 );
 
 /// Default bootstrap theme matching configuration.
