@@ -111,6 +111,18 @@ const skillScriptsDir = path.join(
   '.agents/skills/flutter-expert/scripts'
 );
 
+function readOptionValue(
+  argv: readonly string[],
+  index: number,
+  flag: string
+): string {
+  const next = argv[index + 1];
+  if (!next || next.startsWith('-')) {
+    throw new Error(`Option ${flag} requires a value.`);
+  }
+  return next;
+}
+
 /** Parses script CLI flags with explicit validation. */
 export function parseCliArgs(argv: readonly string[]): CliOptions {
   const opts: CliOptions = {
@@ -121,20 +133,23 @@ export function parseCliArgs(argv: readonly string[]): CliOptions {
   };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
-    const next = argv[i + 1];
     if (arg === '--bundle-only') {
       opts.bundleOnly = true;
-    } else if (arg === '--url' && next) {
-      opts.baseUrl = next;
+    } else if (arg === '--url') {
+      opts.baseUrl = readOptionValue(argv, i, '--url');
       i += 1;
-    } else if (arg === '--route' && next) {
-      opts.route = next.startsWith('/') ? next : `/${next}`;
+    } else if (arg === '--route') {
+      const val = readOptionValue(argv, i, '--route');
+      opts.route = val.startsWith('/') ? val : `/${val}`;
       i += 1;
-    } else if (arg === '--out-dir' && next) {
-      opts.outDir = path.resolve(docsDir, next);
+    } else if (arg === '--out-dir') {
+      opts.outDir = path.resolve(
+        docsDir,
+        readOptionValue(argv, i, '--out-dir')
+      );
       i += 1;
-    } else if (arg?.startsWith('-')) {
-      throw new Error(`Unknown or incomplete option: ${arg}`);
+    } else if (arg) {
+      throw new Error(`Unknown or unexpected argument: ${arg}`);
     }
   }
   return opts;
@@ -268,15 +283,23 @@ async function allocatePort(): Promise<number> {
   });
 }
 
-async function waitForServer(url: string, timeoutMs = 30_000): Promise<void> {
+async function waitForServer(
+  url: string,
+  childExit: Promise<string>,
+  timeoutMs = 30_000
+): Promise<void> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
-    try {
-      const response = await fetch(url);
-      if (response.ok) return;
-    } catch {
-      // Server still booting; retry until timeout.
+    const outcome = await Promise.race([
+      childExit.then((reason) => ({ exited: true as const, reason })),
+      fetch(url)
+        .then((res) => ({ exited: false as const, ok: res.ok }))
+        .catch(() => ({ exited: false as const, ok: false })),
+    ]);
+    if (outcome.exited) {
+      throw new Error(`Docs server exited before ready: ${outcome.reason}`);
     }
+    if (outcome.ok) return;
     await new Promise((resolve) => setTimeout(resolve, 300));
   }
   throw new Error(`Timed out waiting for docs server at ${url}`);
@@ -311,7 +334,7 @@ async function runMobileProfiler(
     '--scroll-sweeps',
     '3',
     '--wait-ms',
-    '3000',
+    '8000',
     '--fail-on',
     'none',
     '--json',
@@ -340,18 +363,33 @@ async function withDocsServer<T>(
     return task(`${cleanBase}${route}`);
   }
   const port = await allocatePort();
-  const origin = `http://127.0.0.1:${port}`;
-  const targetUrl = `${origin}${route}`;
+  const targetUrl = `http://127.0.0.1:${port}${route}`;
   const child = spawn(
     'bun',
     ['run', 'start', '--', '-H', '127.0.0.1', '-p', String(port)],
-    { cwd: docsDir, stdio: ['ignore', 'pipe', 'pipe'] }
+    { cwd: docsDir, detached: true, stdio: ['ignore', 'ignore', 'pipe'] }
   );
+  let stderrTail = '';
+  child.stderr?.on('data', (chunk: Buffer) => {
+    stderrTail = (stderrTail + chunk.toString('utf-8')).slice(-1000);
+  });
+  const childExit = new Promise<string>((resolve) => {
+    child.once('error', (err) => resolve(err.message));
+    child.once('exit', (code) =>
+      resolve(`exit code ${code ?? 'null'} (${stderrTail.trim()})`)
+    );
+  });
   try {
-    await waitForServer(targetUrl);
+    await waitForServer(targetUrl, childExit);
     return await task(targetUrl);
   } finally {
-    child.kill('SIGTERM');
+    if (child.pid) {
+      try {
+        process.kill(-child.pid, 'SIGTERM');
+      } catch {
+        child.kill('SIGTERM');
+      }
+    }
   }
 }
 

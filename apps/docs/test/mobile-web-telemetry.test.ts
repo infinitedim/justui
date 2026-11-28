@@ -108,7 +108,13 @@ describe('mobile-web-telemetry schemas and CLI flags', () => {
     expect(parsed.bundleOnly).toBe(true);
     expect(parsed.baseUrl).toBe('http://127.0.0.1:4100');
     expect(parsed.route).toBe('/id/docs/components');
-    expect(() => parseCliArgs(['--unknown'])).toThrow(/Unknown or incomplete/);
+    expect(() => parseCliArgs(['--unknown'])).toThrow(/Unknown or unexpected/);
+    expect(() => parseCliArgs(['--url', '--bundle-only'])).toThrow(
+      /requires a value/
+    );
+    expect(() => parseCliArgs(['extra-positional'])).toThrow(
+      /Unknown or unexpected/
+    );
   });
 
   it('validates bundle and profile reports with zod', () => {
